@@ -77,11 +77,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.Result;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
@@ -91,7 +89,6 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
-import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -2776,7 +2773,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
             	jobLogDelegate.clearLog();
             }
             
-            // Also make sure to clear the log entries in the central log store & registry 
+            // Also make sure to clear the old log entries in the central log store & registry 
             //
 			if (job!=null) {
 				CentralLogStore.discardLines(job.getLogChannelId(), true);
@@ -2861,25 +2858,16 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public synchronized void stopJob() {
-    try {
-      if (job != null && job.isActive() && job.isInitialized()) {
-        job.stopAll();
-        job.endProcessing(LogStatus.STOP, new Result()); //$NON-NLS-1$
-        job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
-        
-        log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobWasStopped")); //$NON-NLS-1$
-      }
-    } catch (KettleJobException je) {
-      MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-      m.setText(BaseMessages.getString(PKG, "JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Title")); //$NON-NLS-1$
-      m.setMessage(BaseMessages.getString(PKG, "JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Message") + Const.CR + je.toString()); //$NON-NLS-1$
-      m.open();
-    } finally {
-      setControlStates();
-    }
+	  if (job != null && job.isActive() && job.isInitialized()) {
+	    job.stopAll();
+	    job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
+	    
+	    log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobWasStopped")); //$NON-NLS-1$
+	  }
+	  setControlStates();
   }
 
-  public synchronized void setControlStates() {
+  public void setControlStates() {
 	  if (getDisplay().isDisposed()) return;
 	  
       getDisplay().asyncExec(new Runnable() {

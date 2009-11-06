@@ -19,13 +19,13 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 //
 // 
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
@@ -148,7 +148,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface
   	      	   String psqlexec = Const.optionallyQuoteStringByOS(KettleVFS.getFilename(fileObject));
 		       sb.append(psqlexec);
   	       }
-	       catch ( IOException ex )
+	       catch ( KettleFileException ex )
 	       {
 	           throw new KettleException("Error retrieving sqlldr string", ex);
 	       }		       

@@ -12,7 +12,6 @@
 
 package org.pentaho.di.trans;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
@@ -1491,7 +1491,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	                    TimerTask timerTask = new TimerTask() {
 	            			public void run() {
 	            				try {
-	            					endProcessing(LogStatus.RUNNING);
+	            					endProcessing();
 	            				} catch(Exception e) {
 	            					log.logError(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformIntervalLogging"), e);
 	            					// Also stop the show...
@@ -1515,14 +1515,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     addTransListener(new TransListener() {
     					public void transFinished(Trans trans) throws KettleException {
     						try {
-	    						if (trans.isStopped()) {
-	    							endProcessing(LogStatus.STOP);
-	    						} else {
-	    							endProcessing(LogStatus.END);
-	    						}
+	    						endProcessing();
 
-	    						lastWrittenStepPerformanceSequenceNr = writeStepPerformanceLogRecords(lastWrittenStepPerformanceSequenceNr);
-	    						
+	    						lastWrittenStepPerformanceSequenceNr = writeStepPerformanceLogRecords(lastWrittenStepPerformanceSequenceNr, LogStatus.END);
+
     						} catch(KettleException e) {
     							throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"), e);
     						}
@@ -1570,7 +1566,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     TimerTask timerTask = new TimerTask() {
             			public void run() {
             				try {
-            					lastWrittenStepPerformanceSequenceNr = writeStepPerformanceLogRecords(lastWrittenStepPerformanceSequenceNr);
+            					lastWrittenStepPerformanceSequenceNr = writeStepPerformanceLogRecords(lastWrittenStepPerformanceSequenceNr, LogStatus.RUNNING);
             				} catch(Exception e) {
             					log.logError(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformIntervalPerformanceLogging"), e);
             					// Also stop the show...
@@ -1622,6 +1618,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy);
 			}
 			
+			// Also time-out the log records in here...
+			//
+			db.cleanupLogRecords(channelLogTable);
+
 		} catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable"), e);
 		} finally {
@@ -1684,8 +1684,22 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	//
 	// Handle logging at end
 	//
-	private synchronized boolean endProcessing(LogStatus status) throws KettleException
+	private synchronized boolean endProcessing() throws KettleException
 	{
+		LogStatus status;
+		
+		if (isFinished()) {
+			if (isStopped()) {
+				status = LogStatus.STOP;
+			} else {
+				status = LogStatus.END;
+			}
+		} else if (isPaused()) {
+			status = LogStatus.PAUSED;
+		} else {
+			status = LogStatus.RUNNING;
+		}
+
 		TransLogTable transLogTable = transMeta.getTransLogTable(); 
         int intervalInSeconds = Const.toInt( environmentSubstitute(transLogTable.getLogInterval()), -1);
 
@@ -1726,6 +1740,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				if (!Const.isEmpty(logTable)) {
                 	transLogTableDatabaseConnection.writeLogRecord(transLogTable, status, this);
 				}
+				
+				// Also time-out the log records in here...
+				//
+				if (status.equals(LogStatus.END) || status.equals(LogStatus.STOP)) {
+					ldb.cleanupLogRecords(transLogTable);
+				}
 			}
 			catch(Exception e)
 			{
@@ -1742,7 +1762,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		return true;
 	}
 
-	private int writeStepPerformanceLogRecords(int startSequenceNr) throws KettleException {
+	private int writeStepPerformanceLogRecords(int startSequenceNr, LogStatus status) throws KettleException {
 		int lastSeqNr = 0;
 		Database ldb = null;
 		PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
@@ -1781,6 +1801,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			}
 			
 			ldb.insertFinished(true);
+			
+			// Finally, see if the log table needs cleaning up...
+			//
+			if (status.equals(LogStatus.END)) {
+				ldb.cleanupLogRecords(performanceLogTable);
+			}
 
 		} catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingStepPerformanceLogRecordToTable"), e);
@@ -2895,7 +2921,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 FileName fileDir = fileName.getParent();
                 variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI());
             }
-            catch(IOException e)
+            catch(KettleFileException e)
             {
                 variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
                 variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");

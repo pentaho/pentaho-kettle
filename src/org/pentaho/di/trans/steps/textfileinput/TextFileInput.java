@@ -12,7 +12,6 @@
 package org.pentaho.di.trans.steps.textfileinput;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -822,9 +821,9 @@ public class TextFileInput extends BaseStep implements StepInterface
                         if (meta.isPassingThruFields())
                             data.passThruFields.put(fileObject, fileRow);
                     }
-                    catch(IOException e)
+                    catch(KettleFileException e)
                     {
-                        logError(BaseMessages.getString(PKG, "TextFileInput.Log.Error.UnableToCreateFileObject", fileValue));
+                        logError(BaseMessages.getString(PKG, "TextFileInput.Log.Error.UnableToCreateFileObject", fileValue), e);
                     }
                     
                     // Grab another row

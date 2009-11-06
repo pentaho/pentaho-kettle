@@ -15,7 +15,6 @@ import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -163,10 +162,10 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
                     logDetailed(BaseMessages.getString(PKG, "JobEntryFileExists.File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
                 }
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 result.setNrErrors(1);
-                logError(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
+                logError(BaseMessages.getString(PKG, "JobEntryFileExists.ERROR_0004_IO_Exception", e.getMessage()), e); //$NON-NLS-1$
             }
 		}
 		else

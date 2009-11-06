@@ -67,6 +67,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -3695,7 +3696,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	public void writeLogRecord(LogTableInterface logTable, LogStatus status, Object subject) throws KettleException {
 		try {
 			RowMetaAndData logRecord = logTable.getLogRecord(status, subject);
-			boolean update = logTable.containsKeyField() && !status.equals(LogStatus.START);
+			boolean update = (logTable.getKeyField()!=null) && !status.equals(LogStatus.START);
 			String schemaTable = databaseMeta.getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
 			RowMetaInterface rowMeta = logRecord.getRowMeta();
 			Object[] rowData = logRecord.getData();
@@ -3728,9 +3729,41 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				insertRow(logTable.getSchemaName(), logTable.getTableName(), logRecord.getRowMeta(), logRecord.getData());
 
 			}
- 
+			 
 		} catch(Exception e) {
 			throw new KettleDatabaseException("Unable to write log record to log table " + logTable.getTableName(), e);
+		}
+	}
+	
+	public void cleanupLogRecords(LogTableInterface logTable) throws KettleException {
+		try {
+			double timeout = Const.toDouble( Const.trim( environmentSubstitute( logTable.getTimeoutInDays())), 0.0 );
+			if (timeout>0.000001) { 
+				// The timeout has to be at least a few seconds, otherwise we don't bother
+				//
+				String schemaTable = databaseMeta.getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+				
+				// The log date field
+				//
+				LogTableField logField = logTable.getLogDateField();
+				if (logField!=null) {
+					String sql = "DELETE FROM "+schemaTable+" WHERE "+databaseMeta.quoteField(logField.getFieldName())+" < ?"; // $NON-NLS$1 
+					
+					// Now calculate the date...
+					//
+					long now = System.currentTimeMillis();
+					long limit = now - Math.round(timeout*24*60*60*1000);
+					RowMetaAndData row = new RowMetaAndData();
+					row.addValue(logField.getFieldName(), ValueMetaInterface.TYPE_DATE, new Date(limit));
+					
+					execStatement(sql, row.getRowMeta(), row.getData());
+					
+				} else {
+					throw new KettleException(BaseMessages.getString(PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField", logTable.getTableName()));
+				}
+			}
+		} catch(Exception e) {
+			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", logTable.getTableName()), e);
 		}
 	}
 	

@@ -16,7 +16,6 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
@@ -39,8 +39,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -444,7 +444,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 								result.setNrErrors(1);
 								logError(BaseMessages.getString(PKG, "JobMysqlBulkFile.Error.Label") + " "+je.getMessage());
 							}
-							catch (IOException e)
+							catch (KettleFileException e)
 							{
 				       			logError(BaseMessages.getString(PKG, "JobMysqlBulkFile.Error.Label") + e.getMessage());
 								result.setNrErrors(1);

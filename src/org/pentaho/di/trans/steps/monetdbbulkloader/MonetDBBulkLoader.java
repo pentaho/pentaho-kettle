@@ -12,13 +12,13 @@
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -77,7 +77,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
   	      	   String psqlexec = KettleVFS.getFilename(fileObject);
 		       sb.append(psqlexec);
   	       }
-	       catch ( IOException ex )
+	       catch ( KettleFileException ex )
 	       {
 	           throw new KettleException("Error retrieving mclient application string", ex);
 	       }		       
@@ -108,7 +108,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		       sb.append(" --log=");
 		       sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
 		   }
-		   catch ( IOException ex )
+		   catch ( KettleFileException ex )
 		   {
 		       throw new KettleException("Error retrieving logfile string", ex);
 		   }

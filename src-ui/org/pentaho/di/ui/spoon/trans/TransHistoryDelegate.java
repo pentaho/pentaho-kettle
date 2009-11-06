@@ -6,12 +6,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -31,9 +32,12 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableField;
+import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -57,24 +61,29 @@ public class TransHistoryDelegate extends SpoonDelegate {
 
 	private CTabItem transHistoryTab;
 	
-    private ColumnInfo[] colinf;	
+    private List<ColumnInfo[]> columns;	
 	
-	private Text   wText;
-	private TableView wFields;
+    private List<List<LogTableField>> logTableFields;
+	private List<Text>      wText;
+	private List<TableView> wFields;
+    private List<List<Object[]>> rowList;
     
-	private FormData fdText, fdSash; 
-
-    private List<RowMetaAndData> rowList;
+    private boolean displayRefreshNeeded = true;
 
 	private boolean refreshNeeded = true;
 	
 	private Object refreshNeededLock = new Object();
 	
-	private ValueMetaInterface durationMeta;
-	private ValueMetaInterface replayDateMeta;
-
 	private XulToolbar       toolbar;
 	private Composite transHistoryComposite;
+
+	private List<LogTableInterface> logTables;
+
+	private TransMeta	transMeta;
+
+	private CTabFolder	tabFolder;
+
+	protected boolean	gettingHistoryData;
 	
 	/**
 	 * @param spoon
@@ -99,6 +108,8 @@ public class TransHistoryDelegate extends SpoonDelegate {
 			}
 		}
 		
+		transMeta = transGraph.getManagedObject();
+		
 		// Add a transLogTab : display the logging...
 		//
 		transHistoryTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE);
@@ -113,108 +124,161 @@ public class TransHistoryDelegate extends SpoonDelegate {
 		
 		addToolBar();
 		addToolBarListeners();
+		addLogTableTabs();
+		tabFolder.setSelection(0);
 		
-		SashForm sash = new SashForm(transHistoryComposite, SWT.VERTICAL);
-		
-		sash.setLayout(new FillLayout());
-		
-		final int FieldsRows=1;
-		colinf=new ColumnInfo[] {
-            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Name"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Duration"),       ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(BaseMessages.getString(PKG, "TransHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
-        };
-		
-        for (int i=3;i<10;i++) colinf[i].setAllignement(SWT.RIGHT);
-        
-        // Create the duration value meta data
-        //
-        durationMeta = new ValueMeta("DURATION", ValueMetaInterface.TYPE_NUMBER);
-        durationMeta.setConversionMask("0");
-        colinf[2].setValueMeta(durationMeta);
-        
-        wFields=new TableView(transGraph.getManagedObject(), 
-        		              sash, 
-							  SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, 
-							  colinf, 
-							  FieldsRows,  
-							  true, // readonly!
-							  null,
-							  spoon.props
-							  );
-		
-		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
-		spoon.props.setLook(wText);
-		wText.setVisible(true);
-		
-		// Put text in the middle
-		fdText=new FormData();
-		fdText.left   = new FormAttachment(0, 0);
-		fdText.top    = new FormAttachment(0, 0);
-		fdText.right  = new FormAttachment(100, 0);
-		fdText.bottom = new FormAttachment(100, 0);
-		wText.setLayoutData(fdText);
-
-		
-		fdSash     = new FormData(); 
-		fdSash.left   = new FormAttachment(0, 0);  // First one in the left top corner
-		fdSash.top    = new FormAttachment((Control)toolbar.getNativeObject(), 0);
-		fdSash.right  = new FormAttachment(100, 0);
-		fdSash.bottom = new FormAttachment(100, 0);
-		sash.setLayoutData(fdSash);
-		
-		sash.setWeights(new int[] { 60, 40} );
-
 		transHistoryComposite.pack();
-        
-        wFields.table.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    showLogEntry();
-                }
-            }
-        );
-        wFields.table.addKeyListener(new KeyListener()
-            {
-                public void keyReleased(KeyEvent e)
-                {
-                    showLogEntry();
-                }
-            
-                public void keyPressed(KeyEvent e)
-                {
-                }
-            
-            }
-        );
-        
         transHistoryTab.setControl(transHistoryComposite);
-		
 		transGraph.extraViewTabFolder.setSelection(transHistoryTab);
-		
 		
 		// Launch a refresh in the background...
 		//
-		transGraph.getDisplay().asyncExec(new Runnable() {
+		refreshHistory();
+		
+		Timer timer = new Timer();
+		TimerTask timerTask = new TimerTask() {
 			public void run() {
-				refreshHistory();
-				if (!transHistoryComposite.isDisposed()) transHistoryComposite.layout(true, true);
-				showLogEntry();
+				if (displayRefreshNeeded) {
+					displayRefreshNeeded = false;
+					for (int i = 0; i < logTables.size() ; i++) {
+						final int index = i;
+						spoon.getDisplay().syncExec(new Runnable() {
+
+							public void run() {
+								displayHistoryData(logTables.get(index), index, rowList.get(index));
+							}
+						});
+					}
+				}
+			};
+		};
+			
+		// Try to refresh every second or so...
+		//
+		timer.schedule(timerTask, 1000, 1000);
+		
+	}
+	
+	private void addLogTableTabs() {
+		
+		logTables = transMeta.getLogTables();
+		
+		columns = new ArrayList<ColumnInfo[]>();
+		rowList = new ArrayList<List<Object[]>>();
+		logTableFields = new ArrayList<List<LogTableField>>();
+		wFields = new ArrayList<TableView>();
+		wText = new ArrayList<Text>();
+
+		// Create a nested tab folder in the tab item, on the history composite...
+		//
+		tabFolder = new CTabFolder(transHistoryComposite, SWT.MULTI); 
+	    spoon.props.setLook(tabFolder, Props.WIDGET_STYLE_TAB);
+
+		for (LogTableInterface logTable : logTables) {
+			CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
+			// tabItem.setImage(GUIResource.getInstance().getImageShowHistory());
+			tabItem.setText(logTable.getLogTableType());
+			
+			Composite logTableComposite = new Composite(tabFolder, SWT.NONE);
+			logTableComposite.setLayout(new FormLayout());
+			spoon.props.setLook(logTableComposite);
+			
+			tabItem.setControl(logTableComposite);
+			
+			SashForm sash = new SashForm(logTableComposite, SWT.VERTICAL);
+			sash.setLayout(new FillLayout());
+			FormData fdSash = new FormData(); 
+			fdSash.left   = new FormAttachment(0, 0);  // First one in the left top corner
+			fdSash.top    = new FormAttachment(0, 0);
+			fdSash.right  = new FormAttachment(100, 0);
+			fdSash.bottom = new FormAttachment(100, 0);
+			sash.setLayoutData(fdSash);
+			
+			List<ColumnInfo> columnList = new ArrayList<ColumnInfo>();
+			List<LogTableField> fields =new ArrayList<LogTableField>();
+			
+			for (LogTableField field : logTable.getFields()) {
+				if (field.isEnabled() && field.isVisible()) {
+					fields.add(field);
+					if (!field.isLogField()) {
+						ColumnInfo column = new ColumnInfo(field.getName(), ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+						ValueMetaInterface valueMeta = new ValueMeta(field.getFieldName(), field.getDataType(), field.getLength(), -1);
+						
+						switch(field.getDataType()) {
+						case ValueMetaInterface.TYPE_INTEGER: 
+							valueMeta.setConversionMask("###,###,##0");
+							column.setAllignement(SWT.RIGHT);
+							break;
+						case ValueMetaInterface.TYPE_DATE: 
+							valueMeta.setConversionMask("yyyy/MM/dd HH:mm:ss");
+							column.setAllignement(SWT.CENTER);
+							break;
+						case ValueMetaInterface.TYPE_NUMBER: 
+							valueMeta.setConversionMask(" ###,###,##0.00;-###,###,##0.00");
+							column.setAllignement(SWT.RIGHT);
+							break;
+						case ValueMetaInterface.TYPE_STRING: 
+							column.setAllignement(SWT.LEFT);
+							break;
+						}
+						column.setValueMeta(valueMeta);
+						columnList.add(column);
+					}
+				}
 			}
-		});
+			logTableFields.add(fields);
+			
+			final int FieldsRows=1;
+			ColumnInfo[] colinf=columnList.toArray(new ColumnInfo[columnList.size()]);
+			columns.add(colinf); // keep for later
+				
+	        TableView tableView =new TableView(transGraph.getManagedObject(), 
+	        		              sash, 
+								  SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, 
+								  colinf, 
+								  FieldsRows,  
+								  true, // readonly!
+								  null,
+								  spoon.props
+								  );
+	        wFields.add(tableView);
+	        
+	        tableView.table.addSelectionListener(new SelectionAdapter() {
+	        	public void widgetSelected(SelectionEvent arg0) {
+	        		showLogEntry();
+	        	}
+			});
+	        
+	        if (logTable.getLogField()!=null) {
+				
+				Text text = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
+				spoon.props.setLook(text);
+				text.setVisible(true);
+				wText.add(text);
+
+				FormData fdText = new FormData();
+				fdText.left   = new FormAttachment(0, 0);
+				fdText.top    = new FormAttachment(0, 0);
+				fdText.right  = new FormAttachment(100, 0);
+				fdText.bottom = new FormAttachment(100, 0);
+				text.setLayoutData(fdText);
+				
+				sash.setWeights(new int[] { 70, 30, } );
+	        } else {
+	        	wText.add(null);
+				sash.setWeights(new int[] { 100, } );
+	        }
+			
+
+
+		}
+		
+		FormData fdTabFolder = new FormData(); 
+		fdTabFolder.left   = new FormAttachment(0, 0);  // First one in the left top corner
+		fdTabFolder.top    = new FormAttachment((Control)toolbar.getNativeObject(), 0);
+		fdTabFolder.right  = new FormAttachment(100, 0);
+		fdTabFolder.bottom = new FormAttachment(100, 0);
+		tabFolder.setLayoutData(fdTabFolder);
 		
 	}
 	
@@ -261,7 +325,6 @@ public class TransHistoryDelegate extends SpoonDelegate {
 				if (methodName != null)
 				{
 					toolbar.addMenuListener(ids[i], this, methodName);
-
 				}
 			}
 
@@ -273,24 +336,30 @@ public class TransHistoryDelegate extends SpoonDelegate {
 	}
 
 
+    public void clearLogTable() {
+    	clearLogTable(tabFolder.getSelectionIndex());
+    }
+    
     /**
      * User requested to clear the log table.<br>
      * Better ask confirmation
      */
-    public void clearLogTable() {
-    	String logTable = transGraph.getManagedObject().getTransLogTable().getTableName();
-    	DatabaseMeta databaseMeta = transGraph.getManagedObject().getTransLogTable().getDatabaseMeta();
+    public void clearLogTable(int index) {
     	
-    	if (databaseMeta!=null && !Const.isEmpty(logTable)) {
+    	LogTableInterface logTable = logTables.get(index);
     	
+    	if (logTable.isDefined()) {
+	    	String schemaTable = logTable.getQuotedSchemaTableCombination();
+	    	DatabaseMeta databaseMeta = logTable.getDatabaseMeta();
+	    	
 	    	MessageBox mb = new MessageBox(transGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-	        mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", logTable)); // Nothing found that matches your criteria
+	        mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message", schemaTable)); // Nothing found that matches your criteria
 			mb.setText(BaseMessages.getString(PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
 			if (mb.open()==SWT.YES) {
 				Database database = new Database(loggingObject, databaseMeta);
 				try {
 					database.connect();
-					database.truncateTable(logTable);
+					database.truncateTable(schemaTable);
 				}
 				catch(Exception e) {
 					new ErrorDialog(transGraph.getShell(), BaseMessages.getString(PKG, "TransGraph.Dialog.ErrorClearningLoggingTable.Title"), 
@@ -303,20 +372,16 @@ public class TransHistoryDelegate extends SpoonDelegate {
 					}
 					
 					refreshHistory();
-					wText.setText("");
+					if (wText.get(index)!=null) {
+						wText.get(index).setText("");
+					}
 				}
 			}
-
     	}
 	}
 
 	public void showHistoryView() {
-    	
-    	// What button?
-    	//
-    	// XulToolbarButton showLogXulButton = toolbar.getButtonById("trans-show-log");
-    	// ToolItem toolBarButton = (ToolItem) showLogXulButton.getNativeObject();
-    	
+
     	if (transHistoryTab==null || transHistoryTab.isDisposed()) {
     		addTransHistory();
     	} else {
@@ -328,253 +393,263 @@ public class TransHistoryDelegate extends SpoonDelegate {
     
     
 	public void replayHistory() {
-		int idx = wFields.getSelectionIndex();
+		int tabIndex = tabFolder.getSelectionIndex();
+		int idx = wFields.get(tabIndex).getSelectionIndex();
 		if (idx >= 0) {
-			String fields[] = wFields.getItem(idx);
+			String fields[] = wFields.get(tabIndex).getItem(idx);
 			String dateString = fields[13];
-			try {
-				ValueMetaInterface stringValueMeta = replayDateMeta.clone();
-				stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
-				
-				Date replayDate = stringValueMeta.getDate(dateString);
-				
-				spoon.executeTransformation(transGraph.getManagedObject(), true, false, false, false, false, replayDate, false);
-			} catch (KettleException e1) {
-				new ErrorDialog(transGraph.getShell(), 
-						BaseMessages.getString(PKG, "TransHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
-						BaseMessages.getString(PKG, "TransHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
-			}
+			Date replayDate = XMLHandler.stringToDate(dateString);
+			spoon.executeTransformation(transGraph.getManagedObject(), true, false, false, false, false, replayDate, false);
 		}
 	}
+	
+	/**
+	 * Background threaded refresh of the history data...
+	 * 
+	 */
+	public void refreshHistory() {
+		new Thread(new Runnable() {
+			public void run() {
+				if (!gettingHistoryData) {
+					gettingHistoryData = true;
+					
+					rowList.clear();
+					for (int i=0;i<logTables.size();i++) {
+						List<Object[]> rows;
+						try {
+							rows = getHistoryData(logTables.get(i));
+						} catch (KettleException e) {
+							rows = new ArrayList<Object[]>();
+						}
+						rowList.add(rows);
+					}
+					
+					// Signal the refresh timer that there is work...
+					//
+					displayRefreshNeeded = true;
+					gettingHistoryData=false;
+				}
+			}
+		}).start();
+	}
 
-    /**
-     * Refreshes the history window in Spoon: reads entries from the specified log table in the Transformation Settings dialog.
-     */
-	public void refreshHistory()
-	{
-        transGraph.getDisplay().asyncExec(
-            new Runnable()
-            {
-                public void run()
-                {
-                    getHistoryData();                
-                }
-            }
-        );
-    }
-    
-    public void getHistoryData()
+
+
+	public List<Object[]> getHistoryData(LogTableInterface logTable) throws KettleException
     {
         // See if there is a transformation loaded that has a connection table specified.
-    	TransMeta transMeta = transGraph.getManagedObject();
-        if (transMeta!=null && !Const.isEmpty(transMeta.getName()))
+    	// 
+        if (transMeta!=null && !Const.isEmpty(transMeta.getName()) && logTable.isDefined())
         {
-        	DatabaseMeta logConnection = transMeta.getTransLogTable().getDatabaseMeta(); 
-        	String logTable = transMeta.getTransLogTable().getTableName();
-            if (logConnection!=null)
+        	DatabaseMeta logConnection = logTable.getDatabaseMeta(); 
+        	
+            Database database = null;
+            try
             {
-                if (!Const.isEmpty(logTable))
+                // open a connection
+                database = new Database(loggingObject, logConnection);
+                database.shareVariablesWith(transMeta);
+                database.connect();
+                
+                // First, we get the information out of the database table...
+                //
+                String schemaTable = logTable.getQuotedSchemaTableCombination();
+                
+                String sql = "SELECT ";
+                boolean first = true;
+                for (LogTableField field : logTable.getFields()) {
+                	if (field.isEnabled() && field.isVisible()) {
+                		if (!first) sql+=", ";
+            			first=false;
+                		sql+=logConnection.quoteField(field.getFieldName());
+                	}
+                }
+                sql+=" FROM "+schemaTable;
+
+                RowMetaAndData params = new RowMetaAndData();
+
+                // Do we need to limit the amount of data?
+                //
+                LogTableField nameField = logTable.getNameField();
+                if (nameField!=null) {
+                	sql+=" WHERE "+logConnection.quoteField(nameField.getFieldName()) + " LIKE ?";
+                    params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
+
+                    sql+=" OR    "+logConnection.quoteField(nameField.getFieldName()) + " LIKE ?";
+                    params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                
+                LogTableField keyField = logTable.getKeyField();
+                if (keyField!=null) {
+                	sql+=" ORDER BY "+logConnection.quoteField(keyField.getFieldName())+" DESC";
+                }
+                
+                ResultSet resultSet = database.openQuery(sql, params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
+
+                List<Object[]> rows = new ArrayList<Object[]>();
+                Object[] rowData = database.getRow(resultSet);
+                while (rowData!=null)
                 {
-                    Database database = null;
-                    try
-                    {
-                        // open a connection
-                        database = new Database(loggingObject, logConnection);
-                        database.shareVariablesWith(transMeta);
-                        database.connect();
-                        
-                        RowMetaAndData params = new RowMetaAndData();
-                        params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
-                        params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
-                        ResultSet resultSet = database.openQuery("SELECT * FROM "+logTable+" WHERE TRANSNAME LIKE ? OR TRANSNAME LIKE ? ORDER BY ID_BATCH desc", params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
-                        // database.getRows("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME LIKE 'test-hops-%'", 0);
-                        rowList = new ArrayList<RowMetaAndData>();
-                        Object[] rowData = database.getRow(resultSet);
-                        while (rowData!=null)
-                        {
-                            rowList.add(new RowMetaAndData(database.getReturnRowMeta(), rowData));
-                            if (rowList.size()<Props.getInstance().getMaxNrLinesInHistory() || Props.getInstance().getMaxNrLinesInHistory()<=0) {
-                            	rowData = database.getRow(resultSet);
-                            } else {
-                            	break;
-                            }
-                        }
-                        database.closeQuery(resultSet);
-
-                        if (wFields.isDisposed()) return;
-                        
-                        wFields.table.clearAll();
-
-                        if (rowList.size()>0)
-                        {
-                            RowMetaInterface displayMeta = null;
-
-                            // OK, now that we have a series of rows, we can add them to the table view...
-                            // 
-                            for (int i=0;i<rowList.size();i++)
-                            {
-                                RowMetaAndData row = rowList.get(i);
-                                if (displayMeta==null)
-                                {
-                                	displayMeta = row.getRowMeta();
-                                	                                	
-                                    // Displaying it just like that adds way too many zeroes to the numbers.
-                                    // So we set the lengths to -1 of the integers...
-                                    //
-                                    for (int v=0;v<displayMeta.size();v++)
-                                    {
-                                    	ValueMetaInterface valueMeta = displayMeta.getValueMeta(v);
-                                    	
-                                    	if (valueMeta.isNumeric())
-                                    	{
-                                    		valueMeta.setLength(-1,-1);
-                                    	}
-                                    	if (valueMeta.isDate())
-                                    	{
-                                    		valueMeta.setConversionMask("yyyy/MM/dd HH:mm:ss");
-                                    	}
-                                    }
-                                    
-                                    // Set the correct valueMeta objects on the view
-                                    //
-                                    colinf[ 0].setValueMeta(displayMeta.searchValueMeta("TRANSNAME"));
-                                    colinf[ 1].setValueMeta(displayMeta.searchValueMeta("ID_BATCH"));
-                                    colinf[ 2].setValueMeta(displayMeta.searchValueMeta("STATUS"));
-                                    colinf[ 3].setValueMeta(durationMeta);
-                                    colinf[ 4].setValueMeta(displayMeta.searchValueMeta("LINES_READ"));
-                                    colinf[ 5].setValueMeta(displayMeta.searchValueMeta("LINES_WRITTEN"));
-                                    colinf[ 6].setValueMeta(displayMeta.searchValueMeta("LINES_UPDATED"));
-                                    colinf[ 7].setValueMeta(displayMeta.searchValueMeta("LINES_INPUT"));
-                                    colinf[ 8].setValueMeta(displayMeta.searchValueMeta("LINES_OUTPUT"));
-                                    colinf[ 9].setValueMeta(displayMeta.searchValueMeta("ERRORS"));
-                                    colinf[10].setValueMeta(displayMeta.searchValueMeta("STARTDATE"));
-                                    colinf[11].setValueMeta(displayMeta.searchValueMeta("ENDDATE"));
-                                    colinf[12].setValueMeta(displayMeta.searchValueMeta("LOGDATE"));
-                                    colinf[13].setValueMeta(displayMeta.searchValueMeta("DEPDATE"));
-                                    replayDateMeta = displayMeta.searchValueMeta("REPLAYDATE");
-                                    colinf[14].setValueMeta(replayDateMeta);
-                                }
-                                
-                                TableItem item = new TableItem(wFields.table, SWT.NONE);
-                                String batchID = row.getString("ID_BATCH", "");
-                                int index=1;
-                                item.setText( index++, Const.NVL( row.getString("TRANSNAME", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                
-                                // LOGDATE - REPLAYDATE --> duration
-                                //
-                                Date logDate = row.getDate("LOGDATE", null);
-                                Date replayDate = row.getDate("REPLAYDATE", null);
-
-                                Double duration = null;
-                                if (logDate!=null && replayDate!=null)
-                                {
-                                	duration = new Double( ((double)logDate.getTime() - (double)replayDate.getTime())/1000 );
-                                }
-                                
-                                // Display the data...
-                                //
-                                if (batchID != null) item.setText( index++, batchID);           									//$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("STATUS", ""), ""));        //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( durationMeta.getString(duration), ""));   //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LINES_READ", ""), ""));    //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LINES_WRITTEN", ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LINES_UPDATED", ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LINES_INPUT", ""), ""));   //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LINES_OUTPUT", ""), ""));  //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("ERRORS", ""), ""));        //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("STARTDATE", ""), ""));     //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("ENDDATE", ""), ""));       //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("LOGDATE", ""), ""));       //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("DEPDATE", ""), ""));    //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( index++, Const.NVL( row.getString("REPLAYDATE", ""), ""));    //$NON-NLS-1$ //$NON-NLS-2$
-                                
-                                String status = row.getString("STATUS", "");
-                                Long errors = row.getInteger("ERRORS", 0L);
-                                if (errors!=null && errors.longValue()>0L)
-                                {
-                                	item.setBackground(GUIResource.getInstance().getColorRed());
-                                }
-                                else
-                                if ("stop".equals(status))
-                                {
-                                	item.setBackground(GUIResource.getInstance().getColorYellow());
-                                }
-                            }
-                            
-                            wFields.removeEmptyRows();
-                            wFields.setRowNums();
-                            wFields.optWidth(true);
-                            wFields.table.setSelection(0);
-                            
-                            showLogEntry();
-                        }
-                        else
-                        {
-                        	new TableItem(wFields.table, SWT.NONE); // Give it an item to prevent errors on various platforms.
-                        }
+                    rows.add(rowData);
+                    if (rowList.size()<Props.getInstance().getMaxNrLinesInHistory() || Props.getInstance().getMaxNrLinesInHistory()<=0) {
+                    	rowData = database.getRow(resultSet);
+                    } else {
+                    	break;
                     }
-                    catch(KettleException e)
-                    {
-                        StringBuffer message = new StringBuffer();
-                        message.append(BaseMessages.getString(PKG, "TransHistory.Error.GettingInfoFromLoggingTable")).append(Const.CR).append(Const.CR);
-                        message.append(e.toString()).append(Const.CR).append(Const.CR);
-                        message.append(Const.getStackTracker(e)).append(Const.CR);
-                        wText.setText(message.toString());
-                        wFields.clearAll(false);
-                    }
-                    finally
-                    {
-                        if (database!=null) database.disconnect();
-                    }
-                    
+                }
+                database.closeQuery(resultSet);
+                
+                return rows;
+            }
+            catch(Exception e)
+            {
+            	throw new KettleException("Error retrieveing log records for log table '"+logTable.getLogTableType(), e); 
+            }
+            finally
+            {
+                if (database!=null) database.disconnect();
+            }
+        }
+	    else
+	    {
+	    	return new ArrayList<Object[]>();
+	    }
+	}
+
+    
+    public void displayHistoryData(LogTableInterface logTable, int tabIndex, List<Object[]> rows)
+    {
+    	ColumnInfo[] colinf = columns.get(tabIndex);
+    	
+        // Now, we're going to display the data in the table view
+        //
+        if (wFields.get(tabIndex).isDisposed()) return;
+        
+        int selectionIndex = wFields.get(tabIndex).getSelectionIndex();
+
+        wFields.get(tabIndex).table.clearAll();
+
+        if (rows!=null && rows.size()>0)
+        {
+            // OK, now that we have a series of rows, we can add them to the table view...
+            // 
+            for (int i=0;i<rows.size();i++)
+            {
+            	Object[] rowData = rows.get(i);
+            	
+            	TableItem item = new TableItem(wFields.get(tabIndex).table, SWT.NONE);
+                
+            	for (int c=0;c<colinf.length;c++) {
+            		
+            		ColumnInfo column = colinf[c];
+            		
+            		ValueMetaInterface valueMeta = column.getValueMeta();
+            		String string = null;
+					try {
+						string = valueMeta.getString(rowData[c]);
+					} catch (KettleValueException e) {
+						log.logError("history data conversion issue", e);
+					}
+            		item.setText(c+1, Const.NVL(string, ""));
+            	}
+            	
+            	// Add some color
+            	//
+            	Long errors = null;
+            	LogStatus status = null;
+            	
+            	LogTableField errorsField = logTable.getErrorsField();
+            	if (errorsField!=null) {;
+            		int index = logTableFields.get(tabIndex).indexOf(errorsField);
+            		try {
+						errors = colinf[index].getValueMeta().getInteger(rowData[index]);
+					} catch (KettleValueException e) {
+						log.logError("history data conversion issue", e);
+					}
+            	}
+            	LogTableField statusField = logTable.getStatusField();
+            	if (statusField!=null) {
+            		int index = logTableFields.get(tabIndex).indexOf(statusField);
+            		String statusString = null;
+					try {
+						statusString = colinf[index].getValueMeta().getString(rowData[index]);
+					} catch (KettleValueException e) {
+						log.logError("history data conversion issue", e);
+					}
+            		if (statusString!=null) {
+            			status = LogStatus.findStatus(statusString);
+            		}
+            	}
+
+                if (errors!=null && errors.longValue()>0L)
+                {
+                	item.setBackground(GUIResource.getInstance().getColorRed());
                 }
                 else
+                if (status!=null && LogStatus.STOP.equals(status))
                 {
-                	if (!wFields.isDisposed()) wFields.clearAll(false);
+                	item.setBackground(GUIResource.getInstance().getColorYellow());
                 }
             }
-            else
-            {
-                if (!wFields.isDisposed()) wFields.clearAll(false);
-            }
+            
+            wFields.get(tabIndex).removeEmptyRows();
+            wFields.get(tabIndex).setRowNums();
+            wFields.get(tabIndex).optWidth(true);
         }
         else
         {
-        	if (!wFields.isDisposed())  wFields.clearAll(false);
+        	new TableItem(wFields.get(tabIndex).table, SWT.NONE); // Give it an item to prevent errors on various platforms.
         }
+        
+		if (selectionIndex>=0 && selectionIndex<wFields.get(tabIndex).getItemCount()) {
+			wFields.get(tabIndex).table.select(selectionIndex);
+			showLogEntry();
+		}
 	}
 
 	
 	public void showLogEntry()
     {
-		if (wText.isDisposed()) return;
+		int tabIndex = tabFolder.getSelectionIndex();
+		LogTableInterface logTable = logTables.get(tabIndex);
+		List<LogTableField> fields = logTableFields.get(tabIndex);
 		
-        if (rowList==null) 
+		Text text = wText.get(tabIndex);
+		
+		if (text==null || text.isDisposed()) return;
+		
+		List<Object[]> list = rowList.get(tabIndex);
+		
+        if (list==null || list.size()==0) 
         {
         	String message;
-        	TransMeta transMeta = transGraph.getManagedObject();
-        	if (transMeta.getTransLogTable().getDatabaseMeta()==null || Const.isEmpty(transMeta.getTransLogTable().getTableName())) {
-        		message = BaseMessages.getString(PKG, "TransHistory.HistoryConfiguration.Message");
+        	if (logTable.isDefined()) {
+        		message = BaseMessages.getString(PKG, "TransHistory.PleaseRefresh.Message");
         	} else {
-            	message = BaseMessages.getString(PKG, "TransHistory.PleaseRefresh.Message");
+        		message = BaseMessages.getString(PKG, "TransHistory.HistoryConfiguration.Message");
         	}
-        	wText.setText(message);
+        	text.setText(message);
             return;
         }
         
         // grab the selected line in the table:
-        int nr = wFields.table.getSelectionIndex();
-        if (nr>=0 && rowList!=null && nr<rowList.size())
+        int nr = wFields.get(tabIndex).table.getSelectionIndex();
+        if (nr>=0 && list!=null && nr<list.size())
         {
             // OK, grab this one from the buffer...
-            RowMetaAndData row = rowList.get(nr);
-            try
-            {
-                wText.setText(row.getString("LOG_FIELD", ""));
-            }
-            catch (KettleValueException e)
-            {
-                // Should never happen
+            Object[] row = list.get(nr);
+            
+            // What is the name of the log field?
+            //
+            LogTableField logField = logTables.get(tabIndex).getLogField();
+            if (logField!=null) {
+            	int index = fields.indexOf(logField);
+            	String logText = row[index].toString();
+            	
+                text.setText(Const.NVL(logText, ""));
+                
+                text.setSelection(text.getText().length());
+                text.showSelection();
             }
         }
     }

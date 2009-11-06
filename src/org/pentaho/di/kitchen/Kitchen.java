@@ -26,10 +26,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -381,31 +379,12 @@ public class Kitchen
     			//
     			exitJVM(7); // same as the other list options
     		}
-                       
-			result = job.execute(); // Execute the selected job.		
-			job.endProcessing(LogStatus.END, result);  // The bookkeeping...
+                     
+    		job.start();
+    		job.waitUntilFinished();
+			result = job.getResult(); // Execute the selected job.
 		}
-		catch(KettleJobException je)
-		{
-            if (result==null)
-            {
-                result = new Result();
-            }
-            result.setNrErrors(1L);
-            
-			try
-			{
-				job.endProcessing(LogStatus.ERROR, result);
-			}
-			catch(KettleJobException je2)
-			{
-				log.logError(job.getJobname(), BaseMessages.getString(PKG, "Kitchen.Error.SeriousError",je2.getMessage()));
-                log.logError(job.getJobname(), BaseMessages.getString(PKG, "Kitchen.Error.SeriousError",je.getMessage()));
-				
-                returnCode = 2;
-			}
-		}
-        finally
+		finally
         {
             if (repository!=null) repository.disconnect();
         }

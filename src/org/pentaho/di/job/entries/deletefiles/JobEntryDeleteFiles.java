@@ -281,8 +281,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     	  if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFiles.FileAlreadyDeleted", realFilefoldername)); //$NON-NLS-1$
         rcode = true;
       }
-    } catch (IOException e) {
-      logError(BaseMessages.getString(PKG, "JobEntryDeleteFiles.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
+    } catch (Exception e) {
+      logError(BaseMessages.getString(PKG, "JobEntryDeleteFiles.CouldNotProcess", realFilefoldername, e.getMessage()), e); //$NON-NLS-1$
     } finally {
       if (filefolder != null) {
         try {

@@ -208,17 +208,17 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 		if (foldername!=null)
 		{
             String realFoldername = getRealFoldername();
-            FileObject FolderObject = null;
+            FileObject folderObject = null;
 			try {
-				FolderObject = KettleVFS.getFileObject(realFoldername);
+				folderObject = KettleVFS.getFileObject(realFoldername);
 
-				if ( FolderObject.exists() )
+				if ( folderObject.exists() )
 				{
 					//Check if it's a folder
-					if(FolderObject.getType() == FileType.FOLDER) 
+					if(folderObject.getType() == FileType.FOLDER) 
 					{
 						// File provided is a folder, so we can process ...
-						FolderObject.findFiles(new TextFileSelector(FolderObject.toString()));
+						folderObject.findFiles(new TextFileSelector(folderObject.toString()));
 						if(log.isBasic())	log.logBasic("Total files", "We found : "+filescount + " file(s)");
 						if(filescount==0)
 						{
@@ -237,16 +237,16 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 					//  No Folder found	
 					if(log.isBasic()) logBasic("we can not find ["+realFoldername+"] !");
 				}
-			} catch (IOException e) {
-				logError("Could not create Folder ["+realFoldername+"], exception: " + e.getMessage());
+			} catch (Exception e) {
+				logError("Could not create Folder ["+realFoldername+"]", e);
 				result.setResult( false );
 				result.setNrErrors(1);					
 			}
             finally {
-            	if ( FolderObject != null )
+            	if ( folderObject != null )
             	{
             		try  {
-            		     FolderObject.close();
+            		     folderObject.close();
             		}
             		catch ( IOException ex ) {};
             	}

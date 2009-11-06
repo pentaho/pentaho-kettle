@@ -11,13 +11,15 @@
  
 package org.pentaho.di.job;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -34,6 +36,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
+import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogStatus;
@@ -81,7 +84,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	private LogChannelInterface log;
 	private JobMeta jobMeta;
 	private Repository rep;
-	private int errors = 0;
+    private AtomicInteger errors;
+
 	private VariableSpace variables = new Variables();
 	
     /** The job that's launching this (sub-) job. This gives us access to the whole chain, including the parent variables, etc. */
@@ -143,6 +147,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		stopped=new AtomicBoolean(false);
         jobTracker = new JobTracker(jobMeta);
         initialized=new AtomicBoolean(false);
+        errors = new AtomicInteger(0);
         batchId = -1;
         passedBatchId = -1;
         
@@ -249,10 +254,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             // Run the job
             //
             result = execute(); 
-            
-    		// Tell the world that we've finished processing this job...
-    		//
-    		fireJobListeners();
 		}
 		catch(Throwable je)
 		{
@@ -272,18 +273,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		}
 		finally
 		{
-			// Try to write the result back at the end, even if it's an unexpected error
-			//
-			try 
-			{
-				endProcessing(LogStatus.END, result);  // $NON-NLS-1$
-			} 
-			catch (KettleJobException e) 
-			{
-				log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()));
-	            log.logError(Const.getStackTracker(e));
-			}
-			
 			fireJobListeners();
 		}
 	}
@@ -296,7 +285,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 * 
 	 * @throws KettleException
 	 */
-	public Result execute() throws KettleException
+	private Result execute() throws KettleException
     {
 		finished.set(false);
 		stopped.set(false);
@@ -327,18 +316,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
         log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobFinished"));
         
-        /*
-        String allLog = CentralLogStore.getAppender().getBuffer().toString();
-        System.out.println("-------------------------------\n");
-        System.out.println(allLog);
-		*/
-        
         active.set(false);
         finished.set(true);
-        
-		// Tell the world that we've finished processing this job...
-		//
-        fireJobListeners();
         
 		return res;
     }
@@ -655,7 +634,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 */
 	public int getErrors()
 	{	
-		return errors;
+		return errors.get();
 	}
 
 	/**
@@ -663,7 +642,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 */
 	public void resetErrors()
 	{
-	    errors = 0;
+	    errors.set(0);
 	}
 
 	/**
@@ -676,7 +655,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	{
 	    if ( nrToAdd > 0 )
 	    {
-	        errors += nrToAdd;
+	        errors.addAndGet(nrToAdd);
 	    }
 	}
 
@@ -690,11 +669,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		endDate     = currentDate;
 		
 		resetErrors();
-		DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
-		String tableName = jobMeta.getJobLogTable().getTableName();
 		
-		if (logcon!=null && !Const.isEmpty(tableName))
-		{
+		final JobLogTable jobLogTable = jobMeta.getJobLogTable();
+        int intervalInSeconds = Const.toInt( environmentSubstitute(jobLogTable.getLogInterval()), -1);
+
+		if (jobLogTable.isDefined()) {
+		
+			DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
+			String tableName = jobMeta.getJobLogTable().getTableName();
 			Database ldb = new Database(this, logcon);
 			ldb.shareVariablesWith(this);
 			try
@@ -753,13 +735,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
 				ldb.writeLogRecord(jobMeta.getJobLogTable(), LogStatus.START, this);
 				
-				/*
-				ldb.writeLogRecord(tableName, jobMeta.getJobLogTable().isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), LogStatus.START,  // $NON-NLS-1$ 
-				                   0L, 0L, 0L, 0L, 0L, 0L, 
-				                   startDate, endDate, logDate, depDate, currentDate,
-								   null
-								   );
-				*/
                 if (lockedTable) {
 
                 	// Remove the -1 record again...
@@ -770,6 +745,53 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                 	ldb.unlockTables( new String[] { tableName, } );
                 }
 				ldb.disconnect();
+				
+				
+                // If we need to do periodic logging, make sure to install a timer for this...
+                //
+                if (intervalInSeconds>0) {
+                    final Timer timer = new Timer(getName()+" - interval logging timer");
+                    TimerTask timerTask = new TimerTask() {
+            			public void run() {
+            				try {
+            					endProcessing();
+            				} catch(Exception e) {
+            					log.logError(BaseMessages.getString(PKG, "Job.Exception.UnableToPerformIntervalLogging"), e);
+            					// Also stop the show...
+            					//
+            					
+            					errors.incrementAndGet();
+            					stopAll();
+            				}
+            			}
+                    };
+                    timer.schedule(timerTask, intervalInSeconds*1000, intervalInSeconds*1000);
+                    
+                    addJobListener(new JobListener() {
+    					public void jobFinished(Job job) {
+    						timer.cancel();						
+    					}
+    				});
+                }
+
+				
+	            // Add a listener at the end of the job to take of writing the final job log record...
+				//
+	        	addJobListener(new JobListener() {
+					public void jobFinished(Job job) {
+						try {
+    						endProcessing();
+						} catch(Exception e) {
+							log.logError(BaseMessages.getString(PKG, "Job.Exception.UnableToWriteToLoggingTable", jobLogTable.toString()), e);
+						}
+					}
+				});
+
+				
+				
+				
+				
+				
 			}
 			catch(KettleDatabaseException dbe)
 			{
@@ -787,23 +809,36 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	
 	//
 	// Handle logging at end
-	public boolean endProcessing(LogStatus status, Result res) throws KettleJobException
+	private boolean endProcessing() throws KettleJobException
 	{
+		LogStatus status;
+		if (!isActive()) {
+			if (isStopped()) {
+				status = LogStatus.STOP;
+			} else {
+				status = LogStatus.END;
+			}
+		} else {
+			status = LogStatus.RUNNING;
+		}
 		try
 		{
-	        if (errors==0 && !res.getResult()) errors=1;
+	        if (errors.get()==0 && result!=null && !result.getResult()) {
+	        	errors.incrementAndGet();
+	        }
 			
 			logDate     = new Date();
 	
 			/*
 			 * Sums errors, read, written, etc.
 			 */		
-	
-			DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
-			String tableName = jobMeta.getJobLogTable().getTableName();
 			
-			if (logcon!=null)
-			{
+			JobLogTable jobLogTable = jobMeta.getJobLogTable();
+			if (jobLogTable.isDefined()) {
+
+				String tableName = jobMeta.getJobLogTable().getTableName();
+				DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
+
 				Database ldb = new Database(this, logcon);
 				ldb.shareVariablesWith(this);
 				try
@@ -1024,7 +1059,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                 FileName fileDir = fileName.getParent();
                 var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI());
             }
-            catch(IOException e)
+            catch(Exception e)
             {
                 var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
                 var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");

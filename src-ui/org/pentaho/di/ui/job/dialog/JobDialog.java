@@ -27,23 +27,29 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.ChannelLogTable;
+import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableField;
+import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -51,15 +57,18 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.core.widget.FieldDisabledListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
@@ -76,12 +85,16 @@ public class JobDialog extends Dialog
 {
 	private static Class<?> PKG = JobDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+    public static final int	LOG_INDEX_JOB	       = 0;
+    public static final int	LOG_INDEX_JOB_ENTRY	   = 1;
+    public static final int	LOG_INDEX_CHANNEL      = 2;
+
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 
-	private CTabItem     wJobTab, wParamTab, wLogTab;
+	private CTabItem     wJobTab, wParamTab, wLogTab, wSettingsTab;
 
-	private PropsUI        props;
+	private PropsUI      props;
 		
 	private Label        wlJobname;
 	private Text         wJobname;
@@ -96,26 +109,14 @@ public class JobDialog extends Dialog
 	private Button       wbDirectory;
     private FormData     fdlDirectory, fdbDirectory, fdDirectory;    
 
-	private Label        wlLogconnection;
 	private Button       wbLogconnection;
-	private CCombo       wLogconnection;
-	private FormData     fdlLogconnection, fdbLogconnection, fdLogconnection;
+	private ComboVar     wLogconnection;
 
-	private Label        wlLogtable;
-	private Text         wLogtable;
-	private FormData     fdlLogtable, fdLogtable;
-
-    private Label        wlBatch;
-    private Button       wBatch;
-    private FormData     fdlBatch, fdBatch;
+	private TextVar      wLogSchema;
 
     private Label        wlBatchTrans;
     private Button       wBatchTrans;
     private FormData     fdlBatchTrans, fdBatchTrans;
-
-    private Label        wlLogfield;
-    private Button       wLogfield;
-    private FormData     fdlLogfield, fdLogfield;
 
 	private Button wOK, wSQL, wCancel;
 	private Listener lsOK, lsSQL, lsCancel;
@@ -165,9 +166,28 @@ public class JobDialog extends Dialog
 	private RepositoryDirectory newDirectory;
 	private boolean directoryChangeAllowed;
 
-	private Label	wlLogSizeLimit;
-
 	private TextVar	wLogSizeLimit;
+
+	private List	wLogTypeList;
+
+	private Composite	wLogOptionsComposite;
+
+	private int	previousLogTableIndex = -1;
+
+	private TableView	wOptionFields;
+
+	private TextVar	wLogTimeout;
+
+	private Composite	wLogComp;
+	
+	private TextVar	wLogTable;
+
+	private TextVar	wLogInterval;
+
+	private JobLogTable jobLogTable;
+	private JobEntryLogTable jobEntryLogTable;
+	private ChannelLogTable channelLogTable;
+
 
 	public JobDialog(Shell parent, int style, JobMeta jobMeta, Repository rep)
 	{
@@ -179,6 +199,10 @@ public class JobDialog extends Dialog
         this.newDirectory = null;
         
 		directoryChangeAllowed=true;
+		
+		jobLogTable = (JobLogTable) jobMeta.getJobLogTable().clone();
+		channelLogTable = (ChannelLogTable) jobMeta.getChannelLogTable().clone();
+		jobEntryLogTable = (JobEntryLogTable) jobMeta.getJobEntryLogTable().clone();
 	}
 	
 
@@ -214,6 +238,7 @@ public class JobDialog extends Dialog
 		
 		addJobTab();
 		addParamTab();
+		addSettingsTab();
 		addLogTab();
 
 		fdTabFolder = new FormData();
@@ -610,183 +635,627 @@ public class JobDialog extends Dialog
         /////////////////////////////////////////////////////////////
     }	
 		
-	private void addLogTab()
-	{
-		//////////////////////////
-		// START OF LOG TAB///
-		///
-		wLogTab=new CTabItem(wTabFolder, SWT.NONE);
-		wLogTab.setText(BaseMessages.getString(PKG, "JobDialog.LogTab.Label")); //$NON-NLS-1$
+    private void addLogTab()
+    {
+        //////////////////////////
+        // START OF LOG TAB///
+        ///
+        wLogTab=new CTabItem(wTabFolder, SWT.NONE);
+        wLogTab.setText(BaseMessages.getString(PKG, "JobDialog.LogTab.Label")); //$NON-NLS-1$
 
-		FormLayout LogLayout = new FormLayout ();
-		LogLayout.marginWidth  = Const.MARGIN;
-		LogLayout.marginHeight = Const.MARGIN;
+        FormLayout LogLayout = new FormLayout ();
+        LogLayout.marginWidth  = Const.MARGIN;
+        LogLayout.marginHeight = Const.MARGIN;
         
-		Composite wLogComp = new Composite(wTabFolder, SWT.NONE);
-		props.setLook(wLogComp);
-		wLogComp.setLayout(LogLayout);
+        wLogComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wLogComp);
+        wLogComp.setLayout(LogLayout);
+        
+        // Add a log type List on the left hand side...
+        //
+        wLogTypeList = new List(wLogComp, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+        props.setLook(wLogTypeList);
+        
+        wLogTypeList.add(BaseMessages.getString(PKG, "JobDialog.LogTableType.Job")); // Index 0
+        wLogTypeList.add(BaseMessages.getString(PKG, "JobDialog.LogTableType.JobEntry")); // Index 1
+        wLogTypeList.add(BaseMessages.getString(PKG, "JobDialog.LogTableType.LoggingChannels")); // Index 3
+        
+        FormData fdLogTypeList = new FormData();
+        fdLogTypeList.left = new FormAttachment(0, 0);
+        fdLogTypeList.top  = new FormAttachment(0, 0);
+        fdLogTypeList.right= new FormAttachment(middle/2, 0);
+        fdLogTypeList.bottom= new FormAttachment(100, 0);
+        wLogTypeList.setLayoutData(fdLogTypeList);
+        
+        wLogTypeList.addSelectionListener(new SelectionAdapter() {
+        	public void widgetSelected(SelectionEvent arg0) {
+        		showLogTypeOptions(wLogTypeList.getSelectionIndex());
+        	}
+		});
+        
+        // On the right side we see a dynamic area : a composite...
+        //
+        wLogOptionsComposite = new Composite(wLogComp, SWT.BORDER);
 
-		// Log table connection...
-		wlLogconnection=new Label(wLogComp, SWT.RIGHT);
-		wlLogconnection.setText(BaseMessages.getString(PKG, "JobDialog.LogConnection.Label"));
-		props.setLook(wlLogconnection);
-		fdlLogconnection=new FormData();
-		fdlLogconnection.top  = new FormAttachment(wDirectory, margin*4);
-		fdlLogconnection.left = new FormAttachment(0, 0);
-		fdlLogconnection.right= new FormAttachment(middle, 0);
-		wlLogconnection.setLayoutData(fdlLogconnection);
+        FormLayout logOptionsLayout = new FormLayout ();
+        logOptionsLayout.marginWidth  = Const.MARGIN;
+        logOptionsLayout.marginHeight = Const.MARGIN;
+        wLogOptionsComposite.setLayout(logOptionsLayout);
+        
+        props.setLook(wLogOptionsComposite);
+        FormData fdLogOptionsComposite = new FormData();
+        fdLogOptionsComposite.left = new FormAttachment(wLogTypeList, margin);
+        fdLogOptionsComposite.top  = new FormAttachment(0, 0);
+        fdLogOptionsComposite.right= new FormAttachment(100, 0);
+        fdLogOptionsComposite.bottom= new FormAttachment(100, 0);
+        wLogOptionsComposite.setLayoutData(fdLogOptionsComposite);
 
-		wbLogconnection=new Button(wLogComp, SWT.PUSH);
-		wbLogconnection.setText(BaseMessages.getString(PKG, "System.Button.Edit"));
-		fdbLogconnection=new FormData();
-		fdbLogconnection.top   = new FormAttachment(wDirectory, margin*4);
-		fdbLogconnection.right = new FormAttachment(100, 0);
-		wbLogconnection.setLayoutData(fdbLogconnection);
-		wbLogconnection.addSelectionListener(new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e) 
-			{
-				DatabaseMeta databaseMeta = jobMeta.findDatabase(wLogconnection.getText());
-				if (databaseMeta==null) databaseMeta=new DatabaseMeta();
-				databaseMeta.shareVariablesWith(jobMeta);
-				DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
-				cid.setModalDialog(true);
-				if (cid.open()!=null)
-				{
-					wLogconnection.setText(databaseMeta.getName());
-				}
+        FormData fdLogComp = new FormData();
+        fdLogComp.left  = new FormAttachment(0, 0);
+        fdLogComp.top   = new FormAttachment(0, 0);
+        fdLogComp.right = new FormAttachment(100, 0);
+        fdLogComp.bottom= new FormAttachment(100, 0);
+        wLogComp.setLayoutData(fdLogComp);
+    
+        wLogComp.layout();
+        wLogTab.setControl(wLogComp);
+        
+        /////////////////////////////////////////////////////////////
+        /// END OF LOG TAB
+        /////////////////////////////////////////////////////////////
+    }	
+    
+    private void showLogTypeOptions(int index) {
+    	
+    	if (index!=previousLogTableIndex) {
+    		
+    		// Remember the that was entered data...
+    		//
+			switch(previousLogTableIndex) {
+			case LOG_INDEX_JOB       : getJobLogTableOptions(); break;
+			case LOG_INDEX_CHANNEL   : getChannelLogTableOptions(); break;
+			case LOG_INDEX_JOB_ENTRY : getJobEntryLogTableOptions(); break;
+			default: break;
+			}
+    		
+    		// clean the log options composite...
+    		//
+    		for (Control control : wLogOptionsComposite.getChildren()) {
+    			control.dispose();
+    		}
+	    	
+			switch(index) {
+			case LOG_INDEX_JOB       : showJobLogTableOptions(); break;
+			case LOG_INDEX_CHANNEL   : showChannelLogTableOptions(); break;
+			case LOG_INDEX_JOB_ENTRY : showJobEntryLogTableOptions(); break;
+			default: break;
+			}
+    	}
+	}
+
+	private void getJobLogTableOptions() {
+		
+		if (previousLogTableIndex==LOG_INDEX_JOB) {
+			// The connection...
+			//
+			jobLogTable.setConnectionName( wLogconnection.getText() );
+			jobLogTable.setSchemaName( wLogSchema.getText() );
+			jobLogTable.setTableName( wLogTable.getText() );
+			jobLogTable.setLogInterval( wLogInterval.getText() );
+			jobLogTable.setLogSizeLimit( wLogSizeLimit.getText() );
+			jobLogTable.setTimeoutInDays( wLogTimeout.getText() );
+			
+			for (int i=0;i<jobLogTable.getFields().size();i++) {
+				TableItem item = wOptionFields.table.getItem(i);
+				
+				LogTableField field = jobLogTable.getFields().get(i);
+				field.setEnabled(item.getChecked());
+				field.setFieldName(item.getText(1));
 			}
 		}
-		);
+	}
+	
+	private Control addDBSchemaTableLogOptions(LogTableInterface logTable) {
 
-		wLogconnection=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		props.setLook(wLogconnection);
-		wLogconnection.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogConnection.Tooltip"));
-		wLogconnection.addModifyListener(lsMod);
-		fdLogconnection=new FormData();
-		fdLogconnection.top  = new FormAttachment(wDirectory, margin*4);
-		fdLogconnection.left = new FormAttachment(middle, 0);
-		fdLogconnection.right= new FormAttachment(wbLogconnection, -margin);
-		wLogconnection.setLayoutData(fdLogconnection);
+		// Log table connection...
+		//
+        Label wlLogconnection = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogconnection.setText(BaseMessages.getString(PKG, "JobDialog.LogConnection.Label")); //$NON-NLS-1$
+        props.setLook(wlLogconnection);
+        FormData fdlLogconnection = new FormData();
+        fdlLogconnection.left = new FormAttachment(0, 0);
+        fdlLogconnection.right= new FormAttachment(middle, -margin);
+        fdlLogconnection.top  = new FormAttachment(0, 0);
+        wlLogconnection.setLayoutData(fdlLogconnection);
 
-		// populate the combo box...
-		for (int i=0;i<jobMeta.nrDatabases();i++)
-		{
-			DatabaseMeta meta = jobMeta.getDatabase(i);
-			wLogconnection.add(meta.getName());
-		}
-        
-		// add a listener
-		wLogconnection.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent e) { setFlags(); } } );
+        wbLogconnection=new Button(wLogOptionsComposite, SWT.PUSH);
+        wbLogconnection.setText(BaseMessages.getString(PKG, "JobDialog.LogconnectionButton.Label")); //$NON-NLS-1$
+        wbLogconnection.addSelectionListener(new SelectionAdapter() 
+        {
+            public void widgetSelected(SelectionEvent e) 
+            {
+                DatabaseMeta databaseMeta = new DatabaseMeta();
+                databaseMeta.shareVariablesWith(jobMeta);
+                DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+                if (cid.open()!=null)
+                {
+                    jobMeta.addDatabase(databaseMeta);
+                    wLogconnection.add(databaseMeta.getName());
+                    wLogconnection.select(wLogconnection.getItemCount()-1);
+                }
+            }
+        });
+        FormData fdbLogconnection = new FormData();
+        fdbLogconnection.right= new FormAttachment(100, 0);
+        fdbLogconnection.top  = new FormAttachment(0, 0);
+        wbLogconnection.setLayoutData(fdbLogconnection);
 
-		// Log table...:
-		wlLogtable=new Label(wLogComp, SWT.RIGHT);
-		wlLogtable.setText(BaseMessages.getString(PKG, "JobDialog.LogTable.Label"));
-		props.setLook(wlLogtable);
-		fdlLogtable=new FormData();
-		fdlLogtable.left = new FormAttachment(0, 0);
-		fdlLogtable.right= new FormAttachment(middle, 0);
-		fdlLogtable.top  = new FormAttachment(wLogconnection, margin);
-		wlLogtable.setLayoutData(fdlLogtable);
-		wLogtable=new Text(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		props.setLook(wLogtable);
-		wLogtable.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTable.Tooltip"));
-		wLogtable.addModifyListener(lsMod);
-		fdLogtable=new FormData();
-		fdLogtable.left = new FormAttachment(middle, 0);
-		fdLogtable.top  = new FormAttachment(wLogconnection, margin);
-		fdLogtable.right= new FormAttachment(100, 0);
-		wLogtable.setLayoutData(fdLogtable);
+        wLogconnection=new ComboVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLogconnection);
+        wLogconnection.addModifyListener(lsMod);
+        FormData fdLogconnection = new FormData();
+        fdLogconnection.left = new FormAttachment(middle, 0);
+        fdLogconnection.top  = new FormAttachment(0, 0);
+        fdLogconnection.right= new FormAttachment(wbLogconnection, -margin);
+        wLogconnection.setLayoutData(fdLogconnection);
+        wLogconnection.setItems(jobMeta.getDatabaseNames());
+        wLogconnection.setText(Const.NVL(logTable.getConnectionName(), ""));
+        wLogconnection.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogConnection.Tooltip", logTable.getConnectionNameVariable()));
 
-		wlBatch=new Label(wLogComp, SWT.RIGHT);
-		wlBatch.setText(BaseMessages.getString(PKG, "JobDialog.UseBatchID.Label"));
-		props.setLook(wlBatch);
-		fdlBatch=new FormData();
-		fdlBatch.left = new FormAttachment(0, 0);
-		fdlBatch.top  = new FormAttachment(wLogtable, margin*3);
-		fdlBatch.right= new FormAttachment(middle, -margin);
-		wlBatch.setLayoutData(fdlBatch);
-		wBatch=new Button(wLogComp, SWT.CHECK);
-		props.setLook(wBatch);
-		wBatch.setToolTipText(BaseMessages.getString(PKG, "JobDialog.UseBatchID.Tooltip"));
-		fdBatch=new FormData();
-		fdBatch.left = new FormAttachment(middle, 0);
-		fdBatch.top  = new FormAttachment(wLogtable, margin*3);
-		fdBatch.right= new FormAttachment(100, 0);
-		wBatch.setLayoutData(fdBatch);
+        // Log schema ...
+        //
+        Label wlLogSchema = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogSchema.setText(BaseMessages.getString(PKG, "JobDialog.LogSchema.Label")); //$NON-NLS-1$
+        props.setLook(wlLogSchema);
+        FormData fdlLogSchema = new FormData();
+        fdlLogSchema.left = new FormAttachment(0, 0);
+        fdlLogSchema.right= new FormAttachment(middle, -margin);
+        fdlLogSchema.top  = new FormAttachment(wLogconnection, margin);
+        wlLogSchema.setLayoutData(fdlLogSchema);
+        wLogSchema=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLogSchema);
+        wLogSchema.addModifyListener(lsMod);
+        FormData fdLogSchema = new FormData();
+        fdLogSchema.left = new FormAttachment(middle, 0);
+        fdLogSchema.top  = new FormAttachment(wLogconnection, margin);
+        fdLogSchema.right= new FormAttachment(100, 0);
+        wLogSchema.setLayoutData(fdLogSchema);
+        wLogSchema.setText(Const.NVL(logTable.getSchemaName(), ""));
+        wLogSchema.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogSchema.Tooltip", logTable.getSchemaNameVariable()));
 
-		wlBatchTrans=new Label(wLogComp, SWT.RIGHT);
-		wlBatchTrans.setText(BaseMessages.getString(PKG, "JobDialog.PassBatchID.Label"));
-		props.setLook(wlBatchTrans);
-		fdlBatchTrans=new FormData();
-		fdlBatchTrans.left = new FormAttachment(0, 0);
-		fdlBatchTrans.top  = new FormAttachment(wBatch, margin);
-		fdlBatchTrans.right= new FormAttachment(middle, -margin);
-		wlBatchTrans.setLayoutData(fdlBatchTrans);
-		wBatchTrans=new Button(wLogComp, SWT.CHECK);
-		props.setLook(wBatchTrans);
-		wBatchTrans.setToolTipText(BaseMessages.getString(PKG, "JobDialog.PassBatchID.Tooltip"));
-		fdBatchTrans=new FormData();
-		fdBatchTrans.left = new FormAttachment(middle, 0);
-		fdBatchTrans.top  = new FormAttachment(wBatch, margin);
-		fdBatchTrans.right= new FormAttachment(100, 0);
-		wBatchTrans.setLayoutData(fdBatchTrans);
+        // Log table...
+        //
+        Label wlLogtable = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogtable.setText(BaseMessages.getString(PKG, "JobDialog.Logtable.Label")); //$NON-NLS-1$
+        props.setLook(wlLogtable);
+        FormData fdlLogtable = new FormData();
+        fdlLogtable.left = new FormAttachment(0, 0);
+        fdlLogtable.right= new FormAttachment(middle, -margin);
+        fdlLogtable.top  = new FormAttachment(wLogSchema, margin);
+        wlLogtable.setLayoutData(fdlLogtable);
+        wLogTable=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLogTable);
+        wLogTable.addModifyListener(lsMod);
+        FormData fdLogtable = new FormData();
+        fdLogtable.left = new FormAttachment(middle, 0);
+        fdLogtable.top  = new FormAttachment(wLogSchema, margin);
+        fdLogtable.right= new FormAttachment(100, 0);
+        wLogTable.setLayoutData(fdLogtable);
+        wLogTable.setText(Const.NVL(logTable.getTableName(), ""));
+        wLogTable.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTable.Tooltip", logTable.getTableNameVariable()));
 
-		wlLogfield=new Label(wLogComp, SWT.RIGHT);
-		wlLogfield.setText(BaseMessages.getString(PKG, "JobDialog.UseLogField.Label"));
-		props.setLook(wlLogfield);
-		fdlLogfield=new FormData();
-		fdlLogfield.left = new FormAttachment(0, 0);
-		fdlLogfield.top  = new FormAttachment(wBatchTrans, margin);
-		fdlLogfield.right= new FormAttachment(middle, -margin);
-		wlLogfield.setLayoutData(fdlLogfield);
-		wLogfield=new Button(wLogComp, SWT.CHECK);
-		props.setLook(wLogfield);
-		wLogfield.setToolTipText(BaseMessages.getString(PKG, "JobDialog.UseLogField.Tooltip"));
-		fdLogfield=new FormData();
-		fdLogfield.left = new FormAttachment(middle, 0);
-		fdLogfield.top  = new FormAttachment(wBatchTrans, margin);
-		fdLogfield.right= new FormAttachment(100, 0);
-		wLogfield.setLayoutData(fdLogfield);
-        wLogfield.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setFlags(); } });
+        return wLogTable;
+
+	}
+
+	private void showJobLogTableOptions() {
+		previousLogTableIndex=LOG_INDEX_JOB;
+		
+		addDBSchemaTableLogOptions(jobLogTable);
+		
+        // Log interval...
+        //
+        Label wlLogInterval = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogInterval.setText(BaseMessages.getString(PKG, "JobDialog.LogInterval.Label")); //$NON-NLS-1$
+        props.setLook(wlLogInterval);
+        FormData fdlLogInterval = new FormData();
+        fdlLogInterval.left = new FormAttachment(0, 0);
+        fdlLogInterval.right= new FormAttachment(middle, -margin);
+        fdlLogInterval.top  = new FormAttachment(wLogTable, margin);
+        wlLogInterval.setLayoutData(fdlLogInterval);
+        wLogInterval=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLogInterval);
+        wLogInterval.addModifyListener(lsMod);
+        FormData fdLogInterval = new FormData();
+        fdLogInterval.left = new FormAttachment(middle, 0);
+        fdLogInterval.top  = new FormAttachment(wLogTable, margin);
+        fdLogInterval.right= new FormAttachment(100, 0);
+        wLogInterval.setLayoutData(fdLogInterval);
+        wLogInterval.setText(Const.NVL(jobLogTable.getLogInterval(), ""));
+
+        // The log timeout in days
+        //
+        Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); //$NON-NLS-1$
+        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        props.setLook(wlLogTimeout);
+        FormData fdlLogTimeout = new FormData();
+        fdlLogTimeout.left = new FormAttachment(0, 0);
+        fdlLogTimeout.right= new FormAttachment(middle, -margin);
+        fdlLogTimeout.top  = new FormAttachment(wLogInterval, margin);
+        wlLogTimeout.setLayoutData(fdlLogTimeout);
+        wLogTimeout=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        props.setLook(wLogTimeout);
+        wLogTimeout.addModifyListener(lsMod);
+        FormData fdLogTimeout = new FormData();
+        fdLogTimeout.left = new FormAttachment(middle, 0);
+        fdLogTimeout.top  = new FormAttachment(wLogInterval, margin);
+        fdLogTimeout.right= new FormAttachment(100, 0);
+        wLogTimeout.setLayoutData(fdLogTimeout);
+        wLogTimeout.setText(Const.NVL(jobLogTable.getTimeoutInDays(), ""));
 
         // The log size limit
         //
-        wlLogSizeLimit = new Label(wLogComp, SWT.RIGHT);
+        Label wlLogSizeLimit = new Label(wLogOptionsComposite, SWT.RIGHT);
         wlLogSizeLimit.setText(BaseMessages.getString(PKG, "JobDialog.LogSizeLimit.Label")); //$NON-NLS-1$
         wlLogSizeLimit.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogSizeLimit.Tooltip")); //$NON-NLS-1$
         props.setLook(wlLogSizeLimit);
         FormData fdlLogSizeLimit = new FormData();
         fdlLogSizeLimit.left = new FormAttachment(0, 0);
         fdlLogSizeLimit.right= new FormAttachment(middle, -margin);
-        fdlLogSizeLimit.top  = new FormAttachment(wLogfield, margin);
+        fdlLogSizeLimit.top  = new FormAttachment(wLogTimeout, margin);
         wlLogSizeLimit.setLayoutData(fdlLogSizeLimit);
-        wLogSizeLimit=new TextVar(jobMeta, wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLogSizeLimit=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wLogSizeLimit.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogSizeLimit.Tooltip")); //$NON-NLS-1$
         props.setLook(wLogSizeLimit);
         wLogSizeLimit.addModifyListener(lsMod);
         FormData fdLogSizeLimit = new FormData();
         fdLogSizeLimit.left = new FormAttachment(middle, 0);
-        fdLogSizeLimit.top  = new FormAttachment(wLogfield, margin);
+        fdLogSizeLimit.top  = new FormAttachment(wLogTimeout, margin);
         fdLogSizeLimit.right= new FormAttachment(100, 0);
         wLogSizeLimit.setLayoutData(fdLogSizeLimit);
+        wLogSizeLimit.setText(Const.NVL(jobLogTable.getLogSizeLimit(), ""));
+        
+        // Add the fields grid...
+        //
+		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
+		wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFields);
+		FormData fdlFields = new FormData();
+		fdlFields.left = new FormAttachment(0, 0);
+		fdlFields.top  = new FormAttachment(wLogSizeLimit, margin*2);
+		wlFields.setLayoutData(fdlFields);
+		
+		final java.util.List<LogTableField> fields = jobLogTable.getFields();
+		final int nrRows=fields.size();
+		
+		ColumnInfo[] colinf=new ColumnInfo[] {
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		};
+		
+		wOptionFields=new TableView(jobMeta, wLogOptionsComposite, 
+						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a check to the left... 
+						      colinf, 
+						      nrRows,  
+						      true,
+						      lsMod,
+						      props
+						      );      
+		
+		wOptionFields.setSortable(false);
+		
+		for (int i=0;i<fields.size();i++) {
+			LogTableField field = fields.get(i);
+			TableItem item = wOptionFields.table.getItem(i);
+			item.setChecked(field.isEnabled());
+			item.setText(new String[] { "", Const.NVL(field.getFieldName(), ""), Const.NVL(field.getDescription(), "") });
+		}
+		
+		wOptionFields.table.getColumn(0).setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Enabled"));
+        
+		FormData fdOptionFields = new FormData();
+		fdOptionFields.left = new FormAttachment(0, 0);
+		fdOptionFields.top  = new FormAttachment(wlFields, margin);
+		fdOptionFields.right  = new FormAttachment(100, 0);
+		fdOptionFields.bottom = new FormAttachment(100, 0);
+		wOptionFields.setLayoutData(fdOptionFields);
+		
+		wOptionFields.optWidth(true);
+
+		wOptionFields.layout();
+		wLogOptionsComposite.layout(true, true);
+		wLogComp.layout(true, true);
+	}
+	
+    
+	
+	private void getChannelLogTableOptions() {
+		
+		if (previousLogTableIndex==LOG_INDEX_CHANNEL) {
+			// The connection...
+			//
+			channelLogTable.setConnectionName( wLogconnection.getText() );
+			channelLogTable.setSchemaName( wLogSchema.getText() );
+			channelLogTable.setTableName( wLogTable.getText() );
+			channelLogTable.setTimeoutInDays( wLogTimeout.getText() );
+			
+			for (int i=0;i<channelLogTable.getFields().size();i++) {
+				TableItem item = wOptionFields.table.getItem(i);
+				
+				LogTableField field = channelLogTable.getFields().get(i);
+				field.setEnabled(item.getChecked());
+				field.setFieldName(item.getText(1));
+			}
+		}
+	}
+
+	
+	private void showChannelLogTableOptions() {
+		previousLogTableIndex=LOG_INDEX_CHANNEL;
+
+		addDBSchemaTableLogOptions(channelLogTable);
+		
+        // The log timeout in days
+        //
+        Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); //$NON-NLS-1$
+        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        props.setLook(wlLogTimeout);
+        FormData fdlLogTimeout = new FormData();
+        fdlLogTimeout.left = new FormAttachment(0, 0);
+        fdlLogTimeout.right= new FormAttachment(middle, -margin);
+        fdlLogTimeout.top  = new FormAttachment(wLogTable, margin);
+        wlLogTimeout.setLayoutData(fdlLogTimeout);
+        wLogTimeout=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        props.setLook(wLogTimeout);
+        wLogTimeout.addModifyListener(lsMod);
+        FormData fdLogTimeout = new FormData();
+        fdLogTimeout.left = new FormAttachment(middle, 0);
+        fdLogTimeout.top  = new FormAttachment(wLogTable, margin);
+        fdLogTimeout.right= new FormAttachment(100, 0);
+        wLogTimeout.setLayoutData(fdLogTimeout);
+        wLogTimeout.setText(Const.NVL(channelLogTable.getTimeoutInDays(), ""));
+        
+        // Add the fields grid...
+        //
+		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
+		wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFields);
+		FormData fdlFields = new FormData();
+		fdlFields.left = new FormAttachment(0, 0);
+		fdlFields.top  = new FormAttachment(wLogTimeout, margin*2);
+		wlFields.setLayoutData(fdlFields);
+		
+		final java.util.List<LogTableField> fields = channelLogTable.getFields();
+		final int nrRows=fields.size();
+		
+		ColumnInfo[] colinf=new ColumnInfo[] {
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		};
+		
+		FieldDisabledListener disabledListener = new FieldDisabledListener() {
+			
+			public boolean isFieldDisabled(int rowNr) {
+				if (rowNr>=0 && rowNr<fields.size()) {
+					LogTableField field = fields.get(rowNr);
+					return field.isSubjectAllowed();
+				} else {
+					return true;
+				}
+			}
+		};
+		
+		colinf[1].setDisabledListener(disabledListener);
+		
+		wOptionFields=new TableView(jobMeta, wLogOptionsComposite, 
+						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a check to the left... 
+						      colinf, 
+						      nrRows,  
+						      true,
+						      lsMod,
+						      props
+						      );      
+		
+		wOptionFields.setSortable(false);
+		
+		for (int i=0;i<fields.size();i++) {
+			LogTableField field = fields.get(i);
+			TableItem item = wOptionFields.table.getItem(i);
+			item.setChecked(field.isEnabled());
+			item.setText(new String[] { "", Const.NVL(field.getFieldName(), ""), Const.NVL(field.getDescription(), "") });
+		}
+		
+		wOptionFields.table.getColumn(0).setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Enabled"));
+        
+		FormData fdOptionFields = new FormData();
+		fdOptionFields.left = new FormAttachment(0, 0);
+		fdOptionFields.top  = new FormAttachment(wlFields, margin);
+		fdOptionFields.right  = new FormAttachment(100, 0);
+		fdOptionFields.bottom = new FormAttachment(100, 0);
+		wOptionFields.setLayoutData(fdOptionFields);
+		
+		wOptionFields.optWidth(true);
+
+		wOptionFields.layout();
+		wLogOptionsComposite.layout(true, true);
+		wLogComp.layout(true, true);
+	}
+
+	private void getJobEntryLogTableOptions() {
+		
+		if (previousLogTableIndex==LOG_INDEX_JOB_ENTRY) {
+			// The connection...
+			//
+			jobEntryLogTable.setConnectionName( wLogconnection.getText() );
+			jobEntryLogTable.setSchemaName( wLogSchema.getText() );
+			jobEntryLogTable.setTableName( wLogTable.getText() );
+			jobEntryLogTable.setTimeoutInDays( wLogTimeout.getText() );
+			
+			for (int i=0;i<jobEntryLogTable.getFields().size();i++) {
+				TableItem item = wOptionFields.table.getItem(i);
+				
+				LogTableField field = jobEntryLogTable.getFields().get(i);
+				field.setEnabled(item.getChecked());
+				field.setFieldName(item.getText(1));
+			}
+		}
+	}
+	
+	private void showJobEntryLogTableOptions() {
+		previousLogTableIndex=LOG_INDEX_JOB_ENTRY;
+
+		addDBSchemaTableLogOptions(jobEntryLogTable);
+		
+        // The log timeout in days
+        //
+        Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
+        wlLogTimeout.setText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Label")); //$NON-NLS-1$
+        wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        props.setLook(wlLogTimeout);
+        FormData fdlLogTimeout = new FormData();
+        fdlLogTimeout.left = new FormAttachment(0, 0);
+        fdlLogTimeout.right= new FormAttachment(middle, -margin);
+        fdlLogTimeout.top  = new FormAttachment(wLogTable, margin);
+        wlLogTimeout.setLayoutData(fdlLogTimeout);
+        wLogTimeout=new TextVar(jobMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "JobDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+        props.setLook(wLogTimeout);
+        wLogTimeout.addModifyListener(lsMod);
+        FormData fdLogTimeout = new FormData();
+        fdLogTimeout.left = new FormAttachment(middle, 0);
+        fdLogTimeout.top  = new FormAttachment(wLogTable, margin);
+        fdLogTimeout.right= new FormAttachment(100, 0);
+        wLogTimeout.setLayoutData(fdLogTimeout);
+        wLogTimeout.setText(Const.NVL(jobEntryLogTable.getTimeoutInDays(), ""));
+        
+        
+        // Add the fields grid...
+        //
+		Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
+		wlFields.setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFields);
+		FormData fdlFields = new FormData();
+		fdlFields.left = new FormAttachment(0, 0);
+		fdlFields.top  = new FormAttachment(wLogTimeout, margin*2);
+		wlFields.setLayoutData(fdlFields);
+		
+		final java.util.List<LogTableField> fields = jobEntryLogTable.getFields();
+		final int nrRows=fields.size();
+		
+		ColumnInfo[] colinf=new ColumnInfo[] {
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		};
+		
+		FieldDisabledListener disabledListener = new FieldDisabledListener() {
+			
+			public boolean isFieldDisabled(int rowNr) {
+				if (rowNr>=0 && rowNr<fields.size()) {
+					LogTableField field = fields.get(rowNr);
+					return field.isSubjectAllowed();
+				} else {
+					return true;
+				}
+			}
+		};
+		
+		colinf[1].setDisabledListener(disabledListener);
+		
+		wOptionFields=new TableView(jobMeta, wLogOptionsComposite, 
+						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a check to the left... 
+						      colinf, 
+						      nrRows,  
+						      true,
+						      lsMod,
+						      props
+						      );      
+		
+		wOptionFields.setSortable(false);
+		
+		for (int i=0;i<fields.size();i++) {
+			LogTableField field = fields.get(i);
+			TableItem item = wOptionFields.table.getItem(i);
+			item.setChecked(field.isEnabled());
+			item.setText(new String[] { "", Const.NVL(field.getFieldName(), ""), Const.NVL(field.getDescription(), "") });
+		}
+		
+		wOptionFields.table.getColumn(0).setText(BaseMessages.getString(PKG, "JobDialog.TransLogTable.Fields.Enabled"));
+        
+		FormData fdOptionFields = new FormData();
+		fdOptionFields.left = new FormAttachment(0, 0);
+		fdOptionFields.top  = new FormAttachment(wlFields, margin);
+		fdOptionFields.right  = new FormAttachment(100, 0);
+		fdOptionFields.bottom = new FormAttachment(100, 0);
+		wOptionFields.setLayoutData(fdOptionFields);
+		
+		wOptionFields.optWidth(true);
+
+		wOptionFields.layout();
+		wLogOptionsComposite.layout(true, true);
+		wLogComp.layout(true, true);
+	}
+
+
+    
+    
+    
+    
+    
+    
+    
+	private void addSettingsTab()
+	{
+		//////////////////////////
+		// START OF SETTINGS TAB///
+		///
+		wSettingsTab=new CTabItem(wTabFolder, SWT.NONE);
+		wSettingsTab.setText(BaseMessages.getString(PKG, "JobDialog.SettingsTab.Label")); //$NON-NLS-1$
+
+		FormLayout LogLayout = new FormLayout ();
+		LogLayout.marginWidth  = Const.MARGIN;
+		LogLayout.marginHeight = Const.MARGIN;
+        
+		Composite wSettingsComp = new Composite(wTabFolder, SWT.NONE);
+		props.setLook(wSettingsComp);
+		wSettingsComp.setLayout(LogLayout);
+
+		wlBatchTrans=new Label(wSettingsComp, SWT.RIGHT);
+		wlBatchTrans.setText(BaseMessages.getString(PKG, "JobDialog.PassBatchID.Label"));
+		props.setLook(wlBatchTrans);
+		fdlBatchTrans=new FormData();
+		fdlBatchTrans.left = new FormAttachment(0, 0);
+		fdlBatchTrans.top  = new FormAttachment(0, margin);
+		fdlBatchTrans.right= new FormAttachment(middle, -margin);
+		wlBatchTrans.setLayoutData(fdlBatchTrans);
+		wBatchTrans=new Button(wSettingsComp, SWT.CHECK);
+		props.setLook(wBatchTrans);
+		wBatchTrans.setToolTipText(BaseMessages.getString(PKG, "JobDialog.PassBatchID.Tooltip"));
+		fdBatchTrans=new FormData();
+		fdBatchTrans.left = new FormAttachment(middle, 0);
+		fdBatchTrans.top  = new FormAttachment(0, margin);
+		fdBatchTrans.right= new FormAttachment(100, 0);
+		wBatchTrans.setLayoutData(fdBatchTrans);
 
 		// Shared objects file
-		Label wlSharedObjectsFile = new Label(wLogComp, SWT.RIGHT);
+		Label wlSharedObjectsFile = new Label(wSettingsComp, SWT.RIGHT);
 		wlSharedObjectsFile.setText(BaseMessages.getString(PKG, "JobDialog.SharedObjectsFile.Label"));
 		props.setLook(wlSharedObjectsFile);
 		FormData fdlSharedObjectsFile = new FormData();
 		fdlSharedObjectsFile.left = new FormAttachment(0, 0);
 		fdlSharedObjectsFile.right= new FormAttachment(middle, -margin);
-		fdlSharedObjectsFile.top  = new FormAttachment(wLogSizeLimit, 4*margin);
+		fdlSharedObjectsFile.top  = new FormAttachment(wBatchTrans, 4*margin);
 		wlSharedObjectsFile.setLayoutData(fdlSharedObjectsFile);
-		wSharedObjectsFile=new TextVar(jobMeta, wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSharedObjectsFile=new TextVar(jobMeta, wSettingsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wlSharedObjectsFile.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SharedObjectsFile.Tooltip"));
 		wSharedObjectsFile.setToolTipText(BaseMessages.getString(PKG, "JobDialog.SharedObjectsFile.Tooltip"));
 		props.setLook(wSharedObjectsFile);
 		FormData fdSharedObjectsFile = new FormData();
 		fdSharedObjectsFile.left = new FormAttachment(middle, 0);
-		fdSharedObjectsFile.top  = new FormAttachment(wLogSizeLimit, 4*margin);
+		fdSharedObjectsFile.top  = new FormAttachment(wBatchTrans, 4*margin);
 		fdSharedObjectsFile.right= new FormAttachment(100, 0);
 		wSharedObjectsFile.setLayoutData(fdSharedObjectsFile);
 		wSharedObjectsFile.addModifyListener(new ModifyListener()
@@ -803,15 +1272,16 @@ public class JobDialog extends Dialog
 		fdLogComp.top   = new FormAttachment(0, 0);
 		fdLogComp.right = new FormAttachment(100, 0);
 		fdLogComp.bottom= new FormAttachment(100, 0);
-		wLogComp.setLayoutData(fdLogComp);
+		wSettingsComp.setLayoutData(fdLogComp);
 		  
-		wLogComp.layout();
-		wLogTab.setControl(wLogComp);
+		wSettingsComp.layout();
+		wSettingsTab.setControl(wSettingsComp);
 	        
 		/////////////////////////////////////////////////////////////
 		/// END OF LOG TAB
 		/////////////////////////////////////////////////////////////
 	}
+
 	
 	public void dispose()
 	{
@@ -832,6 +1302,9 @@ public class JobDialog extends Dialog
 		wJobversion.setText( Const.NVL(jobMeta.getJobversion(), "") );
 		wJobstatus.select( jobMeta.getJobstatus() -1);
 		
+		wLogTypeList.select(LOG_INDEX_JOB);
+		showJobLogTableOptions();
+		
 		if (jobMeta.getRepositoryDirectory()!=null)      wDirectory.setText    ( jobMeta.getRepositoryDirectory().getPath() );
 		
 		if (jobMeta.getCreatedUser()!=null)     wCreateUser.setText          ( jobMeta.getCreatedUser() );
@@ -843,15 +1316,6 @@ public class JobDialog extends Dialog
 			jobMeta.getModifiedDate()!=null	)     						   
 				wModDate.setText    ( jobMeta.getModifiedDate().toString() );
 	
-		JobLogTable jobLogTable = jobMeta.getJobLogTable();
-
-		if (jobLogTable.getDatabaseMeta()!=null)  wLogconnection.setText( jobLogTable.getDatabaseMeta().getName());
-		if (jobLogTable.getTableName()!=null)     wLogtable.setText     ( jobLogTable.getTableName());
-        
-        wBatch.setSelection(jobLogTable.isBatchIdUsed());
-        wLogfield.setSelection(jobLogTable.isLogFieldUsed());
-		wLogSizeLimit.setText( Const.NVL(jobLogTable.getLogSizeLimit(), ""));
-
 		wBatchTrans.setSelection(jobMeta.isBatchIdPassed());
 
 		// The named parameters
@@ -892,11 +1356,11 @@ public class JobDialog extends Dialog
         // wDirectory.setEnabled(rep!=null);
         wlDirectory.setEnabled(rep!=null);
         
-        DatabaseMeta dbMeta = jobMeta.findDatabase(wLogconnection.getText());
-        wbLogconnection.setEnabled(dbMeta!=null);
+        // DatabaseMeta dbMeta = jobMeta.findDatabase(wLogconnection.getText());
+        // wbLogconnection.setEnabled(dbMeta!=null);
         
-        wlLogSizeLimit.setEnabled(wLogfield.getSelection());
-        wLogSizeLimit.setEnabled(wLogfield.getSelection());
+        // wlLogSizeLimit.setEnabled(wLogfield.getSelection());
+        // wLogSizeLimit.setEnabled(wLogfield.getSelection());
     }
 	
 	private void cancel()
@@ -906,8 +1370,20 @@ public class JobDialog extends Dialog
 		dispose();
 	}
 	
+	private void getLogInfo() {
+		getJobLogTableOptions();
+		getChannelLogTableOptions();
+		getJobEntryLogTableOptions();
+	}
+	
 	private void ok()
 	{
+		getLogInfo();
+		
+		jobMeta.setJobLogTable(jobLogTable);
+		jobMeta.setChannelLogTable(channelLogTable);
+		jobMeta.setJobEntryLogTable(jobEntryLogTable);
+
 		jobMeta.setName( wJobname.getText() );
 		jobMeta.setDescription(wJobdescription.getText());
 		jobMeta.setExtendedDescription(wExtendeddescription.getText()  );
@@ -922,15 +1398,7 @@ public class JobDialog extends Dialog
 		{
 		    jobMeta.setJobstatus( -1  );
 		}
-
-		JobLogTable jobLogTable = jobMeta.getJobLogTable();
-		
-		jobLogTable.setDatabaseMeta( jobMeta.findDatabase(wLogconnection.getText()) );
-		jobLogTable.setTableName( wLogtable.getText() );
-		jobLogTable.setBatchIdUsed( wBatch.getSelection() );
-		jobLogTable.setLogFieldUsed( wLogfield.getSelection() );
-		jobLogTable.setLogSizeLimit( wLogSizeLimit.getText() );
-        
+		        
 		// Clear and add parameters
 		jobMeta.eraseParameters();
     	int nrNonEmptyFields = wParamFields.nrNonEmpty(); 
@@ -984,78 +1452,57 @@ public class JobDialog extends Dialog
 		dispose();
 	}
 	
-	// Generate code for create table...
-	// Conversions done by Database
+	/** 
+	 * Generates code for create table...
+	 * Conversions done by Database
+	 */
 	private void sql()
 	{
-		DatabaseMeta ci = jobMeta.findDatabase(wLogconnection.getText());
-		if (ci!=null)
-		{
-			RowMetaInterface r = jobMeta.getJobLogTable().getLogRecord(LogStatus.START, null).getRowMeta();
-			if (r!=null && r.size()>0)
-			{
-				String tablename = wLogtable.getText();
-				if (tablename!=null && tablename.length()>0)
-				{
-					Database db = new Database(jobMeta, ci);
-					db.shareVariablesWith(jobMeta);
-					try
-					{
-                        db.connect();
-                        
-                        // Get the DDL for the specified tablename and fields...
-						String createTable = db.getDDL(tablename, r);
-                        
-                        if (!Const.isEmpty(createTable))
-                        {
-    						SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, null, createTable);
-    						sqledit.open();
-                        }
-                        else
-                        {
-                            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-                            mb.setText(BaseMessages.getString(PKG, "JobDialog.NoSqlNedds.DialogTitle"));
-                            mb.setMessage(BaseMessages.getString(PKG, "JobDialog.NoSqlNedds.DialogMessage"));
-                            mb.open(); 
-                        }
+		getLogInfo();
+
+		try {
+	
+			for (LogTableInterface logTable : new LogTableInterface[] { jobLogTable, jobEntryLogTable, channelLogTable, } ) {
+				if (logTable.getDatabaseMeta()!=null && !Const.isEmpty(logTable.getTableName())) {
+					// OK, we have something to work with!
+					//
+					Database db = null;
+					try {
+						db = new Database(jobMeta, logTable.getDatabaseMeta());
+						db.shareVariablesWith(jobMeta);
+						db.connect();
+						
+						RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null).getRowMeta();
+						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+						String createTable = db.getDDL(schemaTable, fields);
+						
+						if (!Const.isEmpty(createTable))
+						{
+							String comments="-- "+logTable.getLogTableType()+Const.CR;
+							comments+="--"+Const.CR+Const.CR;
+							
+							SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, logTable.getDatabaseMeta(), DBCache.getInstance(), comments+createTable);
+							sqledit.open();
+						}
+						else
+						{
+							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+							mb.setText(BaseMessages.getString(PKG, "JobDialog.NoSqlNedds.DialogTitle")); //$NON-NLS-1$
+							mb.setMessage(logTable.getLogTableType()+Const.CR+Const.CR+BaseMessages.getString(PKG, "JobDialog.NoSqlNedds.DialogMessage")); //$NON-NLS-1$
+							mb.open(); 
+						}
+						
+					} finally { 
+						if (db!=null) {
+							db.disconnect();
+						}
 					}
-					catch(KettleDatabaseException dbe)
-					{
-						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(BaseMessages.getString(PKG, "JobDialog.Dialog.ErrorCreatingSQL.Message")+Const.CR+dbe.getMessage());
-						mb.setText(BaseMessages.getString(PKG, "JobDialog.Dialog.ErrorCreatingSQL.Title"));
-						mb.open();
-					}
-                    finally
-                    {
-                        db.disconnect();
-                    }
-				}
-				else
-				{
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage(BaseMessages.getString(PKG, "JobDialog.Dialog.PleaseEnterALogTable.Message"));
-					mb.setText(BaseMessages.getString(PKG, "JobDialog.Dialog.PleaseEnterALogTable.Title"));
-					mb.open(); 
 				}
 			}
-			else
-			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(BaseMessages.getString(PKG, "JobDialog.Dialog.CouldNotFindFieldsToCreateLogTable.Message"));
-				mb.setText(BaseMessages.getString(PKG, "JobDialog.Dialog.CouldNotFindFieldsToCreateLogTable.Title"));
-				mb.open(); 
-			}
-		}
-		else
-		{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "JobDialog.Dialog.SelectCreateValidLogConnection.Message"));
-			mb.setText(BaseMessages.getString(PKG, "JobDialog.Dialog.SelectCreateValidLogConnection.Title"));
-			mb.open(); 
+		} catch(Exception e) {
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "JobDialog.Dialog.ErrorCreatingSQL.Title"),BaseMessages.getString(PKG, "JobDialog.Dialog.ErrorCreatingSQL.Message"), e);
 		}
 	}
-
     public boolean isSharedObjectsFileChanged()
     {
         return sharedObjectsFileChanged;

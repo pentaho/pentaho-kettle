@@ -11,8 +11,6 @@
 
 package org.pentaho.di.trans.steps.filestoresult;
 
-import java.io.IOException;
-
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -89,7 +87,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 			// Add all rows to rows buffer...
 			data.filenames.add(resultFile);
 		} 
-		catch (IOException e)
+		catch (Exception e)
 		{
 			throw new KettleException(e);
 		}

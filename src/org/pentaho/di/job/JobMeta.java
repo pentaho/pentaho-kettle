@@ -11,7 +11,6 @@
 
 package org.pentaho.di.job;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -35,6 +34,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.OverwritePrompter;
@@ -42,8 +42,11 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
+import org.pentaho.di.core.logging.ChannelLogTable;
+import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.parameters.DuplicateParamException;
@@ -133,18 +136,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	protected boolean changedEntries, changedHops, changedNotes, changedDatabases;
 
 	protected JobLogTable jobLogTable;
-	
-	/*
-	protected DatabaseMeta logConnection;
-
-	protected String logTable;
-	
-	protected boolean useBatchId;
-	protected boolean logfieldUsed;
-
-	private String logSizeLimit;
-
-	*/
+	protected JobEntryLogTable jobEntryLogTable;
+	protected ChannelLogTable channelLogTable;
 
 	protected List<TransAction> undo;
 
@@ -228,7 +221,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		databases = new ArrayList<DatabaseMeta>();
 		slaveServers = new ArrayList<SlaveServer>();
 
-		jobLogTable = JobLogTable.getDefault();
+		jobLogTable = JobLogTable.getDefault(this, this);
+		channelLogTable = ChannelLogTable.getDefault(this, this);
+		jobEntryLogTable = JobEntryLogTable.getDefault(this, this);
 		
 		arguments = null;
 
@@ -456,6 +451,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public List<DatabaseMeta> getDatabases() {
 		return databases;
 	}
+	
+	public String[] getDatabaseNames() {
+		String[] names = new String[databases.size()];
+		for (int i=0;i<names.length;i++) {
+			names[i] = databases.get(i).getName();
+		}
+		return names;
+	}
 
 	/**
 	 * @param databases
@@ -620,6 +623,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		// Append the job logging information...
 		//
 		retval.append(jobLogTable.getXML());		
+		retval.append(jobEntryLogTable.getXML());		
+		retval.append(channelLogTable.getXML());		
         
 		retval.append("   ").append(XMLHandler.addTagValue("pass_batchid", batchIdPassed)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("   ").append(XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
@@ -862,12 +867,20 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			if (jobLogNode==null) {
 				// Load the XML
 				//
-				jobLogTable.setDatabaseMeta( findDatabase(XMLHandler.getTagValue(jobnode, "logconnection")) );
+				jobLogTable.setConnectionName( XMLHandler.getTagValue(jobnode, "logconnection") );
 				jobLogTable.setTableName( XMLHandler.getTagValue(jobnode, "logtable") );
 				jobLogTable.setBatchIdUsed( "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid")) );
 				jobLogTable.setLogFieldUsed( "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield")) );
 			} else {
 				jobLogTable.loadXML(jobLogNode, databases);
+			}
+			Node channelLogNode = XMLHandler.getSubNode(jobnode, ChannelLogTable.XML_TAG);
+			if (channelLogNode!=null) {
+				channelLogTable.loadXML(channelLogNode, databases);
+			}
+			Node jobEntryLogNode = XMLHandler.getSubNode(jobnode, JobEntryLogTable.XML_TAG);
+			if (jobEntryLogNode!=null) {
+				jobEntryLogTable.loadXML(jobEntryLogNode, databases);
 			}
 
 			batchIdPassed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -2141,7 +2154,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				// The directory of the transformation
 				FileName fileDir = fileName.getParent();
 				var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI());
-			} catch (IOException e) {
+			} catch (Exception e) {
 				var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
 				var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
 			}
@@ -2354,7 +2367,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			}
 		} catch (FileSystemException e) {
 			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", getFilename()), e);
-		} catch (IOException e) {
+		} catch (KettleFileException e) {
 			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.AnErrorOccuredReadingJob", getFilename()), e);
 		}
 
@@ -2626,4 +2639,41 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public LoggingObjectInterface getParent() {
 		return null; // TODO return parent job metadata
 	}
+
+	/**
+	 * @return the channelLogTable
+	 */
+	public ChannelLogTable getChannelLogTable() {
+		return channelLogTable;
+	}
+
+	/**
+	 * @param channelLogTable the channelLogTable to set
+	 */
+	public void setChannelLogTable(ChannelLogTable channelLogTable) {
+		this.channelLogTable = channelLogTable;
+	}
+
+	/**
+	 * @return the jobEntryLogTable
+	 */
+	public JobEntryLogTable getJobEntryLogTable() {
+		return jobEntryLogTable;
+	}
+
+	/**
+	 * @param jobEntryLogTable the jobEntryLogTable to set
+	 */
+	public void setJobEntryLogTable(JobEntryLogTable jobEntryLogTable) {
+		this.jobEntryLogTable = jobEntryLogTable;
+	}
+	
+	public List<LogTableInterface> getLogTables() {
+		List<LogTableInterface> logTables = new ArrayList<LogTableInterface>();
+		logTables.add(jobLogTable);
+		logTables.add(jobEntryLogTable);
+		logTables.add(channelLogTable);
+		return logTables;
+	}
+
 }

@@ -425,7 +425,7 @@ public class XMLHandler
         {
             return loadXMLFile(KettleVFS.getFileObject(filename));
         }
-        catch(IOException e)
+        catch(Exception e)
         {
             throw new KettleXMLException(e);
         }

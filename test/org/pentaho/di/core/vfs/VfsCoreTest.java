@@ -1,6 +1,5 @@
 package org.pentaho.di.core.vfs;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -15,7 +14,7 @@ public class VfsCoreTest extends TestCase {
 	private static final String tmpDir = System.getProperty("java.io.tmpdir");
 	private static final String content = "Just a small line of text\n";
 
-	public void testWriteReadFile() throws IOException {
+	public void testWriteReadFile() throws Exception {
 		// Write a text
 		//
 		FileObject tempFile = KettleVFS.createTempFile("prefix", "suffix", tmpDir);

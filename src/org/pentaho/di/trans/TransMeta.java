@@ -11,7 +11,6 @@
 
 package org.pentaho.di.trans;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +45,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -445,10 +445,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		extended_description=null;
         setFilename(null);
         
-        transLogTable = TransLogTable.getDefault();
-        performanceLogTable = PerformanceLogTable.getDefault();
-        channelLogTable = ChannelLogTable.getDefault();
-        stepLogTable = StepLogTable.getDefault();
+        transLogTable = TransLogTable.getDefault(this, this);
+        performanceLogTable = PerformanceLogTable.getDefault(this, this);
+        channelLogTable = ChannelLogTable.getDefault(this, this);
+        stepLogTable = StepLogTable.getDefault(this, this);
         
         sizeRowset     = Const.ROWS_IN_ROWSET;
         sleepTimeEmpty = Const.TIMEOUT_GET_MILLIS;
@@ -2281,7 +2281,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         {
             doc = XMLHandler.loadXMLFile(KettleVFS.getFileObject(fname));
         }
-        catch (IOException e)
+        catch (KettleFileException e)
         {
             throw new KettleXMLException(BaseMessages.getString(PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname), e);
         }
@@ -2569,7 +2569,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		            transLogTable.findField(TransLogTable.ID.LINES_UPDATED).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "update"))); //$NON-NLS-1$ //$NON-NLS-2$
 		            transLogTable.findField(TransLogTable.ID.LINES_REJECTED).setSubject(findStep(XMLHandler.getTagValue(infonode, "log", "rejected"))); //$NON-NLS-1$ //$NON-NLS-2$
 		            
-		            transLogTable.setDatabaseMeta(findDatabase(XMLHandler.getTagValue(infonode, "log", "connection"))); //$NON-NLS-1$ //$NON-NLS-2$
+		            transLogTable.setConnectionName(XMLHandler.getTagValue(infonode, "log", "connection")); //$NON-NLS-1$ //$NON-NLS-2$
 		            transLogTable.setSchemaName(XMLHandler.getTagValue(infonode, "log", "schema")); //$NON-NLS-1$ //$NON-NLS-2$
 		            transLogTable.setTableName(XMLHandler.getTagValue(infonode, "log", "table")); //$NON-NLS-1$ //$NON-NLS-2$
 		            transLogTable.findField(TransLogTable.ID.ID_BATCH).setEnabled( "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "use_batchid")) ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -2577,7 +2577,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		            transLogTable.setLogSizeLimit( XMLHandler.getTagValue(infonode, "log", "size_limit_lines") ); //$NON-NLS-1$ //$NON-NLS-2$
 		            transLogTable.setLogInterval( XMLHandler.getTagValue(infonode, "log", "interval") ); //$NON-NLS-1$ //$NON-NLS-2$
 		            
-		            performanceLogTable.setDatabaseMeta(transLogTable.getDatabaseMeta());
+		            performanceLogTable.setConnectionName(transLogTable.getConnectionName());
 					performanceLogTable.setTableName( XMLHandler.getTagValue(infonode, "log", "step_performance_table")); //$NON-NLS-1$ //$NON-NLS-2$
 				} else {
 					transLogTable.loadXML(transLogNode, databases, steps);
@@ -5270,7 +5270,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 FileName fileDir = fileName.getParent();
                 var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI());
             }
-            catch(IOException e)
+            catch(KettleFileException e)
             {
                 var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
                 var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
@@ -5528,7 +5528,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 			return exportFileName;
 		} catch (FileSystemException e) {
 			throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e); //$NON-NLS-1$
-		} catch (IOException e) {
+		} catch (KettleFileException e) {
 			throw new KettleException(BaseMessages.getString(PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename()), e); //$NON-NLS-1$
 		}
 	}
@@ -5850,6 +5850,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public void setStepLogTable(StepLogTable stepLogTable) {
 		this.stepLogTable = stepLogTable;
 	}
-	
+
+	public List<LogTableInterface> getLogTables() {
+		List<LogTableInterface> logTables = new ArrayList<LogTableInterface>();
+		logTables.add(transLogTable);
+		logTables.add(stepLogTable);
+		logTables.add(performanceLogTable);
+		logTables.add(channelLogTable);
+		return logTables;
+	}
 	
 }

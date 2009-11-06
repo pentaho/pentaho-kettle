@@ -396,7 +396,12 @@ public class LogWriter
 		if (filteredLogLevel<logLevel) return; // not for our eyes.
 		
 		LoggingObjectInterface loggingObject = registry.getLoggingObject( logMessage.getLogChannelId() );
-		String subject = loggingObject.getObjectName();
+		String subject = null;
+		// TODO: figure out in which situations we cleaned the logging channel and where we still need it here...
+		//
+		if (loggingObject!=null) { 
+			subject = loggingObject.getObjectName();
+		}
 		if (subject==null) subject="Kettle";
         
 		// Are the message filtered?

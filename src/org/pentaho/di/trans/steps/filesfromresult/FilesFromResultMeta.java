@@ -12,7 +12,6 @@
 
 package org.pentaho.di.trans.steps.filesfromresult;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -23,14 +22,15 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -96,7 +96,7 @@ public class FilesFromResultMeta extends BaseStepMeta implements StepMetaInterfa
             for (int i=0;i<add.size();i++) add.getValueMeta(i).setOrigin(name);
             r.addRowMeta(add.getRowMeta());
         }
-        catch(IOException e)
+        catch(KettleFileException e)
         {
             throw new KettleStepException(e);
         }

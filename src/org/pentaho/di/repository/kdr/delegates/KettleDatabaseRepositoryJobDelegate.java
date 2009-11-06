@@ -302,8 +302,11 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					if (id_logdb > 0) {
 						// Get the logconnection
 						//
-						jobMeta.getJobLogTable().setDatabaseMeta( repository.loadDatabaseMeta(new LongObjectId(id_logdb), null)); // reads last version
+						DatabaseMeta logDb = repository.loadDatabaseMeta(new LongObjectId(id_logdb), null);
+						jobMeta.getJobLogTable().setConnectionName( logDb.getName() );
 						jobMeta.getJobLogTable().getDatabaseMeta().shareVariablesWith(jobMeta);
+					} else {
+						// TODO: save the name as a string attribute
 					}
 					jobMeta.getJobLogTable().setTableName( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, null) ); //$NON-NLS-1$
 					jobMeta.getJobLogTable().setBatchIdUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, false) ); //$NON-NLS-1$

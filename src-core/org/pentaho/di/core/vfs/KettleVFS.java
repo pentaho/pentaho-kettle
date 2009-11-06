@@ -30,6 +30,7 @@ import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -67,7 +68,7 @@ public class KettleVFS
     	if (kettleVFS==null) kettleVFS=new KettleVFS(); 
     }
     
-    public static FileObject getFileObject(String vfsFilename) throws IOException
+    public static FileObject getFileObject(String vfsFilename) throws KettleFileException
     {
     	checkHook();
     	
@@ -113,7 +114,7 @@ public class KettleVFS
 	        return fileObject;
     	}
     	catch(IOException e) {
-    		throw new IOException("Unable to get VFS File object for filename '"+vfsFilename+"' : "+e.toString());
+    		throw new KettleFileException("Unable to get VFS File object for filename '"+vfsFilename+"'", e);
     	}
     }
     
@@ -125,23 +126,31 @@ public class KettleVFS
      * @return The content of the file as a String
      * @throws IOException
      */
-    public static String getTextFileContent(String vfsFilename, String charSetName) throws IOException
+    public static String getTextFileContent(String vfsFilename, String charSetName) throws KettleFileException
     {
-        InputStream inputStream = getInputStream(vfsFilename);
-        InputStreamReader reader = new InputStreamReader(inputStream, charSetName);
-        int c;
-        StringBuffer stringBuffer = new StringBuffer();
-        while ( (c=reader.read())!=-1) stringBuffer.append((char)c);
-        reader.close();
-        inputStream.close();
-        
-        return stringBuffer.toString();
+    	try {
+	        InputStream inputStream = getInputStream(vfsFilename);
+	        InputStreamReader reader = new InputStreamReader(inputStream, charSetName);
+	        int c;
+	        StringBuffer stringBuffer = new StringBuffer();
+	        while ( (c=reader.read())!=-1) stringBuffer.append((char)c);
+	        reader.close();
+	        inputStream.close();
+	        
+	        return stringBuffer.toString();
+    	} catch(IOException e) {
+    		throw new KettleFileException(e);
+    	}
     }
     
-    public static boolean fileExists(String vfsFilename) throws IOException
+    public static boolean fileExists(String vfsFilename) throws KettleFileException
     {
-        FileObject fileObject = getFileObject(vfsFilename);
-        return fileObject.exists();
+    	try {
+	        FileObject fileObject = getFileObject(vfsFilename);
+	        return fileObject.exists();
+    	} catch(IOException e) {
+    		throw new KettleFileException(e);
+    	}
     }
     
     public static InputStream getInputStream(FileObject fileObject) throws FileSystemException
@@ -150,10 +159,14 @@ public class KettleVFS
         return content.getInputStream();
     }
     
-    public static InputStream getInputStream(String vfsFilename) throws IOException
+    public static InputStream getInputStream(String vfsFilename) throws KettleFileException
     {
-        FileObject fileObject = getFileObject(vfsFilename);
-        return getInputStream(fileObject);
+    	try {
+			FileObject fileObject = getFileObject(vfsFilename);
+			return getInputStream(fileObject);
+		} catch (IOException e) {
+			throw new KettleFileException(e);
+		}
     }
     
     public static OutputStream getOutputStream(FileObject fileObject, boolean append) throws IOException
@@ -196,10 +209,14 @@ public class KettleVFS
         }
     }
     
-    public static OutputStream getOutputStream(String vfsFilename, boolean append) throws IOException
+    public static OutputStream getOutputStream(String vfsFilename, boolean append) throws KettleFileException
     {
-        FileObject fileObject = getFileObject(vfsFilename);
-        return getOutputStream(fileObject, append);
+    	try {
+	        FileObject fileObject = getFileObject(vfsFilename);
+	        return getOutputStream(fileObject, append);
+    	} catch(IOException e) {
+    		throw new KettleFileException(e);
+    	}
     }
     
     public static String getFilename(FileObject fileObject)
@@ -223,19 +240,23 @@ public class KettleVFS
         return fileString;
     }
     
-    public static FileObject createTempFile(String prefix, String suffix, String directory) throws IOException
+    public static FileObject createTempFile(String prefix, String suffix, String directory) throws KettleFileException
     {
-        FileObject fileObject;
-        do
-        {
-          // Build temporary file name using UUID to ensure uniqueness. Old mechanism would fail using Sort Rows (for example)
-          // when there multiple nodes with multiple JVMs on each node. In this case, the temp file names would end up being
-          // duplicated which would cause the sort to fail.
-          String filename = new StringBuffer(50).append(directory).append('/').append(prefix).append('_').append(UUIDUtil.getUUIDAsString()).append(suffix).toString();
-          fileObject = getFileObject(filename);
-        }
-        while (fileObject.exists());
-        return fileObject;
+    	try {
+	        FileObject fileObject;
+	        do
+	        {
+	          // Build temporary file name using UUID to ensure uniqueness. Old mechanism would fail using Sort Rows (for example)
+	          // when there multiple nodes with multiple JVMs on each node. In this case, the temp file names would end up being
+	          // duplicated which would cause the sort to fail.
+	          String filename = new StringBuffer(50).append(directory).append('/').append(prefix).append('_').append(UUIDUtil.getUUIDAsString()).append(suffix).toString();
+	          fileObject = getFileObject(filename);
+	        }
+	        while (fileObject.exists());
+	        return fileObject;
+    	} catch(IOException e) {
+    		throw new KettleFileException(e);
+    	}
     }
     
     public static Comparator<FileObject> getComparator()

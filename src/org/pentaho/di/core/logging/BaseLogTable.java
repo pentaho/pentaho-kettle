@@ -5,35 +5,59 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.trans.HasDatabasesInterface;
+import org.w3c.dom.Node;
 
 abstract class BaseLogTable {
 	public static final String	XML_TAG	= "field";
-	protected DatabaseMeta databaseMeta;
+	
+	protected VariableSpace space;
+	protected HasDatabasesInterface databasesInterface;;
+	
+	protected String connectionName;
+	
 	protected String schemaName;
 	protected String tableName;
+	protected String timeoutInDays;
 	
 	protected List<LogTableField> fields;
 
-	public BaseLogTable(DatabaseMeta databaseMeta, String schemaName, String tableName) {
-		this.databaseMeta = databaseMeta;
+	public BaseLogTable(VariableSpace space, HasDatabasesInterface databasesInterface, String connectionName, String schemaName, String tableName) {
+		this.space = space;
+		this.databasesInterface = databasesInterface;
+		this.connectionName = connectionName;
 		this.schemaName = schemaName;
 		this.tableName = tableName;
 		this.fields = new ArrayList<LogTableField>();
 	}
+
+	public String toString() {
+		if (isDefined()) {
+			return getDatabaseMeta().getName()+"-"+tableName;
+		}
+		return super.toString();
+	}
+	
+	abstract String getConnectionNameVariable();
+	
+	abstract String getSchemaNameVariable();
+	
+	abstract String getTableNameVariable();
 	
 	/**
 	 * @return the databaseMeta
 	 */
 	public DatabaseMeta getDatabaseMeta() {
-		return databaseMeta;
-	}
-
-	/**
-	 * @param databaseMeta the databaseMeta to set
-	 */
-	public void setDatabaseMeta(DatabaseMeta databaseMeta) {
-		this.databaseMeta = databaseMeta;
+		
+		String name = space.environmentSubstitute(connectionName);
+		if (Const.isEmpty(name)) {
+			name = space.getVariable(getConnectionNameVariable());
+		}
+		if (Const.isEmpty(name)) return null;
+		
+		return databasesInterface.findDatabase(name);
 	}
 
 	/**
@@ -62,6 +86,10 @@ abstract class BaseLogTable {
 	 */
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
+	}
+	
+	public String getQuotedSchemaTableCombination() {
+		return getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
 	}
 
 	/**
@@ -123,12 +151,85 @@ abstract class BaseLogTable {
 		return false;
 	}
 	
+	/**
+	 * @return the field that represents the log date field or null if none was defined.
+	 */
+	public LogTableField getLogDateField() {
+		for (LogTableField field : fields) {
+			if (field.isLogDateField()) {
+				return field;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return the field that represents the key to this logging table (batch id etc)
+	 */
+	public LogTableField getKeyField() {
+		for (LogTableField field : fields) {
+			if (field.isKey()) {
+				return field;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @return the field that represents the logging text (or null if none is found)
+	 */
+	public LogTableField getLogField() {
+		for (LogTableField field : fields) {
+			if (field.isLogField()) {
+				return field;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @return the field that represents the status (or null if none is found)
+	 */
+	public LogTableField getStatusField() {
+		for (LogTableField field : fields) {
+			if (field.isStatusField()) {
+				return field;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @return the field that represents the number of errors (or null if none is found)
+	 */
+	public LogTableField getErrorsField() {
+		for (LogTableField field : fields) {
+			if (field.isErrorsField()) {
+				return field;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @return the field that represents the name of the object that is being used (or null if none is found)
+	 */
+	public LogTableField getNameField() {
+		for (LogTableField field : fields) {
+			if (field.isNameField()) {
+				return field;
+			}
+		}
+		return null;
+	}
+
 	protected String getFieldsXML() {
 		StringBuffer retval = new StringBuffer();
 		
         for (LogTableField field : fields) {
             retval.append(XMLHandler.openTag(XML_TAG)); //$NON-NLS-1$
             
+            retval.append(XMLHandler.addTagValue("id", field.getId(), false)); //$NON-NLS-1$
             retval.append(XMLHandler.addTagValue("enabled", field.isEnabled(), false)); //$NON-NLS-1$
             retval.append(XMLHandler.addTagValue("name", field.getFieldName(), false)); //$NON-NLS-1$
             if (field.isSubjectAllowed()) {
@@ -141,8 +242,51 @@ abstract class BaseLogTable {
 		
 		return retval.toString();
 	}
+
+	public void loadFieldsXML(Node node) {
+		int nr = XMLHandler.countNodes(node, BaseLogTable.XML_TAG);
+		for (int i=0;i<nr;i++) {
+			Node fieldNode = XMLHandler.getSubNodeByNr(node, BaseLogTable.XML_TAG, i);
+			String id = XMLHandler.getTagValue(fieldNode, "id") ;
+			LogTableField field = findField(id);
+			if (field==null) field = fields.get(i); // backward compatible until we go GA
+			if (field!=null) {
+				field.setFieldName( XMLHandler.getTagValue(fieldNode, "name") );
+				field.setEnabled( "Y".equalsIgnoreCase(XMLHandler.getTagValue(fieldNode, "enabled")) );
+			}
+		}
+	}
 	
 	public boolean isDefined() {
-		return databaseMeta!=null && !Const.isEmpty(tableName);
+		return getDatabaseMeta()!=null && !Const.isEmpty(tableName);
 	}
+
+	/**
+	 * @return the timeoutInDays
+	 */
+	public String getTimeoutInDays() {
+		return timeoutInDays;
+	}
+
+	/**
+	 * @param timeoutInDays the timeoutInDays to set
+	 */
+	public void setTimeoutInDays(String timeoutInDays) {
+		this.timeoutInDays = timeoutInDays;
+	}
+
+	/**
+	 * @return the connectionName
+	 */
+	public String getConnectionName() {
+		return connectionName;
+	}
+
+	/**
+	 * @param connectionName the connectionName to set
+	 */
+	public void setConnectionName(String connectionName) {
+		this.connectionName = connectionName;
+	}
+
 }

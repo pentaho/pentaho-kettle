@@ -490,6 +490,17 @@ public class Const
 	 * that don't have the "log size limit" property set in their respective properties.
 	 */
 	public static final String KETTLE_LOG_SIZE_LIMIT = "KETTLE_LOG_SIZE_LIMIT";
+	
+	/**
+	 * The name of the variable that defines the log database connection by default for all transformations
+	 */
+	public static final String KETTLE_TRANS_LOG_DATABASE_NAME = "KETTLE_TRANS_LOG_DATABASE_NAME";
+
+	/**
+	 * The name of the variable that defines the log database connection by default for all jobs
+	 */
+	public static final String KETTLE_JOB_LOG_DATABASE_NAME = "KETTLE_TRANS_LOG_DATABASE_NAME";
+
 
 	/**
 	 * A general initial version comment 

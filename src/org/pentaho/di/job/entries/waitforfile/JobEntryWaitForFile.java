@@ -16,7 +16,6 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
@@ -37,8 +36,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -335,10 +334,10 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     				result.setResult( false );
     			}
     		}
-    		catch ( IOException e )
+    		catch ( Exception e )
     		{
-    			logBasic("Exception while waiting for file [" + realFilename + "] to stop growing: " + e.getMessage());
-    		}finally{
+    			logBasic("Exception while waiting for file [" + realFilename + "] to stop growing", e);
+    		} finally{
     			if(fileObject != null){
     				try{
     					fileObject.close();

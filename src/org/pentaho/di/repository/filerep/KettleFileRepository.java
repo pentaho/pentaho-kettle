@@ -16,6 +16,7 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
@@ -171,7 +172,7 @@ public class KettleFileRepository implements Repository {
 		return calcDirectoryName(null)+id.toString();
 	}
 	
-	private FileObject getFileObject(RepositoryElementLocationInterface element) throws IOException {
+	private FileObject getFileObject(RepositoryElementLocationInterface element) throws KettleFileException {
 		return KettleVFS.getFileObject(calcFilename(element));
 	}
 

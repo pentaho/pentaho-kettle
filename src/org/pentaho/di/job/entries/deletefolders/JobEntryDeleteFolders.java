@@ -326,8 +326,8 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     	  if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryDeleteFolders.FolderAlreadyDeleted", foldername)); //$NON-NLS-1$
         rcode = true;
       }
-    } catch (IOException e) {
-      logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.CouldNotDelete", foldername, e.getMessage())); //$NON-NLS-1$
+    } catch (Exception e) {
+      logError(BaseMessages.getString(PKG, "JobEntryDeleteFolders.CouldNotDelete", foldername, e.getMessage()), e); //$NON-NLS-1$
     } finally {
       if (filefolder != null) {
         try {

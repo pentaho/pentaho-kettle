@@ -14,11 +14,22 @@ public class LogTableField implements Cloneable {
 	private boolean enabled;
 	private String  fieldName;
 	private Object  subject;
+	private String  name;
 	private String  description;
 	private int     dataType;
 	private int     length;
 	private boolean subjectAllowed;
+	
+	// Field indicators...
+	//
+	
 	private boolean key;
+	private boolean logDateField;
+	private boolean logField;
+	private boolean visible;
+	private boolean statusField;
+	private boolean errorsField;
+	private boolean nameField;
 
 	/**
 	 * @param id the ID to reference this field by in the log table
@@ -27,13 +38,15 @@ public class LogTableField implements Cloneable {
 	 * @param subject
 	 * @param description
 	 */
-	public LogTableField(String id, boolean enabled, String fieldName, Object subject, String description) {
+	public LogTableField(String id, boolean enabled, String fieldName, Object subject, String name, String description) {
 		this.id = id;
 		this.enabled = enabled;
 		this.fieldName = fieldName;
 		this.subject = subject;
+		this.name = name;
 		this.description = description;
 		this.subjectAllowed = true;
+		this.visible=true;
 	}
 
 	/**
@@ -44,14 +57,16 @@ public class LogTableField implements Cloneable {
 	 * @param dataType
 	 * @param length
 	 */
-	public LogTableField(String id, boolean enabled, boolean subjectAllowed, String fieldName, String description, int dataType, int length) {
+	public LogTableField(String id, boolean enabled, boolean subjectAllowed, String fieldName, String name, String description, int dataType, int length) {
 		this.id = id;
 		this.enabled = enabled;
 		this.subjectAllowed = subjectAllowed;
 		this.fieldName = fieldName;
+		this.name = name;
 		this.description = description;
 		this.dataType = dataType;
 		this.length = length;
+		this.visible=true;
 	}
 
 	/**
@@ -66,6 +81,7 @@ public class LogTableField implements Cloneable {
 		this.fieldName = fieldName;
 		this.subject = subject;
 		this.subjectAllowed = true;
+		this.visible=true;
 	}
 
 	@Override
@@ -195,5 +211,103 @@ public class LogTableField implements Cloneable {
 	 */
 	public void setKey(boolean key) {
 		this.key = key;
+	}
+
+	/**
+	 * @return the logDateField
+	 */
+	public boolean isLogDateField() {
+		return logDateField;
+	}
+
+	/**
+	 * @param logDateField the logDateField to set
+	 */
+	public void setLogDateField(boolean logDateField) {
+		this.logDateField = logDateField;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return the logField
+	 */
+	public boolean isLogField() {
+		return logField;
+	}
+
+	/**
+	 * @param logField the logField to set
+	 */
+	public void setLogField(boolean logField) {
+		this.logField = logField;
+	}
+
+	/**
+	 * @return the visible
+	 */
+	public boolean isVisible() {
+		return visible;
+	}
+
+	/**
+	 * @param visible the visible to set
+	 */
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
+	/**
+	 * @return the statusField
+	 */
+	public boolean isStatusField() {
+		return statusField;
+	}
+
+	/**
+	 * @param statusField the statusField to set
+	 */
+	public void setStatusField(boolean statusField) {
+		this.statusField = statusField;
+	}
+
+	/**
+	 * @return the errorsField
+	 */
+	public boolean isErrorsField() {
+		return errorsField;
+	}
+
+	/**
+	 * @param errorsField the errorsField to set
+	 */
+	public void setErrorsField(boolean errorsField) {
+		this.errorsField = errorsField;
+	}
+
+	/**
+	 * @return the nameField
+	 */
+	public boolean isNameField() {
+		return nameField;
+	}
+
+	/**
+	 * @param nameField the nameField to set
+	 */
+	public void setNameField(boolean nameField) {
+		this.nameField = nameField;
 	}	
 }

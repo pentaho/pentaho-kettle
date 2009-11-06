@@ -12,10 +12,10 @@
 */
 package org.pentaho.di.core;
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -274,14 +274,18 @@ public class ResultFile implements Cloneable
         return xml.toString();
 	}
 	
-	public ResultFile(Node node) throws IOException
+	public ResultFile(Node node) throws KettleFileException
 	{
-		type = getType(XMLHandler.getTagValue(node, "type"));
-		file = KettleVFS.getFileObject( XMLHandler.getTagValue(node, "file") );
-		originParent = XMLHandler.getTagValue(node, "parentorigin");
-		origin = XMLHandler.getTagValue(node, "origin");
-		comment = XMLHandler.getTagValue(node, "comment");
-		timestamp = XMLHandler.stringToDate( XMLHandler.getTagValue(node, "timestamp") );
+		try {
+			type = getType(XMLHandler.getTagValue(node, "type"));
+			file = KettleVFS.getFileObject( XMLHandler.getTagValue(node, "file") );
+			originParent = XMLHandler.getTagValue(node, "parentorigin");
+			origin = XMLHandler.getTagValue(node, "origin");
+			comment = XMLHandler.getTagValue(node, "comment");
+			timestamp = XMLHandler.stringToDate( XMLHandler.getTagValue(node, "timestamp") );
+		} catch(Exception e) {
+			throw new KettleFileException(e);
+		}
 	}
 
 }

@@ -195,8 +195,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 					result.setResult( true );
 				}
 			}
-            catch (IOException e) {
-				logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0006_Exception_Deleting_File", realFilename, e.getMessage())); //$NON-NLS-1$
+            catch (Exception e) {
+				logError(BaseMessages.getString(PKG, "JobEntryDeleteFile.ERROR_0006_Exception_Deleting_File", realFilename, e.getMessage()), e); //$NON-NLS-1$
 				result.setResult( false );
 				result.setNrErrors(1);
 			}

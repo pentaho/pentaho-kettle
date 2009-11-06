@@ -36,6 +36,7 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -365,7 +366,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
   	      	   String sqlldr = KettleVFS.getFilename(fileObject);
 		       sb.append(sqlldr);
   	       }
-	       catch ( IOException ex )
+	       catch ( KettleFileException ex )
 	       {
 	           throw new KettleException("Error retrieving sqlldr string", ex);
 	       }		       
@@ -385,7 +386,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	           sb.append(KettleVFS.getFilename(fileObject));
 		       sb.append("\'");
   	       }
-	       catch ( IOException ex )
+	       catch ( KettleFileException ex )
 	       {
 	           throw new KettleException("Error retrieving controlfile string", ex);
 	       }		   
@@ -409,7 +410,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		       sb.append(KettleVFS.getFilename(fileObject));
 		       sb.append("\'");
 		   }
-		   catch ( IOException ex )
+		   catch ( KettleFileException ex )
 		   {
 		       throw new KettleException("Error retrieving logfile string", ex);
 		   }
@@ -425,7 +426,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	           sb.append(KettleVFS.getFilename(fileObject));		  		   
 		       sb.append("\'");
 		   }
-		   catch ( IOException ex )
+		   catch ( KettleFileException ex )
 		   {
 		       throw new KettleException("Error retrieving badfile string", ex);
 		   }		       
@@ -441,7 +442,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	           sb.append(KettleVFS.getFilename(fileObject));		  		   
 		       sb.append("\'");
 		   }
-		   catch ( IOException ex )
+		   catch ( KettleFileException ex )
 		   {
 		       throw new KettleException("Error retrieving discardfile string", ex);
 		   }		       		       
@@ -710,9 +711,9 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		               fileObject.delete();
 		               fileObject.close();
 	  	           }
-		           catch ( IOException ex )
+		           catch ( Exception ex )
 		           {
-		               logError("Error deleting control file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage());
+		               logError("Error deleting control file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage(), ex);
 		           }
 		       }
 		   }
@@ -728,9 +729,9 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		               fileObject.delete();
 		               fileObject.close();
 	  	           }
-		           catch ( IOException ex )
+		           catch ( Exception ex )
 		           {
-		               logError("Error deleting data file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage());
+		               logError("Error deleting data file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage(), ex);
 		           }
 		       }
 	       }	       

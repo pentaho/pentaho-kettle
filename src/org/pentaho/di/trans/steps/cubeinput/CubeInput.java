@@ -117,13 +117,13 @@ public class CubeInput extends BaseStep implements StepInterface
 				}
 				catch(KettleFileException kfe)
 				{
-					logError(BaseMessages.getString(PKG, "CubeInput.Log.UnableToReadMetadata")+kfe.getMessage()); //$NON-NLS-1$
+					logError(BaseMessages.getString(PKG, "CubeInput.Log.UnableToReadMetadata"), kfe); //$NON-NLS-1$
 					return false;
 				}
 			}
-			catch(IOException e)
+			catch(Exception e)
 			{
-				logError(BaseMessages.getString(PKG, "CubeInput.Log.ErrorReadingFromDataCube")+e.toString()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "CubeInput.Log.ErrorReadingFromDataCube"), e); //$NON-NLS-1$
 			}
 		}
 		return false;

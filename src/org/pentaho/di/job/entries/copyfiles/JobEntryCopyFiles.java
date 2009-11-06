@@ -482,9 +482,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 				
 			}
 		}
-		catch (IOException e) 
+		catch (Exception e) 
 		{
-			log.logError("Error", BaseMessages.getString(PKG, "JobCopyFiles.Error.Exception.CopyProcess",realSourceFilefoldername.toString(),destinationfilefolder.toString(), e.getMessage()));					
+			log.logError("Error", BaseMessages.getString(PKG, "JobCopyFiles.Error.Exception.CopyProcess",realSourceFilefoldername.toString(),destinationfilefolder.toString(), e.getMessage()), e);					
 		}
 		finally 
 		{

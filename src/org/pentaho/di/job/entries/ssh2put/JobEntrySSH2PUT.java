@@ -38,6 +38,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -1116,28 +1117,33 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		return sftpClient.stat(filename).size.longValue();
 	}  
 	
-    private List<FileObject> getFiles(String localfolder) throws IOException
+    private List<FileObject> getFiles(String localfolder) throws KettleFileException
     {
-		List<FileObject> myFileList = new ArrayList<FileObject>();
-		
-		// Get all the files in the local directory...
-		
-		FileObject localFiles = KettleVFS.getFileObject(localfolder);
-		FileObject[] children = localFiles.getChildren();
-		if (children!=null) 
-		{
-			for (int i=0; i<children.length; i++) 
+    	try {
+			List<FileObject> myFileList = new ArrayList<FileObject>();
+			
+			// Get all the files in the local directory...
+			
+			FileObject localFiles = KettleVFS.getFileObject(localfolder);
+			FileObject[] children = localFiles.getChildren();
+			if (children!=null) 
 			{
-	            // Get filename of file or directory
-				if (children[i].getType().equals(FileType.FILE)) 
+				for (int i=0; i<children.length; i++) 
 				{
-					myFileList.add(children[i]);
-					
-				}
-	        } // end for
-		}
-		
-		return myFileList;
+		            // Get filename of file or directory
+					if (children[i].getType().equals(FileType.FILE)) 
+					{
+						myFileList.add(children[i]);
+						
+					}
+		        } // end for
+			}
+			
+			return myFileList;
+    	} catch(IOException e) {
+    		throw new KettleFileException(e);
+    	}
+    
     }
     
     private boolean deleteOrMoveFiles(FileObject file, String destinationFolder) throws KettleException

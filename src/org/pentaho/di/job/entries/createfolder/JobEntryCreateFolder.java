@@ -193,8 +193,8 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 						logDetailed("Folder ["+realFoldername+"] created!");
 					result.setResult( true );
 				}
-			} catch (IOException e) {
-				logError("Could not create Folder ["+realFoldername+"], exception: " + e.getMessage());
+			} catch (Exception e) {
+				logError("Could not create Folder ["+realFoldername+"]", e);
 				result.setResult( false );
 				result.setNrErrors(1);					
 			}

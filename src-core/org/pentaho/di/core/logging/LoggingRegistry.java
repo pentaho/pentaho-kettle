@@ -2,10 +2,11 @@ package org.pentaho.di.core.logging;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This singleton class contains the logging registry.
@@ -24,7 +25,7 @@ public class LoggingRegistry {
 	private Date lastModificationTime;
 	
 	private LoggingRegistry() {
-		map = new HashMap<String, LoggingObjectInterface>();	
+		map = new ConcurrentHashMap<String, LoggingObjectInterface>();	
 		lastModificationTime = new Date();
 	}
 	
@@ -126,15 +127,13 @@ public class LoggingRegistry {
 		
 		List<String> list = new ArrayList<String>();
 		
-		/*
-		for (LoggingObjectInterface loggingObject : map.values()) {
-			System.out.println("logging object found : "+loggingObject.getName()+" ("+loggingObject.getObjectType()+") --> "+loggingObject.getLogChannelId()+",  parent? "+(loggingObject.getParent()!=null));
-		}
-		*/
 		
+
 		// Get all the direct children of this parent
 		//
-		for (LoggingObjectInterface loggingObject : map.values()) {
+		Iterator<LoggingObjectInterface> mapIterator = map.values().iterator();
+		while(mapIterator.hasNext()) {
+			LoggingObjectInterface loggingObject = mapIterator.next();
 			if (loggingObject.getLogChannelId().equals(parentLogChannelId)) {
 				continue; // not this one!
 			}
@@ -160,18 +159,21 @@ public class LoggingRegistry {
 		
 		// Now for all these children, get the children too...
 		//
-		for (String childId : list) {
+		
+		for (String childId : new ArrayList<String>(list)) {
 			getLogChannelChildren(list, childId);
 		}
 		
 		// Add all the entries in list to children, again, avoid duplicates
 		//
-		for (String id : list) {
+		Iterator<String> listIterator = list.iterator();
+		while(listIterator.hasNext()) {
+			String id = listIterator.next();
 			if (!children.contains(id)) {
 				children.add(id);
 			}
 		}
-		
+
 		return children;
 	}
 	

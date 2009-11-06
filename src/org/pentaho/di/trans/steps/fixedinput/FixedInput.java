@@ -293,9 +293,8 @@ public class FixedInput extends BaseStep implements StepInterface
 				}
 								
 				return true;
-			} catch (IOException e) {
-				logError("Error opening file '"+meta.getFilename()+"' : "+e.toString());
-				logError(Const.getStackTracker(e));
+			} catch (Exception e) {
+				logError("Error opening file '"+meta.getFilename()+"'", e);
 			}
 		}
 		return false;

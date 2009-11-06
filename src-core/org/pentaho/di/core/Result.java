@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -464,7 +465,7 @@ public class Result implements Cloneable
     		try {
 				ResultFile resultFile = new ResultFile(XMLHandler.getSubNodeByNr(resultFilesNode, XML_FILE_TAG, i));
 				resultFiles.put(resultFile.getFile().toString(), resultFile);
-			} catch (IOException e) {
+			} catch (KettleFileException e) {
 				throw new KettleException("Unexpected error reading back a ResultFile object from XML", e);
 			} 
     	}

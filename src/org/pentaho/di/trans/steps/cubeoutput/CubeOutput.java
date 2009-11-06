@@ -17,6 +17,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -68,10 +69,10 @@ public class CubeOutput extends BaseStep implements StepInterface
 			{
 				try
 				{
-					PrepareFile();
+					prepareFile();
 					data.oneFileOpened=true;
 				}
-				catch(IOException ioe)
+				catch(KettleFileException ioe)
 				{
 					logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
 					setErrors(1);
@@ -133,11 +134,11 @@ public class CubeOutput extends BaseStep implements StepInterface
 			{
 				try
 				{
-					PrepareFile();
+					prepareFile();
 					data.oneFileOpened=true;
 					return true;
 				}
-				catch(IOException ioe)
+				catch(KettleFileException ioe)
 				{
 					logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
 				}
@@ -146,22 +147,28 @@ public class CubeOutput extends BaseStep implements StepInterface
 		}
 		return false;
 	}
-    private void PrepareFile() throws IOException
+    private void prepareFile() throws KettleFileException
     {
-		String filename=environmentSubstitute(meta.getFilename());
-	    if(meta.isAddToResultFiles())
-        {
-			// Add this to the result file names...
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
-			resultFile.setComment("This file was created with a cube file output step");
-            addResultFile(resultFile);
-        }
-
-	    
-		data.fos=KettleVFS.getOutputStream(filename, false);
-		data.zip=new GZIPOutputStream(data.fos);
-		data.dos=new DataOutputStream(data.zip);
+    	try {
+			String filename=environmentSubstitute(meta.getFilename());
+		    if(meta.isAddToResultFiles())
+	        {
+				// Add this to the result file names...
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
+				resultFile.setComment("This file was created with a cube file output step");
+	            addResultFile(resultFile);
+	        }
+	
+		    
+			data.fos=KettleVFS.getOutputStream(filename, false);
+			data.zip=new GZIPOutputStream(data.fos);
+			data.dos=new DataOutputStream(data.zip);
+    	}
+    	catch(Exception e) {
+    		throw new KettleFileException(e);
+    	}
     }
+    
     public void dispose(StepMetaInterface smi, StepDataInterface sdi)
     {
     	if(data.oneFileOpened)

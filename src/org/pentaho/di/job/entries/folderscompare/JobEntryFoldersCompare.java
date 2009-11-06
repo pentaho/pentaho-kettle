@@ -43,6 +43,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -246,33 +247,33 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
      * @throws IOException upon IO problems
      */
     protected boolean equalFileContents(FileObject file1, FileObject file2)
-        throws IOException
+        throws KettleFileException
     {
-   	    // Really read the contents and do comparisons
-    		
-        DataInputStream in1 = new DataInputStream(new BufferedInputStream(
-            		                                       KettleVFS.getInputStream(KettleVFS.getFilename(file1))));
-        DataInputStream in2 = new DataInputStream(new BufferedInputStream(
-            		                                       KettleVFS.getInputStream(KettleVFS.getFilename(file2))));
-
-
-        
-        char ch1, ch2;
-        while ( in1.available() != 0 && in2.available() != 0 )
-        {
-          	ch1 = (char)in1.readByte();
-       		ch2 = (char)in2.readByte();
-       		if ( ch1 != ch2 )
-       			return false;
-        }
-        if ( in1.available() != in2.available() )
-        {
-          	return false;
-        }
-        else
-        {
-          	return true;
-        }
+    	try {
+	   	    // Really read the contents and do comparisons
+	    		
+	        DataInputStream in1 = new DataInputStream(new BufferedInputStream(KettleVFS.getInputStream(KettleVFS.getFilename(file1))));
+	        DataInputStream in2 = new DataInputStream(new BufferedInputStream(KettleVFS.getInputStream(KettleVFS.getFilename(file2))));
+	        
+	        char ch1, ch2;
+	        while ( in1.available() != 0 && in2.available() != 0 )
+	        {
+	          	ch1 = (char)in1.readByte();
+	       		ch2 = (char)in2.readByte();
+	       		if ( ch1 != ch2 )
+	       			return false;
+	        }
+	        if ( in1.available() != in2.available() )
+	        {
+	          	return false;
+	        }
+	        else
+	        {
+	          	return true;
+	        }
+    	} catch(IOException e) {
+    		throw new KettleFileException(e);
+    	}
    	}
 
 	public Result execute(Result previousResult, int nr)

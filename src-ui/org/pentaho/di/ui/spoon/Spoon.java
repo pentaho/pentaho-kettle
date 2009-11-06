@@ -14,7 +14,6 @@ package org.pentaho.di.ui.spoon;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -3328,16 +3327,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		try {
 			initialFile = KettleVFS.getFileObject(getLastFileOpened());
 			rootFile = initialFile.getFileSystem().getRoot();
-		} catch (IOException e) {
-			e.printStackTrace();
-			String message = e.getMessage();
-			if (e.getCause() != null) {
-				message = e.getCause().getMessage();
-			}
-			MessageBox messageDialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			messageDialog.setText(BaseMessages.getString(PKG, "Spoon.Error"));
-			messageDialog.setMessage(message);
-			messageDialog.open();
+		} catch (Exception e) {
+			String message = Const.getStackTracker(e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Error"), message, e);
 
 			// bring up a dialog to prompt for userid/password and try again
 			// lastVfsUsername = "";

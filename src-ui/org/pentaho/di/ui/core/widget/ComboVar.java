@@ -174,7 +174,7 @@ public class ComboVar extends Composite {
   public void setText(String text) {
     wCombo.setText(text);
   }
-
+  
   public CCombo getCComboWidget() {
     return wCombo;
   }

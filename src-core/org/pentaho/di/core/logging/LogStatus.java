@@ -12,7 +12,9 @@ public enum LogStatus {
 	END("end"), 
 	STOP("stop"), 
 	ERROR("error"), 
-	RUNNING("running");
+	RUNNING("running"),
+	PAUSED("paused"),
+	;
 
 	private String	status;
 
@@ -30,5 +32,20 @@ public enum LogStatus {
 	
 	public boolean equals(LogStatus logStatus) {
 		return status.equalsIgnoreCase(logStatus.status);
+	}
+	
+	/**
+	 * Find the LogStatus based on the string description of the status.
+	 * 
+	 * @param status the status string to search for
+	 * @return the LogStatus or null if none is found 
+	 */
+	public static LogStatus findStatus(String status) {
+		for (LogStatus logStatus : values()) {
+			if (logStatus.status.equalsIgnoreCase(status)) {
+				return logStatus;
+			}
+		}
+		return null;
 	}
 }

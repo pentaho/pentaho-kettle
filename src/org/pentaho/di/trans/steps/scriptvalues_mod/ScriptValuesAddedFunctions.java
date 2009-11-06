@@ -68,6 +68,7 @@ import org.mozilla.javascript.WrappedException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -1505,6 +1506,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    } catch (JavaScriptException Signal) {
 	    	Context.reportError("JavaScriptException while evaluating file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")");
 	    } catch (IOException Signal) {
+	    	Context.reportError("Error while reading file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")"	      );
+	    } catch (KettleFileException Signal) {
 	    	Context.reportError("Error while reading file \"" + fileName + "\" (reason: \"" + Signal.getMessage() + "\")"	      );
 	    } finally {
 	      try {

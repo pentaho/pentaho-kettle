@@ -35,7 +35,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
-import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
@@ -767,31 +766,18 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                jobRunnerThread.setName( Const.NVL(job.getJobMeta().getName(), job.getJobMeta().getFilename()) );
 	                jobRunnerThread.start();
 	
-	                try
-	                {
-	        			while (!runner.isFinished() && !parentJob.isStopped())
-	        			{
-	        				try { Thread.sleep(0,1);}
-	        				catch(InterruptedException e) { }
-	        			}
-	
-	        			// if the parent-job was stopped, stop the sub-job too...
-	        			if (parentJob.isStopped())
-	        			{
-	        				job.stopAll();
-	        				runner.waitUntilFinished(); // Wait until finished!
-	        				job.endProcessing(LogStatus.STOP, new Result()); // dummy result
-	        			}
-	        			else
-	        			{
-	        				job.endProcessing(LogStatus.END, runner.getResult()); // the result of the execution to be stored in the log file.
-	        			}
-	                }
-	        		catch(KettleException je)
-	        		{
-	        			logError("Unable to open job entry job with name ["+getName()+"] : "+Const.CR+je.toString());
-	        			result.setNrErrors(1);
-	        		}
+        			while (!runner.isFinished() && !parentJob.isStopped())
+        			{
+        				try { Thread.sleep(0,1);}
+        				catch(InterruptedException e) { }
+        			}
+
+        			// if the parent-job was stopped, stop the sub-job too...
+        			if (parentJob.isStopped())
+        			{
+        				job.stopAll();
+        				runner.waitUntilFinished(); // Wait until finished!
+        			}
 	        		
 	        		oneResult = runner.getResult();
                 }

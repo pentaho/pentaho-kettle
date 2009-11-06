@@ -298,9 +298,9 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     	  if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.FileCanNotbeFound", realFilefoldername)); //$NON-NLS-1$
     	  rcode = false;
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
     	rcode = false;
-        logError(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
+        logError(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.CouldNotProcess", realFilefoldername, e.getMessage()), e); //$NON-NLS-1$
     } finally {
       if (filefolder != null) {
         try {

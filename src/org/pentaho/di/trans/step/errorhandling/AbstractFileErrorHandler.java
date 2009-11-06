@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStep;
@@ -69,7 +70,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	}
 
 	public static FileObject getReplayFilename(String destinationDirectory,
-			String processingFilename, String dateString, String extension, Object source) throws IOException 
+			String processingFilename, String dateString, String extension, Object source) throws KettleFileException 
     {
 		String name = null;
 		String sourceAdding = ""; //$NON-NLS-1$
@@ -84,7 +85,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	}
 
 	public static FileObject getReplayFilename(String destinationDirectory,
-			String processingFilename, Date date, String extension, Object source) throws IOException {
+			String processingFilename, Date date, String extension, Object source) throws KettleFileException {
 		return getReplayFilename(destinationDirectory, processingFilename,
 				createDateFormat().format(date), extension, source);
 	}
@@ -123,7 +124,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
     		writers.put(source, outputStreamWriter);
     		return outputStreamWriter;
         }
-        catch(IOException e)
+        catch(KettleFileException e)
         {
             throw new KettleException(BaseMessages.getString(PKG, "AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile"), e);
         }

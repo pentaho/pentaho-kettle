@@ -557,7 +557,10 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 	logTable.findField(TransLogTable.ID.LINES_REJECTED).setSubject( StepMeta.findStep(transMeta.getSteps(), new LongObjectId(id_rejected)) ); //$NON-NLS-1$
                 }
                 
-                logTable.setDatabaseMeta( DatabaseMeta.findDatabase(transMeta.getDatabases(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, -1L))) ); //$NON-NLS-1$
+                DatabaseMeta logDb = DatabaseMeta.findDatabase(transMeta.getDatabases(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, -1L)));
+                logTable.setConnectionName( logDb.getName() ); //$NON-NLS-1$
+                // TODO: save/load name as a string, allow variables! 
+                
                 logTable.setTableName( r.getString(KettleDatabaseRepository.FIELD_TRANSFORMATION_TABLE_NAME_LOG, null) ); //$NON-NLS-1$
                 logTable.setBatchIdUsed( r.getBoolean(KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_BATCHID, false) ); //$NON-NLS-1$
                 logTable.setLogFieldUsed( r.getBoolean(KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_LOGFIELD, false) ); //$NON-NLS-1$

@@ -316,7 +316,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
   	      	   String psqlexec = KettleVFS.getFilename(fileObject);
 		       sb.append('\'').append(psqlexec).append('\'');
   	       }
-	       catch ( IOException ex )
+	       catch ( Exception ex )
 	       {
 	           throw new KettleException("Error retrieving sqlldr string", ex);
 	       }		       
@@ -335,7 +335,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 	           sb.append(" -n -f ");
 	           sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
   	       }
-	       catch ( IOException ex )
+	       catch ( Exception ex )
 	       {
 	           throw new KettleException("Error retrieving controlfile string", ex);
 	       }		   
@@ -354,7 +354,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 		       sb.append(" -o ");
 		       sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
 		   }
-		   catch ( IOException ex )
+		   catch ( Exception ex )
 		   {
 		       throw new KettleException("Error retrieving logfile string", ex);
 		   }
@@ -575,7 +575,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 		               fileObject.delete();
 		               fileObject.close();
 	  	           }
-		           catch ( IOException ex )
+		           catch ( Exception ex )
 		           {
 		               logError("Error deleting control file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage());
 		           }
@@ -593,9 +593,9 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 		               fileObject.delete();
 		               fileObject.close();
 	  	           }
-		           catch ( IOException ex )
+		           catch ( Exception ex )
 		           {
-		               logError("Error deleting data file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage());
+		               logError("Error deleting data file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage(), ex);
 		           }
 		       }
 	       }	       

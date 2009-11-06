@@ -11,7 +11,6 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +31,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.playlist.FilePlayListReplay;
@@ -371,7 +371,7 @@ public class ExcelInput extends BaseStep implements StepInterface
                     {
                         data.files.addFile(KettleVFS.getFileObject(fileValue));
                     }
-                    catch(IOException e)
+                    catch(KettleFileException e)
                     {
                         throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.CanNotCreateFileObject",fileValue), e);
                         

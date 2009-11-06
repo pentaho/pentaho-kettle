@@ -8,8 +8,10 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.HasDatabasesInterface;
 import org.w3c.dom.Node;
 
 /**
@@ -50,20 +52,8 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 		}
 	}
 		
-	/**
-	 * Create a new transformation logging table description.
-	 * It contains an empty list of log table fields.
-	 * 
-	 * @param databaseMeta
-	 * @param schemaName
-	 * @param tableName
-	 */
-	public ChannelLogTable(DatabaseMeta databaseMeta, String schemaName, String tableName) {
-		super(databaseMeta, schemaName, tableName);
-	}
-	
-	public ChannelLogTable() {
-		this(null, null, null);
+	private ChannelLogTable(VariableSpace space, HasDatabasesInterface databasesInterface) {
+		super(space, databasesInterface, null, null, null);
 	}
 	
 	@Override
@@ -85,9 +75,10 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 		StringBuffer retval = new StringBuffer();
 
 		retval.append(XMLHandler.openTag(XML_TAG));
-        retval.append(XMLHandler.addTagValue("connection", databaseMeta==null ?  null  : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append(XMLHandler.addTagValue("connection", connectionName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append(XMLHandler.addTagValue("timeout_days", timeoutInDays)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append(super.getFieldsXML());
 		retval.append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 		
@@ -95,34 +86,32 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 	}
 	
 	public void loadXML(Node node, List<DatabaseMeta> databases) {
-		databaseMeta = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(node, "connection"));
+		connectionName = XMLHandler.getTagValue(node, "connection");
 		schemaName = XMLHandler.getTagValue(node, "schema");
 		tableName = XMLHandler.getTagValue(node, "table");
+		timeoutInDays = XMLHandler.getTagValue(node, "timeout_days");
 		
-		for (int i=0;i<fields.size();i++) {
-			LogTableField field = fields.get(i);
-			Node fieldNode = XMLHandler.getSubNodeByNr(node, BaseLogTable.XML_TAG, i);
-			field.setFieldName( XMLHandler.getTagValue(fieldNode, "name") );
-			field.setEnabled( "Y".equalsIgnoreCase(XMLHandler.getTagValue(fieldNode, "enabled")) );
-		}
+		super.loadFieldsXML(node);
 	}
 
-	public static ChannelLogTable getDefault() {
-		ChannelLogTable table = new ChannelLogTable();
+	public static ChannelLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface) {
+		ChannelLogTable table = new ChannelLogTable(space, databasesInterface);
 				
-		table.fields.add( new LogTableField(ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.IdBatch"), ValueMetaInterface.TYPE_INTEGER, 8) );
-		table.fields.add( new LogTableField(ID.CHANNEL_ID.id, true, false, "CHANNEL_ID", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ChannelId"), ValueMetaInterface.TYPE_STRING, 255) );
-		table.fields.add( new LogTableField(ID.LOG_DATE.id, true, false, "LOG_DATE", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.BatchID"), ValueMetaInterface.TYPE_DATE, -1) );
-		table.fields.add( new LogTableField(ID.LOGGING_OBJECT_TYPE.id, true, false, "LOGGING_OBJECT_TYPE", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ObjectType"), ValueMetaInterface.TYPE_STRING, 255) );
-		table.fields.add( new LogTableField(ID.OBJECT_NAME.id, true, false, "OBJECT_NAME", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ObjectName"), ValueMetaInterface.TYPE_STRING, 255) );
-		table.fields.add( new LogTableField(ID.OBJECT_COPY.id, true, false, "OBJECT_COPY", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ObjectCopy"), ValueMetaInterface.TYPE_STRING, 255) );
-		table.fields.add( new LogTableField(ID.REPOSITORY_DIRECTORY.id, true, false, "REPOSITORY_DIRECTORY", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.RepositoryDirectory"), ValueMetaInterface.TYPE_STRING, 255) );
-		table.fields.add( new LogTableField(ID.FILENAME.id, true, false, "FILENAME", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.Filename"), ValueMetaInterface.TYPE_STRING, 255) );
-		table.fields.add( new LogTableField(ID.OBJECT_ID.id, true, false, "OBJECT_ID", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ObjectId"), ValueMetaInterface.TYPE_STRING, 255) );
-		table.fields.add( new LogTableField(ID.OBJECT_REVISION.id, true, false, "OBJECT_REVISION", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ObjectRevision"), ValueMetaInterface.TYPE_STRING, 255) );
-		table.fields.add( new LogTableField(ID.PARENT_CHANNEL_ID.id, true, false, "PARENT_CHANNEL_ID", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ParentChannelId"), ValueMetaInterface.TYPE_STRING, 255) );
-		table.fields.add( new LogTableField(ID.ROOT_CHANNEL_ID.id, true, false, "ROOT_CHANNEL_ID", BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.RootChannelId"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.IdBatch"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.IdBatch"), ValueMetaInterface.TYPE_INTEGER, 8) );
+		table.fields.add( new LogTableField(ID.CHANNEL_ID.id, true, false, "CHANNEL_ID", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.ChannelId"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ChannelId"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.LOG_DATE.id, true, false, "LOG_DATE", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.LogDate"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.LogDate"), ValueMetaInterface.TYPE_DATE, -1) );
+		table.fields.add( new LogTableField(ID.LOGGING_OBJECT_TYPE.id, true, false, "LOGGING_OBJECT_TYPE", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.ObjectType"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ObjectType"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.OBJECT_NAME.id, true, false, "OBJECT_NAME", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.ObjectName"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ObjectName"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.OBJECT_COPY.id, true, false, "OBJECT_COPY", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.ObjectCopy"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ObjectCopy"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.REPOSITORY_DIRECTORY.id, true, false, "REPOSITORY_DIRECTORY", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.RepositoryDirectory"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.RepositoryDirectory"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.FILENAME.id, true, false, "FILENAME", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.Filename"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.Filename"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.OBJECT_ID.id, true, false, "OBJECT_ID", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.ObjectId"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ObjectId"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.OBJECT_REVISION.id, true, false, "OBJECT_REVISION", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.ObjectRevision"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ObjectRevision"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.PARENT_CHANNEL_ID.id, true, false, "PARENT_CHANNEL_ID", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.ParentChannelId"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.ParentChannelId"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.ROOT_CHANNEL_ID.id, true, false, "ROOT_CHANNEL_ID", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.RootChannelId"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.RootChannelId"), ValueMetaInterface.TYPE_STRING, 255) );
 		
+		table.findField(ID.LOG_DATE.id).setLogDateField(true);
+
 		return table;
 	}
 		
@@ -176,6 +165,18 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 
 	public String getLogTableType() {
 		return BaseMessages.getString(PKG, "ChannelLogTable.Type.Description");
+	}
+
+	public String getConnectionNameVariable() {
+		return "KETTLE_LOG_CHANNEL_DB"; // $NON-NLS-1$
+	}
+
+	public String getSchemaNameVariable() {
+		return "KETTLE_LOG_CHANNEL_SCHEMA"; // $NON-NLS-1$
+	}
+
+	public String getTableNameVariable() {
+		return "KETTLE_LOG_CHANNEL_TABLE"; // $NON-NLS-1$
 	}
 
 	

@@ -47,11 +47,10 @@ public class LogMessage implements LogMessageInterface {
 		// Derive the subject from the registry
 		//
 		LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(logChannelId);
-		if (loggingObject==null) {
-			System.out.println("!!!!!!!!!!!!!!!!!!!OOPS!!!!!!!!!!!!!!!!!!");
+		if (loggingObject!=null) {
+			subject = loggingObject.getObjectName();
+			copy = loggingObject.getObjectCopy();
 		}
-		subject = loggingObject.getObjectName();
-		copy = loggingObject.getObjectCopy();
 	}
 
 	public String toString() {
