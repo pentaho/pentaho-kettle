@@ -19,7 +19,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
+//import junit.framework.TestCase;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.fail;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -61,8 +65,10 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
  *
  * @author Sven Boden
  */
-public class DatabaseLookupTest extends TestCase
+public class DatabaseLookupTest 
 {
+    static Database database;
+
 	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Database Lookup test", LoggingObjectType.GENERAL, null);
     
     public static final String[] databasesXML = {
@@ -130,7 +136,7 @@ public class DatabaseLookupTest extends TestCase
         "VALUES (15, 103, '15')"        
     };
     
-	public RowMetaInterface createSourceRowMetaInterface()
+	public static RowMetaInterface createSourceRowMetaInterface()
 	{
 		RowMetaInterface rm = new RowMeta();
 
@@ -151,7 +157,7 @@ public class DatabaseLookupTest extends TestCase
 	/**
 	 * Create source table.
 	 */
-	public void createTables(Database db) throws Exception
+	public static void createTables(Database db) throws Exception
 	{		
 		String source = db.getCreateTableStatement(lookup_table, createSourceRowMetaInterface(), null, false, null, true);
 		try  {
@@ -168,7 +174,7 @@ public class DatabaseLookupTest extends TestCase
 	 * 
 	 * @param db database to use. 
 	 */
-	private void createData(Database db) throws Exception
+	private static void createData(Database db) throws Exception
 	{		
 		for ( int idx = 0; idx < insertStatement.length; idx++ )
 		{
@@ -296,10 +302,35 @@ public class DatabaseLookupTest extends TestCase
         }
     }
     
+    @BeforeClass
+    public static void createDatabase() throws Exception
+    {
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("transname");
+
+        // Add the database connections
+        for (int i=0;i<databasesXML.length;i++)
+        {
+            DatabaseMeta databaseMeta = new DatabaseMeta(databasesXML[i]);
+            transMeta.addDatabase(databaseMeta);
+        }
+        DatabaseMeta dbInfo = transMeta.findDatabase("db");
+
+        // Execute our setup SQLs in the database.
+        database = new Database(loggingObject, dbInfo);
+        database.connect();
+        createTables(database);
+        createData(database);
+    }
+    
 	/**
 	 * Basic Test case for database lookup.
 	 */
-    public void testBasicDatabaseLookup() throws Exception
+    @Test
+    public void BasicDatabaseLookup() throws Exception
     {
         EnvUtil.environmentInit();
         try
@@ -318,13 +349,6 @@ public class DatabaseLookupTest extends TestCase
             }
 
             DatabaseMeta dbInfo = transMeta.findDatabase("db");
-
-            // Execute our setup SQLs in the database.
-            Database database = new Database(loggingObject, dbInfo);
-            database.connect();
-            createTables(database);
-            createData(database);
-
             StepLoader steploader = StepLoader.getInstance();            
 
             // 
@@ -396,5 +420,203 @@ public class DatabaseLookupTest extends TestCase
             checkRows(goldRows, resultRows);
         }    	
         finally {}    
+    }
+    
+	/**
+	 * Test "Load All Rows" version of BasicDatabaseLookup test.
+	 */
+    @Test
+    public void CacheAndLoadAllRowsDatabaseLookup() throws Exception
+    {
+        EnvUtil.environmentInit();
+        try
+        {
+            //
+            // Create a new transformation...
+            //
+            TransMeta transMeta = new TransMeta();
+            transMeta.setName("transname");
+
+            // Add the database connections
+            for (int i=0;i<databasesXML.length;i++)
+            {
+                DatabaseMeta databaseMeta = new DatabaseMeta(databasesXML[i]);
+                transMeta.addDatabase(databaseMeta);
+            }
+
+            DatabaseMeta dbInfo = transMeta.findDatabase("db");
+
+            StepLoader steploader = StepLoader.getInstance();            
+
+            // 
+            // create an injector step...
+            //
+            String injectorStepname = "injector step";
+            InjectorMeta im = new InjectorMeta();
+            
+            // Set the information of the injector.
+                    
+            String injectorPid = steploader.getStepPluginID(im);
+            StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+            transMeta.addStep(injectorStep);            
+            
+            // 
+            // create the lookup step...
+            //
+            String lookupName = "look up from [" + lookup_table + "]";
+            DatabaseLookupMeta dbl = new DatabaseLookupMeta();
+            dbl.setDatabaseMeta(transMeta.findDatabase("db"));
+            dbl.setTablename(lookup_table);
+            dbl.setCached(true);
+            dbl.setLoadingAllDataInCache(true);
+            dbl.setEatingRowOnLookupFailure(false);
+            dbl.setFailingOnMultipleResults(false);
+            dbl.setOrderByClause("");
+            
+            dbl.setTableKeyField(new String[] {"ID"});
+            dbl.setKeyCondition(new String[] {"="});
+            dbl.setStreamKeyField1(new String[] {"int_field"});
+            dbl.setStreamKeyField2(new String[] {""});
+            
+            dbl.setReturnValueField(new String[] {"CODE", "STRING"});
+            dbl.setReturnValueDefaultType( new int[] {ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING});      
+            dbl.setReturnValueDefault(new String[] {"-1", "UNDEF"});
+            dbl.setReturnValueNewName(new String[] {"RET_CODE", "RET_STRING"});
+            
+            String lookupId = steploader.getStepPluginID(dbl);
+            StepMeta lookupStep = new StepMeta(lookupId, lookupName, (StepMetaInterface) dbl);
+            lookupStep.setDescription("Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]");
+            transMeta.addStep(lookupStep);
+            
+            TransHopMeta hi = new TransHopMeta(injectorStep, lookupStep);
+            transMeta.addTransHop(hi);
+
+            // Now execute the transformation...
+            Trans trans = new Trans(transMeta);
+
+            trans.prepareExecution(null);
+                    
+            StepInterface si = trans.getStepInterface(lookupName, 0);
+            RowStepCollector rc = new RowStepCollector();
+            si.addRowListener(rc);
+            
+            RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+            trans.startThreads();
+            
+            // add rows
+            List<RowMetaAndData> inputList = createDataRows();
+            for (RowMetaAndData rm : inputList )
+            {
+            	rp.putRow(rm.getRowMeta(), rm.getData());
+            }   
+            rp.finished();
+
+            trans.waitUntilFinished();   
+
+            List<RowMetaAndData> resultRows = rc.getRowsWritten();
+            List<RowMetaAndData> goldRows = createResultDataRows();
+            checkRows(goldRows, resultRows);
+        }    	
+        finally {}    
     }    
+
+	/**
+	 * Test with cache turned off but "Load All Rows" enabled (Load all rows should have no effect)
+	 * See JIRA PDI-1910
+	 */
+    @Test
+    public void NOTCachedAndLoadAllRowsDatabaseLookup() throws Exception
+    {
+        EnvUtil.environmentInit();
+        try
+        {
+            //
+            // Create a new transformation...
+            //
+            TransMeta transMeta = new TransMeta();
+            transMeta.setName("transname");
+
+            // Add the database connections
+            for (int i=0;i<databasesXML.length;i++)
+            {
+                DatabaseMeta databaseMeta = new DatabaseMeta(databasesXML[i]);
+                transMeta.addDatabase(databaseMeta);
+            }
+
+            DatabaseMeta dbInfo = transMeta.findDatabase("db");
+
+            StepLoader steploader = StepLoader.getInstance();            
+
+            // 
+            // create an injector step...
+            //
+            String injectorStepname = "injector step";
+            InjectorMeta im = new InjectorMeta();
+            
+            // Set the information of the injector.
+                    
+            String injectorPid = steploader.getStepPluginID(im);
+            StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+            transMeta.addStep(injectorStep);            
+            
+            // 
+            // create the lookup step...
+            //
+            String lookupName = "look up from [" + lookup_table + "]";
+            DatabaseLookupMeta dbl = new DatabaseLookupMeta();
+            dbl.setDatabaseMeta(transMeta.findDatabase("db"));
+            dbl.setTablename(lookup_table);
+            dbl.setCached(false);
+            dbl.setLoadingAllDataInCache(true);
+            dbl.setEatingRowOnLookupFailure(false);
+            dbl.setFailingOnMultipleResults(false);
+            dbl.setOrderByClause("");
+            
+            dbl.setTableKeyField(new String[] {"ID"});
+            dbl.setKeyCondition(new String[] {"="});
+            dbl.setStreamKeyField1(new String[] {"int_field"});
+            dbl.setStreamKeyField2(new String[] {""});
+            
+            dbl.setReturnValueField(new String[] {"CODE", "STRING"});
+            dbl.setReturnValueDefaultType( new int[] {ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING});      
+            dbl.setReturnValueDefault(new String[] {"-1", "UNDEF"});
+            dbl.setReturnValueNewName(new String[] {"RET_CODE", "RET_STRING"});
+            
+            String lookupId = steploader.getStepPluginID(dbl);
+            StepMeta lookupStep = new StepMeta(lookupId, lookupName, (StepMetaInterface) dbl);
+            lookupStep.setDescription("Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]");
+            transMeta.addStep(lookupStep);
+            
+            TransHopMeta hi = new TransHopMeta(injectorStep, lookupStep);
+            transMeta.addTransHop(hi);
+
+            // Now execute the transformation...
+            Trans trans = new Trans(transMeta);
+
+            trans.prepareExecution(null);
+                    
+            StepInterface si = trans.getStepInterface(lookupName, 0);
+            RowStepCollector rc = new RowStepCollector();
+            si.addRowListener(rc);
+            
+            RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+            trans.startThreads();
+            
+            // add rows
+            List<RowMetaAndData> inputList = createDataRows();
+            for (RowMetaAndData rm : inputList )
+            {
+            	rp.putRow(rm.getRowMeta(), rm.getData());
+            }   
+            rp.finished();
+
+            trans.waitUntilFinished();   
+
+            List<RowMetaAndData> resultRows = rc.getRowsWritten();
+            List<RowMetaAndData> goldRows = createResultDataRows();
+            checkRows(goldRows, resultRows);
+        }    	
+        finally {}    
+    }    
+    
 }

@@ -117,7 +117,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
 		if (add==null)
 		{
-			if (!meta.isLoadingAllDataInCache() || data.hasDBCondition) { // do not go to the database when all rows are in (exception LIKE operator)
+			if ( !(meta.isCached() && meta.isLoadingAllDataInCache()) || data.hasDBCondition ) { // do not go to the database when all rows are in (exception LIKE operator)
 				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DatabaseLookup.Log.AddedValuesToLookupRow1")+meta.getStreamKeyField1().length+BaseMessages.getString(PKG, "DatabaseLookup.Log.AddedValuesToLookupRow2")+data.lookupMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
 
 				data.db.setValuesLookup(data.lookupMeta, lookupRow);
@@ -479,7 +479,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             
             // If the user selected to load all data into the cache at startup, that's what we do now...
             //
-            if (meta.isLoadingAllDataInCache()) {
+            if (meta.isCached() && meta.isLoadingAllDataInCache()) {
             	loadAllTableDataIntoTheCache();
             }
             
