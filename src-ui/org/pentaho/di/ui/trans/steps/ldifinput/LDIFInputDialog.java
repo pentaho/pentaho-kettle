@@ -759,7 +759,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 						ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true),
 				new ColumnInfo(
 						BaseMessages.getString(PKG, "LDIFInputDialog.FieldsTable.Format.Column"),
-						ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
+						ColumnInfo.COLUMN_TYPE_FORMAT, 3),
 				new ColumnInfo(
 						BaseMessages.getString(PKG, "LDIFInputDialog.FieldsTable.Length.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),

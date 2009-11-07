@@ -996,8 +996,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
          true ),
 			 new ColumnInfo(
          BaseMessages.getString(PKG, "GetXMLDataDialog.FieldsTable.Format.Column"),
-         ColumnInfo.COLUMN_TYPE_CCOMBO,
-         Const.getConversionFormats()),
+         ColumnInfo.COLUMN_TYPE_FORMAT,
+         4),
 			 new ColumnInfo(
          BaseMessages.getString(PKG, "GetXMLDataDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,

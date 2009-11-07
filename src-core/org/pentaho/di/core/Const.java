@@ -1523,23 +1523,6 @@ public class Const
 
 
 	/**
-	 * @return An array of all default conversion formats, to be used in dialogs etc.
-	 */
-	public static String[] getConversionFormats()
-	{
-		String dats[] = Const.getDateFormats();
-		String nums[] = Const.getNumberFormats();
-		int totsize = dats.length + nums.length;
-		String formats[] = new String[totsize];
-		for (int x = 0; x < dats.length; x++)
-			formats[x] = dats[x];
-		for (int x = 0; x < nums.length; x++)
-			formats[dats.length + x] = nums[x];
-
-		return formats;
-	}
-
-	/**
 	 * Sorts the array of Strings, determines the uniquely occurring strings.  
 	 * @param strings the array that you want to do a distinct on
 	 * @return a sorted array of uniquely occurring strings

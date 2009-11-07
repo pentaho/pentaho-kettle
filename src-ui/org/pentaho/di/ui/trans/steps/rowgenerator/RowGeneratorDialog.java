@@ -155,7 +155,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		ColumnInfo[] colinf=new ColumnInfo[] { 
 		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
 		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Format"),     ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Format"),     ColumnInfo.COLUMN_TYPE_FORMAT, 2),
 		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
 		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false),
 		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Currency"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),

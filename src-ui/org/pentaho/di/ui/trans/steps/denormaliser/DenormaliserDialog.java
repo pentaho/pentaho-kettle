@@ -215,15 +215,13 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		
 		int UpInsRows= (input.getDenormaliserTargetField()!=null?input.getDenormaliserTargetField().length:1);
 		
-        String formats[] = Const.getConversionFormats();
-        
 		ColumnInfo[] ciTarget=new ColumnInfo[]
           {
     		 new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.TargetFieldname"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
     		 new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.ValueFieldname"),      ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
     		 new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Keyvalue"),            ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
              new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Type"),                 ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes(), false), //$NON-NLS-1$
-             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Format"),               ColumnInfo.COLUMN_TYPE_CCOMBO,  formats), //$NON-NLS-1$
+             new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Format"),               ColumnInfo.COLUMN_TYPE_FORMAT,  4), //$NON-NLS-1$
              new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Length"),               ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
              new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Precision"),            ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
              new ColumnInfo(BaseMessages.getString(PKG, "DenormaliserDialog.ColumnInfo.Currency"),             ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$

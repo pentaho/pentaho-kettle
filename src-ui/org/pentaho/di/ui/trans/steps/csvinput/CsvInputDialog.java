@@ -471,7 +471,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
             {
              new ColumnInfo(BaseMessages.getString(PKG, "CsvInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "CsvInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
-             new ColumnInfo(BaseMessages.getString(PKG, "CsvInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats()),
+             new ColumnInfo(BaseMessages.getString(PKG, "CsvInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_FORMAT,  2),
              new ColumnInfo(BaseMessages.getString(PKG, "CsvInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "CsvInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "CsvInputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),

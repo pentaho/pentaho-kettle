@@ -32,6 +32,7 @@ public class ColumnInfo
 	public static final int COLUMN_TYPE_CCOMBO  =  2;
 	public static final int COLUMN_TYPE_BUTTON  =  3;
 	public static final int COLUMN_TYPE_ICON    =  4;
+	public static final int COLUMN_TYPE_FORMAT  =  5;
 	
 	private int      type;
 	private String   name;
@@ -54,6 +55,7 @@ public class ColumnInfo
     private boolean passwordField;
     
     private ComboValuesSelectionListener comboValuesSelectionListener;
+	private int fieldTypeColumn;  
     
     /**
      * Creates a column info class for use with the TableView class.
@@ -150,6 +152,20 @@ public class ColumnInfo
         readonly=ro;
     }
     
+    /**
+     * Creates a column info class for use with the TableView class.
+     * The type of column info to be created is : COLUMN_TYPE_FORMAT
+     * 
+     * @param colname           The column name
+     * @param coltype           The column type (see: COLUMN_TYPE_...)
+     * @param fieldTypeColumn   The column that contains the field type (for use when filtering the format combo dropdown)
+     */
+	public ColumnInfo(String colname, int coltype, int fieldTypeColumn)
+	{
+		this(colname, coltype);
+		this.fieldTypeColumn = fieldTypeColumn;
+	}
+
     public String toString() 
     {
     	return name;
@@ -304,6 +320,14 @@ public class ColumnInfo
     {
         this.passwordField = password;
     }
+
+	public int getFieldTypeColumn() {
+		return fieldTypeColumn;
+	}
+
+	public void setFieldTypeColumn(int fieldTypeColumn) {
+		this.fieldTypeColumn = fieldTypeColumn;
+	}
 
 	/**
 	 * @return the comboValuesSelectionListener

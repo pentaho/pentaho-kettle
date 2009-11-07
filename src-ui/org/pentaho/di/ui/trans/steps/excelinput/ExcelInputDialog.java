@@ -909,7 +909,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Precision.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
 			new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.TrimType.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.trimTypeDesc ),
 			new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Repeat.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } ),
-			new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Format.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats() ),
+			new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Format.Column"),     ColumnInfo.COLUMN_TYPE_FORMAT,  2),
 			new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Currency.Column"),   ColumnInfo.COLUMN_TYPE_TEXT),
 			new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Decimal.Column"),    ColumnInfo.COLUMN_TYPE_TEXT),
 			new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Grouping.Column"),   ColumnInfo.COLUMN_TYPE_TEXT)

@@ -153,7 +153,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
                     new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.LengthColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
                     new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.PrecisionColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
                     new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.RemoveColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") } ),
-                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.ConversionMask.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats()),
+                    new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.ConversionMask.Column"),     ColumnInfo.COLUMN_TYPE_FORMAT, 6),
                     new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.DecimalSymbol.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
                     new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.GroupingSymbol.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
                     new ColumnInfo(BaseMessages.getString(PKG, "CalculatorDialog.CurrencySymbol.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),

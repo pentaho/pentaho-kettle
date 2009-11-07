@@ -1847,7 +1847,10 @@ public class TableView extends Composite
 		switch(columns[colnr-1].getType())
 		{
 		case ColumnInfo.COLUMN_TYPE_TEXT: editText(row, rownr, colnr, select_text, extra); break;
-		case ColumnInfo.COLUMN_TYPE_CCOMBO: editCombo(row, rownr, colnr); break;
+		case ColumnInfo.COLUMN_TYPE_CCOMBO: 
+		case ColumnInfo.COLUMN_TYPE_FORMAT: 
+			editCombo(row, rownr, colnr); 
+			break;
 		case ColumnInfo.COLUMN_TYPE_BUTTON: editButton(row, rownr, colnr); break;
 		default: break;
 		}
@@ -2041,6 +2044,21 @@ public class TableView extends Composite
             }
         }
     }
+	
+	private String[] getComboValues(TableItem row, ColumnInfo colinfo) 
+	{	
+		if (colinfo.getType() == ColumnInfo.COLUMN_TYPE_FORMAT) {
+			int type = ValueMeta.getType( row.getText(colinfo.getFieldTypeColumn()) );
+			switch (type) {
+				case ValueMetaInterface.TYPE_DATE: return Const.getDateFormats();
+				case ValueMetaInterface.TYPE_INTEGER:
+				case ValueMetaInterface.TYPE_BIGNUMBER:
+				case ValueMetaInterface.TYPE_NUMBER: return Const.getNumberFormats();
+				default: return new String[0];
+			}
+		} 
+		return colinfo.getComboValues(); 
+	}
 
     private void editCombo(TableItem row, int rownr, int colnr)
 	{
@@ -2063,7 +2081,9 @@ public class TableView extends Composite
 		combo.addTraverseListener(lsTraverse);
 		combo.addModifyListener(lsModCombo);
 		combo.addFocusListener(lsFocusCombo);
-		String opt[] = colinfo.getComboValues();
+		
+		String opt[] = getComboValues(row, colinfo);
+		
 		if (colinfo.getComboValuesSelectionListener()!=null) {
 			opt = colinfo.getComboValuesSelectionListener().getComboValues(row, rownr, colnr);
 		}
@@ -2216,6 +2236,7 @@ public class TableView extends Composite
     					    str = ti.getText(c);
     						break;
     					case ColumnInfo.COLUMN_TYPE_CCOMBO:
+    					case ColumnInfo.COLUMN_TYPE_FORMAT:
     					    str = ti.getText(c);
     					    int minLength = str.length();
     						String[] options = columns[c-1].getComboValues();

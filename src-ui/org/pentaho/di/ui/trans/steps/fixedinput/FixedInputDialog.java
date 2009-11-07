@@ -402,7 +402,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
             {
              new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
-             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats()),
+             new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_FORMAT,  2),
              new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.WidthColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "FixedInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),

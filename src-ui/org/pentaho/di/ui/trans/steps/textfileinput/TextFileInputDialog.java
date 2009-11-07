@@ -1969,7 +1969,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             {
              new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
-             new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats()),
+             new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_FORMAT,  2),
              new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.PositionColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
@@ -1983,22 +1983,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             };
         
         colinf[12].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.RepeatColumn.Tooltip"));
-        colinf[2].setComboValuesSelectionListener(new ComboValuesSelectionListener() {
-		
-			public String[] getComboValues(TableItem tableItem, int rowNr, int colNr) {
-				String[] comboValues = new String[] { };
-				int type = ValueMeta.getType( tableItem.getText(colNr-1) );
-				switch(type) {
-				case ValueMetaInterface.TYPE_DATE: comboValues = Const.getDateFormats(); break;
-				case ValueMetaInterface.TYPE_INTEGER: 
-				case ValueMetaInterface.TYPE_BIGNUMBER:
-				case ValueMetaInterface.TYPE_NUMBER: comboValues = Const.getNumberFormats(); break;
-				default: break;
-				}
-				return comboValues;
-			}
-		
-		});
         
         wFields=new TableView(transMeta, wFieldsComp, 
                               SWT.FULL_SELECTION | SWT.MULTI, 

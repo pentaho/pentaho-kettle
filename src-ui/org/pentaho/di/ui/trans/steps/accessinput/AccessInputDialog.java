@@ -762,7 +762,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			 new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Name.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
          new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Attribut.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
 		 new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
-		 new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Format.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats()),
+		 new ColumnInfo(BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Format.Column"),  ColumnInfo.COLUMN_TYPE_FORMAT, 3),
          new ColumnInfo(
          BaseMessages.getString(PKG, "AccessInputDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,

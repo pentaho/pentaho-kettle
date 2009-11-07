@@ -471,7 +471,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
             {
              new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
-             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats()),
+             new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_FORMAT,  2),
              new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(BaseMessages.getString(PKG, "ParGzipCsvInputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),

@@ -887,7 +887,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
          
 		 new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
 		 new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Format.Column"),
-         ColumnInfo.COLUMN_TYPE_CCOMBO,Const.getConversionFormats()),
+         ColumnInfo.COLUMN_TYPE_FORMAT, 3),
          new ColumnInfo(
           BaseMessages.getString(PKG, "PropertyInputDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
