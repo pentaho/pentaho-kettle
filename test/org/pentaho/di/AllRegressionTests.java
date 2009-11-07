@@ -100,7 +100,7 @@ public class AllRegressionTests
         suite.addTestSuite(AddSequenceTest.class);  
         suite.addTestSuite(TableInputTest.class);        
         suite.addTestSuite(TableOutputTest.class);
-        suite.addTestSuite(DatabaseLookupTest.class);
+//        suite.addTestSuite(DatabaseLookupTest.class);    Now a JUnit 4 testcase
         suite.addTestSuite(CombinationLookupTest.class);
         suite.addTestSuite(JavaScriptStringTest.class);
         suite.addTestSuite(JavaScriptSpecialTest.class);
