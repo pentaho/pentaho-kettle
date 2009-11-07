@@ -215,9 +215,9 @@ public class NumberRangeMeta extends BaseStepMeta implements
 	 			int i = 0;
 	 			for (NumberRangeRule rule : rules) 
 	 			{
-	 				rep.saveStepAttribute(id_transformation, id_step, i,"lower_bound", rule.getLowerBound()); //$NON-NLS-1$
-	 				rep.saveStepAttribute(id_transformation, id_step, i,"upper_bound", rule.getUpperBound()); //$NON-NLS-1$
-	 				rep.saveStepAttribute(id_transformation, id_step, i, "value",	rule.getValue()); //$NON-NLS-1$
+	 				rep.saveStepAttribute(id_transformation, id_step, i,"lower_bound", String.valueOf(rule.getLowerBound())); //$NON-NLS-1$
+	 				rep.saveStepAttribute(id_transformation, id_step, i,"upper_bound", String.valueOf(rule.getUpperBound())); //$NON-NLS-1$
+	 				rep.saveStepAttribute(id_transformation, id_step, i, "value",	String.valueOf(rule.getValue())); //$NON-NLS-1$
 	 				i++;
 	 			}
 	 		} 
