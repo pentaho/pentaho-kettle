@@ -1,4 +1,4 @@
-<project>
+<project default="publish-pentaho">
 
   <!-- Build Cache properties -->
   <property name="build.cache.dir"
@@ -27,7 +27,7 @@
     </antcall>
     <antcall target="maven-publish-artifact">
         <param name="publish.pomFile" value="kettle-ui-swt.xml" />
-        <param name="publish.file" value="../lib/kettle-ui.jar" />
+        <param name="publish.file" value="../lib/kettle-ui-swt.jar" />
     </antcall>    
   </target>
   
