@@ -86,6 +86,7 @@ public class RepositoryImportProgressDialog extends Dialog
     private boolean askDirectory = true;
     private int nrtrans;
     private int nrjobs;
+    private int nrdirs;
 
     public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String fileDirectory, String[] filenames, RepositoryDirectory baseDirectory)
     {
@@ -404,6 +405,55 @@ public class RepositoryImportProgressDialog extends Dialog
         }
         return true;
     }
+	private boolean importDirectory(int nrthis, Node dirnode) throws KettleException
+	{
+        
+        // What's the directory path?
+        String directoryPath = Const.NVL(dirnode.getChildNodes().item(0).getNodeValue(), Const.FILE_SEPARATOR);
+        wLabel.setText(Messages.getString("RepositoryImportDialog.ImportDirectory.Label", Integer.toString(nrthis), Integer.toString(nrdirs), directoryPath));
+        
+        RepositoryDirectory targetDirectory = baseDirectory.findDirectory(directoryPath);
+        if (targetDirectory == null)
+        {
+            if (askDirectory)
+            {
+                MessageDialogWithToggle mb = new MessageDialogWithToggle(shell,
+                    Messages.getString("RepositoryImportDialog.CreateDir.Title"),
+                    null,
+                    Messages.getString("RepositoryImportDialog.CreateDir.Message", directoryPath),
+                    MessageDialog.QUESTION,
+                    new String[] {
+                                  Messages.getString("System.Button.Yes"),
+                                  Messages.getString("System.Button.No"),
+                                  Messages.getString("System.Button.Cancel") },
+                    1,
+                    Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
+                    !askDirectory);
+                int answer = mb.open();
+                makeDirectory = (answer & 0xFF) == 0;
+                askDirectory = !mb.getToggleState();
+
+                // Cancel?
+                if ((answer & 0xFF) == 2)
+                    return false;
+            }
+
+            if (makeDirectory)
+            {
+                addLog(Messages.getString("RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
+                targetDirectory = baseDirectory.createDirectory(rep, directoryPath);
+                return true;
+            }
+            else {
+            	// user denied creation of the current directory, no harm done, let's continue with the next one
+            	return true;
+            }
+        }
+        else {
+        	// directory already exists, return true
+        	return true;
+        }
+    }
 	
     private void importAll() {
 		wLabel.setText(Messages.getString("RepositoryImportDialog.ImportXML.Label"));
@@ -494,6 +544,43 @@ public class RepositoryImportProgressDialog extends Dialog
 						}
 					}
 
+					Node dirsnode = XMLHandler.getSubNode(repnode, "directories");
+					if (dirsnode != null) // Load directories...
+					{
+						nrdirs = XMLHandler.countNodes(dirsnode, "directory");
+
+						wBar.setMinimum(0);
+						wBar.setMaximum(filenames.length - 1 + nrdirs);
+						for (int i = 0; i < nrdirs; i++) {
+							wBar.setSelection(ii + i);
+							wBar.getDisplay().update();
+							Node dirnode = XMLHandler.getSubNodeByNr(dirsnode, "directory", i);
+							try
+							{
+								if (!importDirectory(i + 1, dirnode)) {
+									return;
+								}
+							} catch (Exception e) {
+								// Some unexpected error occurred during transformation import
+								// This is usually a problem with a missing plugin or something like that...
+								//
+								new ErrorDialog(
+										shell,
+										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Title"),
+										Messages.getString("RepositoryImportDialog.UnexpectedErrorDuringTransformationImport.Message"),
+										e);
+	
+								MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+								mb.setMessage(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Message"));
+								mb.setText(Messages.getString("RepositoryImportDialog.DoYouWantToContinue.Title"));
+								int answer = mb.open();
+								if (answer == SWT.NO) return;
+							}
+
+							wBar.setSelection(ii + i + 1);
+							wBar.getDisplay().update();
+						}
+					}
 					Node transsnode = XMLHandler.getSubNode(repnode, "transformations");
 					if (transsnode != null) // Load transformations...
 					{

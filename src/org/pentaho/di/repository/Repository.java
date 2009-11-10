@@ -5950,6 +5950,14 @@ public class Repository
 	        writer.write(XMLHandler.getXMLHeader()); 
 	        writer.write("<repository>"+Const.CR+Const.CR);
 	
+	        if(exportType.equals("all"))
+	        {
+		        // Dump the directories first, otherwise empty directories don't get exported...
+	        	writer.write("<directories>"+Const.CR);
+	        	exportDirectories(monitor, root, writer);
+	        	writer.write("</directories>"+Const.CR);
+	        }
+	        
 	        if(exportType.equals("all") || exportType.equals("trans"))
 	        {
 		        // Dump the transformations...
@@ -6066,6 +6074,29 @@ public class Repository
 	        
     	} catch(Exception e) {
     		throw new KettleException("Error while exporting repository transformations", e);
+    	}
+    }
+    private void exportDirectories(ProgressMonitorListener monitor, RepositoryDirectory dirTree, OutputStreamWriter writer) throws KettleException
+    {
+    	try {
+	        if (monitor!=null) monitor.subTask("Exporting the directories...");
+	
+	        // Loop over all the directory id's
+	        long dirids[] = dirTree.getDirectoryIDs();
+	        System.out.println("Going through "+dirids.length+" directories in directory ["+dirTree.getPath()+"]");
+	        
+	        for (int d=0;d<dirids.length && (monitor==null || (monitor!=null && !monitor.isCanceled()) );d++)
+	        {
+	            RepositoryDirectory repdir = dirTree.findDirectory(dirids[d]);
+	
+	            System.out.println("Directory ID #"+d+" : "+dirids[d]+" : "+repdir);
+	            if (!repdir.isRoot())
+	            	writer.write("    " + XMLHandler.addTagValue("directory", repdir.getPath()));
+	        }
+	        if (monitor!=null) monitor.worked(1);
+	        
+    	} catch(Exception e) {
+    		throw new KettleException("Error while exporting repository directories", e);
     	}
     }
 
