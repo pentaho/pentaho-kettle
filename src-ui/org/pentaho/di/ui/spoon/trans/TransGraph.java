@@ -88,6 +88,7 @@ import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
+import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogWriter;
@@ -419,16 +420,16 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     canvas.addMouseWheelListener(new MouseWheelListener() {
 
       public void mouseScrolled(MouseEvent e) {
-    	boolean control = (e.stateMask & SWT.CONTROL) != 0;
-    	if (control) {
-	        if (e.count == 3) {
-	          // scroll up
-	          zoomIn();
-	        } else if (e.count == -3) {
-	          // scroll down 
-	          zoomOut();
-	        }
-    	}
+      boolean control = (e.stateMask & SWT.CONTROL) != 0;
+      if (control) {
+          if (e.count == 3) {
+            // scroll up
+            zoomIn();
+          } else if (e.count == -3) {
+            // scroll down 
+            zoomOut();
+          }
+      }
       }
     });
 
@@ -907,7 +908,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           switch (container.getType()) {
             // Put an existing one on the canvas.
             case DragAndDropContainer.TYPE_STEP: {
-              // Drop hidden step onto canvas....		                
+              // Drop hidden step onto canvas....                   
               stepMeta = transMeta.findStep(container.getData());
               if (stepMeta != null) {
                 if (stepMeta.isDrawn() || transMeta.isStepUsedInTransHops(stepMeta)) {
@@ -998,11 +999,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           //
           if (newstep && transMeta.nrSteps() > 1 && transMeta.nrSteps() < 5 && spoon.props.isShowingHelpToolTips()) {
             showHelpTip(p.x, p.y, Messages.getString("TransGraph.HelpToolTip.CreatingHops.Title"), 
-            		Messages.getString("TransGraph.HelpToolTip.CreatingHops.Message"));
+                Messages.getString("TransGraph.HelpToolTip.CreatingHops.Message"));
           }
         } catch (Exception e) {
           new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.ErrorDroppingObject.Message"), 
-        		  Messages.getString("TransGraph.Dialog.ErrorDroppingObject.Title"), e);
+              Messages.getString("TransGraph.Dialog.ErrorDroppingObject.Title"), e);
         }
       }
 
@@ -1024,20 +1025,20 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     //
     final Timer timer = new Timer();
     TimerTask timerTask = new TimerTask() {
-		
-			public void run() {
-				// setControlStates();
-			}
-		};
-	timer.schedule(timerTask, 2000, 1000);
-	
-	// Make sure the timer stops when we close the tab...
-	//
-	addDisposeListener(new DisposeListener() {
-		public void widgetDisposed(DisposeEvent arg0) {
-			timer.cancel();
-		}
-	});
+    
+      public void run() {
+        // setControlStates();
+      }
+    };
+  timer.schedule(timerTask, 2000, 1000);
+  
+  // Make sure the timer stops when we close the tab...
+  //
+  addDisposeListener(new DisposeListener() {
+    public void widgetDisposed(DisposeEvent arg0) {
+      timer.cancel();
+    }
+  });
   }
 
   private void addToolBar() {
@@ -1083,7 +1084,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
       new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-    		  Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR), new Exception(t));
+          Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR), new Exception(t));
     }
   }
 
@@ -1131,7 +1132,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     } catch (Throwable t) {
       t.printStackTrace();
       new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-    		  Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR_PROPERTIES), new Exception(t));
+          Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR_PROPERTIES), new Exception(t));
     }
   }
 
@@ -1235,7 +1236,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         }
         
         if (e.character == 'E' && (e.stateMask & SWT.CTRL) != 0) {
-        	checkErrorVisuals();
+          checkErrorVisuals();
         }
 
         // SPACE : over a step: show output fields...
@@ -1504,12 +1505,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   public void clustering() {
-	StepMeta[] selected = transMeta.getSelectedSteps();
-	if (selected!=null && selected.length>0) {
-		spoon.editClustering(transMeta, transMeta.getSelectedSteps());
-	} else {
-		spoon.editClustering(transMeta, getCurrentStep());
-	}
+  StepMeta[] selected = transMeta.getSelectedSteps();
+  if (selected!=null && selected.length>0) {
+    spoon.editClustering(transMeta, transMeta.getSelectedSteps());
+  } else {
+    spoon.editClustering(transMeta, getCurrentStep());
+  }
   }
 
   public void errorHandling() {
@@ -1608,13 +1609,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
   
   public void fieldsLineage() {
-	  TransDataLineage tdl = new TransDataLineage(transMeta);
-	  try {
-		  tdl.calculateLineage();
-	  }
-	  catch(Exception e) {
-		  new ErrorDialog(shell, "Lineage error", "Unexpected lineage calculation error", e);
-	  }
+    TransDataLineage tdl = new TransDataLineage(transMeta);
+    try {
+      tdl.calculateLineage();
+    }
+    catch(Exception e) {
+      new ErrorDialog(shell, "Lineage error", "Unexpected lineage calculation error", e);
+    }
   }
 
   public void editHop() {
@@ -1822,6 +1823,16 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           menu.addMenuListener("trans-graph-entry-clustering", this, "clustering"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-errors", this, "errorHandling"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-preview", this, "preview"); //$NON-NLS-1$ //$NON-NLS-2$
+          
+          // TODO Remove this when we find a way to modify the menu dynamically
+          menu.addMenuListener( "trans-graph-entry-model", this, "openModeler");
+          menu.addMenuListener( "trans-graph-entry-visualize", this, "quickVisualize");
+          item = menu.getMenuItemById("trans-graph-entry-model"); //$NON-NLS-1$
+          item.setEnabled(stepMeta.getName().equalsIgnoreCase("table output"));
+          item = menu.getMenuItemById("trans-graph-entry-visualize"); //$NON-NLS-1$
+          item.setEnabled(stepMeta.getName().equalsIgnoreCase("table output"));
+           // TODO END ---------------------------------------------------------
+          
           ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
         }
       } else {
@@ -1921,12 +1932,22 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     }
   }
   
+  // TODO - Remove these when we can install our own menuing system
+  public void openModeler() {
+    System.out.println("In 'openModeler()'");
+  }
+  
+  public void quickVisualize() {
+    System.out.println("In 'quickVisualize()'");
+  }
+  // TODO - END -----------------------------------------------------
+
   public void selectAll() {
-	  spoon.editSelectAll();
+    spoon.editSelectAll();
   }
   
   public void clearSelection() {
-	  spoon.editUnselectAll();
+    spoon.editUnselectAll();
   }
 
   private boolean checkNumberOfCopies(TransMeta transMeta, StepMeta stepMeta) {
@@ -2084,9 +2105,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           + Messages.getString("TransGraph.Dialog.HopInfo.Status")+ " " + (hi.isEnabled()?Messages.getString("TransGraph.Dialog.HopInfo.Enable"):Messages.getString("TransGraph.Dialog.HopInfo.Disable")); 
           toolTip.setText(newTip);
           if(hi.isEnabled())
-        	  toolTip.setImage(GUIResource.getInstance().getImageHop());
+            toolTip.setImage(GUIResource.getInstance().getImageHop());
           else
-        	  toolTip.setImage(GUIResource.getInstance().getImageDisabledHop()); 
+            toolTip.setImage(GUIResource.getInstance().getImageDisabledHop()); 
           toolTip.show(new org.eclipse.swt.graphics.Point(screenX, screenY));
       }
       else
@@ -2580,7 +2601,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         spoon.sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
       } catch (KettleException e) {
         new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), 
-        		Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(transMeta)), e);
+            Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(transMeta)), e);
       }
       
       // If we added properties, add them to the variables too, so that they appear in the CTRL-SPACE variable completion.
@@ -2856,7 +2877,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             Map<String, String> paramMap = executionConfiguration.getParams();
             Set<String> keys = paramMap.keySet();
             for ( String key : keys )  {
-            	transMeta.setParameterValue(key, Const.NVL(paramMap.get(key), ""));
+              transMeta.setParameterValue(key, Const.NVL(paramMap.get(key), ""));
             }
             
             transMeta.activateParameters();
@@ -2864,7 +2885,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             // Do we need to clear the log before running?
             //
             if (executionConfiguration.isClearingLog()) {
-            	transLogDelegate.clearLog();
+              transLogDelegate.clearLog();
             }
             
             // Important: even though transMeta is passed to the Trans constructor, it is not the same object as is in memory
@@ -2938,10 +2959,10 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   public void addAllTabs() {
 
-	CTabItem tabItemSelection = null;
-	if (extraViewTabFolder!=null && !extraViewTabFolder.isDisposed()) {
-		tabItemSelection = extraViewTabFolder.getSelection();
-	}
+  CTabItem tabItemSelection = null;
+  if (extraViewTabFolder!=null && !extraViewTabFolder.isDisposed()) {
+    tabItemSelection = extraViewTabFolder.getSelection();
+  }
 
     transHistoryDelegate.addTransHistory();
     transLogDelegate.addTransLog();
@@ -2949,9 +2970,9 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     transPerfDelegate.addTransPerf();
     
     if (tabItemSelection!=null) {
-    	extraViewTabFolder.setSelection(tabItemSelection);
+      extraViewTabFolder.setSelection(tabItemSelection);
     } else {
-    	extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab());
+      extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab());
     }
     
     XulToolbarButton button = toolbar.getButtonById("trans-show-results");
@@ -2978,7 +2999,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         Map<String, String> paramMap = executionConfiguration.getParams();
         Set<String> keys = paramMap.keySet();
         for ( String key : keys )  {
-        	transMeta.setParameterValue(key, Const.NVL(paramMap.get(key), ""));
+          transMeta.setParameterValue(key, Const.NVL(paramMap.get(key), ""));
         }
         
         transMeta.activateParameters();        
@@ -2986,7 +3007,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         // Do we need to clear the log before running?
         //
         if (executionConfiguration.isClearingLog()) {
-        	transLogDelegate.clearLog();
+          transLogDelegate.clearLog();
         }
         
         // Create a new transformation to execution
@@ -3135,8 +3156,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   }
 
   private synchronized void setControlStates() {
-	if (getDisplay().isDisposed()) return;
-	
+  if (getDisplay().isDisposed()) return;
+  
     getDisplay().asyncExec(new Runnable() {
 
       public void run() {
@@ -3194,7 +3215,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         } catch (KettleException e) {
           log.logError(trans.getName(), "Preparing transformation execution failed", e);
           initialized = false;
-      	  checkErrorVisuals();
+          checkErrorVisuals();
         }
         halted = trans.hasHaltedSteps();
         checkStartThreads();// After init, launch the threads.
@@ -3229,7 +3250,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       setControlStates();
     } catch (KettleException e) {
       log.logError(toString(), "Error starting step threads", e);
-  	  checkErrorVisuals();
+      checkErrorVisuals();
     }
 
     // See if we have to fire off the performance graph updater etc.
@@ -3288,44 +3309,44 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private void checkErrorVisuals() {
       if (trans.getErrors()>0) {
-      	// Get the logging text and filter it out.  Store it in the stepLogMap...
-      	//
+        // Get the logging text and filter it out.  Store it in the stepLogMap...
+        //
           stepLogMap = new HashMap<StepMeta, String>();
           lastLog = null;
           shell.getDisplay().syncExec(new Runnable() {
-			
-				public void run() {
-					lastLog = transLogDelegate.getLoggingText();
-				}
-			});
+      
+        public void run() {
+          lastLog = transLogDelegate.getLoggingText();
+        }
+      });
           
           if (!Const.isEmpty(lastLog)) {
-          	String lines[] = lastLog.split(Const.CR);
-          	for (int i=0;i<lines.length && i<30;i++) {
-          		if (lines[i].indexOf(Log4jKettleLayout.ERROR_STRING)>=0) {
-          			// This is an error line, log it!
-          			// Determine to which step it belongs!
-          			//
-          			for (StepMeta stepMeta : transMeta.getSteps()) {
-          				if (lines[i].indexOf(stepMeta.getName())>=0) {
-          					
-          					String line = lines[i];
-          					int index = lines[i].indexOf(") : "); // $NON-NLS-1$   TODO: define this as a more generic marker / constant value
-          					if (index>0) line=lines[i].substring(index+3);
-          					
-          					String str = stepLogMap.get(stepMeta);
-          					if (str==null) {
-          						stepLogMap.put(stepMeta, line);
-          					} else {
-          						stepLogMap.put(stepMeta, str+Const.CR+line);
-          					}
-          				}
-          			}
-          		}
-          	}
+            String lines[] = lastLog.split(Const.CR);
+            for (int i=0;i<lines.length && i<30;i++) {
+              if (lines[i].indexOf(Log4jKettleLayout.ERROR_STRING)>=0) {
+                // This is an error line, log it!
+                // Determine to which step it belongs!
+                //
+                for (StepMeta stepMeta : transMeta.getSteps()) {
+                  if (lines[i].indexOf(stepMeta.getName())>=0) {
+                    
+                    String line = lines[i];
+                    int index = lines[i].indexOf(") : "); // $NON-NLS-1$   TODO: define this as a more generic marker / constant value
+                    if (index>0) line=lines[i].substring(index+3);
+                    
+                    String str = stepLogMap.get(stepMeta);
+                    if (str==null) {
+                      stepLogMap.put(stepMeta, line);
+                    } else {
+                      stepLogMap.put(stepMeta, str+Const.CR+line);
+                    }
+                  }
+                }
+              }
+            }
           }
       } else {
-      	stepLogMap = null;
+        stepLogMap = null;
       } 
       // Redraw the canvas to show the error icons etc.
       //
@@ -3362,14 +3383,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
    * Open the transformation mentioned in the mapping...
    */
   public void openMapping() {
-	  try {
-		  MappingMeta meta = (MappingMeta) this.currentStep.getStepMetaInterface();
-		  TransMeta mappingMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), spoon.rep, transMeta);
-		  mappingMeta.clearChanged();
-		  spoon.addTransGraph(mappingMeta);
-	  } catch(Exception e) {
-		  new ErrorDialog(shell, Messages.getString("TransGraph.Exception.UnableToLoadMapping.Title"), Messages.getString("TransGraph.Exception.UnableToLoadMapping.Message"), e);
-	  }
+    try {
+      MappingMeta meta = (MappingMeta) this.currentStep.getStepMetaInterface();
+      TransMeta mappingMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), spoon.rep, transMeta);
+      mappingMeta.clearChanged();
+      spoon.addTransGraph(mappingMeta);
+    } catch(Exception e) {
+      new ErrorDialog(shell, Messages.getString("TransGraph.Exception.UnableToLoadMapping.Title"), Messages.getString("TransGraph.Exception.UnableToLoadMapping.Message"), e);
+    }
   }
 
   /**
@@ -3411,14 +3432,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
  * @return the stepLogMap
  */
 public Map<StepMeta, String> getStepLogMap() {
-	return stepLogMap;
+  return stepLogMap;
 }
 
 /**
  * @param stepLogMap the stepLogMap to set
  */
 public void setStepLogMap(Map<StepMeta, String> stepLogMap) {
-	this.stepLogMap = stepLogMap;
+  this.stepLogMap = stepLogMap;
 }
 
 }
