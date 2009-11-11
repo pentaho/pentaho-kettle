@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
+
+
 /**
  * @author Samatar
  * @since 03-Juin-2008
@@ -33,6 +35,13 @@ public class CreditCardVerifier
 	public static final int AMERICAN_EXPRESS = 2;
 	public static final int EN_ROUTE         = 3;
 	public static final int DINERS_CLUB      = 4;
+    public static final int DISCOVER 		 = 5;
+    public static final int JCB1 			 = 6;
+    public static final int JCB2 			 = 7;
+    public static final int BANKCARD 		 = 8;
+    public static final int MAESTRO 		 = 9;
+    public static final int SOLO 			 = 10;
+    public static final int SWITCH 			 = 11;
 
 	  private static final String [] cardNames = 
       {   "Visa" , 
@@ -40,6 +49,13 @@ public class CreditCardVerifier
           "American Express", 
           "En Route", 
           "Diner's CLub/Carte Blanche",
+          "Discover",
+          "JCB1",
+          "JCB2",
+          "BankCard",
+          "Maestro",
+          "Solo",
+          "Switch"
       };
 	  private static final String[] NotValidCardNames = {
 	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidVisa"),
@@ -47,6 +63,12 @@ public class CreditCardVerifier
 	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidAmericanExpress"),
 	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidEnRoute"),
 	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidDiners"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidDiscover"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidJcb1"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidJcb2"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidMaestro"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidSolo"),
+	        BaseMessages.getString(PKG, "CreditCardValidator.Log.NotValidSwitch"),
 	    };
 	  public static String getCardName(int id) {
 		    return (id > -1 && id < cardNames.length ? cardNames[id] : null);
@@ -66,7 +88,7 @@ public class CreditCardVerifier
 		
 		Matcher m = Pattern.compile("[^\\d\\s.-]").matcher(CardNumber);
 		if (m.find()) {
-			 ri.UnValidMsg="Credit card number can only contain numbers, spaces, \"-\", and \".\"";
+			 ri.UnValidMsg=BaseMessages.getString(PKG, "CreditCardValidator.OnlyNumbers");
 			 return ri;
 	      }
 		 
@@ -183,14 +205,71 @@ public class CreditCardVerifier
 	           }      
 	      
 	      /* ----
-	      ** DISCOVER card prefix = 60
+	      ** DISCOVER card prefix = 6011
 	      ** --------      lenght = 16
 	      */
-	      else if (digit2.equals("60")) {
+	      else if (digit4.equals("6011")) {
 	  	        if (number.length() == 16) 
-	  	           valid = DINERS_CLUB;
+	  	           valid = DISCOVER;
 	  	           }
 	  	      } 
+		    /* ----
+	         ** JCB1 card prefix = 3
+	         ** --------      lenght = 16
+	         */
+	         else if (digit1.equals("3"))
+	         {
+	             if (number.length() == 16)
+	                 valid = JCB1;
+	         }
+	         /* ----
+	         ** JCB2 card prefix = 2131, 1800
+	         ** --------      lenght = 15
+	         */
+	         else if (digit4.equals("2131") || digit4.equals("1800"))
+	         {
+	             if (number.length() == 15)
+	                 valid = JCB2;
+	         }
+	         /* ----
+	          ** BANKCARD card prefix = 56
+	          ** --------      lenght = 16
+	          */
+	         else if (digit2.equals("56"))
+	         {
+	             if (number.length() == 16)
+	                 valid = BANKCARD;
+	         }
+	         /* ----
+	          ** MAESTRO card prefix = 5020,6
+	          ** --------      lenght = 16
+	          */
+	         else if (digit4.equals("5020") || digit1.equals("6"))
+	         {
+	             if (number.length() == 16)
+	                 valid = MAESTRO;
+	         }
+	         /* ----
+	          ** SOLO card prefix = 6334, 6767
+	          ** --------      lenght = 16,18,19
+	          */
+	         else if (digit4.equals("6334") || digit4.equals("6767"))
+	         {
+	             if (number.length() == 16 || number.length() == 18 || number.length() == 19)
+	                 valid = SOLO;
+	         }
+	         /* ----
+	          ** SWITCH card prefix = 4903,4905,4911,4936,564182,633110,6333,6759
+	          ** --------      lenght = 16,18,19
+	          */
+	         else if (digit4.equals("4903") || digit4.equals("4905")
+	             || digit4.equals("4911") || digit4.equals("4936")
+	             || digit4.equals("564182") || digit4.equals("633110")
+	             || digit4.equals("6333") || digit4.equals("6759"))
+	         {
+	             if (number.length() == 16 || number.length() == 18 || number.length() == 19)
+	                 valid = SWITCH;
+	         }
 	    
 	 	return valid;
 	 }
