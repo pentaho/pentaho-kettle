@@ -45,67 +45,67 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
 
 public class SpoonBrowser implements TabItemInterface
 {
-	private static final LogWriter log = LogWriter.getInstance();
-	
-	private static final String XUL_FILE_BROWSER_TOOLBAR = "ui/browser-toolbar.xul";
-	public static final String XUL_FILE_BROWSER_TOOLBAR_PROPERTIES = "ui/browser-toolbar.properties";
+  protected static final LogWriter log = LogWriter.getInstance();
+  
+  private static final String XUL_FILE_BROWSER_TOOLBAR = "ui/browser-toolbar.xul";
+  public static final String XUL_FILE_BROWSER_TOOLBAR_PROPERTIES = "ui/browser-toolbar.properties";
 
-    private Shell            shell;
-    private Spoon            spoon;
+    protected Shell            shell;
+    protected Spoon            spoon;
     private String           stringUrl;
-    private Composite        composite;
-	private Toolbar toolbar;
+    protected Composite        composite;
+    protected Toolbar toolbar;
     
-    private Browser browser;
+    protected Browser browser;
+    private XulToolbarButton back = null;
+    private XulToolbarButton forward = null;
+    private Text urlText = null;
 
-    public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl,boolean isURL) throws SWTError
+    public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl,boolean isURL) throws SWTError {
+      this( parent, spoon, stringUrl, isURL, true );
+  }
+
+    public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl,boolean isURL, boolean showControls) throws SWTError
     {
-    	composite = new Composite(parent, SWT.NONE);
-    	
+      composite = new Composite(parent, SWT.NONE);
+      
         this.shell = parent.getShell();
         this.spoon = spoon;
         this.stringUrl = stringUrl;
         
         composite.setLayout(new FormLayout());
         
-        addToolBar();
-        addToolBarListeners();
+        if( showControls ) {
+          addToolBar();
+          addToolBarListeners();
+          
+          // HACK ALERT : setting this in some sort of property would be far nicer
+          //
+          Control swtToolBar = (Control)toolbar.getNativeObject();
+          FormData fdToolBar= (FormData) swtToolBar.getLayoutData();
+          fdToolBar.right = null;
+        }
         
-        // HACK ALERT : setting this in some sort of property would be far nicer
-        //
-        Control swtToolBar = (Control)toolbar.getNativeObject();
-        FormData fdToolBar= (FormData) swtToolBar.getLayoutData();
-        fdToolBar.right = null;
-        
-        // Add a URL
-        final Text urlText = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.READ_ONLY | SWT.BORDER);
-        FormData fdUrlText = new FormData();
-        fdUrlText.top = new FormAttachment(swtToolBar, 0, SWT.CENTER);
-        fdUrlText.left = new FormAttachment(swtToolBar, 20);
-        fdUrlText.right = new FormAttachment(100,0);
-        urlText.setLayoutData(fdUrlText);
-        
-        
-        final XulToolbarButton back = toolbar.getButtonById("browse-back");
-        back.setEnable(false);
-        final XulToolbarButton forward = toolbar.getButtonById("browse-forward");
-        forward.setText(Messages.getString("SpoonBrowser.Dialog.Forward"));
-        forward.setEnable(false);
-        
-        browser = new Browser(composite, SWT.NONE);
+        browser = createBrowser();
         FormData fdBrowser = new FormData();
         fdBrowser.left = new FormAttachment(0,0);
         fdBrowser.right = new FormAttachment(100,0);
-        fdBrowser.top = new FormAttachment((Control)toolbar.getNativeObject(),2);
+        if( showControls ) {
+          fdBrowser.top = new FormAttachment((Control)toolbar.getNativeObject(),2);
+        } else {
+          fdBrowser.top = new FormAttachment(0,2);
+        }
         fdBrowser.bottom = new FormAttachment(100,0);
         browser.setLayoutData(fdBrowser);
 
         LocationListener locationListener = new LocationListener() {
             public void changed(LocationEvent event) {
                   Browser browser = (Browser)event.widget;
-                  back.setEnable(browser.isBackEnabled());
-                  forward.setEnable(browser.isForwardEnabled());
-                  urlText.setText(browser.getUrl());
+                  if( back != null ) {
+                    back.setEnable(browser.isBackEnabled());
+                    forward.setEnable(browser.isForwardEnabled());
+                    urlText.setText(browser.getUrl());
+                  }
                }
             public void changing(LocationEvent event) {
                }
@@ -118,71 +118,89 @@ public class SpoonBrowser implements TabItemInterface
                  
         // Set the text
        if (isURL)
-    	   browser.setUrl(stringUrl);
+         browser.setUrl(stringUrl);
        else
-    	   browser.setText(stringUrl);
+         browser.setText(stringUrl);
     }
 
-    private void addToolBar()
-	{
+    protected Browser createBrowser() {
+      return new Browser(composite, SWT.NONE);
+    }
+    
+    protected void addToolBar()
+  {
 
-		try {
-			toolbar = XulHelper.createToolbar(XUL_FILE_BROWSER_TOOLBAR, composite, SpoonBrowser.this, new XulMessages());
-			
-			// Add a few default key listeners
-			//
-			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
-			toolBar.addKeyListener(spoon.defKeys);
-			
-			addToolBarListeners();
-		} catch (Throwable t ) {
-			log.logError(toString(), Const.getStackTracker(t));
-			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR), new Exception(t));
-		}
-	}
+    try {
+      toolbar = XulHelper.createToolbar(XUL_FILE_BROWSER_TOOLBAR, composite, SpoonBrowser.this, new XulMessages());
+      
+      // Add a few default key listeners
+      //
+      ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
+      toolBar.addKeyListener(spoon.defKeys);
+      Control swtToolBar = (Control)toolbar.getNativeObject();
+      
+      // Add a URL
+      urlText = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.READ_ONLY | SWT.BORDER);
+      FormData fdUrlText = new FormData();
+      fdUrlText.top = new FormAttachment(swtToolBar, 0, SWT.CENTER);
+      fdUrlText.left = new FormAttachment(swtToolBar, 20);
+      fdUrlText.right = new FormAttachment(100,0);
+      urlText.setLayoutData(fdUrlText);
+      
+      back = toolbar.getButtonById("browse-back");
+      back.setEnable(false);
+      forward = toolbar.getButtonById("browse-forward");
+      forward.setText(Messages.getString("SpoonBrowser.Dialog.Forward"));
+      forward.setEnable(false);
 
-	public void addToolBarListeners()
-	{
-		try
-		{
-			// first get the XML document
-			URL url = XulHelper.getAndValidate(XUL_FILE_BROWSER_TOOLBAR_PROPERTIES);
-			Properties props = new Properties();
-			props.load(url.openStream());
-			String ids[] = toolbar.getMenuItemIds();
-			for (int i = 0; i < ids.length; i++)
-			{
-				String methodName = (String) props.get(ids[i]);
-				if (methodName != null)
-				{
-					toolbar.addMenuListener(ids[i], this, methodName);
+    } catch (Throwable t ) {
+      log.logError(toString(), Const.getStackTracker(t));
+      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR), new Exception(t));
+    }
+  }
 
-				}
-			}
+  public void addToolBarListeners()
+  {
+    try
+    {
+      // first get the XML document
+      URL url = XulHelper.getAndValidate(XUL_FILE_BROWSER_TOOLBAR_PROPERTIES);
+      Properties props = new Properties();
+      props.load(url.openStream());
+      String ids[] = toolbar.getMenuItemIds();
+      for (int i = 0; i < ids.length; i++)
+      {
+        String methodName = (String) props.get(ids[i]);
+        if (methodName != null)
+        {
+          toolbar.addMenuListener(ids[i], this, methodName);
 
-		} catch (Throwable t ) {
-			t.printStackTrace();
-			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-					Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR_PROPERTIES), new Exception(t));
-		}
-	}
-	
+        }
+      }
+
+    } catch (Throwable t ) {
+      t.printStackTrace();
+      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
+          Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR_PROPERTIES), new Exception(t));
+    }
+  }
+  
     public void newFileDropDown() {
-    	spoon.newFileDropDown(toolbar);
+      spoon.newFileDropDown(toolbar);
     }
 
     public void openFile() {
-    	spoon.openFile();
+      spoon.openFile();
     }
 
-	public void browseBack() {
-		browser.back();
-	}
-	
-	public void browseForward() {
-		browser.forward();
-	}
-	
+  public void browseBack() {
+    browser.back();
+  }
+  
+  public void browseForward() {
+    browser.forward();
+  }
+  
   
     /**
      * @return the browser
@@ -258,7 +276,7 @@ public class SpoonBrowser implements TabItemInterface
     }
 
     public EngineMetaInterface getMeta() {
-    	return null;
+      return null;
     }
 
     
