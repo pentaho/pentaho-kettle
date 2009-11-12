@@ -100,7 +100,6 @@
 	<classpathentry kind="lib" path="libext/janino.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.1.18.jar"/>
 	<classpathentry kind="lib" path="libext/SNMP4J.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-2.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-vfs-2.0-20090205.jar"/>
 	<classpathentry kind="lib" path="libext/jcifs-1.3.3.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/libbase-1.0-SNAPSHOT.jar"/>
@@ -109,12 +108,13 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-formula-editor-0.0.1.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/jtds-1.2.2.jar"/>
 	<classpathentry kind="lib" path="libext/saxon8.jar"/>
-	<classpathentry kind="lib" path="libswt/osx/swt.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-2.5.4.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-2.5.4.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-2.7.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/pentaho-xul-swt"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/pentaho-xul-core"/>
+	<classpathentry kind="lib" path="libswt/linux/x86/swt.jar"/>
+	<classpathentry kind="lib" path="/home/nbaker/workspace_flow/agile-bi/eclipse-bin/org/pentaho/agilebi/pdi/modeler"/>
+	<classpathentry kind="lib" path="/agile-bi/dist/agile-bi-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
