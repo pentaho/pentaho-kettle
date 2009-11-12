@@ -12,6 +12,7 @@
 package org.pentaho.di.ui.spoon.trans;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1934,7 +1935,15 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
   
   // TODO - Remove these when we can install our own menuing system
   public void openModeler() {
-    System.out.println("In 'openModeler()'");
+    try{
+      
+      Object modelerCanvas = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").newInstance();
+      Method m = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").getMethod("createModelerTab");
+      m.invoke(modelerCanvas);
+
+    } catch(Exception e){
+      e.printStackTrace();
+    }
   }
   
   public void quickVisualize() {

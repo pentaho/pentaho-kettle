@@ -34,7 +34,7 @@ public class ExtTextbox extends SwtTextbox {
 
     extText = new TextVar(variableSpace, parentComposite, style);
     textBox = extText.getTextWidget();
-    managedObject = extText;
+    setManagedObject(extText);
   }
 
   @Override
@@ -66,10 +66,10 @@ public class ExtTextbox extends SwtTextbox {
       setReadonly(isReadonly());
       setType(getType());
       textBox = extText.getTextWidget();
-      managedObject = extText;
+      setManagedObject(extText);
       layout();
     }
-    return managedObject;
+    return super.getManagedObject();
   }
 
   @Override
