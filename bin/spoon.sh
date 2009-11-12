@@ -41,6 +41,17 @@ do
   CLASSPATH=$CLASSPATH:$f
 done
 
+# **************************************************
+# ** Spoon Plugin libraries                       **
+# **************************************************
+
+for d in `find $BASEDIR/plugins/spoon -type d`
+do
+	for f in `find $d -type f -name "*.jar"`
+	do
+		CLASSPATH=$CLASSPATH:$f
+	done 
+done
 
 # **************************************************
 # ** Platform specific libraries ...              **

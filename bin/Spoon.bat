@@ -60,6 +60,12 @@ FOR %%F IN (libext\mondrian\*.jar) DO call :addcp %%F
 FOR %%F IN (libext\salesforce\*.jar) DO call :addcp %%F
 FOR %%F IN (libext\feeds\*.jar) DO call :addcp %%F
 
+REM **********************
+REM   Spoon Plugins
+REM **********************
+
+FOR %%F IN (plugins\spoon\*\*.jar) DO call :addcp %%F
+
 goto extlibe
 
 :addcp

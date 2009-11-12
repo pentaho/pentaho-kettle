@@ -1,0 +1,7 @@
+This is the folder location of spoon plugins.  
+
+Spoon plugins should consist of a root folder with jar files that 
+are added to the classpath on spoon startup, as well as any 
+additional resources.
+
+For details on the plugin entry points of Spoon, please see the wiki.
