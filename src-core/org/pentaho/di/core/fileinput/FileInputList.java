@@ -169,7 +169,7 @@ public class FileInputList
                 {
                     // Find all file names that match the wildcard in this directory
                     //
-                    FileObject directoryFileObject = KettleVFS.getFileObject(onefile);
+                    FileObject directoryFileObject = KettleVFS.getFileObject(onefile, space);
                     if (directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER) // it's a directory
                     {
                         FileObject[] fileObjects = directoryFileObject.findFiles(

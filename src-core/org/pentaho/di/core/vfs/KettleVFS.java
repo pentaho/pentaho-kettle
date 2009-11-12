@@ -24,13 +24,22 @@ import java.util.Comparator;
 import org.apache.commons.vfs.FileContent;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
+import org.apache.commons.vfs.provider.FileNameParser;
+import org.apache.commons.vfs.provider.URLFileName;
 import org.apache.commons.vfs.provider.local.LocalFile;
+import org.apache.commons.vfs.provider.sftp.SftpFileNameParser;
+import org.jfree.util.Log;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.UUIDUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+
+import com.jcraft.jsch.UserInfo;
 
 public class KettleVFS
 {
@@ -64,7 +73,16 @@ public class KettleVFS
     	if (kettleVFS==null) kettleVFS=new KettleVFS(); 
     }
     
-    public static FileObject getFileObject(String vfsFilename) throws IOException
+    public static FileObject getFileObject(String vfsFilename) throws IOException {
+      return getFileObject(vfsFilename, null);
+    }
+    
+    
+    public static FileObject getFileObject(String vfsFilename, VariableSpace space) throws IOException {
+      return getFileObject(vfsFilename, space, null);
+    }
+    
+    public static FileObject getFileObject(String vfsFilename, VariableSpace space, FileSystemOptions fsOptions) throws IOException
     {
     	checkHook();
     	
@@ -80,14 +98,19 @@ public class KettleVFS
 	        // If not, we are going to assume it's a file.
 	        //
 	        boolean relativeFilename=true;
+	        
 	        String[] schemes = VFS.getManager().getSchemes();
 	        for (int i=0;i<schemes.length && relativeFilename;i++)
 	        {
-	            if (vfsFilename.startsWith(schemes[i]+":")) relativeFilename=false;
+	            if (vfsFilename.startsWith(schemes[i]+":")) { //$NON-NLS-1$
+	              relativeFilename=false;
+	              // We have a VFS URL, load any options for the file system driver
+	              fsOptions = buildFsOptions(space, fsOptions, vfsFilename);
+	            }
 	        }
 	        
 	        String filename;
-	        if (vfsFilename.startsWith("\\\\"))
+	        if (vfsFilename.startsWith("\\\\")) //$NON-NLS-1$
 	        {
 	            File file = new File(vfsFilename);
 	            filename = file.toURI().toString();
@@ -104,14 +127,206 @@ public class KettleVFS
 	                filename = vfsFilename;
 	            }
 	        }
+	        FileObject fileObject = null;
 	        
-	        FileObject fileObject = fsManager.resolveFile( filename );
+	        if(fsOptions != null) {
+	          fileObject = fsManager.resolveFile(filename, fsOptions);
+	        } else {
+	          fileObject = fsManager.resolveFile(filename);
+	        }
 	        
 	        return fileObject;
     	}
     	catch(IOException e) {
-    		throw new IOException("Unable to get VFS File object for filename '"+vfsFilename+"' : "+e.toString());
+    		throw new IOException("Unable to get VFS File object for filename '"+vfsFilename+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
     	}
+    }
+    
+    private static class SimpleFileSystemConfigBuilder extends FileSystemConfigBuilder {
+      
+      private final static SimpleFileSystemConfigBuilder builder = new SimpleFileSystemConfigBuilder();
+      
+      public static SimpleFileSystemConfigBuilder getInstance()
+      {
+          return builder;
+      }
+      
+      protected SimpleFileSystemConfigBuilder() {
+        super();
+      }
+
+      @Override
+      protected Class getConfigClass() {
+          return SimpleFileSystemConfigBuilder.class;
+      }
+      
+      /**
+       * Publicly expose a generic way to set parameters
+       */
+      public void setParameter(FileSystemOptions opts, String name, Object value) {
+        this.setParam(opts, name, value);
+      }
+
+      /**
+       * Publicly expose a generic way to get parameters
+       */
+      @SuppressWarnings("unused")
+      public Object getParameter(FileSystemOptions opts, String name) {
+        return this.getParam(opts, name);
+      }
+      
+      /**
+       * Publicly expose a generic way to check for parameters
+       */
+      @SuppressWarnings("unused")
+      public boolean hasParameter(FileSystemOptions opts, String name) {
+        return this.hasParameter(opts, name);
+      }
+      
+    }
+    
+    private static FileSystemOptions buildFsOptions(VariableSpace varSpace, FileSystemOptions sourceOptions, String vfsFilename) {
+      return buildFsOptions(varSpace, sourceOptions, vfsFilename, true);
+    }
+    
+    private static FileSystemOptions buildFsOptions(VariableSpace varSpace, FileSystemOptions sourceOptions, String vfsFilename, boolean processAll) {
+      if(varSpace == null) {
+        // We cannot extract settings from a non-existant variable space
+        return null;
+      }
+      
+      SimpleFileSystemConfigBuilder configBuilder = SimpleFileSystemConfigBuilder.getInstance();
+      
+      FileSystemOptions fsOptions = (sourceOptions == null) ? new FileSystemOptions() : sourceOptions;
+
+      String[] varList = varSpace.listVariables();
+      
+      // Get scheme type
+      String scheme = vfsFilename.substring(0, vfsFilename.indexOf(":")); //$NON-NLS-1$
+      
+      
+      
+      // Handle parsing of parameters based on scheme types
+      if(scheme.equalsIgnoreCase("sftp")) { //$NON-NLS-1$
+        
+        for(String var : varList) {
+          if(var.startsWith("vfs.sftp")) { //$NON-NLS-1$
+            try{
+              // Add to properties file
+              
+              // Parse server name from vfsFilename
+              FileNameParser sftpFilenameParser = SftpFileNameParser.getInstance();
+              
+              URLFileName file = (URLFileName)sftpFilenameParser.parseUri(null, null, vfsFilename);
+              
+              // Match server name in variable name
+              if(!parameterContainsHost(var) || var.endsWith(file.getHostName())) {
+                // Parse parameter name
+                String parm = parseParameterName(var, "sftp"); //$NON-NLS-1$
+                
+                // If parameter is auth key passphrase, build UserInfo
+                if(parm.equalsIgnoreCase("authkeypassphrase")) { //$NON-NLS-1$
+                  PentahoUserInfo userInfo = new PentahoUserInfo(varSpace.getVariable(var));
+                  configBuilder.setParameter(fsOptions, UserInfo.class.getName(), userInfo);
+                } else if (parm.equalsIgnoreCase("identity")) { //$NON-NLS-1$
+                  File identityFile = new File(varSpace.getVariable(var));
+                  configBuilder.setParameter(fsOptions, "identities", new File[]{identityFile}); //$NON-NLS-1$
+                } else {
+                  configBuilder.setParameter(fsOptions, parm, varSpace.getVariable(var));
+                }
+              }
+            } catch (FileSystemException e) {
+              Log.error(Messages.getString("FileSystemOptions.Log.ErrorCreatingFileSystemOptions"), e); //$NON-NLS-1$
+            }
+          }
+        }
+      } else if(scheme.equalsIgnoreCase("all")) { //$NON-NLS-1$
+
+        for(String var : varList) {
+          if(var.startsWith("vfs.all")) { //$NON-NLS-1$
+            // Add to properties file
+            String parm = parseParameterName(var, "all"); //$NON-NLS-1$
+            configBuilder.setParameter(fsOptions, parm, varSpace.getVariable(parm));
+          }
+        }        
+      }
+      
+      // Load options for ALL vfs drivers
+      if(processAll) {
+        fsOptions = buildFsOptions(varSpace, fsOptions, "all:", false); //$NON-NLS-1$
+      }
+      
+      return fsOptions;
+    }
+    
+    private static class PentahoUserInfo implements UserInfo{
+      private String passphrase;
+      private String password;
+      
+      public PentahoUserInfo(String passphrase) {
+        this.passphrase = passphrase;
+      }
+      
+      @Override
+      public String getPassphrase() {
+        return passphrase; // Passphrase for the authentication key
+      }
+
+      @Override
+      public String getPassword() {
+        return password; // Appears to be unused in this usage
+      }
+
+      @Override
+      public boolean promptPassphrase(String arg0) {
+          return true;
+      }
+
+      @Override
+      public boolean promptPassword(String arg0) {
+        return false;  
+      }
+
+      @Override
+      public boolean promptYesNo(String arg0) {
+        return false;
+      }
+
+      @Override
+      public void showMessage(String arg0) {
+      }
+    };
+    
+    /**
+     * Extract the FileSystemOptions parameter name from a Kettle variable
+     * 
+     * @param parameter
+     * @return
+     */
+    private static String parseParameterName(String parameter, String scheme) {
+      String result = null;
+      
+      // Frame the parameter name
+      int begin = 5 + scheme.length(); // ('vfs.' + scheme + '.').length
+      int end = -1;
+      
+      end = parameter.indexOf('.', begin);
+      
+      if(end < 0) {
+        end = parameter.length();
+      }
+      
+      if(end > begin) {
+        result = parameter.substring(begin, end);
+      }
+      
+      return result;
+    }
+    
+    private static boolean parameterContainsHost(String parameter) {
+      // Test the number of '.' in the file. If there are more then two, then there is a host associated
+      // return parameter.matches("^(.*\\.){3}") ? true : false; //$NON-NLS-1$
+      return parameter.matches("^(.*\\..*){3,}") ? true : false; //$NON-NLS-1$
     }
     
     /**
@@ -160,7 +375,7 @@ public class KettleVFS
         {
             if (!parent.exists())
             {
-                throw new IOException(Messages.getString("KettleVFS.Exception.ParentDirectoryDoesNotExist", getFilename(parent)));
+                throw new IOException(Messages.getString("KettleVFS.Exception.ParentDirectoryDoesNotExist", getFilename(parent))); //$NON-NLS-1$
             }
         }
         try
@@ -203,19 +418,19 @@ public class KettleVFS
     {
         FileName fileName = fileObject.getName();
         String root = fileName.getRootURI();
-        if (!root.startsWith("file:")) return fileName.getURI(); // nothing we can do about non-normal files.
-        if (root.endsWith(":/")) // Windows
+        if (!root.startsWith("file:")) return fileName.getURI(); // nothing we can do about non-normal files. //$NON-NLS-1$
+        if (root.endsWith(":/")) // Windows //$NON-NLS-1$
         {
             root = root.substring(8,10);
         }
         else // *nix & OSX
         {
-            root = "";
+            root = ""; //$NON-NLS-1$
         }
         String fileString = root + fileName.getPath();
-        if (!"/".equals(Const.FILE_SEPARATOR))
+        if (!"/".equals(Const.FILE_SEPARATOR)) //$NON-NLS-1$
         {
-            fileString = Const.replace(fileString, "/", Const.FILE_SEPARATOR);
+            fileString = Const.replace(fileString, "/", Const.FILE_SEPARATOR); //$NON-NLS-1$
         }
         return fileString;
     }
@@ -262,7 +477,7 @@ public class KettleVFS
 		if (!(fileObject instanceof LocalFile)) {
 			// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
 			//
-			throw new IOException(Messages.getString("FixedInput.Log.OnlyLocalFilesAreSupported"));
+			throw new IOException(Messages.getString("FixedInput.Log.OnlyLocalFilesAreSupported")); //$NON-NLS-1$
 		}
 				
 		return new FileInputStream( fileObject.getName().getPathDecoded() );
