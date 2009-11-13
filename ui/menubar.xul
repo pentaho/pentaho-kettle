@@ -1,6 +1,6 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-align="vertical" >
-     <menubar>
+align="vertical" xmlns:pen="http://www.pentaho.org/2008/xul">
+     <menubar pen:parenttoouter="true">
           <menu value="file" label="%Spoon.Menu.File" accesskey="alt-f">
                <menupopup>
                     <menu value="file-new" acceltext="CTRL-N" accesskey="ctrl-n" label="%Spoon.Menu.File.New">
