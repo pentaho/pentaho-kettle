@@ -24,22 +24,17 @@ import java.util.Comparator;
 import org.apache.commons.vfs.FileContent;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
-import org.apache.commons.vfs.provider.FileNameParser;
-import org.apache.commons.vfs.provider.URLFileName;
 import org.apache.commons.vfs.provider.local.LocalFile;
-import org.apache.commons.vfs.provider.sftp.SftpFileNameParser;
-import org.jfree.util.Log;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.variables.VariableSpace;
-
-import com.jcraft.jsch.UserInfo;
+import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
+import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
 
 public class KettleVFS
 {
@@ -105,7 +100,7 @@ public class KettleVFS
 	            if (vfsFilename.startsWith(schemes[i]+":")) { //$NON-NLS-1$
 	              relativeFilename=false;
 	              // We have a VFS URL, load any options for the file system driver
-	              fsOptions = buildFsOptions(space, fsOptions, vfsFilename);
+	              fsOptions = buildFsOptions(space, fsOptions, vfsFilename, schemes[i]);
 	            }
 	        }
 	        
@@ -127,6 +122,7 @@ public class KettleVFS
 	                filename = vfsFilename;
 	            }
 	        }
+	        
 	        FileObject fileObject = null;
 	        
 	        if(fsOptions != null) {
@@ -142,160 +138,26 @@ public class KettleVFS
     	}
     }
     
-    private static class SimpleFileSystemConfigBuilder extends FileSystemConfigBuilder {
-      
-      private final static SimpleFileSystemConfigBuilder builder = new SimpleFileSystemConfigBuilder();
-      
-      public static SimpleFileSystemConfigBuilder getInstance()
-      {
-          return builder;
-      }
-      
-      protected SimpleFileSystemConfigBuilder() {
-        super();
-      }
-
-      @Override
-      protected Class getConfigClass() {
-          return SimpleFileSystemConfigBuilder.class;
-      }
-      
-      /**
-       * Publicly expose a generic way to set parameters
-       */
-      public void setParameter(FileSystemOptions opts, String name, Object value) {
-        this.setParam(opts, name, value);
-      }
-
-      /**
-       * Publicly expose a generic way to get parameters
-       */
-      @SuppressWarnings("unused")
-      public Object getParameter(FileSystemOptions opts, String name) {
-        return this.getParam(opts, name);
-      }
-      
-      /**
-       * Publicly expose a generic way to check for parameters
-       */
-      @SuppressWarnings("unused")
-      public boolean hasParameter(FileSystemOptions opts, String name) {
-        return this.hasParameter(opts, name);
-      }
-      
-    }
-    
-    private static FileSystemOptions buildFsOptions(VariableSpace varSpace, FileSystemOptions sourceOptions, String vfsFilename) {
-      return buildFsOptions(varSpace, sourceOptions, vfsFilename, true);
-    }
-    
-    private static FileSystemOptions buildFsOptions(VariableSpace varSpace, FileSystemOptions sourceOptions, String vfsFilename, boolean processAll) {
-      if(varSpace == null) {
+    private static FileSystemOptions buildFsOptions(VariableSpace varSpace, FileSystemOptions sourceOptions, String vfsFilename, String scheme) throws IOException {
+      if(varSpace == null || vfsFilename == null) {
         // We cannot extract settings from a non-existant variable space
         return null;
       }
       
-      SimpleFileSystemConfigBuilder configBuilder = SimpleFileSystemConfigBuilder.getInstance();
+      IKettleFileSystemConfigBuilder configBuilder = KettleFileSystemConfigBuilderFactory.getConfigBuilder(varSpace, scheme);
       
       FileSystemOptions fsOptions = (sourceOptions == null) ? new FileSystemOptions() : sourceOptions;
 
       String[] varList = varSpace.listVariables();
       
-      // Get scheme type
-      String scheme = vfsFilename.substring(0, vfsFilename.indexOf(":")); //$NON-NLS-1$
-      
-      
-      
-      // Handle parsing of parameters based on scheme types
-      if(scheme.equalsIgnoreCase("sftp")) { //$NON-NLS-1$
-        
-        for(String var : varList) {
-          if(var.startsWith("vfs.sftp")) { //$NON-NLS-1$
-            try{
-              // Add to properties file
-              
-              // Parse server name from vfsFilename
-              FileNameParser sftpFilenameParser = SftpFileNameParser.getInstance();
-              
-              URLFileName file = (URLFileName)sftpFilenameParser.parseUri(null, null, vfsFilename);
-              
-              // Match server name in variable name
-              if(!parameterContainsHost(var) || var.endsWith(file.getHostName())) {
-                // Parse parameter name
-                String parm = parseParameterName(var, "sftp"); //$NON-NLS-1$
-                
-                // If parameter is auth key passphrase, build UserInfo
-                if(parm.equalsIgnoreCase("authkeypassphrase")) { //$NON-NLS-1$
-                  PentahoUserInfo userInfo = new PentahoUserInfo(varSpace.getVariable(var));
-                  configBuilder.setParameter(fsOptions, UserInfo.class.getName(), userInfo);
-                } else if (parm.equalsIgnoreCase("identity")) { //$NON-NLS-1$
-                  File identityFile = new File(varSpace.getVariable(var));
-                  configBuilder.setParameter(fsOptions, "identities", new File[]{identityFile}); //$NON-NLS-1$
-                } else {
-                  configBuilder.setParameter(fsOptions, parm, varSpace.getVariable(var));
-                }
-              }
-            } catch (FileSystemException e) {
-              Log.error(Messages.getString("FileSystemOptions.Log.ErrorCreatingFileSystemOptions"), e); //$NON-NLS-1$
-            }
-          }
+      for(String var : varList) {
+        if(var.startsWith("vfs." + scheme)) { //$NON-NLS-1$
+          String param = parseParameterName(var, scheme);
+          configBuilder.setParameter(fsOptions, param, varSpace.getVariable(var), var, vfsFilename);
         }
-      } else if(scheme.equalsIgnoreCase("all")) { //$NON-NLS-1$
-
-        for(String var : varList) {
-          if(var.startsWith("vfs.all")) { //$NON-NLS-1$
-            // Add to properties file
-            String parm = parseParameterName(var, "all"); //$NON-NLS-1$
-            configBuilder.setParameter(fsOptions, parm, varSpace.getVariable(parm));
-          }
-        }        
       }
-      
-      // Load options for ALL vfs drivers
-      if(processAll) {
-        fsOptions = buildFsOptions(varSpace, fsOptions, "all:", false); //$NON-NLS-1$
-      }
-      
       return fsOptions;
     }
-    
-    private static class PentahoUserInfo implements UserInfo{
-      private String passphrase;
-      private String password;
-      
-      public PentahoUserInfo(String passphrase) {
-        this.passphrase = passphrase;
-      }
-      
-      @Override
-      public String getPassphrase() {
-        return passphrase; // Passphrase for the authentication key
-      }
-
-      @Override
-      public String getPassword() {
-        return password; // Appears to be unused in this usage
-      }
-
-      @Override
-      public boolean promptPassphrase(String arg0) {
-          return true;
-      }
-
-      @Override
-      public boolean promptPassword(String arg0) {
-        return false;  
-      }
-
-      @Override
-      public boolean promptYesNo(String arg0) {
-        return false;
-      }
-
-      @Override
-      public void showMessage(String arg0) {
-      }
-    };
     
     /**
      * Extract the FileSystemOptions parameter name from a Kettle variable
@@ -321,12 +183,6 @@ public class KettleVFS
       }
       
       return result;
-    }
-    
-    private static boolean parameterContainsHost(String parameter) {
-      // Test the number of '.' in the file. If there are more then two, then there is a host associated
-      // return parameter.matches("^(.*\\.){3}") ? true : false; //$NON-NLS-1$
-      return parameter.matches("^(.*\\..*){3,}") ? true : false; //$NON-NLS-1$
     }
     
     /**
