@@ -11,6 +11,7 @@
  
 package org.pentaho.di.trans.steps.uniquerowsbyhashset;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -77,14 +78,27 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface
 					stopAll();
 					return false;
 				}
+				if(data.sendDuplicateRows)
+				{
+					data.compareFields=data.compareFields==null?meta.getCompareFields()[i]:data.compareFields+","+meta.getCompareFields()[i];
+				}
 			}
+			if(data.sendDuplicateRows && !Const.isEmpty(meta.getErrorDescription())) 
+				data.realErrorDescription=environmentSubstitute(meta.getErrorDescription());
 		}
 		
 		if (isUniqueRow(r))
-		    putRow(data.outputRowMeta, r);
+			putRow(data.outputRowMeta, r);
 		else
-		    incrementLinesRejected();
-
+		{
+			 incrementLinesRejected();
+		    if(data.sendDuplicateRows) {
+			   // Simply add this row to the error row
+			   putError(getInputRowMeta(), r, 1, data.realErrorDescription,data.compareFields==""?null:data.compareFields, "UNRH001");
+		    }
+		}
+		
+		
         if (checkFeedback(getLinesRead())) 
         {
         	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "UniqueRowsByHashSet.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
@@ -101,6 +115,7 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 		    // Add init code here.
+			data.sendDuplicateRows=getStepMeta().getStepErrorMeta()!=null &&  meta.supportsErrorHandling();
 		    return true;
 		}
 		return false;

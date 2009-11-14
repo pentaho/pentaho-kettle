@@ -60,6 +60,9 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
     /**The fields to compare for double, null means all*/
     private boolean caseInsensitive[];
 
+    private boolean rejectDuplicateRow;
+    private String errorDescription;
+    
 	public UniqueRowsMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -112,13 +115,40 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
     {
         return compareFields;
     }
-    
+    /**
+     * @param rejectDuplicateRow The rejectDuplicateRow to set.
+     */
+    public void setRejectDuplicateRow(boolean rejectDuplicateRow)
+    {
+        this.rejectDuplicateRow = rejectDuplicateRow;
+    }
+	/**
+     * @return Returns the rejectDuplicateRow.
+     */
+    public boolean isRejectDuplicateRow()
+    {
+        return rejectDuplicateRow;
+    }
 	public void allocate(int nrfields)
 	{
 		compareFields = new String[nrfields];
         caseInsensitive = new boolean[nrfields];
 	}
-
+    /**
+     * @return Returns the errorDescription.
+     */
+    public String getErrorDescription()
+    {
+        return errorDescription;
+    }
+    
+    /**
+     * @param errorDescription The errorDescription to set.
+     */
+    public void setErrorDescription(String errorDescription)
+    {
+        this.errorDescription = errorDescription;
+    }
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
 	{
@@ -149,7 +179,9 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			countRows = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "count_rows")); //$NON-NLS-1$ //$NON-NLS-2$
 			countField = XMLHandler.getTagValue(stepnode, "count_field"); //$NON-NLS-1$
-
+			rejectDuplicateRow = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "reject_duplicate_row"));
+			errorDescription = XMLHandler.getTagValue(stepnode, "error_description"); //$NON-NLS-1$
+			
 			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
 			int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 			
@@ -174,6 +206,8 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		countRows=false;
 		countField=""; //$NON-NLS-1$
+		rejectDuplicateRow=false;
+		errorDescription=null;
 		
 		int nrfields = 0;
 		
@@ -212,7 +246,9 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 		retval.append("      "+XMLHandler.addTagValue("count_rows",  countRows)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("count_field", countField)); //$NON-NLS-1$ //$NON-NLS-2$
-
+		retval.append("      "+XMLHandler.addTagValue("reject_duplicate_row",  rejectDuplicateRow));
+		retval.append("      "+XMLHandler.addTagValue("error_description", errorDescription));
+		
 		retval.append("    <fields>"); //$NON-NLS-1$
 		for (int i=0;i<compareFields.length;i++)
 		{
@@ -233,6 +269,8 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			countRows  = rep.getStepAttributeBoolean(id_step, "count_rows"); //$NON-NLS-1$
 			countField = rep.getStepAttributeString (id_step, "count_fields"); //$NON-NLS-1$
+			rejectDuplicateRow  = rep.getStepAttributeBoolean(id_step, "reject_duplicate_row");
+			errorDescription = rep.getStepAttributeString (id_step, "error_description"); //$NON-NLS-1$
 			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 			
@@ -257,7 +295,9 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "count_rows",    countRows); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "count_fields",  countField); //$NON-NLS-1$
-
+			rep.saveStepAttribute(id_transformation, id_step, "reject_duplicate_row",    rejectDuplicateRow);
+			rep.saveStepAttribute(id_transformation, id_step, "error_description",  errorDescription);
+			
 			for (int i=0;i<compareFields.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", compareFields[i]); //$NON-NLS-1$
@@ -312,5 +352,8 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.caseInsensitive = caseInsensitive;
     }
-
+    public boolean supportsErrorHandling()
+    {
+        return isRejectDuplicateRow();
+    }
 }

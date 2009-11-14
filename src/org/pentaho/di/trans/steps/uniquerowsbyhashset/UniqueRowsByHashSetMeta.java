@@ -44,6 +44,9 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
     
 	/**The fields to compare for duplicates, null means all*/
 	private String compareFields[];
+	
+    private boolean rejectDuplicateRow;
+    private String errorDescription;
 
 	public UniqueRowsByHashSetMeta()
 	{
@@ -81,6 +84,36 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 		compareFields = new String[nrfields];
 	}
 
+    /**
+     * @param rejectDuplicateRow The rejectDuplicateRow to set.
+     */
+    public void setRejectDuplicateRow(boolean rejectDuplicateRow)
+    {
+        this.rejectDuplicateRow = rejectDuplicateRow;
+    }
+	/**
+     * @return Returns the rejectDuplicateRow.
+     */
+    public boolean isRejectDuplicateRow()
+    {
+        return rejectDuplicateRow;
+    }
+    
+    /**
+     * @param errorDescription The errorDescription to set.
+     */
+    public void setErrorDescription(String errorDescription)
+    {
+        this.errorDescription = errorDescription;
+    }
+	
+	/**
+	 * @return Returns the errorDescription.
+	 */
+	public String getErrorDescription()
+	{
+	    return errorDescription;
+	}
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
 	{
@@ -109,6 +142,9 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 		try
 		{
 		    storeValues = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "store_values")); //$NON-NLS-1$ //$NON-NLS-2$
+			rejectDuplicateRow = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "reject_duplicate_row"));
+			errorDescription = XMLHandler.getTagValue(stepnode, "error_description"); //$NON-NLS-1$
+			
 		    Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
 		    int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 			
@@ -130,6 +166,8 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 
 	public void setDefault()
 	{
+		rejectDuplicateRow=false;
+		errorDescription=null;
 		int nrfields = 0;
 		
 		allocate(nrfields);		
@@ -149,6 +187,8 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 		StringBuffer retval=new StringBuffer();
 
         retval.append("      "+XMLHandler.addTagValue("store_values",  storeValues)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("reject_duplicate_row",  rejectDuplicateRow));
+		retval.append("      "+XMLHandler.addTagValue("error_description", errorDescription));
 		retval.append("    <fields>"); //$NON-NLS-1$
 		for (int i=0;i<compareFields.length;i++)
 		{
@@ -167,6 +207,8 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 		try
 		{
             storeValues  = rep.getStepAttributeBoolean(id_step, "store_values"); //$NON-NLS-1$
+			rejectDuplicateRow  = rep.getStepAttributeBoolean(id_step, "reject_duplicate_row");
+			errorDescription = rep.getStepAttributeString (id_step, "error_description"); //$NON-NLS-1$
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 			
 			allocate(nrfields);
@@ -187,6 +229,8 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 	{
 		try
 		{
+			rep.saveStepAttribute(id_transformation, id_step, "reject_duplicate_row",    rejectDuplicateRow);
+			rep.saveStepAttribute(id_transformation, id_step, "error_description",  errorDescription);
 			for (int i=0;i<compareFields.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", compareFields[i]); //$NON-NLS-1$
@@ -224,4 +268,8 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 	{
 		return new UniqueRowsByHashSetData();
 	}
+    public boolean supportsErrorHandling()
+    {
+        return  isRejectDuplicateRow();
+    }
 }

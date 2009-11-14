@@ -29,6 +29,9 @@ public class UniqueRowsData extends BaseStepData implements StepDataInterface
 	public long	counter;
 	public Object[]	previous;
 	public int  fieldnrs[];
+    public String compareFields;
+    public String realErrorDescription;
+    public boolean sendDuplicateRows;
 	
 	/**
 	 * 
@@ -39,6 +42,9 @@ public class UniqueRowsData extends BaseStepData implements StepDataInterface
 
 		previous=null;
 		counter=0;
+		realErrorDescription=null;
+		compareFields=null;
+		sendDuplicateRows=false;
 	}
 
 }

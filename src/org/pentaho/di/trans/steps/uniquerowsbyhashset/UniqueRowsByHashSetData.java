@@ -25,6 +25,9 @@ public class UniqueRowsByHashSetData extends BaseStepData implements StepDataInt
     public RowMetaInterface inputRowMeta;
     public boolean storeValues;
 	public int  fieldnrs[];
+	public String compareFields;
+	public String realErrorDescription;
+	boolean sendDuplicateRows;
 	
 	public HashSet<RowKey> seen = new HashSet<RowKey>();
 	
@@ -35,6 +38,8 @@ public class UniqueRowsByHashSetData extends BaseStepData implements StepDataInt
 	
 	public void clearHashSet()
 	{
-	    seen.clear();
+		sendDuplicateRows=false;
+	    compareFields=null;
+	    realErrorDescription=null;
 	}
 }

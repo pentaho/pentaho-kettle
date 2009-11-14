@@ -11,6 +11,7 @@
  
 package org.pentaho.di.trans.steps.uniquerows;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -64,7 +65,6 @@ public class UniqueRows extends BaseStep implements StepInterface
 
 		if (first)
 		{
-            first=false;
             
             data.inputRowMeta = getInputRowMeta().clone();
             data.compareRowMeta = getInputRowMeta().clone();
@@ -89,7 +89,14 @@ public class UniqueRows extends BaseStep implements StepInterface
 				// Change the case insensitive flag...
 				//
                 data.compareRowMeta.getValueMeta(data.fieldnrs[i]).setCaseInsensitive(meta.getCaseInsensitive()[i]);
+                
+				if(data.sendDuplicateRows)
+				{
+					data.compareFields=data.compareFields==null?meta.getCompareFields()[i]:data.compareFields+","+meta.getCompareFields()[i];
+				}
 			}
+			if(data.sendDuplicateRows && !Const.isEmpty(meta.getErrorDescription())) 
+				data.realErrorDescription=environmentSubstitute(meta.getErrorDescription());
 		}
 		
 		boolean isEqual = false;
@@ -113,13 +120,17 @@ public class UniqueRows extends BaseStep implements StepInterface
 		else
 		{
 			data.counter++;
+			if(data.sendDuplicateRows && !first) 
+			{
+				putError(getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields==""?null:data.compareFields, "UNR001");
+			}
 		}
 
         if (checkFeedback(getLinesRead())) 
         {
         	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "UniqueRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
         }
-			
+		if(first) first=false;
 		return true;
 	}
 	
@@ -145,6 +156,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 		    // Add init code here.
+			data.sendDuplicateRows=getStepMeta().getStepErrorMeta()!=null && meta.supportsErrorHandling();
 		    return true;
 		}
 		return false;

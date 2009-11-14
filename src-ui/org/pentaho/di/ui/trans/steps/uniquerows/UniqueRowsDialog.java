@@ -38,6 +38,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -56,6 +57,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -82,6 +84,17 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 	private ColumnInfo[] colinf;
 	
     private Map<String, Integer> inputFields;
+	
+	private Label        wlRejectDuplicateRow;
+	private Button       wRejectDuplicateRow;
+	private FormData     fdlRejectDuplicateRow, fdRejectDuplicateRow;
+
+	private Label        wlErrorDesc;
+	private TextVar      wErrorDesc;
+	private FormData     fdlErrorDesc, fdErrorDesc;
+	
+	private Group wSettings;
+	private FormData fdSettings;
 
 	public UniqueRowsDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -137,6 +150,19 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
+		// ///////////////////////////////
+		// START OF Settings GROUP  //
+		///////////////////////////////// 
+
+		wSettings = new Group(shell, SWT.SHADOW_NONE);
+		props.setLook(wSettings);
+		wSettings.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.Settings.Label"));
+		
+		FormLayout SettingsgroupLayout = new FormLayout();
+		SettingsgroupLayout.marginWidth = 10;
+		SettingsgroupLayout.marginHeight = 10;
+		wSettings.setLayout(SettingsgroupLayout);
+		
 		wlCount=new Label(shell, SWT.RIGHT);
 		wlCount.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.Count.Label")); //$NON-NLS-1$
  		props.setLook(wlCount);
@@ -179,6 +205,59 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		fdCountField.right= new FormAttachment(100, 0);
 		wCountField.setLayoutData(fdCountField);
 		
+		wlRejectDuplicateRow=new Label(wSettings, SWT.RIGHT);
+		wlRejectDuplicateRow.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.RejectDuplicateRow.Label")); //$NON-NLS-1$
+ 		props.setLook(wlRejectDuplicateRow);
+		fdlRejectDuplicateRow=new FormData();
+		fdlRejectDuplicateRow.left = new FormAttachment(0, 0);
+		fdlRejectDuplicateRow.top  = new FormAttachment(wCountField, margin);
+		fdlRejectDuplicateRow.right= new FormAttachment(middle, -margin);
+		wlRejectDuplicateRow.setLayoutData(fdlRejectDuplicateRow);
+		
+		wRejectDuplicateRow=new Button(wSettings, SWT.CHECK );
+ 		props.setLook(wRejectDuplicateRow);
+		wRejectDuplicateRow.setToolTipText(BaseMessages.getString(PKG, "UniqueRowsDialog.RejectDuplicateRow.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		fdRejectDuplicateRow=new FormData();
+		fdRejectDuplicateRow.left = new FormAttachment(middle, 0);
+		fdRejectDuplicateRow.top  = new FormAttachment(wCountField, margin);
+		wRejectDuplicateRow.setLayoutData(fdRejectDuplicateRow);
+		wRejectDuplicateRow.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+					setErrorDesc();
+				}
+			}
+		);
+
+		wlErrorDesc=new Label(wSettings, SWT.LEFT);
+		wlErrorDesc.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.ErrorDescription.Label")); //$NON-NLS-1$
+ 		props.setLook(wlErrorDesc);
+		fdlErrorDesc=new FormData();
+		fdlErrorDesc.left = new FormAttachment(wRejectDuplicateRow, margin);
+		fdlErrorDesc.top  = new FormAttachment(wCountField, margin);
+		wlErrorDesc.setLayoutData(fdlErrorDesc);
+		wErrorDesc=new TextVar(transMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wErrorDesc);
+		wErrorDesc.addModifyListener(lsMod);
+		fdErrorDesc=new FormData();
+		fdErrorDesc.left = new FormAttachment(wlErrorDesc, margin);
+		fdErrorDesc.top  = new FormAttachment(wCountField, margin);
+		fdErrorDesc.right= new FormAttachment(100, 0);
+		wErrorDesc.setLayoutData(fdErrorDesc);
+		
+
+		fdSettings = new FormData();
+		fdSettings.left = new FormAttachment(0, margin);
+		fdSettings.top = new FormAttachment(wStepname, margin);
+		fdSettings.right = new FormAttachment(100, -margin);
+		wSettings.setLayoutData(fdSettings);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Settings GROUP
+		// ///////////////////////////////////////////////////////////		
+		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
@@ -195,7 +274,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wCountField, margin);
+		fdlFields.top  = new FormAttachment(wSettings, margin);
 		wlFields.setLayoutData(fdlFields);
 
 		final int FieldsRows=input.getCompareFields()==null?0:input.getCompareFields().length;
@@ -281,6 +360,11 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		return stepname;
 	}
+	private void setErrorDesc()
+	{
+		wlErrorDesc.setEnabled(wRejectDuplicateRow.getSelection());
+		wErrorDesc.setEnabled(wRejectDuplicateRow.getSelection());
+	}
 	protected void setComboBoxes()
     {
         // Something was changed in the row.
@@ -312,6 +396,9 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		wCount.setSelection(input.isCountRows());
 		if (input.getCountField()!=null) wCountField.setText(input.getCountField());
 		setFlags();
+		wRejectDuplicateRow.setSelection(input.isRejectDuplicateRow());
+		if (input.getErrorDescription()!=null) wErrorDesc.setText(input.getErrorDescription());
+		setErrorDesc();
 		for (int i=0;i<input.getCompareFields().length;i++)
 		{
 			TableItem item = wFields.table.getItem(i);
@@ -347,7 +434,8 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		input.setCountField(wCountField.getText());
 		input.setCountRows( wCount.getSelection() );
-		
+		input.setRejectDuplicateRow(wRejectDuplicateRow.getSelection());
+		input.setErrorDescription(wErrorDesc.getText());
 		stepname = wStepname.getText(); // return value
 		
         if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
