@@ -1,125 +1,128 @@
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-align="vertical" xmlns:pen="http://www.pentaho.org/2008/xul">
+<?xml version="1.0"?>
+<window id="label-test" title="Flow Test"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:pen="http://www.pentaho.org/2008/xul"
+    onload="spoon.onLoad()" >
      <menubar pen:parenttoouter="true">
-          <menu value="file" label="%Spoon.Menu.File" accesskey="alt-f">
+          <menu id="file" label="%Spoon.Menu.File" accesskey="alt-f">
                <menupopup>
-                    <menu value="file-new" acceltext="CTRL-N" accesskey="ctrl-n" label="%Spoon.Menu.File.New">
+                    <menu id="file-new" acceltext="CTRL-N" accesskey="ctrl-n" label="%Spoon.Menu.File.New">
 						<menupopup>
-							<menuitem value="file-new-trans" acceltext="CTRL-N"  accesskey="ctrl-n" label="%Spoon.Menu.Transformation"/>
-							<menuitem value="file-new-job" acceltext="CTRL-ALT-N"  accesskey="ctrl-alt-n" label="%Spoon.Menu.Job"/>
+							<menuitem id="file-new-trans" acceltext="CTRL-N"  accesskey="ctrl-n" label="%Spoon.Menu.Transformation" command="spoon.newTransFile()"/>
+							<menuitem id="file-new-job" acceltext="CTRL-ALT-N"  accesskey="ctrl-alt-n" label="%Spoon.Menu.Job" command="spoon.newJobFile()"/>
 						</menupopup>
                     </menu>
-                    <menuitem value="file-open" acceltext="CTRL-O"  accesskey="ctrl-o" label="%Spoon.Menu.File.Open"/>
-                    <menuitem value="file-open-from-vfs" label="%Spoon.Menu.File.OpenVFS"/>
-                    <menuitem value="file-import-from-xml" acceltext="CTRL-I"  accesskey="ctrl-i" label="%Spoon.Menu.File.Import"/>
-					<menuitem value="file-export-to-xml" label="%Spoon.Menu.File.Export"/>
-					<menuitem value="file-export-all-to-xml" label="%Spoon.Menu.File.ExportAll"/>
-                    <menuitem value="file-save" acceltext="CTRL-S"  accesskey="ctrl-s" label="%Spoon.Menu.File.Save"/>
-                    <menuitem value="file-save-as" label="%Spoon.Menu.File.SaveAs"/>
-                    <menuitem value="file-save-as-vfs" label="%Spoon.Menu.File.SaveAsVFS"/>
-                    <menuitem value="file-close" acceltext="CTRL-F4"  accesskey="ctrl-f4" label="%Spoon.Menu.File.Close"/>
+                    <menuitem id="file-open" acceltext="CTRL-O"  accesskey="ctrl-o" label="%Spoon.Menu.File.Open" command="spoon.openFile()"/>
+                    <menuitem id="file-open-from-vfs" label="%Spoon.Menu.File.OpenVFS" command="spoon.openFileVFSFile()"/>
+                    <menuitem id="file-import-from-xml" acceltext="CTRL-I"  accesskey="ctrl-i" label="%Spoon.Menu.File.Import" command="spoon.importFile()"/>
+					<menuitem id="file-export-to-xml" label="%Spoon.Menu.File.Export" command="spoon.exportXMLFile()"/>
+					<menuitem id="file-export-all-to-xml" label="%Spoon.Menu.File.ExportAll" command="spoon.exportAllXMLFile()"/>
+                    <menuitem id="file-save" acceltext="CTRL-S"  accesskey="ctrl-s" label="%Spoon.Menu.File.Save" command="spoon.saveFile()"/>
+                    <menuitem id="file-save-as" label="%Spoon.Menu.File.SaveAs" command="spoon.saveFileAs()"/>
+                    <menuitem id="file-save-as-vfs" label="%Spoon.Menu.File.SaveAsVFS" command="spoon.saveXMLFileToVfs()"/>
+                    <menuitem id="file-close" acceltext="CTRL-F4"  accesskey="ctrl-f4" label="%Spoon.Menu.File.Close" command="spoon.closeFile()"/>
 					<menuseparator/>
-                    <menuitem value="file-print" label="%Spoon.Menu.File.Print"/>
+                    <menuitem id="file-print" label="%Spoon.Menu.File.Print" command="spoon.printFile()"/>
 					<menuseparator/>
-                    <menuitem value="file-quit" label="%Spoon.Menu.File.Quit"/>
-					<menuseparator value="file-last-separator" />
+                    <menuitem id="file-quit" label="%Spoon.Menu.File.Quit" command="spoon.quitFile()"/>
+					<menuseparator id="file-last-separator" />
                </menupopup>
           </menu>
-          <menu value="edit" label="%Spoon.Menu.Edit">
+          <menu id="edit" label="%Spoon.Menu.Edit">
                <menupopup>
-                    <menuitem value="edit-undo" acceltext="CTRL-Z"  accesskey="ctrl-z" label="%Spoon.Menu.Undo.NotAvailable"/>
-                    <menuitem value="edit-redo" acceltext="CTRL-Y"  accesskey="ctrl-y" label="%Spoon.Menu.Redo.NotAvailable"/>
+                    <menuitem id="edit-undo" acceltext="CTRL-Z"  accesskey="ctrl-z" label="%Spoon.Menu.Undo.NotAvailable" command="spoon.undoAction()"/>
+                    <menuitem id="edit-redo" acceltext="CTRL-Y"  accesskey="ctrl-y" label="%Spoon.Menu.Redo.NotAvailable" command="spoon.redoAction()"/>
 					<menuseparator/>
-                    <menuitem value="edit-search-metadata" acceltext="CTRL-F"  accesskey="ctrl-f" label="%Spoon.Menu.Edit.Search"/>
-                    <menuitem value="edit-set-env-vars" acceltext="CTRL-ALT-J"  accesskey="ctrl-alt-j" label="%Spoon.Menu.Edit.Variables"/>
-                    <menuitem value="edit-show-env-vars" acceltext="CTRL-L"  accesskey="ctrl-l" label="%Spoon.Menu.Edit.ShowVariables"/>
+                    <menuitem id="edit-search-metadata" acceltext="CTRL-F"  accesskey="ctrl-f" label="%Spoon.Menu.Edit.Search" command="spoon.searchMetaData()"/>
+                    <menuitem id="edit-set-env-vars" acceltext="CTRL-ALT-J"  accesskey="ctrl-alt-j" label="%Spoon.Menu.Edit.Variables" command="spoon.setVariables()"/>
+                    <menuitem id="edit-show-env-vars" acceltext="CTRL-L"  accesskey="ctrl-l" label="%Spoon.Menu.Edit.ShowVariables" command="spoon.showVariables()"/>
 					<menuseparator/> 
-				    <menuitem value="edit-show-arguments" acceltext="CTRL-ALT-U"  accesskey="ctrl-alt-u" label="%Spoon.Menu.Edit.ShowArguments"/>
+				    <menuitem id="edit-show-arguments" acceltext="CTRL-ALT-U"  accesskey="ctrl-alt-u" label="%Spoon.Menu.Edit.ShowArguments" command="spoon.showArguments()"/>
 					<menuseparator/>
-                    <menuitem value="edit-clear-selection" acceltext="ESC"  accesskey="esc" label="%Spoon.Menu.Edit.ClearSelection"/>
-                    <menuitem value="edit-select-all" acceltext="CTRL-A"  accesskey="ctrl-a" label="%Spoon.Menu.Edit.SelectAllSteps"/>
+                    <menuitem id="edit-clear-selection" acceltext="ESC"  accesskey="esc" label="%Spoon.Menu.Edit.ClearSelection" command="spoon.editUnselectAll()"/>
+                    <menuitem id="edit-select-all" acceltext="CTRL-A"  accesskey="ctrl-a" label="%Spoon.Menu.Edit.SelectAllSteps" command="spoon.editSelectAll()"/>
 					<menuseparator/>
-                    <menuitem value="edit-copy-steps" acceltext="CTRL-C"  accesskey="ctrl-c" label="%Spoon.Menu.Edit.CopyToClipboard"/>
-                    <menuitem value="edit-paste-steps" acceltext="CTRL-V"  accesskey="ctrl-v" label="%Spoon.Menu.Edit.PasteFromClipboard"/>
+                    <menuitem id="edit-copy-steps" acceltext="CTRL-C"  accesskey="ctrl-c" label="%Spoon.Menu.Edit.CopyToClipboard" command="spoon.copySteps()"/>
+                    <menuitem id="edit-paste-steps" acceltext="CTRL-V"  accesskey="ctrl-v" label="%Spoon.Menu.Edit.PasteFromClipboard" command="spoon.pasteSteps()"/>
 					<menuseparator/>
-                    <menuitem value="explore-database" label="%Spoon.Menu.ExploreConnection"/>
+                    <menuitem id="explore-database" label="%Spoon.Menu.ExploreConnection"/>
 					<menuseparator/>
-                    <menuitem value="edit-options" label="%Spoon.Menu.Edit.Options"/>
+                    <menuitem id="edit-options" label="%Spoon.Menu.Edit.Options" command="spoon.editOptions()"/>
                </menupopup>
           </menu>
-          <menu value="view" label="%Spoon.Menu.View">
+          <menu id="view" label="%Spoon.Menu.View">
                <menupopup>
-                    <menuitem value="view-zoom-in" acceltext="PAGE-UP"  accesskey="pageup" label="%Spoon.Menu.View.ZoomIn"/>
-                    <menuitem value="view-zoom-out" acceltext="PAGE-DOWN"  accesskey="pagedown" label="%Spoon.Menu.View.ZoomOut"/>
+                    <menuitem id="view-zoom-in" acceltext="PAGE-UP"  accesskey="pageup" label="%Spoon.Menu.View.ZoomIn" command="spoon.zoomIn()"/>
+                    <menuitem id="view-zoom-out" acceltext="PAGE-DOWN"  accesskey="pagedown" label="%Spoon.Menu.View.ZoomOut" command="spoon.zoomOut()"/>
 					<menuseparator/>
-                    <menuitem value="view-zoom-100pct" acceltext="HOME"  accesskey="home" label="%Spoon.Menu.View.Zoom100"/>
+                    <menuitem id="view-zoom-100pct" acceltext="HOME"  accesskey="home" label="%Spoon.Menu.View.Zoom100" command="spoon.zoom100Percent()"/>
                </menupopup>
           </menu>
-          <menu value="repository" label="%Spoon.Menu.Repository">
+          <menu id="repository" label="%Spoon.Menu.Repository">
                <menupopup>
-                    <menuitem value="repository-connect" acceltext="CTRL-R"  accesskey="ctrl-r" label="%Spoon.Menu.Repository.ConnectToRepository"/>
-                    <menuitem value="repository-disconnect" acceltext="CTRL-D"  accesskey="ctrl-d" disabled="true" label="%Spoon.Menu.Repository.DisconnectRepository"/>
-                    <menuitem value="repository-explore" acceltext="CTRL-E"  accesskey="ctrl-e" disabled="true" label="%Spoon.Menu.Repository.ExploreRepository"/>
+                    <menuitem id="repository-connect" acceltext="CTRL-R"  accesskey="ctrl-r" label="%Spoon.Menu.Repository.ConnectToRepository" command="spoon.openRepository()"/>
+                    <menuitem id="repository-disconnect" acceltext="CTRL-D"  accesskey="ctrl-d" disabled="true" label="%Spoon.Menu.Repository.DisconnectRepository" command="spoon.closeRepository()"/>
+                    <menuitem id="repository-explore" acceltext="CTRL-E"  accesskey="ctrl-e" disabled="true" label="%Spoon.Menu.Repository.ExploreRepository" command="spoon.exploreRepository()"/>
 					<menuseparator/>
-                    <menuitem value="repository-edit-user" acceltext="CTRL-U"  accesskey="ctrl-u" disabled="true" label="%Spoon.Menu.Repository.EditCurrentUser"/>
+                    <menuitem id="repository-edit-user" acceltext="CTRL-U"  accesskey="ctrl-u" disabled="true" label="%Spoon.Menu.Repository.EditCurrentUser" command="spoon.editRepositoryUser()"/>
                </menupopup>
 		</menu>
-          <menu value="trans" label="%Spoon.Menu.Transformation">
+          <menu id="trans" label="%Spoon.Menu.Transformation">
                <menupopup>
-                    <menuitem value="trans-run" acceltext="F9"  accesskey="f9" label="%Spoon.Menu.Transformation.Run"/>
-                    <menuitem value="trans-preview" acceltext="F10"  accesskey="f10" label="%Spoon.Menu.Transformation.Preview"/>
-                    <menuitem value="trans-debug" acceltext="SHIFT-F10"  accesskey="shift-f10" label="%Spoon.Menu.Transformation.Debug"/>
-                    <menuitem value="trans-replay" acceltext="SHIFT-F11"  accesskey="shift-f10" label="%Spoon.Menu.Transformation.Replay"/>
-                    <menuitem value="trans-verify" acceltext="F11"  accesskey="f11" label="%Spoon.Menu.Transformation.Verify"/>
-                    <menuitem value="trans-impact" label="%Spoon.Menu.Transformation.Impact"/>
-                    <menuitem value="trans-get-sql" label="%Spoon.Menu.Transformation.GetSQL"/>
+                    <menuitem id="trans-run" acceltext="F9"  accesskey="f9" label="%Spoon.Menu.Transformation.Run" command="spoon.runFile()"/>
+                    <menuitem id="trans-preview" acceltext="F10"  accesskey="f10" label="%Spoon.Menu.Transformation.Preview" command="spoon.previewFile()"/>
+                    <menuitem id="trans-debug" acceltext="SHIFT-F10"  accesskey="shift-f10" label="%Spoon.Menu.Transformation.Debug" command="spoon.debugFile()"/>
+                    <menuitem id="trans-replay" acceltext="SHIFT-F11"  accesskey="shift-f10" label="%Spoon.Menu.Transformation.Replay"/>
+                    <menuitem id="trans-verify" acceltext="F11"  accesskey="f11" label="%Spoon.Menu.Transformation.Verify"/>
+                    <menuitem id="trans-impact" label="%Spoon.Menu.Transformation.Impact" command="spoon.analyseImpact()"/>
+                    <menuitem id="trans-get-sql" label="%Spoon.Menu.Transformation.GetSQL" command="spoon.getSQL()"/>
 					<menuseparator/>
-                    <menuitem value="trans-last-impact" acceltext="F6"  accesskey="f6" label="%Spoon.Menu.Transformation.ShowLastImpactAnalyses"/>
-                    <menuitem value="trans-last-verify" acceltext="F7"  accesskey="f7" label="%Spoon.Menu.Transformation.ShowLastVerifyResults"/>
-                    <menuitem value="trans-last-preview" acceltext="F8"  accesskey="f8" label="%Spoon.Menu.Transformation.ShowLastPreviewResults"/>
+                    <menuitem id="trans-last-impact" acceltext="F6"  accesskey="f6" label="%Spoon.Menu.Transformation.ShowLastImpactAnalyses" command="spoon.analyseImpact()"/>
+                    <menuitem id="trans-last-verify" acceltext="F7"  accesskey="f7" label="%Spoon.Menu.Transformation.ShowLastVerifyResults"/>
+                    <menuitem id="trans-last-preview" acceltext="F8"  accesskey="f8" label="%Spoon.Menu.Transformation.ShowLastPreviewResults"/>
 					<menuseparator/>
-                    <menuitem value="trans-copy" label="%Spoon.Menu.Transformation.CopyTransformationToClipboard"/>
-                    <menuitem value="trans-paste" label="%Spoon.Menu.Transformation.PasteTransformationFromClipboard"/>
-                    <menuitem value="trans-copy-image" acceltext="CTRL-ALT-I"  accesskey="ctrl-alt-i" label="%Spoon.Menu.Transformation.CopyTransformationImageClipboard"/>
+                    <menuitem id="trans-copy" label="%Spoon.Menu.Transformation.CopyTransformationToClipboard" command="spoon.copyTransformation()"/>
+                    <menuitem id="trans-paste" label="%Spoon.Menu.Transformation.PasteTransformationFromClipboard" command="spoon.pasteTransformation()"/>
+                    <menuitem id="trans-copy-image" acceltext="CTRL-ALT-I"  accesskey="ctrl-alt-i" label="%Spoon.Menu.Transformation.CopyTransformationImageClipboard" command="spoon.copyTransformationImage()"/>
 					<menuseparator/>
-                    <menuitem value="trans-settings" acceltext="CTRL-T"  accesskey="ctrl-t" label="%Spoon.Menu.Transformation.Settings"/>
+                    <menuitem id="trans-settings" acceltext="CTRL-T"  accesskey="ctrl-t" label="%Spoon.Menu.Transformation.Settings" command="spoon.editTransformationProperties()"/>
                </menupopup>
           </menu>
-          <menu value="job" label="%Spoon.Menu.Job">
+          <menu id="job" label="%Spoon.Menu.Job">
                <menupopup>
-                    <menuitem value="job-run" acceltext="F9"  accesskey="f9" disabled="true" label="%Spoon.Menu.Job.Run"/>
+                    <menuitem id="job-run" acceltext="F9"  accesskey="f9" disabled="true" label="%Spoon.Menu.Job.Run" command="spoon.runFile()"/>
 					<menuseparator/>
-                    <menuitem value="job-copy" label="%Spoon.Menu.Job.CopyToClipboard"/>
-                    <menuitem value="job-paste" label="%Spoon.Menu.Job.PasteJobFromClipboard"/>
+                    <menuitem id="job-copy" label="%Spoon.Menu.Job.CopyToClipboard" command="spoon.copyJob()"/>
+                    <menuitem id="job-paste" label="%Spoon.Menu.Job.PasteJobFromClipboard" command="spoon.pasteJob()"/>
 					<menuseparator/>
-                    <menuitem value="job-settings" acceltext="CTRL-J"  accesskey="ctrl-j" label="%Spoon.Menu.Job.Settings"/>
+                    <menuitem id="job-settings" acceltext="CTRL-J"  accesskey="ctrl-j" label="%Spoon.Menu.Job.Settings" command="spoon.editJobProperties()"/>
                </menupopup>
 		</menu>
-          <menu value="wizard" label="%Spoon.Menu.Wizard">
+          <menu id="wizard" label="%Spoon.Menu.Wizard">
                <menupopup>
-                    <menuitem value="wizard-connection" acceltext="F3"  accesskey="f3" label="%Spoon.Menu.Wizard.CreateDatabaseConnectionWizard"/>
-                    <menuitem value="wizard-copy-table" acceltext="F4"  accesskey="f4" label="%Spoon.Menu.Wizard.CopyTableWizard"/>
-                    <menuitem value="wizard-copy-tables" acceltext="CTRL-F10"  accesskey="ctrl-f10" label="%Spoon.Menu.Wizard.CopyTables"/>
+                    <menuitem id="wizard-connection" acceltext="F3"  accesskey="f3" label="%Spoon.Menu.Wizard.CreateDatabaseConnectionWizard" command="spoon.createDatabaseWizard()"/>
+                    <menuitem id="wizard-copy-table" acceltext="F4"  accesskey="f4" label="%Spoon.Menu.Wizard.CopyTableWizard" command="spoon.copyTableWizard()"/>
+                    <menuitem id="wizard-copy-tables" acceltext="CTRL-F10"  accesskey="ctrl-f10" label="%Spoon.Menu.Wizard.CopyTables" command="spoon.ripDBWizard()"/>
                </menupopup>
           </menu>
-          <menu value="help" label="%Spoon.Menu.Help">
+          <menu id="help" label="%Spoon.Menu.Help">
                <menupopup>
-                    <menuitem value="help-tip" label="%Spoon.Menu.Help.Tip"/>
-                    <menuitem value="help-welcome" label="%Spoon.Menu.Help.Welcome"/>
+                    <menuitem id="help-tip" label="%Spoon.Menu.Help.Tip" command="spoon.showTips()"/>
+                    <menuitem id="help-welcome" label="%Spoon.Menu.Help.Welcome" command="spoon.showWelcomePage()"/>
 					<menuseparator/>
-                    <menuitem value="help-step-plugins" label="%Spoon.Menu.StepPlugins"/>
-                    <menuitem value="help-jobentry-plugins" label="%Spoon.Menu.JobEntryPlugins"/>
+                    <menuitem id="help-step-plugins" label="%Spoon.Menu.StepPlugins" command="spoon.helpShowStepPlugins()"/>
+                    <menuitem id="help-jobentry-plugins" label="%Spoon.Menu.JobEntryPlugins" command="spoon.helpShowJobEntryPlugins()"/>
 					<menuseparator/>
-                    <menuitem value="help-about" label="%Spoon.Menu.About"/>
+                    <menuitem id="help-about" label="%Spoon.Menu.About" command="spoon.helpAbout()"/>
                </menupopup>
           </menu>
      </menubar>
 	 
 	 <toolbox>
 		<toolbar id="nav-toolbar" mode="full">
-			<toolbarbutton value="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
+			<toolbarbutton id="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
 			<toolbarseparator />
-			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
+			<toolbarbutton id="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
 		</toolbar>
 	</toolbox>
 

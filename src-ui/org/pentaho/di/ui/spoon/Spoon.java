@@ -191,7 +191,6 @@ import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.job.dialog.JobLoadProgressDialog;
 import org.pentaho.di.ui.job.dialog.JobSaveProgressDialog;
@@ -216,14 +215,17 @@ import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
 import org.pentaho.di.ui.util.ThreadGuiResources;
 import org.pentaho.di.version.BuildVersion;
+import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.containers.XulMenubar;
+import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
-import org.pentaho.xul.menu.XulMenu;
-import org.pentaho.xul.menu.XulMenuBar;
-import org.pentaho.xul.menu.XulMenuItem;
-import org.pentaho.xul.menu.XulPopupMenu;
+//import org.pentaho.xul.menu.XulMenu;
+//import org.pentaho.xul.menu.XulMenuBar;
+//import org.pentaho.xul.menu.XulMenuItem;
+//import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.menu.Menu;
-import org.pentaho.xul.swt.menu.MenuChoice;
-import org.pentaho.xul.swt.menu.PopupMenu;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabListener;
 import org.pentaho.xul.swt.tab.TabSet;
@@ -239,7 +241,7 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
-public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver, LifeEventHandler {
+public class Spoon extends XulEventSourceAdapter implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver, LifeEventHandler {
 	public static final String				STRING_TRANSFORMATIONS	= Messages.getString("Spoon.STRING_TRANSFORMATIONS");	// Transformations
 	public static final String				STRING_JOBS				= Messages.getString("Spoon.STRING_JOBS");				// Jobs
 	public static final String				STRING_BUILDING_BLOCKS	= Messages.getString("Spoon.STRING_BUILDING_BLOCKS");	// Building blocks
@@ -298,7 +300,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 * This contains a map with all the unnamed transformation (just a filename)
 	 */
 
-	private XulMenuBar						menuBar;
+	private XulMenubar						menuBar;
 
 	private ToolItem						view, design, expandAll, collapseAll;
 
@@ -306,6 +308,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private Text                            selectionFilter;
 
 	private org.eclipse.swt.widgets.Menu	fileMenus;
+	
+	private static final String       MAIN_MENU_XUL     = "/Users/wseyler/Documents/workspace-trunk/Kettle 3.2.3-agile-bi/ui/menubar.xul"; //$NON-NLS-1$
 
 	private static final String				APPL_TITLE				= APP_NAME;
 
@@ -603,10 +607,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					key = new String(new char[] { c });
 				}
 
-				menuBar.handleAccessKey(key, alt, ctrl);
+//				menuBar.handleAccessKey(key, alt, ctrl);
 			}
 		};
 
+		try {
+      final SwtXulLoader loader = new SwtXulLoader();
+      loader.setOuterContext(shell);
+      XulDomContainer mainSpoonContainer = loader.loadXul(MAIN_MENU_XUL);
+    } catch (IllegalArgumentException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    } catch (XulException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
 		// addBar();
 
 		initFileMenu();
@@ -631,7 +646,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			shell.setMaximized(true); // Default = maximized!
 		}
 
-		addMenu();
+//		addMenu();
 		addTree();
 		// addCoreObjectsExpandBar();
 		addTabs();
@@ -708,7 +723,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return staticSpoon;
 	}
 
-	public XulMenuBar getMenuBar() {
+	public XulMenubar getMenuBar() {
 		return menuBar;
 	}
 
@@ -1007,46 +1022,46 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		display.sleep();
 	}
 
-	public void addMenuListeners() {
-		try {
-			// first get the XML document
-			URL url = XulHelper.getAndValidate(XUL_FILE_MENU_PROPERTIES);
-			Properties props = new Properties();
-			props.load(url.openStream());
-			String ids[] = menuBar.getMenuItemIds();
-			for (int i = 0; i < ids.length; i++) {
-				String methodName = (String) props.get(ids[i]);
-				if (methodName != null) {
-					menuBar.addMenuListener(ids[i], this, methodName);
-					// toolbar.addMenuListener(ids[i], this, methodName);
-
-				}
-			}
-			for (String id : menuMap.keySet()) {
-				PopupMenu menu = (PopupMenu) menuMap.get(id);
-				ids = menu.getMenuItemIds();
-				for (int i = 0; i < ids.length; i++) {
-					String methodName = (String) props.get(ids[i]);
-					if (methodName != null) {
-						menu.addMenuListener(ids[i], this, methodName);
-					}
-				}
-				for (int i = 0; i < menuListeners.size(); i++) {
-					Object info[] = menuListeners.get(i);
-					menu.addMenuListener((String) info[0], info[1], (String) info[2]);
-				}
-			}
-
-			// now apply any overrides
-			for (int i = 0; i < menuListeners.size(); i++) {
-				Object info[] = menuListeners.get(i);
-				menuBar.addMenuListener((String) info[0], info[1], (String) info[2]); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENU_PROPERTIES), new Exception(t));
-		}
-	}
+//	public void addMenuListeners() {
+//		try {
+//			// first get the XML document
+//			URL url = XulHelper.getAndValidate(XUL_FILE_MENU_PROPERTIES);
+//			Properties props = new Properties();
+//			props.load(url.openStream());
+//			String ids[] = menuBar.getMenuItemIds();
+//			for (int i = 0; i < ids.length; i++) {
+//				String methodName = (String) props.get(ids[i]);
+//				if (methodName != null) {
+//					menuBar.addMenuListener(ids[i], this, methodName);
+//					// toolbar.addMenuListener(ids[i], this, methodName);
+//
+//				}
+//			}
+//			for (String id : menuMap.keySet()) {
+//				PopupMenu menu = (PopupMenu) menuMap.get(id);
+//				ids = menu.getMenuItemIds();
+//				for (int i = 0; i < ids.length; i++) {
+//					String methodName = (String) props.get(ids[i]);
+//					if (methodName != null) {
+//						menu.addMenuListener(ids[i], this, methodName);
+//					}
+//				}
+//				for (int i = 0; i < menuListeners.size(); i++) {
+//					Object info[] = menuListeners.get(i);
+//					menu.addMenuListener((String) info[0], info[1], (String) info[2]);
+//				}
+//			}
+//
+//			// now apply any overrides
+//			for (int i = 0; i < menuListeners.size(); i++) {
+//				Object info[] = menuListeners.get(i);
+//				menuBar.addMenuListener((String) info[0], info[1], (String) info[2]); //$NON-NLS-1$ //$NON-NLS-2$
+//			}
+//		} catch (Throwable t) {
+//			t.printStackTrace();
+//			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENU_PROPERTIES), new Exception(t));
+//		}
+//	}
 
 	public void undoAction() {
 		undoAction(getActiveUndoInterface());
@@ -1077,44 +1092,44 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	public void addMenu() {
-
-		if (menuBar != null && !menuBar.isDisposed()) {
-			menuBar.dispose();
-		}
-
-		try {
-			menuBar = XulHelper.createMenuBar(XUL_FILE_MENUBAR, shell, new XulMessages());
-			List<String> ids = new ArrayList<String>();
-			ids.add("trans-class");
-			ids.add("trans-class-new");
-			ids.add("job-class");
-			ids.add("trans-hop-class");
-			ids.add("database-class");
-			ids.add("partition-schema-class");
-			ids.add("cluster-schema-class");
-			ids.add("slave-cluster-class");
-			ids.add("trans-inst");
-			ids.add("job-inst");
-			ids.add("step-plugin");
-			ids.add("database-inst");
-			ids.add("step-inst");
-			ids.add("job-entry-copy-inst");
-			ids.add("trans-hop-inst");
-			ids.add("partition-schema-inst");
-			ids.add("cluster-schema-inst");
-			ids.add("slave-server-inst");
-
-			this.menuMap = XulHelper.createPopupMenus(XUL_FILE_MENUS, shell, new XulMessages(), ids);// createMenuBarFromXul();
-		} catch (Throwable t) {
-			t.printStackTrace();
-			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS), new Exception(t));
-		}
-
-		addMenuListeners();
-		addMenuLast();
-
-	}
+//	public void addMenu() {
+//
+//		if (menuBar != null && !menuBar.isDisposed()) {
+//			menuBar.dispose();
+//		}
+//
+//		try {
+//			menuBar = XulHelper.createMenuBar(XUL_FILE_MENUBAR, shell, new XulMessages());
+//			List<String> ids = new ArrayList<String>();
+//			ids.add("trans-class");
+//			ids.add("trans-class-new");
+//			ids.add("job-class");
+//			ids.add("trans-hop-class");
+//			ids.add("database-class");
+//			ids.add("partition-schema-class");
+//			ids.add("cluster-schema-class");
+//			ids.add("slave-cluster-class");
+//			ids.add("trans-inst");
+//			ids.add("job-inst");
+//			ids.add("step-plugin");
+//			ids.add("database-inst");
+//			ids.add("step-inst");
+//			ids.add("job-entry-copy-inst");
+//			ids.add("trans-hop-inst");
+//			ids.add("partition-schema-inst");
+//			ids.add("cluster-schema-inst");
+//			ids.add("slave-server-inst");
+//
+//			this.menuMap = XulHelper.createPopupMenus(XUL_FILE_MENUS, shell, new XulMessages(), ids);// createMenuBarFromXul();
+//		} catch (Throwable t) {
+//			t.printStackTrace();
+//			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS), new Exception(t));
+//		}
+//
+//		addMenuListeners();
+//		addMenuLast();
+//
+//	}
 
 	public void executeTransformation() {
 		executeTransformation(getActiveTransformation(), true, false, false, false, false, null, false);
@@ -1190,55 +1205,55 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	public void addMenuLast() {
-
-		XulMenuItem sep = menuBar.getSeparatorById("file-last-separator"); //$NON-NLS-1$
-		XulMenu msFile = null;
-		if (sep != null) {
-			msFile = sep.getMenu(); //$NON-NLS-1$
-		}
-		if (msFile == null || sep == null) {
-			// The menu system has been altered and we can't display the last
-			// used files
-			return;
-		}
-		int idx = msFile.indexOf(sep);
-		int max = msFile.getItemCount();
-		// Remove everything until end...
-		for (int i = max - 1; i > idx; i--) {
-			XulMenuItem mi = msFile.getItem(i);
-			msFile.remove(mi);
-			mi.dispose();
-		}
-
-		// Previously loaded files...
-		List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
-		for (int i = 0; i < lastUsedFiles.size(); i++) {
-			final LastUsedFile lastUsedFile = lastUsedFiles.get(i);
-
-			char chr = (char) ('1' + i);
-			String accessKey = "ctrl-" + chr; //$NON-NLS-1$
-			String accessText = "CTRL-" + chr; //$NON-NLS-1$
-			String text = lastUsedFile.toString();
-			String id = "last-file-" + i; //$NON-NLS-1$
-
-			if (i > 9) {
-				accessKey = null;
-				accessText = null;
-			}
-
-			MenuChoice miFileLast = new MenuChoice(msFile, text, id, accessText, accessKey, MenuChoice.TYPE_PLAIN, null);
-
-			if (lastUsedFile.isTransformation()) {
-				miFileLast.setImage(GUIResource.getInstance().getImageTransGraph());
-			} else if (lastUsedFile.isJob()) {
-				miFileLast.setImage(GUIResource.getInstance().getImageJobGraph());
-			}
-
-			menuBar.addMenuListener(id, this, "lastFileSelect"); //$NON-NLS-1$
-		}
-
-	}
+//	public void addMenuLast() {
+//
+//		XulMenuItem sep = menuBar.getSeparatorById("file-last-separator"); //$NON-NLS-1$
+//		XulMenu msFile = null;
+//		if (sep != null) {
+//			msFile = sep.getMenu(); //$NON-NLS-1$
+//		}
+//		if (msFile == null || sep == null) {
+//			// The menu system has been altered and we can't display the last
+//			// used files
+//			return;
+//		}
+//		int idx = msFile.indexOf(sep);
+//		int max = msFile.getItemCount();
+//		// Remove everything until end...
+//		for (int i = max - 1; i > idx; i--) {
+//			XulMenuItem mi = msFile.getItem(i);
+//			msFile.remove(mi);
+//			mi.dispose();
+//		}
+//
+//		// Previously loaded files...
+//		List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
+//		for (int i = 0; i < lastUsedFiles.size(); i++) {
+//			final LastUsedFile lastUsedFile = lastUsedFiles.get(i);
+//
+//			char chr = (char) ('1' + i);
+//			String accessKey = "ctrl-" + chr; //$NON-NLS-1$
+//			String accessText = "CTRL-" + chr; //$NON-NLS-1$
+//			String text = lastUsedFile.toString();
+//			String id = "last-file-" + i; //$NON-NLS-1$
+//
+//			if (i > 9) {
+//				accessKey = null;
+//				accessText = null;
+//			}
+//
+//			MenuChoice miFileLast = new MenuChoice(msFile, text, id, accessText, accessKey, MenuChoice.TYPE_PLAIN, null);
+//
+//			if (lastUsedFile.isTransformation()) {
+//				miFileLast.setImage(GUIResource.getInstance().getImageTransGraph());
+//			} else if (lastUsedFile.isJob()) {
+//				miFileLast.setImage(GUIResource.getInstance().getImageJobGraph());
+//			}
+//
+//			menuBar.addMenuListener(id, this, "lastFileSelect"); //$NON-NLS-1$
+//		}
+//
+//	}
 
 	public void lastFileSelect(String id) {
 
@@ -1276,7 +1291,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			try {
 				RepositoryMeta meta = (rep == null ? null : rep.getRepositoryInfo());
 				loadLastUsedFile(lastUsedFile, meta);
-				addMenuLast();
+//				addMenuLast();
 				refreshHistory();
 			} catch (KettleException ke) {
 				// "Error loading transformation", "I was unable to load this
@@ -2236,26 +2251,27 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				spoonMenu = (Menu) menuMap.get("step-plugin");
 			}
 
-			else if (selection instanceof DatabaseMeta) {
-				spoonMenu = (PopupMenu) menuMap.get("database-inst");
-				// disable for now if the connection is an SAP R/3 type of database...
-				//
-				XulMenuItem item = ((XulPopupMenu) spoonMenu).getMenuItemById("database-inst-explore");
-				if (item != null) {
-					final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
-					if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SAPR3)
-						item.setEnabled(false);
-				}
-				item = ((XulPopupMenu) spoonMenu).getMenuItemById("database-inst-clear-cache");
-				if (item != null) {
-					final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-					item.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache") + databaseMeta.getName());// Clear
-																															// DB
-																															// Cache
-					// of
-				}
-
-			} else if (selection instanceof StepMeta) {
+//			else if (selection instanceof DatabaseMeta) {
+//				spoonMenu = (PopupMenu) menuMap.get("database-inst");
+//				// disable for now if the connection is an SAP R/3 type of database...
+//				//
+//				XulMenuitem item = ((XulPopupMenu) spoonMenu).getMenuItemById("database-inst-explore");
+//				if (item != null) {
+//					final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
+//					if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SAPR3)
+//						item.setEnabled(false);
+//				}
+//				item = ((XulPopupMenu) spoonMenu).getMenuItemById("database-inst-clear-cache");
+//				if (item != null) {
+//					final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
+//					item.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache") + databaseMeta.getName());// Clear
+//																															// DB
+//																															// Cache
+//					// of
+//				}
+//
+//			} 
+			else if (selection instanceof StepMeta) {
 				spoonMenu = (Menu) menuMap.get("step-inst");
 			} else if (selection instanceof JobEntryCopy) {
 				spoonMenu = (Menu) menuMap.get("job-entry-copy-inst");
@@ -2976,7 +2992,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						if (log.isDetailed())
 							log.logDetailed(toString(), Messages.getString("Spoon.Log.LoadToTransformation", name, repdir.getDirectoryName()));// "Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
 						props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repdir.getPath(), true, rep.getName());
-						addMenuLast();
+//						addMenuLast();
 						transMeta.clearChanged();
 						transMeta.setFilename(name);
 						addTransGraph(transMeta);
@@ -2994,7 +3010,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					if (jobMeta != null) {
 						props.addLastFile(LastUsedFile.FILE_TYPE_JOB, name, repdir.getPath(), true, rep.getName());
 						saveSettings();
-						addMenuLast();
+//						addMenuLast();
 						delegates.jobs.addJobGraph(jobMeta);
 					}
 					refreshGraph();
@@ -3504,7 +3520,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 							// Handle last opened files...
 							props.addLastFile(meta.getFileType(), meta.getName(), meta.getDirectory().getPath(), true, getRepositoryName());
 							saveSettings();
-							addMenuLast();
+//							addMenuLast();
 
 							setShellText();
 						}
@@ -3591,7 +3607,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 							// Handle last opened files...
 							props.addLastFile(LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta.getDirectory().getPath(), true, rep.getName());
 							saveSettings();
-							addMenuLast();
+//							addMenuLast();
 
 							setShellText();
 
@@ -3886,7 +3902,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			// Handle last opened files...
 			props.addLastFile(meta.getFileType(), fname, null, false, null); //$NON-NLS-1$
 			saveSettings();
-			addMenuLast();
+//			addMenuLast();
 
 			if (log.isDebug())
 				log.logDebug(toString(), Messages.getString("Spoon.Log.FileWritten") + " [" + fname + "]"); // "File
@@ -4636,82 +4652,82 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		shell.setText(text);
 
-		enableMenus();
+//		enableMenus();
 		markTabsChanged();
 	}
 
-	public void enableMenus() {
-		boolean enableTransMenu = getActiveTransformation() != null;
-		boolean enableJobMenu = getActiveJob() != null;
-		boolean enableRepositoryMenu = rep != null;
-
-		boolean enableLastPreviewMenu = false;
-		boolean disablePreviewButton = false;
-
-		TransGraph transGraph = getActiveTransGraph();
-		if (transGraph != null) {
-			TransDebugMeta lastTransDebugMeta = transGraph.getLastTransDebugMeta();
-			enableLastPreviewMenu = !(lastTransDebugMeta == null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty());
-
-			disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
-		}
-
-		design.setEnabled(enableTransMenu || enableJobMenu);
-
-		// Only enable certain menu-items if we need to.
-		menuBar.setEnableById("file-save", enableTransMenu || enableJobMenu);
-		menuBar.setEnableById("file-save-as", enableTransMenu || enableJobMenu);
-		menuBar.setEnableById("file-close", enableTransMenu || enableJobMenu);
-		menuBar.setEnableById("file-print", enableTransMenu || enableJobMenu);
-
-		// Disable the undo and redo menus if there is no active transformation
-		// or active job
-		// DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
-		//
-		if (!enableTransMenu && !enableJobMenu) {
-			menuBar.setEnableById(UNDO_MENUITEM, false);
-			menuBar.setEnableById(REDO_MENUITEM, false);
-		}
-
-		menuBar.setEnableById("edit-clear-selection", enableTransMenu);
-		menuBar.setEnableById("edit-select-all", enableTransMenu);
-		menuBar.setEnableById("edit-copy", enableTransMenu);
-		menuBar.setEnableById("edit-paste", enableTransMenu);
-
-		// Transformations
-		menuBar.setEnableById("trans-run", enableTransMenu && !disablePreviewButton);
-		menuBar.setEnableById("trans-replay", enableTransMenu && !disablePreviewButton);
-		menuBar.setEnableById("trans-preview", enableTransMenu && !disablePreviewButton);
-		menuBar.setEnableById("trans-debug", enableTransMenu && !disablePreviewButton);
-		menuBar.setEnableById("trans-verify", enableTransMenu);
-		menuBar.setEnableById("trans-impact", enableTransMenu);
-		menuBar.setEnableById("trans-get-sql", enableTransMenu);
-		menuBar.setEnableById("trans-last-impact", enableTransMenu);
-		menuBar.setEnableById("trans-last-check", enableTransMenu);
-		menuBar.setEnableById("trans-last-preview", enableTransMenu);
-		menuBar.setEnableById("trans-copy", enableTransMenu);
-		// miTransPaste.setEnabled(enableTransMenu);
-		menuBar.setEnableById("trans-copy-image", enableTransMenu);
-		menuBar.setEnableById("trans-settings", enableTransMenu);
-
-		// Jobs
-		menuBar.setEnableById("job-run", enableJobMenu);
-		menuBar.setEnableById("job-copy", enableJobMenu);
-		menuBar.setEnableById("job-settings", enableJobMenu);
-
-		menuBar.setEnableById("wizard-connection", enableTransMenu || enableJobMenu);
-		menuBar.setEnableById("wizard-copy-table", enableTransMenu || enableJobMenu);
-		menuBar.setEnableById("wizard-copy-tables", enableRepositoryMenu || enableTransMenu || enableJobMenu);
-
-		menuBar.setEnableById("repository-disconnect", enableRepositoryMenu);
-		menuBar.setEnableById("repository-explore", enableRepositoryMenu);
-		menuBar.setEnableById("repository-edit-user", enableRepositoryMenu);
-
-		menuBar.setEnableById("trans-last-preview", enableLastPreviewMenu);
-
-		// What steps & plugins to show?
-		refreshCoreObjects();
-	}
+//	public void enableMenus() {
+//		boolean enableTransMenu = getActiveTransformation() != null;
+//		boolean enableJobMenu = getActiveJob() != null;
+//		boolean enableRepositoryMenu = rep != null;
+//
+//		boolean enableLastPreviewMenu = false;
+//		boolean disablePreviewButton = false;
+//
+//		TransGraph transGraph = getActiveTransGraph();
+//		if (transGraph != null) {
+//			TransDebugMeta lastTransDebugMeta = transGraph.getLastTransDebugMeta();
+//			enableLastPreviewMenu = !(lastTransDebugMeta == null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty());
+//
+//			disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
+//		}
+//
+//		design.setEnabled(enableTransMenu || enableJobMenu);
+//
+//		// Only enable certain menu-items if we need to.
+//		menuBar.setEnableById("file-save", enableTransMenu || enableJobMenu);
+//		menuBar.setEnableById("file-save-as", enableTransMenu || enableJobMenu);
+//		menuBar.setEnableById("file-close", enableTransMenu || enableJobMenu);
+//		menuBar.setEnableById("file-print", enableTransMenu || enableJobMenu);
+//
+//		// Disable the undo and redo menus if there is no active transformation
+//		// or active job
+//		// DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
+//		//
+//		if (!enableTransMenu && !enableJobMenu) {
+//			menuBar.setEnableById(UNDO_MENUITEM, false);
+//			menuBar.setEnableById(REDO_MENUITEM, false);
+//		}
+//
+//		menuBar.setEnableById("edit-clear-selection", enableTransMenu);
+//		menuBar.setEnableById("edit-select-all", enableTransMenu);
+//		menuBar.setEnableById("edit-copy", enableTransMenu);
+//		menuBar.setEnableById("edit-paste", enableTransMenu);
+//
+//		// Transformations
+//		menuBar.setEnableById("trans-run", enableTransMenu && !disablePreviewButton);
+//		menuBar.setEnableById("trans-replay", enableTransMenu && !disablePreviewButton);
+//		menuBar.setEnableById("trans-preview", enableTransMenu && !disablePreviewButton);
+//		menuBar.setEnableById("trans-debug", enableTransMenu && !disablePreviewButton);
+//		menuBar.setEnableById("trans-verify", enableTransMenu);
+//		menuBar.setEnableById("trans-impact", enableTransMenu);
+//		menuBar.setEnableById("trans-get-sql", enableTransMenu);
+//		menuBar.setEnableById("trans-last-impact", enableTransMenu);
+//		menuBar.setEnableById("trans-last-check", enableTransMenu);
+//		menuBar.setEnableById("trans-last-preview", enableTransMenu);
+//		menuBar.setEnableById("trans-copy", enableTransMenu);
+//		// miTransPaste.setEnabled(enableTransMenu);
+//		menuBar.setEnableById("trans-copy-image", enableTransMenu);
+//		menuBar.setEnableById("trans-settings", enableTransMenu);
+//
+//		// Jobs
+//		menuBar.setEnableById("job-run", enableJobMenu);
+//		menuBar.setEnableById("job-copy", enableJobMenu);
+//		menuBar.setEnableById("job-settings", enableJobMenu);
+//
+//		menuBar.setEnableById("wizard-connection", enableTransMenu || enableJobMenu);
+//		menuBar.setEnableById("wizard-copy-table", enableTransMenu || enableJobMenu);
+//		menuBar.setEnableById("wizard-copy-tables", enableRepositoryMenu || enableTransMenu || enableJobMenu);
+//
+//		menuBar.setEnableById("repository-disconnect", enableRepositoryMenu);
+//		menuBar.setEnableById("repository-explore", enableRepositoryMenu);
+//		menuBar.setEnableById("repository-edit-user", enableRepositoryMenu);
+//
+//		menuBar.setEnableById("trans-last-preview", enableLastPreviewMenu);
+//
+//		// What steps & plugins to show?
+//		refreshCoreObjects();
+//	}
 
 	private void markTabsChanged() {
 		for (TabMapEntry entry : delegates.tabs.getTabs()) {
@@ -5012,12 +5028,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		TransAction next = undoInterface != null ? undoInterface.viewNextUndo() : null;
 
 		// Set the menubar text
-		menuBar.setTextById(UNDO_MENUITEM, prev == null ? UNDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Undo.Available", prev.toString())); //$NON-NLS-1$
-		menuBar.setTextById(REDO_MENUITEM, next == null ? REDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Redo.Available", next.toString())); //$NON-NLS-1$
-
-		// Set the enabled flags
-		menuBar.setEnableById(UNDO_MENUITEM, prev != null);
-		menuBar.setEnableById(REDO_MENUITEM, next != null);
+//		menuBar.setTextById(UNDO_MENUITEM, prev == null ? UNDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Undo.Available", prev.toString())); //$NON-NLS-1$
+//		menuBar.setTextById(REDO_MENUITEM, next == null ? REDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Redo.Available", next.toString())); //$NON-NLS-1$
+//
+//		// Set the enabled flags
+//		menuBar.setEnableById(UNDO_MENUITEM, prev != null);
+//		menuBar.setEnableById(REDO_MENUITEM, next != null);
 	}
 
 	public void addUndoNew(UndoInterface undoInterface, Object obj[], int position[]) {
