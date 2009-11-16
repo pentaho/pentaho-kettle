@@ -1205,7 +1205,7 @@ public class Spoon extends XulEventSourceAdapter implements AddUndoPositionInter
 		}
 	}
 
-//	public void addMenuLast() {
+	public void addMenuLast() {
 //
 //		XulMenuItem sep = menuBar.getSeparatorById("file-last-separator"); //$NON-NLS-1$
 //		XulMenu msFile = null;
@@ -1253,7 +1253,7 @@ public class Spoon extends XulEventSourceAdapter implements AddUndoPositionInter
 //			menuBar.addMenuListener(id, this, "lastFileSelect"); //$NON-NLS-1$
 //		}
 //
-//	}
+	}
 
 	public void lastFileSelect(String id) {
 
@@ -4652,11 +4652,11 @@ public class Spoon extends XulEventSourceAdapter implements AddUndoPositionInter
 
 		shell.setText(text);
 
-//		enableMenus();
+		enableMenus();
 		markTabsChanged();
 	}
 
-//	public void enableMenus() {
+	public void enableMenus() {
 //		boolean enableTransMenu = getActiveTransformation() != null;
 //		boolean enableJobMenu = getActiveJob() != null;
 //		boolean enableRepositoryMenu = rep != null;
@@ -4727,7 +4727,7 @@ public class Spoon extends XulEventSourceAdapter implements AddUndoPositionInter
 //
 //		// What steps & plugins to show?
 //		refreshCoreObjects();
-//	}
+	}
 
 	private void markTabsChanged() {
 		for (TabMapEntry entry : delegates.tabs.getTabs()) {
