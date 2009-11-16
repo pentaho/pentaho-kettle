@@ -219,6 +219,7 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.containers.XulMenubar;
+import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 //import org.pentaho.xul.menu.XulMenu;
@@ -241,7 +242,7 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
-public class Spoon extends XulEventSourceAdapter implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver, LifeEventHandler {
+public class Spoon extends XulEventSourceAdapter implements XulEventHandler, AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver, LifeEventHandler {
 	public static final String				STRING_TRANSFORMATIONS	= Messages.getString("Spoon.STRING_TRANSFORMATIONS");	// Transformations
 	public static final String				STRING_JOBS				= Messages.getString("Spoon.STRING_JOBS");				// Jobs
 	public static final String				STRING_BUILDING_BLOCKS	= Messages.getString("Spoon.STRING_BUILDING_BLOCKS");	// Building blocks
@@ -309,7 +310,7 @@ public class Spoon extends XulEventSourceAdapter implements AddUndoPositionInter
 
 	private org.eclipse.swt.widgets.Menu	fileMenus;
 	
-	private static final String       MAIN_MENU_XUL     = "/Users/wseyler/Documents/workspace-trunk/Kettle 3.2.3-agile-bi/ui/menubar.xul"; //$NON-NLS-1$
+	private static final String       MAIN_MENU_XUL     = "ui/menubar.xul"; //$NON-NLS-1$
 
 	private static final String				APPL_TITLE				= APP_NAME;
 
@@ -544,68 +545,68 @@ public class Spoon extends XulEventSourceAdapter implements AddUndoPositionInter
 		defKeys = new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 
-				boolean ctrl = ((e.stateMask & SWT.CONTROL) != 0);
-				boolean alt = ((e.stateMask & SWT.ALT) != 0);
-
-				String key = null;
-
-				switch (e.keyCode) {
-				case SWT.ESC:
-					key = "esc";break; //$NON-NLS-1$
-				case SWT.F1:
-					key = "f1";break; //$NON-NLS-1$
-				case SWT.F2:
-					key = "f2";break; //$NON-NLS-1$
-				case SWT.F3:
-					key = "f3";break; //$NON-NLS-1$
-				case SWT.F4:
-					key = "f4";break; //$NON-NLS-1$
-				case SWT.F5:
-					key = "f5";break; //$NON-NLS-1$
-				case SWT.F6:
-					key = "f6";break; //$NON-NLS-1$
-				case SWT.F7:
-					key = "f7";break; //$NON-NLS-1$
-				case SWT.F8:
-					key = "f8";break; //$NON-NLS-1$
-				case SWT.F9:
-					key = "f9";break; //$NON-NLS-1$
-				case SWT.F10:
-					key = "f10";break; //$NON-NLS-1$
-				case SWT.F11:
-					key = "f12";break; //$NON-NLS-1$
-				case SWT.F12:
-					key = "f12";break; //$NON-NLS-1$
-				case SWT.ARROW_UP:
-					key = "up";break; //$NON-NLS-1$
-				case SWT.ARROW_DOWN:
-					key = "down";break; //$NON-NLS-1$
-				case SWT.ARROW_LEFT:
-					key = "left";break; //$NON-NLS-1$
-				case SWT.ARROW_RIGHT:
-					key = "right";break; //$NON-NLS-1$
-				case SWT.HOME:
-					key = "home";break; //$NON-NLS-1$
-				case SWT.PAGE_UP:
-					key = "pageup";break; //$NON-NLS-1$
-				case SWT.PAGE_DOWN:
-					key = "pagedown";break; //$NON-NLS-1$
-				default:
-					;
-				}
-				if (key == null && ctrl) {
-					// get the character
-					if (e.character >= '0' && e.character <= '9') {
-						char c = e.character;
-						key = new String(new char[] { c });
-					} else {
-						char c = (char) ('a' + (e.character - 1));
-						key = new String(new char[] { c });
-					}
-				} else if (key == null) {
-					char c = e.character;
-					key = new String(new char[] { c });
-				}
+//				boolean ctrl = ((e.stateMask & SWT.CONTROL) != 0);
+//				boolean alt = ((e.stateMask & SWT.ALT) != 0);
+//
+//				String key = null;
+//
+//				switch (e.keyCode) {
+//				case SWT.ESC:
+//					key = "esc";break; //$NON-NLS-1$
+//				case SWT.F1:
+//					key = "f1";break; //$NON-NLS-1$
+//				case SWT.F2:
+//					key = "f2";break; //$NON-NLS-1$
+//				case SWT.F3:
+//					key = "f3";break; //$NON-NLS-1$
+//				case SWT.F4:
+//					key = "f4";break; //$NON-NLS-1$
+//				case SWT.F5:
+//					key = "f5";break; //$NON-NLS-1$
+//				case SWT.F6:
+//					key = "f6";break; //$NON-NLS-1$
+//				case SWT.F7:
+//					key = "f7";break; //$NON-NLS-1$
+//				case SWT.F8:
+//					key = "f8";break; //$NON-NLS-1$
+//				case SWT.F9:
+//					key = "f9";break; //$NON-NLS-1$
+//				case SWT.F10:
+//					key = "f10";break; //$NON-NLS-1$
+//				case SWT.F11:
+//					key = "f12";break; //$NON-NLS-1$
+//				case SWT.F12:
+//					key = "f12";break; //$NON-NLS-1$
+//				case SWT.ARROW_UP:
+//					key = "up";break; //$NON-NLS-1$
+//				case SWT.ARROW_DOWN:
+//					key = "down";break; //$NON-NLS-1$
+//				case SWT.ARROW_LEFT:
+//					key = "left";break; //$NON-NLS-1$
+//				case SWT.ARROW_RIGHT:
+//					key = "right";break; //$NON-NLS-1$
+//				case SWT.HOME:
+//					key = "home";break; //$NON-NLS-1$
+//				case SWT.PAGE_UP:
+//					key = "pageup";break; //$NON-NLS-1$
+//				case SWT.PAGE_DOWN:
+//					key = "pagedown";break; //$NON-NLS-1$
+//				default:
+//					;
+//				}
+//				if (key == null && ctrl) {
+//					// get the character
+//					if (e.character >= '0' && e.character <= '9') {
+//						char c = e.character;
+//						key = new String(new char[] { c });
+//					} else {
+//						char c = (char) ('a' + (e.character - 1));
+//						key = new String(new char[] { c });
+//					}
+//				} else if (key == null) {
+//					char c = e.character;
+//					key = new String(new char[] { c });
+//				}
 
 //				menuBar.handleAccessKey(key, alt, ctrl);
 			}
@@ -615,6 +616,7 @@ public class Spoon extends XulEventSourceAdapter implements AddUndoPositionInter
       final SwtXulLoader loader = new SwtXulLoader();
       loader.setOuterContext(shell);
       XulDomContainer mainSpoonContainer = loader.loadXul(MAIN_MENU_XUL);
+      mainSpoonContainer.addEventHandler(this);
     } catch (IllegalArgumentException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
@@ -6498,5 +6500,55 @@ public class Spoon extends XulEventSourceAdapter implements AddUndoPositionInter
 	    	  }
 	      }
 	}
+
+	// XulEventHandling
+	
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
+   */
+  public Object getData() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
+   */
+  public String getName() {
+    // TODO Auto-generated method stub
+    return "spoon";
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
+   */
+  public XulDomContainer getXulDomContainer() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
+   */
+  public void setData(Object arg0) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
+   */
+  public void setName(String arg0) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
+   */
+  public void setXulDomContainer(XulDomContainer arg0) {
+    // TODO Auto-generated method stub
+    
+  }
 
 }
