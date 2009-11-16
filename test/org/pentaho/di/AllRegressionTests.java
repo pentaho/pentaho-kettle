@@ -3,7 +3,6 @@ package org.pentaho.di;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-//import org.pentaho.di.blackbox.BlackBoxTests;
 import org.pentaho.di.compatibility.ValueBigNumberTest;
 import org.pentaho.di.compatibility.ValueBooleanTest;
 import org.pentaho.di.compatibility.ValueDateTest;
@@ -31,7 +30,6 @@ import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest;
 import org.pentaho.di.trans.steps.constant.ConstantTest;
 import org.pentaho.di.trans.steps.csvinput.CsvInput1Test;
 import org.pentaho.di.trans.steps.csvinput.CsvInput2Test;
-import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupTest;
 import org.pentaho.di.trans.steps.detectlastrow.DetectLastRowStepTest;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
