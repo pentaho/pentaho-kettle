@@ -186,27 +186,52 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		return getSubjectString(ID.LINES_READ);
 	}
 
-	public String getStepnameWritten() {
+  public void setStepRead(StepMeta read) {
+    findField(ID.LINES_READ).setSubject(read);
+  }
+
+  public String getStepnameWritten() {
 		return getSubjectString(ID.LINES_WRITTEN);
 	}
 
-	public String getStepnameInput() {
+  public void setStepWritten(StepMeta written) {
+    findField(ID.LINES_WRITTEN).setSubject(written);
+  }
+
+  public String getStepnameInput() {
 		return getSubjectString(ID.LINES_INPUT);
 	}
+  
+  public void setStepInput(StepMeta input) {
+    findField(ID.LINES_INPUT).setSubject(input);
+  }
 
 	public String getStepnameOutput() {
 		return getSubjectString(ID.LINES_OUTPUT);
 	}
 
-	public String getStepnameUpdated() {
+  public void setStepOutput(StepMeta output) {
+    findField(ID.LINES_OUTPUT).setSubject(output);
+  }
+
+  public String getStepnameUpdated() {
 		return getSubjectString(ID.LINES_UPDATED);
 	}
 
-	public String getStepnameRejected() {
+  public void setStepUpdate(StepMeta update) {
+    findField(ID.LINES_UPDATED).setSubject(update);
+  }
+
+  public String getStepnameRejected() {
 		return getSubjectString(ID.LINES_REJECTED);
 	}
 
-	/**
+  public void setStepRejected(StepMeta rejected) {
+    findField(ID.LINES_REJECTED).setSubject(rejected);
+  }
+
+
+  /**
 	 * Sets the logging interval in seconds.
 	 * Disabled if the logging interval is <=0.
 	 * 
