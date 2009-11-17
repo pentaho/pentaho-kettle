@@ -24,8 +24,6 @@ public interface SpoonInterface extends OverwritePrompter {
 
 	public static final String XUL_FILE_MENUS = "ui/menus.xul";
 
-	public static final String XUL_FILE_MENU_PROPERTIES = "ui/menubar.properties";
-	
     public boolean addSpoonBrowser(String name, String urlString);
 
     public void addTransGraph(TransMeta transMeta);

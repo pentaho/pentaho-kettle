@@ -1017,7 +1017,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     addKeyListener(this);
     // addKeyListener(filenameLabel);
 
-    canvas.addKeyListener(spoon.defKeys);
+//    canvas.addKeyListener(spoon.defKeys);
     // filenameLabel.addKeyListener(spoon.defKeys);
 
     setBackground(GUIResource.getInstance().getColorBackground());
@@ -1078,7 +1078,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
       // Add a few default key listeners
       //
-      toolBar.addKeyListener(spoon.defKeys);
+//      toolBar.addKeyListener(spoon.defKeys);
 
       addToolBarListeners();
       toolBar.layout(true, true);

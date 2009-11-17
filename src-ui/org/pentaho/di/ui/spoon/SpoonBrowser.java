@@ -113,8 +113,8 @@ public class SpoonBrowser implements TabItemInterface
             
         browser.addLocationListener(locationListener);
          
-        composite.addKeyListener(spoon.defKeys);
-        browser.addKeyListener(spoon.defKeys);
+//        composite.addKeyListener(spoon.defKeys);
+//        browser.addKeyListener(spoon.defKeys);
                  
         // Set the text
        if (isURL)
@@ -136,7 +136,7 @@ public class SpoonBrowser implements TabItemInterface
       // Add a few default key listeners
       //
       ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
-      toolBar.addKeyListener(spoon.defKeys);
+//      toolBar.addKeyListener(spoon.defKeys);
       Control swtToolBar = (Control)toolbar.getNativeObject();
       
       // Add a URL

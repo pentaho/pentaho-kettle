@@ -791,7 +791,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
     // addKeyListener(filenameLabel);
 
     // filenameLabel.addKeyListener(spoon.defKeys);
-    canvas.addKeyListener(spoon.defKeys);
+//    canvas.addKeyListener(spoon.defKeys);
 
     setBackground(GUIResource.getInstance().getColorBackground());
 
@@ -854,7 +854,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
       // Add a few default key listeners
       //
-      toolBar.addKeyListener(spoon.defKeys);
+//      toolBar.addKeyListener(spoon.defKeys);
 
       addToolBarListeners();
     } catch (Throwable t) {

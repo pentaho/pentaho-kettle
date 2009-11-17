@@ -44,8 +44,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -218,14 +216,11 @@ import org.pentaho.di.version.BuildVersion;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.containers.XulMenubar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
-//import org.pentaho.xul.menu.XulMenu;
-//import org.pentaho.xul.menu.XulMenuBar;
-//import org.pentaho.xul.menu.XulMenuItem;
-//import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.menu.Menu;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabListener;
@@ -243,87 +238,85 @@ import org.w3c.dom.Node;
  * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
 public class Spoon extends XulEventSourceAdapter implements XulEventHandler, AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver, LifeEventHandler {
-	public static final String				STRING_TRANSFORMATIONS	= Messages.getString("Spoon.STRING_TRANSFORMATIONS");	// Transformations
-	public static final String				STRING_JOBS				= Messages.getString("Spoon.STRING_JOBS");				// Jobs
-	public static final String				STRING_BUILDING_BLOCKS	= Messages.getString("Spoon.STRING_BUILDING_BLOCKS");	// Building blocks
-	public static final String				STRING_ELEMENTS			= Messages.getString("Spoon.STRING_ELEMENTS");			// Model elements
-	public static final String				STRING_CONNECTIONS		= Messages.getString("Spoon.STRING_CONNECTIONS");		// Connections
-	public static final String				STRING_STEPS			= Messages.getString("Spoon.STRING_STEPS");				// Steps
-	public static final String				STRING_JOB_ENTRIES		= Messages.getString("Spoon.STRING_JOB_ENTRIES");		// Job entries
-	public static final String				STRING_HOPS				= Messages.getString("Spoon.STRING_HOPS");				// Hops
-	public static final String				STRING_PARTITIONS		= Messages.getString("Spoon.STRING_PARTITIONS");		// Partition schemas
-	public static final String				STRING_SLAVES			= Messages.getString("Spoon.STRING_SLAVES");			// Slave servers
-	public static final String				STRING_CLUSTERS			= Messages.getString("Spoon.STRING_CLUSTERS");			// Cluster Schemas
-	public static final String				STRING_TRANS_BASE		= Messages.getString("Spoon.STRING_BASE");				// Base step types
-	public static final String				STRING_JOB_BASE			= Messages.getString("Spoon.STRING_JOBENTRY_BASE");		// Base job entry types
-	public static final String				STRING_HISTORY			= Messages.getString("Spoon.STRING_HISTORY");			// Step creation history
-	public static final String				STRING_TRANS_NO_NAME	= Messages.getString("Spoon.STRING_TRANS_NO_NAME");		// <unnamed transformation>
-	public static final String				STRING_JOB_NO_NAME		= Messages.getString("Spoon.STRING_JOB_NO_NAME");		// <unnamed job>
-	public static final String				STRING_TRANSFORMATION	= Messages.getString("Spoon.STRING_TRANSFORMATION");	// Transformation
-	public static final String				STRING_JOB				= Messages.getString("Spoon.STRING_JOB");				// Job
+	public static final String				STRING_TRANSFORMATIONS = Messages.getString("Spoon.STRING_TRANSFORMATIONS");	// Transformations
+	public static final String				STRING_JOBS            = Messages.getString("Spoon.STRING_JOBS");				// Jobs
+	public static final String				STRING_BUILDING_BLOCKS = Messages.getString("Spoon.STRING_BUILDING_BLOCKS");	// Building blocks
+	public static final String				STRING_ELEMENTS			   = Messages.getString("Spoon.STRING_ELEMENTS");			// Model elements
+	public static final String				STRING_CONNECTIONS		 = Messages.getString("Spoon.STRING_CONNECTIONS");		// Connections
+	public static final String				STRING_STEPS           = Messages.getString("Spoon.STRING_STEPS");				// Steps
+	public static final String				STRING_JOB_ENTRIES		 = Messages.getString("Spoon.STRING_JOB_ENTRIES");		// Job entries
+	public static final String				STRING_HOPS            = Messages.getString("Spoon.STRING_HOPS");				// Hops
+	public static final String				STRING_PARTITIONS      = Messages.getString("Spoon.STRING_PARTITIONS");		// Partition schemas
+	public static final String				STRING_SLAVES          = Messages.getString("Spoon.STRING_SLAVES");			// Slave servers
+	public static final String				STRING_CLUSTERS			   = Messages.getString("Spoon.STRING_CLUSTERS");			// Cluster Schemas
+	public static final String				STRING_TRANS_BASE      = Messages.getString("Spoon.STRING_BASE");				// Base step types
+	public static final String				STRING_JOB_BASE			   = Messages.getString("Spoon.STRING_JOBENTRY_BASE");		// Base job entry types
+	public static final String				STRING_HISTORY         = Messages.getString("Spoon.STRING_HISTORY");			// Step creation history
+	public static final String				STRING_TRANS_NO_NAME   = Messages.getString("Spoon.STRING_TRANS_NO_NAME");		// <unnamed transformation>
+	public static final String				STRING_JOB_NO_NAME     = Messages.getString("Spoon.STRING_JOB_NO_NAME");		// <unnamed job>
+	public static final String				STRING_TRANSFORMATION	 = Messages.getString("Spoon.STRING_TRANSFORMATION");	// Transformation
+	public static final String				STRING_JOB				     = Messages.getString("Spoon.STRING_JOB");				// Job
 
-	private static final String				SYNC_TRANS				= "sync_trans_name_to_file_name";
+	private static final String				SYNC_TRANS             = "sync_trans_name_to_file_name";
 	
-	public static final String				APP_NAME				= Messages.getString("Spoon.Application.Name");			// "Spoon";
+	public static final String				APP_NAME				       = Messages.getString("Spoon.Application.Name");			// "Spoon";
 
 	private static Spoon					staticSpoon;
 
-	private LogWriter						log;
-	private Display							display;
+	private LogWriter					log;
+	private Display						display;
 	private Shell							shell;
-	private boolean							destroy;
+	private boolean						destroy;
 
-	private SashForm						sashform;
+	private SashForm					sashform;
 	public TabSet							tabfolder;
 
-	public boolean							shift;
-	public boolean							control;
+	public boolean						shift;
+	public boolean						control;
 
 	// THE HANDLERS
-	public SpoonDelegates					delegates				= new SpoonDelegates(this);
+	public SpoonDelegates			delegates				              = new SpoonDelegates(this);
 
-	public RowMetaAndData					variables				= new RowMetaAndData(new RowMeta(), new Object[] {});
+	public RowMetaAndData			variables				              = new RowMetaAndData(new RowMeta(), new Object[] {});
 
 	/**
 	 * These are the arguments that were given at Spoon launch time...
 	 */
-	private String[]						arguments;
+	private String[]					arguments;
 
-	private boolean							stopped;
+	private boolean						stopped;
 
-	private Cursor							cursor_hourglass, cursor_hand;
+	private Cursor						cursor_hourglass, cursor_hand;
 
-	public PropsUI							props;
+	public PropsUI						props;
 
-	public Repository						rep;
+	public Repository					rep;
 
 	/**
 	 * This contains a map with all the unnamed transformation (just a filename)
 	 */
 
-	private XulMenubar						menuBar;
+	private XulMenubar				menuBar;
 
-	private ToolItem						view, design, expandAll, collapseAll;
+	private ToolItem					view, design, expandAll, collapseAll;
 
 	private Label							selectionLabel;
-	private Text                            selectionFilter;
+	private Text              selectionFilter;
 
 	private org.eclipse.swt.widgets.Menu	fileMenus;
 	
-	private static final String       MAIN_MENU_XUL     = "ui/menubar.xul"; //$NON-NLS-1$
-
-	private static final String				APPL_TITLE				= APP_NAME;
+	private static final String				APPL_TITLE				   = APP_NAME;
 
 	private static final String				STRING_WELCOME_TAB_NAME	= Messages.getString("Spoon.Title.STRING_WELCOME");
 
 	private static final String				FILE_WELCOME_PAGE		= Const.safeAppendDirectory(BasePropertyHandler.getProperty("documentationDirBase", "docs/"), Messages.getString("Spoon.Title.STRING_DOCUMENT_WELCOME"));	// "docs/English/welcome/kettle_document_map.html";
 
-	private static final String				UNDO_MENUITEM			= "edit-undo";				//$NON-NLS-1$
-	private static final String				REDO_MENUITEM			= "edit-redo";				//$NON-NLS-1$
+	private static final String				UNDO_MENUITEM			  = "edit-undo";				//$NON-NLS-1$
+	private static final String				REDO_MENUITEM			  = "edit-redo";				//$NON-NLS-1$
 	private static final String				UNDO_UNAVAILABLE		= Messages.getString("Spoon.Menu.Undo.NotAvailable");	//"Undo : not available \tCTRL-Z" //$NON-NLS-1$
 	private static final String				REDO_UNAVAILABLE		= Messages.getString("Spoon.Menu.Redo.NotAvailable");	//"Redo : not available \tCTRL-Y" //$NON-NLS-1$S
 
-	public KeyAdapter						defKeys;
+//	public KeyAdapter						defKeys;
 
 	private Composite						tabComp;
 
@@ -340,15 +333,17 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
 	private int								coreObjectsState		= STATE_CORE_OBJECTS_NONE;
 
-	protected Map<String, FileListener>		fileExtensionMap		= new HashMap<String, FileListener>();
-	protected Map<String, FileListener>		fileNodeMap				= new HashMap<String, FileListener>();
+	protected Map<String, FileListener>		fileExtensionMap= new HashMap<String, FileListener>();
+	protected Map<String, FileListener>		fileNodeMap     = new HashMap<String, FileListener>();
 
-	private List<Object[]>					menuListeners			= new ArrayList<Object[]>();
+	private List<Object[]>					menuListeners			    = new ArrayList<Object[]>();
 
-	private Map<String, Menu>				menuMap					= new HashMap<String, Menu>();
+	private Map<String, Menu>				menuMap					      = new HashMap<String, Menu>();
 
+	XulDomContainer mainSpoonContainer;
+	
 	// loads the lifecycle listeners
-	private LifecycleSupport				lcsup					= new LifecycleSupport();
+	private LifecycleSupport				lcsup					        = new LifecycleSupport();
 	private Composite						mainComposite;
 
 	private boolean							viewSelected;
@@ -542,8 +537,8 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
 		// widgets = new WidgetContainer();
 
-		defKeys = new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
+//		defKeys = new KeyAdapter() {
+//			public void keyPressed(KeyEvent e) {
 
 //				boolean ctrl = ((e.stateMask & SWT.CONTROL) != 0);
 //				boolean alt = ((e.stateMask & SWT.ALT) != 0);
@@ -609,13 +604,13 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 //				}
 
 //				menuBar.handleAccessKey(key, alt, ctrl);
-			}
-		};
+//			}
+//		};
 
 		try {
       final SwtXulLoader loader = new SwtXulLoader();
       loader.setOuterContext(shell);
-      XulDomContainer mainSpoonContainer = loader.loadXul(MAIN_MENU_XUL);
+      mainSpoonContainer = loader.loadXul(XUL_FILE_MENUBAR);
       mainSpoonContainer.addEventHandler(this);
     } catch (IllegalArgumentException e1) {
       // TODO Auto-generated catch block
@@ -648,7 +643,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			shell.setMaximized(true); // Default = maximized!
 		}
 
-//		addMenu();
+		addMenu();
 		addTree();
 		// addCoreObjectsExpandBar();
 		addTabs();
@@ -665,7 +660,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			}
 		});
 
-		shell.addKeyListener(defKeys);
+//		shell.addKeyListener(defKeys);
 
 		// Add a browser widget
 		if (props.showWelcomePageOnStartup()) {
@@ -674,6 +669,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 	}
 
 	private void initFileMenu() {
+	  
 		fileMenus = new org.eclipse.swt.widgets.Menu(shell, SWT.NONE);
 
 		// Add the new file toolbar items dropdowns
@@ -1094,7 +1090,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		}
 	}
 
-//	public void addMenu() {
+	public void addMenu() {
 //
 //		if (menuBar != null && !menuBar.isDisposed()) {
 //			menuBar.dispose();
@@ -1129,9 +1125,9 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 //		}
 //
 //		addMenuListeners();
-//		addMenuLast();
+		addMenuLast();
 //
-//	}
+	}
 
 	public void executeTransformation() {
 		executeTransformation(getActiveTransformation(), true, false, false, false, false, null, false);
@@ -1293,7 +1289,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			try {
 				RepositoryMeta meta = (rep == null ? null : rep.getRepositoryInfo());
 				loadLastUsedFile(lastUsedFile, meta);
-//				addMenuLast();
+				addMenuLast();
 				refreshHistory();
 			} catch (KettleException ke) {
 				// "Error loading transformation", "I was unable to load this
@@ -2379,9 +2375,9 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		tabfolder.setUnchangedFont(GUIResource.getInstance().getFontGraph());
 		props.setLook(tabfolder.getSwtTabset(), Props.WIDGET_STYLE_TAB);
 
-		tabfolder.addKeyListener(defKeys);
+//		tabfolder.addKeyListener(defKeys);
 
-		sashform.addKeyListener(defKeys);
+//		sashform.addKeyListener(defKeys);
 
 		int weights[] = props.getSashWeights();
 		sashform.setWeights(weights);
@@ -2994,7 +2990,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 						if (log.isDetailed())
 							log.logDetailed(toString(), Messages.getString("Spoon.Log.LoadToTransformation", name, repdir.getDirectoryName()));// "Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
 						props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repdir.getPath(), true, rep.getName());
-//						addMenuLast();
+						addMenuLast();
 						transMeta.clearChanged();
 						transMeta.setFilename(name);
 						addTransGraph(transMeta);
@@ -3012,7 +3008,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 					if (jobMeta != null) {
 						props.addLastFile(LastUsedFile.FILE_TYPE_JOB, name, repdir.getPath(), true, rep.getName());
 						saveSettings();
-//						addMenuLast();
+						addMenuLast();
 						delegates.jobs.addJobGraph(jobMeta);
 					}
 					refreshGraph();
@@ -3522,7 +3518,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 							// Handle last opened files...
 							props.addLastFile(meta.getFileType(), meta.getName(), meta.getDirectory().getPath(), true, getRepositoryName());
 							saveSettings();
-//							addMenuLast();
+							addMenuLast();
 
 							setShellText();
 						}
@@ -3609,7 +3605,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 							// Handle last opened files...
 							props.addLastFile(LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta.getDirectory().getPath(), true, rep.getName());
 							saveSettings();
-//							addMenuLast();
+							addMenuLast();
 
 							setShellText();
 
@@ -3904,7 +3900,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			// Handle last opened files...
 			props.addLastFile(meta.getFileType(), fname, null, false, null); //$NON-NLS-1$
 			saveSettings();
-//			addMenuLast();
+			addMenuLast();
 
 			if (log.isDebug())
 				log.logDebug(toString(), Messages.getString("Spoon.Log.FileWritten") + " [" + fname + "]"); // "File
@@ -4081,7 +4077,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			});
 
 			// Keyboard shortcuts!
-			selectionTree.addKeyListener(defKeys);
+//			selectionTree.addKeyListener(defKeys);
 
 			// Set a listener on the tree
 			addDragSourceToTree(selectionTree);
@@ -4659,44 +4655,73 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 	}
 
 	public void enableMenus() {
-//		boolean enableTransMenu = getActiveTransformation() != null;
-//		boolean enableJobMenu = getActiveJob() != null;
-//		boolean enableRepositoryMenu = rep != null;
-//
-//		boolean enableLastPreviewMenu = false;
-//		boolean disablePreviewButton = false;
-//
-//		TransGraph transGraph = getActiveTransGraph();
-//		if (transGraph != null) {
-//			TransDebugMeta lastTransDebugMeta = transGraph.getLastTransDebugMeta();
-//			enableLastPreviewMenu = !(lastTransDebugMeta == null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty());
-//
-//			disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
-//		}
-//
-//		design.setEnabled(enableTransMenu || enableJobMenu);
-//
-//		// Only enable certain menu-items if we need to.
+		boolean enableTransMenu = getActiveTransformation() != null;
+		boolean enableJobMenu = getActiveJob() != null;
+		boolean enableRepositoryMenu = rep != null;
+
+		boolean enableLastPreviewMenu = false;
+		boolean disablePreviewButton = false;
+
+		TransGraph transGraph = getActiveTransGraph();
+		if (transGraph != null) {
+			TransDebugMeta lastTransDebugMeta = transGraph.getLastTransDebugMeta();
+			enableLastPreviewMenu = !(lastTransDebugMeta == null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty());
+
+			disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
+		}
+
+		design.setEnabled(enableTransMenu || enableJobMenu);
+
+		org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
+		// Only enable certain menu-items if we need to.
+		((XulMenuitem)doc.getElementById("file-save")).setDisabled(!(enableTransMenu || enableJobMenu));
+		((XulMenuitem)doc.getElementById("file-save-as")).setDisabled(!(enableTransMenu || enableJobMenu));
+		((XulMenuitem)doc.getElementById("file-close")).setDisabled(!(enableTransMenu || enableJobMenu));
+		((XulMenuitem)doc.getElementById("file-print")).setDisabled(!(enableTransMenu || enableJobMenu));
 //		menuBar.setEnableById("file-save", enableTransMenu || enableJobMenu);
 //		menuBar.setEnableById("file-save-as", enableTransMenu || enableJobMenu);
 //		menuBar.setEnableById("file-close", enableTransMenu || enableJobMenu);
 //		menuBar.setEnableById("file-print", enableTransMenu || enableJobMenu);
-//
-//		// Disable the undo and redo menus if there is no active transformation
-//		// or active job
-//		// DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
-//		//
-//		if (!enableTransMenu && !enableJobMenu) {
+
+		// Disable the undo and redo menus if there is no active transformation
+		// or active job
+		// DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
+		//
+		if (!enableTransMenu && !enableJobMenu) {
+		  ((XulMenuitem)doc.getElementById(UNDO_MENUITEM)).setDisabled(true);
+		  ((XulMenuitem)doc.getElementById(REDO_MENUITEM)).setDisabled(true);
 //			menuBar.setEnableById(UNDO_MENUITEM, false);
 //			menuBar.setEnableById(REDO_MENUITEM, false);
-//		}
-//
+		}
+
+		((XulMenuitem)doc.getElementById("edit-clear-selection")).setDisabled(!enableTransMenu);
+		((XulMenuitem)doc.getElementById("edit-select-all")).setDisabled(!enableTransMenu);
+		
+		// TODO Figure out what's supposed to happen here
+//		((XulMenuitem)doc.getElementById("edit-copy")).setDisabled(!enableTransMenu);
+//		((XulMenuitem)doc.getElementById("edit-paste")).setDisabled(!enableTransMenu);
+		
 //		menuBar.setEnableById("edit-clear-selection", enableTransMenu);
 //		menuBar.setEnableById("edit-select-all", enableTransMenu);
 //		menuBar.setEnableById("edit-copy", enableTransMenu);
 //		menuBar.setEnableById("edit-paste", enableTransMenu);
-//
-//		// Transformations
+
+		// Transformations
+		((XulMenuitem)doc.getElementById("trans-run")).setDisabled(!(enableTransMenu && !disablePreviewButton));
+		((XulMenuitem)doc.getElementById("trans-replay")).setDisabled(!(enableTransMenu && !disablePreviewButton));
+		((XulMenuitem)doc.getElementById("trans-preview")).setDisabled(!(enableTransMenu && !disablePreviewButton));
+		((XulMenuitem)doc.getElementById("trans-debug")).setDisabled(!(enableTransMenu && !disablePreviewButton));
+		((XulMenuitem)doc.getElementById("trans-verify")).setDisabled(!enableTransMenu);
+		((XulMenuitem)doc.getElementById("trans-impact")).setDisabled(!enableTransMenu);
+		((XulMenuitem)doc.getElementById("trans-get-sql")).setDisabled(!enableTransMenu);
+		((XulMenuitem)doc.getElementById("trans-last-impact")).setDisabled(!enableTransMenu);
+		
+		//TODO Figure out why this isn't working
+//		((XulMenuitem)doc.getElementById("trans-last-check")).setDisabled(!enableTransMenu);
+		((XulMenuitem)doc.getElementById("trans-last-preview")).setDisabled(!enableTransMenu);
+		((XulMenuitem)doc.getElementById("trans-copy")).setDisabled(!enableTransMenu);
+		((XulMenuitem)doc.getElementById("trans-copy-image")).setDisabled(!enableTransMenu);
+		((XulMenuitem)doc.getElementById("trans-settings")).setDisabled(!enableTransMenu);
 //		menuBar.setEnableById("trans-run", enableTransMenu && !disablePreviewButton);
 //		menuBar.setEnableById("trans-replay", enableTransMenu && !disablePreviewButton);
 //		menuBar.setEnableById("trans-preview", enableTransMenu && !disablePreviewButton);
@@ -4711,24 +4736,33 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 //		// miTransPaste.setEnabled(enableTransMenu);
 //		menuBar.setEnableById("trans-copy-image", enableTransMenu);
 //		menuBar.setEnableById("trans-settings", enableTransMenu);
-//
-//		// Jobs
+
+		// Jobs
+		((XulMenuitem)doc.getElementById("job-run")).setDisabled(!enableJobMenu);
+		((XulMenuitem)doc.getElementById("job-copy")).setDisabled(!enableJobMenu);
+		((XulMenuitem)doc.getElementById("job-settings")).setDisabled(!enableJobMenu);
 //		menuBar.setEnableById("job-run", enableJobMenu);
 //		menuBar.setEnableById("job-copy", enableJobMenu);
 //		menuBar.setEnableById("job-settings", enableJobMenu);
-//
+
+		((XulMenuitem)doc.getElementById("wizard-connection")).setDisabled(!(enableTransMenu || enableJobMenu));
+		((XulMenuitem)doc.getElementById("wizard-copy-table")).setDisabled(!(enableTransMenu || enableJobMenu));
+		((XulMenuitem)doc.getElementById("wizard-copy-tables")).setDisabled(!(enableRepositoryMenu || enableTransMenu || enableJobMenu));
 //		menuBar.setEnableById("wizard-connection", enableTransMenu || enableJobMenu);
 //		menuBar.setEnableById("wizard-copy-table", enableTransMenu || enableJobMenu);
 //		menuBar.setEnableById("wizard-copy-tables", enableRepositoryMenu || enableTransMenu || enableJobMenu);
-//
+
+		((XulMenuitem)doc.getElementById("repository-disconnect")).setDisabled(!enableRepositoryMenu);
+		((XulMenuitem)doc.getElementById("repository-explore")).setDisabled(!enableRepositoryMenu);
+		((XulMenuitem)doc.getElementById("repository-edit-user")).setDisabled(!enableRepositoryMenu);
+		((XulMenuitem)doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
 //		menuBar.setEnableById("repository-disconnect", enableRepositoryMenu);
 //		menuBar.setEnableById("repository-explore", enableRepositoryMenu);
 //		menuBar.setEnableById("repository-edit-user", enableRepositoryMenu);
-//
 //		menuBar.setEnableById("trans-last-preview", enableLastPreviewMenu);
-//
-//		// What steps & plugins to show?
-//		refreshCoreObjects();
+
+		// What steps & plugins to show?
+		refreshCoreObjects();
 	}
 
 	private void markTabsChanged() {
