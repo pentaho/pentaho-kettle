@@ -64,7 +64,7 @@ REM **********************
 REM   Spoon Plugins
 REM **********************
 
-FOR %%F IN (plugins\spoon\*\*.jar) DO call :addcp %%F
+FOR %%F IN (plugins\spoon\*\lib\*.jar) DO call :addcp %%F
 
 goto extlibe
 

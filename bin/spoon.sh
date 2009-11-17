@@ -45,7 +45,7 @@ done
 # ** Spoon Plugin libraries                       **
 # **************************************************
 
-for f in `find $BASEDIR/plugins/spoon -maxdepth 2 -type f -name "*.jar"`
+for f in `find $BASEDIR/plugins/spoon -maxdepth 3 -type f -name "*.jar"`
 do
 	CLASSPATH=$CLASSPATH:$f
 done 
