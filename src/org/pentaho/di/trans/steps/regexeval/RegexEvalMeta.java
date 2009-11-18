@@ -528,7 +528,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
                 fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
                 fieldNullIf[i] = rep.getStepAttributeString(id_step, i, "field_nullif"); //$NON-NLS-1$
                 fieldIfNull[i] = rep.getStepAttributeString(id_step, i, "field_ifnull"); //$NON-NLS-1$
-                fieldTrimType[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_trimtype"); //$NON-NLS-1$
+                fieldTrimType[i] = ValueMeta.getTrimTypeByCode(rep.getStepAttributeString(id_step, i, "field_trimtype"));  //$NON-NLS-1$
             }
         }
         catch (Exception e)
