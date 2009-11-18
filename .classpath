@@ -110,9 +110,9 @@
 	<classpathentry exported="true" kind="lib" path="libext/saxon8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-lang-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/infobright-core-2.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="libswt/linux/x86/swt.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libswt/osx/swt.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar" sourcepath="/pentaho-xul-core"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar" sourcepath="/pentaho-xul-swt"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-database-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
