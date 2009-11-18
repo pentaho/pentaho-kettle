@@ -189,6 +189,7 @@ import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.job.dialog.JobLoadProgressDialog;
 import org.pentaho.di.ui.job.dialog.JobSaveProgressDialog;
@@ -218,6 +219,7 @@ import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.containers.XulMenubar;
+import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
@@ -338,11 +340,11 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
 	private List<Object[]>					menuListeners			    = new ArrayList<Object[]>();
 
-	private Map<String, Menu>				menuMap					      = new HashMap<String, Menu>();
+	private Map<String, XulMenupopup>				menuMap					      = new HashMap<String, XulMenupopup>();
 
 	XulDomContainer mainSpoonContainer;
 	
-	// loads the lifecycle listeners
+  // loads the lifecycle listeners
 	private LifecycleSupport				lcsup					        = new LifecycleSupport();
 	private Composite						mainComposite;
 
@@ -612,6 +614,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       loader.setOuterContext(shell);
       mainSpoonContainer = loader.loadXul(XUL_FILE_MENUBAR);
       mainSpoonContainer.addEventHandler(this);
+      menuBar = (XulMenubar) mainSpoonContainer.getDocumentRoot().getElementById("spoon-menubar");
     } catch (IllegalArgumentException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
@@ -643,7 +646,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			shell.setMaximized(true); // Default = maximized!
 		}
 
-		addMenu();
+		createPopupMenus();
 		addTree();
 		// addCoreObjectsExpandBar();
 		addTabs();
@@ -723,6 +726,10 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
 	public XulMenubar getMenuBar() {
 		return menuBar;
+	}
+	
+	public XulDomContainer getMainSpoonContainer() {
+	  return mainSpoonContainer;
 	}
 
 	public void closeFile() {
@@ -1090,14 +1097,9 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		}
 	}
 
-	public void addMenu() {
-//
-//		if (menuBar != null && !menuBar.isDisposed()) {
-//			menuBar.dispose();
-//		}
-//
-//		try {
-//			menuBar = XulHelper.createMenuBar(XUL_FILE_MENUBAR, shell, new XulMessages());
+	public void createPopupMenus() {
+
+		try {
 //			List<String> ids = new ArrayList<String>();
 //			ids.add("trans-class");
 //			ids.add("trans-class-new");
@@ -1117,13 +1119,31 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 //			ids.add("partition-schema-inst");
 //			ids.add("cluster-schema-inst");
 //			ids.add("slave-server-inst");
-//
+		    menuMap.put("trans-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("trans-class"));
+		    menuMap.put("trans-class-new", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("trans-class-new"));
+		    menuMap.put("job-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("job-class"));
+		    menuMap.put("trans-hop-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("trans-hop-class"));
+		    menuMap.put("database-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("database-class"));
+		    menuMap.put("partition-schema-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("partition-schema-class"));
+		    menuMap.put("cluster-schema-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("cluster-schema-class"));
+		    menuMap.put("slave-cluster-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("slave-cluster-class"));
+		    menuMap.put("trans-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("trans-inst"));
+		    menuMap.put("job-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("job-inst"));
+		    menuMap.put("step-plugin", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("step-plugin"));
+		    menuMap.put("database-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("database-inst"));
+		    menuMap.put("step-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("step-inst"));
+		    menuMap.put("job-entry-copy-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("job-entry-copy-inst"));
+		    menuMap.put("trans-hop-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("trans-hop-inst"));
+		    menuMap.put("partition-schema-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("partition-schema-inst"));
+		    menuMap.put("cluster-schema-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("cluster-schema-inst"));
+		    menuMap.put("slave-server-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("slave-server-inst"));
+		    
 //			this.menuMap = XulHelper.createPopupMenus(XUL_FILE_MENUS, shell, new XulMessages(), ids);// createMenuBarFromXul();
-//		} catch (Throwable t) {
-//			t.printStackTrace();
-//			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS), new Exception(t));
-//		}
-//
+		} catch (Throwable t) {
+			t.printStackTrace();
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS), new Exception(t));
+		}
+
 //		addMenuListeners();
 		addMenuLast();
 //
@@ -1981,7 +2001,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		}
 	}
 
-	public Map<String, Menu> getMenuMap() {
+	public Map<String, XulMenupopup> getMenuMap() {
 		return menuMap;
 	}
 

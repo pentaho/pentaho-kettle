@@ -89,8 +89,6 @@ import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
-import org.pentaho.di.core.gui.SpoonFactory;
-import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -134,10 +132,9 @@ import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
-import org.pentaho.xul.menu.XulMenu;
-import org.pentaho.xul.menu.XulMenuChoice;
-import org.pentaho.xul.menu.XulPopupMenu;
-import org.pentaho.xul.swt.menu.MenuChoice;
+import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.containers.XulMenupopup;
+import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.xul.toolbar.XulToolbar;
 import org.pentaho.xul.toolbar.XulToolbarButton;
 
@@ -149,7 +146,7 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * @since 17-mei-2003
  * 
  */
-public class TransGraph extends Composite implements Redrawable, TabItemInterface {
+public class TransGraph extends Composite implements XulEventHandler, Redrawable, TabItemInterface {
   private static final LogWriter log = LogWriter.getInstance();
 
   private static final int HOP_SEL_MARGIN = 9;
@@ -241,7 +238,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private TransDebugMeta lastTransDebugMeta;
 
-  protected Map<String, org.pentaho.xul.swt.menu.Menu> menuMap = new HashMap<String, org.pentaho.xul.swt.menu.Menu>();
+  private Map<String, XulMenupopup>       menuMap               = new HashMap<String, XulMenupopup>();
 
   protected int currentMouseX = 0;
 
@@ -356,10 +353,16 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     sashForm.setWeights(new int[] { 100, });
 
+    spoon.getMainSpoonContainer().addEventHandler(this);
     try {
       // first get the XML document
-      menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell, new XulMessages(), "trans-graph-hop",
-          "trans-graph-entry", "trans-graph-background", "trans-graph-note");
+      menuMap.put("trans-graph-hop", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-hop"));
+      menuMap.put("trans-graph-entry", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry"));
+      menuMap.put("trans-graph-background", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-background"));
+      menuMap.put("trans-graph-note", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-note"));
+
+//      menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell, new XulMessages(), "trans-graph-hop",
+//          "trans-graph-entry", "trans-graph-background", "trans-graph-note");
     } catch (Throwable t) {
       // TODO log this
       t.printStackTrace();
@@ -1760,105 +1763,105 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       {
         setCurrentStep(stepMeta);
 
-        XulPopupMenu menu = (XulPopupMenu) menuMap.get("trans-graph-entry"); //$NON-NLS-1$
+        XulMenupopup menu = menuMap.get("trans-graph-entry"); //$NON-NLS-1$
         if (menu != null) {
           int sels = transMeta.nrSelectedSteps();
 
-          XulMenuChoice item = menu.getMenuItemById("trans-graph-entry-newhop"); //$NON-NLS-1$
-          menu.addMenuListener("trans-graph-entry-newhop", this, TransGraph.class, "newHop"); //$NON-NLS-1$ //$NON-NLS-2$
-          item.setEnabled(sels == 2);
+//          XulMenuChoice item = menu.getMenuItemById("trans-graph-entry-newhop"); //$NON-NLS-1$
+//          menu.addMenuListener("trans-graph-entry-newhop", this, TransGraph.class, "newHop"); //$NON-NLS-1$ //$NON-NLS-2$
+//          item.setEnabled(sels == 2);
+//          
+//          item = menu.getMenuItemById("trans-graph-entry-open-mapping"); // $NON-NLS-1$
+//          menu.addMenuListener("trans-graph-entry-open-mapping", this, TransGraph.class, "openMapping"); //$NON-NLS-1$ //$NON-NLS-2$
+//          item.setEnabled(stepMeta.isMapping());
+//
+//          item = menu.getMenuItemById("trans-graph-entry-align-snap"); //$NON-NLS-1$
+//          item.setText(Messages.getString("TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
+//
+//          XulMenu aMenu = menu.getMenuById("trans-graph-entry-align"); //$NON-NLS-1$
+//
+//          if (aMenu != null) {
+//            aMenu.setEnabled(sels > 1);
+//          }
+//
+//          menu.addMenuListener("trans-graph-entry-align-left", this, "allignleft"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-align-right", this, "allignright"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-align-top", this, "alligntop"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-align-bottom", this, "allignbottom"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-align-horz", this, "distributehorizontal"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-align-vert", this, "distributevertical"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-align-snap", this, "snaptogrid"); //$NON-NLS-1$ //$NON-NLS-2$
+//
+//          item = menu.getMenuItemById("trans-graph-entry-data-movement-distribute"); //$NON-NLS-1$
+//          item.setChecked(stepMeta.isDistributes());
+//          item = menu.getMenuItemById("trans-graph-entry-data-movement-copy"); //$NON-NLS-1$
+//          item.setChecked(!stepMeta.isDistributes());
+//
+//          item = menu.getMenuItemById("trans-graph-entry-hide"); //$NON-NLS-1$
+//          item.setEnabled(stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta));
+//
+//          item = menu.getMenuItemById("trans-graph-entry-detach"); //$NON-NLS-1$
+//          item.setEnabled(transMeta.isStepUsedInTransHops(stepMeta));
+//
+//          item = menu.getMenuItemById("trans-graph-entry-errors"); //$NON-NLS-1$
+//          item.setEnabled(stepMeta.supportsErrorHandling());
+//
+//          menu.addMenuListener("trans-graph-entry-newhop", this, "newHopChoice"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-edit", this, "editStep"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-edit-description", this, "editDescription"); //$NON-NLS-1$ //$NON-NLS-2$
+//
+//          menu.addMenuListener("trans-graph-entry-data-movement-distribute", this, "setDistributes"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-data-movement-copy", this, "setCopies"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-copies", this, "copies"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-copy", this, "copyStep"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-duplicate", this, "dupeStep"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-delete", this, "delSelected"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-hide", this, "hideStep"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-detach", this, "detachStep"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-inputs", this, "fieldsBefore"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-outputs", this, "fieldsAfter"); //$NON-NLS-1$ //$NON-NLS-2$
+//          // menu.addMenuListener("trans-graph-entry-lineage", this, "fieldsLineage"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-verify", this, "checkSelectedSteps"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-mapping", this, "generateMappingToThisStep"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-partitioning", this, "partitioning"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-clustering", this, "clustering"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-errors", this, "errorHandling"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("trans-graph-entry-preview", this, "preview"); //$NON-NLS-1$ //$NON-NLS-2$
+//          
+//          // TODO Remove this when we find a way to modify the menu dynamically
+//          menu.addMenuListener( "trans-graph-entry-model", this, "openModeler");
+//          menu.addMenuListener( "trans-graph-entry-visualize", this, "quickVisualize");
+//          item = menu.getMenuItemById("trans-graph-entry-model"); //$NON-NLS-1$
+//          item.setEnabled(stepMeta.getName().equalsIgnoreCase("table output"));
+//          item = menu.getMenuItemById("trans-graph-entry-visualize"); //$NON-NLS-1$
+//          item.setEnabled(stepMeta.getName().equalsIgnoreCase("table output"));
+//           // TODO END ---------------------------------------------------------
           
-          item = menu.getMenuItemById("trans-graph-entry-open-mapping"); // $NON-NLS-1$
-          menu.addMenuListener("trans-graph-entry-open-mapping", this, TransGraph.class, "openMapping"); //$NON-NLS-1$ //$NON-NLS-2$
-          item.setEnabled(stepMeta.isMapping());
-
-          item = menu.getMenuItemById("trans-graph-entry-align-snap"); //$NON-NLS-1$
-          item.setText(Messages.getString("TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
-
-          XulMenu aMenu = menu.getMenuById("trans-graph-entry-align"); //$NON-NLS-1$
-
-          if (aMenu != null) {
-            aMenu.setEnabled(sels > 1);
-          }
-
-          menu.addMenuListener("trans-graph-entry-align-left", this, "allignleft"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-align-right", this, "allignright"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-align-top", this, "alligntop"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-align-bottom", this, "allignbottom"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-align-horz", this, "distributehorizontal"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-align-vert", this, "distributevertical"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-align-snap", this, "snaptogrid"); //$NON-NLS-1$ //$NON-NLS-2$
-
-          item = menu.getMenuItemById("trans-graph-entry-data-movement-distribute"); //$NON-NLS-1$
-          item.setChecked(stepMeta.isDistributes());
-          item = menu.getMenuItemById("trans-graph-entry-data-movement-copy"); //$NON-NLS-1$
-          item.setChecked(!stepMeta.isDistributes());
-
-          item = menu.getMenuItemById("trans-graph-entry-hide"); //$NON-NLS-1$
-          item.setEnabled(stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta));
-
-          item = menu.getMenuItemById("trans-graph-entry-detach"); //$NON-NLS-1$
-          item.setEnabled(transMeta.isStepUsedInTransHops(stepMeta));
-
-          item = menu.getMenuItemById("trans-graph-entry-errors"); //$NON-NLS-1$
-          item.setEnabled(stepMeta.supportsErrorHandling());
-
-          menu.addMenuListener("trans-graph-entry-newhop", this, "newHopChoice"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-edit", this, "editStep"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-edit-description", this, "editDescription"); //$NON-NLS-1$ //$NON-NLS-2$
-
-          menu.addMenuListener("trans-graph-entry-data-movement-distribute", this, "setDistributes"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-data-movement-copy", this, "setCopies"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-copies", this, "copies"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-copy", this, "copyStep"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-duplicate", this, "dupeStep"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-delete", this, "delSelected"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-hide", this, "hideStep"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-detach", this, "detachStep"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-inputs", this, "fieldsBefore"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-outputs", this, "fieldsAfter"); //$NON-NLS-1$ //$NON-NLS-2$
-          // menu.addMenuListener("trans-graph-entry-lineage", this, "fieldsLineage"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-verify", this, "checkSelectedSteps"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-mapping", this, "generateMappingToThisStep"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-partitioning", this, "partitioning"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-clustering", this, "clustering"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-errors", this, "errorHandling"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("trans-graph-entry-preview", this, "preview"); //$NON-NLS-1$ //$NON-NLS-2$
-          
-          // TODO Remove this when we find a way to modify the menu dynamically
-          menu.addMenuListener( "trans-graph-entry-model", this, "openModeler");
-          menu.addMenuListener( "trans-graph-entry-visualize", this, "quickVisualize");
-          item = menu.getMenuItemById("trans-graph-entry-model"); //$NON-NLS-1$
-          item.setEnabled(stepMeta.getName().equalsIgnoreCase("table output"));
-          item = menu.getMenuItemById("trans-graph-entry-visualize"); //$NON-NLS-1$
-          item.setEnabled(stepMeta.getName().equalsIgnoreCase("table output"));
-           // TODO END ---------------------------------------------------------
-          
-          ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
+          ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
         }
       } else {
         final TransHopMeta hi = findHop(x, y);
         if (hi != null) // We clicked on a HOP!
         {
-          XulPopupMenu menu = (XulPopupMenu) menuMap.get("trans-graph-hop"); //$NON-NLS-1$
+          XulMenupopup menu = menuMap.get("trans-graph-hop"); //$NON-NLS-1$
           if (menu != null) {
             setCurrentHop(hi);
 
-            XulMenuChoice item = menu.getMenuItemById("trans-graph-hop-enabled"); //$NON-NLS-1$
-            if (item != null) {
-              if (hi.isEnabled()) {
-                item.setText(Messages.getString("TransGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
-              } else {
-                item.setText(Messages.getString("TransGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
-              }
-            }
+//            XulMenuChoice item = menu.getMenuItemById("trans-graph-hop-enabled"); //$NON-NLS-1$
+//            if (item != null) {
+//              if (hi.isEnabled()) {
+//                item.setText(Messages.getString("TransGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
+//              } else {
+//                item.setText(Messages.getString("TransGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
+//              }
+//            }
+//
+//            menu.addMenuListener("trans-graph-hop-edit", this, "editHop"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("trans-graph-hop-flip", this, "flipHopDirection"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("trans-graph-hop-enabled", this, "enableHop"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("trans-graph-hop-delete", this, "deleteHop"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            menu.addMenuListener("trans-graph-hop-edit", this, "editHop"); //$NON-NLS-1$ //$NON-NLS-2$
-            menu.addMenuListener("trans-graph-hop-flip", this, "flipHopDirection"); //$NON-NLS-1$ //$NON-NLS-2$
-            menu.addMenuListener("trans-graph-hop-enabled", this, "enableHop"); //$NON-NLS-1$ //$NON-NLS-2$
-            menu.addMenuListener("trans-graph-hop-delete", this, "deleteHop"); //$NON-NLS-1$ //$NON-NLS-2$
-
-            ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
+            ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
           }
         } else {
           // Clicked on the background: maybe we hit a note?
@@ -1866,62 +1869,62 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           setCurrentNote(ni);
           if (ni != null) {
 
-            XulPopupMenu menu = (XulPopupMenu) menuMap.get("trans-graph-note"); //$NON-NLS-1$
+            XulMenupopup menu = menuMap.get("trans-graph-note"); //$NON-NLS-1$
             if (menu != null) {
 
-              menu.addMenuListener("trans-graph-note-edit", this, "editNote"); //$NON-NLS-1$ //$NON-NLS-2$
-              menu.addMenuListener("trans-graph-note-delete", this, "deleteNote"); //$NON-NLS-1$ //$NON-NLS-2$
-              menu.addMenuListener("trans-graph-note-raise", this, "raiseNote"); //$NON-NLS-1$ //$NON-NLS-2$
-              menu.addMenuListener("trans-graph-note-lower", this, "lowerNote"); //$NON-NLS-1$ //$NON-NLS-2$
-              ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
+//              menu.addMenuListener("trans-graph-note-edit", this, "editNote"); //$NON-NLS-1$ //$NON-NLS-2$
+//              menu.addMenuListener("trans-graph-note-delete", this, "deleteNote"); //$NON-NLS-1$ //$NON-NLS-2$
+//              menu.addMenuListener("trans-graph-note-raise", this, "raiseNote"); //$NON-NLS-1$ //$NON-NLS-2$
+//              menu.addMenuListener("trans-graph-note-lower", this, "lowerNote"); //$NON-NLS-1$ //$NON-NLS-2$
+              ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
             }
           } else {
 
-            XulPopupMenu menu = (XulPopupMenu) menuMap.get("trans-graph-background"); //$NON-NLS-1$
+            XulMenupopup menu = menuMap.get("trans-graph-background"); //$NON-NLS-1$
             if (menu != null) {
 
-              menu.addMenuListener("trans-graph-background-new-note", this, "newNote"); //$NON-NLS-1$ //$NON-NLS-2$
-              menu.addMenuListener("trans-graph-background-paste", this, "paste"); //$NON-NLS-1$ //$NON-NLS-2$
-              menu.addMenuListener("trans-graph-background-settings", this, "settings"); //$NON-NLS-1$ //$NON-NLS-2$
+//              menu.addMenuListener("trans-graph-background-new-note", this, "newNote"); //$NON-NLS-1$ //$NON-NLS-2$
+//              menu.addMenuListener("trans-graph-background-paste", this, "paste"); //$NON-NLS-1$ //$NON-NLS-2$
+//              menu.addMenuListener("trans-graph-background-settings", this, "settings"); //$NON-NLS-1$ //$NON-NLS-2$
 
               final String clipcontent = spoon.fromClipboard();
-              XulMenuChoice item = menu.getMenuItemById("trans-graph-background-paste"); //$NON-NLS-1$
-              if (item != null) {
-                item.setEnabled(clipcontent != null);
-              }
+//              XulMenuChoice item = menu.getMenuItemById("trans-graph-background-paste"); //$NON-NLS-1$
+//              if (item != null) {
+//                item.setEnabled(clipcontent != null);
+//              }
               String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
 
-              XulMenu subMenu = menu.getMenuById("trans-graph-background-new-step");
-              if (subMenu.getItemCount() == 0) {
-                // group these by type so the menu doesn't stretch the height of the screen and to be friendly to testing tools
-                StepLoader steploader = StepLoader.getInstance();
-                // get a list of the categories
-                String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale);
-                // get all the plugins
-                StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
+//              XulMenu subMenu = menu.getMenuById("trans-graph-background-new-step");
+//              if (subMenu.getItemCount() == 0) {
+//                // group these by type so the menu doesn't stretch the height of the screen and to be friendly to testing tools
+//                StepLoader steploader = StepLoader.getInstance();
+//                // get a list of the categories
+//                String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale);
+//                // get all the plugins
+//                StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
+//
+//                XulMessages xulMessages = new XulMessages();
+//                for (int cat = 0; cat < basecat.length; cat++) {
+//                  // create a submenu for this category
+//                  org.pentaho.xul.swt.menu.Menu catMenu = new org.pentaho.xul.swt.menu.Menu(
+//                      (org.pentaho.xul.swt.menu.Menu) subMenu, basecat[cat], basecat[cat], null);
+//                  for (int step = 0; step < basesteps.length; step++) {
+//                    // find the steps for this category
+//                    if (basesteps[step].getCategory(locale).equalsIgnoreCase(basecat[cat])) {
+//                      // create a menu option for this step
+//                      final String name = basesteps[step].getDescription();
+//                      new MenuChoice(catMenu, name, name, null, null, MenuChoice.TYPE_PLAIN, xulMessages);
+//                      menu.addMenuListener(name, this, "newStep"); //$NON-NLS-1$ //$NON-NLS-2$
+//                    }
+//                  }
+//                }
+//
+//              }
+//              
+//              menu.addMenuListener("trans-graph-background-select-all", this, "selectAll"); //$NON-NLS-1$ //$NON-NLS-2$
+//              menu.addMenuListener("trans-graph-background-clear-selection", this, "clearSelection"); //$NON-NLS-1$ //$NON-NLS-2$
 
-                XulMessages xulMessages = new XulMessages();
-                for (int cat = 0; cat < basecat.length; cat++) {
-                  // create a submenu for this category
-                  org.pentaho.xul.swt.menu.Menu catMenu = new org.pentaho.xul.swt.menu.Menu(
-                      (org.pentaho.xul.swt.menu.Menu) subMenu, basecat[cat], basecat[cat], null);
-                  for (int step = 0; step < basesteps.length; step++) {
-                    // find the steps for this category
-                    if (basesteps[step].getCategory(locale).equalsIgnoreCase(basecat[cat])) {
-                      // create a menu option for this step
-                      final String name = basesteps[step].getDescription();
-                      new MenuChoice(catMenu, name, name, null, null, MenuChoice.TYPE_PLAIN, xulMessages);
-                      menu.addMenuListener(name, this, "newStep"); //$NON-NLS-1$ //$NON-NLS-2$
-                    }
-                  }
-                }
-
-              }
-              
-              menu.addMenuListener("trans-graph-background-select-all", this, "selectAll"); //$NON-NLS-1$ //$NON-NLS-2$
-              menu.addMenuListener("trans-graph-background-clear-selection", this, "clearSelection"); //$NON-NLS-1$ //$NON-NLS-2$
-
-              ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
+              ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
             }
 
           }
@@ -3449,6 +3452,38 @@ public Map<StepMeta, String> getStepLogMap() {
  */
 public void setStepLogMap(Map<StepMeta, String> stepLogMap) {
   this.stepLogMap = stepLogMap;
+}
+
+/* (non-Javadoc)
+ * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
+ */
+public String getName() {
+  // TODO Auto-generated method stub
+  return "transgraph";
+}
+
+/* (non-Javadoc)
+ * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
+ */
+public XulDomContainer getXulDomContainer() {
+  // TODO Auto-generated method stub
+  return null;
+}
+
+/* (non-Javadoc)
+ * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
+ */
+public void setName(String arg0) {
+  // TODO Auto-generated method stub
+  
+}
+
+/* (non-Javadoc)
+ * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
+ */
+public void setXulDomContainer(XulDomContainer arg0) {
+  // TODO Auto-generated method stub
+  
 }
 
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <window id="label-test" title="Flow Test" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:pen="http://www.pentaho.org/2008/xul" onload="spoon.onLoad()">
-  <menubar pen:parenttoouter="true">
+  <menubar id="spoon-menubar" pen:parenttoouter="true">
     <menu id="file" label="${Spoon.Menu.File}" accesskey="alt-f">
       <menupopup>
         <menu id="file-new" acceltext="CTRL-N" accesskey="ctrl-n" label="${Spoon.Menu.File.New}">
