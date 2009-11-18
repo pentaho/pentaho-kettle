@@ -189,7 +189,6 @@ import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.job.dialog.JobLoadProgressDialog;
 import org.pentaho.di.ui.job.dialog.JobSaveProgressDialog;
@@ -214,16 +213,16 @@ import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
 import org.pentaho.di.ui.util.ThreadGuiResources;
 import org.pentaho.di.version.BuildVersion;
+import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.components.XulMenuitem;
+import org.pentaho.ui.xul.containers.XulMenu;
 import org.pentaho.ui.xul.containers.XulMenubar;
-import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
-import org.pentaho.xul.swt.menu.Menu;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabListener;
 import org.pentaho.xul.swt.tab.TabSet;
@@ -331,7 +330,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
 	private JobExecutionConfiguration		jobExecutionConfiguration;
 
-	private Menu							spoonMenu;																																											// Connections,
+	private XulMenu							spoonMenu;																																											// Connections,
 
 	private int								coreObjectsState		= STATE_CORE_OBJECTS_NONE;
 
@@ -340,7 +339,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
 	private List<Object[]>					menuListeners			    = new ArrayList<Object[]>();
 
-	private Map<String, XulMenupopup>				menuMap					      = new HashMap<String, XulMenupopup>();
+	private Map<String, XulComponent>				menuMap					      = new HashMap<String, XulComponent>();
 
 	XulDomContainer mainSpoonContainer;
 	
@@ -1119,24 +1118,24 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 //			ids.add("partition-schema-inst");
 //			ids.add("cluster-schema-inst");
 //			ids.add("slave-server-inst");
-		    menuMap.put("trans-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("trans-class"));
-		    menuMap.put("trans-class-new", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("trans-class-new"));
-		    menuMap.put("job-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("job-class"));
-		    menuMap.put("trans-hop-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("trans-hop-class"));
-		    menuMap.put("database-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("database-class"));
-		    menuMap.put("partition-schema-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("partition-schema-class"));
-		    menuMap.put("cluster-schema-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("cluster-schema-class"));
-		    menuMap.put("slave-cluster-class", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("slave-cluster-class"));
-		    menuMap.put("trans-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("trans-inst"));
-		    menuMap.put("job-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("job-inst"));
-		    menuMap.put("step-plugin", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("step-plugin"));
-		    menuMap.put("database-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("database-inst"));
-		    menuMap.put("step-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("step-inst"));
-		    menuMap.put("job-entry-copy-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("job-entry-copy-inst"));
-		    menuMap.put("trans-hop-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("trans-hop-inst"));
-		    menuMap.put("partition-schema-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("partition-schema-inst"));
-		    menuMap.put("cluster-schema-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("cluster-schema-inst"));
-		    menuMap.put("slave-server-inst", (XulMenupopup) mainSpoonContainer.getDocumentRoot().getElementById("slave-server-inst"));
+		    menuMap.put("trans-class", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("trans-class"));
+		    menuMap.put("trans-class-new", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("trans-class-new"));
+		    menuMap.put("job-class", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("job-class"));
+		    menuMap.put("trans-hop-class", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("trans-hop-class"));
+		    menuMap.put("database-class", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("database-class"));
+		    menuMap.put("partition-schema-class", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("partition-schema-class"));
+		    menuMap.put("cluster-schema-class", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("cluster-schema-class"));
+		    menuMap.put("slave-cluster-class", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("slave-cluster-class"));
+		    menuMap.put("trans-inst", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("trans-inst"));
+		    menuMap.put("job-inst", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("job-inst"));
+		    menuMap.put("step-plugin", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("step-plugin"));
+		    menuMap.put("database-inst", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("database-inst"));
+		    menuMap.put("step-inst", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("step-inst"));
+		    menuMap.put("job-entry-copy-inst", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("job-entry-copy-inst"));
+		    menuMap.put("trans-hop-inst", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("trans-hop-inst"));
+		    menuMap.put("partition-schema-inst", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("partition-schema-inst"));
+		    menuMap.put("cluster-schema-inst", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("cluster-schema-inst"));
+		    menuMap.put("slave-server-inst", (XulComponent) mainSpoonContainer.getDocumentRoot().getElementById("slave-server-inst"));
 		    
 //			this.menuMap = XulHelper.createPopupMenus(XUL_FILE_MENUS, shell, new XulMessages(), ids);// createMenuBarFromXul();
 		} catch (Throwable t) {
@@ -2001,7 +2000,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		}
 	}
 
-	public Map<String, XulMenupopup> getMenuMap() {
+	public Map<String, XulComponent> getMenuMap() {
 		return menuMap;
 	}
 
@@ -2241,32 +2240,32 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		if (selection instanceof Class) {
 			if (selection.equals(TransMeta.class)) {
 				// New
-				spoonMenu = (Menu) menuMap.get("trans-class");
+				spoonMenu = (XulMenu) menuMap.get("trans-class");
 			} else if (selection.equals(JobMeta.class)) {
 				// New
-				spoonMenu = (Menu) menuMap.get("job-class");
+				spoonMenu = (XulMenu) menuMap.get("job-class");
 			} else if (selection.equals(TransHopMeta.class)) {
 				// New
-				spoonMenu = (Menu) menuMap.get("trans-hop-class");
+				spoonMenu = (XulMenu) menuMap.get("trans-hop-class");
 			} else if (selection.equals(DatabaseMeta.class)) {
-				spoonMenu = (Menu) menuMap.get("database-class");
+				spoonMenu = (XulMenu) menuMap.get("database-class");
 			} else if (selection.equals(PartitionSchema.class)) {
 				// New
-				spoonMenu = (Menu) menuMap.get("partition-schema-class");
+				spoonMenu = (XulMenu) menuMap.get("partition-schema-class");
 			} else if (selection.equals(ClusterSchema.class)) {
-				spoonMenu = (Menu) menuMap.get("cluster-schema-class");
+				spoonMenu = (XulMenu) menuMap.get("cluster-schema-class");
 			} else if (selection.equals(SlaveServer.class)) {
-				spoonMenu = (Menu) menuMap.get("slave-cluster-class");
+				spoonMenu = (XulMenu) menuMap.get("slave-cluster-class");
 			} else
 				spoonMenu = null;
 		} else {
 
 			if (selection instanceof TransMeta) {
-				spoonMenu = (Menu) menuMap.get("trans-inst");
+				spoonMenu = (XulMenu) menuMap.get("trans-inst");
 			} else if (selection instanceof JobMeta) {
-				spoonMenu = (Menu) menuMap.get("job-inst");
+				spoonMenu = (XulMenu) menuMap.get("job-inst");
 			} else if (selection instanceof StepPlugin) {
-				spoonMenu = (Menu) menuMap.get("step-plugin");
+				spoonMenu = (XulMenu) menuMap.get("step-plugin");
 			}
 
 //			else if (selection instanceof DatabaseMeta) {
@@ -2290,22 +2289,22 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 //
 //			} 
 			else if (selection instanceof StepMeta) {
-				spoonMenu = (Menu) menuMap.get("step-inst");
+				spoonMenu = (XulMenu) menuMap.get("step-inst");
 			} else if (selection instanceof JobEntryCopy) {
-				spoonMenu = (Menu) menuMap.get("job-entry-copy-inst");
+				spoonMenu = (XulMenu) menuMap.get("job-entry-copy-inst");
 			} else if (selection instanceof TransHopMeta) {
-				spoonMenu = (Menu) menuMap.get("trans-hop-inst");
+				spoonMenu = (XulMenu) menuMap.get("trans-hop-inst");
 			} else if (selection instanceof PartitionSchema) {
-				spoonMenu = (Menu) menuMap.get("partition-schema-inst");
+				spoonMenu = (XulMenu) menuMap.get("partition-schema-inst");
 			} else if (selection instanceof ClusterSchema) {
-				spoonMenu = (Menu) menuMap.get("cluster-schema-inst");
+				spoonMenu = (XulMenu) menuMap.get("cluster-schema-inst");
 			} else if (selection instanceof SlaveServer) {
-				spoonMenu = (Menu) menuMap.get("slave-server-inst");
+				spoonMenu = (XulMenu) menuMap.get("slave-server-inst");
 			}
 
 		}
 		if (spoonMenu != null) {
-			ConstUI.displayMenu(spoonMenu.getSwtMenu(), tree);
+			ConstUI.displayMenu((org.eclipse.swt.widgets.Menu) spoonMenu.getManagedObject(), tree);
 		} else
 			tree.setMenu(null);
 	}
