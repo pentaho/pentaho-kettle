@@ -12,25 +12,25 @@
 */
 package org.pentaho.di.core.vfs.configuration;
 
+import java.io.IOException;
+
 import org.apache.commons.vfs.FileSystemOptions;
 
 /**
  * @author cboyden
  */
 public interface IKettleFileSystemConfigBuilder {
+  
+  /**
+   * Extract the FileSystemOptions parameter name from a Kettle variable
+   * 
+   * @param parameter
+   * @return
+   */
+  public String parseParameterName(String parameter, String scheme);
+  
   /**
    * Publicly expose a generic way to set parameters
    */
-  public void setParameter(FileSystemOptions opts, String name, String value, String fullParameterName, String vfsUrl);
-
-  /**
-   * Publicly expose a generic way to get parameters
-   */
-  public Object getParameter(FileSystemOptions opts, String name);
-
-  /**
-   * Publicly expose a generic way to check for parameters
-   */
-  public boolean hasParameter(FileSystemOptions opts, String name);
-
+  public void setParameter(FileSystemOptions opts, String name, String value, String fullParameterName, String vfsUrl) throws IOException;
 }

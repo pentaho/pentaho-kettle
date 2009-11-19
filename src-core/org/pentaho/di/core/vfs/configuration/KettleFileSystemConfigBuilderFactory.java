@@ -56,7 +56,7 @@ public class KettleFileSystemConfigBuilderFactory {
         }
       } catch (Exception e) {
         // Failed to load custom parser. Throw exception.
-        throw new IOException(Messages.getString("CustomVfsSettingsParser.Log.FailedToLoad"), e); //$NON-NLS-1$
+        throw new IOException(Messages.getString("CustomVfsSettingsParser.Log.FailedToLoad")); //$NON-NLS-1$
       }
     } else {
       // No custom parser requested, load default

@@ -13,6 +13,8 @@
 package org.pentaho.di.core.vfs.configuration;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.commons.vfs.FileSystemException;
@@ -20,6 +22,7 @@ import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.provider.FileNameParser;
 import org.apache.commons.vfs.provider.URLFileName;
 import org.apache.commons.vfs.provider.sftp.SftpFileNameParser;
+import org.apache.commons.vfs.provider.sftp.SftpFileSystem;
 import org.jfree.util.Log;
 
 import com.jcraft.jsch.UserInfo;
@@ -32,7 +35,7 @@ import com.jcraft.jsch.UserInfo;
  * Overriden parameters are currently:
  * <table style="text-align: left;" border="1">
  *  <tr><th>Parameter</th><th>Description</th></tr>
- *  <tr><td>AuthKeyPassphrase</td><td>The passphrase that unlocks the private key. (Not recommended for security reasons) (Recommended on a per host basis, unless the passphrase is the same for ALL authentication keys)</td></tr>
+ *  <tr><td>AuthKeyPassphrase</td><td>The passphrase that unlocks the private key. (Recommended on a per host basis, unless the passphrase is the same for ALL authentication keys)</td></tr>
  *  <tr><td>identity</td><td>Local file path (Not VFS) to the private key for authentication.</td></tr>
  * </table>
  * 
@@ -41,7 +44,7 @@ import com.jcraft.jsch.UserInfo;
 public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemConfigBuilder {
 
   private final static KettleSftpFileSystemConfigBuilder builder = new KettleSftpFileSystemConfigBuilder();
-
+  
   public static KettleSftpFileSystemConfigBuilder getInstance() {
     return builder;
   }
@@ -52,45 +55,53 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
 
   @Override
   protected Class<?> getConfigClass() {
-    return KettleGenericFileSystemConfigBuilder.class;
+    // Return the VFS driver class that will recognize the parameters processed by this component
+    return SftpFileSystem.class;
   }
   
-  @Override
-  public void setParameter(FileSystemOptions opts, String name, String value, String fullParameterName, String vfsUrl) {
-    setParameter(opts, name, (Object)value, fullParameterName, vfsUrl);
-  }
-
   /**
    * Publicly expose a generic way to set parameters
    */
   @Override
-  public void setParameter(FileSystemOptions opts, String name, Object value, String fullParameterName, String vfsUrl) {
-    // Check for the presence of a host in the full variable name
-    try {
-      // Parse server name from vfsFilename
-      FileNameParser sftpFilenameParser = SftpFileNameParser.getInstance();
-      URLFileName file = (URLFileName)sftpFilenameParser.parseUri(null, null, vfsUrl);
-
-      if(!parameterContainsHost(fullParameterName) || fullParameterName.endsWith(file.getHostName())) {
-        // Match special cases for parameter names
-        if(name.equalsIgnoreCase("AuthKeyPassphrase")) { //$NON-NLS-1$
-          setParam(opts, UserInfo.class.getName(), new PentahoUserInfo((String)value));
-        } else if (name.equals("identity")) { //$NON-NLS-1$
-          File[] identities = (File[])this.getParam(opts, "identities"); //$NON-NLS-1$
-          
-          if(identities == null) {
-            identities = new File[] {new File((String)value)};
+  public void setParameter(FileSystemOptions opts, String name, String value, String fullParameterName, String vfsUrl) throws IOException {
+    if(!fullParameterName.startsWith("vfs.sftp")) { //$NON-NLS-1$
+      // This is not an SFTP parameter. Delegate to the generic handler
+      super.setParameter(opts, name, value, fullParameterName, vfsUrl);
+    } else {
+      // Check for the presence of a host in the full variable name
+      try { 
+        // Parse server name from vfsFilename
+        FileNameParser sftpFilenameParser = SftpFileNameParser.getInstance();
+        URLFileName file = (URLFileName)sftpFilenameParser.parseUri(null, null, vfsUrl);
+  
+        if(!parameterContainsHost(fullParameterName) || fullParameterName.endsWith(file.getHostName())) {
+          // Match special cases for parameter names
+          if(name.equalsIgnoreCase("AuthKeyPassphrase")) { //$NON-NLS-1$
+            setParam(opts, UserInfo.class.getName(), new PentahoUserInfo((String)value));
+          } else if (name.equals("identity")) { //$NON-NLS-1$
+            File[] identities = (File[])this.getParam(opts, "identities"); //$NON-NLS-1$
+            
+            if(identities == null) {
+              identities = new File[] {new File((String)value)};
+            } else {
+              // Copy, in a Java 5 friendly manner, identities into a larger array 
+              File[] temp = new File[identities.length + 1];
+              System.arraycopy(identities, 0, temp, 0, identities.length);
+              identities = temp;
+              
+              identities[identities.length - 1] = new File((String)value);
+            }
+            setParam(opts, "identities", identities); //$NON-NLS-1$
           } else {
-            identities = Arrays.copyOf(identities, identities.length + 1);
-            identities[identities.length - 1] = new File((String)value);
+            setParam(opts, name, value);
           }
-          setParam(opts, "identities", identities); //$NON-NLS-1$
         } else {
-          setParam(opts, name, value);
+          // No host match found
+          Log.debug("No host match found for: " + fullParameterName); //$NON-NLS-1$
         }
+      } catch (FileSystemException e) {
+        Log.error("Failed to set VFS parameter: [" + fullParameterName + "] " + value, e); //$NON-NLS-1$ //$NON-NLS-2$
       }
-    } catch (FileSystemException e) {
-      Log.error("Failed to set VFS parameter: [" + fullParameterName + "] " + value, e); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
   
@@ -107,32 +118,26 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
       this.passphrase = passphrase;
     }
     
-    @Override
     public String getPassphrase() {
       return passphrase; // Passphrase for the authentication key
     }
 
-    @Override
     public String getPassword() {
       return password; // Appears to be unused in this usage
     }
 
-    @Override
     public boolean promptPassphrase(String arg0) {
         return true;
     }
 
-    @Override
     public boolean promptPassword(String arg0) {
       return false;  
     }
 
-    @Override
     public boolean promptYesNo(String arg0) {
       return false;
     }
 
-    @Override
     public void showMessage(String arg0) {
     }
   };

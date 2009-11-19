@@ -151,38 +151,16 @@ public class KettleVFS
       String[] varList = varSpace.listVariables();
       
       for(String var : varList) {
-        if(var.startsWith("vfs." + scheme)) { //$NON-NLS-1$
-          String param = parseParameterName(var, scheme);
-          configBuilder.setParameter(fsOptions, param, varSpace.getVariable(var), var, vfsFilename);
+        if(var.startsWith("vfs.")) { //$NON-NLS-1$
+          String param = configBuilder.parseParameterName(var, scheme);
+          if(param != null) {
+            configBuilder.setParameter(fsOptions, param, varSpace.getVariable(var), var, vfsFilename);
+          } else {
+            throw new IOException("FileSystemConfigBuilder could not parse parameter: " + var); //$NON-NLS-1$
+          }
         }
       }
       return fsOptions;
-    }
-    
-    /**
-     * Extract the FileSystemOptions parameter name from a Kettle variable
-     * 
-     * @param parameter
-     * @return
-     */
-    private static String parseParameterName(String parameter, String scheme) {
-      String result = null;
-      
-      // Frame the parameter name
-      int begin = 5 + scheme.length(); // ('vfs.' + scheme + '.').length
-      int end = -1;
-      
-      end = parameter.indexOf('.', begin);
-      
-      if(end < 0) {
-        end = parameter.length();
-      }
-      
-      if(end > begin) {
-        result = parameter.substring(begin, end);
-      }
-      
-      return result;
     }
     
     /**
