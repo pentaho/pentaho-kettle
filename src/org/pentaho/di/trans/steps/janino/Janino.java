@@ -201,6 +201,11 @@ public class Janino extends BaseStep implements StepInterface
                     	if (fn.getValueType()!=ValueMetaInterface.TYPE_INTEGER) {
                     		throw new KettleValueException("Please specify an Integer type to parse ["+formulaResult.getClass().getName()+"] for field ["+fn.getFieldName()+"] as a result of formula ["+fn.getFormula()+"]");
                     	}
+                    } else if (formulaResult instanceof BigDecimal) { //BigDecimal must be before Number since this is also instanceof Number
+                    	data.returnType[i] = JaninoData.RETURN_TYPE_BIGDECIMAL;
+                    	if (fn.getValueType()!=ValueMetaInterface.TYPE_BIGNUMBER) {
+                    		throw new KettleValueException("Please specify a BigNumber type to parse ["+formulaResult.getClass().getName()+"] for field ["+fn.getFieldName()+"] as a result of formula ["+fn.getFormula()+"]");
+                    	}                    	
                     } else if (formulaResult instanceof Number) {
                     	data.returnType[i] = JaninoData.RETURN_TYPE_NUMBER;
                     	if (fn.getValueType()!=ValueMetaInterface.TYPE_NUMBER) {
@@ -210,11 +215,6 @@ public class Janino extends BaseStep implements StepInterface
                     	data.returnType[i] = JaninoData.RETURN_TYPE_DATE;
                     	if (fn.getValueType()!=ValueMetaInterface.TYPE_DATE) {
                     		throw new KettleValueException("Please specify a Date type to parse ["+formulaResult.getClass().getName()+"] for field ["+fn.getFieldName()+"] as a result of formula ["+fn.getFormula()+"]");
-                    	}
-                    } else if (formulaResult instanceof BigDecimal) {
-                    	data.returnType[i] = JaninoData.RETURN_TYPE_BIGDECIMAL;
-                    	if (fn.getValueType()!=ValueMetaInterface.TYPE_BIGNUMBER) {
-                    		throw new KettleValueException("Please specify a BigNumber type to parse ["+formulaResult.getClass().getName()+"] for field ["+fn.getFieldName()+"] as a result of formula ["+fn.getFormula()+"]");
                     	}
                     } else if (formulaResult instanceof byte[]) {
                     	data.returnType[i] = JaninoData.RETURN_TYPE_BYTE_ARRAY;
