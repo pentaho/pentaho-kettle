@@ -2626,7 +2626,7 @@ public class Trans implements VariableSpace, NamedParams
 				
 				// First export the job...
 				//
-				FileObject tempFile = KettleVFS.createTempFile("transExport", ".zip", System.getProperty("java.io.tmpdir"));
+				FileObject tempFile = KettleVFS.createTempFile("transExport", ".zip", System.getProperty("java.io.tmpdir"), transMeta);
 				
 				TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(tempFile.getName().toString(), transMeta, transMeta, repository, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME);
 				
@@ -2698,7 +2698,7 @@ public class Trans implements VariableSpace, NamedParams
         {
             try
             {
-                FileObject fileObject = KettleVFS.getFileObject(transMeta.getFilename());
+                FileObject fileObject = KettleVFS.getFileObject(transMeta.getFilename(), var);
                 FileName fileName = fileObject.getName();
                 
                 // The filename of the transformation

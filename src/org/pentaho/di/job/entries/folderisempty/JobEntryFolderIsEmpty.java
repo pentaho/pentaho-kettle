@@ -220,7 +220,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
             String realFoldername = getRealFoldername();
             FileObject FolderObject = null;
 			try {
-				FolderObject = KettleVFS.getFileObject(realFoldername);
+				FolderObject = KettleVFS.getFileObject(realFoldername, this);
 
 				if ( FolderObject.exists() )
 				{

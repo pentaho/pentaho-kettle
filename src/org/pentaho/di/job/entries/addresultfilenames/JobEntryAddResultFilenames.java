@@ -269,7 +269,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     String realwildcard = environmentSubstitute(wildcard);
 
     try {
-      filefolder = KettleVFS.getFileObject(realFilefoldername);
+      filefolder = KettleVFS.getFileObject(realFilefoldername, this);
 
       // Here gc() is explicitly called if e.g. createfile is used in the same
       // job for the same file. The problem is that after creating the file the
@@ -285,7 +285,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 	    {
 	    	// Add filename to Resultfilenames ...
 	    	if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryAddResultFilenames.AddingFileToResult",filefolder.toString()));
-        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filefolder.toString()), parentJob.getJobname(), toString());
+        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filefolder.toString(), this), parentJob.getJobname(), toString());
             result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	    }
 	    else
@@ -296,7 +296,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 			{
 				// Add filename to Resultfilenames ...
 	    		if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobEntryAddResultFilenames.AddingFileToResult",list[i].toString()));
-	        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(list[i].toString()), parentJob.getJobname(), toString());
+	        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(list[i].toString(), this), parentJob.getJobname(), toString());
 	            result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	        }
 	    }

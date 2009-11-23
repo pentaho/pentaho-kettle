@@ -107,7 +107,7 @@ public class PropertyOutput extends BaseStep implements StepInterface
 				throw new KettleException(Messages.getString("PropertyOutput.Log.FilenameEmpty"));	
 			}
 			try{
-				data.file=KettleVFS.getFileObject(filename);
+				data.file=KettleVFS.getFileObject(filename, getTransMeta());
 			}catch(Exception e){throw new KettleException(e);}
 
 

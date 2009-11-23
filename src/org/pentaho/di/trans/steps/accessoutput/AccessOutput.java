@@ -210,7 +210,7 @@ public class AccessOutput extends BaseStep implements StepInterface
         String realFilename = environmentSubstitute(meta.getFilename());
         if(log.isBasic())
         	logBasic(Messages.getString("AccessOutput.log.WritingToFile", realFilename));
-        FileObject fileObject = KettleVFS.getFileObject(realFilename);
+        FileObject fileObject = KettleVFS.getFileObject(realFilename, getTransMeta());
         File file = new File(KettleVFS.getFilename(fileObject));
         
         // First open or create the access file

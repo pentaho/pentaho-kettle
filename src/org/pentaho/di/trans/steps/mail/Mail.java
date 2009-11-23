@@ -572,7 +572,7 @@ public class Mail extends BaseStep implements StepInterface
 			  
 			
 				if(!Const.isEmpty(realSourceFileFoldername)){
-					sourcefile=KettleVFS.getFileObject(realSourceFileFoldername);
+					sourcefile=KettleVFS.getFileObject(realSourceFileFoldername, getTransMeta());
 					if(sourcefile.exists()){
 						long FileSize=0;
 						FileObject list[]=null;
@@ -595,7 +595,7 @@ public class Mail extends BaseStep implements StepInterface
 					
 						 	for ( int i=0; i < list.length; i++ ) {
 	
-						    	  file=KettleVFS.getFileObject(KettleVFS.getFilename(list[i]));
+						    	  file=KettleVFS.getFileObject(KettleVFS.getFilename(list[i]), getTransMeta());
 						    	  
 						    	  if(zipFiles){
 						    		  
@@ -633,7 +633,7 @@ public class Mail extends BaseStep implements StepInterface
 							
 						 			for ( int i=0; i < list.length; i++ ) {
 						 				
-						 				file=KettleVFS.getFileObject(KettleVFS.getFilename(list[i]));
+						 				file=KettleVFS.getFileObject(KettleVFS.getFilename(list[i]), getTransMeta());
 						 				
 						 				 ZipEntry zipEntry = new ZipEntry(file.getName().getBaseName());
 						                  zipOutputStream.putNextEntry(zipEntry);
@@ -653,7 +653,7 @@ public class Mail extends BaseStep implements StepInterface
 						 		}
 						 		if(data.zipFileLimit>0 && FileSize>data.zipFileLimit || data.zipFileLimit==0)
 						 		{
-						 			file=KettleVFS.getFileObject(masterZipfile.getAbsolutePath());
+						 			file=KettleVFS.getFileObject(masterZipfile.getAbsolutePath(), getTransMeta());
 						 			addAttachedFilePart(file); 
 						 		}
 						 	}

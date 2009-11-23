@@ -583,7 +583,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
 						data.parentZipOutputStream = new ZipOutputStream(
 								KettleVFS.getOutputStream(
-										KettleVFS.getFileObject(data.parentZipOutputMeta.name),
+										KettleVFS.getFileObject(data.parentZipOutputMeta.name, getTransMeta()),
 										meta.isFileAppended()));
 						outputStream = data.parentZipOutputStream;
 					}
@@ -606,7 +606,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				{
 					// If we ever have code to intermediately close files before we are done
 					// with them, then we'll need code to track whether it was previously opened or not.
-					FileObject f = KettleVFS.getFileObject(data.outputMeta.name);
+					FileObject f = KettleVFS.getFileObject(data.outputMeta.name, getTransMeta());
 					fileAlreadyExisted = f.exists();
 					outputStream = KettleVFS.getOutputStream(f, meta.isFileAppended());
 					
@@ -649,7 +649,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				
 				if (meta.isAddToResultFiles())
 				{
-					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(data.outputMeta.name), getTransMeta().getName(), getStepname());
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(data.outputMeta.name, getTransMeta()), getTransMeta().getName(), getStepname());
 					resultFile.setComment("This file was created with a text file output step");
 					addResultFile(resultFile);
 				}

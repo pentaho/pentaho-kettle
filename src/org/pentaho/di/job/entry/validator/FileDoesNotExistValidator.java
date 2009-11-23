@@ -53,7 +53,7 @@ public class FileDoesNotExistValidator extends AbstractFileValidator
     FileObject fileObject = null;
     try
     {
-      fileObject = KettleVFS.getFileObject(realFileName);
+      fileObject = KettleVFS.getFileObject(realFileName, variableSpace);
 
       if (fileObject.exists() && failIfExists)
       {

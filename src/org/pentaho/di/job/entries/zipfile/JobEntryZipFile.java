@@ -253,7 +253,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		try
 		{
 			// Get parent folder
-			parentfolder=KettleVFS.getFileObject(filename).getParent();	
+			parentfolder=KettleVFS.getFileObject(filename, this).getParent();	
 			
     		if(!parentfolder.exists())	
     		{
@@ -307,7 +307,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		
 		try
 		{
-			OriginFile = KettleVFS.getFileObject(realSourceDirectoryOrFile);
+			OriginFile = KettleVFS.getFileObject(realSourceDirectoryOrFile, this);
 			localSourceFilename=KettleVFS.getFilename(OriginFile);
 			orginexist=OriginFile.exists();
 		}catch(Exception e){}finally {if (OriginFile != null )	{try {OriginFile.close();}
@@ -319,7 +319,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
             
             FileObject fileObject = null;
 			try {
-				fileObject = KettleVFS.getFileObject(localrealZipfilename);
+				fileObject = KettleVFS.getFileObject(localrealZipfilename, this);
 				localrealZipfilename=KettleVFS.getFilename(fileObject);
 				// Check if Zip File exists
 				if (fileObject.exists())
@@ -583,8 +583,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 								if ( zippedFiles[i] != null)
 								{								
 									// Delete File
-									FileObject fileObjectd = KettleVFS.getFileObject(localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i]);
-									if(f.isFile()) fileObjectd = KettleVFS.getFileObject(localSourceFilename);		
+									FileObject fileObjectd = KettleVFS.getFileObject(localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i], this);
+									if(f.isFile()) fileObjectd = KettleVFS.getFileObject(localSourceFilename, this);
 									
 									// Here gc() is explicitly called if e.g. createfile is used in the same
 									// job for the same file. The problem is that after creating the file the
@@ -617,7 +617,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 										// Move File	
 										try
 										{
-											FileObject fileObjectm = KettleVFS.getFileObject(realMovetodirectory + Const.FILE_SEPARATOR+zippedFiles[i]);
+											FileObject fileObjectm = KettleVFS.getFileObject(realMovetodirectory + Const.FILE_SEPARATOR+zippedFiles[i], this);
 											fileObjectd.moveTo(fileObjectm);
 										}
 										catch (IOException e) 
@@ -720,7 +720,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			 {
 				 FileObject moveToDirectory=null;
 				 try{
-					 moveToDirectory=KettleVFS.getFileObject(realMovetodirectory);
+					 moveToDirectory=KettleVFS.getFileObject(realMovetodirectory, this);
 					 if(moveToDirectory.exists())
 					 {
 						 if(moveToDirectory.getType()==FileType.FOLDER)

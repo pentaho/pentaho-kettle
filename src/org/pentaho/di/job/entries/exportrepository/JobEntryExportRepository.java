@@ -491,7 +491,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		
 		try
 		{
-			file=KettleVFS.getFileObject(realoutfilename);
+			file=KettleVFS.getFileObject(realoutfilename, this);
 			if(file.exists())
 			{
 				if(export_type.equals(Export_All) || export_type.equals(Export_Jobs)
@@ -512,7 +512,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 						String parentFolder= KettleVFS.getFilename(file.getParent());
 						String shortFilename=file.getName().getBaseName();
 						shortFilename=buildUniqueFilename(shortFilename);
-						file=KettleVFS.getFileObject(parentFolder+Const.FILE_SEPARATOR+shortFilename);
+						file=KettleVFS.getFileObject(parentFolder+Const.FILE_SEPARATOR+shortFilename, this);
 						if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobExportRepository.Log.NewFilename",file.toString()));
 					}
 				}else if(export_type.equals(Export_By_Folder))
@@ -692,7 +692,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	            if(newfolder)
 	            {
 	            	foldername=realoutfilename + Const.FILE_SEPARATOR + filename;
-	            	this.file=KettleVFS.getFileObject(foldername);
+	            	this.file=KettleVFS.getFileObject(foldername, this);
 	            	if(!this.file.exists())
 	            	{
 	            		this.file.createFolder();
@@ -700,7 +700,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	            }
 	            
 	            filename=foldername+ Const.FILE_SEPARATOR + buildFilename(filename)+".xml";
-	            this.file=KettleVFS.getFileObject(filename);
+	            this.file=KettleVFS.getFileObject(filename, this);
 
 	            if(this.file.exists())
 	            {
@@ -792,7 +792,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	{	
 		try
 		{
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getJobname(), toString());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry, this), parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 			if(log.isDebug()) log.logDebug(toString(),Messages.getString("JobExportRepository.Log.FileAddedToResultFilesName",fileaddentry));
 		}catch (Exception e)

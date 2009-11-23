@@ -53,7 +53,7 @@ public class FileExistsValidator extends AbstractFileValidator
     FileObject fileObject = null;
     try
     {
-      fileObject = KettleVFS.getFileObject(realFileName);
+      fileObject = KettleVFS.getFileObject(realFileName, variableSpace);
       if (fileObject == null || (fileObject != null && !fileObject.exists() && failIfDoesNotExist))
       {
         JobEntryValidatorUtils.addFailureRemark(source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils

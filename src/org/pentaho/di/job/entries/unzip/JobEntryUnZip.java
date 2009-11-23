@@ -358,7 +358,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			boolean exitjobentry=false;
 			// Target folder
-			targetdir = KettleVFS.getFileObject(realTargetdirectory);	
+			targetdir = KettleVFS.getFileObject(realTargetdirectory, this);	
 			if (!targetdir.exists())
 			{
 				if(createfolder)
@@ -392,7 +392,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 					exitjobentry=true;
 				}else
 				{
-					movetodir = KettleVFS.getFileObject(realMovetodirectory);
+					movetodir = KettleVFS.getFileObject(realMovetodirectory, this);
 					if (!(movetodir.exists()) || !(movetodir.getType() == FileType.FOLDER))
 					{
 						if(createMoveToDirectory)
@@ -432,7 +432,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 						realFilenameSource = resultRow.getString(0,null);
 						realWildcardSource = resultRow.getString(1,null);
 			
-						fileObject = KettleVFS.getFileObject(realFilenameSource);
+						fileObject = KettleVFS.getFileObject(realFilenameSource, this);
 						if(fileObject.exists())
 						{
 							processOneFile(log, result,parentJob, 
@@ -447,7 +447,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 					}
 				}
 			}else{
-				fileObject = KettleVFS.getFileObject(realFilenameSource);
+				fileObject = KettleVFS.getFileObject(realFilenameSource, this);
 				if (!fileObject.exists())
 				{
 					log.logError(Messages.getString("JobUnZip.Error.Label"), Messages.getString("JobUnZip.ZipFile.NotExists.Label",realFilenameSource));
@@ -604,7 +604,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	        	if(lastindexOfDot==-1) lastindexOfDot=lenstring;
 	        		
 	        	String foldername=realTargetdirectory + "/" + shortSourceFilename.substring(0, lastindexOfDot);
-				FileObject rootfolder=KettleVFS.getFileObject(foldername);
+				FileObject rootfolder=KettleVFS.getFileObject(foldername, this);
 				if(!rootfolder.exists())
 				{
 					try {
@@ -620,7 +620,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		    // Try to read the entries from the VFS object...
 			//
 			String zipFilename = "zip:"+sourceFileObject.getName().getFriendlyURI();
-			FileObject zipFile = KettleVFS.getFileObject(zipFilename);
+			FileObject zipFile = KettleVFS.getFileObject(zipFilename, this);
 			FileObject[] items = zipFile.findFiles(
 					new AllFileSelector()
                         {
@@ -671,7 +671,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 					  // get real destination filename
 					  //
 					  String newFileName = unzipToFolder + Const.FILE_SEPARATOR + getTargetFilename(item.getName().getPath());
-					  newFileObject = KettleVFS.getFileObject(newFileName);
+					  newFileObject = KettleVFS.getFileObject(newFileName, this);
 						
 					  if( item.getType().equals(FileType.FOLDER))
 					  {
@@ -800,7 +800,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 					try
 					{
 						String destinationFilename=movetodir+Const.FILE_SEPARATOR+ fileObject.getName().getBaseName();
-						destFile=KettleVFS.getFileObject(destinationFilename);
+						destFile=KettleVFS.getFileObject(destinationFilename, this);
 						
 						fileObject.moveTo(destFile);
 
@@ -837,7 +837,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		if (addfiletoresult)
 	 	{
 			// Add file to result files name
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(newfile), parentJob.getJobname(), toString());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(newfile, this), parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	 	}
 	}

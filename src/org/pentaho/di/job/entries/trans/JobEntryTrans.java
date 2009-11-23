@@ -934,7 +934,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
                         if (setLogfile)
                         {
-                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(getLogFilename()), parentJob.getJobname(), toString());
+                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(getLogFilename(), this), parentJob.getJobname(), toString());
                             result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
         				}
                     }

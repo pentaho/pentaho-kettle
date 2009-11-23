@@ -239,7 +239,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		try
 		{
 			
-			FileObject file = KettleVFS.getFileObject(buildFilename(true));
+			FileObject file = KettleVFS.getFileObject(buildFilename(true), getTransMeta());
 			
 
 		    if(meta.isAddToResultFiles())

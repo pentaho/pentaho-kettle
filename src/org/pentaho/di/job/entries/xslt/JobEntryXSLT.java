@@ -226,9 +226,9 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
 			if (xmlfilename!=null && xslfilename!=null && outputfilename!=null)
 			{
-				xmlfile = KettleVFS.getFileObject(realxmlfilename);
-				xslfile = KettleVFS.getFileObject(realxslfilename);
-				outputfile = KettleVFS.getFileObject(realoutputfilename);
+				xmlfile = KettleVFS.getFileObject(realxmlfilename, this);
+				xslfile = KettleVFS.getFileObject(realxslfilename, this);
+				outputfile = KettleVFS.getFileObject(realoutputfilename, this);
 
 				if ( xmlfile.exists() && xslfile.exists() )
 				{
@@ -310,7 +310,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 						if (isAddFileToResult())
 						{
 							// Add output filename to output files
-		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realoutputfilename), parentJob.getJobname(), toString());
+		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realoutputfilename, this), parentJob.getJobname(), toString());
 		                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 						}
 						

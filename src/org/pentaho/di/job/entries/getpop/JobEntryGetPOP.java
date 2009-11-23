@@ -392,7 +392,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     {
       int nbrmailtoretrieve = Const.toInt(firstmails, 0);
       String realOutputFolder=getRealOutputDirectory();
-      fileObject = KettleVFS.getFileObject(realOutputFolder);
+      fileObject = KettleVFS.getFileObject(realOutputFolder, this);
 
       // Check if output folder exists
       if (!fileObject.exists())

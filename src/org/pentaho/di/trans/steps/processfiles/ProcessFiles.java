@@ -113,7 +113,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
         		log.logError(toString(), Messages.getString("ProcessFiles.Error.SourceFileEmpty"));
         		throw new KettleException(Messages.getString("ProcessFiles.Error.SourceFileEmpty"));
         	}
-        	data.sourceFile=KettleVFS.getFileObject(sourceFilename);
+        	data.sourceFile=KettleVFS.getFileObject(sourceFilename, getTransMeta());
         	boolean targetFileExists=false;
         	
         	if(!data.sourceFile.exists())
@@ -137,7 +137,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
             		log.logError(toString(), Messages.getString("ProcessFiles.Error.TargetFileEmpty"));
             		throw new KettleException(Messages.getString("ProcessFiles.Error.TargetFileEmpty"));
             	}
-            	data.targetFile=KettleVFS.getFileObject(targetFilename);
+            	data.targetFile=KettleVFS.getFileObject(targetFilename, getTransMeta());
 				if(data.targetFile.exists())
 				{
 					if(log.isDetailed()) log.logDetailed(toString(), Messages.getString("ProcessFiles.Log.TargetFileExists",targetFilename));
@@ -167,7 +167,7 @@ public class ProcessFiles extends BaseStep implements StepInterface
 	    			break;
 	    		case ProcessFilesMeta.OPERATION_TYPE_MOVE:
 	    			if(((meta.isOverwriteTargetFile() && targetFileExists) || !targetFileExists)&& !meta.simulate)
-	    				data.sourceFile.moveTo(KettleVFS.getFileObject(targetFilename));
+	    				data.sourceFile.moveTo(KettleVFS.getFileObject(targetFilename, getTransMeta()));
 	    			if(log.isDetailed()) 
 	    				log.logDetailed(toString(), Messages.getString("ProcessFiles.Log.SourceFileMoved",sourceFilename,targetFilename));
 	    			break;

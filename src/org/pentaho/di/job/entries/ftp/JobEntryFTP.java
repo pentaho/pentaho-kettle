@@ -1092,7 +1092,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		if(isaddresult){
 		FileObject targetFile = null;
 		try{
-			targetFile = KettleVFS.getFileObject(filename);
+			targetFile = KettleVFS.getFileObject(filename, this);
 			
 			// Add to the result files...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());

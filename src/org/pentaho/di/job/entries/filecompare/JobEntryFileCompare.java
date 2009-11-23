@@ -174,9 +174,9 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
    	    // Really read the contents and do comparisons
 
         DataInputStream in1 = new DataInputStream(new BufferedInputStream(
-            		                                       KettleVFS.getInputStream(KettleVFS.getFilename(file1))));
+            		                                       KettleVFS.getInputStream(KettleVFS.getFilename(file1), this)));
         DataInputStream in2 = new DataInputStream(new BufferedInputStream(
-            		                                       KettleVFS.getInputStream(KettleVFS.getFilename(file2))));
+            		                                       KettleVFS.getInputStream(KettleVFS.getFilename(file2), this)));
 
         char ch1, ch2;
         while ( in1.available() != 0 && in2.available() != 0 )
@@ -211,8 +211,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		{
 			if (filename1!=null && filename2!=null)
 			{
-				file1 = KettleVFS.getFileObject(realFilename1);
-				file2 = KettleVFS.getFileObject(realFilename2);
+				file1 = KettleVFS.getFileObject(realFilename1, this);
+				file2 = KettleVFS.getFileObject(realFilename2, this);
 
 				if ( file1.exists() && file2.exists() )
 				{

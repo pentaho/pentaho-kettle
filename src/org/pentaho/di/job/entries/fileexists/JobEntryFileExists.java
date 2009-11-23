@@ -162,7 +162,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
             String realFilename = getRealFilename();
             try
             {
-                FileObject file = KettleVFS.getFileObject(realFilename);
+                FileObject file = KettleVFS.getFileObject(realFilename, this);
                 if (file.exists() && file.isReadable())
                 {
                     log.logDetailed(toString(), Messages.getString("JobEntryFileExists.File_Exists", realFilename)); //$NON-NLS-1$
@@ -225,7 +225,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 				// From : ${FOLDER}/../foo/bar.csv
 				// To   : /home/matt/test/files/foo/bar.csv
 				//
-				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(filename));
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(filename), space);
 				
 				// If the file doesn't exist, forget about this effort too!
 				//

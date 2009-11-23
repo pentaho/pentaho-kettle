@@ -264,7 +264,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 					
 					try{
 						String realfilename=environmentSubstitute(sqlfilename);
-						SQLfile=KettleVFS.getFileObject(realfilename);
+						SQLfile=KettleVFS.getFileObject(realfilename, this);
 						if(!SQLfile.exists()) 
 						{
 							log.logError(toString(),Messages.getString("JobSQL.SQLFileNotExist",realfilename));
