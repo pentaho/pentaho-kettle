@@ -14,40 +14,27 @@ set LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
 export MOZILLA_FIVE_HOME LD_LIBRARY_PATH
 
 # **************************************************
-# ** Libraries used by Kettle:                    **
+# ** Init BASEDIR                                 **
 # **************************************************
 
 BASEDIR=`dirname $0`
 cd $BASEDIR
 
-CLASSPATH=$BASEDIR
-
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-db.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-ui-swt.jar
-
-CLASSPATH=$CLASSPATH:$BASEDIR/libswt/jface.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/libswt/runtime.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/libswt/common.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/libswt/commands.jar
-
-# **************************************************
-# ** JDBC & other libraries used by Kettle:       **
-# **************************************************
-
-for f in `find $BASEDIR/libext -type f -name "*.jar"` `find $BASEDIR/libext -type f -name "*.zip"`
-do
-  CLASSPATH=$CLASSPATH:$f
-done
 
 # **************************************************
 # ** Spoon Plugin libraries                       **
 # **************************************************
 
-for f in `find $BASEDIR/plugins/spoon -maxdepth 3 -type f -name "*.jar"`
+PLUGINPATH=NONE
+
+for f in `find $BASEDIR/plugins/spoon -maxdepth 2 -type d -name "lib"` 
 do
-	CLASSPATH=$CLASSPATH:$f
+if [ "$PLUGINPATH" != "NONE" ]
+then
+	PLUGINPATH=$PLUGINPATH:$f
+else
+	PLUGINPATH=$f
+fi
 done 
 
 # **************************************************
@@ -136,12 +123,25 @@ esac
 
 export LIBPATH
 
+# **************************************************
+# ** Merge PLUGINPATH and LIBPATH into LIBSPATH   **
+# **************************************************
+
+LIBSPATH=
+
 if [ "$LIBPATH" != "NONE" ]
 then
-  for f in `find $LIBPATH -name '*.jar'`
-  do
-    CLASSPATH=$CLASSPATH:$f
-  done
+ if [ "$PLUGINPATH" != "NONE" ]
+ then
+	LIBSPATH="-lib $LIBPATH:$PLUGINPATH"
+ else 
+	LIBSPATH="-lib $LIBPATH"
+ fi 
+else
+ if [ "$PLUGINPATH" != "NONE" ]
+ then
+    LIBSPATH="-lib $PLUGINPATH"
+ fi
 fi
 
 
@@ -150,11 +150,10 @@ fi
 # ** Change 256m to higher values in case you run out of memory.  **
 # ******************************************************************
 
-OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
+OPT="-Xmx256m -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
 
 # ***************
 # ** Run...    **
 # ***************
 
-$JAVA_BIN $OPT org.pentaho.di.ui.spoon.Spoon "${1+$@}"
-
+$JAVA_BIN $OPT -jar launcher.jar $LIBSPATH "${1+$@}"
