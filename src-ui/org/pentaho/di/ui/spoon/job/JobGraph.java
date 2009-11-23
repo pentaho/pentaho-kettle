@@ -2909,4 +2909,10 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
     // TODO Auto-generated method stub
     
   }
+
+  public boolean canHandleSave() {
+    return true;
+  }
+  
+  
 }

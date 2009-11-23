@@ -1946,24 +1946,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     }
   }
   
-  // TODO - Remove these when we can install our own menuing system
-  public void openModeler() {
-    try{
-      
-      Object modelerCanvas = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").newInstance();
-      Method m = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").getMethod("createModelerTab");
-      m.invoke(modelerCanvas);
-
-    } catch(Exception e){
-      e.printStackTrace();
-    }
-  }
-  
-  public void quickVisualize() {
-    System.out.println("In 'quickVisualize()'");
-  }
-  // TODO - END -----------------------------------------------------
-
   public void selectAll() {
     spoon.editSelectAll();
   }
@@ -3450,50 +3432,53 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     this.halting = halting;
   }
 
-/**
- * @return the stepLogMap
- */
-public Map<StepMeta, String> getStepLogMap() {
-  return stepLogMap;
-}
-
-/**
- * @param stepLogMap the stepLogMap to set
- */
-public void setStepLogMap(Map<StepMeta, String> stepLogMap) {
-  this.stepLogMap = stepLogMap;
-}
-
-/* (non-Javadoc)
- * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
- */
-public String getName() {
-  // TODO Auto-generated method stub
-  return "transgraph";
-}
-
-/* (non-Javadoc)
- * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
- */
-public XulDomContainer getXulDomContainer() {
-  // TODO Auto-generated method stub
-  return null;
-}
-
-/* (non-Javadoc)
- * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
- */
-public void setName(String arg0) {
-  // TODO Auto-generated method stub
+  /**
+   * @return the stepLogMap
+   */
+  public Map<StepMeta, String> getStepLogMap() {
+    return stepLogMap;
+  }
   
-}
-
-/* (non-Javadoc)
- * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
- */
-public void setXulDomContainer(XulDomContainer arg0) {
-  // TODO Auto-generated method stub
+  /**
+   * @param stepLogMap the stepLogMap to set
+   */
+  public void setStepLogMap(Map<StepMeta, String> stepLogMap) {
+    this.stepLogMap = stepLogMap;
+  }
   
-}
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
+   */
+  public String getName() {
+    // TODO Auto-generated method stub
+    return "transgraph";
+  }
+  
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
+   */
+  public XulDomContainer getXulDomContainer() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
+   */
+  public void setName(String arg0) {
+    // TODO Auto-generated method stub
+    
+  }
+  
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
+   */
+  public void setXulDomContainer(XulDomContainer arg0) {
+    // TODO Auto-generated method stub
+    
+  }
+  public boolean canHandleSave() {
+    return true;
+  }
 
 }

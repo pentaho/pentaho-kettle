@@ -614,6 +614,15 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       mainSpoonContainer.addEventHandler(this);
       menuBar = (XulMenubar) mainSpoonContainer.getDocumentRoot().getElementById("spoon-menubar");
       
+      for(SpoonPlugin pl : UIPluginManager.getInstance().getPlugins()){
+        for(String url : pl.getOverlays()){
+          mainSpoonContainer.loadOverlay(url.toString());
+        }
+        for(XulEventHandler hand : pl.getEventHandlers()){
+          mainSpoonContainer.addEventHandler(hand);
+        }
+      }
+      
     } catch (IllegalArgumentException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();

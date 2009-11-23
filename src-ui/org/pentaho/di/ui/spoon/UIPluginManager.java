@@ -15,7 +15,7 @@ public class UIPluginManager {
   private List<SpoonPlugin> plugins = new ArrayList<SpoonPlugin>();
   private final String PLUGIN_FILE_NAME = "plugin.xml";
   
-  public UIPluginManager(){
+  private UIPluginManager(){
     File dir = new File("plugins/spoon");
     File[] dirChildren = dir.listFiles();
     
@@ -51,9 +51,13 @@ public class UIPluginManager {
     
   }
   
-  public UIPluginManager getInstance(){
+  public static UIPluginManager getInstance(){
     return instance;
   }
   
+  
+  public List<SpoonPlugin> getPlugins(){
+    return plugins;
+  }
   
 }

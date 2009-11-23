@@ -6,6 +6,6 @@ import java.util.List;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
 public interface SpoonPlugin {
-  public List<URL> getOverlays();
+  public List<String> getOverlays();
   public List<? extends XulEventHandler> getEventHandlers();
 }

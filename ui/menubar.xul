@@ -310,8 +310,6 @@
       <menuitem id="trans-graph-entry-errors" label="${TransGraph.PopupMenu.Error}" command="transgraph.errorHandling()" />
       <menuseparator />
       <menuitem id="trans-graph-entry-preview" label="${TransGraph.PopupMenu.Preview}" command="transgraph.preview()" />
-      <menuitem id="trans-graph-entry-model" label="Model" command="transgraph.openModeler()" />
-      <menuitem id="trans-graph-entry-visualize" label="Quick Visualize" command="transgraph.quickVisualize()" />
     </menupopup>
 
     <menupopup id="trans-graph-hop">
