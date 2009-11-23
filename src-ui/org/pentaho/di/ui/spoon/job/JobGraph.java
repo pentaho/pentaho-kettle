@@ -296,7 +296,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
    
     sashForm.setWeights(new int[] { 100, });
 
-    spoon.getMainSpoonContainer().addEventHandler(this);
     try {
       Document doc = spoon.getMainSpoonContainer().getDocumentRoot();
       menuMap.put("job-graph-hop", (XulMenupopup) doc.getElementById("job-graph-hop"));
@@ -990,6 +989,7 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
   }
 
   public boolean setFocus() {
+    spoon.getMainSpoonContainer().addEventHandler(this);
     return canvas.setFocus();
   }
 
@@ -2877,6 +2877,7 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
   public void addRefreshListener(RefreshListener refreshListener) {
     refreshListeners.add(refreshListener);
   }
+
   /* (non-Javadoc)
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
@@ -2907,8 +2908,5 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
   public void setXulDomContainer(XulDomContainer xulDomContainer) {
     // TODO Auto-generated method stub
     
-  }
-  public boolean canHandleSave() {
-    return true;
   }
 }

@@ -355,7 +355,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
     sashForm.setWeights(new int[] { 100, });
 
-    spoon.getMainSpoonContainer().addEventHandler(this);
     try {
       // first get the XML document
       menuMap.put("trans-graph-hop", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-hop"));
@@ -1274,6 +1273,7 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
   }
 
   public boolean setFocus() {
+    spoon.getMainSpoonContainer().addEventHandler(this);
     return canvas.setFocus();
   }
 
@@ -1950,13 +1950,8 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
   public void openModeler() {
     try{
       
-      //Object modelerCanvas = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").newInstance();
-      
-      Method singletonMethod = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").getMethod("getInstance");
-      Object modelerCanvas = singletonMethod.invoke(null);
-      
-      
-      Method m = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").getMethod("createModelerTabFromOutputStep");
+      Object modelerCanvas = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").newInstance();
+      Method m = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").getMethod("createModelerTab");
       m.invoke(modelerCanvas);
 
     } catch(Exception e){
@@ -3499,10 +3494,6 @@ public void setName(String arg0) {
 public void setXulDomContainer(XulDomContainer arg0) {
   // TODO Auto-generated method stub
   
-}
-
-public boolean canHandleSave() {
-  return true;
 }
 
 }
