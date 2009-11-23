@@ -57,7 +57,7 @@
         <menuitem id="edit-paste-steps" acceltext="CTRL-V" accesskey="ctrl-v" label="${Spoon.Menu.Edit.PasteFromClipboard}"
           command="spoon.pasteSteps()" />
         <menuseparator />
-        <menuitem id="explore-database" label="${Spoon.Menu.ExploreConnection}" />
+        <menuitem id="explore-database" label="${Spoon.Menu.ExploreConnection}" command="spoon.exploreDatabase()" />
         <menuseparator />
         <menuitem id="edit-options" label="${Spoon.Menu.Edit.Options}" command="spoon.editOptions()" />
       </menupopup>
@@ -94,7 +94,7 @@
           command="spoon.previewFile()" />
         <menuitem id="trans-debug" acceltext="SHIFT-F10" accesskey="shift-f10" label="${Spoon.Menu.Transformation.Debug}"
           command="spoon.debugFile()" />
-        <menuitem id="trans-replay" acceltext="SHIFT-F11" accesskey="shift-f10" label="${Spoon.Menu.Transformation.Replay}" />
+        <menuitem id="trans-replay" acceltext="SHIFT-F11" accesskey="shift-f10" label="${Spoon.Menu.Transformation.Replay}" command="spoon.replayTransformation()" />
         <menuitem id="trans-verify" acceltext="F11" accesskey="f11" label="${Spoon.Menu.Transformation.Verify}" />
         <menuitem id="trans-impact" label="${Spoon.Menu.Transformation.Impact}" command="spoon.analyseImpact()" />
         <menuitem id="trans-get-sql" label="${Spoon.Menu.Transformation.GetSQL}" command="spoon.getSQL()" />
@@ -102,9 +102,9 @@
         <menuitem id="trans-last-impact" acceltext="F6" accesskey="f6"
           label="${Spoon.Menu.Transformation.ShowLastImpactAnalyses}" command="spoon.analyseImpact()" />
         <menuitem id="trans-last-verify" acceltext="F7" accesskey="f7"
-          label="${Spoon.Menu.Transformation.ShowLastVerifyResults}" />
-        <menuitem id="trans-last-preview" acceltext="F8" accesskey="f8"
-          label="${Spoon.Menu.Transformation.ShowLastPreviewResults}" />
+          label="${Spoon.Menu.Transformation.ShowLastVerifyResults}" command="spoon.showLastTransCheck()" />
+        <menuitem id="trans-last-preview" acceltext="F8" accesskey="f8" 
+          label="${Spoon.Menu.Transformation.ShowLastPreviewResults}" comand="spoon.showLastTransPreview()" />
         <menuseparator />
         <menuitem id="trans-copy" label="${Spoon.Menu.Transformation.CopyTransformationToClipboard}" command="spoon.copyTransformation()" />
         <menuitem id="trans-paste" label="${Spoon.Menu.Transformation.PasteTransformationFromClipboard}"
@@ -161,22 +161,22 @@
   </toolbox>
 
     <menupopup id="trans-class">
-      <menuitem id="trans-class-new" label="${Spoon.Menu.Popup.BASE.New}" />
+      <menuitem id="trans-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newTransFile()" />
     </menupopup>
 
     <menupopup id="job-class">
-      <menuitem id="job-class-new" label="${Spoon.Menu.Popup.BASE.New}" />
+      <menuitem id="job-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="jobgraph.newJobFile()" />
     </menupopup>
 
     <menupopup id="trans-hop-class">
-      <menuitem id="trans-hop-class-new" label="${Spoon.Menu.Popup.BASE.New}" />
-      <menuitem id="trans-hop-class-sort" label="${Spoon.Menu.Popup.HOPS.SortHops}" />
+      <menuitem id="trans-hop-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="transgraph.newHop()" />
+      <menuitem id="trans-hop-class-sort" label="${Spoon.Menu.Popup.HOPS.SortHops}" command="transgraph.sortHops()" />
     </menupopup>
 
     <menupopup id="database-class">
-      <menuitem id="database-class-new" label="${Spoon.Menu.Popup.BASE.New}" />
-      <menuitem id="database-class-connection-wizard" label="${Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard}" />
-      <menuitem id="database-class-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete}" />
+      <menuitem id="database-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newConnection" />
+      <menuitem id="database-class-connection-wizard" label="${Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard}" command="spoon.createDatabaseWizard()" />
+      <menuitem id="database-class-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete}" command="spoon.clearDBCache()" />
     </menupopup>
 
     <menupopup id="partition-schema-class">
@@ -184,27 +184,27 @@
     </menupopup>
 
     <menupopup id="cluster-schema-class">
-      <menuitem id="cluster-schema-class-new" label="${Spoon.Menu.Popup.BASE.New}" />
+      <menuitem id="cluster-schema-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newClusteringSchema()" />
     </menupopup>
 
     <menupopup id="slave-cluster-class">
-      <menuitem id="slave-cluster-class-new" label="${Spoon.Menu.Popup.BASE.New}" />
+      <menuitem id="slave-cluster-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newSlaveServer()"/>
     </menupopup>
 
     <menupopup id="trans-inst">
-      <menuitem id="trans-inst-settings" label="${Spoon.Menu.Transformation.Settings}" />
-      <menuitem id="trans-inst-logging" label="${Spoon.Menu.Popup.BASE.LogWindow}" />
-      <menuitem id="trans-inst-history" label="${Spoon.Menu.Popup.BASE.HistoryWindow}" />
+      <menuitem id="trans-inst-settings" label="${Spoon.Menu.Transformation.Settings}" command="spoon.editTransformationPropertiesPopup()" />
+      <menuitem id="trans-inst-logging" label="${Spoon.Menu.Popup.BASE.LogWindow}" command="spoon.addTransLog()" />
+      <menuitem id="trans-inst-history" label="${Spoon.Menu.Popup.BASE.HistoryWindow}" command="spoon.addTransHistory()" />
     </menupopup>
 
     <menupopup id="job-inst">
-      <menuitem id="job-inst-settings" label="${Spoon.Menu.Job.Settings}" />
+      <menuitem id="job-inst-settings" label="${Spoon.Menu.Job.Settings}" command="jobgraph.editJobProperties()" />
       <menuitem id="job-inst-logging" label="${Spoon.Menu.Popup.BASE.LogWindow}" />
       <menuitem id="job-inst-history" label="${Spoon.Menu.Popup.BASE.HistoryWindow}" />
     </menupopup>
 
     <menupopup id="step-plugin">
-      <menuitem id="step-plugin-new" label="${Spoon.Menu.Popup.BASE.New}" />
+      <menuitem id="step-plugin-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newStep()" />
     </menupopup>
 
     <menupopup id="database-inst">
@@ -345,69 +345,69 @@
     </menupopup>
 
     <menupopup id="job-graph-entry">
-      <menuitem id="job-graph-entry-newhop" label="${JobGraph.PopupMenu.JobEntry.NewHop}" />
-      <menuitem id="job-graph-entry-launch" label="${JobGraph.PopupMenu.JobEntry.LaunchSpoon}" />
-      <menuitem id="job-graph-entry-edit" label="${JobGraph.PopupMenu.JobEntry.Edit}" />
-      <menuitem id="job-graph-entry-edit-description" label="${JobGraph.PopupMenu.JobEntry.EditDescription}" />
-      <menuitem id="job-graph-entry-parallel" type="checkbox" label="${JobGraph.PopupMenu.JobEntry.LaunchParallel}" />
+      <menuitem id="job-graph-entry-newhop" label="${JobGraph.PopupMenu.JobEntry.NewHop}" command="jobgraph.newHopClick()" />
+      <menuitem id="job-graph-entry-launch" label="${JobGraph.PopupMenu.JobEntry.LaunchSpoon}" command="jobgraph.launchStuff()" />
+      <menuitem id="job-graph-entry-edit" label="${JobGraph.PopupMenu.JobEntry.Edit}" command="jobgraph.editEntryClick()" />
+      <menuitem id="job-graph-entry-edit-description" label="${JobGraph.PopupMenu.JobEntry.EditDescription}" command="jobgraph.editEntryDescription()" />
+      <menuitem id="job-graph-entry-parallel" type="checkbox" label="${JobGraph.PopupMenu.JobEntry.LaunchParallel}" command="jobgraph.editEntryParallel()" />
       <menuseparator />
-      <menuitem id="job-graph-entry-duplicate" label="${JobGraph.PopupMenu.JobEntry.Duplicate}" />
-      <menuitem id="job-graph-entry-copy" label="${JobGraph.PopupMenu.JobEntry.CopyToClipboard}" />
+      <menuitem id="job-graph-entry-duplicate" label="${JobGraph.PopupMenu.JobEntry.Duplicate}" command="jobgraph.duplicateEntry()" />
+      <menuitem id="job-graph-entry-copy" label="${JobGraph.PopupMenu.JobEntry.CopyToClipboard}" command="jobgraph.copyEntry()" />
       <menuseparator />
       <menu id="job-graph-entry-align" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute}" >
         <menupopup>
           <menuitem id="job-graph-entry-align-left" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Left}"
-            accesskey="ctrl-left" />
+            accesskey="ctrl-left" command="jobgraph.allignleft()"/>
           <menuitem id="job-graph-entry-align-right" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Right}"
-            accesskey="ctrl-right" />
+            accesskey="ctrl-right" command="jobgraph.allignright()" />
           <menuitem id="job-graph-entry-align-top" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Top}"
-            accesskey="ctrl-up" />
+            accesskey="ctrl-up" command="jobgraph.alligntop()" />
           <menuitem id="job-graph-entry-align-bottom" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Bottom}"
-            accesskey="ctrl-down" />
+            accesskey="ctrl-down" command="jobgraph.allignbottom()" />
           <menuseparator />
           <menuitem id="job-graph-entry-align-horz" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Horizontally}"
-            accesskey="alt-right" />
+            accesskey="alt-right" command="jobgraph.distributehorizontal()" />
           <menuitem id="job-graph-entry-align-vert" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Vertically}"
-            accesskey="alt-up" />
+            accesskey="alt-up" command="jobgraph.distributevertical()" />
           <menuseparator />
           <menuitem id="job-graph-entry-align-snap" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid}"
-            accesskey="alt-home" />
+            accesskey="alt-home" command="jobgraph.snaptogrid()" />
         </menupopup>
       </menu>
-      <menuitem id="job-graph-entry-detach" label="${JobGraph.PopupMenu.Hop.Detach}" />
-      <menuitem id="job-graph-entry-hide" label="${JobGraph.PopupMenu.JobEntry.Hide}" />
-      <menuitem id="job-graph-entry-delete" label="${JobGraph.PopupMenu.JobEntry.Delete}" />
+      <menuitem id="job-graph-entry-detach" label="${JobGraph.PopupMenu.Hop.Detach}" command="jobgraph.detachEntry()" />
+      <menuitem id="job-graph-entry-hide" label="${JobGraph.PopupMenu.JobEntry.Hide}" command="jobgraph.hideEntry()" />
+      <menuitem id="job-graph-entry-delete" label="${JobGraph.PopupMenu.JobEntry.Delete}" command="jobgraph.deleteEntry()" />
     </menupopup>
 
     <menupopup id="job-graph-hop">
       <menu id="job-graph-hop-evaluation" label="${JobGraph.PopupMenu.Hop.Evaluation}" >
         <menupopup>
           <menuitem id="job-graph-hop-evaluation-uncond" type="checkbox"
-            label="${JobGraph.PopupMenu.Hop.Evaluation.Unconditional}" />
+            label="${JobGraph.PopupMenu.Hop.Evaluation.Unconditional}" command="jobgraph.setHopConditional()" />
           <menuitem id="job-graph-hop-evaluation-true" type="checkbox"
-            label="${JobGraph.PopupMenu.Hop.Evaluation.FollowWhenOK}" />
+            label="${JobGraph.PopupMenu.Hop.Evaluation.FollowWhenOK}" command="jobgraph.setHopConditional()" />
           <menuitem id="job-graph-hop-evaluation-false" type="checkbox"
-            label="${JobGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed}" />
+            label="${JobGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed}" command="jobgraph.setHopConditional()" />
         </menupopup>
       </menu>
-      <menuitem id="job-graph-hop-flip" label="${JobGraph.PopupMenu.Hop.FlipDirection}" />
-      <menuitem id="job-graph-hop-enabled" label="${JobGraph.PopupMenu.Hop.Disable}" />
-      <menuitem id="job-graph-hop-delete" label="${JobGraph.PopupMenu.Hop.Delete}" />
+      <menuitem id="job-graph-hop-flip" label="${JobGraph.PopupMenu.Hop.FlipDirection}" command="jobgraph.flipHop()" />
+      <menuitem id="job-graph-hop-enabled" label="${JobGraph.PopupMenu.Hop.Disable}" command="jobgraph.disableHop()" />
+      <menuitem id="job-graph-hop-delete" label="${JobGraph.PopupMenu.Hop.Delete}" command="jobgraph.deleteHop()" />
     </menupopup>
 
     <menupopup id="job-graph-note">
-      <menuitem id="job-graph-note-edit" label="${JobGraph.PopupMenu.Note.Edit}" />
-      <menuitem id="job-graph-note-delete" label="${JobGraph.PopupMenu.Note.Delete}" />
+      <menuitem id="job-graph-note-edit" label="${JobGraph.PopupMenu.Note.Edit}" command="jobgraph.editNote()" />
+      <menuitem id="job-graph-note-delete" label="${JobGraph.PopupMenu.Note.Delete}" command="jobgraph.deleteNote()" />
     </menupopup>
 
     <menupopup id="job-graph-background">
-      <menuitem id="job-graph-note-new" label="${JobGraph.PopupMenu.Note.New}" />
-      <menuitem id="job-graph-note-paste" label="${JobGraph.PopupMenu.PasteStepFromClipboard}" />
+      <menuitem id="job-graph-note-new" label="${JobGraph.PopupMenu.Note.New}" command="jobgraph.newNote()" />
+      <menuitem id="job-graph-note-paste" label="${JobGraph.PopupMenu.PasteStepFromClipboard}" command="jobgraph.pasteNote()" />
       <menuseparator />
-      <menuitem id="job-graph-background-select-all" label="${JobGraph.PopupMenu.SelectAll}" />
-      <menuitem id="job-graph-background-clear-selection" label="${JobGraph.PopupMenu.ClearSelection}" />
+      <menuitem id="job-graph-background-select-all" label="${JobGraph.PopupMenu.SelectAll}" command="jobgraph.selectAll()" />
+      <menuitem id="job-graph-background-clear-selection" label="${JobGraph.PopupMenu.ClearSelection}" command="jobgraph.clearSelection()" />
       <menuseparator />
-      <menuitem id="job-graph-background-settings" label="${JobGraph.PopupMenu.Settings}" />
+      <menuitem id="job-graph-background-settings" label="${JobGraph.PopupMenu.Settings}" command="jobgraph.editJobProperties()" />
     </menupopup>
 
 

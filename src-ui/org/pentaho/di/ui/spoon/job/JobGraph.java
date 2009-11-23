@@ -84,7 +84,6 @@ import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
-import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
@@ -115,9 +114,12 @@ import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.TransPainter;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
-import org.pentaho.xul.menu.XulMenu;
-import org.pentaho.xul.menu.XulMenuChoice;
-import org.pentaho.xul.menu.XulPopupMenu;
+import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.components.XulMenuitem;
+import org.pentaho.ui.xul.containers.XulMenu;
+import org.pentaho.ui.xul.containers.XulMenupopup;
+import org.pentaho.ui.xul.dom.Document;
+import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.toolbar.XulToolbar;
 import org.pentaho.xul.toolbar.XulToolbarButton;
@@ -129,7 +131,7 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * Created on 17-may-2003
  *
  */
-public class JobGraph extends Composite implements Redrawable, TabItemInterface {
+public class JobGraph extends Composite implements XulEventHandler, Redrawable, TabItemInterface {
   private static final String XUL_FILE_JOB_TOOLBAR = "ui/job-toolbar.xul";
 
   public static final String XUL_FILE_JOB_TOOLBAR_PROPERTIES = "ui/job-toolbar.properties";
@@ -153,8 +155,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
   protected JobMeta jobMeta;
 
   private Job job;
-
-  // protected Props props;
 
   protected int iconsize;
 
@@ -201,7 +201,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
   protected int shadowsize;
 
-  protected Map<String, org.pentaho.xul.swt.menu.Menu> menuMap = new HashMap<String, org.pentaho.xul.swt.menu.Menu>();
+  protected Map<String, XulMenupopup> menuMap = new HashMap<String, XulMenupopup>();
 
   protected int currentMouseX = 0;
 
@@ -296,10 +296,16 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
    
     sashForm.setWeights(new int[] { 100, });
 
+    spoon.getMainSpoonContainer().addEventHandler(this);
     try {
-      menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell,
-          new org.pentaho.di.ui.spoon.job.XulMessages(), "job-graph-hop", "job-graph-note", "job-graph-background",
-          "job-graph-entry");
+      Document doc = spoon.getMainSpoonContainer().getDocumentRoot();
+      menuMap.put("job-graph-hop", (XulMenupopup) doc.getElementById("job-graph-hop"));
+      menuMap.put("job-graph-note", (XulMenupopup) doc.getElementById("job-graph-note"));
+      menuMap.put("job-graph-background", (XulMenupopup) doc.getElementById("job-graph-background"));
+      menuMap.put("job-graph-entry", (XulMenupopup) doc.getElementById("job-graph-entry"));
+//      menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell,
+//          new org.pentaho.di.ui.spoon.job.XulMessages(), "job-graph-hop", "job-graph-note", "job-graph-background",
+//          "job-graph-entry");
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
       new ErrorDialog(shell, Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Title"), 
@@ -1310,84 +1316,91 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
 
     final JobEntryCopy jobEntry = jobMeta.getJobEntryCopy(x, y, iconsize);
     setJobEntry(jobEntry);
+    Document doc = spoon.getMainSpoonContainer().getDocumentRoot();
     if (jobEntry != null) // We clicked on a Job Entry!
     {
-
-      XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-entry"); //$NON-NLS-1$
+      XulMenupopup menu = (XulMenupopup)doc.getElementById("job-graph-entry");
+//      XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-entry"); //$NON-NLS-1$
       if (menu != null) {
         int sels = jobMeta.nrSelected();
-
-        XulMenuChoice item = menu.getMenuItemById("job-graph-entry-newhop"); //$NON-NLS-1$
-        menu.addMenuListener("job-graph-entry-newhop", this, JobGraph.class, "newHopClick"); //$NON-NLS-1$ //$NON-NLS-2$
-        item.setEnabled(sels == 2);
-
-        item = menu.getMenuItemById("job-graph-entry-launch"); //$NON-NLS-1$
+        XulMenuitem item = (XulMenuitem) doc.getElementById("job-graph-entry-newhop");
+//        XulMenuChoice item = menu.getMenuItemById("job-graph-entry-newhop"); //$NON-NLS-1$
+//        menu.addMenuListener("job-graph-entry-newhop", this, JobGraph.class, "newHopClick"); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setDisabled(sels == 2);
+        item = (XulMenuitem) doc.getElementById("job-graph-entry-launch");
+//        item = menu.getMenuItemById("job-graph-entry-launch"); //$NON-NLS-1$
         switch (jobEntry.getJobEntryType()) {
           case TRANS: {
-            item.setEnabled(true);
-            item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchSpoon"));
-            menu.addMenuListener("job-graph-entry-launch", this, "openTransformation"); //$NON-NLS-1$ //$NON-NLS-2$
+            item.setDisabled(false);
+            item.setLabel(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchSpoon"));
+//            menu.addMenuListener("job-graph-entry-launch", this, "openTransformation"); //$NON-NLS-1$ //$NON-NLS-2$
             break;
           }
           case JOB: {
-            item.setEnabled(true);
-            item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchChef"));
-            menu.addMenuListener("job-graph-entry-launch", this, "openJob"); //$NON-NLS-1$ //$NON-NLS-2$
+            item.setDisabled(false);
+            item.setLabel(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchChef"));
+//            menu.addMenuListener("job-graph-entry-launch", this, "openJob"); //$NON-NLS-1$ //$NON-NLS-2$
           }
             break;
           default: {
-            item.setEnabled(false);
+            item.setDisabled(true);
           }
             break;
         }
 
-        item = menu.getMenuItemById("job-graph-entry-align-snap"); //$NON-NLS-1$
-        item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + ConstUI.GRID_SIZE
+        item = (XulMenuitem) doc.getElementById("job-graph-entry-align-snap");
+//        item = menu.getMenuItemById("job-graph-entry-align-snap"); //$NON-NLS-1$
+        item.setLabel(Messages.getString("JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + ConstUI.GRID_SIZE
             + ")\tALT-HOME");
 
-        XulMenu aMenu = menu.getMenuById("job-graph-entry-align"); //$NON-NLS-1$
+        XulMenu aMenu = (XulMenu) doc.getElementById("job-graph-entry-align");
+//        XulMenu aMenu = menu.getMenuById("job-graph-entry-align"); //$NON-NLS-1$
         if (aMenu != null) {
-          aMenu.setEnabled(sels > 1);
+          aMenu.setDisabled(sels < 1);
         }
 
-        item = menu.getMenuItemById("job-graph-entry-detach"); //$NON-NLS-1$
+        item = (XulMenuitem) doc.getElementById("job-graph-entry-detach");
+//        item = menu.getMenuItemById("job-graph-entry-detach"); //$NON-NLS-1$
         if (item != null) {
-          item.setEnabled(jobMeta.isEntryUsedInHops(jobEntry));
+          item.setDisabled(!jobMeta.isEntryUsedInHops(jobEntry));
         }
 
-        item = menu.getMenuItemById("job-graph-entry-hide"); //$NON-NLS-1$
+        item = (XulMenuitem) doc.getElementById("job-graph-entry-hide");
+//        item = menu.getMenuItemById("job-graph-entry-hide"); //$NON-NLS-1$
         if (item != null) {
-          item.setEnabled(jobEntry.isDrawn() && !jobMeta.isEntryUsedInHops(jobEntry));
+          item.setDisabled(!(jobEntry.isDrawn() && !jobMeta.isEntryUsedInHops(jobEntry)));
         }
 
-        item = menu.getMenuItemById("job-graph-entry-delete"); //$NON-NLS-1$
+        item = (XulMenuitem) doc.getElementById("job-graph-entry-delete");
+//        item = menu.getMenuItemById("job-graph-entry-delete"); //$NON-NLS-1$
         if (item != null) {
-          item.setEnabled(jobEntry.isDrawn());
+          item.setDisabled(!jobEntry.isDrawn());
         }
 
-        item = menu.getMenuItemById("job-graph-entry-parallel"); // $NON-NLS-1$
+        item = (XulMenuitem) doc.getElementById("job-graph-entry-parallel");
+//        item = menu.getMenuItemById("job-graph-entry-parallel"); // $NON-NLS-1$
         if (item != null) {
-          item.setChecked(jobEntry.isLaunchingInParallel());
+          item.setSelected(jobEntry.isLaunchingInParallel());
         }
 
-        menu.addMenuListener("job-graph-entry-align-left", this, "allignleft"); //$NON-NLS-1$ //$NON-NLS-2$
-        menu.addMenuListener("job-graph-entry-align-right", this, "allignright"); //$NON-NLS-1$ //$NON-NLS-2$
-        menu.addMenuListener("job-graph-entry-align-top", this, "alligntop"); //$NON-NLS-1$ //$NON-NLS-2$
-        menu.addMenuListener("job-graph-entry-align-bottom", this, "allignbottom"); //$NON-NLS-1$ //$NON-NLS-2$
-        menu.addMenuListener("job-graph-entry-align-horz", this, "distributehorizontal"); //$NON-NLS-1$ //$NON-NLS-2$
-        menu.addMenuListener("job-graph-entry-align-vert", this, "distributevertical"); //$NON-NLS-1$ //$NON-NLS-2$
-        menu.addMenuListener("job-graph-entry-align-snap", this, "snaptogrid"); //$NON-NLS-1$ //$NON-NLS-2$
+//        menu.addMenuListener("job-graph-entry-align-left", this, "allignleft"); //$NON-NLS-1$ //$NON-NLS-2$
+//        menu.addMenuListener("job-graph-entry-align-right", this, "allignright"); //$NON-NLS-1$ //$NON-NLS-2$
+//        menu.addMenuListener("job-graph-entry-align-top", this, "alligntop"); //$NON-NLS-1$ //$NON-NLS-2$
+//        menu.addMenuListener("job-graph-entry-align-bottom", this, "allignbottom"); //$NON-NLS-1$ //$NON-NLS-2$
+//        menu.addMenuListener("job-graph-entry-align-horz", this, "distributehorizontal"); //$NON-NLS-1$ //$NON-NLS-2$
+//        menu.addMenuListener("job-graph-entry-align-vert", this, "distributevertical"); //$NON-NLS-1$ //$NON-NLS-2$
+//        menu.addMenuListener("job-graph-entry-align-snap", this, "snaptogrid"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        menu.addMenuListener("job-graph-entry-edit", this, "editEntryClick"); //$NON-NLS-1$ //$NON-NLS-2$ 
-        menu.addMenuListener("job-graph-entry-edit-description", this, "editEntryDescription"); //$NON-NLS-1$ //$NON-NLS-2$ 
-        menu.addMenuListener("job-graph-entry-parallel", this, "editEntryParallel"); //$NON-NLS-1$ //$NON-NLS-2$ 
-        menu.addMenuListener("job-graph-entry-duplicate", this, "duplicateEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
-        menu.addMenuListener("job-graph-entry-copy", this, "copyEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
-        menu.addMenuListener("job-graph-entry-detach", this, "detatchEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
-        menu.addMenuListener("job-graph-entry-hide", this, "hideEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
-        menu.addMenuListener("job-graph-entry-delete", this, "deleteEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
+//        menu.addMenuListener("job-graph-entry-edit", this, "editEntryClick"); //$NON-NLS-1$ //$NON-NLS-2$ 
+//        menu.addMenuListener("job-graph-entry-edit-description", this, "editEntryDescription"); //$NON-NLS-1$ //$NON-NLS-2$ 
+//        menu.addMenuListener("job-graph-entry-parallel", this, "editEntryParallel"); //$NON-NLS-1$ //$NON-NLS-2$ 
+//        menu.addMenuListener("job-graph-entry-duplicate", this, "duplicateEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
+//        menu.addMenuListener("job-graph-entry-copy", this, "copyEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
+//        menu.addMenuListener("job-graph-entry-detach", this, "detatchEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
+//        menu.addMenuListener("job-graph-entry-hide", this, "hideEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
+//        menu.addMenuListener("job-graph-entry-delete", this, "deleteEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
 
-        ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
+        ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
       }
 
     } else // Clear the menu
@@ -1398,63 +1411,68 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
       if (hi != null) // We clicked on a HOP!
       {
 
-        XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-hop"); //$NON-NLS-1$
+        XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-hop");
+//        XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-hop"); //$NON-NLS-1$
         if (menu != null) {
-          XulMenuChoice miPopEvalUncond = menu.getMenuItemById("job-graph-hop-evaluation-uncond"); //$NON-NLS-1$
-          XulMenuChoice miPopEvalTrue = menu.getMenuItemById("job-graph-hop-evaluation-true"); //$NON-NLS-1$
-          XulMenuChoice miPopEvalFalse = menu.getMenuItemById("job-graph-hop-evaluation-false"); //$NON-NLS-1$
-          XulMenuChoice miDisHop = menu.getMenuItemById("job-graph-hop-enabled"); //$NON-NLS-1$
+          XulMenuitem miPopEvalUncond = (XulMenuitem) doc.getElementById("job-graph-hop-evaluation-uncond");
+          XulMenuitem miPopEvalTrue = (XulMenuitem) doc.getElementById("job-graph-hop-evaluation-true");
+          XulMenuitem miPopEvalFalse = (XulMenuitem) doc.getElementById("job-graph-hop-evaluation-uncond");
+          XulMenuitem miDisHop = (XulMenuitem) doc.getElementById("job-graph-hop-enabled");
+//          XulMenuChoice miPopEvalUncond = menu.getMenuItemById("job-graph-hop-evaluation-uncond"); //$NON-NLS-1$
+//          XulMenuChoice miPopEvalTrue = menu.getMenuItemById("job-graph-hop-evaluation-true"); //$NON-NLS-1$
+//          XulMenuChoice miPopEvalFalse = menu.getMenuItemById("job-graph-hop-evaluation-false"); //$NON-NLS-1$
+//          XulMenuChoice miDisHop = menu.getMenuItemById("job-graph-hop-enabled"); //$NON-NLS-1$
 
-          menu.addMenuListener("job-graph-hop-evaluation-uncond", this, "setHopConditional"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("job-graph-hop-evaluation-true", this, "setHopConditional"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("job-graph-hop-evaluation-false", this, "setHopConditional"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("job-graph-hop-evaluation-uncond", this, "setHopConditional"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("job-graph-hop-evaluation-true", this, "setHopConditional"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("job-graph-hop-evaluation-false", this, "setHopConditional"); //$NON-NLS-1$ //$NON-NLS-2$
 
-          menu.addMenuListener("job-graph-hop-flip", this, "flipHop"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("job-graph-hop-enabled", this, "disableHop"); //$NON-NLS-1$ //$NON-NLS-2$
-          menu.addMenuListener("job-graph-hop-delete", this, "deleteHop"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("job-graph-hop-flip", this, "flipHop"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("job-graph-hop-enabled", this, "disableHop"); //$NON-NLS-1$ //$NON-NLS-2$
+//          menu.addMenuListener("job-graph-hop-delete", this, "deleteHop"); //$NON-NLS-1$ //$NON-NLS-2$
 
           if (hi.isUnconditional()) {
             if (miPopEvalUncond != null)
-              miPopEvalUncond.setChecked(true);
+              miPopEvalUncond.setSelected(true);
             if (miPopEvalTrue != null)
-              miPopEvalTrue.setChecked(false);
+              miPopEvalTrue.setSelected(false);
             if (miPopEvalFalse != null)
-              miPopEvalFalse.setChecked(false);
+              miPopEvalFalse.setSelected(false);
           } else {
             if (hi.getEvaluation()) {
               if (miPopEvalUncond != null)
-                miPopEvalUncond.setChecked(false);
+                miPopEvalUncond.setSelected(false);
               if (miPopEvalTrue != null)
-                miPopEvalTrue.setChecked(true);
+                miPopEvalTrue.setSelected(true);
               if (miPopEvalFalse != null)
-                miPopEvalFalse.setChecked(false);
+                miPopEvalFalse.setSelected(false);
             } else {
               if (miPopEvalUncond != null)
-                miPopEvalUncond.setChecked(false);
+                miPopEvalUncond.setSelected(false);
               if (miPopEvalTrue != null)
-                miPopEvalTrue.setChecked(false);
+                miPopEvalTrue.setSelected(false);
               if (miPopEvalFalse != null)
-                miPopEvalFalse.setChecked(true);
+                miPopEvalFalse.setSelected(true);
             }
           }
           if (!hi.from_entry.evaluates()) {
             if (miPopEvalTrue != null)
-              miPopEvalTrue.setEnabled(false);
+              miPopEvalTrue.setDisabled(true);
             if (miPopEvalFalse != null)
-              miPopEvalFalse.setEnabled(false);
+              miPopEvalFalse.setDisabled(true);
           }
           if (!hi.from_entry.isUnconditional()) {
             if (miPopEvalUncond != null)
-              miPopEvalUncond.setEnabled(false);
+              miPopEvalUncond.setDisabled(true);
           }
 
           if (miDisHop != null) {
             if (hi.isEnabled())
-              miDisHop.setText(Messages.getString("JobGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
+              miDisHop.setLabel(Messages.getString("JobGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
             else
-              miDisHop.setText(Messages.getString("JobGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
+              miDisHop.setLabel(Messages.getString("JobGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
           }
-          ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
+          ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
         }
 
       } else {
@@ -1463,34 +1481,37 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         setCurrentNote(ni);
         if (ni != null) {
 
-          XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-note"); //$NON-NLS-1$
+          XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-note");
+//          XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-note"); //$NON-NLS-1$
           if (menu != null) {
 
-            menu.addMenuListener("job-graph-note-edit", this, "editNote"); //$NON-NLS-1$ //$NON-NLS-2$
-            menu.addMenuListener("job-graph-note-delete", this, "deleteNote"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("job-graph-note-edit", this, "editNote"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("job-graph-note-delete", this, "deleteNote"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            menu.addMenuListener("job-graph-note-raise", this, "raiseNote"); //$NON-NLS-1$ //$NON-NLS-2$
-            menu.addMenuListener("job-graph-note-lower", this, "lowerNote"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("job-graph-note-raise", this, "raiseNote"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("job-graph-note-lower", this, "lowerNote"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
+            ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
           }
         } else {
-          XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-background"); //$NON-NLS-1$
+          XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-background");
+//          XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-background"); //$NON-NLS-1$
           if (menu != null) {
 
-            menu.addMenuListener("job-graph-note-new", this, "newNote"); //$NON-NLS-1$ //$NON-NLS-2$
-            menu.addMenuListener("job-graph-note-paste", this, "pasteNote"); //$NON-NLS-1$ //$NON-NLS-2$
-            menu.addMenuListener("job-graph-background-select-all", this, "selectAll"); //$NON-NLS-1$ //$NON-NLS-2$
-            menu.addMenuListener("job-graph-background-clear-selection", this, "clearSelection"); //$NON-NLS-1$ //$NON-NLS-2$
-            menu.addMenuListener("job-graph-background-settings", this, "editJobProperties"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("job-graph-note-new", this, "newNote"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("job-graph-note-paste", this, "pasteNote"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("job-graph-background-select-all", this, "selectAll"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("job-graph-background-clear-selection", this, "clearSelection"); //$NON-NLS-1$ //$NON-NLS-2$
+//            menu.addMenuListener("job-graph-background-settings", this, "editJobProperties"); //$NON-NLS-1$ //$NON-NLS-2$
 
             final String clipcontent = spoon.fromClipboard();
-            XulMenuChoice item = menu.getMenuItemById("job-graph-note-paste"); //$NON-NLS-1$
+            XulMenuitem item = (XulMenuitem) doc.getElementById("job-graph-note-paste");
+//            XulMenuChoice item = menu.getMenuItemById("job-graph-note-paste"); //$NON-NLS-1$
             if (item != null) {
-              item.setEnabled(clipcontent != null);
+              item.setDisabled(clipcontent == null);
             }
 
-            ConstUI.displayMenu((Menu)menu.getNativeObject(), canvas);
+            ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
           }
         }
       }
@@ -1686,6 +1707,10 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
         openTransformation(entry);
       }
     }
+  }
+  
+  public void launchStuff() {
+    launchStuff(jobEntry);
   }
 
   protected void openTransformation(JobEntryTrans entry) {
@@ -2851,5 +2876,37 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface 
    */
   public void addRefreshListener(RefreshListener refreshListener) {
     refreshListeners.add(refreshListener);
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
+   */
+  public String getName() {
+    // TODO Auto-generated method stub
+    return "jobgraph";
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
+   */
+  public XulDomContainer getXulDomContainer() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
+   */
+  public void setName(String name) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
+   */
+  public void setXulDomContainer(XulDomContainer xulDomContainer) {
+    // TODO Auto-generated method stub
+    
   }
 }
