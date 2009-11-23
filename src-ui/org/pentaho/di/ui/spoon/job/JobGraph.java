@@ -2877,7 +2877,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
   public void addRefreshListener(RefreshListener refreshListener) {
     refreshListeners.add(refreshListener);
   }
-
   /* (non-Javadoc)
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
@@ -2908,5 +2907,8 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
   public void setXulDomContainer(XulDomContainer xulDomContainer) {
     // TODO Auto-generated method stub
     
+  }
+  public boolean canHandleSave() {
+    return true;
   }
 }

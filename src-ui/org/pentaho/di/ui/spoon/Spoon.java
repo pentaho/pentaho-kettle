@@ -613,6 +613,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       mainSpoonContainer = loader.loadXul(XUL_FILE_MENUBAR);
       mainSpoonContainer.addEventHandler(this);
       menuBar = (XulMenubar) mainSpoonContainer.getDocumentRoot().getElementById("spoon-menubar");
+      
     } catch (IllegalArgumentException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
@@ -2996,8 +2997,22 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		if (rep == null || importfile) // Load from XML
 		{
 			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-			dialog.setFilterExtensions(Const.STRING_TRANS_AND_JOB_FILTER_EXT);
-			dialog.setFilterNames(Const.getTransformationAndJobFilterNames());
+			int extensionCollectionLength = Const.STRING_TRANS_AND_JOB_FILTER_EXT.length + fileExtensionMap.keySet().size();
+			String[] fileExtensions = new String[extensionCollectionLength];
+			String[] fileExtensionNames = new String[extensionCollectionLength];
+			System.arraycopy(Const.STRING_TRANS_AND_JOB_FILTER_EXT, 0, fileExtensions, 0, Const.STRING_TRANS_AND_JOB_FILTER_EXT.length);
+
+      System.arraycopy(Const.getTransformationAndJobFilterNames(), 0, fileExtensionNames, 0, Const.getTransformationAndJobFilterNames().length);
+
+      //System.arraycopy(fileExtensionMap.keySet().toArray(), 0, fileExtensions, Const.STRING_TRANS_AND_JOB_FILTER_EXT.length, fileExtensionMap.keySet().toArray().length);
+			
+			Object[] exts = fileExtensionMap.keySet().toArray();
+			for(int i=0; i< exts.length; i++){
+			  fileExtensions[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length+i] = "*."+exts[i];
+			  fileExtensionNames[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length+i] = ""+exts[i];
+			}
+			dialog.setFilterExtensions(fileExtensions);
+			dialog.setFilterNames(fileExtensionNames);
 			setFilterPath(dialog);
 			String fname = dialog.open();
 			if (fname != null) {
@@ -3428,6 +3443,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 	}
 
 	public boolean saveFile() {
+	  
 		TransMeta transMeta = getActiveTransformation();
 		if (transMeta != null)
 			return saveToFile(transMeta);
@@ -3436,6 +3452,10 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		if (jobMeta != null)
 			return saveToFile(jobMeta);
 
+		EngineMetaInterface meta = getActiveMeta();
+		if(meta != null)
+		  return saveToFile(meta);
+		
 		return false;
 	}
 
@@ -3669,6 +3689,10 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		JobMeta jobMeta = getActiveJob();
 		if (jobMeta != null)
 			return saveFileAs(jobMeta);
+		
+    EngineMetaInterface meta = getActiveMeta();
+    if(meta != null)
+      return saveFileAs(meta);
 
 		return false;
 	}
@@ -4689,10 +4713,17 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 	public void enableMenus() {
 		boolean enableTransMenu = getActiveTransformation() != null;
 		boolean enableJobMenu = getActiveJob() != null;
+		boolean enableMetaMenu = getActiveMeta() != null;
 		boolean enableRepositoryMenu = rep != null;
 
 		boolean enableLastPreviewMenu = false;
 		boolean disablePreviewButton = false;
+		
+		TabItemInterface currentTab = getActiveTabitem();
+		boolean saveEnabled  = true;
+		if(currentTab != null && currentTab.canHandleSave()){
+		  saveEnabled = currentTab.hasContentChanged();
+		}
 
 		TransGraph transGraph = getActiveTransGraph();
 		if (transGraph != null) {
@@ -4706,9 +4737,9 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
 		org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
 		// Only enable certain menu-items if we need to.
-		((XulMenuitem)doc.getElementById("file-save")).setDisabled(!(enableTransMenu || enableJobMenu));
-		((XulMenuitem)doc.getElementById("file-save-as")).setDisabled(!(enableTransMenu || enableJobMenu));
-		((XulMenuitem)doc.getElementById("file-close")).setDisabled(!(enableTransMenu || enableJobMenu));
+		((XulMenuitem)doc.getElementById("file-save")).setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu) && saveEnabled);
+		((XulMenuitem)doc.getElementById("file-save-as")).setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
+		((XulMenuitem)doc.getElementById("file-close")).setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
 		((XulMenuitem)doc.getElementById("file-print")).setDisabled(!(enableTransMenu || enableJobMenu));
 //		menuBar.setEnableById("file-save", enableTransMenu || enableJobMenu);
 //		menuBar.setEnableById("file-save-as", enableTransMenu || enableJobMenu);
@@ -4908,8 +4939,24 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			if (mapEntry.getObject() instanceof JobGraph)
 				meta = (mapEntry.getObject()).getMeta();
 		}
+		if(meta == null){
+		  meta = mapEntry.getObject().getMeta();
+		}
 
 		return meta;
+	}
+	
+	public TabItemInterface getActiveTabitem(){
+
+    if (tabfolder == null)
+      return null;
+    TabItem tabItem = tabfolder.getSelected();
+    if (tabItem == null)
+      return null;
+
+    TabMapEntry mapEntry = delegates.tabs.getTab(tabItem);
+
+    return mapEntry.getObject();
 	}
 
 	/**
@@ -4936,6 +4983,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		}
 		return null;
 	}
+	
 
 	public UndoInterface getActiveUndoInterface() {
 		return (UndoInterface) this.getActiveMeta();

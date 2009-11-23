@@ -22,10 +22,13 @@ public interface TabItemInterface
      * @return true if the tab was closed, false if it was prevented by the user. (are you sure dialog)
      */
     public boolean canBeClosed();
+    public boolean canHandleSave();
     public Object getManagedObject();
-    public boolean hasContentChanged();    
+    public boolean hasContentChanged();
     public int showChangedWarning();
     public boolean applyChanges();
     public EngineMetaInterface getMeta();
+    public boolean setFocus();
+    
     
 }

@@ -1950,8 +1950,13 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
   public void openModeler() {
     try{
       
-      Object modelerCanvas = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").newInstance();
-      Method m = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").getMethod("createModelerTab");
+      //Object modelerCanvas = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").newInstance();
+      
+      Method singletonMethod = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").getMethod("getInstance");
+      Object modelerCanvas = singletonMethod.invoke(null);
+      
+      
+      Method m = Class.forName("org.pentaho.agilebi.pdi.modeler.ModelerCanvas").getMethod("createModelerTabFromOutputStep");
       m.invoke(modelerCanvas);
 
     } catch(Exception e){
@@ -3494,6 +3499,10 @@ public void setName(String arg0) {
 public void setXulDomContainer(XulDomContainer arg0) {
   // TODO Auto-generated method stub
   
+}
+
+public boolean canHandleSave() {
+  return true;
 }
 
 }

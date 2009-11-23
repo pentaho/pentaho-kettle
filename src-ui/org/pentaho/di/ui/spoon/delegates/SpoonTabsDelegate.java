@@ -412,11 +412,8 @@ public class SpoonTabsDelegate extends SpoonDelegate
 					}
 				}
 				
-				if (entry.getObject() instanceof JobGraph) {
-					((JobGraph)entry.getObject()).setFocus();
-				} else if (entry.getObject() instanceof TransGraph) {
-					((TransGraph)entry.getObject()).setFocus();
-				}
+				entry.getObject().setFocus();
+				
 				
 				break;
 			}

@@ -279,5 +279,13 @@ public class SpoonBrowser implements TabItemInterface
       return null;
     }
 
-    
+    public boolean canHandleSave() {
+      return false;
+    }
+
+    public boolean setFocus() {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
 }
