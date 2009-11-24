@@ -217,6 +217,9 @@ import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.DefaultBindingFactory;
+import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulMenuseparator;
 import org.pentaho.ui.xul.containers.XulMenu;
@@ -329,7 +332,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
 	private              JobExecutionConfiguration		  jobExecutionConfiguration;
 
-	private              XulMenu				spoonMenu;																																											// Connections,
+//	private              XulMenu				spoonMenu;																																											// Connections,
 
 	private              int						coreObjectsState		   = STATE_CORE_OBJECTS_NONE;
 
@@ -341,6 +344,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 	private              Map<String, XulComponent>		menuMap	 = new HashMap<String, XulComponent>();
 
 	private              XulDomContainer mainSpoonContainer;
+	private              BindingFactory bf;
 	
   // loads the lifecycle listeners
 	private              LifecycleSupport				lcsup					 = new LifecycleSupport();
@@ -611,9 +615,10 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       final SwtXulLoader loader = new SwtXulLoader();
       loader.setOuterContext(shell);
       mainSpoonContainer = loader.loadXul(XUL_FILE_MENUBAR);
+      bf = new DefaultBindingFactory();
+      bf.setDocument(mainSpoonContainer.getDocumentRoot());
       mainSpoonContainer.addEventHandler(this);
       menuBar = (XulMenubar) mainSpoonContainer.getDocumentRoot().getElementById("spoon-menubar");
-      
       for(SpoonPlugin pl : UIPluginManager.getInstance().getPlugins()){
         for(String url : pl.getOverlays()){
           mainSpoonContainer.loadOverlay(url.toString());
@@ -623,6 +628,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
         }
       }
       
+      setupBindings(); 
     } catch (IllegalArgumentException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
@@ -2265,37 +2271,38 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		// final Object grandParent = object.getGrandParent();
 
 		// Not clicked on a real object: returns a class
+		XulMenupopup      spoonMenu = null;
 		if (selection instanceof Class) {
 			if (selection.equals(TransMeta.class)) {
 				// New
-				spoonMenu = (XulMenu) menuMap.get("trans-class");
+				spoonMenu = (XulMenupopup) menuMap.get("trans-class");
 			} else if (selection.equals(JobMeta.class)) {
 				// New
-				spoonMenu = (XulMenu) menuMap.get("job-class");
+				spoonMenu = (XulMenupopup) menuMap.get("job-class");
 			} else if (selection.equals(TransHopMeta.class)) {
 				// New
-				spoonMenu = (XulMenu) menuMap.get("trans-hop-class");
+				spoonMenu = (XulMenupopup) menuMap.get("trans-hop-class");
 			} else if (selection.equals(DatabaseMeta.class)) {
-				spoonMenu = (XulMenu) menuMap.get("database-class");
+				spoonMenu = (XulMenupopup) menuMap.get("database-class");
 			} else if (selection.equals(PartitionSchema.class)) {
 				// New
-				spoonMenu = (XulMenu) menuMap.get("partition-schema-class");
+				spoonMenu = (XulMenupopup) menuMap.get("partition-schema-class");
 			} else if (selection.equals(ClusterSchema.class)) {
-				spoonMenu = (XulMenu) menuMap.get("cluster-schema-class");
+				spoonMenu = (XulMenupopup) menuMap.get("cluster-schema-class");
 			} else if (selection.equals(SlaveServer.class)) {
-				spoonMenu = (XulMenu) menuMap.get("slave-cluster-class");
+				spoonMenu = (XulMenupopup) menuMap.get("slave-cluster-class");
 			} else
 				spoonMenu = null;
 		} else {
 
 			if (selection instanceof TransMeta) {
-				spoonMenu = (XulMenu) menuMap.get("trans-inst");
+				spoonMenu = (XulMenupopup) menuMap.get("trans-inst");
 			} else if (selection instanceof JobMeta) {
-				spoonMenu = (XulMenu) menuMap.get("job-inst");
+				spoonMenu = (XulMenupopup) menuMap.get("job-inst");
 			} else if (selection instanceof StepPlugin) {
-				spoonMenu = (XulMenu) menuMap.get("step-plugin");
+				spoonMenu = (XulMenupopup) menuMap.get("step-plugin");
 			} else if (selection instanceof DatabaseMeta) {
-				spoonMenu = (XulMenu) menuMap.get("database-inst");
+				spoonMenu = (XulMenupopup) menuMap.get("database-inst");
 				// disable for now if the connection is an SAP R/3 type of database...
 				//
 				XulMenuitem item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById("database-inst-explore");
@@ -2312,17 +2319,17 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 					item.setLabel(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache") + databaseMeta.getName());// Clear
 				}
 			} else if (selection instanceof StepMeta) {
-				spoonMenu = (XulMenu) menuMap.get("step-inst");
+				spoonMenu = (XulMenupopup) menuMap.get("step-inst");
 			} else if (selection instanceof JobEntryCopy) {
-				spoonMenu = (XulMenu) menuMap.get("job-entry-copy-inst");
+				spoonMenu = (XulMenupopup) menuMap.get("job-entry-copy-inst");
 			} else if (selection instanceof TransHopMeta) {
-				spoonMenu = (XulMenu) menuMap.get("trans-hop-inst");
+				spoonMenu = (XulMenupopup) menuMap.get("trans-hop-inst");
 			} else if (selection instanceof PartitionSchema) {
-				spoonMenu = (XulMenu) menuMap.get("partition-schema-inst");
+				spoonMenu = (XulMenupopup) menuMap.get("partition-schema-inst");
 			} else if (selection instanceof ClusterSchema) {
-				spoonMenu = (XulMenu) menuMap.get("cluster-schema-inst");
+				spoonMenu = (XulMenupopup) menuMap.get("cluster-schema-inst");
 			} else if (selection instanceof SlaveServer) {
-				spoonMenu = (XulMenu) menuMap.get("slave-server-inst");
+				spoonMenu = (XulMenupopup) menuMap.get("slave-server-inst");
 			}
 
 		}
@@ -4719,6 +4726,9 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 		markTabsChanged();
 	}
 
+	private void setupBindings() {
+	}	
+	
 	public void enableMenus() {
 		boolean enableTransMenu = getActiveTransformation() != null;
 		boolean enableJobMenu = getActiveJob() != null;
