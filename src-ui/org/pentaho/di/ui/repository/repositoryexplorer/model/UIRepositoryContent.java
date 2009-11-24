@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.ObjectRevision;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementLocation;
@@ -21,8 +22,8 @@ public class UIRepositoryContent extends UIRepositoryObject{
     super();
   }
   
-  public UIRepositoryContent(RepositoryContent rc, Directory parent) {
-    super(rc);
+  public UIRepositoryContent(RepositoryContent rc, Directory parent, Repository rep) {
+    super(rc, rep);
     this.rc = rc;
     this.parent = parent;
   }
@@ -79,7 +80,7 @@ public class UIRepositoryContent extends UIRepositoryObject{
     List<UIRepositoryObjectRevision> returnRevs = new ArrayList<UIRepositoryObjectRevision>();
     
     RepositoryElementLocation loc = new RepositoryElementLocation(getName(), (RepositoryDirectory)parent, getObjectType());
-    List <ObjectRevision> or = parent.getRepository().getRevisions(loc);
+    List <ObjectRevision> or = getRepository().getRevisions(loc);
 
     for (ObjectRevision rev : or) {
       returnRevs.add(new UIRepositoryObjectRevision(rev));

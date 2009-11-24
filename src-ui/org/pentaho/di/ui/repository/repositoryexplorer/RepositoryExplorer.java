@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.repository.Directory;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
@@ -46,7 +47,7 @@ public class RepositoryExplorer {
   
   private Directory repositoryDirectory; 
 
-  public RepositoryExplorer(Directory rd) {
+  public RepositoryExplorer(Directory rd, Repository rep) {
     repositoryDirectory = rd;
     try {
       
@@ -63,7 +64,7 @@ public class RepositoryExplorer {
 
       browseController.setBindingFactory(bf);
       container.addEventHandler(browseController);
-      browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory));
+      browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
 
       try {
         runner.initialize();

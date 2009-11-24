@@ -3,7 +3,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import java.util.Date;
 
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElement;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
@@ -12,6 +12,7 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   
   // This object can be a Directory or a RepositoryContent
   protected RepositoryElement obj;
+  protected Repository rep;
 
   public UIRepositoryObject() {
     super();
@@ -22,6 +23,12 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
     this.obj = obj;
   }
   
+  public UIRepositoryObject(RepositoryElement obj, Repository rep) {
+    super();
+    this.rep = rep;
+    this.obj = obj;
+  }
+
   public String getId() {
     return obj.getObjectId().getId();
   }
@@ -50,6 +57,14 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   
   public boolean isDeleted(){
     return false;
+  }
+
+  public Repository getRepository() {
+    return rep;
+  }
+
+  public void setRepository(Repository rep) {
+    this.rep = rep;
   }
 
 }

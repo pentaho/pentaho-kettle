@@ -21,10 +21,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.repository.Directory;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
 
 public class UIRepositoryDirectory extends UIRepositoryObject {
 
@@ -36,8 +36,8 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     super();
   }
   
-  public UIRepositoryDirectory(Directory rd) {
-    super(rd);
+  public UIRepositoryDirectory(Directory rd, Repository rep) {
+    super(rd, rep);
     this.rd = rd;
   }
 
@@ -54,8 +54,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     }
 
     for (Directory child : rd.getChildren()) {
-      child.setRepository(rd.getRepository());
-      kidDirectoryCache.add(new UIRepositoryDirectory(child));
+      kidDirectoryCache.add(new UIRepositoryDirectory(child, rep));
     }
     return kidDirectoryCache;
   }
@@ -71,25 +70,24 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     kidElementCache = new ArrayList<UIRepositoryObject>();
 
     for (Directory child : rd.getChildren()) {
-      child.setRepository(rd.getRepository());
-      kidElementCache.add(new UIRepositoryDirectory(child));
+      kidElementCache.add(new UIRepositoryDirectory(child, rep));
     }
     List<? extends RepositoryContent> transformations;
-    transformations = rd.getRepository().getTransformationObjects(new StringObjectId(getId()), true);
+    transformations = rep.getTransformationObjects(new StringObjectId(getId()), true);
     for (RepositoryContent child : transformations) {
-      kidElementCache.add(new UIRepositoryContent(child, rd));
+      kidElementCache.add(new UIRepositoryContent(child, rd, rep));
     }
     List<? extends RepositoryContent> jobs;
-    jobs = rd.getRepository().getJobObjects(new StringObjectId(getId()), true);
+    jobs = rep.getJobObjects(new StringObjectId(getId()), true);
     for (RepositoryContent child : jobs) {
       
-      kidElementCache.add(new UIRepositoryContent(child, rd));
+      kidElementCache.add(new UIRepositoryContent(child, rd, rep));
     }
     return kidElementCache;
   }
 
   public boolean isRevisionsSupported(){
-    return rd.getRepository().getRepositoryMeta().getRepositoryCapabilities().supportsRevisions();
+    return rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions();
   }
  
   public String toString(){
