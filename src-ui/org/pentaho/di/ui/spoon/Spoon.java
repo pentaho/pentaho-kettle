@@ -3088,7 +3088,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 					if (transMeta != null) {
 						if (log.isDetailed())
-							log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.LoadToTransformation", name, repdir.getDirectoryName()));
+							log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.LoadToTransformation", name, repdir.getName()));
 						props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repdir.getPath(), true, rep.getName());
 						addMenuLast();
 						transMeta.clearChanged();

@@ -51,7 +51,7 @@ public class RepositoryDirectoryUI {
      */
 	public static void getTreeWithNames(TreeItem ti, Repository rep, Map<String, RepositoryObject> objectMap, Color dircolor, int sortPosition, boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectory dir, String filterString, Pattern pattern) throws KettleDatabaseException
 	{
-		ti.setText(dir.getDirectoryName());
+		ti.setText(dir.getName());
 		ti.setForeground(dircolor);
 		int nrAdded=0;
 		
@@ -183,7 +183,7 @@ public class RepositoryDirectoryUI {
 	 */
 	public static void getDirectoryTree(TreeItem ti, Color dircolor, RepositoryDirectory dir)
 	{
-		ti.setText(dir.getDirectoryName());
+		ti.setText(dir.getName());
 		ti.setForeground(dircolor);
 		
 		// First, we draw the directories

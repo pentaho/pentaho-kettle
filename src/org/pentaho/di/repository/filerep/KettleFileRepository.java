@@ -386,7 +386,7 @@ public class KettleFileRepository implements Repository {
 		RepositoryDirectory directory = tree.findDirectory(id_directory);
 		String[] names = new String[directory.getNrSubdirectories()];
 		for (int i=0;i<names.length;i++) {
-			names[i] = directory.getSubdirectory(i).getDirectoryName();
+			names[i] = directory.getSubdirectory(i).getName();
 		}
 		return names;
 	}
@@ -931,7 +931,7 @@ public class KettleFileRepository implements Repository {
 			String folderName = calcDirectoryName(null)+dirId.getId();
 			FileObject folder = KettleVFS.getFileObject(folderName);
 			
-			String newFolderName = folder.getParent().toString()+"/"+dir.getDirectoryName();
+			String newFolderName = folder.getParent().toString()+"/"+dir.getName();
 			FileObject newFolder = KettleVFS.getFileObject(newFolderName);
 			folder.moveTo(newFolder);
 			

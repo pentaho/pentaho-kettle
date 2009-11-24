@@ -23,7 +23,7 @@ import java.util.List;
  * @author Matt
  * 
  */
-public class RepositoryObject
+public class RepositoryObject implements RepositoryContent
 {
 
 	@Deprecated

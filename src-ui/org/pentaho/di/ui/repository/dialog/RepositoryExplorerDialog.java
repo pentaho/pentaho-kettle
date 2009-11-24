@@ -2620,7 +2620,7 @@ public class RepositoryExplorerDialog extends Dialog
             }
     		if (!name.equals(newname))
     		{
-    			repdir.setDirectoryName(newname);
+    			repdir.setName(newname);
     			try {
     				rep.renameRepositoryDirectory(repdir);
     				retval=true;

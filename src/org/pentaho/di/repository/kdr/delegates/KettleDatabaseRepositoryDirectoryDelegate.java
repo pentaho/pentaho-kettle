@@ -60,7 +60,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 				
 				// Content?
 				//
-				repositoryDirectory.setDirectoryName( row.getString("DIRECTORY_NAME", null));
+				repositoryDirectory.setName( row.getString("DIRECTORY_NAME", null));
 				
 				// The sub-directories?
 				//
@@ -123,7 +123,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 		RowMetaAndData table = new RowMetaAndData();
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), id);
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER), id_directory_parent);
-		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), dir.getDirectoryName());
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), dir.getName());
 
 		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), tablename);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
@@ -218,7 +218,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 	{
 		try
 		{
-			renameDirectory(dir.getObjectId(), dir.getDirectoryName());
+			renameDirectory(dir.getObjectId(), dir.getName());
 			return dir.getObjectId(); // doesn't change in this specific case.
 		}
 		catch(Exception e)

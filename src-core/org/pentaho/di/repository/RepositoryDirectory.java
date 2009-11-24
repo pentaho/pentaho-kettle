@@ -28,12 +28,13 @@ import org.w3c.dom.Node;
  * @since  09-nov-2004
  *
  */
-public class RepositoryDirectory
+public class RepositoryDirectory implements Directory
 {
     public static final String DIRECTORY_SEPARATOR = "/";
 
 	private RepositoryDirectory parent;
-	private ArrayList<RepositoryDirectory>           children;
+  private Repository repository;
+	private List<Directory> children;
 	
 	private String directoryname;
 	
@@ -48,7 +49,7 @@ public class RepositoryDirectory
 	{
 		this.parent        = parent;
 		this.directoryname = directoryname;
-		this.children      = new ArrayList<RepositoryDirectory>(); // default: no subdirectories...
+		this.children      = new ArrayList<Directory>(); // default: no subdirectories...
 		this.id            = null;              // The root directory!
 	}
 	
@@ -62,11 +63,19 @@ public class RepositoryDirectory
 		this(null, (String)null);
 	}
 	
-	public void clear()
+	public List<Directory> getChildren() {
+    return children;
+  }
+
+  public void setChildren(List<Directory> children) {
+    this.children = children;
+  }
+
+  public void clear()
 	{
 		this.parent        = null;
 		this.directoryname = null;
-		this.children      = new ArrayList<RepositoryDirectory>(); // default: no subdirectories...
+		this.children      = new ArrayList<Directory>(); // default: no subdirectories...
 	}
 	
 	/**
@@ -110,7 +119,7 @@ public class RepositoryDirectory
 	 * Set the directory name (rename)
 	 * @param directoryname The new directory name
 	 */
-	public void setDirectoryName(String directoryname)
+	public void setName(String directoryname)
 	{
 		this.directoryname = directoryname;
 	}
@@ -119,7 +128,7 @@ public class RepositoryDirectory
 	 * Get the name of this directory...
 	 * @return the name of this directory
 	 */
-	public String getDirectoryName()
+	public String getName()
 	{
 		if (directoryname==null) return DIRECTORY_SEPARATOR;
 		return directoryname;
@@ -149,11 +158,11 @@ public class RepositoryDirectory
 		{
 			if (getParent().getParent()==null)
 			{
-				return DIRECTORY_SEPARATOR + getDirectoryName();
+				return DIRECTORY_SEPARATOR + getName();
 			}
 			else
 			{
-				return getParent().getPath() + DIRECTORY_SEPARATOR + getDirectoryName();
+				return getParent().getPath() + DIRECTORY_SEPARATOR + getName();
 			}
 		}
 	}
@@ -177,13 +186,13 @@ public class RepositoryDirectory
 		// Then put something in it...
 		String retval[] = new String[depth];
 		int level=depth-1;
-		retval[level]=getDirectoryName();
+		retval[level]=getName();
 		
 		follow = getParent();
 		if (follow!=null)
 		{
 			level--;
-			retval[level]=follow.getDirectoryName();
+			retval[level]=follow.getName();
 			
 			follow=follow.getParent();
 		}
@@ -260,7 +269,7 @@ public class RepositoryDirectory
 		}
 		else
 		// This directory?    
-	    if (directoryPath.length==1 && directoryPath[0].equalsIgnoreCase(getDirectoryName()))
+	    if (directoryPath.length==1 && directoryPath[0].equalsIgnoreCase(getName()))
 		{
 			return this;
 		}
@@ -331,8 +340,9 @@ public class RepositoryDirectory
 	}
 	
 	public RepositoryDirectory findChild(String name) {
-		for (RepositoryDirectory child : children) {
-			if (child.getDirectoryName().equalsIgnoreCase(name)) return child;
+		for (Directory child : children) {
+			if (child.getName().equalsIgnoreCase(name)) 
+			  return (RepositoryDirectory)child;
 		}
 		return null;
 	}
@@ -379,7 +389,7 @@ public class RepositoryDirectory
         StringBuffer retval = new StringBuffer(200);
 		
 		retval.append(spaces).append("<repdir>").append(Const.CR);
-		retval.append(spaces).append("  ").append(XMLHandler.addTagValue("name", getDirectoryName() ));
+		retval.append(spaces).append("  ").append(XMLHandler.addTagValue("name", getName() ));
 		
 		if (getNrSubdirectories()>0)
 		{
@@ -491,5 +501,13 @@ public class RepositoryDirectory
         {
             return getPath()+RepositoryDirectory.DIRECTORY_SEPARATOR+transName;
         }
+    }
+
+    public Repository getRepository() {
+      return repository;
+    }
+
+    public void setRepository(Repository repository) {
+      this.repository = repository;
     }
 }

@@ -1,0 +1,134 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2009 Pentaho Corporation.  All rights reserved.
+ */
+package org.pentaho.di.ui.repository.repositoryexplorer.model;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.pentaho.di.repository.Directory;
+import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
+
+public class UIRepositoryDirectory extends UIRepositoryObject {
+
+  private Directory rd;
+  private List <UIRepositoryDirectory> kidDirectoryCache = null;
+  private List<UIRepositoryObject> kidElementCache = null;
+  
+  public UIRepositoryDirectory() {
+    super();
+  }
+  
+  public UIRepositoryDirectory(Directory rd) {
+    super(rd);
+    this.rd = rd;
+  }
+
+  
+  public List<UIRepositoryDirectory> getChildren(){
+    // We've been here before.. use the cache
+    if (kidDirectoryCache != null){
+      return kidDirectoryCache;
+    }
+    
+    kidDirectoryCache = new ArrayList<UIRepositoryDirectory>();
+    if (rd.getChildren()==null){
+      return kidDirectoryCache;
+    }
+
+    for (Directory child : rd.getChildren()) {
+      child.setRepository(rd.getRepository());
+      kidDirectoryCache.add(new UIRepositoryDirectory(child));
+    }
+    return kidDirectoryCache;
+  }
+  
+  // TODO: Abstract working model; should throw RepositoryException
+  // TODO: We will need a way to reset this cache when a directory or element changes
+  public List<UIRepositoryObject> getRepositoryObjects()throws Exception {
+    // We've been here before.. use the cache
+    if (kidElementCache != null){
+      return kidElementCache;
+    }
+    
+    kidElementCache = new ArrayList<UIRepositoryObject>();
+
+    for (Directory child : rd.getChildren()) {
+      child.setRepository(rd.getRepository());
+      kidElementCache.add(new UIRepositoryDirectory(child));
+    }
+    List<? extends RepositoryContent> transformations;
+    transformations = rd.getRepository().getTransformationObjects(new StringObjectId(getId()), true);
+    for (RepositoryContent child : transformations) {
+      kidElementCache.add(new UIRepositoryContent(child, rd));
+    }
+    List<? extends RepositoryContent> jobs;
+    jobs = rd.getRepository().getJobObjects(new StringObjectId(getId()), true);
+    for (RepositoryContent child : jobs) {
+      
+      kidElementCache.add(new UIRepositoryContent(child, rd));
+    }
+    return kidElementCache;
+  }
+
+  public boolean isRevisionsSupported(){
+    return rd.getRepository().getRepositoryMeta().getRepositoryCapabilities().supportsRevisions();
+  }
+ 
+  public String toString(){
+    return getName();
+  }
+
+  public String getDescription() {
+    return null;
+  }
+
+  public String getLockMessage() {
+    return null;
+  }
+
+  public Date getModifiedDate() {
+    return null;
+  }
+
+  public String getModifiedUser() {
+    return null;
+  }
+
+  public RepositoryObjectType getObjectType() {
+    return null;
+  }
+
+  @Override
+  public boolean isDeleted() {
+    return super.isDeleted();
+  }
+
+  @Override
+  public String getType() {
+    return null;
+  }
+
+  @Override
+  public String getFormatModifiedDate() {
+    return null;
+  }
+  
+}
