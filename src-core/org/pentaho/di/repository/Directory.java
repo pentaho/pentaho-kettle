@@ -8,8 +8,8 @@ public interface Directory extends RepositoryElement{
 
   public void setChildren(List<Directory> children);
 
-  public void setRepository(Repository repository);
+  //public void setRepository(Repository repository);
   
-  public Repository getRepository();
+  //public Repository getRepository();
   
 }

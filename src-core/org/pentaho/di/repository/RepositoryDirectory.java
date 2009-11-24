@@ -33,7 +33,6 @@ public class RepositoryDirectory implements Directory
     public static final String DIRECTORY_SEPARATOR = "/";
 
 	private RepositoryDirectory parent;
-  private Repository repository;
 	private List<Directory> children;
 	
 	private String directoryname;
@@ -503,11 +502,4 @@ public class RepositoryDirectory implements Directory
         }
     }
 
-    public Repository getRepository() {
-      return repository;
-    }
-
-    public void setRepository(Repository repository) {
-      this.repository = repository;
-    }
 }
