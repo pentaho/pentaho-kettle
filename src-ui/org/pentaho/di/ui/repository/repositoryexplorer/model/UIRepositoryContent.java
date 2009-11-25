@@ -11,9 +11,10 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementLocation;
+import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 
-public class UIRepositoryContent extends UIRepositoryObject{
+public class UIRepositoryContent extends UIRepositoryObject implements RepositoryElementLocationInterface{
 
   private RepositoryContent rc;
   private Directory parent;
@@ -48,11 +49,6 @@ public class UIRepositoryContent extends UIRepositoryObject{
   }
 
   @Override
-  public RepositoryObjectType getObjectType() {
-    return rc.getObjectType();
-  }
-
-  @Override
   public String getType() {
     return rc.getObjectType().name();
   }
@@ -79,13 +75,21 @@ public class UIRepositoryContent extends UIRepositoryObject{
   public List<UIRepositoryObjectRevision> getRevisions() throws Exception{
     List<UIRepositoryObjectRevision> returnRevs = new ArrayList<UIRepositoryObjectRevision>();
     
-    RepositoryElementLocation loc = new RepositoryElementLocation(getName(), (RepositoryDirectory)parent, getObjectType());
-    List <ObjectRevision> or = getRepository().getRevisions(loc);
+    List <ObjectRevision> or = getRepository().getRevisions(this);
 
     for (ObjectRevision rev : or) {
       returnRevs.add(new UIRepositoryObjectRevision(rev));
     }
     return returnRevs;
+  }
+
+  // TODO: Remove references to the Kettle object RepositoryDirectory
+  public RepositoryDirectory getRepositoryDirectory() {
+    return (RepositoryDirectory) parent;
+  }
+
+  public RepositoryObjectType getRepositoryElementType() {
+    return rc.getObjectType();
   }
 
 }

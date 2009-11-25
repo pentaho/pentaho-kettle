@@ -17,8 +17,11 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.pentaho.di.repository.Directory;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
@@ -43,6 +46,7 @@ public class BrowseController extends AbstractXulEventHandler{
   private XulTree versionTable;
 
   private UIRepositoryDirectory repositoryDirectory; 
+  private RepositoryExplorerCallback callback;
   
   BindingFactory bf;
 
@@ -160,6 +164,10 @@ public class BrowseController extends AbstractXulEventHandler{
     this.repositoryDirectory = repositoryDirectory;
   }
   
+  public void setCallback(RepositoryExplorerCallback callback) {
+    this.callback = callback;
+  }
+
   public void expandAllFolders(){
     folderTree.expandAll();
   }
@@ -167,5 +175,53 @@ public class BrowseController extends AbstractXulEventHandler{
   public void collapseAllFolders(){
     folderTree.collapseAll();
   }
+
+  public void openContent(){
+    Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
+    UIRepositoryContent contentToOpen = content.iterator().next();
+    if (callback != null) {
+      if (callback.open(contentToOpen, null)){
+        //TODO: fire request to close dialog
+      }
+    }
+  }
   
+  public void openRevision(){
+    Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
+    UIRepositoryContent contentToOpen = content.iterator().next();
+
+    Collection<UIRepositoryObjectRevision> revision = versionTable.getSelectedItems();
+    
+    // TODO: Is it a requirement to allow opening multiple revisions? 
+    UIRepositoryObjectRevision revisionToOpen = revision.iterator().next();
+    if (callback != null) {
+      if (callback.open(contentToOpen, revisionToOpen.getName())){
+        //TODO: fire request to close dialog
+      }
+    }
+  }
+  
+  public void createFolder() throws Exception{
+    Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
+    UIRepositoryDirectory selectedFolder = directory.iterator().next();
+    if (selectedFolder==null){
+      selectedFolder = repositoryDirectory;
+    }
+    Directory newDirectory = 
+      selectedFolder.getRepository().createRepositoryDirectory(selectedFolder.getDirectory(), "new");
+    
+    System.out.println(newDirectory.getName() + ", " + newDirectory.getObjectId().getId());
+
+    //this.firePropertyChange("selectedItems", toDelete, null);
+  }
+
+  public void deleteFolder() throws Exception{
+    Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
+    UIRepositoryDirectory toDelete = directory.iterator().next();
+    toDelete.getRepository().deleteRepositoryDirectory(toDelete.getDirectory());
+
+    this.firePropertyChange("selectedItems", toDelete, null);
+  }
+
+
 }

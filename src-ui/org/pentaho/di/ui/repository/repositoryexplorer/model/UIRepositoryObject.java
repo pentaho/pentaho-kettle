@@ -47,7 +47,7 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
 
   public abstract String getModifiedUser();
 
-  public abstract RepositoryObjectType getObjectType();
+  public abstract RepositoryObjectType getRepositoryElementType();
 
   public abstract String getType();
 

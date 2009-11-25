@@ -23,6 +23,7 @@ import java.util.List;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 
@@ -110,7 +111,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     return null;
   }
 
-  public RepositoryObjectType getObjectType() {
+  public RepositoryObjectType getRepositoryElementType() {
     return null;
   }
 
@@ -127,6 +128,10 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   @Override
   public String getFormatModifiedDate() {
     return null;
+  }
+  
+  public RepositoryDirectory getDirectory(){
+    return (RepositoryDirectory)rd;
   }
   
 }

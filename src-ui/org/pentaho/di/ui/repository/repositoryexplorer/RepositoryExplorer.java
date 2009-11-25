@@ -47,7 +47,7 @@ public class RepositoryExplorer {
   
   private Directory repositoryDirectory; 
 
-  public RepositoryExplorer(Directory rd, Repository rep) {
+  public RepositoryExplorer(Directory rd, Repository rep, RepositoryExplorerCallback callback) {
     repositoryDirectory = rd;
     try {
       
@@ -65,6 +65,7 @@ public class RepositoryExplorer {
       browseController.setBindingFactory(bf);
       container.addEventHandler(browseController);
       browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
+      browseController.setCallback(callback);
 
       try {
         runner.initialize();
