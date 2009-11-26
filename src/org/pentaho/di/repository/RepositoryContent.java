@@ -16,4 +16,8 @@ public interface RepositoryContent extends RepositoryElement {
   
   public boolean isDeleted();
   
+  public void setName(String name);
+  
+  public String getName();
+  
 }

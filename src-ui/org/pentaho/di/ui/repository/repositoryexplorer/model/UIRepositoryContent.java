@@ -92,4 +92,28 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     return rc.getObjectType();
   }
 
+  public void setName(String name) throws Exception{
+    if (rc.getName().equalsIgnoreCase(name)){
+      return;
+    }
+    rc.setName(name);
+    rep.renameTransformation(this.getObjectId(), getRepositoryDirectory(), name);
+  }
+  
+  @Override
+  public String getImage() {
+    String image = null;
+    
+    switch (rc.getObjectType()){
+      case JOB:
+        image = "images/job.png";
+        break;
+      case TRANSFORMATION:
+        image = "images/transformation.png";
+        break;
+    }
+    return image;
+  }
+
+
 }

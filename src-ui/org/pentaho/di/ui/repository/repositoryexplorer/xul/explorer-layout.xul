@@ -66,10 +66,10 @@
 								<button label="c" onclick="browseController.collapseAllFolders()" />
 							</hbox>
 
-							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu">
+							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" >
 								<treecols>
 									<treecol flex="1" label="" primary="true" pen:binding="name"
-										pen:childrenbinding="children" />
+										pen:childrenbinding="children" pen:imagebinding="image"/>
 								</treecols>
 								<treechildren>
 									<treeitem container="true" open="true">
@@ -85,10 +85,11 @@
 						<vbox flex="2">
 							<vbox flex="1">
 								<tree id="file-table" flex="1" hidecolumnpicker="true"
-									enableColumnDrag="true" context="fileContextMenu">
+									enableColumnDrag="true" context="fileContextMenu" editable="true">
 									<treecols>
 										<treecol id="name-col" flex="1" label="Name"
-											pen:binding="name" pen:childrenbinding="children" />
+											pen:binding="name" pen:childrenbinding="children" editable="true" 
+											pen:imagebinding="image"/>
 										<treecol id="type-col" flex="1" label="Type"
 											pen:binding="type" />
 										<treecol id="date-mod-col" flex="1" label="Date Modified"

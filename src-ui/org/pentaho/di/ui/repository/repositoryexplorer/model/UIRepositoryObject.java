@@ -59,6 +59,8 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
     return false;
   }
 
+  public abstract String getImage();
+
   public Repository getRepository() {
     return rep;
   }

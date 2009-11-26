@@ -95,6 +95,14 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     return getName();
   }
 
+  public void setName(String name)throws Exception{
+    if (getDirectory().getName().equalsIgnoreCase(name)){
+      return;
+    }
+    //getDirectory().setName(name);
+    //rep.renameRepositoryDirectory(getDirectory());
+  }
+  
   public String getDescription() {
     return null;
   }
@@ -132,6 +140,17 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   
   public RepositoryDirectory getDirectory(){
     return (RepositoryDirectory)rd;
+  }
+  
+  public void contentChanged()throws Exception{
+    this.kidDirectoryCache = null;
+    this.kidElementCache = null;
+    rd = rep.loadRepositoryDirectoryTree();
+  }
+
+  @Override
+  public String getImage() {
+    return "images/treeClosed.png";
   }
   
 }

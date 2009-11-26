@@ -16,6 +16,8 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,7 +51,8 @@ public class BrowseController extends AbstractXulEventHandler{
   private RepositoryExplorerCallback callback;
   
   BindingFactory bf;
-
+  Binding directoryBinding;
+  
   public BrowseController() {
   }
   
@@ -64,7 +67,8 @@ public class BrowseController extends AbstractXulEventHandler{
 
     // Bind the repository folder structure to the folder tree.
     bf.setBindingType(Binding.Type.ONE_WAY);
-    Binding directoryBinding = bf.createBinding(repositoryDirectory, "children", folderTree, "elements");
+    directoryBinding = bf.createBinding(repositoryDirectory, "children", folderTree, "elements");
+    
     
     // Bind the selected index from the folder tree to the list of repository objects in the file table. 
     bf.setBindingType(Binding.Type.ONE_WAY);
@@ -146,6 +150,13 @@ public class BrowseController extends AbstractXulEventHandler{
       System.out.println(e.getMessage()); e.printStackTrace();
     }
     
+    this.addPropertyChangeListener(new PropertyChangeListener(){
+
+      public void propertyChange(PropertyChangeEvent evt) {
+      }
+      
+    });
+    
   }
 
   public void setBindingFactory(BindingFactory bf) {
@@ -212,6 +223,9 @@ public class BrowseController extends AbstractXulEventHandler{
     
     System.out.println(newDirectory.getName() + ", " + newDirectory.getObjectId().getId());
 
+    repositoryDirectory.contentChanged();
+    directoryBinding.fireSourceChanged();
+    folderTree.update();
     //this.firePropertyChange("selectedItems", toDelete, null);
   }
 
@@ -219,8 +233,11 @@ public class BrowseController extends AbstractXulEventHandler{
     Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
     UIRepositoryDirectory toDelete = directory.iterator().next();
     toDelete.getRepository().deleteRepositoryDirectory(toDelete.getDirectory());
+    
+    repositoryDirectory.contentChanged();
+    directoryBinding.fireSourceChanged();
+    folderTree.update();
 
-    this.firePropertyChange("selectedItems", toDelete, null);
   }
 
 
