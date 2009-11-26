@@ -144,8 +144,49 @@
 			<tabpanel><!-- tabpanel Second elements go here -->
 			</tabpanel>
 
-			<tabpanel><!-- tabpanel Third elements go here -->
+			<!--
+				###############################################################################
+			-->
+			<!--
+				START - SECURITY TAB
+			-->
+			<!--
+				###############################################################################
+			-->
+
+			<tabpanel>
+
+					<hbox id="security-box" flex="1">
+						<vbox flex="1">
+							<hbox>
+								<label id="available-label" value="Available Users:" />
+								<label id="spacer-label" flex="1" />
+								<button  image="images/Edit.png"/>
+								<button  image="images/Add.png" />
+								<button  image="images/Remove.png" />
+							</hbox>
+
+							<tree id="user-table" flex="1" hidecolumnpicker="true"
+								enableColumnDrag="true">
+								<treecols>
+									<treecol id="user-name-col" flex="1" label="Name"/>
+									<treecol id="user-desc-col" flex="4" label="Description"/>
+								</treecols>
+								<treechildren />
+							</tree>
+						</vbox>
+					</hbox>
+
 			</tabpanel>
+			<!--
+				###############################################################################
+			-->
+			<!--
+				END - SECURITY TAB
+			-->
+			<!--
+				###############################################################################
+			-->
 
 			<tabpanel><!-- tabpanel Fourth elements go here -->
 			</tabpanel>
