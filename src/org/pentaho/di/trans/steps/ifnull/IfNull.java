@@ -193,30 +193,35 @@ public class IfNull extends BaseStep implements StepInterface
 		// Loop through fields
 		for(int i=0;i<data.fieldnr;i++){
 			ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(data.fieldnrs[i]);
-			if(sourceValueMeta.isNull(r[data.fieldnrs[i]]))
+			if(data.outputRowMeta.getValueMeta(data.fieldnrs[i]).isNull(r[data.fieldnrs[i]]))
 			{
 				 if(meta.isSelectValuesType()){
 					 ValueMetaInterface fieldMeta= data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
 					 int pos=data.ListTypes.get(fieldMeta.getTypeDesc());
 					 data.realReplaceByValue=data.defaultValues[pos];	
 					 data.realconversionMask=data.defaultMasks[pos];
+					 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.defaultValues[pos], data.defaultMasks[pos]);
 				 }else if(meta.isSelectFields()) {
-						 data.realReplaceByValue=data.defaultValues[i];
-						 data.realconversionMask=data.defaultMasks[i];
+					 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.defaultValues[i], data.defaultMasks[i]);
+				 }else { // all
+					 if (data.outputRowMeta.getValueMeta(data.fieldnrs[i]).isDate()) {
+						 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, data.realconversionMask);
+					 } else { // don't use any special date format when not a date
+						 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, null);
+					 }
 				 }
-				 replaceNull(r,sourceValueMeta, data.fieldnrs[i]);
+				 
 			}
 		}
 	}
 		
-		
-	public void replaceNull(Object[] row, ValueMetaInterface sourceValueMeta, int i) throws Exception
+	public void replaceNull(Object[] row, ValueMetaInterface sourceValueMeta, int i, String realReplaceByValue, String realconversionMask) throws Exception
 	{
 		// DO CONVERSION OF THE DEFAULT VALUE ...
 		// Entered by user
 		ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
-		if(!Const.isEmpty(data.realconversionMask)) sourceValueMeta.setConversionMask(data.realconversionMask);
-		row[i] = targetValueMeta.convertData(sourceValueMeta, data.realReplaceByValue);
+		if(!Const.isEmpty(realconversionMask)) sourceValueMeta.setConversionMask(realconversionMask);
+		row[i] = targetValueMeta.convertData(sourceValueMeta, realReplaceByValue);
 	}
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
