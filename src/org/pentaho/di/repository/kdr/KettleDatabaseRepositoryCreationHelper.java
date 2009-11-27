@@ -2205,7 +2205,6 @@ public class KettleDatabaseRepositoryCreationHelper {
 		            		Permission.SCHEMA,
 		            		Permission.DATABASE,
 		            		Permission.EXPLORE_DATABASE,
-		            		Permission.DATABASE,
 		            		Permission.LOCK_FILE,
 							},
 					// A normal user do it all too, doesn't have administration rights: can't manage users, can't unlock files from another user, etc.   
@@ -2216,7 +2215,6 @@ public class KettleDatabaseRepositoryCreationHelper {
 		            		Permission.SCHEMA,
 		            		Permission.DATABASE,
 		            		Permission.EXPLORE_DATABASE,
-		            		Permission.DATABASE,
 		            		Permission.LOCK_FILE,
 				            },
 					// A read-only user can do a lot too.  However, it can't save, rename, delete files, create directories, etc   
@@ -2228,7 +2226,6 @@ public class KettleDatabaseRepositoryCreationHelper {
 		            		Permission.SCHEMA,
 		            		Permission.DATABASE,
 		            		Permission.EXPLORE_DATABASE,
-		            		Permission.DATABASE,
 				            },
 				};
 			

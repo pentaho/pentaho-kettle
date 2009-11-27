@@ -288,7 +288,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				// As such, we're going to verify that it's a local file...
 				// We're also going to convert VFS FileObject to File
 				//
-				FileObject fileObject = KettleVFS.getFileObject(vfsFilename);
+				FileObject fileObject = KettleVFS.getFileObject(vfsFilename, this);
 				if (!(fileObject instanceof LocalFile)) {
 					// MySQL LOAD DATA can only use local files, so that's what we limit ourselves to.
 					//
@@ -428,7 +428,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 									if (isAddFileToResult())
 									{
 										// Add zip filename to output files
-					                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realFilename), parentJob.getJobname(), toString());
+					                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realFilename, this), parentJob.getJobname(), toString());
 					                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 									}
 									

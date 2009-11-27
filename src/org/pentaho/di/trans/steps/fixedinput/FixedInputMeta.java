@@ -562,7 +562,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.txt
 			// To   : /home/matt/test/files/foo/bar.txt
 			//
-			FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(filename));
+			FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(filename), space);
 			
 			// If the file doesn't exist, forget about this effort too!
 			//

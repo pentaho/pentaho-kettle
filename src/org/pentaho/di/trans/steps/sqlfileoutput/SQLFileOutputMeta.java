@@ -971,7 +971,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.data
 			// To   : /home/matt/test/files/foo/bar.data
 			//
-			FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName));
+			FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName), space);
 				
 			// If the file doesn't exist, forget about this effort too!
 			//

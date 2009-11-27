@@ -919,7 +919,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			boolean resultat=true;
 			try{
 				// Get parent folder
-	    		parentfolder=KettleVFS.getFileObject(filename).getParent();	    		
+	    		parentfolder=KettleVFS.getFileObject(filename, this).getParent();	    		
 	    		if(!parentfolder.exists()){
 	    			if(createParentFolder){
 	    				if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));

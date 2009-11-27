@@ -77,7 +77,7 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
         	// 1) Set up the FIFO folder, create the directory and path to it... 
         	//
         	String fifoVfsDirectory = environmentSubstitute(meta.getFifoDirectory());
-        	FileObject directory = KettleVFS.getFileObject(fifoVfsDirectory);
+        	FileObject directory = KettleVFS.getFileObject(fifoVfsDirectory, getTransMeta());
         	directory.createFolder();
         	String fifoDirectory = KettleVFS.getFilename(directory);
         	

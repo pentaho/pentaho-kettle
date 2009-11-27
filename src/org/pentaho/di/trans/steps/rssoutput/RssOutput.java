@@ -161,7 +161,7 @@ public class RssOutput extends BaseStep implements StepInterface
 	    		try
 	    		{
 	    			// Get parent folder
-		    		parentfolder=KettleVFS.getFileObject(data.filename).getParent();	    		
+		    		parentfolder=KettleVFS.getFileObject(data.filename, getTransMeta()).getParent();	    		
 		    		if(!parentfolder.exists())	
 		    		{
 		    			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssOutput.Log.ParentFolderExists",parentfolder.getName().toString()));
@@ -686,7 +686,7 @@ public class RssOutput extends BaseStep implements StepInterface
         	if (meta.AddToResult())
 			{
 				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileName), getTransMeta().getName(), getStepname());
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileName, getTransMeta()), getTransMeta().getName(), getStepname());
 				resultFile.setComment("This file was created with a RSS Output step");
 	            addResultFile(resultFile);
 			}

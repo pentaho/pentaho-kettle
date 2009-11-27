@@ -588,7 +588,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
             else
             {
             	// Add this to the result file names...
-				resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
+				resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename, getTransMeta()), getTransMeta().getName(), getStepname());
 				resultFile.setComment("This file was created with a text file output step");
 	            addResultFile(resultFile);
 
@@ -601,9 +601,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
     					if(log.isDetailed()) logDetailed("Opening output stream in zipped mode");
                         
     		            if(checkPreviouslyOpened(filename)){
-    		            	data.fos = KettleVFS.getOutputStream(filename, true);
+    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), true);
     		            }else{
-    		            	data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
     		            }
                         data.zip = new ZipOutputStream(data.fos);
     					File entry = new File( filename );
@@ -616,9 +616,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
     				{
     					if(log.isDetailed()) logDetailed("Opening output stream in gzipped mode");
     		            if(checkPreviouslyOpened(filename)){
-    		            	data.fos = KettleVFS.getOutputStream(filename, true);
+    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), true);
     		            }else{
-    		            	data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
     		            }
                         data.gzip = new GZIPOutputStream(data.fos);
     					outputStream=data.gzip;
@@ -632,9 +632,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				{
 					if(log.isDetailed()) logDetailed("Opening output stream in nocompress mode");
                     if(checkPreviouslyOpened(filename)){
-    		            	data.fos = KettleVFS.getOutputStream(filename, true);
+    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), true);
     		            }else{
-    		            	data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
     		            }
                     outputStream=data.fos;
 				}

@@ -185,7 +185,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     		String realFilename = getRealFilename();
     		try
     		{
-    			fileObject = KettleVFS.getFileObject(realFilename);
+    			fileObject = KettleVFS.getFileObject(realFilename, this);
 
     			long iMaximumTimeout = Const.toInt(getRealMaximumTimeout(),
     					Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
@@ -222,7 +222,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     			boolean continueLoop = true;
     			while ( continueLoop && !parentJob.isStopped() )
     			{
-        			fileObject = KettleVFS.getFileObject(realFilename);
+        			fileObject = KettleVFS.getFileObject(realFilename, this);
 
     				if ( fileObject.exists() )
     				{

@@ -123,7 +123,7 @@ public class XsdValidator extends BaseStep implements StepInterface
 						FileObject xsdfile=null;
 						try
 						{
-							xsdfile = KettleVFS.getFileObject(environmentSubstitute(meta.getXSDFilename()));
+							xsdfile = KettleVFS.getFileObject(environmentSubstitute(meta.getXSDFilename()), getTransMeta());
 						    if(!xsdfile.exists())
 						    {
 						    	logError(BaseMessages.getString(PKG, "XsdValidator.Log.Error.XSDFileNotExists"));
@@ -213,7 +213,7 @@ public class XsdValidator extends BaseStep implements StepInterface
 						
 				SchemaFactory factoryXSDValidator = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 				
-			    xsdfile = KettleVFS.getFileObject(xsdfilename);
+			    xsdfile = KettleVFS.getFileObject(xsdfilename, getTransMeta());
 				File XSDFile = new File(KettleVFS.getFilename(xsdfile));
 					
 				//	Get XML stream		

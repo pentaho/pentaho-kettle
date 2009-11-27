@@ -170,7 +170,7 @@ public class FileInputList
             {
                 try
                 {
-                	  FileObject directoryFileObject = KettleVFS.getFileObject(onefile);
+                	  FileObject directoryFileObject = KettleVFS.getFileObject(onefile, space);
                       boolean processFolder=true;
                       if(onerequired)
                       {
@@ -273,7 +273,7 @@ public class FileInputList
             {
                 try
                 {
-                    FileObject fileObject = KettleVFS.getFileObject(onefile);
+                    FileObject fileObject = KettleVFS.getFileObject(onefile, space);
                     if (fileObject.exists())
                     {
                         if (fileObject.isReadable())
@@ -321,7 +321,7 @@ public class FileInputList
 	        {
 	            // Find all folder names  in this directory
 	            //
-	            directoryFileObject = KettleVFS.getFileObject(onefile);
+	            directoryFileObject = KettleVFS.getFileObject(onefile, space);
 	            if (directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER) // it's a directory
 	            {
 	            	

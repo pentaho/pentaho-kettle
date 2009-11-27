@@ -680,7 +680,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		this.initializeVariablesFrom(parentSpace);
 		try {
 			// OK, try to load using the VFS stuff...
-			Document doc = XMLHandler.loadXMLFile(KettleVFS.getFileObject(fname));
+			Document doc = XMLHandler.loadXMLFile(KettleVFS.getFileObject(fname, this));
 			if (doc != null) {
 				// Clear the job
 				clear();
@@ -2145,7 +2145,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		if (filename != null) // we have a filename that's defined.
 		{
 			try {
-				FileObject fileObject = KettleVFS.getFileObject(filename);
+				FileObject fileObject = KettleVFS.getFileObject(filename, var);
 				FileName fileName = fileObject.getName();
 
 				// The filename of the transformation
@@ -2310,7 +2310,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			} else {
 				// Assume file
 				//
-				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()));
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()), space);
 				originalPath = fileObject.getParent().getName().getPath();
 				baseName = fileObject.getName().getBaseName();
 				fullname = fileObject.getName().getPath();

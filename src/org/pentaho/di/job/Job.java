@@ -1049,7 +1049,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         {
             try
             {
-                FileObject fileObject = KettleVFS.getFileObject(jobMeta.getFilename());
+                FileObject fileObject = KettleVFS.getFileObject(jobMeta.getFilename(), this);
                 FileName fileName = fileObject.getName();
                 
                 // The filename of the transformation
@@ -1218,7 +1218,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			if (executionConfiguration.isPassingExport()) {
 				// First export the job... slaveServer.getVariable("MASTER_HOST")
 				//
-				FileObject tempFile = KettleVFS.createTempFile("jobExport", ".zip", System.getProperty("java.io.tmpdir"));
+				FileObject tempFile = KettleVFS.createTempFile("jobExport", ".zip", System.getProperty("java.io.tmpdir"), jobMeta);
 				
 				TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface(tempFile.getName().toString(), jobMeta, jobMeta, repository, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME);
 				

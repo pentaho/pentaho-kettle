@@ -434,7 +434,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
                 ws.setEncoding(meta.getEncoding());
             }
             String buildFilename=buildFilename();
-            data.file = KettleVFS.getFileObject(buildFilename);
+            data.file = KettleVFS.getFileObject(buildFilename, getTransMeta());
             if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.OpeningFile",buildFilename));
             
             if(meta.isAddToResultFiles())
@@ -494,7 +494,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	}
             } else {
 
-            	FileObject fo = KettleVFS.getFileObject(environmentSubstitute(meta.getTemplateFileName()));
+            	FileObject fo = KettleVFS.getFileObject(environmentSubstitute(meta.getTemplateFileName()), getTransMeta());
 				// create the openFile from the template
 
 				Workbook tmpWorkbook=Workbook.getWorkbook(KettleVFS.getInputStream(fo), ws);

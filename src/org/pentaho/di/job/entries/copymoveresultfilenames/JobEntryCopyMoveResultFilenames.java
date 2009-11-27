@@ -556,7 +556,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		FileObject folder=null;
 		try
 		{
-			folder=KettleVFS.getFileObject(foldername);
+			folder=KettleVFS.getFileObject(foldername, this);
 			
     		if(!folder.exists())	
     		{
@@ -599,7 +599,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			String shortfilename=getDestinationFilename(sourcefile.getName().getBaseName());
 			// build full destination filename
 			String destinationFilename=destinationFolder+Const.FILE_SEPARATOR+shortfilename;
-			FileObject destinationfile=KettleVFS.getFileObject(destinationFilename);
+			FileObject destinationfile=KettleVFS.getFileObject(destinationFilename, this);
 			filexists=destinationfile.exists();
 			if(filexists)
 			{
@@ -631,7 +631,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 				if(isAddDestinationFilename())
 				{
 					// Add destination filename to Resultfilenames ...
-					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(destinationfile.toString()), parentJob.getJobname(), toString());
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(destinationfile.toString(), this), parentJob.getJobname(), toString());
 					result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 					if(log.isDetailed())
 						logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddedFileToResult",destinationfile.toString()));

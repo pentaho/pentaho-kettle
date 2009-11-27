@@ -421,7 +421,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			// Let's perform some checks before starting
 			if(!Const.isEmpty(realTargetDirectory))
 			{
-				TargetFolder=KettleVFS.getFileObject(realTargetDirectory);
+				TargetFolder=KettleVFS.getFileObject(realTargetDirectory, this);
 				boolean TargetFolderExists=TargetFolder.exists();
 				if(TargetFolderExists)
 				{
@@ -523,7 +523,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 					if(isaddresult)
 					{
 						// Add to the result files...
-						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename), parentJob.getJobname(), toString());
+						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename, this), parentJob.getJobname(), toString());
 						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.FilenameAddedToResultFilenames",filelist[i]));
 					}

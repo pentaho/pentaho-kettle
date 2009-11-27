@@ -68,7 +68,7 @@ public class ResourceUtil {
 
 				// Create the ZIP file...
 				//
-				FileObject fileObject = KettleVFS.getFileObject(zipFilename);
+				FileObject fileObject = KettleVFS.getFileObject(zipFilename, space);
 
 				// Store the XML in the definitions in a ZIP file...
 				//

@@ -1202,7 +1202,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			if (!fileNameInField) {
 				
 				if (!Const.isEmpty(fileName)) {
-					FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName));
+					FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName), space);
 					fileName = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
 				}
 			}

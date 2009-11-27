@@ -429,7 +429,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 
 		try
 		{
-			sourcefilefolder = KettleVFS.getFileObject(realSourceFilefoldername);
+			sourcefilefolder = KettleVFS.getFileObject(realSourceFilefoldername, this);
 			
 			if (sourcefilefolder.exists())
 			{
@@ -596,7 +596,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	{	
 		try
 		{
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getName(), toString());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry, this), parentJob.getName(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	    
 			if(log.isDetailed())

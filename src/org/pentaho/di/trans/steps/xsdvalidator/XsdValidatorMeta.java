@@ -469,7 +469,7 @@ public class XsdValidatorMeta extends BaseStepMeta implements StepMetaInterface
 			// To   : /home/matt/test/files/foo/bar.xsd
 			//
 			if (!Const.isEmpty(xsdFilename)) {
-				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(xsdFilename));
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(xsdFilename), space);
 				xsdFilename = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
 				
 				return xsdFilename;

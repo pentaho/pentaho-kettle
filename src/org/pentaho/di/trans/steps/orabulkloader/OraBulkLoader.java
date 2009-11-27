@@ -362,7 +362,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getSqlldr()));   
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getSqlldr()), getTransMeta());   
   	      	   String sqlldr = KettleVFS.getFilename(fileObject);
 		       sb.append(sqlldr);
   	       }
@@ -380,7 +380,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()));   
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()), getTransMeta());   
 		   
 	           sb.append(" control=\'");
 	           sb.append(KettleVFS.getFilename(fileObject));
@@ -404,7 +404,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try 
 		   {
-		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()));   
+		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()), getTransMeta());   
 	   
 		       sb.append(" log=\'");
 		       sb.append(KettleVFS.getFilename(fileObject));
@@ -420,7 +420,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getBadFile()));   
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getBadFile()), getTransMeta());   
 		   
 	           sb.append(" bad=\'");
 	           sb.append(KettleVFS.getFilename(fileObject));		  		   
@@ -436,7 +436,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getDiscardFile()));   
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getDiscardFile()), getTransMeta());   
 		   
 	           sb.append(" discard=\'");
 	           sb.append(KettleVFS.getFilename(fileObject));		  		   
@@ -707,7 +707,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		       {
 			       try
 			       {
-		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()));			   
+		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()), getTransMeta());			   
 		               fileObject.delete();
 		               fileObject.close();
 	  	           }
@@ -725,7 +725,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		       {
 			       try
 			       {
-		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getDataFile()));			   
+		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getDataFile()), getTransMeta());			   
 		               fileObject.delete();
 		               fileObject.close();
 	  	           }

@@ -157,7 +157,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
             String realFoldername = getRealFoldername();
             FileObject FolderObject = null;
 			try {
-				FolderObject = KettleVFS.getFileObject(realFoldername);
+				FolderObject = KettleVFS.getFileObject(realFoldername, this);
 
 				if ( FolderObject.exists() )
 				{

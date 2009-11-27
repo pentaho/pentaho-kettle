@@ -416,7 +416,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         }
 
         // Create the output File...
-        outputFile = KettleVFS.getOutputStream(realTargetFile, fileAppended);
+        outputFile = KettleVFS.getOutputStream(realTargetFile, this, fileAppended);
 
         // Get a stream for the specified URL
         server = new URL(urlToUse);
@@ -469,7 +469,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         logBasic("Finished writing " + bytesRead + " bytes to result file [" + realTargetFile + "]");
 
         // Add to the result files...
-        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realTargetFile),
+        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realTargetFile, this),
             parentJob.getJobname(), toString());
         result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 

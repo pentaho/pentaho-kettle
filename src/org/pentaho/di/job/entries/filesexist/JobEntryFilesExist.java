@@ -188,7 +188,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		    	  try
 		            {
 		    		   String realFilefoldername = environmentSubstitute(arguments[i]);
-		    		   file = KettleVFS.getFileObject(realFilefoldername);
+		    		   file = KettleVFS.getFileObject(realFilefoldername, this);
 		    		  
 		    		    if (file.exists() && file.isReadable())
 		    		    {

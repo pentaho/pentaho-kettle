@@ -213,7 +213,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
 				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.FilenameInStream", meta.setOutputFilenameField(),filename));
 
-				data.file= KettleVFS.getFileObject(filename);
+				data.file= KettleVFS.getFileObject(filename, getTransMeta());
                
 				// Init Row number
               	if(meta.isFileField()) data.rownr =0;	

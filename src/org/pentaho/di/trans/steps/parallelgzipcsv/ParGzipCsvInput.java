@@ -263,7 +263,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 			// Open the next one...
 			//
 			logBasic("Opening file #"+data.filenr+" : "+data.filenames[data.filenr]);
-			FileObject fileObject = KettleVFS.getFileObject(data.filenames[data.filenr]);
+			FileObject fileObject = KettleVFS.getFileObject(data.filenames[data.filenr], getTransMeta());
 			data.fis = KettleVFS.getInputStream(fileObject);
 			
 			if (meta.isLazyConversionActive()) {

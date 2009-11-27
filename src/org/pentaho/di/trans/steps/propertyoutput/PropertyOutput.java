@@ -208,7 +208,7 @@ public class PropertyOutput extends BaseStep implements StepInterface
 			data.pro=new Properties();
 			data.KeySet.clear();
 			
-			data.file=KettleVFS.getFileObject(data.filename);
+			data.file=KettleVFS.getFileObject(data.filename, getTransMeta());
 			if(meta.isAppend() && data.file.exists())
 				data.pro.load(KettleVFS.getInputStream(data.file));
 		

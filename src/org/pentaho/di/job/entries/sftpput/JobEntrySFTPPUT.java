@@ -361,7 +361,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 					String file_previous = resultRow.getString(0,null);
 					if(!Const.isEmpty(file_previous))
 					{
-						FileObject file=KettleVFS.getFileObject(file_previous);
+						FileObject file=KettleVFS.getFileObject(file_previous, this);
 						if(!file.exists())
 							logError(BaseMessages.getString(PKG, "JobSFTPPUT.Log.FilefromPreviousNotFound",file_previous));
 						else
@@ -412,7 +412,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 				// Get all the files in the local directory...
 				myFileList = new ArrayList<FileObject>();
 	
-				FileObject localFiles = KettleVFS.getFileObject(realLocalDirectory);
+				FileObject localFiles = KettleVFS.getFileObject(realLocalDirectory, this);
 				FileObject[] children = localFiles.getChildren();
 				if (children!=null) {
 					for (int i=0; i<children.length; i++) {

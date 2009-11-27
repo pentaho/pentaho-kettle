@@ -991,7 +991,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
         
     	FileObject file=null;
         try {
-        	file=KettleVFS.getFileObject(filename);
+        	file=KettleVFS.getFileObject(filename, this);
         	if(!file.exists()) return false;
         	else
         	{
@@ -1307,7 +1307,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		FileObject folder=null;
 		try
 		{
-			folder=	 KettleVFS.getFileObject(filefolder);
+			folder=	 KettleVFS.getFileObject(filefolder, this);
 			
     		if(!folder.exists())	
     		{

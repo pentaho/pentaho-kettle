@@ -322,7 +322,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
 				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
 
-				data.file= KettleVFS.getFileObject(filename);
+				data.file= KettleVFS.getFileObject(filename, getTransMeta());
 			}
 						
 

@@ -159,7 +159,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		DataInputStream dis = null;
 		try
 		{
-			InputStream is = KettleVFS.getInputStream(space.environmentSubstitute(filename));
+			InputStream is = KettleVFS.getInputStream(space.environmentSubstitute(filename), space);
 			fis = new GZIPInputStream(is);
 			dis = new DataInputStream(fis);
 	
@@ -272,7 +272,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 			// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.data
 			// To   : /home/matt/test/files/foo/bar.data
 			//
-			FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(filename));
+			FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(filename), space);
 				
 			// If the file doesn't exist, forget about this effort too!
 			//

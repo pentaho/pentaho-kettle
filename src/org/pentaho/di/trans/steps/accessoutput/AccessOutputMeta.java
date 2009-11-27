@@ -654,7 +654,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 			// So let's change the filename from relative to absolute by grabbing the file object...
 			// 
 			if (!Const.isEmpty(filename)) {
-				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(filename));
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(filename), space);
 				filename = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
 			}
 			

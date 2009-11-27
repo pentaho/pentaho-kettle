@@ -222,14 +222,14 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 			if (meta.AddToResult())
 			{
 				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename, getTransMeta()), getTransMeta().getName(), getStepname());
 				resultFile.setComment("This file was created with a text file output step");
 	            addResultFile(resultFile);
 			}
             OutputStream outputStream;
             
             if(log.isDetailed()) logDetailed("Opening output stream in nocompress mode");
-            OutputStream fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+            OutputStream fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
             outputStream=fos;
 			
             if(log.isDetailed()) logDetailed("Opening output stream in default encoding");
@@ -321,7 +321,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 		    		{
 		    			// Get parent folder
 		    			String filename=environmentSubstitute(meta.getFileName());
-			    		parentfolder=KettleVFS.getFileObject(filename).getParent();	    		
+			    		parentfolder=KettleVFS.getFileObject(filename, getTransMeta()).getParent();	    		
 			    		if(!parentfolder.exists())	
 			    		{
 			    			log.logBasic("Folder parent", "Folder parent " + parentfolder.getName() + " does not exist !");

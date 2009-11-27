@@ -81,7 +81,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 
 		try
 		{
-			ResultFile resultFile = new ResultFile(meta.getFileType(), KettleVFS.getFileObject(filename),
+			ResultFile resultFile = new ResultFile(meta.getFileType(), KettleVFS.getFileObject(filename, getTransMeta()),
 					getTrans().getName(), getStepname());
 
 			// Add all rows to rows buffer...

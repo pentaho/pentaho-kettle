@@ -472,27 +472,27 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			}else
 			{
 				String realFilename = environmentSubstitute(getFilename());
-				fileObject = KettleVFS.getFileObject(realFilename);	
+				fileObject = KettleVFS.getFileObject(realFilename, this);	
 			}
 
 			if (Const.getOS().equals("Windows 95"))
 			{
 				base = new String[] { "command.com", "/C" };
 				if (insertScript) {
-					tempFile = KettleVFS.createTempFile("kettle", "shell.bat", workDirectory);
+					tempFile = KettleVFS.createTempFile("kettle", "shell.bat", workDirectory, this);
 					fileObject = createTemporaryShellFile(tempFile, realScript);
 				}
 			} else if (Const.getOS().startsWith("Windows"))
 			{
 				base = new String[] { "cmd.exe", "/C" };
 				if (insertScript) {
-					tempFile = KettleVFS.createTempFile("kettle", "shell.bat", workDirectory);
+					tempFile = KettleVFS.createTempFile("kettle", "shell.bat", workDirectory, this);
 					fileObject = createTemporaryShellFile(tempFile, realScript);
 				}
 			} else
 			{
 				if (insertScript) {
-					tempFile = KettleVFS.createTempFile("kettle", "shell", workDirectory);
+					tempFile = KettleVFS.createTempFile("kettle", "shell", workDirectory, this);
 					fileObject = createTemporaryShellFile(tempFile, realScript);
 				}
 				base = new String[] { KettleVFS.getFilename(fileObject) };
@@ -613,7 +613,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			if (getWorkDirectory() != null && !Const.isEmpty(Const.rtrim(getWorkDirectory())))
 			{
 				String vfsFilename = environmentSubstitute(getWorkDirectory());
-				File file = new File(KettleVFS.getFilename(KettleVFS.getFileObject(vfsFilename)));
+				File file = new File(KettleVFS.getFilename(KettleVFS.getFileObject(vfsFilename, this)));
 				procBuilder.directory(file);
 			}
 			Process proc = procBuilder.start();

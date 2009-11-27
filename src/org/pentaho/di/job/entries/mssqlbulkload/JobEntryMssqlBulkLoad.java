@@ -394,7 +394,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				// As such, we're going to verify that it's a local file...
 				// We're also going to convert VFS FileObject to File
 				//
-				fileObject = KettleVFS.getFileObject(vfsFilename);
+				fileObject = KettleVFS.getFileObject(vfsFilename, this);
 				if (!(fileObject instanceof LocalFile)) {
 					// MSSQL BUKL INSERT can only use local files, so that's what we limit ourselves to.
 					//
@@ -545,7 +545,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 									if (isAddFileToResult())
 									{
 										// Add filename to output files
-					                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realFilename), parentJob.getJobname(), toString());
+					                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realFilename, this), parentJob.getJobname(), toString());
 					                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 									}
 									

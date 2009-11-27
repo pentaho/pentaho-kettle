@@ -953,7 +953,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
                         if (setLogfile)
                         {
-                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(getLogFilename()), parentJob.getJobname(), toString());
+                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(getLogFilename(), this), parentJob.getJobname(), toString());
                             result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
         				}
                     }
@@ -1009,7 +1009,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		boolean resultat=true;
 		try{
 			// Get parent folder
-    		parentfolder=KettleVFS.getFileObject(filename).getParent();	    		
+    		parentfolder=KettleVFS.getFileObject(filename, this).getParent();	    		
     		if(!parentfolder.exists()){
     			if(createParentFolder){
     				if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobTrans.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));

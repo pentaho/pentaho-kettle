@@ -106,7 +106,7 @@ public class FileExists extends BaseStep implements StepInterface
         	String filename= data.previousRowMeta.getString(r,data.indexOfFileename);
         	if(!Const.isEmpty(filename))
         	{
-        		data.file=KettleVFS.getFileObject(filename);
+        		data.file=KettleVFS.getFileObject(filename, getTransMeta());
         	
         		// Check if file
         		fileexists=data.file.exists();

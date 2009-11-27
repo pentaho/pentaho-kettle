@@ -26,12 +26,16 @@ import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.UUIDUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
+import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleVFS
@@ -68,7 +72,16 @@ public class KettleVFS
     	if (kettleVFS==null) kettleVFS=new KettleVFS(); 
     }
     
-    public static FileObject getFileObject(String vfsFilename) throws KettleFileException
+    public static FileObject getFileObject(String vfsFilename) throws KettleFileException {
+      return getFileObject(vfsFilename, null);
+    }
+    
+    
+    public static FileObject getFileObject(String vfsFilename, VariableSpace space) throws KettleFileException {
+      return getFileObject(vfsFilename, space, null);
+    }
+    
+    public static FileObject getFileObject(String vfsFilename, VariableSpace space, FileSystemOptions fsOptions) throws KettleFileException
     {
     	checkHook();
     	
@@ -87,11 +100,15 @@ public class KettleVFS
 	        String[] schemes = VFS.getManager().getSchemes();
 	        for (int i=0;i<schemes.length && relativeFilename;i++)
 	        {
-	            if (vfsFilename.startsWith(schemes[i]+":")) relativeFilename=false;
+	            if (vfsFilename.startsWith(schemes[i]+":")) { //$NON-NLS-1$
+	              relativeFilename=false;
+	              // We have a VFS URL, load any options for the file system driver
+	              fsOptions = buildFsOptions(space, fsOptions, vfsFilename, schemes[i]);
+	            }
 	        }
 	        
 	        String filename;
-	        if (vfsFilename.startsWith("\\\\"))
+	        if (vfsFilename.startsWith("\\\\")) //$NON-NLS-1$
 	        {
 	            File file = new File(vfsFilename);
 	            filename = file.toURI().toString();
@@ -109,13 +126,44 @@ public class KettleVFS
 	            }
 	        }
 	        
-	        FileObject fileObject = fsManager.resolveFile( filename );
+	        FileObject fileObject = null;
+	        
+	        if(fsOptions != null) {
+	          fileObject = fsManager.resolveFile(filename, fsOptions);
+	        } else {
+	          fileObject = fsManager.resolveFile(filename);
+	        }
 	        
 	        return fileObject;
     	}
     	catch(IOException e) {
     		throw new KettleFileException("Unable to get VFS File object for filename '"+vfsFilename+"'", e);
     	}
+    }
+    
+    private static FileSystemOptions buildFsOptions(VariableSpace varSpace, FileSystemOptions sourceOptions, String vfsFilename, String scheme) throws IOException {
+      if(varSpace == null || vfsFilename == null) {
+        // We cannot extract settings from a non-existant variable space
+        return null;
+      }
+      
+      IKettleFileSystemConfigBuilder configBuilder = KettleFileSystemConfigBuilderFactory.getConfigBuilder(varSpace, scheme);
+      
+      FileSystemOptions fsOptions = (sourceOptions == null) ? new FileSystemOptions() : sourceOptions;
+
+      String[] varList = varSpace.listVariables();
+      
+      for(String var : varList) {
+        if(var.startsWith("vfs.")) { //$NON-NLS-1$
+          String param = configBuilder.parseParameterName(var, scheme);
+          if(param != null) {
+            configBuilder.setParameter(fsOptions, param, varSpace.getVariable(var), var, vfsFilename);
+          } else {
+            throw new IOException("FileSystemConfigBuilder could not parse parameter: " + var); //$NON-NLS-1$
+          }
+        }
+      }
+      return fsOptions;
     }
     
     /**
@@ -126,10 +174,20 @@ public class KettleVFS
      * @return The content of the file as a String
      * @throws IOException
      */
-    public static String getTextFileContent(String vfsFilename, String charSetName) throws KettleFileException
+    public static String getTextFileContent(String vfsFilename, String charSetName) throws KettleFileException {
+     return getTextFileContent(vfsFilename, null, charSetName);
+    }
+    
+    public static String getTextFileContent(String vfsFilename, VariableSpace space, String charSetName) throws KettleFileException
     {
-    	try {
-	        InputStream inputStream = getInputStream(vfsFilename);
+      	  try {
+  	        InputStream inputStream = null; 
+        
+          if(space == null) {
+            inputStream = getInputStream(vfsFilename);
+          } else {
+            inputStream = getInputStream(vfsFilename, space);
+          }
 	        InputStreamReader reader = new InputStreamReader(inputStream, charSetName);
 	        int c;
 	        StringBuffer stringBuffer = new StringBuffer();
@@ -143,10 +201,14 @@ public class KettleVFS
     	}
     }
     
-    public static boolean fileExists(String vfsFilename) throws KettleFileException
+    public static boolean fileExists(String vfsFilename) throws KettleFileException {
+      return fileExists(vfsFilename, null);
+    }
+    
+    public static boolean fileExists(String vfsFilename, VariableSpace space) throws KettleFileException
     {
     	try {
-	        FileObject fileObject = getFileObject(vfsFilename);
+	        FileObject fileObject = getFileObject(vfsFilename, space);
 	        return fileObject.exists();
     	} catch(IOException e) {
     		throw new KettleFileException(e);
@@ -159,10 +221,14 @@ public class KettleVFS
         return content.getInputStream();
     }
     
-    public static InputStream getInputStream(String vfsFilename) throws KettleFileException
+    public static InputStream getInputStream(String vfsFilename) throws KettleFileException {
+      return getInputStream(vfsFilename, null);
+    }
+    
+    public static InputStream getInputStream(String vfsFilename, VariableSpace space) throws KettleFileException
     {
     	try {
-			FileObject fileObject = getFileObject(vfsFilename);
+			FileObject fileObject = getFileObject(vfsFilename, space);
 			return getInputStream(fileObject);
 		} catch (IOException e) {
 			throw new KettleFileException(e);
@@ -209,10 +275,14 @@ public class KettleVFS
         }
     }
     
-    public static OutputStream getOutputStream(String vfsFilename, boolean append) throws KettleFileException
+    public static OutputStream getOutputStream(String vfsFilename, boolean append) throws KettleFileException {
+      return getOutputStream(vfsFilename, null, append);
+    }
+    
+    public static OutputStream getOutputStream(String vfsFilename, VariableSpace space, boolean append) throws KettleFileException
     {
     	try {
-	        FileObject fileObject = getFileObject(vfsFilename);
+	        FileObject fileObject = getFileObject(vfsFilename, space);
 	        return getOutputStream(fileObject, append);
     	} catch(IOException e) {
     		throw new KettleFileException(e);
@@ -223,24 +293,28 @@ public class KettleVFS
     {
         FileName fileName = fileObject.getName();
         String root = fileName.getRootURI();
-        if (!root.startsWith("file:")) return fileName.getURI(); // nothing we can do about non-normal files.
-        if (root.endsWith(":/")) // Windows
+        if (!root.startsWith("file:")) return fileName.getURI(); // nothing we can do about non-normal files. //$NON-NLS-1$
+        if (root.endsWith(":/")) // Windows //$NON-NLS-1$
         {
             root = root.substring(8,10);
         }
         else // *nix & OSX
         {
-            root = "";
+            root = ""; //$NON-NLS-1$
         }
         String fileString = root + fileName.getPath();
-        if (!"/".equals(Const.FILE_SEPARATOR))
+        if (!"/".equals(Const.FILE_SEPARATOR)) //$NON-NLS-1$
         {
-            fileString = Const.replace(fileString, "/", Const.FILE_SEPARATOR);
+            fileString = Const.replace(fileString, "/", Const.FILE_SEPARATOR); //$NON-NLS-1$
         }
         return fileString;
     }
     
-    public static FileObject createTempFile(String prefix, String suffix, String directory) throws KettleFileException
+    public static FileObject createTempFile(String prefix, String suffix, String directory) throws KettleFileException {
+      return createTempFile(prefix, suffix, directory, null);
+    }
+    
+    public static FileObject createTempFile(String prefix, String suffix, String directory, VariableSpace space) throws KettleFileException
     {
     	try {
 	        FileObject fileObject;
@@ -250,7 +324,7 @@ public class KettleVFS
 	          // when there multiple nodes with multiple JVMs on each node. In this case, the temp file names would end up being
 	          // duplicated which would cause the sort to fail.
 	          String filename = new StringBuffer(50).append(directory).append('/').append(prefix).append('_').append(UUIDUtil.getUUIDAsString()).append(suffix).toString();
-	          fileObject = getFileObject(filename);
+	          fileObject = getFileObject(filename, space);
 	        }
 	        while (fileObject.exists());
 	        return fileObject;

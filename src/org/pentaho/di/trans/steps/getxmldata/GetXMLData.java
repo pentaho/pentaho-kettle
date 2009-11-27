@@ -316,7 +316,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 					try
 					{
 						// XML source is a file.
-						file=  KettleVFS.getFileObject(Fieldvalue);
+						file=  KettleVFS.getFileObject(Fieldvalue, getTransMeta());
 						//Open the XML document
 						if(!setDocument(null,file,false,false)) 
 						{

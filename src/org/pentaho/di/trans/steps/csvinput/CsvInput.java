@@ -176,7 +176,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			// We'll use the same algorithm...
 			//
 	        for (String filename : data.filenames) { 
-	        	long size = KettleVFS.getFileObject(filename).getContent().getSize();
+	        	long size = KettleVFS.getFileObject(filename, getTransMeta()).getContent().getSize();
 	        	data.fileSizes.add(size);
 	        	data.totalFileSize+=size;
 	        }
@@ -286,7 +286,7 @@ public class CsvInput extends BaseStep implements StepInterface
 
 			// Open the next one...
 			//
-			FileObject fileObject = KettleVFS.getFileObject(data.filenames[data.filenr]);
+			FileObject fileObject = KettleVFS.getFileObject(data.filenames[data.filenr], getTransMeta());
 			if (!(fileObject instanceof LocalFile)) {
 				// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
 				//

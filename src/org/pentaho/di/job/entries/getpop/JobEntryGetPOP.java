@@ -727,7 +727,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			int nbrmailtoretrieve=usePOP3?getRetrievemails()==2?Const.toInt(getFirstMails(), 0):0:Const.toInt(getFirstIMAPMails(), 0);
 			
 			String realOutputFolder=getRealOutputDirectory();
-			fileObject = KettleVFS.getFileObject(realOutputFolder);
+			fileObject = KettleVFS.getFileObject(realOutputFolder, this);
 
 			// Check if output folder exists
 			if (fileObject.exists()) {
@@ -753,7 +753,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 				if(Const.isEmpty(realFolderAttachment))
 					throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.AttachmentFolderEmpty"));
 				
-				fileObject=KettleVFS.getFileObject(realFolderAttachment);
+				fileObject=KettleVFS.getFileObject(realFolderAttachment, this);
 				
 				if (!fileObject.exists())
 					throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.AttachmentFolderNotExist",realFolderAttachment));

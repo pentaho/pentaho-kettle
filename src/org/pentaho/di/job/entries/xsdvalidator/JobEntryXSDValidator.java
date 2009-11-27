@@ -174,8 +174,8 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 
 			if (xmlfilename!=null && xsdfilename!=null)
 			{
-				xmlfile = KettleVFS.getFileObject(realxmlfilename);
-				xsdfile = KettleVFS.getFileObject(realxsdfilename);
+				xmlfile = KettleVFS.getFileObject(realxmlfilename, this);
+				xsdfile = KettleVFS.getFileObject(realxsdfilename, this);
 
 				if ( xmlfile.exists() && xsdfile.exists() )
 				{

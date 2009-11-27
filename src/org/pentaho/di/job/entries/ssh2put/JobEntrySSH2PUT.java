@@ -729,7 +729,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 				}else
 				{
 					// Let's check if folder exists...
-					if(!KettleVFS.fileExists(realKeyFilename))
+					if(!KettleVFS.fileExists(realKeyFilename, this))
 					{
 						mandatoryok=false;
 						logError(BaseMessages.getString(PKG, "JobSSH2PUT.Log.KeyFileNotExist"));
@@ -751,7 +751,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 				}else{
 					FileObject folder=null;
 					try{
-						folder=KettleVFS.getFileObject(realDestinationFolder);
+						folder=KettleVFS.getFileObject(realDestinationFolder, this);
 						// Let's check if folder exists...
 						if(!folder.exists())
 						{
@@ -807,7 +807,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		
 					boolean isAuthenticated = false;
 					if(publicpublickey){
-						String keyContent = KettleVFS.getTextFileContent(realKeyFilename, Const.XML_ENCODING);
+						String keyContent = KettleVFS.getTextFileContent(realKeyFilename, this, Const.XML_ENCODING);
 						isAuthenticated=conn.authenticateWithPublicKey(realUserName, keyContent.toCharArray(), relKeyFilepass);
 					}else{
 						isAuthenticated=conn.authenticateWithPassword(realUserName, realServerPassword);
@@ -1124,7 +1124,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 			
 			// Get all the files in the local directory...
 			
-			FileObject localFiles = KettleVFS.getFileObject(localfolder);
+			FileObject localFiles = KettleVFS.getFileObject(localfolder, this);
 			FileObject[] children = localFiles.getChildren();
 			if (children!=null) 
 			{
@@ -1166,7 +1166,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 				FileObject source=null;
 				try
 				{
-					destination = KettleVFS.getFileObject(destinationFolder + Const.FILE_SEPARATOR + file.getName().getBaseName());
+					destination = KettleVFS.getFileObject(destinationFolder + Const.FILE_SEPARATOR + file.getName().getBaseName(), this);
 					file.moveTo(destination);
 					retval=true;
 				}

@@ -1136,7 +1136,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     		  }else{
 		    	  try {
 		    		  boolean found = false;
-			    	  imageFile=KettleVFS.getFileObject(realImageFile);
+			    	  imageFile=KettleVFS.getFileObject(realImageFile, this);
 			    	  if(imageFile.exists() && imageFile.getType()==FileType.FILE)
 			    		  found=true;
 			    	  else

@@ -73,7 +73,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getMClientPath()));
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getMClientPath()), getTransMeta());
   	      	   String psqlexec = KettleVFS.getFilename(fileObject);
 		       sb.append(psqlexec);
   	       }
@@ -103,7 +103,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try 
 		   {
-		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()));   
+		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()), getTransMeta());   
 	   
 		       sb.append(" --log=");
 		       sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');

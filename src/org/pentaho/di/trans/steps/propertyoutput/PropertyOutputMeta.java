@@ -630,7 +630,7 @@ public class PropertyOutputMeta extends BaseStepMeta implements StepMetaInterfac
 			//
 			// In case the name of the file comes from previous steps, forget about this!
 			if (!fileNameInField) {
-				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName));
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName), space);
 					
 				// If the file doesn't exist, forget about this effort too!
 				//

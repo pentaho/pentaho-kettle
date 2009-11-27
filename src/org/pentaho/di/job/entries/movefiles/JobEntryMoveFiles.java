@@ -381,7 +381,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			}
 			 FileObject folder = null;
 			 try{
-				 folder = KettleVFS.getFileObject(MoveToFolder);
+				 folder = KettleVFS.getFileObject(MoveToFolder, this);
 				 if(!folder.exists()) {
 					 if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobMoveFiles.Log.Error.FolderMissing",MoveToFolder));
 					 if(create_move_to_folder) {
@@ -532,9 +532,9 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 
 		     System.gc();
 		      
-			sourcefilefolder = KettleVFS.getFileObject(realSourceFilefoldername);
-			destinationfilefolder = KettleVFS.getFileObject(realDestinationFilefoldername);
-			if(!Const.isEmpty(MoveToFolder)) movetofolderfolder  =KettleVFS.getFileObject(MoveToFolder);
+			sourcefilefolder = KettleVFS.getFileObject(realSourceFilefoldername, this);
+			destinationfilefolder = KettleVFS.getFileObject(realDestinationFilefoldername, this);
+			if(!Const.isEmpty(MoveToFolder)) movetofolderfolder  =KettleVFS.getFileObject(MoveToFolder, this);
 			
 			if (sourcefilefolder.exists()){
 			
@@ -569,7 +569,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							// Move the file to the destination folder				
 							
 							String destinationfilenamefull=KettleVFS.getFilename(destinationfilefolder)+Const.FILE_SEPARATOR+shortfilename;
-							FileObject destinationfile= KettleVFS.getFileObject(destinationfilenamefull);
+							FileObject destinationfile= KettleVFS.getFileObject(destinationfilenamefull, this);
 							
 							entrystatus=MoveFile(shortfilename,sourcefilefolder,destinationfile,movetofolderfolder,parentJob,result);
 							
@@ -577,7 +577,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 						{
 							// Source is a file, destination is a file
 							
-							FileObject destinationfile= KettleVFS.getFileObject(realDestinationFilefoldername);
+							FileObject destinationfile= KettleVFS.getFileObject(realDestinationFilefoldername, this);
 							
 							// return destination short filename
 							String shortfilename=destinationfile.getName().getBaseName();
@@ -590,7 +590,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 							}
 
 							String destinationfilenamefull=KettleVFS.getFilename(destinationfile.getParent())+Const.FILE_SEPARATOR+shortfilename;
-							destinationfile= KettleVFS.getFileObject(destinationfilenamefull);
+							destinationfile= KettleVFS.getFileObject(destinationfilenamefull, this);
 							
 							entrystatus=MoveFile(shortfilename,sourcefilefolder,destinationfile,movetofolderfolder,parentJob,result);
 
@@ -750,7 +750,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				
 
 				String movetofilenamefull=destinationfilename.getParent().toString()+Const.FILE_SEPARATOR+short_filename;
-				destinationfile = KettleVFS.getFileObject(movetofilenamefull);
+				destinationfile = KettleVFS.getFileObject(movetofilenamefull, this);
 				
 				
 				if(!simulate) sourcefilename.moveTo(destinationfile);
@@ -780,7 +780,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 				}
 				
 				String movetofilenamefull=movetofolderfolder.toString()+Const.FILE_SEPARATOR+short_filename;
-				destinationfile = KettleVFS.getFileObject(movetofilenamefull);
+				destinationfile = KettleVFS.getFileObject(movetofilenamefull, this);
 				if(!destinationfile.exists()){
 					if(!simulate) sourcefilename.moveTo(destinationfile);
 					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobMoveFiles.Log.FileMoved",sourcefilename.getName().toString(),destinationfile.getName().toString()));
@@ -810,7 +810,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 						short_filename+="_"+dt;
 						
 						String destinationfilenamefull=movetofolderfolder.toString()+Const.FILE_SEPARATOR+short_filename;
-						destinationfile= KettleVFS.getFileObject(destinationfilenamefull);
+						destinationfile= KettleVFS.getFileObject(destinationfilenamefull, this);
 							
 						if(!simulate) sourcefilename.moveTo(destinationfile);
 						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobMoveFiles.Log.FileMoved",destinationfile.getName().toString()));
@@ -879,7 +879,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			short_filename_from_basefolder=short_filename_from_basefolder.substring(0,short_filename_from_basefolder.length()-lenCurrent)+shortfilename;
 
 			// Built destination filename
-			file_name=KettleVFS.getFileObject(realDestinationFilefoldername + Const.FILE_SEPARATOR + short_filename_from_basefolder); 
+			file_name=KettleVFS.getFileObject(realDestinationFilefoldername + Const.FILE_SEPARATOR + short_filename_from_basefolder, this); 
 			 
 
 			
@@ -982,7 +982,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	{	
 		try
 		{
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry), parentJob.getJobname(), toString());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(fileaddentry, this), parentJob.getJobname(), toString());
 			result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 	    
 			if(log.isDebug())

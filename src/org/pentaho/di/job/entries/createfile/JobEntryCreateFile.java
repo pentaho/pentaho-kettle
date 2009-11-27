@@ -164,7 +164,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
       FileObject fileObject = null;
       try
       {
-        fileObject = KettleVFS.getFileObject(realFilename);
+        fileObject = KettleVFS.getFileObject(realFilename, this);
 
         if (fileObject.exists())
         {
@@ -222,7 +222,7 @@ private void addFilenameToResult(String targetFilename,LogWriter log,Result resu
 	FileObject targetFile=null;
 	try
 	{
-		targetFile = KettleVFS.getFileObject(targetFilename);
+		targetFile = KettleVFS.getFileObject(targetFilename, this);
 		
 		// Add to the result files...
 		ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());

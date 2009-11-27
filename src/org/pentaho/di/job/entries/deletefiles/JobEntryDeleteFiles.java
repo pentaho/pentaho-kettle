@@ -241,7 +241,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     String realwildcard = environmentSubstitute(wildcard);
 
     try {
-      filefolder = KettleVFS.getFileObject(realFilefoldername);
+      filefolder = KettleVFS.getFileObject(realFilefoldername, this);
 
       // Here gc() is explicitly called if e.g. createfile is used in the same
       // job for the same file. The problem is that after creating the file the

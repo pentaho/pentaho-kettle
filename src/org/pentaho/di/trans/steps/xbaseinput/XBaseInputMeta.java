@@ -553,7 +553,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 				// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.dbf
 				// To   : /home/matt/test/files/foo/bar.dbf
 				//
-				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(dbfFileName));
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(dbfFileName), space);
 				
 				// If the file doesn't exist, forget about this effort too!
 				//

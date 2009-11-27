@@ -816,7 +816,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                     String fileValue = prevInfoFields.getString(fileRow, idx);
                     try
                     {
-                        FileObject fileObject = KettleVFS.getFileObject(fileValue);
+                        FileObject fileObject = KettleVFS.getFileObject(fileValue, getTransMeta());
                         data.files.addFile(fileObject);
                         if (meta.isPassingThruFields())
                             data.passThruFields.put(fileObject, fileRow);

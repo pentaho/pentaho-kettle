@@ -182,7 +182,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 		
 			if (xmlfilename!=null &&  ((dtdfilename!=null && !dtdintern) || (dtdintern))   )
 			{
-				xmlfile = KettleVFS.getFileObject(realxmlfilename);
+				xmlfile = KettleVFS.getFileObject(realxmlfilename, this);
 				
 				
 				if ( xmlfile.exists())   
@@ -243,7 +243,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 					{
 						// DTD in external document
 						// If we find an intern declaration, we remove it
-						DTDfile = KettleVFS.getFileObject(realDTDfilename);
+						DTDfile = KettleVFS.getFileObject(realDTDfilename, this);
 						
 						if (DTDfile.exists())
 						{

@@ -2279,7 +2279,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         Document doc=null;
         try
         {
-            doc = XMLHandler.loadXMLFile(KettleVFS.getFileObject(fname));
+            doc = XMLHandler.loadXMLFile(KettleVFS.getFileObject(fname, parentVariableSpace));
         }
         catch (KettleFileException e)
         {
@@ -5260,7 +5260,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         {
             try
             {
-                FileObject fileObject = KettleVFS.getFileObject(filename);
+                FileObject fileObject = KettleVFS.getFileObject(filename, var);
                 FileName fileName = fileObject.getName();
                 
                 // The filename of the transformation
@@ -5464,7 +5464,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 			} else {
 				// Assume file
 				//
-				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()));
+				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()), space);
 				originalPath = fileObject.getParent().getName().getPath();
 				baseName = fileObject.getName().getBaseName();
 				fullname = fileObject.getName().getPath();

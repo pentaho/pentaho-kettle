@@ -369,7 +369,7 @@ public class ExcelInput extends BaseStep implements StepInterface
                     String fileValue = rowSet.getRowMeta().getString(fileRow, idx);
                     try
                     {
-                        data.files.addFile(KettleVFS.getFileObject(fileValue));
+                        data.files.addFile(KettleVFS.getFileObject(fileValue, getTransMeta()));
                     }
                     catch(KettleFileException e)
                     {

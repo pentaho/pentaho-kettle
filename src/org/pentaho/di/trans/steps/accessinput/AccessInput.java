@@ -297,7 +297,7 @@ public class AccessInput extends BaseStep implements StepInterface
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
 				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "AccessInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
 
-				data.file= KettleVFS.getFileObject(filename);
+				data.file= KettleVFS.getFileObject(filename, getTransMeta());
 				// Check if file exists!
 			}
 			

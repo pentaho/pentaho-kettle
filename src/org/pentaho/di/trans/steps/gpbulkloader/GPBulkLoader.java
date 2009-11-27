@@ -312,7 +312,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getPsqlpath()));
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getPsqlpath()), getTransMeta());
   	      	   String psqlexec = KettleVFS.getFilename(fileObject);
 		       sb.append('\'').append(psqlexec).append('\'');
   	       }
@@ -330,7 +330,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()));   
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()), getTransMeta());   
 		   
 	           sb.append(" -n -f ");
 	           sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
@@ -349,7 +349,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try 
 		   {
-		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()));   
+		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()), getTransMeta());   
 	   
 		       sb.append(" -o ");
 		       sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
@@ -571,7 +571,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 		       {
 			       try
 			       {
-		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()));			   
+		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()), getTransMeta());			   
 		               fileObject.delete();
 		               fileObject.close();
 	  	           }
@@ -589,7 +589,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 		       {
 			       try
 			       {
-		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getDataFile()));			   
+		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getDataFile()), getTransMeta());			   
 		               fileObject.delete();
 		               fileObject.close();
 	  	           }

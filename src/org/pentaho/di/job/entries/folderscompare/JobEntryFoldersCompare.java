@@ -252,8 +252,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
     	try {
 	   	    // Really read the contents and do comparisons
 	    		
-	        DataInputStream in1 = new DataInputStream(new BufferedInputStream(KettleVFS.getInputStream(KettleVFS.getFilename(file1))));
-	        DataInputStream in2 = new DataInputStream(new BufferedInputStream(KettleVFS.getInputStream(KettleVFS.getFilename(file2))));
+	        DataInputStream in1 = new DataInputStream(new BufferedInputStream(KettleVFS.getInputStream(KettleVFS.getFilename(file1), this)));
+	        DataInputStream in2 = new DataInputStream(new BufferedInputStream(KettleVFS.getInputStream(KettleVFS.getFilename(file2), this)));
 	        
 	        char ch1, ch2;
 	        while ( in1.available() != 0 && in2.available() != 0 )
@@ -296,8 +296,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 			if (filename1!=null && filename2!=null)
 			{
 				// Get Folders/Files to compare
-				folder1 = KettleVFS.getFileObject(realFilename1);
-				folder2 = KettleVFS.getFileObject(realFilename2);
+				folder1 = KettleVFS.getFileObject(realFilename1, this);
+				folder2 = KettleVFS.getFileObject(realFilename2, this);
 
 				if (folder1.exists() && folder2.exists() )
 				{	
@@ -386,8 +386,8 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 								   {
 									   if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobFoldersCompare.Log.FileIsFoundIn",entree.getKey().toString(),realFilename2));
 									   
-									   filefolder1= KettleVFS.getFileObject(entree.getValue().toString());
-									   filefolder2= KettleVFS.getFileObject(collection2.get(entree.getKey()).toString());
+									   filefolder1= KettleVFS.getFileObject(entree.getValue().toString(), this);
+									   filefolder2= KettleVFS.getFileObject(collection2.get(entree.getKey()).toString(), this);
 									   
 									   if(!filefolder2.getType().equals(filefolder1.getType()))
 									   {
