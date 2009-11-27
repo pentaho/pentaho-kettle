@@ -56,7 +56,9 @@ public class SecurityController extends AbstractXulEventHandler{
   }
   
   public void init() {
-    createBindings();
+    if (bf!=null){
+      createBindings();
+    }
   }
   
   private void createBindings(){

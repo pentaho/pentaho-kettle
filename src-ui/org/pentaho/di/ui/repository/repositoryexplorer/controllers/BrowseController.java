@@ -28,6 +28,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevision;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -45,7 +46,7 @@ public class BrowseController extends AbstractXulEventHandler{
 
   private XulTree folderTree;
   private XulTree fileTable;
-  private XulTree versionTable;
+  private XulTree revisionTable;
 
   private UIRepositoryDirectory repositoryDirectory; 
   private RepositoryExplorerCallback callback;
@@ -63,7 +64,7 @@ public class BrowseController extends AbstractXulEventHandler{
   private void createBindings(){
     folderTree = (XulTree) document.getElementById("folder-tree");
     fileTable = (XulTree) document.getElementById("file-table");
-    versionTable = (XulTree) document.getElementById("version-table");
+    revisionTable = (XulTree) document.getElementById("revision-table");
 
     // Bind the repository folder structure to the folder tree.
     bf.setBindingType(Binding.Type.ONE_WAY);
@@ -105,16 +106,33 @@ public class BrowseController extends AbstractXulEventHandler{
     */
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    Binding revisionTreeBinding = bf.createBinding(repositoryDirectory,"revisionsSupported", "version-table", "!disabled");
-    Binding historyLabelBinding = bf.createBinding(repositoryDirectory,"revisionsSupported", "history-label", "!disabled");
+    Binding revisionTreeBinding = bf.createBinding(repositoryDirectory,"revisionsSupported", "revision-table", "!disabled");
+    Binding revisionLabelBinding = bf.createBinding(repositoryDirectory,"revisionsSupported", "revision-label", "!disabled");
+
+    BindingConvertor<int[], Boolean> forButtons = new BindingConvertor<int[], Boolean>() {
+
+      @Override
+      public Boolean sourceToTarget(int[] value) {
+        return value != null && !(value.length<=0);
+      }
+
+      @Override
+      public int[] targetToSource(Boolean value) {
+        return null;
+      }
+    };
     
+    bf.createBinding(revisionTable,"selectedRows", "revision-open", "!disabled", forButtons);
+    bf.createBinding(revisionTable,"selectedRows", "revision-remove", "!disabled", forButtons);
+    
+    Binding revisionBinding = null;
     if (repositoryDirectory.isRevisionsSupported()){
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(fileTable,"selectedItems", versionTable, "elements",
-        new BindingConvertor<List<UIRepositoryObject>, List<UIRepositoryObjectRevision>>() {
+      revisionBinding = bf.createBinding(fileTable,"selectedItems", revisionTable, "elements",
+        new BindingConvertor<List<UIRepositoryObject>, UIRepositoryObjectRevisions>() {
           @Override
-          public List<UIRepositoryObjectRevision> sourceToTarget(List<UIRepositoryObject> ro) {
-            List<UIRepositoryObjectRevision> listOfObjects = new ArrayList<UIRepositoryObjectRevision>();
+          public UIRepositoryObjectRevisions sourceToTarget(List<UIRepositoryObject> ro) {
+            UIRepositoryObjectRevisions revisions = new UIRepositoryObjectRevisions();
             
             if(ro==null){
               return null;
@@ -127,15 +145,18 @@ public class BrowseController extends AbstractXulEventHandler{
             }
             try {
               UIRepositoryContent rc = (UIRepositoryContent)ro.get(0);
-              listOfObjects = rc.getRevisions();
+              revisions = rc.getRevisions();
+              bf.setBindingType(Binding.Type.ONE_WAY);
+              bf.createBinding(revisions,"children", revisionTable, "elements");
+              
             } catch (Exception e) {
               // how do we handle exceptions in a binding? dialog here? 
               // TODO: handle exception
             }
-            return listOfObjects;
+            return revisions;
           }
           @Override
-          public List<UIRepositoryObject> targetToSource(List<UIRepositoryObjectRevision> elements) {
+          public List<UIRepositoryObject> targetToSource(UIRepositoryObjectRevisions elements) {
             return null;
           }
         });
@@ -145,7 +166,10 @@ public class BrowseController extends AbstractXulEventHandler{
       // Fires the population of the repository tree of folders. 
       directoryBinding.fireSourceChanged();
       revisionTreeBinding.fireSourceChanged();
-      historyLabelBinding.fireSourceChanged();
+      revisionLabelBinding.fireSourceChanged();
+      if (revisionBinding != null){
+        revisionBinding.fireSourceChanged();
+      }
     } catch (Exception e) {
       System.out.println(e.getMessage()); e.printStackTrace();
     }
@@ -201,7 +225,7 @@ public class BrowseController extends AbstractXulEventHandler{
     Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
     UIRepositoryContent contentToOpen = content.iterator().next();
 
-    Collection<UIRepositoryObjectRevision> revision = versionTable.getSelectedItems();
+    Collection<UIRepositoryObjectRevision> revision = revisionTable.getSelectedItems();
     
     // TODO: Is it a requirement to allow opening multiple revisions? 
     UIRepositoryObjectRevision revisionToOpen = revision.iterator().next();

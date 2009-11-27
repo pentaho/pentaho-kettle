@@ -57,6 +57,7 @@
 			<tabpanel id="browse-tab">
 				<vbox flex="1">
 					<hbox id="all-box" flex="1">
+						
 						<vbox>
 							<hbox>
 								<label id="folder-label" value="Folders:" />
@@ -83,6 +84,7 @@
 						</vbox>
 
 						<vbox flex="2">
+							
 							<vbox flex="1">
 								<tree id="file-table" flex="1" hidecolumnpicker="true"
 									enableColumnDrag="true" context="fileContextMenu" editable="true">
@@ -95,10 +97,12 @@
 										<treecol id="date-mod-col" flex="1" label="Date Modified"
 											pen:binding="formatModifiedDate" />
 										<treecol id="size-col" flex="1" label="Size" />
+<!-- 
 										<treecol id="desc-col" flex="1" label="Description"
 											pen:binding="description" />
 										<treecol id="lock-msg-col" flex="1" label="Lock Message"
 											pen:binding="lockMessage" />
+ -->											
 									</treecols>
 
 									<treechildren />
@@ -106,27 +110,32 @@
 							</vbox>
 
 
-							<label id="spacer-label" value="" />
-							<label id="history-label" value="Version History:" />
-
-							<tree id="version-table" flex="1" hidecolumnpicker="true"
-								enableColumnDrag="true" context="revisionContextMenu">
-								<treecols>
-									<treecol id="version-label-col" flex="1" label="Label"
-										pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
-									<treecol id="version-date-mod-col" flex="1" label="Date Created"
-										pen:binding="formatCreationDate" context="revisionContextMenu" />
-									<treecol id="version-comment-col" flex="1" label="Comment"
-										pen:binding="comment" />
-									<treecol id="version-user-col" flex="1" label="User"
-										pen:binding="login" />
-								</treecols>
-
-								<treechildren />
-							</tree>
+							<vbox  flex="1">
+								<hbox>
+									<label id="revision-label" value="Version History:" />
+									<label id="spacer-label" flex="1" />
+									<button id="revision-open" image="images/open.png" onclick="browseController.openRevision()"/>
+									<button id="revision-remove" image="images/Remove.png"  />
+								</hbox>
+	
+								<tree id="revision-table" flex="1" hidecolumnpicker="true"
+									enableColumnDrag="true" context="revisionContextMenu">
+									<treecols>
+										<treecol id="revision-label-col" flex="1" label="Label"
+											pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
+										<treecol id="revision-date-mod-col" flex="1" label="Date Created"
+											pen:binding="formatCreationDate" context="revisionContextMenu" />
+										<treecol id="revision-comment-col" flex="1" label="Comment"
+											pen:binding="comment" />
+										<treecol id="revision-user-col" flex="1" label="User"
+											pen:binding="login" />
+									</treecols>
+	
+									<treechildren />
+								</tree>
+							</vbox>
 
 						</vbox>
-
 					</hbox>
 				</vbox>
 
@@ -154,29 +163,8 @@
 				###############################################################################
 			-->
 
-			<tabpanel>
-
-					<hbox id="security-box" flex="1">
-						<vbox flex="1">
-							<hbox>
-								<label id="user-available-label" value="Available Users:" />
-								<label id="spacer-label" flex="1" />
-								<button  id="user-edit" image="images/Edit.png" onclick="securityController.editUser()"/>
-								<button  id="user-add"  image="images/Add.png" onclick="securityController.newUser()"/>
-								<button  id="user-remove"  image="images/Remove.png" onclick="securityController.removeUser()"/>
-							</hbox>
-
-							<tree id="user-table" flex="1" hidecolumnpicker="true"
-								enableColumnDrag="true">
-								<treecols>
-									<treecol id="user-name-col" flex="1" label="Name" pen:binding="login" pen:childrenbinding="children"/>
-									<treecol id="user-desc-col" flex="4" label="Description" pen:binding="description"/>
-								</treecols>
-								<treechildren />
-							</tree>
-						</vbox>
-					</hbox>
-
+			<tabpanel id="security" >
+				<hbox id="security-box" flex="1" ></hbox>
 			</tabpanel>
 			<!--
 				###############################################################################

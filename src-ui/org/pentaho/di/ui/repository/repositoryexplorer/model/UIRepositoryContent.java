@@ -17,6 +17,7 @@ import org.pentaho.di.repository.RepositoryObjectType;
 public class UIRepositoryContent extends UIRepositoryObject implements RepositoryElementLocationInterface{
 
   private RepositoryContent rc;
+  private UIRepositoryObjectRevisions revisions;
   private Directory parent;
   
   public UIRepositoryContent() {
@@ -72,15 +73,19 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     this.parent = parent;
   }
   
-  public List<UIRepositoryObjectRevision> getRevisions() throws Exception{
-    List<UIRepositoryObjectRevision> returnRevs = new ArrayList<UIRepositoryObjectRevision>();
+  public UIRepositoryObjectRevisions getRevisions() throws Exception{
+    if (revisions != null){
+      return revisions;
+    }
+    
+    revisions = new UIRepositoryObjectRevisions();
     
     List <ObjectRevision> or = getRepository().getRevisions(this);
 
     for (ObjectRevision rev : or) {
-      returnRevs.add(new UIRepositoryObjectRevision(rev));
+      revisions.add(new UIRepositoryObjectRevision(rev));
     }
-    return returnRevs;
+    return revisions;
   }
 
   // TODO: Remove references to the Kettle object RepositoryDirectory
@@ -96,9 +101,10 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     if (rc.getName().equalsIgnoreCase(name)){
       return;
     }
-    rc.setName(name);
-    rep.renameTransformation(this.getObjectId(), getRepositoryDirectory(), name);
+    //rc.setName(name);
+    //rep.renameTransformation(this.getObjectId(), getRepositoryDirectory(), name);
   }
+  
   
   @Override
   public String getImage() {
