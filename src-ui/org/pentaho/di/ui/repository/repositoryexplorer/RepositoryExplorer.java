@@ -23,6 +23,7 @@ import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
+import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -42,6 +43,7 @@ public class RepositoryExplorer {
   
   private MainController mainController = new MainController();
   private BrowseController browseController = new BrowseController();
+  private SecurityController securityController = new SecurityController();
 
   private XulDomContainer container;
   
@@ -67,6 +69,10 @@ public class RepositoryExplorer {
       browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
       browseController.setCallback(callback);
 
+      securityController.setBindingFactory(bf);
+      container.addEventHandler(securityController);
+      securityController.setRepositoryUserInterface(rep.getSecurityProvider());
+      
       try {
         runner.initialize();
       } catch (XulException e) {
