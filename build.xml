@@ -180,6 +180,7 @@
 		    		<fileset dir="${lib}" 	  		includes="kettle-engine.jar"/>
 		    		<fileset dir="${testlibext}" 	includes="*.jar"/>
 		    		<fileset dir="${libext}/commons" 	includes="*.jar"/>
+		    		<fileset dir="${libext}/pentaho" 	includes="kettle-vfs*.jar"/>
 		    		<fileset dir="${libext}" 	    includes="log4j-1.2.8.jar"/>
 				    <fileset dir="${libswt}" 		includes="common.jar"/>
 			  	</classpath>
