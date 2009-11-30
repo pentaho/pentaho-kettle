@@ -275,8 +275,8 @@
       <menuitem id="trans-graph-entry-copies" label="${TransGraph.PopupMenu.NumberOfCopies}"  command="transgraph.copies()" />
       <menuseparator />
       <menuitem id="trans-graph-entry-copy" label="${TransGraph.PopupMenu.CopyToClipboard}" command="transgraph.copyStep()" />
-      <menuitem id="trans-graph-entry-duplicate" label="${TransGraph.PopupMenu.DuplicateStep}" command="transgraph.dupeStep()"/>
-      <menuitem id="trans-graph-entry-delete" label="${TransGraph.PopupMenu.DeleteStep}" command="transgraph.delSelected" />
+      <menuitem id="trans-graph-entry-duplicate" label="${TransGraph.PopupMenu.DuplicateStep}" command="transgraph.dupeStep()" />
+      <menuitem id="trans-graph-entry-delete" label="${TransGraph.PopupMenu.DeleteStep}" command="transgraph.delSelected()" />
       <menuitem id="trans-graph-entry-hide" label="${TransGraph.PopupMenu.HideStep}" command="transgraph.hideStep()" />
       <menuitem id="trans-graph-entry-detach" label="${TransGraph.PopupMenu.DetachStep}" command="transgraph.detatchStep()"/>
       <menuseparator />
