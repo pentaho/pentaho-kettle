@@ -40,6 +40,8 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   public String getName() {
     return obj.getName();
   }
+
+  public abstract void setName(String name)throws Exception;
   
   public abstract Date getModifiedDate();
 

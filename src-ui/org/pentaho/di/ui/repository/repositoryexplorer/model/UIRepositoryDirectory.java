@@ -85,13 +85,12 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     List<? extends RepositoryContent> transformations;
     transformations = rep.getTransformationObjects(new StringObjectId(getId()), true);
     for (RepositoryContent child : transformations) {
-      kidElementCache.add(new UIRepositoryContent(child, rd, rep));
+      kidElementCache.add(new UITransformation(child, this, rep));
     }
     List<? extends RepositoryContent> jobs;
     jobs = rep.getJobObjects(new StringObjectId(getId()), true);
     for (RepositoryContent child : jobs) {
-      
-      kidElementCache.add(new UIRepositoryContent(child, rd, rep));
+      kidElementCache.add(new UIJob(child, this, rep));
     }
     return kidElementCache;
   }
@@ -108,8 +107,9 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     if (getDirectory().getName().equalsIgnoreCase(name)){
       return;
     }
-    //getDirectory().setName(name);
-    //rep.renameRepositoryDirectory(getDirectory());
+    getDirectory().setName(name);
+    rep.renameRepositoryDirectory(getDirectory());
+    uiParent.fireCollectionChanged();
   }
   
   public String getDescription() {
@@ -172,6 +172,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   }
 
   public void fireCollectionChanged() {
-    firePropertyChange("children", null, getChildren());
+    kidDirectoryCache.fireCollectionChanged();
+    kidElementCache.fireCollectionChanged();
   }
 }

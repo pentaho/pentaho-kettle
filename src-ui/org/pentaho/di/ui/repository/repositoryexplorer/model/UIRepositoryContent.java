@@ -18,16 +18,16 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
 
   private RepositoryContent rc;
   private UIRepositoryObjectRevisions revisions;
-  private Directory parent;
+  protected UIRepositoryDirectory uiParent;
   
   public UIRepositoryContent() {
     super();
   }
   
-  public UIRepositoryContent(RepositoryContent rc, Directory parent, Repository rep) {
+  public UIRepositoryContent(RepositoryContent rc, UIRepositoryDirectory parent, Repository rep) {
     super(rc, rep);
     this.rc = rc;
-    this.parent = parent;
+    this.uiParent = parent;
   }
   @Override
   public String getDescription() {
@@ -64,7 +64,7 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     }
     return str;
   }
-
+/*
   public Directory getParent() {
     return parent;
   }
@@ -72,7 +72,7 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
   public void setParent(Directory parent) {
     this.parent = parent;
   }
-  
+*/  
   public UIRepositoryObjectRevisions getRevisions() throws Exception{
     if (revisions != null){
       return revisions;
@@ -90,7 +90,7 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
 
   // TODO: Remove references to the Kettle object RepositoryDirectory
   public RepositoryDirectory getRepositoryDirectory() {
-    return (RepositoryDirectory) parent;
+    return (RepositoryDirectory) uiParent.getDirectory();
   }
 
   public RepositoryObjectType getRepositoryElementType() {
@@ -101,24 +101,14 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     if (rc.getName().equalsIgnoreCase(name)){
       return;
     }
-    //rc.setName(name);
-    //rep.renameTransformation(this.getObjectId(), getRepositoryDirectory(), name);
+    rc.setName(name);
   }
   
   
   @Override
   public String getImage() {
-    String image = null;
-    
-    switch (rc.getObjectType()){
-      case JOB:
-        image = "images/job.png";
-        break;
-      case TRANSFORMATION:
-        image = "images/transformation.png";
-        break;
-    }
-    return image;
+    //TODO: a generic image for unknown content?
+    return "";
   }
 
 

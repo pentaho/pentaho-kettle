@@ -16,24 +16,25 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.List;
 
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectories;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevision;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjects;
+import org.pentaho.ui.xul.XulComponent;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.util.XulDialogCallback;
 
 
 /**
@@ -124,7 +125,7 @@ public class BrowseController extends AbstractXulEventHandler{
     };
     
     bf.createBinding(revisionTable,"selectedRows", "revision-open", "!disabled", forButtons);
-    bf.createBinding(revisionTable,"selectedRows", "revision-remove", "!disabled", forButtons);
+    //bf.createBinding(revisionTable,"selectedRows", "revision-remove", "!disabled", forButtons);
     
     Binding revisionBinding = null;
     if (repositoryDirectory.isRevisionsSupported()){
@@ -214,6 +215,12 @@ public class BrowseController extends AbstractXulEventHandler{
     }
   }
   
+  public void renameContent() throws Exception{
+    Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
+    UIRepositoryObject contentToRename = content.iterator().next();
+    renameRepositoryObject(contentToRename);
+  }
+
   public void deleteContent() throws Exception{
     Collection<UIRepositoryObject> content = fileTable.getSelectedItems();
     UIRepositoryObject toDelete = content.iterator().next();
@@ -254,6 +261,41 @@ public class BrowseController extends AbstractXulEventHandler{
     UIRepositoryDirectory toDelete = directory.iterator().next();
     toDelete.delete();
     repositoryDirectory.fireCollectionChanged();
+  }
+  
+  public void renameFolder() throws Exception{
+    Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
+    final UIRepositoryDirectory toRename = directory.iterator().next();
+    renameRepositoryObject(toRename);
+    repositoryDirectory.fireCollectionChanged();
+  }
+  
+  private void renameRepositoryObject(final UIRepositoryObject object) throws XulException{
+    XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox");
+    prompt.setTitle("Rename ".concat(object.getName()));
+    prompt.setButtons(new String[]{"Accept", "Cancel"});
+    prompt.setMessage("Enter new name for :".concat(object.getName()));
+    prompt.setValue(object.getName());
+    prompt.addDialogCallback(new XulDialogCallback<String>(){
+      public void onClose(XulComponent component, Status status, String value) {
+          
+          try {
+            object.setName(value);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+          System.out.println("Component: " + component.getName());
+          System.out.println("Status: " + status.name());
+          System.out.println("Value: " + value);
+      }
+      
+      public void onError(XulComponent component, Throwable err) {
+        // TODO: Deal with errors
+        System.out.println(err.getMessage());
+      }      
+    });
+    
+    prompt.open();
   }
 
 

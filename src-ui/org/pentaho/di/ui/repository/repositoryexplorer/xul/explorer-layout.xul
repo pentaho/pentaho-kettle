@@ -16,18 +16,18 @@
 	<menupopup id="folderContextMenu">
 		<menuitem label="New Folder" command="browseController.createFolder()"/>
 		<menuitem label="Open" />
-		<menuitem label="Rename" />
+		<menuitem label="Rename" command="browseController.renameFolder()"/>
 		<menuitem label="Delete" command="browseController.deleteFolder()"/>
 	</menupopup>
 
 	<menupopup id="revisionContextMenu">
 		<menuitem label="Open" command="browseController.openRevision()"/>
-		<menuitem label="Delete" />
+		<!-- <menuitem label="Delete" /> -->
 	</menupopup>
 
 	<menupopup id="fileContextMenu">
 		<menuitem label="Open" command="browseController.openContent()"/>
-		<menuitem label="Rename" />
+		<menuitem label="Rename" command="browseController.renameContent()"/>
 		<menuitem label="Delete" command="browseController.deleteContent()"/>
 	</menupopup>
 
@@ -55,7 +55,6 @@
 			-->
 
 			<tabpanel id="browse-tab">
-				<vbox flex="1">
 					<hbox id="all-box" flex="1">
 						
 						<vbox>
@@ -83,61 +82,52 @@
 							</tree>
 						</vbox>
 
-						<vbox flex="2">
+						<vbox flex="1">
 							
-							<vbox flex="1">
-								<tree id="file-table" flex="1" hidecolumnpicker="true"
-									enableColumnDrag="true" context="fileContextMenu" editable="true">
+								<tree id="file-table" flex="4" hidecolumnpicker="true"
+									enableColumnDrag="true" context="fileContextMenu" height="500">
 									<treecols>
 										<treecol id="name-col" flex="1" label="Name"
-											pen:binding="name" pen:childrenbinding="children" editable="true" 
-											pen:imagebinding="image"/>
+											pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image"/>
 										<treecol id="type-col" flex="1" label="Type"
 											pen:binding="type" />
 										<treecol id="date-mod-col" flex="1" label="Date Modified"
 											pen:binding="formatModifiedDate" />
 										<treecol id="size-col" flex="1" label="Size" />
 <!-- 
-										<treecol id="desc-col" flex="1" label="Description"
-											pen:binding="description" />
-										<treecol id="lock-msg-col" flex="1" label="Lock Message"
-											pen:binding="lockMessage" />
- -->											
-									</treecols>
+									<treecol id="desc-col" flex="1" label="Description"
+										pen:binding="description" />
+									<treecol id="lock-msg-col" flex="1" label="Lock Message"
+										pen:binding="lockMessage" />
+-->											
+								</treecols>
+								<treechildren />
+							</tree>
 
-									<treechildren />
-								</tree>
-							</vbox>
+							<hbox>
+								<label id="revision-label" value="Version History:" />
+								<label id="spacer-label" flex="1" />
+								<button id="revision-open" image="images/open.png" onclick="browseController.openRevision()"/>
+								<!-- <button id="revision-remove" image="images/Remove.png"  />  -->
+							</hbox>
 
+							<tree id="revision-table" flex="1" hidecolumnpicker="true"
+								enableColumnDrag="true" context="revisionContextMenu">
+								<treecols>
+									<treecol id="revision-label-col" flex="1" label="Label"
+										pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
+									<treecol id="revision-date-mod-col" flex="1" label="Date Created"
+										pen:binding="formatCreationDate" context="revisionContextMenu" />
+									<treecol id="revision-comment-col" flex="1" label="Comment"
+										pen:binding="comment" />
+									<treecol id="revision-user-col" flex="1" label="User"
+										pen:binding="login" />
+								</treecols>
+								<treechildren />
+							</tree>
 
-							<vbox  flex="1">
-								<hbox>
-									<label id="revision-label" value="Version History:" />
-									<label id="spacer-label" flex="1" />
-									<button id="revision-open" image="images/open.png" onclick="browseController.openRevision()"/>
-									<button id="revision-remove" image="images/Remove.png"  />
-								</hbox>
-	
-								<tree id="revision-table" flex="1" hidecolumnpicker="true"
-									enableColumnDrag="true" context="revisionContextMenu">
-									<treecols>
-										<treecol id="revision-label-col" flex="1" label="Label"
-											pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
-										<treecol id="revision-date-mod-col" flex="1" label="Date Created"
-											pen:binding="formatCreationDate" context="revisionContextMenu" />
-										<treecol id="revision-comment-col" flex="1" label="Comment"
-											pen:binding="comment" />
-										<treecol id="revision-user-col" flex="1" label="User"
-											pen:binding="login" />
-									</treecols>
-	
-									<treechildren />
-								</tree>
-							</vbox>
-
-						</vbox>
+				 		</vbox>  
 					</hbox>
-				</vbox>
 
 			</tabpanel>
 			<!--
