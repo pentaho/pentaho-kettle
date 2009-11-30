@@ -16,7 +16,6 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,8 +29,9 @@ import org.pentaho.di.repository.StringObjectId;
 public class UIRepositoryDirectory extends UIRepositoryObject {
 
   private Directory rd;
-  private List <UIRepositoryDirectory> kidDirectoryCache = null;
-  private List<UIRepositoryObject> kidElementCache = null;
+  private UIRepositoryDirectory uiParent = null;
+  private UIRepositoryDirectories kidDirectoryCache = null;
+  private UIRepositoryObjects kidElementCache = null;
   
   public UIRepositoryDirectory() {
     super();
@@ -42,36 +42,45 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     this.rd = rd;
   }
 
+  public UIRepositoryDirectory(Directory rd, UIRepositoryDirectory uiParent, Repository rep) {
+    super(rd, rep);
+    this.uiParent = uiParent;
+    this.rd = rd;
+  }
   
-  public List<UIRepositoryDirectory> getChildren(){
+  public UIRepositoryDirectories getChildren(){
     // We've been here before.. use the cache
     if (kidDirectoryCache != null){
       return kidDirectoryCache;
     }
     
-    kidDirectoryCache = new ArrayList<UIRepositoryDirectory>();
+    kidDirectoryCache = new UIRepositoryDirectories();
     if (rd.getChildren()==null){
       return kidDirectoryCache;
     }
 
     for (Directory child : rd.getChildren()) {
-      kidDirectoryCache.add(new UIRepositoryDirectory(child, rep));
+      kidDirectoryCache.add(new UIRepositoryDirectory(child, this, rep));
     }
     return kidDirectoryCache;
   }
   
+  public void setChildren(UIRepositoryDirectories children){
+    kidDirectoryCache = children;
+  }
+
   // TODO: Abstract working model; should throw RepositoryException
   // TODO: We will need a way to reset this cache when a directory or element changes
-  public List<UIRepositoryObject> getRepositoryObjects()throws Exception {
+  public UIRepositoryObjects getRepositoryObjects()throws Exception {
     // We've been here before.. use the cache
     if (kidElementCache != null){
       return kidElementCache;
     }
     
-    kidElementCache = new ArrayList<UIRepositoryObject>();
+    kidElementCache = new UIRepositoryObjects();
 
-    for (Directory child : rd.getChildren()) {
-      kidElementCache.add(new UIRepositoryDirectory(child, rep));
+    for (UIRepositoryDirectory child : getChildren()) {
+      kidElementCache.add(child);
     }
     List<? extends RepositoryContent> transformations;
     transformations = rep.getTransformationObjects(new StringObjectId(getId()), true);
@@ -141,16 +150,28 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   public RepositoryDirectory getDirectory(){
     return (RepositoryDirectory)rd;
   }
-  
-  public void contentChanged()throws Exception{
-    this.kidDirectoryCache = null;
-    this.kidElementCache = null;
-    rd = rep.loadRepositoryDirectoryTree();
-  }
 
   @Override
   public String getImage() {
     return "images/treeClosed.png";
   }
   
+  public void delete()throws Exception{
+    rep.deleteRepositoryDirectory(getDirectory());
+    uiParent.getChildren().remove(this);
+    if(uiParent.getRepositoryObjects().contains(this))
+      uiParent.getRepositoryObjects().remove(this);
+  }
+  
+  public UIRepositoryDirectory createFolder(String name) throws Exception{
+    Directory dir = getRepository().createRepositoryDirectory(getDirectory(), name);
+    UIRepositoryDirectory newDir = new UIRepositoryDirectory(dir, this, rep);
+    getChildren().add(newDir);
+    kidElementCache=null; // rebuild the element cache for correct positioning.
+    return newDir;
+  }
+
+  public void fireCollectionChanged() {
+    firePropertyChange("children", null, getChildren());
+  }
 }

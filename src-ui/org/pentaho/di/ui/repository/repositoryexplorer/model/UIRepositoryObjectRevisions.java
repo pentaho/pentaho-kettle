@@ -18,8 +18,6 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.util.List;
 
-import org.pentaho.di.repository.RepositoryUserInterface;
-
 
 public class UIRepositoryObjectRevisions extends AbstractModelNode<UIRepositoryObjectRevision>{
 

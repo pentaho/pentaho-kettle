@@ -28,7 +28,7 @@
 	<menupopup id="fileContextMenu">
 		<menuitem label="Open" command="browseController.openContent()"/>
 		<menuitem label="Rename" />
-		<menuitem label="Delete" />
+		<menuitem label="Delete" command="browseController.deleteContent()"/>
 	</menupopup>
 
 	<tabbox id="repositoryExplorerTabs" flex="1">

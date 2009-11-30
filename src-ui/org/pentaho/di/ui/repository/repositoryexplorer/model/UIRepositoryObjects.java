@@ -18,32 +18,17 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.util.List;
 
-import org.pentaho.di.repository.RepositoryUserInterface;
 
-
-public class UIRepositoryUsers extends AbstractModelNode<UIRepositoryUser>{
+public class UIRepositoryObjects extends AbstractModelNode<UIRepositoryObject>{
 
     
-  public UIRepositoryUsers(){
+  public UIRepositoryObjects(){
   }
   
-  public UIRepositoryUsers(List<UIRepositoryUser> users){
-    super(users);
+  public UIRepositoryObjects(List<UIRepositoryObject> objects){
+    super(objects);
   }
 
-  public UIRepositoryUsers(RepositoryUserInterface rui){
-
-    String[] logins; 
-    try {
-      logins = rui.getUserLogins();
-      for (String login : logins) {
-        this.add(new UIRepositoryUser(rui.loadUserInfo(login)));
-      }
-    } catch (Exception e) {
-      // TODO: handle exception; can't get users???
-    }
-  }
-  
   @Override
   protected void fireCollectionChanged() {
     this.changeSupport.firePropertyChange("children", null, this.getChildren());

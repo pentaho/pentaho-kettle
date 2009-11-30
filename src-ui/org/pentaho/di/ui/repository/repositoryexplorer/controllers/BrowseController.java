@@ -18,17 +18,17 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.pentaho.di.repository.Directory;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectories;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevision;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjects;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -67,17 +67,16 @@ public class BrowseController extends AbstractXulEventHandler{
     revisionTable = (XulTree) document.getElementById("revision-table");
 
     // Bind the repository folder structure to the folder tree.
-    bf.setBindingType(Binding.Type.ONE_WAY);
+    //bf.setBindingType(Binding.Type.ONE_WAY);
     directoryBinding = bf.createBinding(repositoryDirectory, "children", folderTree, "elements");
-    
     
     // Bind the selected index from the folder tree to the list of repository objects in the file table. 
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(folderTree, "selectedItems", fileTable, "elements", 
-        new BindingConvertor<List<UIRepositoryDirectory>, List<UIRepositoryObject>>() {
+        new BindingConvertor<List<UIRepositoryDirectory>, UIRepositoryObjects>() {
           @Override
-          public List<UIRepositoryObject> sourceToTarget(List<UIRepositoryDirectory> rd) {
-            List<UIRepositoryObject> listOfObjects = new ArrayList<UIRepositoryObject>();
+          public UIRepositoryObjects sourceToTarget(List<UIRepositoryDirectory> rd) {
+            UIRepositoryObjects listOfObjects = new UIRepositoryObjects();
             
             if(rd==null){
               return null;
@@ -87,6 +86,8 @@ public class BrowseController extends AbstractXulEventHandler{
             }
             try {
               listOfObjects = rd.get(0).getRepositoryObjects();
+              bf.setBindingType(Binding.Type.ONE_WAY);
+              bf.createBinding(listOfObjects,"children", fileTable, "elements");
             } catch (Exception e) {
               // how do we handle exceptions in a binding? dialog here? 
               // TODO: handle exception
@@ -94,7 +95,7 @@ public class BrowseController extends AbstractXulEventHandler{
             return listOfObjects;
           }
           @Override
-          public List<UIRepositoryDirectory> targetToSource(List<UIRepositoryObject> elements) {
+          public List<UIRepositoryDirectory> targetToSource(UIRepositoryObjects elements) {
             return null;
           }
         });
@@ -173,14 +174,6 @@ public class BrowseController extends AbstractXulEventHandler{
     } catch (Exception e) {
       System.out.println(e.getMessage()); e.printStackTrace();
     }
-    
-    this.addPropertyChangeListener(new PropertyChangeListener(){
-
-      public void propertyChange(PropertyChangeEvent evt) {
-      }
-      
-    });
-    
   }
 
   public void setBindingFactory(BindingFactory bf) {
@@ -221,6 +214,14 @@ public class BrowseController extends AbstractXulEventHandler{
     }
   }
   
+  public void deleteContent() throws Exception{
+    Collection<UIRepositoryObject> content = fileTable.getSelectedItems();
+    UIRepositoryObject toDelete = content.iterator().next();
+    if (toDelete instanceof UIRepositoryDirectory){
+      ((UIRepositoryDirectory)toDelete).delete();
+    }
+  }
+
   public void openRevision(){
     Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
     UIRepositoryContent contentToOpen = content.iterator().next();
@@ -242,26 +243,17 @@ public class BrowseController extends AbstractXulEventHandler{
     if (selectedFolder==null){
       selectedFolder = repositoryDirectory;
     }
-    Directory newDirectory = 
-      selectedFolder.getRepository().createRepositoryDirectory(selectedFolder.getDirectory(), "new");
-    
+    UIRepositoryDirectory newDirectory = selectedFolder.createFolder("new");
+    repositoryDirectory.fireCollectionChanged();
     System.out.println(newDirectory.getName() + ", " + newDirectory.getObjectId().getId());
 
-    repositoryDirectory.contentChanged();
-    directoryBinding.fireSourceChanged();
-    folderTree.update();
-    //this.firePropertyChange("selectedItems", toDelete, null);
   }
 
   public void deleteFolder() throws Exception{
     Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
     UIRepositoryDirectory toDelete = directory.iterator().next();
-    toDelete.getRepository().deleteRepositoryDirectory(toDelete.getDirectory());
-    
-    repositoryDirectory.contentChanged();
-    directoryBinding.fireSourceChanged();
-    folderTree.update();
-
+    toDelete.delete();
+    repositoryDirectory.fireCollectionChanged();
   }
 
 

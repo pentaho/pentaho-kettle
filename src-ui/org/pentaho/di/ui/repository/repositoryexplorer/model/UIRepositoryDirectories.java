@@ -16,32 +16,12 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
-import java.util.List;
-
-import org.pentaho.di.repository.RepositoryUserInterface;
 
 
-public class UIRepositoryUsers extends AbstractModelNode<UIRepositoryUser>{
+public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryDirectory>{
 
     
-  public UIRepositoryUsers(){
-  }
-  
-  public UIRepositoryUsers(List<UIRepositoryUser> users){
-    super(users);
-  }
-
-  public UIRepositoryUsers(RepositoryUserInterface rui){
-
-    String[] logins; 
-    try {
-      logins = rui.getUserLogins();
-      for (String login : logins) {
-        this.add(new UIRepositoryUser(rui.loadUserInfo(login)));
-      }
-    } catch (Exception e) {
-      // TODO: handle exception; can't get users???
-    }
+  public UIRepositoryDirectories(){
   }
   
   @Override
