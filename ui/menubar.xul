@@ -278,7 +278,7 @@
       <menuitem id="trans-graph-entry-duplicate" label="${TransGraph.PopupMenu.DuplicateStep}" command="transgraph.dupeStep()" />
       <menuitem id="trans-graph-entry-delete" label="${TransGraph.PopupMenu.DeleteStep}" command="transgraph.delSelected()" />
       <menuitem id="trans-graph-entry-hide" label="${TransGraph.PopupMenu.HideStep}" command="transgraph.hideStep()" />
-      <menuitem id="trans-graph-entry-detach" label="${TransGraph.PopupMenu.DetachStep}" command="transgraph.detatchStep()"/>
+      <menuitem id="trans-graph-entry-detach" label="${TransGraph.PopupMenu.DetachStep}" command="transgraph.detachStep()"/>
       <menuseparator />
       <menuitem id="trans-graph-entry-inputs" label="${TransGraph.PopupMenu.ShowInputFields}" command="transgraph.fieldsBefore()" />
       <menuitem id="trans-graph-entry-outputs" label="${TransGraph.PopupMenu.ShowOutputFields}" command="transgraph.fieldsAfter()" />
