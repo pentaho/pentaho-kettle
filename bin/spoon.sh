@@ -43,7 +43,7 @@ done
 
 JAVA_BIN=java
 LIBPATH="NONE"
-
+STARTUP="-jar launcher.jar"
 case `uname -s` in 
 	AIX)
 		LIBPATH=$BASEDIR/libswt/aix/
@@ -56,6 +56,7 @@ case `uname -s` in
 	Darwin)
 		LIBPATH=$BASEDIR/libswt/osx/
 		JAVA_BIN=$BASEDIR/libswt/osx/java_swt
+                STARTUP="-cp launcher.jar org.pentaho.commons.launcher.Launcher"
 		chmod +x $JAVA_BIN
 		;;
 
@@ -156,4 +157,4 @@ OPT="-Xmx256m -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_R
 # ** Run...    **
 # ***************
 
-$JAVA_BIN $OPT -jar launcher.jar $LIBSPATH "${1+$@}"
+$JAVA_BIN $OPT $STARTUP $LIBSPATH "${1+$@}"
