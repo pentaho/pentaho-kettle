@@ -1301,7 +1301,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 //				miFileLast.setImage(GUIResource.getInstance().getImageJobGraph());
 			}
 //
-			  miFileLast.setAttribute("command", "spoon.lastFileSelect");
+			  miFileLast.setAttribute("command", "spoon.lastFileSelect()");
 //			menuBar.addMenuListener(id, this, "lastFileSelect"); //$NON-NLS-1$
 		}
 	}
