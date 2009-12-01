@@ -3024,8 +3024,15 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			
 			Object[] exts = fileExtensionMap.keySet().toArray();
 			for(int i=0; i< exts.length; i++){
+			  FileListener fListener = fileExtensionMap.get(exts[i]);
+			  String fileExtName = ""+exts[i];
+			  for(Map.Entry<String, FileListener> entry : fileNodeMap.entrySet()){
+			    if(entry.getValue().equals(fListener)){
+			      fileExtName = entry.getKey();
+			    }
+			  }
 			  fileExtensions[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length+i] = "*."+exts[i];
-			  fileExtensionNames[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length+i] = ""+exts[i];
+			  fileExtensionNames[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length+i] = fileExtName;
 			}
 			dialog.setFilterExtensions(fileExtensions);
 			dialog.setFilterNames(fileExtensionNames);

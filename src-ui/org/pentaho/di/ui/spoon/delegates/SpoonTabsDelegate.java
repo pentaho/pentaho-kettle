@@ -410,6 +410,16 @@ public class SpoonTabsDelegate extends SpoonDelegate
 					{
 						spoon.refreshCoreObjects();
 					}
+				} else if( entry.getObject() != null){
+				  EngineMetaInterface meta = entry.getObject().getMeta();
+          if (meta != null)
+          {
+            meta.setInternalKettleVariables();
+          }
+          if (spoon.getCoreObjectsState() != SpoonInterface.STATE_CORE_OBJECTS_SPOON)
+          {
+            spoon.refreshCoreObjects();
+          }
 				}
 				
 				entry.getObject().setFocus();
