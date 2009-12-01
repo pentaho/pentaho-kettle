@@ -172,7 +172,19 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   }
 
   public void fireCollectionChanged() {
-    kidDirectoryCache.fireCollectionChanged();
-    kidElementCache.fireCollectionChanged();
+    
+    firePropertyChange("children", null, getChildren());
+    /*
+    try{
+      //getChildren().fireCollectionChanged();
+      //getRepositoryObjects().fireCollectionChanged();
+    }catch (Exception e){
+      
+    }
+    */
+    if (kidDirectoryCache != null)
+      kidDirectoryCache.fireCollectionChanged();
+    if (kidElementCache != null)
+      kidElementCache.fireCollectionChanged();
   }
 }

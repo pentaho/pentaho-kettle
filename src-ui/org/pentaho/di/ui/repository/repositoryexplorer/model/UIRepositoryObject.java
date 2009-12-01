@@ -43,6 +43,8 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
 
   public abstract void setName(String name)throws Exception;
   
+  public abstract void delete()throws Exception;
+
   public abstract Date getModifiedDate();
 
   public abstract String getFormatModifiedDate();

@@ -109,6 +109,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
+import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIFactory;
@@ -153,10 +154,12 @@ import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
+import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
@@ -216,8 +219,9 @@ import org.pentaho.di.ui.repository.dialog.RepositoriesDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.repository.dialog.UserDialog;
-import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryObjectReference;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
@@ -2954,7 +2958,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void exploreRepository() {
 		if (rep != null) {
-			RepositoryExplorerCallback cb = new RepositoryExplorerDialog.RepositoryExplorerCallback() {
+		  RepositoryExplorerDialog.RepositoryExplorerCallback cb = new RepositoryExplorerDialog.RepositoryExplorerCallback() {
 
 				public boolean open(RepositoryObjectReference objectToOpen) {
 					String objname = objectToOpen.getName();
@@ -2975,7 +2979,38 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	public void loadObjectFromRepository(String objname, RepositoryObjectType objectType, RepositoryDirectory repdir, String versionLabel) {
+
+  public void exploreRepositoryExperimental() {
+    if (rep != null) {
+        RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
+
+          public boolean open(RepositoryElementLocationInterface element, String revision) {
+            String objname = element.getName();
+            if (objname != null) {
+              RepositoryObjectType objectType = element.getRepositoryElementType();
+              RepositoryDirectory repdir = element.getRepositoryDirectory();
+              String versionLabel = revision==null?"null":revision;
+
+              loadObjectFromRepository(objname, objectType, repdir, versionLabel);
+            }
+            return false; // do not close explorer
+          }
+      };
+
+      try {
+        Directory root = rep.loadRepositoryDirectoryTree();
+        RepositoryExplorer explorer = new RepositoryExplorer(root, rep, cb);
+        explorer.show();
+      } catch (KettleSecurityException e) {
+        e.printStackTrace();
+      } catch (KettleException e) {
+        e.printStackTrace();
+      }
+
+    }
+  }
+
+  public void loadObjectFromRepository(String objname, RepositoryObjectType objectType, RepositoryDirectory repdir, String versionLabel) {
 		// Try to open the selected transformation.
 		if (objectType.equals(RepositoryObjectType.TRANSFORMATION)) {
 			try {
@@ -4998,6 +5033,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		menuBar.setEnableById("repository-disconnect", enableRepositoryMenu);
 		menuBar.setEnableById("repository-explore", enableRepositoryMenu);
+    menuBar.setEnableById("repository-explore-experimental", enableRepositoryMenu);
 
 		// See if the file is locked or not.
 		//

@@ -23,5 +23,12 @@ public class UIJob extends UIRepositoryContent {
     rep.renameJob(this.getObjectId(), getRepositoryDirectory(), name);
     uiParent.fireCollectionChanged();
   }
+  
+  public void delete()throws Exception{
+    rep.deleteJob(this.getObjectId());
+    if(uiParent.getRepositoryObjects().contains(this))
+      uiParent.getRepositoryObjects().remove(this);
+  }
+  
 
 }

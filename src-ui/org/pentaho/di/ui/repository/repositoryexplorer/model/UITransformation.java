@@ -24,4 +24,10 @@ public class UITransformation extends UIRepositoryContent {
     uiParent.fireCollectionChanged();
   }
 
+  public void delete()throws Exception{
+    rep.deleteTransformation(this.getObjectId());
+    if(uiParent.getRepositoryObjects().contains(this))
+      uiParent.getRepositoryObjects().remove(this);
+  }
+
 }

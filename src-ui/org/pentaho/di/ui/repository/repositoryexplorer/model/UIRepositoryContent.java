@@ -64,15 +64,7 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     }
     return str;
   }
-/*
-  public Directory getParent() {
-    return parent;
-  }
 
-  public void setParent(Directory parent) {
-    this.parent = parent;
-  }
-*/  
   public UIRepositoryObjectRevisions getRevisions() throws Exception{
     if (revisions != null){
       return revisions;
@@ -109,6 +101,11 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
   public String getImage() {
     //TODO: a generic image for unknown content?
     return "";
+  }
+
+  @Override
+  public void delete() throws Exception {
+    
   }
 
 

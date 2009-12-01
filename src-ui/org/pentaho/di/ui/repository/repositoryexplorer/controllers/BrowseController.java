@@ -219,13 +219,17 @@ public class BrowseController extends AbstractXulEventHandler{
     Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
     UIRepositoryObject contentToRename = content.iterator().next();
     renameRepositoryObject(contentToRename);
+    if (contentToRename instanceof UIRepositoryDirectory){
+      repositoryDirectory.fireCollectionChanged();
+    }
   }
 
   public void deleteContent() throws Exception{
     Collection<UIRepositoryObject> content = fileTable.getSelectedItems();
     UIRepositoryObject toDelete = content.iterator().next();
+    toDelete.delete();
     if (toDelete instanceof UIRepositoryDirectory){
-      ((UIRepositoryDirectory)toDelete).delete();
+      repositoryDirectory.fireCollectionChanged();
     }
   }
 
