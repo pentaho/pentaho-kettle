@@ -3,9 +3,9 @@
   xmlns:pen="http://www.pentaho.org/2008/xul" onload="spoon.onLoad()">
   <menubar id="spoon-menubar" pen:parenttoouter="true">
     <menu id="file" label="${Spoon.Menu.File}" accesskey="alt-f">
-      <menupopup>
+      <menupopup id="file-popup">
         <menu id="file-new" acceltext="CTRL-N" accesskey="ctrl-n" label="${Spoon.Menu.File.New}">
-          <menupopup>
+          <menupopup id="file-newfile-new-popup">
             <menuitem id="file-new-trans" acceltext="CTRL-N" accesskey="ctrl-n" label="${Spoon.Menu.Transformation}"
               command="spoon.newTransFile()" />
             <menuitem id="file-new-job" acceltext="CTRL-ALT-N" accesskey="ctrl-alt-n" label="${Spoon.Menu.Job}"
@@ -31,7 +31,7 @@
       </menupopup>
     </menu>
     <menu id="edit" label="${Spoon.Menu.Edit}">
-      <menupopup>
+      <menupopup id="edit-popup">
         <menuitem id="edit-undo" acceltext="CTRL-Z" accesskey="ctrl-z" label="${Spoon.Menu.Undo.NotAvailable}"
           command="spoon.undoAction()" />
         <menuitem id="edit-redo" acceltext="CTRL-Y" accesskey="ctrl-y" label="${Spoon.Menu.Redo.NotAvailable}"
@@ -63,7 +63,7 @@
       </menupopup>
     </menu>
     <menu id="view" label="${Spoon.Menu.View}">
-      <menupopup>
+      <menupopup id="view-popup">
         <menuitem id="view-zoom-in" acceltext="PAGE-UP" accesskey="pageup" label="${Spoon.Menu.View.ZoomIn}"
           command="spoon.zoomIn()" />
         <menuitem id="view-zoom-out" acceltext="PAGE-DOWN" accesskey="pagedown" label="${Spoon.Menu.View.ZoomOut}"
@@ -74,7 +74,7 @@
       </menupopup>
     </menu>
     <menu id="repository" label="${Spoon.Menu.Repository}">
-      <menupopup>
+      <menupopup id="repository-popup">
         <menuitem id="repository-connect" acceltext="CTRL-R" accesskey="ctrl-r"
           label="${Spoon.Menu.Repository.ConnectToRepository}" command="spoon.openRepository()" />
         <menuitem id="repository-disconnect" acceltext="CTRL-D" accesskey="ctrl-d" disabled="true"
@@ -87,7 +87,7 @@
       </menupopup>
     </menu>
     <menu id="trans" label="${Spoon.Menu.Transformation}">
-      <menupopup>
+      <menupopup id="trans-popup">
         <menuitem id="trans-run" acceltext="F9" accesskey="f9" label="${Spoon.Menu.Transformation.Run}"
           command="spoon.runFile()" />
         <menuitem id="trans-preview" acceltext="F10" accesskey="f10" label="${Spoon.Menu.Transformation.Preview}"
@@ -119,7 +119,7 @@
       </menupopup>
     </menu>
     <menu id="job" label="${Spoon.Menu.Job}">
-      <menupopup>
+      <menupopup id="job-popup">
         <menuitem id="job-run" acceltext="F9" accesskey="f9" disabled="true" label="${Spoon.Menu.Job.Run}"
           command="spoon.runFile()" />
         <menuseparator />
@@ -131,7 +131,7 @@
       </menupopup>
     </menu>
     <menu id="wizard" label="${Spoon.Menu.Wizard}">
-      <menupopup>
+      <menupopup id="wizard-popup">
         <menuitem id="wizard-connection" acceltext="F3" accesskey="f3"
           label="${Spoon.Menu.Wizard.CreateDatabaseConnectionWizard}" command="spoon.createDatabaseWizard()" />
         <menuitem id="wizard-copy-table" acceltext="F4" accesskey="f4" label="${Spoon.Menu.Wizard.CopyTableWizard}"
@@ -141,7 +141,7 @@
       </menupopup>
     </menu>
     <menu id="help" label="${Spoon.Menu.Help}">
-      <menupopup>
+      <menupopup id="help-popup">
         <menuitem id="help-tip" label="${Spoon.Menu.Help.Tip}" command="spoon.showTips()" />
         <menuitem id="help-welcome" label="${Spoon.Menu.Help.Welcome}" command="spoon.showWelcomePage()" />
         <menuseparator />
@@ -271,7 +271,7 @@
       command="transgraph.editDescription()" />
     <menuseparator />
     <menu id="trans-graph-entry-data-movement" label="${TransGraph.PopupMenu.DataMovement}">
-      <menupopup>
+      <menupopup id="trans-graph-entry-data-movement-popup">
         <menuitem id="trans-graph-entry-data-movement-distribute" type="checkbox" label="${TransGraph.PopupMenu.DistributeData}"
           command="transgraph.setDistributes()" />
         <menuitem id="trans-graph-entry-data-movement-copy" type="checkbox" label="${TransGraph.PopupMenu.CopyData}"
@@ -294,7 +294,7 @@
     -->
     <menuseparator />
     <menu id="trans-graph-entry-align" label="${TransGraph.PopupMenu.AllignDistribute}">
-      <menupopup>
+      <menupopup id="trans-graph-entry-align-popup">
         <menuitem id="trans-graph-entry-align-left" label="${TransGraph.PopupMenu.AllignLeft}" accesskey="ctrl-left"
           command="transgraph.allignleft()" />
         <menuitem id="trans-graph-entry-align-right" label="${TransGraph.PopupMenu.AllignRight}" accesskey="ctrl-right"
@@ -367,7 +367,7 @@
     <menuitem id="job-graph-entry-copy" label="${JobGraph.PopupMenu.JobEntry.CopyToClipboard}" command="jobgraph.copyEntry()" />
     <menuseparator />
     <menu id="job-graph-entry-align" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute}">
-      <menupopup>
+      <menupopup id="job-graph-entry-align-popup">
         <menuitem id="job-graph-entry-align-left" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Left}"
           accesskey="ctrl-left" command="jobgraph.allignleft()" />
         <menuitem id="job-graph-entry-align-right" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Right}"
@@ -393,7 +393,7 @@
 
   <menupopup id="job-graph-hop">
     <menu id="job-graph-hop-evaluation" label="${JobGraph.PopupMenu.Hop.Evaluation}">
-      <menupopup>
+      <menupopup id="job-graph-hop-evaluation-popup">
         <menuitem id="job-graph-hop-evaluation-uncond" type="checkbox"
           label="${JobGraph.PopupMenu.Hop.Evaluation.Unconditional}" command="jobgraph.setHopConditional()" />
         <menuitem id="job-graph-hop-evaluation-true" type="checkbox" label="${JobGraph.PopupMenu.Hop.Evaluation.FollowWhenOK}"
