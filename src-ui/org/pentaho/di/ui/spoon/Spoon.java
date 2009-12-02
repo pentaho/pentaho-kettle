@@ -6696,5 +6696,9 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     // TODO Auto-generated method stub
     
   }
+  
+  public Object getSelectionObject() {
+    return selectionObject;
+  }
 
 }
