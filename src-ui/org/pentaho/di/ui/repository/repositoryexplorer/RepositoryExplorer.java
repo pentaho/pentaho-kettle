@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
+import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
@@ -44,6 +45,7 @@ public class RepositoryExplorer {
   private MainController mainController = new MainController();
   private BrowseController browseController = new BrowseController();
   private SecurityController securityController = new SecurityController();
+  private ConnectionsController connectionsController = new ConnectionsController();
 
   private XulDomContainer container;
   
@@ -52,8 +54,7 @@ public class RepositoryExplorer {
   public RepositoryExplorer(Directory rd, Repository rep, RepositoryExplorerCallback callback) {
     repositoryDirectory = rd;
     try {
-      
-      container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul");
+      container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul"); //$NON-NLS-1$
 
       final XulRunner runner = new SwtXulRunner();
       runner.addContainer(container);
@@ -68,6 +69,10 @@ public class RepositoryExplorer {
       container.addEventHandler(browseController);
       browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
       browseController.setCallback(callback);
+      
+      connectionsController.setRepository(rep);
+      connectionsController.setBindingFactory(bf);
+      container.addEventHandler(connectionsController);
 
       boolean securityEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().managesUsers();
       loadSecurityOverlay(securityEnabled);
@@ -89,12 +94,12 @@ public class RepositoryExplorer {
   }
 
   public Composite getDialogArea(){
-    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog");
+    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
     return (Composite) dialog.getManagedObject();
   }
   
   public void show(){
-    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog");
+    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
     dialog.show();
     
   }
@@ -102,9 +107,9 @@ public class RepositoryExplorer {
   private void loadSecurityOverlay(boolean securityEnabled){
     try {
       String overlay = securityEnabled ? 
-          "org/pentaho/di/ui/repository/repositoryexplorer/xul/security-enabled-layout-overlay.xul" :
-            "org/pentaho/di/ui/repository/repositoryexplorer/xul/security-disabled-layout-overlay.xul";
-      container.loadOverlay(overlay); //$NON-NLS-1$
+          "org/pentaho/di/ui/repository/repositoryexplorer/xul/security-enabled-layout-overlay.xul" : //$NON-NLS-1$
+            "org/pentaho/di/ui/repository/repositoryexplorer/xul/security-disabled-layout-overlay.xul"; //$NON-NLS-1$
+      container.loadOverlay(overlay);
     } catch (XulException e) {
       log.error("Error loading Xul overlay: security-layout-overlay.xul");
       e.printStackTrace();

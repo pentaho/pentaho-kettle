@@ -11,7 +11,7 @@
 	ondialogaccept="mainController.closeDialog()"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:pen="http://www.pentaho.org/2008/xul" 
-	onload="mainController.init(), browseController.init(), securityController.init()">
+	onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init()">
 
 	<menupopup id="folderContextMenu">
 		<menuitem label="New Folder" command="browseController.createFolder()"/>
@@ -140,8 +140,69 @@
 				###############################################################################
 			-->
 
-			<tabpanel><!-- tabpanel Second elements go here -->
+			<!--
+				###############################################################################
+			-->
+			<!--
+				START - CONNECTIONS TAB
+			-->
+			<!--
+				###############################################################################
+			-->
+			
+			<tabpanel id="connections">
+				<hbox flex="1">
+				<vbox flex="1">
+					<!-- Connection list tool pane -->
+					<hbox height="20px">
+						<label value="Available:"/>
+						<button id="connections-edit" image="images/edit.png" pen:disabledimage="images/dedit.png" onclick="connectionsController.editConnection()"/>
+						<button id="connections-new" image="images/add.png" pen:disabledimage="images/dadd.png" onclick="connectionsController.createConnection()"/>
+						<button id="connections-remove" image="images/remove.png" pen:disabledimage="images/dremove.png" onclick="connectionsController.removeConnection()" />
+					</hbox>
+					<!-- Connection list -->
+					<hbox flex="1">
+						<tree id="connections-table" flex="1" hidecolumnpicker="true">
+							<treecols>
+								<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
+								<treecol id="type-col" flex="1" label="Type" pen:binding="type"/>
+								<treecol id="date-mod-col" flex="1" label="Date Modified" pen:binding="dateModified"/>
+								<treecol id="size-col" flex="1" label="Size"/>
+							</treecols>
+							<treechildren/>
+						</tree>
+					</hbox>
+					<!-- Version history tool pane -->
+					<hbox height="20px">
+						<label id="connections-revision-label" value="Version History:"/>
+					</hbox>
+					<!-- Version history -->
+					<hbox flex="1">
+						<tree id="connections-revision-table" flex="1" hidecolumnpicker="true"
+							enableColumnDrag="true" context="revisionContextMenu">
+							<treecols>
+								<treecol id="revision-label-col" flex="1" label="Label" context="revisionContextMenu" />
+								<treecol id="revision-date-mod-col" flex="1" label="Date Created"/>
+								<treecol id="revision-comment-col" flex="1" label="Comment"/>
+								<treecol id="revision-user-col" flex="1" label="User"/>
+							</treecols>
+							<treechildren />
+						</tree>
+					</hbox>
+				</vbox>
+				</hbox>
 			</tabpanel>
+			
+			
+			<!--
+				###############################################################################
+			-->
+			<!--
+				END - CONNECTIONS TAB
+			-->
+			<!--
+				###############################################################################
+			-->
 
 			<!--
 				###############################################################################
