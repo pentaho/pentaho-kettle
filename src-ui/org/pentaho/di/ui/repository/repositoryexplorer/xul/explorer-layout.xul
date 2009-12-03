@@ -174,17 +174,21 @@
 					</hbox>
 					<!-- Version history tool pane -->
 					<hbox height="20px">
-						<label id="connections-revision-label" value="Version History:"/>
+						<label id="connection-revision-label" value="Version History:"/>
 					</hbox>
 					<!-- Version history -->
 					<hbox flex="1">
-						<tree id="connections-revision-table" flex="1" hidecolumnpicker="true"
+						<tree id="connection-revision-table" flex="1" hidecolumnpicker="true"
 							enableColumnDrag="true" context="revisionContextMenu">
 							<treecols>
-								<treecol id="revision-label-col" flex="1" label="Label" context="revisionContextMenu" />
-								<treecol id="revision-date-mod-col" flex="1" label="Date Created"/>
-								<treecol id="revision-comment-col" flex="1" label="Comment"/>
-								<treecol id="revision-user-col" flex="1" label="User"/>
+								<treecol id="revision-label-col" flex="1" label="Label"
+									pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
+								<treecol id="revision-date-mod-col" flex="1" label="Date Created"
+									pen:binding="formatCreationDate" context="revisionContextMenu" />
+								<treecol id="revision-comment-col" flex="1" label="Comment"
+									pen:binding="comment" />
+								<treecol id="revision-user-col" flex="1" label="User"
+									pen:binding="login" />
 							</treecols>
 							<treechildren />
 						</tree>

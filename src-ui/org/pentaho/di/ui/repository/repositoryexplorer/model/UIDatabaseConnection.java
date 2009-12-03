@@ -11,6 +11,8 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
+import java.util.List;
+
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
@@ -19,7 +21,7 @@ public class UIDatabaseConnection extends XulEventSourceAdapter {
 
   private DatabaseMeta dbMeta;
   
-  private ObjectRevision revision;
+  private List<ObjectRevision> revHistory;
   
   public UIDatabaseConnection() {
     super();
@@ -30,9 +32,9 @@ public class UIDatabaseConnection extends XulEventSourceAdapter {
     this.dbMeta = databaseMeta;
   }
   
-  public UIDatabaseConnection(DatabaseMeta databaseMeta, ObjectRevision rev) {
+  public UIDatabaseConnection(DatabaseMeta databaseMeta, List<ObjectRevision> revHistory) {
     this(databaseMeta);
-    this.revision = rev;
+    this.revHistory = revHistory;
   }
   
   public String getName() {
@@ -48,10 +50,25 @@ public class UIDatabaseConnection extends XulEventSourceAdapter {
     }
     return null;
   }
+  
+  public UIRepositoryObjectRevisions getRevisions() {
+    if(revHistory == null || revHistory.size() <= 0) {
+      // Revision history does not exist for this database connection
+      return null;
+    }
+    
+    UIRepositoryObjectRevisions revisions = new UIRepositoryObjectRevisions();
+    
+    for(ObjectRevision rev : revHistory) {
+      revisions.add(new UIRepositoryObjectRevision(rev));
+    }
+    
+    return revisions;
+  }
 
   public String getDateModified() {
-    if(revision != null) {
-      return revision.getCreationDate().toString();
+    if(revHistory != null && revHistory.size() > 0) {
+      return revHistory.get(revHistory.size() - 1).getCreationDate().toString();
     }
     return null;
   }
