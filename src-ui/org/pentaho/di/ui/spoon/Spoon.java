@@ -1283,6 +1283,23 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			}
 			
 			XulMenuitem miFileLast = ((SwtMenupopup)msFile).createNewMenuitem();
+			
+			// shorten the filename if necessary
+			int targetLength = 40;
+			if( text.length() > targetLength ) {
+			  int lastSep = text.replace('\\', '/').lastIndexOf('/');
+			  if( lastSep != -1 ) {
+	        String fileName = "..."+text.substring(lastSep);
+	        if( fileName.length() < targetLength ) {
+	          // add the start of the file path
+	          int leadSize = targetLength - fileName.length();
+	          text = text.substring(0,leadSize)+fileName;
+	        } else {
+	          text = fileName;
+	        }
+			  }
+			}
+			
 			miFileLast.setLabel(text);
 			miFileLast.setId(id);
 			miFileLast.setAcceltext(accessText);
@@ -3016,6 +3033,14 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			int extensionCollectionLength = Const.STRING_TRANS_AND_JOB_FILTER_EXT.length + fileExtensionMap.keySet().size();
 			String[] fileExtensions = new String[extensionCollectionLength];
 			String[] fileExtensionNames = new String[extensionCollectionLength];
+			
+			// create an 'all known types' option
+			StringBuilder allExtensions = new StringBuilder();
+			// Add the trans and job file types
+			allExtensions.append( "*." ).append(Const.STRING_TRANS_DEFAULT_EXT).append(';');
+			allExtensions.append( "*." ).append(Const.STRING_JOB_DEFAULT_EXT).append(';');
+			// now build up a list of plugin types
+      
 			System.arraycopy(Const.STRING_TRANS_AND_JOB_FILTER_EXT, 0, fileExtensions, 0, Const.STRING_TRANS_AND_JOB_FILTER_EXT.length);
 
       System.arraycopy(Const.getTransformationAndJobFilterNames(), 0, fileExtensionNames, 0, Const.getTransformationAndJobFilterNames().length);
@@ -3026,15 +3051,21 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 			for(int i=0; i< exts.length; i++){
 			  FileListener fListener = fileExtensionMap.get(exts[i]);
 			  String fileExtName = ""+exts[i];
+			  String fileExt = ((String)exts[i]).toLowerCase();
 			  for(Map.Entry<String, FileListener> entry : fileNodeMap.entrySet()){
 			    if(entry.getValue().equals(fListener)){
 			      fileExtName = entry.getKey();
 			    }
 			  }
 			  fileExtensions[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length+i] = "*."+exts[i];
+			  if( !fileExt.equalsIgnoreCase("xml") && !fileExt.equalsIgnoreCase("*") && !allExtensions.toString().contains(fileExt.toLowerCase())) {
+			    allExtensions.append( "*." ).append(fileExt.toLowerCase()).append(';');
+			  }
 			  fileExtensionNames[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length+i] = fileExtName;
 			}
-			dialog.setFilterExtensions(fileExtensions);
+			
+			fileExtensions[0] = allExtensions.toString();
+      dialog.setFilterExtensions(fileExtensions);
 			dialog.setFilterNames(fileExtensionNames);
 			setFilterPath(dialog);
 			String fname = dialog.open();

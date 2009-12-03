@@ -321,7 +321,7 @@ public class Const
 	public static final String XML_ENCODING = "UTF-8";
 
     /** The possible extensions a transformation XML file can have. */
-    public static final String STRING_TRANS_AND_JOB_FILTER_EXT[] = new String[] { "*.ktr;*.kjb;*.xml", "*.ktr;*.xml", "*.kjb;*.xml", "*.xml", "*.*" };
+    public static final String STRING_TRANS_AND_JOB_FILTER_EXT[] = new String[] { null, "*.ktr;*.kjb;*.xml", "*.ktr;*.xml", "*.kjb;*.xml", "*.xml", "*.*" };
 
     /** The discriptions of the possible extensions a transformation XML file can have. */
     private static String STRING_TRANS_AND_JOB_FILTER_NAMES[];
@@ -1773,6 +1773,7 @@ public class Const
         if (STRING_TRANS_AND_JOB_FILTER_NAMES == null)
         {
             STRING_TRANS_AND_JOB_FILTER_NAMES = new String[] {
+                                                            Messages.getString("Const.FileFilter.AllKnownTypes"),
                                                             Messages.getString("Const.FileFilter.TransformationJob"),
                                                             Messages.getString("Const.FileFilter.Transformations"),
                                                             Messages.getString("Const.FileFilter.Jobs"),

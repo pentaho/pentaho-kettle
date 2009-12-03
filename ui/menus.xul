@@ -57,7 +57,6 @@
     <menuitem value="database-inst-clear-cache" label="%Spoon.Menu.Popup.CONNECTIONS.ClearDBCache"/>
     <menuitem value="database-inst-share" label="%Spoon.Menu.Popup.CONNECTIONS.Share"/>
     <menuitem value="database-inst-explore" label="%Spoon.Menu.Popup.CONNECTIONS.Explore"/>
-    <menuitem value="database-inst-model" label="Model"/>
   </menupopup>
 
   <menupopup id="step-inst">
@@ -145,8 +144,6 @@
     <menuitem value="trans-graph-entry-errors" label="%TransGraph.PopupMenu.Error"/>
 	<menuseparator/>
     <menuitem value="trans-graph-entry-preview" label="%TransGraph.PopupMenu.Preview"/>
-    <menuitem value="trans-graph-entry-model" label="Model"/>
-    <menuitem value="trans-graph-entry-visualize" label="Quick Visualize"/>
   </menupopup>
 
   <menupopup id="trans-graph-hop">
