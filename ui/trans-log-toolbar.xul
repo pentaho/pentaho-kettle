@@ -1,12 +1,13 @@
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
-	 
-	 <toolbox>
-		<toolbar id="nav-toolbar" mode="icons">
-			<toolbarbutton value="show-error-lines" label="%TransLog.Button.ShowErrorLines" image="ui/images/show-error-lines.png" tooltiptext="%TransLog.Button.ShowErrorLines"/>
-			<toolbarbutton value="clear-log" label="%TransLog.Button.ClearLog" image="ui/images/clear-log.png" tooltiptext="%TransLog.Button.ClearLog"/>
-			<toolbarseparator />
-			<toolbarbutton value="log-settings" label="%TransLog.Button.LogSettings" image="ui/images/log-settings.png" tooltiptext="%TransLog.Button.LogSettings"/>
-		</toolbar>
-	</toolbox>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
+
+  <toolbar id="nav-toolbar" mode="icons">
+    <toolbarbutton value="show-error-lines" label="${TransLog.Button.ShowErrorLines}" image="images/show-error-lines.png"
+      tooltiptext="${TransLog.Button.ShowErrorLines}" onclick="translog.showErrors()" />
+    <toolbarbutton value="clear-log" label="${TransLog.Button.ClearLog}" image="images/clear-log.png"
+      tooltiptext="${TransLog.Button.ClearLog}" onclick="translog.clearLog()" />
+    <toolbarseparator />
+    <toolbarbutton value="log-settings" label="${TransLog.Button.LogSettings}" image="images/log-settings.png"
+      tooltiptext="${TransLog.Button.LogSettings}" onclick="translog.showLogSettings()" />
+  </toolbar>
 
 </window>

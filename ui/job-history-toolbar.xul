@@ -1,12 +1,13 @@
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
-	 
-	 <toolbox>
-		<toolbar id="nav-toolbar" mode="icons">
-			<toolbarbutton value="refresh-history" label="%JobHistory.Button.Refresh" image="ui/images/refresh.png" tooltiptext="%JobHistory.Button.Refresh"/>
-			<toolbarbutton value="replay-history" label="%JobHistory.Button.Replay" image="ui/images/replay.png" tooltiptext="%JobHistory.Button.Replay" />
-			<toolbarseparator />
-			<toolbarbutton value="clear-history" label="%JobHistory.Button.Clear" image="ui/images/clear-log.png" tooltiptext="%JobHistory.Button.Clear" />
-		</toolbar>
-	</toolbox>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
+
+  <toolbar id="nav-toolbar" mode="icons">
+    <toolbarbutton id="refresh-history" label="${JobHistory.Button.Refresh}" image="images/refresh.png"
+      tooltiptext="${JobHistory.Button.Refresh}" onclick="history.refreshHistory()" />
+    <toolbarbutton id="replay-history" label="${JobHistory.Button.Replay}" image="images/replay.png"
+      tooltiptext="${JobHistory.Button.Replay}" onclick="history.replayHistory()" />
+    <toolbarseparator />
+    <toolbarbutton id="clear-history" label="${JobHistory.Button.Clear}" image="images/clear-log.png"
+      tooltiptext="${JobHistory.Button.Clear}" onclick="history.clearLogTable()" />
+  </toolbar>
 
 </window>

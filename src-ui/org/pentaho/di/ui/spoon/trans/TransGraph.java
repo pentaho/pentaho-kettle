@@ -12,14 +12,11 @@
 package org.pentaho.di.ui.spoon.trans;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Timer;
@@ -119,7 +116,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.StepFieldsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.spoon.AreaOwner;
@@ -127,18 +123,19 @@ import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TransPainter;
-import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.components.XulMenuitem;
+import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulMenu;
 import org.pentaho.ui.xul.containers.XulMenupopup;
+import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
-import org.pentaho.xul.toolbar.XulToolbar;
-import org.pentaho.xul.toolbar.XulToolbarButton;
+import org.pentaho.ui.xul.swt.SwtXulLoader;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc.
@@ -149,21 +146,16 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * 
  */
 public class TransGraph extends Composite implements XulEventHandler, Redrawable, TabItemInterface {
+  
   private static final LogWriter log = LogWriter.getInstance();
-
   private static final int HOP_SEL_MARGIN = 9;
-
   private static final String XUL_FILE_TRANS_TOOLBAR = "ui/trans-toolbar.xul";
 
-  public static final String XUL_FILE_TRANS_TOOLBAR_PROPERTIES = "ui/trans-toolbar.properties";
+  public static final String START_TEXT = Messages.getString("TransLog.Button.StartTransformation"); //$NON-NLS-1$
+  public static final String PAUSE_TEXT = Messages.getString("TransLog.Button.PauseTransformation"); //$NON-NLS-1$
+  public static final String RESUME_TEXT = Messages.getString("TransLog.Button.ResumeTransformation"); //$NON-NLS-1$
 
-  public final static String START_TEXT = Messages.getString("TransLog.Button.StartTransformation"); //$NON-NLS-1$
-
-  public final static String PAUSE_TEXT = Messages.getString("TransLog.Button.PauseTransformation"); //$NON-NLS-1$
-
-  public final static String RESUME_TEXT = Messages.getString("TransLog.Button.ResumeTransformation"); //$NON-NLS-1$
-
-  public final static String STOP_TEXT = Messages.getString("TransLog.Button.StopTransformation"); //$NON-NLS-1$
+  public static final String STOP_TEXT = Messages.getString("TransLog.Button.StopTransformation"); //$NON-NLS-1$
 
   private TransMeta transMeta;
 
@@ -338,9 +330,17 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     //
     mainComposite = new Composite(this, SWT.NONE);
     mainComposite.setLayout(new FillLayout());
+    
+    // Nick's fix below -------
+    Control toolbarControl = (Control) toolbar.getManagedObject();
+    
+    toolbarControl.setLayoutData(new FormData());
+    toolbarControl.setParent(this);
+    // ------------------------
+    
     FormData fdMainComposite = new FormData();
     fdMainComposite.left = new FormAttachment(0, 0);
-    fdMainComposite.top = new FormAttachment((Control) toolbar.getNativeObject(), 0);
+    fdMainComposite.top = new FormAttachment((Control) toolbar.getManagedObject(), 0);
     fdMainComposite.right = new FormAttachment(100, 0);
     fdMainComposite.bottom = new FormAttachment(100, 0);
     mainComposite.setLayoutData(fdMainComposite);
@@ -361,9 +361,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
       menuMap.put("trans-graph-entry", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry"));
       menuMap.put("trans-graph-background", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-background"));
       menuMap.put("trans-graph-note", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-note"));
-
-//      menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell, new XulMessages(), "trans-graph-hop",
-//          "trans-graph-entry", "trans-graph-background", "trans-graph-note");
     } catch (Throwable t) {
       // TODO log this
       t.printStackTrace();
@@ -1019,10 +1016,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     // Keyboard shortcuts...
     addKeyListener(canvas);
     addKeyListener(this);
-    // addKeyListener(filenameLabel);
-
-//    canvas.addKeyListener(spoon.defKeys);
-    // filenameLabel.addKeyListener(spoon.defKeys);
 
     setBackground(GUIResource.getInstance().getColorBackground());
     
@@ -1049,15 +1042,19 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
   private void addToolBar() {
 
     try {
-      toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_TOOLBAR, TransGraph.this, TransGraph.this, new XulMessages());
-      ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
-      toolBar.pack();
+      XulLoader loader = new SwtXulLoader();
+      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_TOOLBAR);
+      xulDomContainer.addEventHandler(this);
+      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
+
+      ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
+      swtToolbar.pack();
       
       // Hack alert : more XUL limitations...
       //
-      ToolItem sep = new ToolItem(toolBar, SWT.SEPARATOR);
+      ToolItem sep = new ToolItem(swtToolbar, SWT.SEPARATOR);
 
-      zoomLabel = new Combo(toolBar, SWT.DROP_DOWN);
+      zoomLabel = new Combo(swtToolbar, SWT.DROP_DOWN);
       zoomLabel.setItems(TransPainter.magnificationDescriptions);
       zoomLabel.addSelectionListener(new SelectionAdapter() {
         public void widgetSelected(SelectionEvent arg0) {
@@ -1078,14 +1075,7 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
       sep.setWidth(80);
       sep.setControl(zoomLabel);
-      toolBar.pack();
-
-      // Add a few default key listeners
-      //
-//      toolBar.addKeyListener(spoon.defKeys);
-
-      addToolBarListeners();
-      toolBar.layout(true, true);
+      swtToolbar.pack();
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
       new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
@@ -1117,28 +1107,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
       mb.open();
     }
     redraw();
-  }
-
-  public void addToolBarListeners() {
-    try {
-      // first get the XML document
-      URL url = XulHelper.getAndValidate(XUL_FILE_TRANS_TOOLBAR_PROPERTIES);
-      Properties props = new Properties();
-      props.load(url.openStream());
-      String ids[] = toolbar.getMenuItemIds();
-      for (int i = 0; i < ids.length; i++) {
-        String methodName = (String) props.get(ids[i]);
-        if (methodName != null) {
-          toolbar.addMenuListener(ids[i], this, methodName);
-
-        }
-      }
-
-    } catch (Throwable t) {
-      t.printStackTrace();
-      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-          Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR_PROPERTIES), new Exception(t));
-    }
   }
 
   protected void hideToolTips() {
@@ -1770,82 +1738,32 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
           int sels = transMeta.nrSelectedSteps();
             XulMenuitem item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-newhop");
             item.setDisabled(sels != 2);
-//          XulMenuChoice item = menu.getMenuItemById("trans-graph-entry-newhop"); //$NON-NLS-1$
-//          menu.addMenuListener("trans-graph-entry-newhop", this, TransGraph.class, "newHop"); //$NON-NLS-1$ //$NON-NLS-2$
-//          item.setEnabled(sels == 2);
-//          
+
             item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-open-mapping");
             item.setDisabled(!stepMeta.isMapping());
-//          item = menu.getMenuItemById("trans-graph-entry-open-mapping"); // $NON-NLS-1$
-//          menu.addMenuListener("trans-graph-entry-open-mapping", this, TransGraph.class, "openMapping"); //$NON-NLS-1$ //$NON-NLS-2$
-//          item.setEnabled(stepMeta.isMapping());
-//
+
             item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-align-snap");
             item.setLabel(Messages.getString("TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
-//          item = menu.getMenuItemById("trans-graph-entry-align-snap"); //$NON-NLS-1$
-//          item.setText(Messages.getString("TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
-//
+
             XulMenu aMenu = (XulMenu) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-align");
-//          XulMenu aMenu = menu.getMenuById("trans-graph-entry-align"); //$NON-NLS-1$
-//
             if (aMenu != null) {
               aMenu.setDisabled(sels < 2);
             }
-//
-//          menu.addMenuListener("trans-graph-entry-align-left", this, "allignleft"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-align-right", this, "allignright"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-align-top", this, "alligntop"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-align-bottom", this, "allignbottom"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-align-horz", this, "distributehorizontal"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-align-vert", this, "distributevertical"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-align-snap", this, "snaptogrid"); //$NON-NLS-1$ //$NON-NLS-2$
-//
+
             item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-data-movement-distribute");
             item.setSelected(!stepMeta.isDistributes());
             item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-data-movement-copy");
             item.setSelected(!stepMeta.isDistributes());
-//          item = menu.getMenuItemById("trans-graph-entry-data-movement-distribute"); //$NON-NLS-1$
-//          item.setChecked(stepMeta.isDistributes());
-//          item = menu.getMenuItemById("trans-graph-entry-data-movement-copy"); //$NON-NLS-1$
-//          item.setChecked(!stepMeta.isDistributes());
-//
+
             item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-hide");
             item.setDisabled(!(stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta)));
-//          item = menu.getMenuItemById("trans-graph-entry-hide"); //$NON-NLS-1$
-//          item.setEnabled(stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta));
-//
+
             item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-detach");
             item.setDisabled(!transMeta.isStepUsedInTransHops(stepMeta));
-//          item = menu.getMenuItemById("trans-graph-entry-detach"); //$NON-NLS-1$
-//          item.setEnabled(transMeta.isStepUsedInTransHops(stepMeta));
-//
+
             item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-errors");
             item.setDisabled(!stepMeta.supportsErrorHandling());
-//          item = menu.getMenuItemById("trans-graph-entry-errors"); //$NON-NLS-1$
-//          item.setEnabled(stepMeta.supportsErrorHandling());
-//
-//          menu.addMenuListener("trans-graph-entry-newhop", this, "newHopChoice"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-edit", this, "editStep"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-edit-description", this, "editDescription"); //$NON-NLS-1$ //$NON-NLS-2$
-//
-//          menu.addMenuListener("trans-graph-entry-data-movement-distribute", this, "setDistributes"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-data-movement-copy", this, "setCopies"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-copies", this, "copies"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-copy", this, "copyStep"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-duplicate", this, "dupeStep"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-delete", this, "delSelected"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-hide", this, "hideStep"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-detach", this, "detachStep"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-inputs", this, "fieldsBefore"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-outputs", this, "fieldsAfter"); //$NON-NLS-1$ //$NON-NLS-2$
-//          // menu.addMenuListener("trans-graph-entry-lineage", this, "fieldsLineage"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-verify", this, "checkSelectedSteps"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-mapping", this, "generateMappingToThisStep"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-partitioning", this, "partitioning"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-clustering", this, "clustering"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-errors", this, "errorHandling"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("trans-graph-entry-preview", this, "preview"); //$NON-NLS-1$ //$NON-NLS-2$
-          
+
           ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
         }
       } else {
@@ -1856,7 +1774,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
           if (menu != null) {
             setCurrentHop(hi);
             XulMenuitem item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-hop-enabled");            
-//            XulMenuChoice item = menu.getMenuItemById("trans-graph-hop-enabled"); //$NON-NLS-1$
             if (item != null) {
               if (hi.isEnabled()) {
                 item.setLabel(Messages.getString("TransGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
@@ -1864,11 +1781,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
                 item.setLabel(Messages.getString("TransGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
               }
             }
-//
-//            menu.addMenuListener("trans-graph-hop-edit", this, "editHop"); //$NON-NLS-1$ //$NON-NLS-2$
-//            menu.addMenuListener("trans-graph-hop-flip", this, "flipHopDirection"); //$NON-NLS-1$ //$NON-NLS-2$
-//            menu.addMenuListener("trans-graph-hop-enabled", this, "enableHop"); //$NON-NLS-1$ //$NON-NLS-2$
-//            menu.addMenuListener("trans-graph-hop-delete", this, "deleteHop"); //$NON-NLS-1$ //$NON-NLS-2$
 
             ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
           }
@@ -1880,25 +1792,13 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
             XulMenupopup menu = menuMap.get("trans-graph-note"); //$NON-NLS-1$
             if (menu != null) {
-
-//              menu.addMenuListener("trans-graph-note-edit", this, "editNote"); //$NON-NLS-1$ //$NON-NLS-2$
-//              menu.addMenuListener("trans-graph-note-delete", this, "deleteNote"); //$NON-NLS-1$ //$NON-NLS-2$
-//              menu.addMenuListener("trans-graph-note-raise", this, "raiseNote"); //$NON-NLS-1$ //$NON-NLS-2$
-//              menu.addMenuListener("trans-graph-note-lower", this, "lowerNote"); //$NON-NLS-1$ //$NON-NLS-2$
               ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
             }
           } else {
-
             XulMenupopup menu = menuMap.get("trans-graph-background"); //$NON-NLS-1$
             if (menu != null) {
-
-//              menu.addMenuListener("trans-graph-background-new-note", this, "newNote"); //$NON-NLS-1$ //$NON-NLS-2$
-//              menu.addMenuListener("trans-graph-background-paste", this, "paste"); //$NON-NLS-1$ //$NON-NLS-2$
-//              menu.addMenuListener("trans-graph-background-settings", this, "settings"); //$NON-NLS-1$ //$NON-NLS-2$
-
               final String clipcontent = spoon.fromClipboard();
               XulMenuitem item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-background-paste");            
-//              XulMenuChoice item = menu.getMenuItemById("trans-graph-background-paste"); //$NON-NLS-1$
               if (item != null) {
                 item.setDisabled(clipcontent == null);
               }
@@ -2709,9 +2609,10 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     sashForm.layout();
     sashForm.setWeights(new int[] { 100, });
 
-    XulToolbarButton button = toolbar.getButtonById("trans-show-results");
-    button.setImage(GUIResource.getInstance().getImageShowResults());
-    button.setHint(Messages.getString("Spoon.Tooltip.ShowExecutionResults"));
+    XulToolbarbutton button = (XulToolbarbutton) toolbar.getElementById("trans-show-results");
+    // TODO figure out how to do this stuff.
+//    button.setImage(GUIResource.getInstance().getImageShowResults());
+//    button.setHint(Messages.getString("Spoon.Tooltip.ShowExecutionResults"));
 
   }
 
@@ -2979,9 +2880,10 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
       extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab());
     }
     
-    XulToolbarButton button = toolbar.getButtonById("trans-show-results");
-    button.setImage(GUIResource.getInstance().getImageHideResults());
-    button.setHint(Messages.getString("Spoon.Tooltip.HideExecutionResults"));
+    XulToolbarbutton button = (XulToolbarbutton) toolbar.getElementById("trans-show-results");
+    // TODO figure out how to do this.
+//    button.setImage(GUIResource.getInstance().getImageHideResults());
+//    button.setHint(Messages.getString("Spoon.Tooltip.HideExecutionResults"));
 
   }
 
@@ -3167,40 +3069,41 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
       public void run() {
         // Start/Run button...
         //
-        XulToolbarButton runButton = toolbar.getButtonById("trans-run");
+        XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("trans-run");
         if (runButton != null) {
-          runButton.setEnable(!running);
+          runButton.setDisabled(running);
         }
 
         // Pause button...
         //
-        XulToolbarButton pauseButton = toolbar.getButtonById("trans-pause");
+        XulToolbarbutton pauseButton = (XulToolbarbutton) toolbar.getElementById("trans-pause");
         if (pauseButton != null) {
-          pauseButton.setEnable(running);
-          pauseButton.setText(pausing ? RESUME_TEXT : PAUSE_TEXT);
-          pauseButton.setHint(pausing ? Messages.getString("Spoon.Tooltip.ResumeTranformation") : Messages
-              .getString("Spoon.Tooltip.PauseTranformation"));
+          pauseButton.setDisabled(!running);
+          // TODO figure this out
+//          pauseButton.setText(pausing ? RESUME_TEXT : PAUSE_TEXT);
+//          pauseButton.setHint(pausing ? Messages.getString("Spoon.Tooltip.ResumeTranformation") : Messages
+//              .getString("Spoon.Tooltip.PauseTranformation"));
         }
 
         // Stop button...
         //
-        XulToolbarButton stopButton = toolbar.getButtonById("trans-stop");
+        XulToolbarbutton stopButton = (XulToolbarbutton) toolbar.getElementById("trans-stop");
         if (stopButton != null) {
-          stopButton.setEnable(running);
+          stopButton.setDisabled(!running);
         }
 
         // Debug button...
         //
-        XulToolbarButton debugButton = toolbar.getButtonById("trans-debug");
+        XulToolbarbutton debugButton = (XulToolbarbutton) toolbar.getElementById("trans-debug");
         if (debugButton != null) {
-          debugButton.setEnable(!running);
+          debugButton.setDisabled(running);
         }
 
         // Preview button...
         //
-        XulToolbarButton previewButton = toolbar.getButtonById("trans-preview");
+        XulToolbarbutton previewButton = (XulToolbarbutton) toolbar.getElementById("trans-preview");
         if (previewButton != null) {
-          previewButton.setEnable(!running);
+          previewButton.setDisabled(running);
         }
 
         // TODO: enable/disable Transformation menu entries too

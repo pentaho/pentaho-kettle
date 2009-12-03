@@ -153,14 +153,13 @@
     </menu>
   </menubar>
 
-  <toolbox>
-    <toolbar id="nav-toolbar" mode="full">
-      <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="ui/images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}" />
-      <toolbarseparator />
-      <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="ui/images/open.png"
-        tooltiptext="${Spoon.Tooltip.OpenTranformation}" />
-    </toolbar>
-  </toolbox>
+  <toolbar id="nav-toolbar" mode="full">
+    <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}"
+      command="spoon.newTransFile()" />
+    <toolbarseparator />
+    <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
+      tooltiptext="${Spoon.Tooltip.OpenTranformation}" command="spoon.openFile()" />
+  </toolbar>
 
   <menupopup id="trans-class">
     <menuitem id="trans-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newTransFile()" />
@@ -222,7 +221,6 @@
     <menuitem id="database-inst-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCache}" />
     <menuitem id="database-inst-share" label="${Spoon.Menu.Popup.CONNECTIONS.Share}" />
     <menuitem id="database-inst-explore" label="${Spoon.Menu.Popup.CONNECTIONS.Explore}" command="spoon.exploreDB()" />
-    <menuitem id="database-inst-model" label="Model}" />
   </menupopup>
 
   <menupopup id="step-inst">
@@ -321,6 +319,8 @@
     <menuitem id="trans-graph-entry-errors" label="${TransGraph.PopupMenu.Error}" command="transgraph.errorHandling()" />
     <menuseparator />
     <menuitem id="trans-graph-entry-preview" label="${TransGraph.PopupMenu.Preview}" command="transgraph.preview()" />
+    <menuitem value="trans-graph-entry-model" label="Model"/>
+    <menuitem value="trans-graph-entry-visualize" label="Quick Visualize"/>
   </menupopup>
 
   <menupopup id="trans-graph-hop">

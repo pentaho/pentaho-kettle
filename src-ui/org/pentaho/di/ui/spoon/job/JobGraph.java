@@ -11,12 +11,10 @@
 
 package org.pentaho.di.ui.spoon.job;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -104,7 +102,6 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -112,17 +109,18 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.TransPainter;
-import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.components.XulMenuitem;
+import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulMenu;
 import org.pentaho.ui.xul.containers.XulMenupopup;
+import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.xul.swt.tab.TabItem;
-import org.pentaho.xul.toolbar.XulToolbar;
-import org.pentaho.xul.toolbar.XulToolbarButton;
 
 /**
  * Handles the display of Jobs in Spoon, in a graphical form.
@@ -132,18 +130,11 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  *
  */
 public class JobGraph extends Composite implements XulEventHandler, Redrawable, TabItemInterface {
+  public static final String START_TEXT = Messages.getString("JobLog.Button.Start"); //$NON-NLS-1$
+  public static final String STOP_TEXT = Messages.getString("JobLog.Button.Stop"); //$NON-NLS-1$
+
   private static final String XUL_FILE_JOB_TOOLBAR = "ui/job-toolbar.xul";
-
-  public static final String XUL_FILE_JOB_TOOLBAR_PROPERTIES = "ui/job-toolbar.properties";
-
-  public final static String START_TEXT = Messages.getString("JobLog.Button.Start"); //$NON-NLS-1$
-
-  // public final static String PAUSE_TEXT = Messages.getString("JobLog.Button.PauseJob"); //$NON-NLS-1$    TODO 
-  // public final static String RESUME_TEXT = Messages.getString("JobLog.Button.ResumeJob"); //$NON-NLS-1$  TODO
-  public final static String STOP_TEXT = Messages.getString("JobLog.Button.Stop"); //$NON-NLS-1$
-
-  private final static String STRING_PARALLEL_WARNING_PARAMETER = "ParallelJobEntriesWarning";
-
+  private static final String STRING_PARALLEL_WARNING_PARAMETER = "ParallelJobEntriesWarning";
   private static final int HOP_SEL_MARGIN = 9;
 
   protected Shell shell;
@@ -186,7 +177,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
 
   protected ScrollBar vert;
 
-  // public boolean shift, control;
   protected boolean split_hop;
 
   protected int last_button;
@@ -213,7 +203,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
 
   protected JobHopMeta currentHop;
 
-  // private Text filenameLabel;
   private SashForm sashForm;
 
   public Composite extraViewComposite;
@@ -278,9 +267,17 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
     //
     mainComposite = new Composite(this, SWT.NONE);
     mainComposite.setLayout(new FillLayout());
+    
+    // Nick's fix below -------
+    Control toolbarControl = (Control) toolbar.getManagedObject();
+    
+    toolbarControl.setLayoutData(new FormData());
+    toolbarControl.setParent(this);
+    // ------------------------
+
     FormData fdMainComposite = new FormData();
     fdMainComposite.left = new FormAttachment(0, 0);
-    fdMainComposite.top = new FormAttachment((Control) toolbar.getNativeObject(), 0);
+    fdMainComposite.top = new FormAttachment((Control) toolbar.getManagedObject(), 0);
     fdMainComposite.right = new FormAttachment(100, 0);
     fdMainComposite.bottom = new FormAttachment(100, 0);
     mainComposite.setLayoutData(fdMainComposite);
@@ -302,9 +299,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
       menuMap.put("job-graph-note", (XulMenupopup) doc.getElementById("job-graph-note"));
       menuMap.put("job-graph-background", (XulMenupopup) doc.getElementById("job-graph-background"));
       menuMap.put("job-graph-entry", (XulMenupopup) doc.getElementById("job-graph-entry"));
-//      menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell,
-//          new org.pentaho.di.ui.spoon.job.XulMessages(), "job-graph-hop", "job-graph-note", "job-graph-background",
-//          "job-graph-entry");
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
       new ErrorDialog(shell, Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Title"), 
@@ -793,13 +787,7 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
     });
 
     addKeyListener(canvas);
-    // addKeyListener(filenameLabel);
-
-    // filenameLabel.addKeyListener(spoon.defKeys);
-//    canvas.addKeyListener(spoon.defKeys);
-
     setBackground(GUIResource.getInstance().getColorBackground());
-
     setControlStates();
     
     // Add a timer to set correct the state of the run/stop buttons every 2 seconds...
@@ -825,16 +813,19 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
   private void addToolBar() {
 
     try {
-      toolbar = XulHelper.createToolbar(XUL_FILE_JOB_TOOLBAR, JobGraph.this, JobGraph.this, new XulMessages());
-      ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
-      toolBar.pack();
-      // int h = toolBar.getBounds().height;
+      XulLoader loader = new SwtXulLoader();
+      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_JOB_TOOLBAR);
+      xulDomContainer.addEventHandler(this);
+      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
+      
+      ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
+      swtToolbar.pack();
 
       // Hack alert : more XUL limitations...
       //
-      ToolItem sep = new ToolItem(toolBar, SWT.SEPARATOR);
+      ToolItem sep = new ToolItem(swtToolbar, SWT.SEPARATOR);
 
-      zoomLabel = new Combo(toolBar, SWT.DROP_DOWN);
+      zoomLabel = new Combo(swtToolbar, SWT.DROP_DOWN);
       zoomLabel.setItems(TransPainter.magnificationDescriptions);
       zoomLabel.addSelectionListener(new SelectionAdapter() {
         public void widgetSelected(SelectionEvent arg0) {
@@ -855,13 +846,7 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
 
       sep.setWidth(80);
       sep.setControl(zoomLabel);
-      toolBar.pack();
-
-      // Add a few default key listeners
-      //
-//      toolBar.addKeyListener(spoon.defKeys);
-
-      addToolBarListeners();
+      swtToolbar.pack();
     } catch (Throwable t) {
       log.logError(toString(), Const.getStackTracker(t));
       new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
@@ -894,28 +879,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
       mb.open();
     }
     redraw();
-  }
-
-  public void addToolBarListeners() {
-    try {
-      // first get the XML document
-      URL url = XulHelper.getAndValidate(XUL_FILE_JOB_TOOLBAR_PROPERTIES);
-      Properties props = new Properties();
-      props.load(url.openStream());
-      String ids[] = toolbar.getMenuItemIds();
-      for (int i = 0; i < ids.length; i++) {
-        String methodName = (String) props.get(ids[i]);
-        if (methodName != null) {
-          toolbar.addMenuListener(ids[i], this, methodName);
-
-        }
-      }
-
-    } catch (Throwable t) {
-      t.printStackTrace();
-      new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), 
-    		  Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR_PROPERTIES), new Exception(t));
-    }
   }
 
   private void addKeyListener(Control control) {
@@ -1320,26 +1283,20 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
     if (jobEntry != null) // We clicked on a Job Entry!
     {
       XulMenupopup menu = (XulMenupopup)doc.getElementById("job-graph-entry");
-//      XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-entry"); //$NON-NLS-1$
       if (menu != null) {
         int sels = jobMeta.nrSelected();
         XulMenuitem item = (XulMenuitem) doc.getElementById("job-graph-entry-newhop");
-//        XulMenuChoice item = menu.getMenuItemById("job-graph-entry-newhop"); //$NON-NLS-1$
-//        menu.addMenuListener("job-graph-entry-newhop", this, JobGraph.class, "newHopClick"); //$NON-NLS-1$ //$NON-NLS-2$
         item.setDisabled(sels == 2);
         item = (XulMenuitem) doc.getElementById("job-graph-entry-launch");
-//        item = menu.getMenuItemById("job-graph-entry-launch"); //$NON-NLS-1$
         switch (jobEntry.getJobEntryType()) {
           case TRANS: {
             item.setDisabled(false);
             item.setLabel(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchSpoon"));
-//            menu.addMenuListener("job-graph-entry-launch", this, "openTransformation"); //$NON-NLS-1$ //$NON-NLS-2$
             break;
           }
           case JOB: {
             item.setDisabled(false);
             item.setLabel(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchChef"));
-//            menu.addMenuListener("job-graph-entry-launch", this, "openJob"); //$NON-NLS-1$ //$NON-NLS-2$
           }
             break;
           default: {
@@ -1349,56 +1306,33 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
         }
 
         item = (XulMenuitem) doc.getElementById("job-graph-entry-align-snap");
-//        item = menu.getMenuItemById("job-graph-entry-align-snap"); //$NON-NLS-1$
         item.setLabel(Messages.getString("JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + ConstUI.GRID_SIZE
             + ")\tALT-HOME");
 
         XulMenu aMenu = (XulMenu) doc.getElementById("job-graph-entry-align");
-//        XulMenu aMenu = menu.getMenuById("job-graph-entry-align"); //$NON-NLS-1$
         if (aMenu != null) {
           aMenu.setDisabled(sels < 1);
         }
 
         item = (XulMenuitem) doc.getElementById("job-graph-entry-detach");
-//        item = menu.getMenuItemById("job-graph-entry-detach"); //$NON-NLS-1$
         if (item != null) {
           item.setDisabled(!jobMeta.isEntryUsedInHops(jobEntry));
         }
 
         item = (XulMenuitem) doc.getElementById("job-graph-entry-hide");
-//        item = menu.getMenuItemById("job-graph-entry-hide"); //$NON-NLS-1$
         if (item != null) {
           item.setDisabled(!(jobEntry.isDrawn() && !jobMeta.isEntryUsedInHops(jobEntry)));
         }
 
         item = (XulMenuitem) doc.getElementById("job-graph-entry-delete");
-//        item = menu.getMenuItemById("job-graph-entry-delete"); //$NON-NLS-1$
         if (item != null) {
           item.setDisabled(!jobEntry.isDrawn());
         }
 
         item = (XulMenuitem) doc.getElementById("job-graph-entry-parallel");
-//        item = menu.getMenuItemById("job-graph-entry-parallel"); // $NON-NLS-1$
         if (item != null) {
           item.setSelected(jobEntry.isLaunchingInParallel());
         }
-
-//        menu.addMenuListener("job-graph-entry-align-left", this, "allignleft"); //$NON-NLS-1$ //$NON-NLS-2$
-//        menu.addMenuListener("job-graph-entry-align-right", this, "allignright"); //$NON-NLS-1$ //$NON-NLS-2$
-//        menu.addMenuListener("job-graph-entry-align-top", this, "alligntop"); //$NON-NLS-1$ //$NON-NLS-2$
-//        menu.addMenuListener("job-graph-entry-align-bottom", this, "allignbottom"); //$NON-NLS-1$ //$NON-NLS-2$
-//        menu.addMenuListener("job-graph-entry-align-horz", this, "distributehorizontal"); //$NON-NLS-1$ //$NON-NLS-2$
-//        menu.addMenuListener("job-graph-entry-align-vert", this, "distributevertical"); //$NON-NLS-1$ //$NON-NLS-2$
-//        menu.addMenuListener("job-graph-entry-align-snap", this, "snaptogrid"); //$NON-NLS-1$ //$NON-NLS-2$
-
-//        menu.addMenuListener("job-graph-entry-edit", this, "editEntryClick"); //$NON-NLS-1$ //$NON-NLS-2$ 
-//        menu.addMenuListener("job-graph-entry-edit-description", this, "editEntryDescription"); //$NON-NLS-1$ //$NON-NLS-2$ 
-//        menu.addMenuListener("job-graph-entry-parallel", this, "editEntryParallel"); //$NON-NLS-1$ //$NON-NLS-2$ 
-//        menu.addMenuListener("job-graph-entry-duplicate", this, "duplicateEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
-//        menu.addMenuListener("job-graph-entry-copy", this, "copyEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
-//        menu.addMenuListener("job-graph-entry-detach", this, "detatchEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
-//        menu.addMenuListener("job-graph-entry-hide", this, "hideEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
-//        menu.addMenuListener("job-graph-entry-delete", this, "deleteEntry"); //$NON-NLS-1$ //$NON-NLS-2$ 
 
         ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
       }
@@ -1412,24 +1346,11 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
       {
 
         XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-hop");
-//        XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-hop"); //$NON-NLS-1$
         if (menu != null) {
           XulMenuitem miPopEvalUncond = (XulMenuitem) doc.getElementById("job-graph-hop-evaluation-uncond");
           XulMenuitem miPopEvalTrue = (XulMenuitem) doc.getElementById("job-graph-hop-evaluation-true");
           XulMenuitem miPopEvalFalse = (XulMenuitem) doc.getElementById("job-graph-hop-evaluation-uncond");
           XulMenuitem miDisHop = (XulMenuitem) doc.getElementById("job-graph-hop-enabled");
-//          XulMenuChoice miPopEvalUncond = menu.getMenuItemById("job-graph-hop-evaluation-uncond"); //$NON-NLS-1$
-//          XulMenuChoice miPopEvalTrue = menu.getMenuItemById("job-graph-hop-evaluation-true"); //$NON-NLS-1$
-//          XulMenuChoice miPopEvalFalse = menu.getMenuItemById("job-graph-hop-evaluation-false"); //$NON-NLS-1$
-//          XulMenuChoice miDisHop = menu.getMenuItemById("job-graph-hop-enabled"); //$NON-NLS-1$
-
-//          menu.addMenuListener("job-graph-hop-evaluation-uncond", this, "setHopConditional"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("job-graph-hop-evaluation-true", this, "setHopConditional"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("job-graph-hop-evaluation-false", this, "setHopConditional"); //$NON-NLS-1$ //$NON-NLS-2$
-
-//          menu.addMenuListener("job-graph-hop-flip", this, "flipHop"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("job-graph-hop-enabled", this, "disableHop"); //$NON-NLS-1$ //$NON-NLS-2$
-//          menu.addMenuListener("job-graph-hop-delete", this, "deleteHop"); //$NON-NLS-1$ //$NON-NLS-2$
 
           if (hi.isUnconditional()) {
             if (miPopEvalUncond != null)
@@ -1480,33 +1401,15 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
         final NotePadMeta ni = jobMeta.getNote(x, y);
         setCurrentNote(ni);
         if (ni != null) {
-
           XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-note");
-//          XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-note"); //$NON-NLS-1$
           if (menu != null) {
-
-//            menu.addMenuListener("job-graph-note-edit", this, "editNote"); //$NON-NLS-1$ //$NON-NLS-2$
-//            menu.addMenuListener("job-graph-note-delete", this, "deleteNote"); //$NON-NLS-1$ //$NON-NLS-2$
-
-//            menu.addMenuListener("job-graph-note-raise", this, "raiseNote"); //$NON-NLS-1$ //$NON-NLS-2$
-//            menu.addMenuListener("job-graph-note-lower", this, "lowerNote"); //$NON-NLS-1$ //$NON-NLS-2$
-
             ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
           }
         } else {
           XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-background");
-//          XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-background"); //$NON-NLS-1$
           if (menu != null) {
-
-//            menu.addMenuListener("job-graph-note-new", this, "newNote"); //$NON-NLS-1$ //$NON-NLS-2$
-//            menu.addMenuListener("job-graph-note-paste", this, "pasteNote"); //$NON-NLS-1$ //$NON-NLS-2$
-//            menu.addMenuListener("job-graph-background-select-all", this, "selectAll"); //$NON-NLS-1$ //$NON-NLS-2$
-//            menu.addMenuListener("job-graph-background-clear-selection", this, "clearSelection"); //$NON-NLS-1$ //$NON-NLS-2$
-//            menu.addMenuListener("job-graph-background-settings", this, "editJobProperties"); //$NON-NLS-1$ //$NON-NLS-2$
-
             final String clipcontent = spoon.fromClipboard();
             XulMenuitem item = (XulMenuitem) doc.getElementById("job-graph-note-paste");
-//            XulMenuChoice item = menu.getMenuItemById("job-graph-note-paste"); //$NON-NLS-1$
             if (item != null) {
               item.setDisabled(clipcontent == null);
             }
@@ -1578,7 +1481,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
     int idx = jobMeta.indexOfNote(getCurrentNote());
     if (idx >= 0) {
       jobMeta.raiseNote(idx);
-      //spoon.addUndoRaise(jobMeta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
     }
     redraw();
   }
@@ -1588,7 +1490,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
     int idx = jobMeta.indexOfNote(getCurrentNote());
     if (idx >= 0) {
       jobMeta.lowerNote(idx);
-      //spoon.addUndoLower(jobMeta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
     }
     redraw();
   }
@@ -2582,10 +2483,10 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
     sashForm.layout();
     sashForm.setWeights(new int[] { 100, });
     
-    XulToolbarButton button = toolbar.getButtonById("job-show-results");
-    button.setImage(GUIResource.getInstance().getImageShowResults());
-    button.setHint(Messages.getString("Spoon.Tooltip.ShowExecutionResults"));
-
+    XulToolbarbutton button = (XulToolbarbutton) toolbar.getElementById("job-show-results");
+    button.setTooltiptext(Messages.getString("Spoon.Tooltip.ShowExecutionResults"));
+    ToolItem swtToolItem = (ToolItem) button.getManagedObject();
+    swtToolItem.setImage(GUIResource.getInstance().getImageShowResults());
   }
 
   private void minMaxExtraView() {
@@ -2632,10 +2533,10 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
     	extraViewTabFolder.setSelection(jobGridDelegate.getJobGridTab());
     }
     
-    XulToolbarButton button = toolbar.getButtonById("job-show-results");
-    button.setImage(GUIResource.getInstance().getImageHideResults());
-    button.setHint(Messages.getString("Spoon.Tooltip.HideExecutionResults"));
-
+    XulToolbarbutton button = (XulToolbarbutton) toolbar.getElementById("job-show-results");
+    button.setTooltiptext(Messages.getString("Spoon.Tooltip.HideExecutionResults"));
+    ToolItem swtToolItem = (ToolItem) button.getManagedObject();
+    swtToolItem.setImage(GUIResource.getInstance().getImageHideResults());
   }
 
   public void newFileDropDown() {
@@ -2826,9 +2727,9 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
       public void run() {
         // Start/Run button...
         //
-        XulToolbarButton runButton = toolbar.getButtonById("job-run");
+        XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("job-run");
         if (runButton != null) {
-          runButton.setEnable(!running);
+          runButton.setDisabled(running);
         }
 
         /* TODO add pause button
@@ -2845,9 +2746,9 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
         */
         // Stop button...
         //
-        XulToolbarButton stopButton = toolbar.getButtonById("job-stop");
+        XulToolbarbutton stopButton = (XulToolbarbutton) toolbar.getElementById("job-stop");
         if (stopButton != null) {
-          stopButton.setEnable(running);
+          stopButton.setDisabled(!running);
         }
 
         // TODO: enable/disable Job menu entries too

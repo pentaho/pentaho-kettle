@@ -1,16 +1,18 @@
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
-	 
-	 <toolbox>
-		<toolbar id="nav-toolbar" mode="icons">
-			<toolbarbutton value="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
-			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
-			<toolbarseparator />
-			<toolbarbutton value="browse-back" label="%SpoonBrowser.Dialog.Back" image="ui/images/arrow_left.gif" tooltiptext="%SpoonBrowser.Dialog.Back"/>
-			<toolbarbutton value="browse-forward" label="%SpoonBrowser.Dialog.Forward" image="ui/images/arrow_right.gif" tooltiptext="%SpoonBrowser.Dialog.Forward" />
-			<toolbaritem>
-				<textbox id="browser-address" value="http://"/>
-			</toolbaritem>
-		</toolbar>
-	</toolbox>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
+
+  <toolbar id="nav-toolbar" parenttoouter="true" >
+    <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}" onclick="browser.newFileDropDown()"/>
+    
+    <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
+      tooltiptext="${Spoon.Tooltip.OpenTranformation}" onclick="browser.openFile()"/>
+    <toolbarseparator />
+    <toolbarbutton id="browse-back" label="${SpoonBrowser.Dialog.Back}" image="images/arrow_left.gif"
+      tooltiptext="${SpoonBrowser.Dialog.Back}" onclick="browser.browserBack()" />
+    <toolbarbutton id="browse-forward" label="${SpoonBrowser.Dialog.Forward}" image="images/arrow_right.gif"
+      tooltiptext="${SpoonBrowser.Dialog.Forward" onclick="browser.browserForward()" /><!--
+    <toolbaritem>
+      <textbox id="browser-address" value="http://" />
+    </toolbaritem>
+ --></toolbar>
 
 </window>

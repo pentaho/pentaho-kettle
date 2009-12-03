@@ -1,23 +1,30 @@
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
-	 
-	 <toolbox>
-		<toolbar id="nav-toolbar" mode="icons">
-			<toolbarbutton value="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
-			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
-			<toolbarseparator />
-			<toolbarbutton value="file-save" label="%Spoon.Menu.File.Save" image="ui/images/save.png" tooltiptext="%Spoon.Tooltip.SaveCurrentTranformation" />
-			<toolbarbutton value="file-save-as" label="%Spoon.Menu.File.SaveAs" image="ui/images/saveas.png" tooltiptext="%Spoon.Tooltip.SaveDifferentNameTranformation" />
-			<toolbarseparator />
-			<toolbarbutton value="job-run" label="%Spoon.Menu.Job.Run" image="ui/images/run.png" tooltiptext="%Spoon.Tooltip.RunJob"/>
-			<toolbarbutton value="job-stop" label="%Spoon.Menu.Job.Stop" image="ui/images/stop.png" tooltiptext="%Spoon.Tooltip.StopJob"/>
-			<toolbarseparator />
-			<toolbarbutton value="job-get-sql" label="%Spoon.Menu.Job.GetSQL" image="ui/images/SQLbutton.png" tooltiptext="%Spoon.Tooltip.GenerateSQLForJob"/>
-			<toolbarseparator />
-			<toolbarbutton value="explore-database" label="%Spoon.Menu.ExploreConnection" image="ui/images/exploredb.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
-			<toolbarseparator />
-			<toolbarbutton value="job-show-results" label="%Spoon.Menu.ShowExecutionResults" image="ui/images/show-results.png" tooltiptext="%Spoon.Tooltip.ShowExecutionResults"/>
-			<toolbarseparator />
-		</toolbar>
-	</toolbox>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
+
+  <toolbar id="nav-toolbar" mode="icons">
+    <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}"
+      onclick="jobgraph.newFileDropDown()" />
+    <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
+      tooltiptext="${Spoon.Tooltip.OpenTranformation}" onclick="jobgraph.openFile()" />
+    <toolbarseparator />
+    <toolbarbutton id="file-save" label="${Spoon.Menu.File.Save}" image="images/save.png"
+      tooltiptext="${Spoon.Tooltip.SaveCurrentTranformation}" onclick="jobgraph.saveFile()" />
+    <toolbarbutton id="file-save-as" label="${Spoon.Menu.File.SaveAs}" image="images/saveas.png"
+      tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="jobgraph.saveFileAs()" />
+    <toolbarseparator />
+    <toolbarbutton id="job-run" label="${Spoon.Menu.Job.Run}" image="images/run.png" tooltiptext="${Spoon.Tooltip.RunJob}"
+      onclick="jobgraph.runJob()" />
+    <toolbarbutton id="job-stop" label="${Spoon.Menu.Job.Stop}" image="images/stop.png" tooltiptext="${Spoon.Tooltip.StopJob}"
+      onclick="jobgraph.stopJob()" />
+    <toolbarseparator />
+    <toolbarbutton id="job-get-sql" label="${Spoon.Menu.Job.GetSQL}" image="images/SQLbutton.png"
+      tooltiptext="${Spoon.Tooltip.GenerateSQLForJob}" onclick="jobgraph.getSQL()" />
+    <toolbarseparator />
+    <toolbarbutton id="explore-database" label="${Spoon.Menu.ExploreConnection}" image="images/exploredb.png"
+      tooltiptext="${Spoon.Tooltip.ExploreConnection}" onclick="jobgraph.exploreDatabase()" />
+    <toolbarseparator />
+    <toolbarbutton id="job-show-results" label="${Spoon.Menu.ShowExecutionResults}" image="images/show-results.png"
+      tooltiptext="${Spoon.Tooltip.ShowExecutionResults}" onclick="jobgraph.showExecutionResults()" />
+    <toolbarseparator />
+  </toolbar>
 
 </window>
