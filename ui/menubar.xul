@@ -175,7 +175,7 @@
   </menupopup>
 
   <menupopup id="database-class">
-    <menuitem id="database-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newConnection" />
+    <menuitem id="database-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newConnection()" />
     <menuitem id="database-class-connection-wizard" label="${Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard}"
       command="spoon.createDatabaseWizard()" />
     <menuitem id="database-class-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete}"
