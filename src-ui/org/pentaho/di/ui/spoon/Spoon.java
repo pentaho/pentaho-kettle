@@ -3355,18 +3355,10 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
   public boolean saveFile() {
 
-    TransMeta transMeta = getActiveTransformation();
-    if (transMeta != null)
-      return saveToFile(transMeta);
-
-    JobMeta jobMeta = getActiveJob();
-    if (jobMeta != null)
-      return saveToFile(jobMeta);
-
     EngineMetaInterface meta = getActiveMeta();
-    if (meta != null)
+    if (meta != null) {
       return saveToFile(meta);
-
+    }
     return false;
   }
 
@@ -3593,14 +3585,6 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
   }
 
   public boolean saveFileAs() {
-    TransMeta transMeta = getActiveTransformation();
-    if (transMeta != null)
-      return saveFileAs(transMeta);
-
-    JobMeta jobMeta = getActiveJob();
-    if (jobMeta != null)
-      return saveFileAs(jobMeta);
-
     EngineMetaInterface meta = getActiveMeta();
     if (meta != null)
       return saveFileAs(meta);
