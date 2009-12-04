@@ -25,6 +25,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseControl
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
+import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SlavesController;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -46,6 +47,7 @@ public class RepositoryExplorer {
   private BrowseController browseController = new BrowseController();
   private SecurityController securityController = new SecurityController();
   private ConnectionsController connectionsController = new ConnectionsController();
+  private SlavesController slavesController = new SlavesController();
 
   private XulDomContainer container;
   
@@ -73,6 +75,10 @@ public class RepositoryExplorer {
       connectionsController.setRepository(rep);
       connectionsController.setBindingFactory(bf);
       container.addEventHandler(connectionsController);
+      
+      slavesController.setRepository(rep);
+      slavesController.setBindingFactory(bf);
+      container.addEventHandler(slavesController);
 
       boolean securityEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().managesUsers();
       loadSecurityOverlay(securityEnabled);

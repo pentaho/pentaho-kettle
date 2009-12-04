@@ -11,7 +11,7 @@
 	ondialogaccept="mainController.closeDialog()"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:pen="http://www.pentaho.org/2008/xul" 
-	onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init()">
+	onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init(), slavesController.init()">
 
 	<menupopup id="folderContextMenu">
 		<menuitem label="New Folder" command="browseController.createFolder()"/>
@@ -230,9 +230,52 @@
 			<!--
 				###############################################################################
 			-->
+			
+			<!--
+				###############################################################################
+			-->
+			<!--
+				START - SLAVES TAB
+			-->
+			<!--
+				###############################################################################
+			-->
 
-			<tabpanel><!-- tabpanel Fourth elements go here -->
+			<tabpanel id="slaves">
+				<hbox flex="1">
+				<vbox flex="1">
+					<!-- Slaves list tool pane -->
+					<hbox height="20px">
+						<label value="Available:"/>
+						<button id="slaves-edit" image="images/edit.png" pen:disabledimage="images/dedit.png" onclick="slavesController.editSlave()"/>
+						<button id="slaves-new" image="images/add.png" pen:disabledimage="images/dadd.png" onclick="slavesController.createSlave()"/>
+						<button id="slaves-remove" image="images/remove.png" pen:disabledimage="images/dremove.png" onclick="slavesController.removeSlave()" />
+					</hbox>
+					<!-- Connection list -->
+					<hbox flex="1">
+						<tree id="slaves-table" flex="1" hidecolumnpicker="true">
+							<treecols>
+								<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
+								<treecol id="host-col" flex="1" label="Host" pen:binding="host"/>
+								<treecol id="port-col" flex="1" label="Port" pen:binding="port"/>
+								<treecol id="master-col" flex="1" label="Master" pen:binding="master"/>
+							</treecols>
+							<treechildren/>
+						</tree>
+					</hbox>
+				</vbox>
+				</hbox>
 			</tabpanel>
+			
+			<!--
+				###############################################################################
+			-->
+			<!--
+				END - SLAVES TAB
+			-->
+			<!--
+				###############################################################################
+			-->
 
 			<tabpanel><!-- tabpanel Fifth elements go here -->
 			</tabpanel>
