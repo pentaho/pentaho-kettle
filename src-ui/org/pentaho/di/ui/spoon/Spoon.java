@@ -5757,30 +5757,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     }
 
     if (!lastUsedFile.isSourceRepository() && !Const.isEmpty(lastUsedFile.getFilename())) {
-      if (lastUsedFile.isTransformation()) {
-        openFile(lastUsedFile.getFilename(), false);
-        /*
-         * TransMeta transMeta = new
-         * TransMeta(lastUsedFile.getFilename());
-         * transMeta.setFilename(lastUsedFile.getFilename());
-         * transMeta.clearChanged();
-         * props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION,
-         * lastUsedFile.getFilename(), null, false, null);
-         * addTransGraph(transMeta);
-         */
-      }
-      if (lastUsedFile.isJob()) {
-        openFile(lastUsedFile.getFilename(), false);
-        /*
-         * JobMeta jobMeta = new JobMeta(log,
-         * lastUsedFile.getFilename(), rep);
-         * jobMeta.setFilename(lastUsedFile.getFilename());
-         * jobMeta.clearChanged();
-         * props.addLastFile(LastUsedFile.FILE_TYPE_JOB,
-         * lastUsedFile.getFilename(), null, false, null);
-         * addJobGraph(jobMeta);
-         */
-      }
+      openFile(lastUsedFile.getFilename(), false);
       refreshTree();
     }
   }
