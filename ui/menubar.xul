@@ -319,8 +319,6 @@
     <menuitem id="trans-graph-entry-errors" label="${TransGraph.PopupMenu.Error}" command="transgraph.errorHandling()" />
     <menuseparator />
     <menuitem id="trans-graph-entry-preview" label="${TransGraph.PopupMenu.Preview}" command="transgraph.preview()" />
-    <menuitem value="trans-graph-entry-model" label="Model"/>
-    <menuitem value="trans-graph-entry-visualize" label="Quick Visualize"/>
   </menupopup>
 
   <menupopup id="trans-graph-hop">
