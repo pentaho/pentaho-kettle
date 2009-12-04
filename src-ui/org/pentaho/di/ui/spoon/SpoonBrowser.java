@@ -11,6 +11,8 @@
 
 package org.pentaho.di.ui.spoon;
 
+import java.util.ResourceBundle;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
@@ -140,7 +142,8 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
     try {
       XulLoader loader = new SwtXulLoader();
-      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_BROWSER_TOOLBAR);
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
+      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_BROWSER_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
 

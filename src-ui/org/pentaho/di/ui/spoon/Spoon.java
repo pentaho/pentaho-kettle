@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -559,7 +560,8 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     try {
       xulLoader = new SwtXulLoader();
       xulLoader.setOuterContext(shell);
-      mainSpoonContainer = xulLoader.loadXul(XUL_FILE_MENUBAR);
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
+      mainSpoonContainer = xulLoader.loadXul(XUL_FILE_MENUBAR, bundle);
       bf = new DefaultBindingFactory();
       bf.setDocument(mainSpoonContainer.getDocumentRoot());
       mainSpoonContainer.addEventHandler(this);

@@ -1,6 +1,7 @@
 package org.pentaho.di.ui.spoon.job;
 
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
@@ -142,7 +143,8 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
 
     try {
       XulLoader loader = new SwtXulLoader();
-      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_LOG_TOOLBAR);
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
+      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_LOG_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
 

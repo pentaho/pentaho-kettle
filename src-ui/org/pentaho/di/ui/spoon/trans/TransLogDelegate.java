@@ -2,6 +2,7 @@ package org.pentaho.di.ui.spoon.trans;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
@@ -144,7 +145,8 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
 
     try {
       XulLoader loader = new SwtXulLoader();
-      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_LOG_TOOLBAR);
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
+      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_LOG_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
 

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -814,7 +815,8 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
 
     try {
       XulLoader loader = new SwtXulLoader();
-      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_JOB_TOOLBAR);
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
+      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_JOB_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
       
