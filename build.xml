@@ -178,6 +178,7 @@
 		    		<fileset dir="${lib}" 	  		includes="kettle-core.jar"/>
 		    		<fileset dir="${lib}" 	  		includes="kettle-db.jar"/>
 		    		<fileset dir="${lib}" 	  		includes="kettle-engine.jar"/>
+		    		<fileset dir="${lib}" 	  		includes="kettle-ui-swt.jar"/>
 		    		<fileset dir="${testlibext}" 	includes="*.jar"/>
 		    		<fileset dir="${libext}/commons" 	includes="*.jar"/>
 		    		<fileset dir="${libext}/pentaho" 	includes="kettle-vfs*.jar"/>
@@ -802,6 +803,7 @@
 				<fileset dir="${lib}" includes="kettle-core.jar"/>
 				<fileset dir="${lib}" includes="kettle-db.jar"/>
 				<fileset dir="${lib}" includes="kettle-engine.jar"/>
+	    		<fileset dir="${lib}" includes="kettle-ui-swt.jar"/>
 				<!-- fileset dir="test/libext/" includes="junit.jar"/ -->
 	    		<pathelement path="${testClasses}"/>
 
