@@ -1,6 +1,6 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
 
-  <toolbar id="nav-toolbar" parenttoouter="true" >
+  <toolbar id="nav-toolbar" parenttoouter="true"  mode="icons">
     <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}" onclick="browser.newFileDropDown()"/>
     
     <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
