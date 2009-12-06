@@ -80,7 +80,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
 
-		targetStreams[1].setStepname( XMLHandler.getTagValue(stepnode, "send_true_to") ); //$NON-NLS-1$
+		targetStreams[0].setStepname( XMLHandler.getTagValue(stepnode, "send_true_to") ); //$NON-NLS-1$
 		targetStreams[1].setStepname( XMLHandler.getTagValue(stepnode, "send_false_to") ); //$NON-NLS-1$
 
 		condition = XMLHandler.getTagValue(stepnode, "condition");
