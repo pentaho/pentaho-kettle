@@ -289,23 +289,6 @@ public class Janino extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		try
-		{
-			logBasic("Starting to run...");
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Exception e)
-		{
-			logError("Unexpected error in "+" : "+e.toString());
-            logError(Const.getStackTracker(e));
-            setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
+    	BaseStep.runStepThread(this, meta, data);
 	}
 }

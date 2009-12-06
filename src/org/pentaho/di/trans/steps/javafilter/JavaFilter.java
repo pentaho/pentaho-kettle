@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.codehaus.janino.ExpressionEvaluator;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -231,23 +230,6 @@ public class JavaFilter extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		try
-		{
-			logBasic("Starting to run...");
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Exception e)
-		{
-			logError("Unexpected error in "+" : "+e.toString());
-            logError(Const.getStackTracker(e));
-            setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
+    	BaseStep.runStepThread(this, meta, data);
 	}
 }
