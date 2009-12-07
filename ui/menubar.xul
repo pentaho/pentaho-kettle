@@ -4,7 +4,7 @@
   <menubar id="spoon-menubar" pen:parenttoouter="true">
     <menu id="file" label="${Spoon.Menu.File}" accesskey="alt-f">
       <menupopup id="file-popup">
-        <menu id="file-new" acceltext="CTRL-N" accesskey="ctrl-n" label="${Spoon.Menu.File.New}">
+        <menu id="file-new" label="${Spoon.Menu.File.New}">
           <menupopup id="file-newfile-new-popup">
             <menuitem id="file-new-trans" acceltext="CTRL-N" accesskey="ctrl-n" label="${Spoon.Menu.Transformation}"
               command="spoon.newTransFile()" />
