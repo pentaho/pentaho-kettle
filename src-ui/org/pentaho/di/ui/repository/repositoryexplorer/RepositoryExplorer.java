@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
+import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
@@ -48,6 +49,7 @@ public class RepositoryExplorer {
   private SecurityController securityController = new SecurityController();
   private ConnectionsController connectionsController = new ConnectionsController();
   private SlavesController slavesController = new SlavesController();
+  private ClustersController clustersController = new ClustersController();
 
   private XulDomContainer container;
   
@@ -79,6 +81,10 @@ public class RepositoryExplorer {
       slavesController.setRepository(rep);
       slavesController.setBindingFactory(bf);
       container.addEventHandler(slavesController);
+      
+      clustersController.setRepository(rep);
+      clustersController.setBindingFactory(bf);
+      container.addEventHandler(clustersController);
 
       boolean securityEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().managesUsers();
       loadSecurityOverlay(securityEnabled);

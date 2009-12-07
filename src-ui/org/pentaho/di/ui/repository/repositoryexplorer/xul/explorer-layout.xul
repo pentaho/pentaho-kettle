@@ -11,7 +11,7 @@
 	ondialogaccept="mainController.closeDialog()"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:pen="http://www.pentaho.org/2008/xul" 
-	onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init(), slavesController.init()">
+	onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init(), slavesController.init(), clustersController.init()">
 
 	<menupopup id="folderContextMenu">
 		<menuitem label="New Folder" command="browseController.createFolder()"/>
@@ -251,7 +251,7 @@
 						<button id="slaves-new" image="images/add.png" pen:disabledimage="images/dadd.png" onclick="slavesController.createSlave()"/>
 						<button id="slaves-remove" image="images/remove.png" pen:disabledimage="images/dremove.png" onclick="slavesController.removeSlave()" />
 					</hbox>
-					<!-- Connection list -->
+					<!-- Slaves list -->
 					<hbox flex="1">
 						<tree id="slaves-table" flex="1" hidecolumnpicker="true">
 							<treecols>
@@ -280,8 +280,47 @@
 			<tabpanel><!-- tabpanel Fifth elements go here -->
 			</tabpanel>
 
-			<tabpanel><!-- tabpanel Sixth elements go here -->
+			<!--
+				###############################################################################
+			-->
+			<!--
+				START - CLUSTERS TAB
+			-->
+			<!--
+				###############################################################################
+			-->
+			<tabpanel id="clusters">
+				<hbox flex="1">
+				<vbox flex="1">
+					<!-- Cluster list tool pane -->
+					<hbox height="20px">
+						<label value="Available:"/>
+						<button id="clusters-edit" image="images/edit.png" pen:disabledimage="images/dedit.png" onclick="clustersController.editCluster()"/>
+						<button id="clusters-new" image="images/add.png" pen:disabledimage="images/dadd.png" onclick="clustersController.createCluster()"/>
+						<button id="clusters-remove" image="images/remove.png" pen:disabledimage="images/dremove.png" onclick="clustersController.removeCluster()" />
+					</hbox>
+					<!-- Cluster list -->
+					<hbox flex="1">
+						<tree id="clusters-table" flex="1" hidecolumnpicker="true">
+							<treecols>
+								<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
+								<treecol id="servers-col" flex="1" label="Server(s)" pen:binding="serverList"/>
+							</treecols>
+							<treechildren/>
+						</tree>
+					</hbox>
+				</vbox>
+				</hbox>
 			</tabpanel>
+			<!--
+				###############################################################################
+			-->
+			<!--
+				END - CLUSTERS TAB
+			-->
+			<!--
+				###############################################################################
+			-->
 
 		</tabpanels>
 
