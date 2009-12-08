@@ -2999,7 +2999,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       try {
         Directory root = rep.loadRepositoryDirectoryTree();
-        RepositoryExplorer explorer = new RepositoryExplorer(root, rep, cb);
+        RepositoryExplorer explorer = new RepositoryExplorer(root, rep, cb, Variables.getADefaultVariableSpace());
         explorer.show();
       } catch (KettleSecurityException e) {
         e.printStackTrace();

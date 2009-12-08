@@ -14,47 +14,25 @@
  *
  * Copyright (c) 2009 Pentaho Corporation.  All rights reserved.
  */
+
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
-import org.pentaho.di.repository.UserInfo;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
+import java.util.List;
 
-public class UIRepositoryUser extends XulEventSourceAdapter{
+import org.pentaho.ui.xul.util.AbstractModelList;
 
-  private UserInfo rui;
+public class UIPartitions  extends AbstractModelList<UIPartition> {
   
-  public UIRepositoryUser() {
+  public UIPartitions(){
   }
   
-  public UIRepositoryUser(UserInfo rui) {
-    this.rui = rui;
-  }
-
-  public void setLogin(String name){
-    rui.setLogin(name);
+  public UIPartitions(List<UIPartition> partitions){
+    super(partitions);
   }
   
-  public String getLogin(){
-    return rui.getLogin();
+  @Override
+  protected void fireCollectionChanged() {
+    this.changeSupport.firePropertyChange("children", null, this.getChildren()); //$NON-NLS-1$
   }
 
-  public String getDescription(){
-    return rui.getDescription();
-  }
-  
-  public void setDescription(String desc){
-    rui.setLogin(desc);
-  }
-  
-  public void setPassword(String pass){
-    rui.setPassword(pass);
-  }
-  
-  public String getPassword(){
-    return rui.getPassword();
-  }
-  
-  public UserInfo getUserInfo(){
-    return rui;
-  }
 }

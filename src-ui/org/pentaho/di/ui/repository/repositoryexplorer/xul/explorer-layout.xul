@@ -11,7 +11,7 @@
 	ondialogaccept="mainController.closeDialog()"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:pen="http://www.pentaho.org/2008/xul" 
-	onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init(), slavesController.init(), clustersController.init()">
+	onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init()">
 
 	<menupopup id="folderContextMenu">
 		<menuitem label="New Folder" command="browseController.createFolder()"/>
@@ -38,7 +38,7 @@
 			<tab label="Connections" />
 			<tab label="Security" />
 			<tab label="Slaves" />
-			<tab label="Schema" />
+			<tab label="Partitions" />
 			<tab label="Clusters" />
 		</tabs>
 
@@ -277,8 +277,47 @@
 				###############################################################################
 			-->
 
-			<tabpanel><!-- tabpanel Fifth elements go here -->
+			<!--
+				###############################################################################
+			-->
+			<!--
+				START - PARTITIONS TAB
+			-->
+			<!--
+				###############################################################################
+			-->
+			<tabpanel id="partitions">
+				<hbox flex="1">
+				<vbox flex="1">
+					<!-- Partition list tool pane -->
+					<hbox height="20px">
+						<label value="Available:"/>
+						<button id="partitions-edit" image="images/edit.png" pen:disabledimage="images/dedit.png" onclick="partitionsController.editPartition()"/>
+						<button id="partitions-new" image="images/add.png" pen:disabledimage="images/dadd.png" onclick="partitionsController.createPartition()"/>
+						<button id="partitions-remove" image="images/remove.png" pen:disabledimage="images/dremove.png" onclick="partitionsController.removePartition()" />
+					</hbox>
+					<!-- Partition list -->
+					<hbox flex="1">
+						<tree id="partitions-table" flex="1" hidecolumnpicker="true">
+							<treecols>
+								<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
+							</treecols>
+							<treechildren/>
+						</tree>
+					</hbox>
+				</vbox>
+				</hbox>
 			</tabpanel>
+			<!--
+				###############################################################################
+			-->
+			<!--
+				END - PARTITIONS TAB
+			-->
+			<!--
+				###############################################################################
+			-->
+				
 
 			<!--
 				###############################################################################

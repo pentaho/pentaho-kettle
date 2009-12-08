@@ -16,34 +16,26 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
 
-public class UITransformation extends UIRepositoryContent {
-
-  public UITransformation() {
+public class UIPartition extends XulEventSourceAdapter {
+  
+  private PartitionSchema partitionSchema;
+  
+  public UIPartition(PartitionSchema partitionSchema) {
+    this.partitionSchema = partitionSchema;
   }
-
-  public UITransformation(RepositoryContent rc, UIRepositoryDirectory parent, Repository rep) {
-    super(rc, parent, rep);
+  
+  public PartitionSchema getPartitionSchema() {
+    return this.partitionSchema;
   }
-
-  @Override
-  public String getImage() {
-    return "images/transformation.png";
-  }
-
-  @Override
-  public void setName(String name) throws Exception {
-    super.setName(name);
-    rep.renameTransformation(this.getObjectId(), getRepositoryDirectory(), name);
-    uiParent.fireCollectionChanged();
-  }
-
-  public void delete()throws Exception{
-    rep.deleteTransformation(this.getObjectId());
-    if(uiParent.getRepositoryObjects().contains(this))
-      uiParent.getRepositoryObjects().remove(this);
+  
+  public String getName() {
+    if(partitionSchema != null) {
+      return partitionSchema.getName();
+    }
+    return null;
   }
 
 }

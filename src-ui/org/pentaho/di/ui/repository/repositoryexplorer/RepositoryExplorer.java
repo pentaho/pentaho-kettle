@@ -19,12 +19,14 @@ package org.pentaho.di.ui.repository.repositoryexplorer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
+import org.pentaho.di.ui.repository.repositoryexplorer.controllers.PartitionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SlavesController;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
@@ -49,13 +51,14 @@ public class RepositoryExplorer {
   private SecurityController securityController = new SecurityController();
   private ConnectionsController connectionsController = new ConnectionsController();
   private SlavesController slavesController = new SlavesController();
+  private PartitionsController partitionsController = new PartitionsController();
   private ClustersController clustersController = new ClustersController();
 
   private XulDomContainer container;
   
   private Directory repositoryDirectory; 
 
-  public RepositoryExplorer(Directory rd, Repository rep, RepositoryExplorerCallback callback) {
+  public RepositoryExplorer(Directory rd, Repository rep, RepositoryExplorerCallback callback, VariableSpace variableSpace) {
     repositoryDirectory = rd;
     try {
       container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul"); //$NON-NLS-1$
@@ -81,6 +84,11 @@ public class RepositoryExplorer {
       slavesController.setRepository(rep);
       slavesController.setBindingFactory(bf);
       container.addEventHandler(slavesController);
+      
+      partitionsController.setRepository(rep);
+      partitionsController.setVariableSpace(variableSpace);
+      partitionsController.setBindingFactory(bf);
+      container.addEventHandler(partitionsController);
       
       clustersController.setRepository(rep);
       clustersController.setBindingFactory(bf);
