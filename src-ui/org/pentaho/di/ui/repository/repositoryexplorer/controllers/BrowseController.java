@@ -124,7 +124,7 @@ public class BrowseController extends AbstractXulEventHandler{
       }
     };
     
-    bf.createBinding(revisionTable,"selectedRows", "revision-open", "!disabled", forButtons);
+    Binding buttonBinding = bf.createBinding(revisionTable,"selectedRows", "revision-open", "!disabled", forButtons);
     //bf.createBinding(revisionTable,"selectedRows", "revision-remove", "!disabled", forButtons);
     
     Binding revisionBinding = null;
@@ -169,6 +169,7 @@ public class BrowseController extends AbstractXulEventHandler{
       directoryBinding.fireSourceChanged();
       revisionTreeBinding.fireSourceChanged();
       revisionLabelBinding.fireSourceChanged();
+      buttonBinding.fireSourceChanged();
       if (revisionBinding != null){
         revisionBinding.fireSourceChanged();
       }
