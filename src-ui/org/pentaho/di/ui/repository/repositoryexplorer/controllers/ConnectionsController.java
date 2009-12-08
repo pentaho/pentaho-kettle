@@ -11,7 +11,6 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,12 +29,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnection;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnections;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevision;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;

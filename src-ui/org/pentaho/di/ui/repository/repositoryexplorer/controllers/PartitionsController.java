@@ -34,7 +34,6 @@ import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartition;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartitions;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;

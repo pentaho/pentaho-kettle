@@ -19,17 +19,15 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
-import org.pentaho.ui.xul.binding.Binding;
-import org.pentaho.ui.xul.binding.BindingConvertor;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.binding.DefaultBinding;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.swt.tags.SwtDialog;
 import org.pentaho.ui.xul.util.DialogController;
 
 
@@ -39,7 +37,9 @@ import org.pentaho.ui.xul.util.DialogController;
  * to some of the main UI events such as closing and accepting the dialog.
  * 
  */
-public class MainController extends AbstractXulEventHandler implements DialogController{
+public class MainController extends AbstractXulEventHandler implements DialogController {
+  
+  private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public static final int CANCELLED = 0;
 	public static final int OK = 1;
@@ -50,6 +50,8 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
 
   private XulDialog dialog;
   private List<DialogListener> listeners = new ArrayList<DialogListener>();
+  
+  private Repository repository = null;
   
   BindingFactory bf;
 
@@ -62,6 +64,10 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
 
   public void init() {
     createBindings();
+    
+    if(dialog != null && repository != null) {
+      dialog.setTitle(BaseMessages.getString(PKG, "RepositoryExplorerDialog.DevTitle", repository.getName())); //$NON-NLS-1$
+    }
   }
   
   public void showDialog(){
@@ -79,6 +85,10 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
       System.out.println(e.getMessage()); e.printStackTrace();
     }
     
+  }
+  
+  public void setRepository(Repository rep) {
+    this.repository = rep;
   }
 
   public void setBindingFactory(BindingFactory bf) {

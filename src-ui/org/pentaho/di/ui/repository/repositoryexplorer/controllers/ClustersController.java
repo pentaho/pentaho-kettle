@@ -33,7 +33,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UICluster;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIClusters;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartition;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;

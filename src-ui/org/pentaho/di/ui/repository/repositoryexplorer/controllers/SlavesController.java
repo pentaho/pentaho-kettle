@@ -26,8 +26,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnection;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlaves;
 import org.pentaho.ui.xul.binding.BindingConvertor;
