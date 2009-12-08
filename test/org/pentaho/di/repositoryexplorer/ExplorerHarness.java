@@ -76,7 +76,7 @@ public class ExplorerHarness {
     try {
       repository.connect();
       Directory root = repository.loadRepositoryDirectoryTree();
-      RepositoryExplorer explorer = new RepositoryExplorer(root, repository, cb);
+      RepositoryExplorer explorer = new RepositoryExplorer(root, repository, cb, null);
       explorer.show();
     } catch (KettleSecurityException e) {
       e.printStackTrace();
