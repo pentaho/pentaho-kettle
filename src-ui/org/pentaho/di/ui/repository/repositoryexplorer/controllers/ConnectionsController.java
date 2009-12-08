@@ -39,6 +39,7 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
@@ -90,7 +91,7 @@ public class ConnectionsController extends AbstractXulEventHandler {
     if (bf!=null){
       createBindings();
     }
-    
+    setEnableButtons(false);
     initComplete = true;
   }
   
@@ -111,27 +112,44 @@ public class ConnectionsController extends AbstractXulEventHandler {
       (bindRevisionTableDisable = bf.createBinding(this, "revSupported", "connection-revision-table", "!disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       (bindRevisionLabelDisable = bf.createBinding(this, "revSupported", "connection-revision-label", "!disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       
-      if (repository != null && repository.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions()){
+      if (repository != null){
+        bf.createBinding(connectionsTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
+          new BindingConvertor<List<UIDatabaseConnection>, Boolean>() {
+            @Override
+            public Boolean sourceToTarget(List<UIDatabaseConnection> dbConnList) {
+              // Enable / Disable New,Edit,Remove buttons
+              if(dbConnList != null && dbConnList.size() > 0) {
+                return true;
+              }
+                return false;
+            }
+            
+            @Override
+            public List<UIDatabaseConnection> targetToSource(Boolean enable) {
+              return null;
+            }
+        });
+        
         bf.createBinding(connectionsTable, "selectedItems", revisionTable, "elements", //$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<List<UIDatabaseConnection>, UIRepositoryObjectRevisions>() {
             @Override
             public UIRepositoryObjectRevisions sourceToTarget(List<UIDatabaseConnection> dbConnList) {
               UIRepositoryObjectRevisions revisions = new UIRepositoryObjectRevisions();
-              
-              if(dbConnList==null){
-                return null;
-              }
-              if (dbConnList.size()<=0){
-                return null;
-              }
-              try {
-                UIDatabaseConnection dbConn = (UIDatabaseConnection)dbConnList.get(0);
-                revisions = dbConn.getRevisions();
-                bf.createBinding(revisions,"children", revisionTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
-                
-              } catch (Exception e) {
-                // how do we handle exceptions in a binding? dialog here? 
-                // TODO: handle exception
+              if(repository.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions()) {
+                if(dbConnList==null){
+                  return null;
+                }
+                if (dbConnList.size()<=0){
+                  return null;
+                }
+                try {
+                  UIDatabaseConnection dbConn = (UIDatabaseConnection)dbConnList.get(0);
+                  revisions = dbConn.getRevisions();
+                  bf.createBinding(revisions,"children", revisionTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
+                } catch (Exception e) {
+                  // how do we handle exceptions in a binding? dialog here? 
+                  // TODO: handle exception
+                }
               }
               return revisions;
             }
@@ -344,5 +362,20 @@ public class ConnectionsController extends AbstractXulEventHandler {
     {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
     }
+  }
+  
+  public void setEnableButtons(boolean enable) {
+    // Convenience - Leave 'new' enabled, modify 'edit' and 'remove'
+    enableButtons(true, enable, enable);
+  }
+  
+  public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
+    XulButton bNew = (XulButton) document.getElementById("connections-new"); //$NON-NLS-1$
+    XulButton bEdit = (XulButton) document.getElementById("connections-edit"); //$NON-NLS-1$
+    XulButton bRemove = (XulButton) document.getElementById("connections-remove"); //$NON-NLS-1$
+    
+    bNew.setDisabled(!enableNew);
+    bEdit.setDisabled(!enableEdit);
+    bRemove.setDisabled(!enableRemove);
   }
 }

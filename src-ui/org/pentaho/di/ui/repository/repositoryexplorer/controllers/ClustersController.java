@@ -17,6 +17,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -32,7 +33,10 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UICluster;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIClusters;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartition;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
@@ -60,6 +64,8 @@ public class ClustersController extends AbstractXulEventHandler {
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
 
+    setEnableButtons(false);
+    
     if (bf != null) {
       createBindings();
     }
@@ -69,6 +75,23 @@ public class ClustersController extends AbstractXulEventHandler {
     try {
       clustersTable = (XulTree) document.getElementById("clusters-table"); //$NON-NLS-1$
       bf.createBinding(clusterList, "children", clustersTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+      
+      bf.createBinding(clustersTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
+          new BindingConvertor<List<UICluster>, Boolean>() {
+            @Override
+            public Boolean sourceToTarget(List<UICluster> clusters) {
+              // Enable / Disable New,Edit,Remove buttons
+              if(clusters != null && clusters.size() > 0) {
+                return true;
+              }
+              
+              return false;
+            }
+            @Override
+            public List<UICluster> targetToSource(Boolean enabled) {
+              return null;
+            }
+        });
     } catch (Exception e) {
       //TODO: Better error handling
       System.err.println(e.getMessage());
@@ -197,6 +220,21 @@ public class ClustersController extends AbstractXulEventHandler {
         System.err.println(e.getMessage());
       }
     }
+  }
+  
+  public void setEnableButtons(boolean enable) {
+    // Convenience - Leave 'new' enabled, modify 'edit' and 'remove'
+    enableButtons(true, enable, enable);
+  }
+  
+  public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
+    XulButton bNew = (XulButton) document.getElementById("clusters-new"); //$NON-NLS-1$
+    XulButton bEdit = (XulButton) document.getElementById("clusters-edit"); //$NON-NLS-1$
+    XulButton bRemove = (XulButton) document.getElementById("clusters-remove"); //$NON-NLS-1$
+    
+    bNew.setDisabled(!enableNew);
+    bEdit.setDisabled(!enableEdit);
+    bRemove.setDisabled(!enableRemove);
   }
 
 }

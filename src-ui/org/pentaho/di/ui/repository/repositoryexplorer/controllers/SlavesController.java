@@ -12,6 +12,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -25,9 +26,13 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnection;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlaves;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
@@ -53,6 +58,8 @@ public class SlavesController extends AbstractXulEventHandler {
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog)document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
     
+    setEnableButtons(false);
+    
     if (bf!=null){
       createBindings();
     }
@@ -75,6 +82,23 @@ public class SlavesController extends AbstractXulEventHandler {
     try {
       slavesTable = (XulTree) document.getElementById("slaves-table"); //$NON-NLS-1$
       bf.createBinding(slaveList, "children", slavesTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+      
+      bf.createBinding(slavesTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
+        new BindingConvertor<List<UISlave>, Boolean>() {
+          @Override
+          public Boolean sourceToTarget(List<UISlave> slaves) {
+            // Enable / Disable New,Edit,Remove buttons
+            if(slaves != null && slaves.size() > 0) {
+              return true;
+            }
+            
+            return false;
+          }
+          @Override
+          public List<UISlave> targetToSource(Boolean enabled) {
+            return null;
+          }
+      });
     } catch (Exception e) {
       //TODO: Better error handling
       System.err.println(e.getMessage());
@@ -199,5 +223,20 @@ public class SlavesController extends AbstractXulEventHandler {
     {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message")+slaveServerName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
+  }
+  
+  public void setEnableButtons(boolean enable) {
+    // Convenience - Leave 'new' enabled, modify 'edit' and 'remove'
+    enableButtons(true, enable, enable);
+  }
+  
+  public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
+    XulButton bNew = (XulButton) document.getElementById("slaves-new"); //$NON-NLS-1$
+    XulButton bEdit = (XulButton) document.getElementById("slaves-edit"); //$NON-NLS-1$
+    XulButton bRemove = (XulButton) document.getElementById("slaves-remove"); //$NON-NLS-1$
+    
+    bNew.setDisabled(!enableNew);
+    bEdit.setDisabled(!enableEdit);
+    bRemove.setDisabled(!enableRemove);
   }
 }

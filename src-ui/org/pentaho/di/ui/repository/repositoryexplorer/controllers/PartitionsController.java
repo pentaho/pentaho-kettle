@@ -17,6 +17,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -33,7 +34,10 @@ import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartition;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartitions;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
@@ -63,6 +67,8 @@ public class PartitionsController extends AbstractXulEventHandler {
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
 
+    setEnableButtons(false);
+    
     if (bf != null) {
       createBindings();
     }
@@ -72,6 +78,23 @@ public class PartitionsController extends AbstractXulEventHandler {
     try {
       partitionsTable = (XulTree) document.getElementById("partitions-table"); //$NON-NLS-1$
       bf.createBinding(partitionList, "children", partitionsTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+      
+      bf.createBinding(partitionsTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
+          new BindingConvertor<List<UIPartition>, Boolean>() {
+            @Override
+            public Boolean sourceToTarget(List<UIPartition> partitions) {
+              // Enable / Disable New,Edit,Remove buttons
+              if(partitions != null && partitions.size() > 0) {
+                return true;
+              }
+              
+              return false;
+            }
+            @Override
+            public List<UIPartition> targetToSource(Boolean enabled) {
+              return null;
+            }
+        });
     } catch (Exception e) {
       //TODO: Better error handling
       System.err.println(e.getMessage());
@@ -204,4 +227,18 @@ public class PartitionsController extends AbstractXulEventHandler {
     }
   }
 
+  public void setEnableButtons(boolean enable) {
+    // Convenience - Leave 'new' enabled, modify 'edit' and 'remove'
+    enableButtons(true, enable, enable);
+  }
+  
+  public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
+    XulButton bNew = (XulButton) document.getElementById("partitions-new"); //$NON-NLS-1$
+    XulButton bEdit = (XulButton) document.getElementById("partitions-edit"); //$NON-NLS-1$
+    XulButton bRemove = (XulButton) document.getElementById("partitions-remove"); //$NON-NLS-1$
+    
+    bNew.setDisabled(!enableNew);
+    bEdit.setDisabled(!enableEdit);
+    bRemove.setDisabled(!enableRemove);
+  }
 }
