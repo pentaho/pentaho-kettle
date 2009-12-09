@@ -489,20 +489,20 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			{
 				base = new String[] { "command.com", "/C" };
 				if (insertScript) {
-					tempFile = KettleVFS.createTempFile("kettle", "shell.bat", workDirectory, this);
+					tempFile = KettleVFS.createTempFile("kettle", "shell.bat", environmentSubstitute(workDirectory), this);
 					fileObject = createTemporaryShellFile(tempFile, realScript);
 				}
 			} else if (Const.getOS().startsWith("Windows"))
 			{
 				base = new String[] { "cmd.exe", "/C" };
 				if (insertScript) {
-					tempFile = KettleVFS.createTempFile("kettle", "shell.bat", workDirectory, this);
+					tempFile = KettleVFS.createTempFile("kettle", "shell.bat", environmentSubstitute(workDirectory), this);
 					fileObject = createTemporaryShellFile(tempFile, realScript);
 				}
 			} else
 			{
 				if (insertScript) {
-					tempFile = KettleVFS.createTempFile("kettle", "shell", workDirectory, this);
+					tempFile = KettleVFS.createTempFile("kettle", "shell", environmentSubstitute(workDirectory), this);
 					fileObject = createTemporaryShellFile(tempFile, realScript);
 				}
 				base = new String[] { KettleVFS.getFilename(fileObject) };
