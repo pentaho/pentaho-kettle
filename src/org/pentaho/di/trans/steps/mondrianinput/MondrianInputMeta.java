@@ -219,7 +219,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "sql",              sql);
-			rep.saveStepAttribute(id_transformation, id_step, "limit",            catalog);
+			rep.saveStepAttribute(id_transformation, id_step, "catalog",            catalog);
             rep.saveStepAttribute(id_transformation, id_step, "variables_active", variableReplacementActive);
 			
 			// Also, save the step-database relationship!

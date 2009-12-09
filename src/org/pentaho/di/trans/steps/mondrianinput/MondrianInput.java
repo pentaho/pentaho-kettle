@@ -48,7 +48,8 @@ public class MondrianInput extends BaseStep implements StepInterface
 			String mdx = meta.getSQL();
 			if(meta.isVariableReplacementActive()) mdx = environmentSubstitute(meta.getSQL());
 			
-			data.mondrianHelper = new MondrianHelper(meta.getDatabaseMeta(), meta.getCatalog(), mdx, this);
+			String catalog = environmentSubstitute(meta.getCatalog());
+			data.mondrianHelper = new MondrianHelper(meta.getDatabaseMeta(), catalog, mdx, this);
 			data.mondrianHelper.openQuery();
 			data.mondrianHelper.createRectangularOutput();
 			

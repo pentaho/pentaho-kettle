@@ -36,6 +36,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -56,6 +57,7 @@ import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 public class MondrianInputDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -68,7 +70,8 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 	private FormData     fdlSQL, fdSQL;
 
 	private Label        wlCatalog;
-	private Text         wCatalog;
+	private TextVar      wCatalog;
+	private Button       wbbFilename; // Browse for a file
 	private FormData     fdlCatalog, fdCatalog;
  
 	private MondrianInputMeta input;
@@ -155,6 +158,15 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 
 		// Catalog location...
 		//
+		wbbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbbFilename);
+        wbbFilename.setText(BaseMessages.getString("System.Button.Browse"));
+        wbbFilename.setToolTipText(BaseMessages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+        FormData fdbFilename = new FormData();
+        fdbFilename.right= new FormAttachment(100, 0);
+        fdbFilename.bottom = new FormAttachment(wOK, -2*margin);
+		wbbFilename.setLayoutData(fdbFilename);
+		
 		wlCatalog=new Label(shell, SWT.RIGHT);
 		wlCatalog.setText(BaseMessages.getString(PKG, "MondrianInputDialog.Catalog")); //$NON-NLS-1$
  		props.setLook(wlCatalog);
@@ -163,12 +175,12 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		fdlCatalog.right= new FormAttachment(middle, -margin);
 		fdlCatalog.bottom = new FormAttachment(wOK, -2*margin);
 		wlCatalog.setLayoutData(fdlCatalog);
-		wCatalog=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wCatalog=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wCatalog);
 		wCatalog.addModifyListener(lsMod);
 		fdCatalog=new FormData();
 		fdCatalog.left = new FormAttachment(middle, 0);
-		fdCatalog.right= new FormAttachment(100, 0);
+		fdCatalog.right= new FormAttachment(wbbFilename, -margin);
 		fdCatalog.bottom = new FormAttachment(wOK, -2*margin);
 		wCatalog.setLayoutData(fdCatalog);
 		
@@ -268,6 +280,33 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		wStepname.addSelectionListener( lsDef );
 		wCatalog.addSelectionListener( lsDef );
+		
+		if (wbbFilename!=null) {
+			// Listen to the browse button next to the file name
+			wbbFilename.addSelectionListener(
+				new SelectionAdapter()
+				{
+					public void widgetSelected(SelectionEvent e) 
+					{
+						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+						dialog.setFilterExtensions(new String[] {"*.xml", "*"});
+						if (wCatalog.getText()!=null)
+						{
+							String fname = transMeta.environmentSubstitute(wCatalog.getText());
+							dialog.setFileName( fname );
+						}
+						
+						dialog.setFilterNames(new String[] {BaseMessages.getString("System.FileType.XMLFiles"), BaseMessages.getString("System.FileType.AllFiles")});
+						
+						if (dialog.open()!=null)
+						{
+							String str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
+							wCatalog.setText(str);
+						}
+					}
+				}
+			);
+		}
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
