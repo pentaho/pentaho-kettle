@@ -156,9 +156,9 @@
 					<!-- Connection list tool pane -->
 					<hbox height="20px">
 						<label value="Available:"/>
-						<button id="connections-edit" image="images/edit.png" pen:disabledimage="images/dedit.png" onclick="connectionsController.editConnection()"/>
-						<button id="connections-new" image="images/add.png" pen:disabledimage="images/dadd.png" onclick="connectionsController.createConnection()"/>
-						<button id="connections-remove" image="images/remove.png" pen:disabledimage="images/dremove.png" onclick="connectionsController.removeConnection()" />
+						<button id="connections-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="connectionsController.editConnection()"/>
+						<button id="connections-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="connectionsController.createConnection()"/>
+						<button id="connections-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="connectionsController.removeConnection()" />
 					</hbox>
 					<!-- Connection list -->
 					<hbox flex="1">
@@ -247,9 +247,9 @@
 					<!-- Slaves list tool pane -->
 					<hbox height="20px">
 						<label value="Available:"/>
-						<button id="slaves-edit" image="images/edit.png" pen:disabledimage="images/dedit.png" onclick="slavesController.editSlave()"/>
-						<button id="slaves-new" image="images/add.png" pen:disabledimage="images/dadd.png" onclick="slavesController.createSlave()"/>
-						<button id="slaves-remove" image="images/remove.png" pen:disabledimage="images/dremove.png" onclick="slavesController.removeSlave()" />
+						<button id="slaves-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="slavesController.editSlave()"/>
+						<button id="slaves-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="slavesController.createSlave()"/>
+						<button id="slaves-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="slavesController.removeSlave()" />
 					</hbox>
 					<!-- Slaves list -->
 					<hbox flex="1">
@@ -292,9 +292,9 @@
 					<!-- Partition list tool pane -->
 					<hbox height="20px">
 						<label value="Available:"/>
-						<button id="partitions-edit" image="images/edit.png" pen:disabledimage="images/dedit.png" onclick="partitionsController.editPartition()"/>
-						<button id="partitions-new" image="images/add.png" pen:disabledimage="images/dadd.png" onclick="partitionsController.createPartition()"/>
-						<button id="partitions-remove" image="images/remove.png" pen:disabledimage="images/dremove.png" onclick="partitionsController.removePartition()" />
+						<button id="partitions-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="partitionsController.editPartition()"/>
+						<button id="partitions-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="partitionsController.createPartition()"/>
+						<button id="partitions-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="partitionsController.removePartition()" />
 					</hbox>
 					<!-- Partition list -->
 					<hbox flex="1">
@@ -334,9 +334,9 @@
 					<!-- Cluster list tool pane -->
 					<hbox height="20px">
 						<label value="Available:"/>
-						<button id="clusters-edit" image="images/edit.png" pen:disabledimage="images/dedit.png" onclick="clustersController.editCluster()"/>
-						<button id="clusters-new" image="images/add.png" pen:disabledimage="images/dadd.png" onclick="clustersController.createCluster()"/>
-						<button id="clusters-remove" image="images/remove.png" pen:disabledimage="images/dremove.png" onclick="clustersController.removeCluster()" />
+						<button id="clusters-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="clustersController.editCluster()"/>
+						<button id="clusters-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="clustersController.createCluster()"/>
+						<button id="clusters-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="clustersController.removeCluster()" />
 					</hbox>
 					<!-- Cluster list -->
 					<hbox flex="1">

@@ -69,6 +69,7 @@ public class RepositoryExplorer {
       BindingFactory bf = new DefaultBindingFactory();
       bf.setDocument(container.getDocumentRoot());
 
+      mainController.setRepository(rep);
       mainController.setBindingFactory(bf);
       container.addEventHandler(mainController);
 
