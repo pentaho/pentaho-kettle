@@ -5690,8 +5690,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 							JobMeta jobMeta = progressDialog.open();
 							if (trackIt)
 								props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
-							jobMeta.clearChanged();
-							delegates.jobs.addJobGraph(jobMeta);
+							if (jobMeta != null) {
+								jobMeta.clearChanged();
+								delegates.jobs.addJobGraph(jobMeta);
+							}
 						}
 						refreshTree();
 					}
