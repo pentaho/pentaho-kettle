@@ -2612,10 +2612,9 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     sashForm.setWeights(new int[] { 100, });
 
     XulToolbarbutton button = (XulToolbarbutton) toolbar.getElementById("trans-show-results");
-    // TODO figure out how to do this stuff.
-//    button.setImage(GUIResource.getInstance().getImageShowResults());
-//    button.setHint(Messages.getString("Spoon.Tooltip.ShowExecutionResults"));
-
+    button.setTooltiptext(Messages.getString("Spoon.Tooltip.ShowExecutionResults"));
+    ToolItem toolItem = (ToolItem) button.getManagedObject();
+    toolItem.setImage(GUIResource.getInstance().getImageShowResults());
   }
 
   private void minMaxExtraView() {
@@ -2883,10 +2882,9 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     }
     
     XulToolbarbutton button = (XulToolbarbutton) toolbar.getElementById("trans-show-results");
-    // TODO figure out how to do this.
-//    button.setImage(GUIResource.getInstance().getImageHideResults());
-//    button.setHint(Messages.getString("Spoon.Tooltip.HideExecutionResults"));
-
+    button.setTooltiptext("Spoon.Tooltip.HideExecutionResults");
+    ToolItem toolItem = (ToolItem) button.getManagedObject();
+    toolItem.setImage(GUIResource.getInstance().getImageHideResults());
   }
 
   public synchronized void debug(TransExecutionConfiguration executionConfiguration, TransDebugMeta transDebugMeta) {
@@ -3081,10 +3079,9 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
         XulToolbarbutton pauseButton = (XulToolbarbutton) toolbar.getElementById("trans-pause");
         if (pauseButton != null) {
           pauseButton.setDisabled(!running);
-          // TODO figure this out
-//          pauseButton.setText(pausing ? RESUME_TEXT : PAUSE_TEXT);
-//          pauseButton.setHint(pausing ? Messages.getString("Spoon.Tooltip.ResumeTranformation") : Messages
-//              .getString("Spoon.Tooltip.PauseTranformation"));
+          pauseButton.setLabel(pausing ? RESUME_TEXT : PAUSE_TEXT);
+          pauseButton.setTooltiptext(pausing ? Messages.getString("Spoon.Tooltip.ResumeTranformation") : Messages
+              .getString("Spoon.Tooltip.PauseTranformation"));
         }
 
         // Stop button...
