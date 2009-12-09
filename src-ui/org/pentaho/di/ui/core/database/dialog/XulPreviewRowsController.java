@@ -15,19 +15,21 @@ import org.pentaho.ui.xul.swt.tags.SwtTreeCols;
 
 public class XulPreviewRowsController extends AbstractXulEventHandler {
 
-	private XulPreviewRowsModel model;
 	private Shell shell;
 	private DatabaseMeta databaseMeta;
+	private String table;
+	private int limit;
 
 	public XulPreviewRowsController(Shell aShell, DatabaseMeta aDatabaseMeta, String aTable, int aLimit) {
-		this.model = new XulPreviewRowsModel(aTable, aLimit);
 		this.shell = aShell;
 		this.databaseMeta = aDatabaseMeta;
+		this.table = aTable;
+		this.limit = aLimit;
 	}
 
 	public void init() {
 
-		GetPreviewTableProgressDialog theProgressDialog = new GetPreviewTableProgressDialog(this.shell, this.databaseMeta, this.model.getSelectedTable(), this.model.getLimit());
+		GetPreviewTableProgressDialog theProgressDialog = new GetPreviewTableProgressDialog(this.shell, this.databaseMeta, this.table, this.limit);
 		List<Object[]> thePreviewData = theProgressDialog.open();
 
 		// Adds table rows.
@@ -67,7 +69,7 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 		thePreviewTable.update();
 
 		XulLabel theCountLabel = (XulLabel) super.document.getElementById("rowCountLabel");
-		theCountLabel.setValue("Rows of step: " + this.model.getSelectedTable() + " (" + theRowCount + " rows)");
+		theCountLabel.setValue("Rows of step: " + this.table + " (" + theRowCount + " rows)");
 
 	}
 

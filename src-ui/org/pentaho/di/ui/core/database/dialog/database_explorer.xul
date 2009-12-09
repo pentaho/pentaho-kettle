@@ -6,9 +6,7 @@
     xmlns:pen="http://www.pentaho.org/2008/xul" >
      
     <dialog width="600" height="400" id="databaseExplorerDialog" title="Database explorer on connection">
-     
 	    <vbox flex="1" id="mainVBox">
-			
 			<hbox>
 				<spacer flex="1"/>
 				<button image="ui/images/refresh.png" onclick="dbexplorer.refresh()"/>
@@ -18,10 +16,10 @@
 				    <menuitem label="Actions"/>
 				    <menuitem label="Preview first 100"/>
 				    <menuitem label="Preview x Rows"/>
+				    <menuitem label="Row Count"/>
 				  </menupopup>
 				</menulist>
 			</hbox>	    			
-	    	
  			<tree id="databaseTree" flex="1" editable="false" expanded="false">
 				<treecols>
               		<treecol flex="1" label="" primary="true" editable="false" pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" />
@@ -50,25 +48,6 @@
 					</treeitem>
 				</treechildren>
 			</tree>
-				
-				
-				<!--vbox>
-					<button disabled="true" id="button1" label="Preview first 100 rows of [?]" onclick="dbexplorer.preview()"/>
-					<button disabled="true" id="button2" label="Preview first ... rows of [?]"/>
-					<button disabled="true" id="button3" label="Number of rows of [?]"/>
-					<spacer/>
-					<button disabled="true" id="button4" label="Show layout of [?]"/>
-					<button disabled="true" id="button5" label="Generate DDL"/>
-					<button disabled="true" id="button6" label="Generate DDL for other connection"/>
-					<button disabled="true" id="button7" label="Open SQL for [?]"/>
-					<spacer/>
-					<button disabled="true" id="button8" label="Truncate table [?]"/>
-				</vbox-->
-				
-									
-			
 	    </vbox>
-	
 	</dialog>
-	
 </window>

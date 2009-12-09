@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.ui.xul.XulComponent;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -14,6 +15,7 @@ import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMenuList;
+import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -35,7 +37,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private static final String TABLE_IMAGE = "ui/images/table.png";
 	private static final String EXPAND_ALL_IMAGE = "ui/images/ExpandAll.png";
 	private static final String COLLAPSE_ALL_IMAGE = "ui/images/CollapseAll.png";
-	
+
 	private static final String STRING_TABLES = Messages.getString("DatabaseExplorerDialog.Tables.Label");
 	private static final String STRING_VIEWS = Messages.getString("DatabaseExplorerDialog.Views.Label");
 
@@ -91,6 +93,25 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 		if (aCommand.equals("Preview x Rows")) {
 			preview(true);
+		}
+		if (aCommand.equals("Row Count")) {
+			displayRowCount();
+		}
+	}
+
+	private void displayRowCount() {
+
+		try {
+			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.shell, this.model.getDatabaseMeta(), this.model.getTable());
+			Long theCount = pd.open();
+			if (theCount != null) {
+				XulMessageBox theMessageBox = (XulMessageBox) document.createElement("messagebox");
+				theMessageBox.setTitle(Messages.getString("DatabaseExplorerDialog.TableSize.Title"));
+				theMessageBox.setMessage(Messages.getString("DatabaseExplorerDialog.TableSize.Message", this.model.getTable(), theCount.toString()));
+				theMessageBox.open();
+			}
+		} catch (XulException e) {
+			logger.error(e);
 		}
 	}
 
