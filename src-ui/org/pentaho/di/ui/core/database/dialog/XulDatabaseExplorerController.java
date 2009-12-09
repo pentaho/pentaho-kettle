@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.binding.Binding;
@@ -11,6 +12,7 @@ import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.binding.Binding.Type;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -23,8 +25,19 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private XulDatabaseExplorerModel model;
 	private Binding databaseTreeBinding;
 	private XulTree databaseTree;
+	private XulButton expandCollapseButton;
 	private BindingFactory bf;
 	private Shell shell;
+	private boolean isExpanded = false;
+
+	private static final String DATABASE_IMAGE = "ui/images/folder_connection.png";
+	private static final String FOLDER_IMAGE = "ui/images/BOL.png";
+	private static final String TABLE_IMAGE = "ui/images/table.png";
+	private static final String EXPAND_ALL_IMAGE = "ui/images/ExpandAll.png";
+	private static final String COLLAPSE_ALL_IMAGE = "ui/images/CollapseAll.png";
+	
+	private static final String STRING_TABLES = Messages.getString("DatabaseExplorerDialog.Tables.Label");
+	private static final String STRING_VIEWS = Messages.getString("DatabaseExplorerDialog.Views.Label");
 
 	private static Log logger = LogFactory.getLog(XulDatabaseExplorerController.class);
 
@@ -32,12 +45,14 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		this.model = new XulDatabaseExplorerModel(aMeta);
 		this.shell = aShell;
 		this.bf = new DefaultBindingFactory();
+		createDatabaseNodes();
 	}
 
 	public void init() {
 		bf.setDocument(super.document);
 		bf.setBindingType(Type.ONE_WAY);
 
+		this.expandCollapseButton = (XulButton) document.getElementById("expandCollapseButton");
 		this.databaseTree = (XulTree) document.getElementById("databaseTree");
 		this.databaseTreeBinding = bf.createBinding(this.model, "database", this.databaseTree, "elements");
 
@@ -70,7 +85,6 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void setCommand(Object aCommand) {
-
 		if (aCommand.equals("Preview first 100")) {
 			preview(false);
 		}
@@ -78,7 +92,6 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		if (aCommand.equals("Preview x Rows")) {
 			preview(true);
 		}
-
 	}
 
 	private void fireBindings() {
@@ -113,6 +126,82 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		} catch (Exception e) {
 			logger.error(e);
 		}
+	}
+
+	public void refresh() {
+		collapse();
+		this.model.getDatabase().clear();
+		createDatabaseNodes();
+		fireBindings();
+	}
+
+	private void createDatabaseNodes() {
+		try {
+			Database theDatabase = new Database(this.model.getDatabaseMeta());
+			theDatabase.connect();
+
+			// Adds the main database node.
+			DatabaseExplorerNode theDatabaseNode = new DatabaseExplorerNode();
+			theDatabaseNode.setName(this.model.getDatabaseMeta().getName());
+			theDatabaseNode.setImage(DATABASE_IMAGE);
+			this.model.getDatabase().add(theDatabaseNode);
+
+			// Adds the Tables database node.
+			DatabaseExplorerNode theTablesNode = new DatabaseExplorerNode();
+			theTablesNode.setName(STRING_TABLES);
+			theTablesNode.setImage(FOLDER_IMAGE);
+			theDatabaseNode.addChild(theTablesNode);
+
+			// Adds the Views database node.
+			DatabaseExplorerNode theViewsNode = new DatabaseExplorerNode();
+			theViewsNode.setName(STRING_VIEWS);
+			theViewsNode.setImage(FOLDER_IMAGE);
+			theDatabaseNode.addChild(theViewsNode);
+
+			// Adds the database tables.
+			String[] theTableNames = theDatabase.getTablenames();
+			DatabaseExplorerNode theTableNode = null;
+			for (int i = 0; i < theTableNames.length; i++) {
+				theTableNode = new DatabaseExplorerNode();
+				theTableNode.setIsTable(true);
+				theTableNode.setName(theTableNames[i]);
+				theTableNode.setImage(TABLE_IMAGE);
+				theTablesNode.addChild(theTableNode);
+			}
+
+			// Adds the database views.
+			String[] theViewNames = theDatabase.getViews();
+			DatabaseExplorerNode theViewNode = null;
+			for (int i = 0; i < theViewNames.length; i++) {
+				theViewNode = new DatabaseExplorerNode();
+				theViewNode.setIsTable(true);
+				theViewNode.setName(theViewNames[i]);
+				theViewNode.setImage(TABLE_IMAGE);
+				theViewsNode.addChild(theViewNode);
+			}
+		} catch (Exception e) {
+			logger.info(e);
+		}
+	}
+
+	public void expandCollapse() {
+		if (isExpanded) {
+			collapse();
+		} else {
+			expand();
+		}
+	}
+
+	private void expand() {
+		this.databaseTree.expandAll();
+		this.isExpanded = true;
+		this.expandCollapseButton.setImage(COLLAPSE_ALL_IMAGE);
+	}
+
+	private void collapse() {
+		this.databaseTree.collapseAll();
+		this.isExpanded = false;
+		this.expandCollapseButton.setImage(EXPAND_ALL_IMAGE);
 	}
 
 	class PromptCallback implements XulDialogCallback {

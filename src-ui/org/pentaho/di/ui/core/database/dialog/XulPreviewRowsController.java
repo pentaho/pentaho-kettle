@@ -3,10 +3,9 @@ package org.pentaho.di.ui.core.database.dialog;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeRow;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -19,8 +18,6 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 	private XulPreviewRowsModel model;
 	private Shell shell;
 	private DatabaseMeta databaseMeta;
-
-	private static Log logger = LogFactory.getLog(XulPreviewRowsController.class);
 
 	public XulPreviewRowsController(Shell aShell, DatabaseMeta aDatabaseMeta, String aTable, int aLimit) {
 		this.model = new XulPreviewRowsModel(aTable, aLimit);
@@ -38,6 +35,7 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 		XulTreeRow theRow = null;
 		Object theValue = null;
 		SwtTreeCell theCell = null;
+		int theRowCount = 0;
 
 		XulTree thePreviewTable = (XulTree) super.document.getElementById("table_data");
 		thePreviewTable.getRootChildren().removeAll();
@@ -45,6 +43,7 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 		while (theItr.hasNext()) {
 			theObj = theItr.next();
 			theRow = thePreviewTable.getRootChildren().addNewRow();
+			theRowCount++;
 			for (int i = 0; i < theObj.length; i++) {
 				theValue = theObj[i];
 				if (theValue != null) {
@@ -66,6 +65,10 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 		}
 		thePreviewTable.setColumns(theColumns);
 		thePreviewTable.update();
+
+		XulLabel theCountLabel = (XulLabel) super.document.getElementById("rowCountLabel");
+		theCountLabel.setValue("Rows of step: " + this.model.getSelectedTable() + " (" + theRowCount + " rows)");
+
 	}
 
 	public String getName() {

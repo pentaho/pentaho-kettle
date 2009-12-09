@@ -5,14 +5,14 @@
 	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="dbexplorer.init()"
     xmlns:pen="http://www.pentaho.org/2008/xul" >
      
-    <dialog width="800" height="600" id="databaseExplorerDialog" title="Database explorer on connection">
+    <dialog width="600" height="400" id="databaseExplorerDialog" title="Database explorer on connection">
      
 	    <vbox flex="1" id="mainVBox">
 			
 			<hbox>
 				<spacer flex="1"/>
-				<button label="Refresh" disabled="true"/>
-				<button label="Expand/Collapse" disabled="true" image="images/ExpandAll.png"/>
+				<button image="ui/images/refresh.png" onclick="dbexplorer.refresh()"/>
+				<button id="expandCollapseButton" image="ui/images/ExpandAll.png" onclick="dbexplorer.expandCollapse()"/>
 				<menulist id="actionsList" disabled="true">
 				  <menupopup>
 				    <menuitem label="Actions"/>
@@ -22,7 +22,7 @@
 				</menulist>
 			</hbox>	    			
 	    	
- 			<tree id="databaseTree" flex="1" editable="false" expanded="true">
+ 			<tree id="databaseTree" flex="1" editable="false" expanded="false">
 				<treecols>
               		<treecol flex="1" label="" primary="true" editable="false" pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" />
             	</treecols>
