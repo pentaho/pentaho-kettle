@@ -28,6 +28,7 @@ import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.binding.Binding.Type;
+import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
@@ -41,6 +42,7 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 	private Binding stepNameBinding;
 	private XulTree stepFieldsTree;
 	private XulStepFieldsModel model;
+	private String selectedStep;
 
 	private static Log logger = LogFactory.getLog(XulStepFieldsController.class);
 
@@ -92,6 +94,19 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 				this.model.addStepField(theStep);
 			}
 		}
+	}
+
+	public void editOriginStep() {
+		StepFieldNode theSelectedStep = (StepFieldNode) this.stepFieldsTree.getSelectedItem();
+		if (theSelectedStep != null) {
+			XulDialog theStepsDialog = (XulDialog) document.getElementById("stepFieldsDialog");
+			this.selectedStep = theSelectedStep.getFieldName();
+			theStepsDialog.hide();
+		}
+	}
+
+	public String getSelectedStep() {
+		return this.selectedStep;
 	}
 
 	public String getName() {

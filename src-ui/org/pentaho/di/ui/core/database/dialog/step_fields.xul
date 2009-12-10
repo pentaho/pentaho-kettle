@@ -5,7 +5,11 @@
 	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="stepFields.init()"
     xmlns:pen="http://www.pentaho.org/2008/xul" >
      
-    <dialog width="800" height="600" id="stepFieldsDialog" title="Step fields and their origin">
+    <dialog width="800" height="600" id="stepFieldsDialog" title="Step fields and their origin" 
+     buttons="accept,cancel"
+     buttonlabelcancel="Cancel"
+     buttonlabelaccept="Edit Origin Step"
+     ondialogaccept="stepFields.editOriginStep()">
 		<vbox flex="1">
 			<label id="stepNameLabel" value="Step name:" pen:binding="stepName"/>
 			<label id="fieldsLabel" value="Fields:"/>

@@ -65,4 +65,8 @@ public class XulStepFieldsDialog {
 			logger.info(e);
 		}
 	}
+
+	public String getSelectedStep() {
+		return this.controller.getSelectedStep();
+	}
 }
