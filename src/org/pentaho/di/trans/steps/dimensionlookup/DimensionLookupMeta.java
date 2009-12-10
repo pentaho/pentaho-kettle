@@ -1729,7 +1729,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							if (sql.length() == 0)
 								retval.setSQL(null);
 							else
-								retval.setSQL(sql);
+								retval.setSQL(transMeta.environmentSubstitute(sql));
 						}
 						catch (KettleDatabaseException dbe)
 						{
