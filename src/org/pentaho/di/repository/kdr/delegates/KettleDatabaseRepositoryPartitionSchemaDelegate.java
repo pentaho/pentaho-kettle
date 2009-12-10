@@ -37,21 +37,36 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
 	{
 		savePartitionSchema(partitionSchema, null, false);
 	}
+	
+	public void savePartitionSchema(PartitionSchema partitionSchema, ObjectId id_transformation, boolean isUsedByTransformation) throws KettleException {
+	  savePartitionSchema(partitionSchema, id_transformation, isUsedByTransformation, false);
+	}
 
-	public void savePartitionSchema(PartitionSchema partitionSchema, ObjectId id_transformation, boolean isUsedByTransformation) throws KettleException
+	public void savePartitionSchema(PartitionSchema partitionSchema, ObjectId id_transformation, boolean isUsedByTransformation, boolean overwrite) throws KettleException
 	{
-		// see if this partitioning schema is already in the repository...
-		//
-		partitionSchema.setObjectId( getPartitionSchemaID(partitionSchema.getName()) );
-		if (partitionSchema.getObjectId()==null)
-		{
-			
-			partitionSchema.setObjectId(insertPartitionSchema(partitionSchema));
-		}
-		else
-		{
-			updatePartitionSchema(partitionSchema);
-			repository.delPartitions(partitionSchema.getObjectId());
+	  if (partitionSchema.getObjectId() == null)
+    {
+      // New Slave Server
+      partitionSchema.setObjectId(insertPartitionSchema(partitionSchema));
+    } else {
+      ObjectId existingPartitionSchemaId = getPartitionSchemaID(partitionSchema.getName());
+      
+      // If we received a partitionSchemaId and it is different from the partition schema we are working with...
+      if(existingPartitionSchemaId != null && !partitionSchema.getObjectId().equals(existingPartitionSchemaId)) {
+        // A partition with this name already exists
+        if(overwrite) {
+          // Proceed with save, removing the original version from the repository first
+          repository.deletePartitionSchema(existingPartitionSchemaId);
+          updatePartitionSchema(partitionSchema);
+          repository.delPartitions(partitionSchema.getObjectId());
+        } else {
+          throw new KettleException("Failed to save object to repository. Object [" + partitionSchema.getName() + "] already exists.");
+        }
+      } else {
+        // There are no naming collisions (either it is the same object or the name is unique)
+        updatePartitionSchema(partitionSchema);
+        repository.delPartitions(partitionSchema.getObjectId());
+      }
 		}
         
 		// Save the cluster-partition relationships
@@ -95,6 +110,11 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
 
     public synchronized ObjectId insertPartitionSchema(PartitionSchema partitionSchema) throws KettleException
     {
+      if(getPartitionSchemaID(partitionSchema.getName()) != null) {
+        // This partition schema name is already in use. Throw an exception.
+        throw new KettleException("Failed to create object in repository. Object [" + partitionSchema.getName() + "] already exists.");
+      }
+      
     	ObjectId id = repository.connectionDelegate.getNextPartitionSchemaID();
 
         RowMetaAndData table = new RowMetaAndData();
@@ -168,6 +188,4 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
             throw new KettleDependencyException("This partition schema is still in use by one or more transformations ("+transList.length+") :", e);
         }
     }
-    
-
 }

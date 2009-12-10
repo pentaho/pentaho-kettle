@@ -35,15 +35,34 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
     
     public void saveSlaveServer(SlaveServer slaveServer, ObjectId id_transformation, boolean isUsedByTransformation) throws KettleException
     {
-        slaveServer.setObjectId(getSlaveID(slaveServer.getName()));
-        
-        if (slaveServer.getObjectId()==null)
+      saveSlaveServer(slaveServer, id_transformation, isUsedByTransformation, false);
+    }
+    
+    public void saveSlaveServer(SlaveServer slaveServer, ObjectId id_transformation, boolean isUsedByTransformation, boolean overwrite) throws KettleException {
+        if (slaveServer.getObjectId() == null)
         {
+          // New Slave Server
         	slaveServer.setObjectId(insertSlave(slaveServer));
         }
         else
         {
+          // If not overwriting, check for name collision
+          ObjectId existingSlaveId = getSlaveID(slaveServer.getName());
+          
+          // If we received a slaveId and it is different from the Slave Server we are working with...
+          if(existingSlaveId != null && !slaveServer.getObjectId().equals(existingSlaveId)) {
+            // A slave with this name already exists
+            if(overwrite) {
+              // Proceed with save, removing the original version from the repository first
+              repository.deleteSlave(existingSlaveId);
+              updateSlave(slaveServer);
+            } else {
+              throw new KettleException("Failed to save object to repository. Object [" + slaveServer.getName() + "] already exists.");
+            }
+          } else {
+            // There are no naming collisions (either it is the same object or the name is unique)
             updateSlave(slaveServer);
+          }
         }
         
         // Save the trans-slave relationship too.
@@ -80,27 +99,32 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
     
     public synchronized ObjectId insertSlave(SlaveServer slaveServer) throws KettleException
     {
-        ObjectId id = repository.connectionDelegate.getNextSlaveServerID();
+      if(getSlaveID(slaveServer.getName()) != null) {
+        // This slave server name is already in use. Throw an exception.
+        throw new KettleException("Failed to create object in repository. Object [" + slaveServer.getName() + "] already exists.");
+      }
+      
+      ObjectId id = repository.connectionDelegate.getNextSlaveServerID();
 
-        RowMetaAndData table = new RowMetaAndData();
+      RowMetaAndData table = new RowMetaAndData();
 
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER), id);
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getName());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING), slaveServer.getUsername());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING), slaveServer.getPassword());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(slaveServer.isMaster()));
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE, ValueMetaInterface.TYPE_INTEGER), id);
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getName());
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getHostname());
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getPort());
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING), slaveServer.getUsername());
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING), slaveServer.getPassword());
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PROXY_HOST_NAME, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyHostname());
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PROXY_PORT, ValueMetaInterface.TYPE_STRING), slaveServer.getProxyPort());
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_NON_PROXY_HOSTS, ValueMetaInterface.TYPE_STRING), slaveServer.getNonProxyHosts());
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_MASTER, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(slaveServer.isMaster()));
 
-        repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_SLAVE);
-        repository.connectionDelegate.getDatabase().setValuesInsert(table);
-        repository.connectionDelegate.getDatabase().insertRow();
-        repository.connectionDelegate.getDatabase().closeInsert();
+      repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_SLAVE);
+      repository.connectionDelegate.getDatabase().setValuesInsert(table);
+      repository.connectionDelegate.getDatabase().insertRow();
+      repository.connectionDelegate.getDatabase().closeInsert();
 
-        return id;
+      return id;
     }
     
     public synchronized void updateSlave(SlaveServer slaveServer) throws KettleException
@@ -118,7 +142,4 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
 
         repository.connectionDelegate.updateTableRow(KettleDatabaseRepository.TABLE_R_SLAVE, KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE, table, slaveServer.getObjectId());
     }
-    
-
-
 }

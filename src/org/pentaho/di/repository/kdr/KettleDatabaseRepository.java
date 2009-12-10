@@ -291,7 +291,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     }
     
     public void save(RepositoryElementInterface repositoryElement, String versionComment) throws KettleException {
-    	save(repositoryElement, null);
+    	save(repositoryElement, versionComment, null);
     }
 
     public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException {
