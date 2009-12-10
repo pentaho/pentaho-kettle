@@ -139,15 +139,23 @@ public class SlavesController extends AbstractXulEventHandler {
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.Title")); //$NON-NLS-1$
           mb.open();
         } else {
-          repository.insertLogEntry("Creating new slave server '"+slaveServer.getName()+"'");
-          repository.save(slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null);
-          refreshSlaves();
+          if(slaveServer.getName() != null && !slaveServer.getName().equals("")) {
+            repository.insertLogEntry("Creating new slave server '"+slaveServer.getName()+"'");
+            repository.save(slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null);
+          } else {
+            MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.InvalidName.Message")); //$NON-NLS-1$
+            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.Title")); //$NON-NLS-1$
+            mb.open();
+          }
         }
       }
     }
     catch(KettleException e)
     {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    } finally {
+      refreshSlaves();
     }
   }
   
@@ -171,9 +179,15 @@ public class SlavesController extends AbstractXulEventHandler {
         } else {
           SlaveServerDialog ssd = new SlaveServerDialog(shell, slaveServer);
           if(ssd.open()) {
-            repository.insertLogEntry("Updating slave server '"+slaveServer.getName()+"'");
-            repository.save(slaveServer, Const.VERSION_COMMENT_EDIT_VERSION, null);
-            refreshSlaves();
+            if(slaveServer.getName() != null && !slaveServer.getName().equals("")) {
+              repository.insertLogEntry("Updating slave server '"+slaveServer.getName()+"'");
+              repository.save(slaveServer, Const.VERSION_COMMENT_EDIT_VERSION, null);
+            } else {
+              MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.InvalidName.Message")); //$NON-NLS-1$
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title")); //$NON-NLS-1$
+              mb.open();
+            }
           }
         }
       } else {
@@ -186,6 +200,8 @@ public class SlavesController extends AbstractXulEventHandler {
     catch(KettleException e)
     {
         new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Message")+slaveServerName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    } finally {
+      refreshSlaves();
     }
   }
   

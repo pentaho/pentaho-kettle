@@ -126,9 +126,15 @@ public class ClustersController extends AbstractXulEventHandler {
         } else {
           ClusterSchemaDialog csd = new ClusterSchemaDialog(shell, clusterSchema, repository.getSlaveServers());
           if(csd.open()) {
-            repository.insertLogEntry("Updating cluster schema '"+clusterSchema.getName()+"'");
-            repository.save(clusterSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
-            refreshClusters();
+            if(clusterSchema.getName() != null  && !clusterSchema.getName().equals("")) {
+              repository.insertLogEntry("Updating cluster schema '"+clusterSchema.getName()+"'");
+              repository.save(clusterSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
+            } else {
+              MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.InvalidName.Message")); //$NON-NLS-1$
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); //$NON-NLS-1$
+              mb.open();
+            }
           }
         }
       } else {
@@ -137,6 +143,8 @@ public class ClustersController extends AbstractXulEventHandler {
         mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); //$NON-NLS-1$
         mb.open();
       }
+      
+      refreshClusters();
     }
     catch(KettleException e)
     {
@@ -152,9 +160,15 @@ public class ClustersController extends AbstractXulEventHandler {
         // See if this cluster already exists...
         ObjectId idCluster = repository.getClusterID(cluster.getName());
         if (idCluster == null) {
-          repository.insertLogEntry("Creating new cluster '" + cluster.getName() + "'");
-          repository.save(cluster, Const.VERSION_COMMENT_INITIAL_VERSION, null);
-          refreshClusters();
+          if(cluster.getName() != null && !cluster.getName().equals("")) {
+            repository.insertLogEntry("Creating new cluster '" + cluster.getName() + "'");
+            repository.save(cluster, Const.VERSION_COMMENT_INITIAL_VERSION, null);
+          } else {
+            MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.InvalidName.Message")); //$NON-NLS-1$
+            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); //$NON-NLS-1$
+            mb.open();
+          }
         } else {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
           mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Message")); //$NON-NLS-1$
@@ -166,6 +180,8 @@ public class ClustersController extends AbstractXulEventHandler {
       new ErrorDialog(shell, BaseMessages.getString(PKG,
           "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, //$NON-NLS-1$
           "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
+    } finally {
+      refreshClusters();
     }
   }
 
@@ -183,12 +199,11 @@ public class ClustersController extends AbstractXulEventHandler {
         ObjectId clusterId = repository.getClusterID(clusterSchema.getName());
         if(clusterId == null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.DoesNotExists.Message")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.DoesNotExists.Message", clusterSchema.getName())); //$NON-NLS-1$
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title")); //$NON-NLS-1$
           mb.open();
         } else {
           repository.deleteClusterSchema(clusterId);
-          refreshClusters();
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -200,6 +215,8 @@ public class ClustersController extends AbstractXulEventHandler {
     catch(KettleException e)
     {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message")+clusterSchemaName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    } finally {
+      refreshClusters();
     }
   }
 

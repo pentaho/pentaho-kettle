@@ -242,7 +242,7 @@ public class ConnectionsController extends AbstractXulEventHandler {
       databaseMeta.initializeVariablesFrom(null);
       DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
       String dbName = dd.open();
-      if (dbName!=null)
+      if (dbName != null && !dbName.equals(""))
       {
         // See if this user connection exists...
         ObjectId idDatabase = repository.getDatabaseID(dbName);
@@ -258,13 +258,13 @@ public class ConnectionsController extends AbstractXulEventHandler {
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title")); //$NON-NLS-1$
           mb.open();
         }
-        
-        refreshConnectionList();        
       }
     }
     catch(KettleException e)
     {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    } finally {
+      refreshConnectionList();
     }
   }
   
@@ -289,7 +289,7 @@ public class ConnectionsController extends AbstractXulEventHandler {
           boolean save = true;
           DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
           String dbName = dd.open();
-          if (dbName!=null)
+          if (dbName != null && !dbName.equals(""))
           {
             if(!dbName.equals(originalDbName)) {
               // Make sure the new name does not already exist
@@ -308,7 +308,6 @@ public class ConnectionsController extends AbstractXulEventHandler {
             if(save) {
               repository.insertLogEntry("Updating database connection '"+databaseMeta.getName()+"'");
               repository.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
-              refreshConnectionList();
             }
           }
         }
@@ -322,6 +321,8 @@ public class ConnectionsController extends AbstractXulEventHandler {
     catch(KettleException e)
     {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    } finally {
+      refreshConnectionList();
     }
   }
   
@@ -343,7 +344,6 @@ public class ConnectionsController extends AbstractXulEventHandler {
           mb.open();
         } else {
           repository.deleteDatabaseMeta(databaseMeta.getName());
-          refreshConnectionList();
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -355,6 +355,8 @@ public class ConnectionsController extends AbstractXulEventHandler {
     catch(KettleException e)
     {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    } finally {
+      refreshConnectionList();
     }
   }
   

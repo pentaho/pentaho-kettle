@@ -132,9 +132,15 @@ public class PartitionsController extends AbstractXulEventHandler {
         } else {
           PartitionSchemaDialog partitionDialog = new PartitionSchemaDialog(shell, partitionSchema, repository.readDatabases(), variableSpace);
           if (partitionDialog.open()) {
-            repository.insertLogEntry("Updating partition schema '" + partitionSchema.getName() + "'");
-            repository.save(partitionSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
-            refreshPartitions();
+            if(partitionSchema.getName() != null && !partitionSchema.getName().equals("")) {
+              repository.insertLogEntry("Updating partition schema '" + partitionSchema.getName() + "'");
+              repository.save(partitionSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
+            } else {
+              MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.InvalidName.Message")); //$NON-NLS-1$
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title")); //$NON-NLS-1$
+              mb.open();
+            }
           }
         }
       } else {
@@ -147,6 +153,8 @@ public class PartitionsController extends AbstractXulEventHandler {
       new ErrorDialog(
           shell,
           BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.UnexpectedError.Message") + partitionSchemaName + "]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    } finally {
+      refreshPartitions();
     }
   }
 
@@ -158,9 +166,15 @@ public class PartitionsController extends AbstractXulEventHandler {
         // See if this partition already exists...
         ObjectId idPartition = repository.getPartitionSchemaID(partition.getName());
         if (idPartition == null) {
-          repository.insertLogEntry("Creating new partition '" + partition.getName() + "'");
-          repository.save(partition, Const.VERSION_COMMENT_INITIAL_VERSION, null);
-          refreshPartitions();
+          if(partition.getName() != null && !partition.getName().equals("")) {
+            repository.insertLogEntry("Creating new partition '" + partition.getName() + "'");
+            repository.save(partition, Const.VERSION_COMMENT_INITIAL_VERSION, null);
+          } else {
+            MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.InvalidName.Message")); //$NON-NLS-1$
+            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.Title")); //$NON-NLS-1$
+            mb.open();
+          }
         } else {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
           mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.AlreadyExists.Message")); //$NON-NLS-1$
@@ -172,6 +186,8 @@ public class PartitionsController extends AbstractXulEventHandler {
       new ErrorDialog(shell, BaseMessages.getString(PKG,
           "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, //$NON-NLS-1$
           "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
+    } finally {
+      refreshPartitions();
     }
   }
 
@@ -193,7 +209,6 @@ public class PartitionsController extends AbstractXulEventHandler {
           mb.open();
         } else {
           repository.deletePartitionSchema(partitionId);
-          refreshPartitions();
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -205,6 +220,8 @@ public class PartitionsController extends AbstractXulEventHandler {
       new ErrorDialog(
           shell,
           BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.UnexpectedError.Message") + partitionSchemaName + "]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    } finally {
+      refreshPartitions();
     }
   }
 
