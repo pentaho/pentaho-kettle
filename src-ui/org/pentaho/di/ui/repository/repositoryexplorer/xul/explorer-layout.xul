@@ -156,43 +156,40 @@
 					<!-- Connection list tool pane -->
 					<hbox height="20px">
 						<label value="Available:"/>
+						<label id="spacer-label" flex="1" />
 						<button id="connections-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="connectionsController.editConnection()"/>
 						<button id="connections-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="connectionsController.createConnection()"/>
 						<button id="connections-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="connectionsController.removeConnection()" />
 					</hbox>
 					<!-- Connection list -->
-					<hbox flex="1">
-						<tree id="connections-table" flex="1" hidecolumnpicker="true">
-							<treecols>
-								<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
-								<treecol id="type-col" flex="1" label="Type" pen:binding="type"/>
-								<treecol id="date-mod-col" flex="1" label="Date Modified" pen:binding="dateModified"/>
-								<treecol id="size-col" flex="1" label="Size"/>
-							</treecols>
-							<treechildren/>
-						</tree>
-					</hbox>
+					<tree id="connections-table" flex="1" hidecolumnpicker="true">
+						<treecols>
+							<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
+							<treecol id="type-col" flex="1" label="Type" pen:binding="type"/>
+							<treecol id="date-mod-col" flex="1" label="Date Modified" pen:binding="dateModified"/>
+							<treecol id="size-col" flex="1" label="Size"/>
+						</treecols>
+						<treechildren/>
+					</tree>
 					<!-- Version history tool pane -->
 					<hbox height="20px">
 						<label id="connection-revision-label" value="Version History:"/>
 					</hbox>
 					<!-- Version history -->
-					<hbox flex="1">
-						<tree id="connection-revision-table" flex="1" hidecolumnpicker="true"
-							enableColumnDrag="true" context="revisionContextMenu">
-							<treecols>
-								<treecol id="revision-label-col" flex="1" label="Label"
-									pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
-								<treecol id="revision-date-mod-col" flex="1" label="Date Created"
-									pen:binding="formatCreationDate" context="revisionContextMenu" />
-								<treecol id="revision-comment-col" flex="1" label="Comment"
-									pen:binding="comment" />
-								<treecol id="revision-user-col" flex="1" label="User"
-									pen:binding="login" />
-							</treecols>
-							<treechildren />
-						</tree>
-					</hbox>
+					<tree id="connection-revision-table" flex="1" hidecolumnpicker="true"
+						enableColumnDrag="true" context="revisionContextMenu">
+						<treecols>
+							<treecol id="revision-label-col" flex="1" label="Label"
+								pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
+							<treecol id="revision-date-mod-col" flex="1" label="Date Created"
+								pen:binding="formatCreationDate" context="revisionContextMenu" />
+							<treecol id="revision-comment-col" flex="1" label="Comment"
+								pen:binding="comment" />
+							<treecol id="revision-user-col" flex="1" label="User"
+								pen:binding="login" />
+						</treecols>
+						<treechildren />
+					</tree>
 				</vbox>
 				</hbox>
 			</tabpanel>
@@ -245,24 +242,23 @@
 				<hbox flex="1">
 				<vbox flex="1">
 					<!-- Slaves list tool pane -->
-					<hbox height="20px">
+					<hbox>
 						<label value="Available:"/>
+						<label id="spacer-label" flex="1" />
 						<button id="slaves-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="slavesController.editSlave()"/>
 						<button id="slaves-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="slavesController.createSlave()"/>
 						<button id="slaves-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="slavesController.removeSlave()" />
 					</hbox>
 					<!-- Slaves list -->
-					<hbox flex="1">
-						<tree id="slaves-table" flex="1" hidecolumnpicker="true">
-							<treecols>
-								<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
-								<treecol id="host-col" flex="1" label="Host" pen:binding="host"/>
-								<treecol id="port-col" flex="1" label="Port" pen:binding="port"/>
-								<treecol id="master-col" flex="1" label="Master" pen:binding="master"/>
-							</treecols>
-							<treechildren/>
-						</tree>
-					</hbox>
+					<tree id="slaves-table" flex="1" hidecolumnpicker="true">
+						<treecols>
+							<treecol id="name-col" flex="4" label="Name" pen:binding="name"/>
+							<treecol id="host-col" flex="4" label="Host" pen:binding="host"/>
+							<treecol id="port-col" flex="2" label="Port" pen:binding="port"/>
+							<treecol id="master-col" flex="1" label="Master" pen:binding="master"/>
+						</treecols>
+						<treechildren/>
+					</tree>
 				</vbox>
 				</hbox>
 			</tabpanel>
@@ -290,21 +286,20 @@
 				<hbox flex="1">
 				<vbox flex="1">
 					<!-- Partition list tool pane -->
-					<hbox height="20px">
+					<hbox>
 						<label value="Available:"/>
+						<label id="spacer-label" flex="1" />
 						<button id="partitions-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="partitionsController.editPartition()"/>
 						<button id="partitions-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="partitionsController.createPartition()"/>
 						<button id="partitions-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="partitionsController.removePartition()" />
 					</hbox>
 					<!-- Partition list -->
-					<hbox flex="1">
-						<tree id="partitions-table" flex="1" hidecolumnpicker="true">
-							<treecols>
-								<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
-							</treecols>
-							<treechildren/>
-						</tree>
-					</hbox>
+					<tree id="partitions-table" flex="1" hidecolumnpicker="true">
+						<treecols>
+							<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
+						</treecols>
+						<treechildren/>
+					</tree>
 				</vbox>
 				</hbox>
 			</tabpanel>
@@ -332,22 +327,21 @@
 				<hbox flex="1">
 				<vbox flex="1">
 					<!-- Cluster list tool pane -->
-					<hbox height="20px">
+					<hbox>
 						<label value="Available:"/>
+						<label id="spacer-label" flex="1" />
 						<button id="clusters-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="clustersController.editCluster()"/>
 						<button id="clusters-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="clustersController.createCluster()"/>
 						<button id="clusters-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="clustersController.removeCluster()" />
 					</hbox>
 					<!-- Cluster list -->
-					<hbox flex="1">
-						<tree id="clusters-table" flex="1" hidecolumnpicker="true">
-							<treecols>
-								<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
-								<treecol id="servers-col" flex="1" label="Server(s)" pen:binding="serverList"/>
-							</treecols>
-							<treechildren/>
-						</tree>
-					</hbox>
+					<tree id="clusters-table" flex="1" hidecolumnpicker="true">
+						<treecols>
+							<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
+							<treecol id="servers-col" flex="4" label="Server(s)" pen:binding="serverList"/>
+						</treecols>
+						<treechildren/>
+					</tree>
 				</vbox>
 				</hbox>
 			</tabpanel>
