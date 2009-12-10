@@ -7,7 +7,7 @@
      
     <dialog width="800" height="600" id="stepFieldsDialog" title="Step fields and their origin">
 		<vbox flex="1">
-			<label id="stepNameLabel" value="Step name:"/>
+			<label id="stepNameLabel" value="Step name:" pen:binding="stepName"/>
 			<label id="fieldsLabel" value="Fields:"/>
 			<tree flex="1" editable="false" id="step_fields_data">
 				<treecols>

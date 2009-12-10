@@ -38,6 +38,7 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 	private String table;
 	private BindingFactory bf;
 	private Binding stepFieldsTreeBinding;
+	private Binding stepNameBinding;
 	private XulTree stepFieldsTree;
 	private XulStepFieldsModel model;
 
@@ -54,11 +55,12 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 	public void init() {
 		createStepFieldNodes();
 
-		bf.setDocument(super.document);
-		bf.setBindingType(Type.ONE_WAY);
+		this.bf.setDocument(super.document);
+		this.bf.setBindingType(Type.ONE_WAY);
 
 		this.stepFieldsTree = (XulTree) document.getElementById("step_fields_data");
-		this.stepFieldsTreeBinding = bf.createBinding(this.model, "stepFields", this.stepFieldsTree, "elements");
+		this.stepFieldsTreeBinding = this.bf.createBinding(this.model, "stepFields", this.stepFieldsTree, "elements");
+		this.stepNameBinding = this.bf.createBinding(this.model, "stepName", "stepNameLabel", "value");
 
 		fireBindings();
 	}
@@ -69,14 +71,12 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 		GetQueryFieldsProgressDialog theProgressDialog = new GetQueryFieldsProgressDialog(this.shell, this.databaseMeta, theSql);
 		RowMetaInterface theRowMeta = theProgressDialog.open();
 
+		this.model.setStepName("Step name:" + this.table);
+
 		if (theRowMeta != null) {
-
 			StepFieldNode theStep = null;
-
 			for (int i = 0; i < theRowMeta.size(); i++) {
-
 				theStep = new StepFieldNode();
-
 				ValueMetaInterface theMetaInterface = theRowMeta.getValueMeta(i);
 				theStep.setFieldName(theMetaInterface.getName());
 				theStep.setType(theMetaInterface.getTypeDesc());
@@ -89,12 +89,9 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 				theStep.setGroupingSymbol(theMetaInterface.getGroupingSymbol());
 				theStep.setTrimType(Integer.toString(theMetaInterface.getTrimType()));
 				theStep.setComments(theMetaInterface.getComments());
-
 				this.model.addStepField(theStep);
 			}
-
 		}
-
 	}
 
 	public String getName() {
@@ -104,6 +101,7 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 	private void fireBindings() {
 		try {
 			this.stepFieldsTreeBinding.fireSourceChanged();
+			this.stepNameBinding.fireSourceChanged();
 		} catch (Exception e) {
 			logger.info(e);
 		}

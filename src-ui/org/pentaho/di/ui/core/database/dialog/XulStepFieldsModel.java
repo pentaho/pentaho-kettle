@@ -23,6 +23,7 @@ import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class XulStepFieldsModel extends XulEventSourceAdapter {
 
+	private String stepName;
 	private FieldsCollection stepFields;
 
 	public XulStepFieldsModel() {
@@ -39,6 +40,14 @@ public class XulStepFieldsModel extends XulEventSourceAdapter {
 
 	public String toString() {
 		return "Step Fields Node";
+	}
+
+	public void setStepName(String aStepName) {
+		this.stepName = aStepName;
+	}
+
+	public String getStepName() {
+		return this.stepName;
 	}
 
 	public void addStepField(StepFieldNode aStepField) {

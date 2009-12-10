@@ -21,9 +21,14 @@ package org.pentaho.di.ui.core.database.dialog;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.ui.xul.components.XulLabel;
+import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.DefaultBindingFactory;
+import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeRow;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -37,16 +42,38 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 	private DatabaseMeta databaseMeta;
 	private String table;
 	private int limit;
+	private BindingFactory bf;
+	private Binding rowCountBinding;
+	private String rowCount;
+
+	private static Log logger = LogFactory.getLog(XulStepFieldsController.class);
 
 	public XulPreviewRowsController(Shell aShell, DatabaseMeta aDatabaseMeta, String aTable, int aLimit) {
 		this.shell = aShell;
 		this.databaseMeta = aDatabaseMeta;
 		this.table = aTable;
 		this.limit = aLimit;
+		this.bf = new DefaultBindingFactory();
 	}
 
 	public void init() {
+		createPreviewRows();
 
+		this.bf.setDocument(super.document);
+		this.bf.setBindingType(Type.ONE_WAY);
+		this.rowCountBinding = this.bf.createBinding(this, "rowCount", "rowCountLabel", "value");
+		fireBindings();
+	}
+
+	private void fireBindings() {
+		try {
+			this.rowCountBinding.fireSourceChanged();
+		} catch (Exception e) {
+			logger.info(e);
+		}
+	}
+
+	private void createPreviewRows() {
 		GetPreviewTableProgressDialog theProgressDialog = new GetPreviewTableProgressDialog(this.shell, this.databaseMeta, this.table, this.limit);
 		List<Object[]> thePreviewData = theProgressDialog.open();
 
@@ -86,9 +113,15 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 		thePreviewTable.setColumns(theColumns);
 		thePreviewTable.update();
 
-		XulLabel theCountLabel = (XulLabel) super.document.getElementById("rowCountLabel");
-		theCountLabel.setValue("Rows of step: " + this.table + " (" + theRowCount + " rows)");
+		setRowCount("Rows of step: " + this.table + " (" + theRowCount + " rows)");
+	}
 
+	public void setRowCount(String aRowCount) {
+		this.rowCount = aRowCount;
+	}
+
+	public String getRowCount() {
+		return this.rowCount;
 	}
 
 	public String getName() {
