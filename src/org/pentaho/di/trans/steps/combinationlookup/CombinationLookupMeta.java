@@ -978,7 +978,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 								cr_seq+=Const.CR;
 							}
 						}
-						retval.setSQL(cr_table+cr_uniq_index+cr_index+cr_seq);
+						retval.setSQL(transMeta.environmentSubstitute(cr_table+cr_uniq_index+cr_index+cr_seq));
 					}
 					catch(KettleException e)
 					{
