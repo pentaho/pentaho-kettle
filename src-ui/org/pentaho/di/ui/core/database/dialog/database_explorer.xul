@@ -17,6 +17,7 @@
 				    <menuitem label="Preview first 100"/>
 				    <menuitem label="Preview x Rows"/>
 				    <menuitem label="Row Count"/>
+				    <menuitem label="Show Layout"/>
 				  </menupopup>
 				</menulist>
 			</hbox>	    			

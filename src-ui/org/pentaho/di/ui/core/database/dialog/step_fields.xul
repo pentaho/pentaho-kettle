@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
+<window id="step_fields" title="Step Fields"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="stepFields.init()"
+    xmlns:pen="http://www.pentaho.org/2008/xul" >
+     
+    <dialog width="800" height="600" id="stepFieldsDialog" title="Step fields and their origin">
+		<vbox flex="1">
+			<label id="stepNameLabel" value="Step name:"/>
+			<label id="fieldsLabel" value="Fields:"/>
+			<tree flex="1" editable="false" id="step_fields_data">
+				<treecols>
+					<treecol label="Fieldname" flex="1" editable="false" pen:binding="fieldName"/>
+					<treecol label="Type" flex="1" editable="false" pen:binding="type"/>
+					<treecol label="Lenght" flex="1" editable="false" pen:binding="length"/>
+					<treecol label="Precision" flex="1" editable="false" pen:binding="precision"/>
+					<treecol label="Step origin" flex="1" editable="false" pen:binding="origin"/>
+					<treecol label="Storage" flex="1" editable="false" pen:binding="storageType"/>
+					<treecol label="Mask" flex="1" editable="false" pen:binding="conversionMask"/>
+					<treecol label="Decimal" flex="1" editable="false" pen:binding="decimalSymbol"/>
+					<treecol label="Group" flex="1" editable="false" pen:binding="groupingSymbol"/>
+					<treecol label="Trim" flex="1" editable="false" pen:binding="trimType"/>
+					<treecol label="Comments" flex="1" editable="false" pen:binding="comments"/>
+				</treecols>
+				<treechildren>
+					<treeitem>
+						<treerow>
+							<treecell label="a"/>
+							<treecell label="b"/>
+							<treecell label="c"/>
+                            <treecell label="d"/>
+                            <treecell label="e"/>
+                            <treecell label="f"/>
+                            <treecell label="g"/>
+                            <treecell label="h"/>
+                            <treecell label="i"/>
+                            <treecell label="j"/>
+                            <treecell label="k"/>																					
+						</treerow>
+					</treeitem>
+				</treechildren>
+			</tree>
+		</vbox>
+	</dialog>
+</window>

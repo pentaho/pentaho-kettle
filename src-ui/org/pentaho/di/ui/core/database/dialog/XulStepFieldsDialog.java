@@ -28,21 +28,19 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
-public class XulPreviewRowsDialog {
+public class XulStepFieldsDialog {
 
 	private Shell shell;
-	private int limit;
 	private String table;
 	private XulDomContainer container;
 	private XulRunner runner;
-	private XulPreviewRowsController controller;
+	private XulStepFieldsController controller;
 	private DatabaseMeta databaseMeta;
-	private static Log logger = LogFactory.getLog(XulPreviewRowsDialog.class);
-	private static final String XUL = "org/pentaho/di/ui/core/database/dialog/preview_rows.xul";
+	private static Log logger = LogFactory.getLog(XulStepFieldsDialog.class);
+	private static final String XUL = "org/pentaho/di/ui/core/database/dialog/step_fields.xul";
 
-	public XulPreviewRowsDialog(Shell aShell, int aStyle, DatabaseMeta aDatabaseMeta, String aTableName, int aLimit) {
+	public XulStepFieldsDialog(Shell aShell, int aStyle, DatabaseMeta aDatabaseMeta, String aTableName) {
 		this.shell = aShell;
-		this.limit = aLimit;
 		this.table = aTableName;
 		this.databaseMeta = aDatabaseMeta;
 	}
@@ -53,14 +51,14 @@ public class XulPreviewRowsDialog {
 			theLoader.setOuterContext(this.shell);
 			this.container = theLoader.loadXul(XUL);
 
-			this.controller = new XulPreviewRowsController(this.shell, this.databaseMeta, this.table, this.limit);
+			this.controller = new XulStepFieldsController(this.shell, this.databaseMeta, this.table);
 			this.container.addEventHandler(this.controller);
 
 			this.runner = new SwtXulRunner();
 			this.runner.addContainer(this.container);
 			this.runner.initialize();
 
-			XulDialog thePreviewDialog = (XulDialog) this.container.getDocumentRoot().getElementById("previewRowsDialog");
+			XulDialog thePreviewDialog = (XulDialog) this.container.getDocumentRoot().getElementById("stepFieldsDialog");
 			thePreviewDialog.show();
 
 		} catch (Exception e) {

@@ -18,41 +18,33 @@
  */
 package org.pentaho.di.ui.core.database.dialog;
 
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
-import org.pentaho.ui.xul.util.AbstractModelNode;
+import org.pentaho.ui.xul.util.AbstractModelList;
 
-public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
+public class XulStepFieldsModel extends XulEventSourceAdapter {
 
-	private XulDatabaseExplorerNode database;
-	private DatabaseMeta databaseMeta;
-	private String table;
+	private FieldsCollection stepFields;
 
-	public XulDatabaseExplorerModel(DatabaseMeta aDatabaseMeta) {
-		this.database = new XulDatabaseExplorerNode();
-		this.databaseMeta = aDatabaseMeta;
+	public XulStepFieldsModel() {
+		this.stepFields = new FieldsCollection();
 	}
 
-	public DatabaseMeta getDatabaseMeta() {
-		return this.databaseMeta;
+	public FieldsCollection getStepFields() {
+		return this.stepFields;
 	}
 
-	public XulDatabaseExplorerNode getDatabase() {
-		return this.database;
+	public void setStepFields(FieldsCollection aStepFields) {
+		this.stepFields = aStepFields;
 	}
 
-	public void setDatabase(XulDatabaseExplorerNode aDatabase) {
-		this.database = aDatabase;
+	public String toString() {
+		return "Step Fields Node";
 	}
 
-	public static class XulDatabaseExplorerNode extends AbstractModelNode<DatabaseExplorerNode> {
+	public void addStepField(StepFieldNode aStepField) {
+		this.stepFields.add(aStepField);
 	}
 
-	public void setTable(String aTable) {
-		this.table = aTable;
-	}
-
-	public String getTable() {
-		return this.table;
+	public static class FieldsCollection extends AbstractModelList<StepFieldNode> {
 	}
 }
