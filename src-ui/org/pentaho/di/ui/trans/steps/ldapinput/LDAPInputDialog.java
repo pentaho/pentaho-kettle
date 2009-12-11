@@ -77,6 +77,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.core.encryption.Encr;
 
 public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -839,7 +840,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			
 			DirContext ctx = connectServerLdap(transMeta.environmentSubstitute(meta.getHost()),
 					transMeta.environmentSubstitute(meta.getUserName()), 
-					transMeta.environmentSubstitute(meta.getPassword()),
+					Encr.decryptPasswordOptionallyEncrypted(transMeta.environmentSubstitute(meta.getPassword())),
 					transMeta.environmentSubstitute(meta.getPort()));
 			
 		    if(Const.isEmpty(wSearchBase.getText()))
@@ -895,7 +896,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     		String port=transMeta.environmentSubstitute(meta.getPort());
     		String hostname=transMeta.environmentSubstitute(meta.getHost());
     		String username=transMeta.environmentSubstitute(meta.getUserName());
-    		String password=transMeta.environmentSubstitute(meta.getPassword());
+    		String password=Encr.decryptPasswordOptionallyEncrypted(transMeta.environmentSubstitute(meta.getPassword()));
             //Set the filter string.  The more exact of the search string
     		String filter=transMeta.environmentSubstitute(meta.getFilterString());
     		//Set the Search base.This is the place where the search will
