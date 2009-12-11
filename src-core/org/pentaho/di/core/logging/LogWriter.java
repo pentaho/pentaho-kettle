@@ -432,6 +432,12 @@ public class LogWriter
 	public void logError(LogMessageInterface message)    { println(LOG_LEVEL_ERROR, message); }
 	*/
 	
+	@Deprecated  //temporarily needed for Version Checker
+    public void logBasic(String subject, String message, Object[] arguments) {
+    	LogChannel log = new LogChannel(subject);
+    	log.logBasic(message, arguments);
+    }
+	
 	public void println(LogMessageInterface message, Throwable e) { 
 		println(message); 
 
