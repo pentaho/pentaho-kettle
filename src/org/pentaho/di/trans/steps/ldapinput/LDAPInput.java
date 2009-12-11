@@ -37,6 +37,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.core.encryption.Encr;
 /**
  * Read LDAP Host, convert them to rows and writes these to one or more output streams.
  * 
@@ -248,7 +249,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 			int portint=Const.toInt(port, 389);
 			String hostname=environmentSubstitute(meta.getHost());
 			String username=environmentSubstitute(meta.getUserName());
-			String password=environmentSubstitute(meta.getPassword());
+			String password=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getPassword()));
 	        //Set the filter string.  The more exact of the search string
 			String filter=environmentSubstitute(meta.getFilterString());
 			//Set the Search base.This is the place where the search will
