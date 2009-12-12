@@ -385,7 +385,8 @@ public class Mail extends BaseStep implements StepInterface
 	      // create some properties and get the default Session
 
 	      String protocol = "smtp";
-	      if (meta.isUsingAuthentication()) {
+	      if (meta.isUsingSecureAuthentication()) { //PDI-2955
+	      //if (meta.isUsingAuthentication()) {
 	    	if (meta.getSecureConnectionType().equals("TLS")){
 	    		// Allow TLS authentication
 	    		data.props.put("mail.smtp.starttls.enable","true"); 
