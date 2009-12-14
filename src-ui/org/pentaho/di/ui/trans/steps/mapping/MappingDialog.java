@@ -664,7 +664,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			if (wRepRadio.getSelection() && repository != null && !Const.isEmpty(wTransName.getText())
 					&& !Const.isEmpty(wTransDir.getText()))
 			{
-				RepositoryDirectory repdir = repository.loadRepositoryDirectoryTree().findDirectory(wTransDir.getText());
+				RepositoryDirectory repdir = repository.loadRepositoryDirectoryTree().findDirectory(transMeta.environmentSubstitute(wTransDir.getText()));
 				if (repdir == null)
 				{
 					throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToFindRepositoryDirectory)"));

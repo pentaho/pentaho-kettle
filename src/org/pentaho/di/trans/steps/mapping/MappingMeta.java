@@ -504,7 +504,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             // OK, load the meta-data from the repository...
             if (!Const.isEmpty(realTransname) && directoryPath!=null && rep!=null)
             {
-                RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(directoryPath);
+                RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(space.environmentSubstitute(directoryPath));
                 if (repdir!=null)
                 {
                     try
