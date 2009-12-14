@@ -1726,8 +1726,8 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
                 if (element !=null) item.setText( 3, element);
     			if (type    !=null) item.setText( 4, type    );
     			if (format  !=null) item.setText( 5, format  );
-    			if (length  !=null && !"-1".equals(length  )) item.setText( 7, length  );
-    			if (prec    !=null && !"-1".equals(prec    )) item.setText( 8, prec    );
+    			if (length  !=null && !"-1".equals(length  )) item.setText( 6, length  );
+    			if (prec    !=null && !"-1".equals(prec    )) item.setText( 7, prec    );
     			if (curr    !=null) item.setText( 8, curr    );
     			if (decim   !=null) item.setText( 9, decim   );
     			if (group   !=null) item.setText( 10, group   );
