@@ -5,7 +5,9 @@
 	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="dbexplorer.init()"
     xmlns:pen="http://www.pentaho.org/2008/xul" >
      
-    <dialog width="600" height="400" id="databaseExplorerDialog" title="Database explorer on connection">
+    <dialog width="600" height="400" id="databaseExplorerDialog" title="Database explorer on connection"
+     ondialogaccept="dbexplorer.accept()"
+     ondialogcancel="dbexplorer.cancel()">
 	    <vbox flex="1" id="mainVBox">
 			<hbox>
 				<spacer flex="1"/>

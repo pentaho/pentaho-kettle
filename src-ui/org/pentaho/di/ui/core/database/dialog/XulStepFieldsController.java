@@ -25,6 +25,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.binding.Binding.Type;
@@ -40,9 +41,11 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 	private BindingFactory bf;
 	private Binding stepFieldsTreeBinding;
 	private Binding stepNameBinding;
+	private Binding acceptButtonBinding;
 	private XulTree stepFieldsTree;
 	private XulStepFieldsModel model;
 	private String selectedStep;
+	private Boolean showAcceptButton;
 
 	private static Log logger = LogFactory.getLog(XulStepFieldsController.class);
 
@@ -60,11 +63,39 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 		this.bf.setDocument(super.document);
 		this.bf.setBindingType(Type.ONE_WAY);
 
-		this.stepFieldsTree = (XulTree) document.getElementById("step_fields_data");
+		this.stepFieldsTree = (XulTree) super.document.getElementById("step_fields_data");
 		this.stepFieldsTreeBinding = this.bf.createBinding(this.model, "stepFields", this.stepFieldsTree, "elements");
 		this.stepNameBinding = this.bf.createBinding(this.model, "stepName", "stepNameLabel", "value");
+		this.acceptButtonBinding = this.bf.createBinding(this, "showAcceptButton", "stepFieldsDialog_accept", "visible");
 
+		if (this.getShowAcceptButton()) {
+			BindingConvertor<StepFieldNode, Boolean> isDisabledConvertor = new BindingConvertor<StepFieldNode, Boolean>() {
+				public Boolean sourceToTarget(StepFieldNode value) {
+					return !(value != null);
+				}
+
+				public StepFieldNode targetToSource(Boolean value) {
+					return null;
+				}
+			};
+
+			this.acceptButtonBinding = this.bf.createBinding(this.stepFieldsTree, "selectedItem", "stepFieldsDialog_accept", "disabled", isDisabledConvertor);
+		}
 		fireBindings();
+
+	}
+
+	public void cancelDialog() {
+		XulDialog theDialog = (XulDialog) super.document.getElementById("stepFieldsDialog");
+		theDialog.setVisible(false);
+	}
+
+	public void setShowAcceptButton(boolean isVisible) {
+		this.showAcceptButton = isVisible;
+	}
+
+	public boolean getShowAcceptButton() {
+		return this.showAcceptButton;
 	}
 
 	private void createStepFieldNodes() {
@@ -117,6 +148,7 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 		try {
 			this.stepFieldsTreeBinding.fireSourceChanged();
 			this.stepNameBinding.fireSourceChanged();
+			this.acceptButtonBinding.fireSourceChanged();
 		} catch (Exception e) {
 			logger.info(e);
 		}

@@ -45,13 +45,14 @@ public class XulStepFieldsDialog {
 		this.databaseMeta = aDatabaseMeta;
 	}
 
-	public void open() {
+	public void open(boolean isAcceptButtonHidden) {
 		try {
 			SwtXulLoader theLoader = new SwtXulLoader();
 			theLoader.setOuterContext(this.shell);
 			this.container = theLoader.loadXul(XUL);
 
 			this.controller = new XulStepFieldsController(this.shell, this.databaseMeta, this.table);
+			this.controller.setShowAcceptButton(isAcceptButtonHidden);
 			this.container.addEventHandler(this.controller);
 
 			this.runner = new SwtXulRunner();
@@ -60,7 +61,6 @@ public class XulStepFieldsDialog {
 
 			XulDialog thePreviewDialog = (XulDialog) this.container.getDocumentRoot().getElementById("stepFieldsDialog");
 			thePreviewDialog.show();
-
 		} catch (Exception e) {
 			logger.info(e);
 		}

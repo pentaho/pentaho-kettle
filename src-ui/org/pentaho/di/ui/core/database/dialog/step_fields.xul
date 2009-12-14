@@ -9,7 +9,8 @@
      buttons="accept,cancel"
      buttonlabelcancel="Cancel"
      buttonlabelaccept="Edit Origin Step"
-     ondialogaccept="stepFields.editOriginStep()">
+     ondialogaccept="stepFields.editOriginStep()"
+     ondialogcancel="stepFields.cancelDialog()">
 		<vbox flex="1">
 			<label id="stepNameLabel" value="Step name:" pen:binding="stepName"/>
 			<label id="fieldsLabel" value="Fields:"/>

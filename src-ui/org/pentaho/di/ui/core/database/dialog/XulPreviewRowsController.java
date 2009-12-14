@@ -29,6 +29,7 @@ import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.binding.Binding.Type;
+import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeRow;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -114,6 +115,11 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 		thePreviewTable.update();
 
 		setRowCount("Rows of step: " + this.table + " (" + theRowCount + " rows)");
+	}
+
+	public void accept() {
+		XulDialog theDialog = (XulDialog) super.document.getElementById("previewRowsDialog");
+		theDialog.setVisible(false);
 	}
 
 	public void setRowCount(String aRowCount) {

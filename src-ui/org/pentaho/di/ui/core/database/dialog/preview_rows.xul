@@ -5,7 +5,9 @@
 	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="previewRows.init()"
     xmlns:pen="http://www.pentaho.org/2008/xul" >
      
-    <dialog width="400" height="200" id="previewRowsDialog" title="Examine preview data">
+    <dialog width="400" height="200" id="previewRowsDialog" title="Examine preview data"
+     buttons="accept"
+     ondialogaccept="previewRows.accept()">
 		<vbox flex="1">
 			<label id="rowCountLabel" value=""  pen:binding="rowCount"/>
 			<tree flex="1" editable="false" id="table_data">

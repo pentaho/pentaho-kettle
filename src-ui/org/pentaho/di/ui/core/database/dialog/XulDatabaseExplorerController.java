@@ -35,6 +35,7 @@ import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
+import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.util.XulDialogCallback;
@@ -69,7 +70,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 	public void init() {
 		createDatabaseNodes();
-		
+
 		this.bf.setDocument(super.document);
 		this.bf.setBindingType(Type.ONE_WAY);
 
@@ -89,7 +90,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		};
 		bf.createBinding(this.databaseTree, "selectedItem", this.model, "table", theTableNameConvertor);
 
-		XulMenuList theActionsList = (XulMenuList) document.getElementById("actionsList");
+		XulMenuList theActionsList = (XulMenuList) this.document.getElementById("actionsList");
 		BindingConvertor<DatabaseExplorerNode, Boolean> isDisabledConvertor = new BindingConvertor<DatabaseExplorerNode, Boolean>() {
 			public Boolean sourceToTarget(DatabaseExplorerNode value) {
 				return !(value != null && value.isTable());
@@ -103,6 +104,15 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		bf.createBinding(theActionsList, "selectedItem", this, "command");
 
 		fireBindings();
+	}
+
+	public void accept() {
+		this.cancel();
+	}
+
+	public void cancel() {
+		XulDialog theDialog = (XulDialog) this.document.getElementById("databaseExplorerDialog");
+		theDialog.setVisible(false);
 	}
 
 	public void setCommand(Object aCommand) {
@@ -119,12 +129,12 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		if (aCommand.equals("Show Layout")) {
 			showLayout();
 		}
-		
+
 	}
-	
+
 	private void showLayout() {
 		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable());
-		theStepFieldsDialog.open();
+		theStepFieldsDialog.open(false);
 	}
 
 	private void displayRowCount() {
