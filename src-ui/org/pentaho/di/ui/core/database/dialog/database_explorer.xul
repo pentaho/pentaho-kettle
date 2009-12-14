@@ -20,6 +20,8 @@
 				    <menuitem label="Preview x Rows"/>
 				    <menuitem label="Row Count"/>
 				    <menuitem label="Show Layout"/>
+				    <menuitem label="View SQL"/>
+				    <menuitem label="Truncate Table"/>
 				  </menupopup>
 				</menulist>
 			</hbox>	    			

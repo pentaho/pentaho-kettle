@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.ui.xul.XulComponent;
@@ -35,9 +36,9 @@ import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
-import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.swt.tags.SwtDialog;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 @SuppressWarnings("unchecked")
@@ -49,6 +50,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private XulButton expandCollapseButton;
 	private BindingFactory bf;
 	private Shell shell;
+	private SwtDialog dbExplorerDialog;
 	private boolean isExpanded = false;
 
 	private static final String DATABASE_IMAGE = "ui/images/folder_connection.png";
@@ -70,7 +72,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 	public void init() {
 		createDatabaseNodes();
-
+		this.dbExplorerDialog = (SwtDialog) this.document.getElementById("databaseExplorerDialog");
 		this.bf.setDocument(super.document);
 		this.bf.setBindingType(Type.ONE_WAY);
 
@@ -111,8 +113,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void cancel() {
-		XulDialog theDialog = (XulDialog) this.document.getElementById("databaseExplorerDialog");
-		theDialog.setVisible(false);
+		this.dbExplorerDialog.setVisible(false);
 	}
 
 	public void setCommand(Object aCommand) {
@@ -129,7 +130,22 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		if (aCommand.equals("Show Layout")) {
 			showLayout();
 		}
+		if (aCommand.equals("View SQL")) {
+			viewSql();
+		}
+		if (aCommand.equals("Truncate Table")) {
+			truncate();
+		}
+	}
 
+	private void truncate() {
+		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), DBCache.getInstance(), "-- TRUNCATE TABLE " + this.model.getTable());
+		theSqlEditor.open();
+	}
+
+	private void viewSql() {
+		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), DBCache.getInstance(), "SELECT * FROM " + this.model.getTable());
+		theSqlEditor.open();
 	}
 
 	private void showLayout() {
