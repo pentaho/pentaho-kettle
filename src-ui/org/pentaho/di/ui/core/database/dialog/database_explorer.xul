@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
-<window id="database-explorer" title="Database Explorer"
+<window id="database-explorer" title="Database Explorer" 
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="dbexplorer.init()"
     xmlns:pen="http://www.pentaho.org/2008/xul" >
@@ -21,6 +21,7 @@
 	</menupopup>
 	  
     <dialog width="600" height="400" id="databaseExplorerDialog" title="Database explorer on connection"
+     appicon="ui/images/cnc.png"
      ondialogaccept="dbexplorer.accept()"
      ondialogcancel="dbexplorer.cancel()">
 	    <vbox flex="1" id="mainVBox">
