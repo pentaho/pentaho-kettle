@@ -1,6 +1,7 @@
 package org.pentaho.di.ui.spoon;
 
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.impl.XulEventHandler;
@@ -15,20 +16,20 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 public interface SpoonPlugin {
   
   /**
-   * List of XulOverlays that will be applied on Spoon startup. These overlays can modify the look 
+   * Map of XulOverlays that will be applied on Spoon startup. These overlays can modify the look 
    * of the main UI as well as any Xul-based dialog registered in Spoon.
    * 
-   * @return list of XulOverlays
+   * @return Map of XulOverlays
    */
-  public List<XulOverlay> getOverlays();
+  public Map<String, XulOverlay>  getOverlays();
   
   /**
-   * List of XulEventHandlers to be registered at Spoon startup. These Event Handlers can support UI
+   * Map of XulEventHandlers to be registered at Spoon startup. These Event Handlers can support UI
    * added via the Overlays or replace default registered Event Handlers
    *  
-   * @return List of XulEventHandlers
+   * @return Map of XulEventHandlers
    */
-  public List<? extends XulEventHandler> getEventHandlers();
+  public Map<String, XulEventHandler>  getEventHandlers();
   
   /**
    * Returns an optional SpoonLifecycleListener to be notified of Spoon startup and shutdown.

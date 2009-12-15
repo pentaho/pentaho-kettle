@@ -403,7 +403,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
   public String lastDirOpened;
   
   public List<FileListener> fileListeners = new ArrayList<FileListener>();
-
+  
   /**
    * This is the main procedure for Spoon.
    * 
@@ -582,6 +582,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       xulLoader.setOuterContext(shell);
       
       mainSpoonContainer = xulLoader.loadXul(XUL_FILE_MAIN, new XulSpoonResourceBundle());
+      
       bf = new DefaultBindingFactory();
       bf.setDocument(mainSpoonContainer.getDocumentRoot());
       mainSpoonContainer.addEventHandler(this);
@@ -595,13 +596,12 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       
       SpoonPerspectiveManager.getInstance().addPerspective(new MainSpoonPerspective(tempSashComposite, tabfolder));
       
-      for (SpoonPlugin pl : UIPluginManager.getInstance().getPlugins()) {
-        for (XulOverlay over : pl.getOverlays()) {
-          mainSpoonContainer.loadOverlay(over.getOverlayUri());
-        }
-        for (XulEventHandler hand : pl.getEventHandlers()) {
-          mainSpoonContainer.addEventHandler(hand);
-        }
+      for(XulOverlay over : SpoonPluginManager.getInstance().getOverlaysforContainer("spoon")){
+        mainSpoonContainer.loadOverlay(over.getOverlayUri());
+      }
+      
+      for(XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("spoon")){
+        mainSpoonContainer.addEventHandler(handler);
       }
       
       SpoonPerspectiveManager.getInstance().setDeck(deck); 
@@ -721,52 +721,6 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     }
     
   }
-
-  // Xul Refactor
-//  private void initFileMenu() {
-//
-//    fileMenus = new org.eclipse.swt.widgets.Menu(shell, SWT.NONE);
-//
-//    // Add the new file toolbar items dropdowns
-//    //
-//    MenuItem miNewTrans = new MenuItem(fileMenus, SWT.CASCADE);
-//    miNewTrans.setText(Messages.getString("Spoon.Menu.File.NewTrans")); //$NON-NLS-1$
-//    miNewTrans.addSelectionListener(new SelectionAdapter() {
-//      public void widgetSelected(SelectionEvent arg0) {
-//        newTransFile();
-//      }
-//    });
-//    miNewTrans.setImage(GUIResource.getInstance().getImageTransGraph());
-//
-//    MenuItem miNewJob = new MenuItem(fileMenus, SWT.CASCADE);
-//    miNewJob.setText(Messages.getString("Spoon.Menu.File.NewJob")); //$NON-NLS-1$
-//    miNewJob.addSelectionListener(new SelectionAdapter() {
-//      public void widgetSelected(SelectionEvent arg0) {
-//        newJobFile();
-//      }
-//    });
-//    miNewJob.setImage(GUIResource.getInstance().getImageJobGraph());
-//
-//    new MenuItem(fileMenus, SWT.SEPARATOR);
-//
-//    MenuItem miNewDB = new MenuItem(fileMenus, SWT.CASCADE);
-//    miNewDB.setText(Messages.getString("Spoon.Menu.File.NewDB")); //$NON-NLS-1$
-//    miNewDB.addSelectionListener(new SelectionAdapter() {
-//      public void widgetSelected(SelectionEvent arg0) {
-//        newConnection();
-//      }
-//    });
-//    miNewDB.setImage(GUIResource.getInstance().getImageConnection());
-//
-//    MenuItem miNewSlave = new MenuItem(fileMenus, SWT.CASCADE);
-//    miNewSlave.setText(Messages.getString("Spoon.Menu.File.NewSlave")); //$NON-NLS-1$
-//    miNewSlave.addSelectionListener(new SelectionAdapter() {
-//      public void widgetSelected(SelectionEvent arg0) {
-//        newSlaveServer();
-//      }
-//    });
-//    miNewSlave.setImage(GUIResource.getInstance().getImageSlave());
-//  }
 
   public Shell getShell() {
     return shell;
