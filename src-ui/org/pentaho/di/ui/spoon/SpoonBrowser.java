@@ -169,10 +169,6 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
     }
   }
 
-  public void newFileDropDown() {
-    spoon.newFileDropDown(toolbar);
-  }
-
   public void openFile() {
     spoon.openFile();
   }

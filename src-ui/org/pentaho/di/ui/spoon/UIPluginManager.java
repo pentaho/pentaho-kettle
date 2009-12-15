@@ -44,6 +44,9 @@ public class UIPluginManager {
       for (Object key : beans.keySet()) {
         SpoonPlugin plg = (SpoonPlugin)beans.get(key);
         plugins.add(plg);
+        if(plg.getPerspective() != null){
+          SpoonPerspectiveManager.getInstance().addPerspective(plg.getPerspective());
+        }
       }
     } catch (XmlBeanDefinitionStoreException e) {
       e.printStackTrace();

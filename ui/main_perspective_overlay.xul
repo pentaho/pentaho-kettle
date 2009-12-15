@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
+<overlay id="label-test" title="Flow Test"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" 
+    xmlns:pen="http://www.pentaho.org/2008/xul" >
+    
+    <menu id="trans" visible="true"/>
+    <menu id="job" visible="true"/>
+    <menu id="wizard" visible="true"/>
+</overlay>

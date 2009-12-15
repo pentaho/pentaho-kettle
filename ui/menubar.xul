@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <window id="label-test" title="Flow Test" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:pen="http://www.pentaho.org/2008/xul" onload="spoon.onLoad()">
-  <menubar id="spoon-menubar" pen:parenttoouter="true">
+  <menubar id="spoon-menubar">
     <menu id="file" label="${Spoon.Menu.File}" accesskey="alt-f">
       <menupopup id="file-popup">
         <menu id="file-new" label="${Spoon.Menu.File.New}">
@@ -71,6 +71,13 @@
         <menuseparator />
         <menuitem id="view-zoom-100pct" acceltext="HOME" accesskey="home" label="${Spoon.Menu.View.Zoom100}"
           command="spoon.zoom100Percent()" />
+		<menuseparator />
+        <menu label="${Spoon.Menu.View.Perspectives}">
+          <menupopup id="view-perspectives-popup">
+		    <menuitem label="${Spoon.Perspectives.Main.MenuItem.Label}"
+	    	  command="spoon.loadPerspective('org.pentaho.di.ui.spoon.MainSpoonPerspective')"/>
+          </menupopup>
+        </menu>
       </menupopup>
     </menu>
     <menu id="repository" label="${Spoon.Menu.Repository}">
@@ -152,14 +159,15 @@
       </menupopup>
     </menu>
   </menubar>
-
+  
+  <!--
   <toolbar id="nav-toolbar" mode="full">
     <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}"
       command="spoon.newTransFile()" />
     <toolbarseparator />
     <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
       tooltiptext="${Spoon.Tooltip.OpenTranformation}" command="spoon.openFile()" />
-  </toolbar>
+  </toolbar>-->
 
   <menupopup id="trans-class">
     <menuitem id="trans-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newTransFile()" />

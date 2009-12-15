@@ -2541,10 +2541,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
     swtToolItem.setImage(GUIResource.getInstance().getImageHideResults());
   }
 
-  public void newFileDropDown() {
-    spoon.newFileDropDown(toolbar);
-  }
-
   public void openFile() {
     spoon.openFile();
   }

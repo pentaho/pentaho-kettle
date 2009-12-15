@@ -14,10 +14,13 @@ package org.pentaho.di.ui.spoon;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -66,6 +70,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -219,17 +224,22 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
+import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulMenuseparator;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
+import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulMenubar;
 import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
+import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
+import org.pentaho.ui.xul.swt.tags.SwtDeck;
 import org.pentaho.ui.xul.swt.tags.SwtMenupopup;
+import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabListener;
@@ -307,6 +317,12 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
    * This contains a map with all the unnamed transformation (just a filename)
    */
   private XulMenubar menuBar;
+  
+  private XulToolbar mainToolbar;
+  
+  private XulVbox canvas;
+  
+  private SwtDeck deck;
 
   private ToolItem view, design, expandAll, collapseAll;
 
@@ -385,6 +401,8 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
   /** We can use this to set a default filter path in the open and save dialogs */
   public String lastDirOpened;
+  
+  public List<FileListener> fileListeners = new ArrayList<FileListener>();
 
   /**
    * This is the main procedure for Spoon.
@@ -528,9 +546,9 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     layout.marginHeight = 0;
     shell.setLayout(layout);
 
-    addFileListener(new TransFileListener(), Const.STRING_TRANS_DEFAULT_EXT, TransMeta.XML_TAG);
+    addFileListener(new TransFileListener());
 
-    addFileListener(new JobFileListener(), Const.STRING_JOB_DEFAULT_EXT, JobMeta.XML_TAG);
+    addFileListener(new JobFileListener());
 
     // INIT Data structure
     if (ti != null)
@@ -557,23 +575,76 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     cursor_hourglass = new Cursor(display, SWT.CURSOR_WAIT);
     cursor_hand = new Cursor(display, SWT.CURSOR_HAND);
 
+    Composite sashComposite = null;
+    
     try {
       xulLoader = new SwtXulLoader();
       xulLoader.setOuterContext(shell);
-      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
-      mainSpoonContainer = xulLoader.loadXul(XUL_FILE_MENUBAR, bundle);
+      
+      mainSpoonContainer = xulLoader.loadXul(XUL_FILE_MAIN, new XulSpoonResourceBundle());
       bf = new DefaultBindingFactory();
       bf.setDocument(mainSpoonContainer.getDocumentRoot());
       mainSpoonContainer.addEventHandler(this);
       menuBar = (XulMenubar) mainSpoonContainer.getDocumentRoot().getElementById("spoon-menubar");
+      mainToolbar = (XulToolbar) mainSpoonContainer.getDocumentRoot().getElementById("main-toolbar");
+      canvas = (XulVbox) mainSpoonContainer.getDocumentRoot().getElementById("trans-job-canvas");
+      deck = (SwtDeck) mainSpoonContainer.getDocumentRoot().getElementById("canvas-deck");
+
+      final Composite tempSashComposite = new Composite(shell, SWT.None);
+      sashComposite = tempSashComposite;
+      
+      SpoonPerspectiveManager.getInstance().addPerspective(new MainSpoonPerspective(tempSashComposite, tabfolder));
+      
       for (SpoonPlugin pl : UIPluginManager.getInstance().getPlugins()) {
-        for (String url : pl.getOverlays()) {
-          mainSpoonContainer.loadOverlay(url.toString());
+        for (XulOverlay over : pl.getOverlays()) {
+          mainSpoonContainer.loadOverlay(over.getOverlayUri());
         }
         for (XulEventHandler hand : pl.getEventHandlers()) {
           mainSpoonContainer.addEventHandler(hand);
         }
       }
+      
+      SpoonPerspectiveManager.getInstance().setDeck(deck); 
+      SpoonPerspectiveManager.getInstance().setXulDoc(mainSpoonContainer); 
+      boolean firstBtn = true;
+      for(SpoonPerspective per : SpoonPerspectiveManager.getInstance().getPerspectives()){
+        String name = per.getDisplayName(Locale.getDefault());
+        InputStream in = per.getPerspectiveIcon();
+        
+        final SwtToolbarbutton btn = (SwtToolbarbutton ) mainSpoonContainer.getDocumentRoot().createElement("toolbarbutton");
+        btn.setType("toggle");
+        btn.setTooltiptext(name);
+        btn.setOnclick("spoon.loadPerspective('"+per.getClass().getName()+"')");
+        mainToolbar.addChild(btn);
+        if(firstBtn){
+          btn.setSelected(true);
+          firstBtn = false;
+        }
+        if(in != null){
+          btn.setImageFromStream(in);
+          try {
+            in.close();
+          } catch (IOException e1) {}
+        }
+        
+        XulVbox box = deck.createVBoxCard();
+        box.setId("perspective-"+per.getId());
+        box.setFlex(1);
+        deck.addChild(box);
+        
+        per.getUI().setParent((Composite) box.getManagedObject());
+        per.getUI().layout();
+        
+        per.addPerspectiveListener(new SpoonPerspectiveListener(){
+          public void onActivation() {
+            btn.setSelected(true);
+          }
+          public void onDeactication() {
+            btn.setSelected(false);
+          }
+        });
+      }
+      deck.setSelectedIndex(0);
 
       setupBindings();
     } catch (IllegalArgumentException e1) {
@@ -585,9 +656,36 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     }
     // addBar();
 
-    initFileMenu();
+    // Set the shell size, based upon previous time...
+    WindowProperty winprop = props.getScreen(APPL_TITLE);
+    if (winprop != null)
+      winprop.setShell(shell);
+    else {
+      shell.pack();
+      shell.setMaximized(true); // Default = maximized!
+    }
 
-    sashform = new SashForm(shell, SWT.HORIZONTAL);
+    // In case someone dares to press the [X] in the corner ;-)
+    shell.addShellListener(new ShellAdapter() {
+      public void shellClosed(ShellEvent e) {
+        e.doit = quitFile();
+      }
+    });
+
+    layout = new FormLayout();
+    layout.marginWidth = 0;
+    layout.marginHeight = 0;
+    
+    GridData data = new GridData();
+    data.grabExcessHorizontalSpace = true;
+    data.grabExcessVerticalSpace = true;
+    data.verticalAlignment = SWT.FILL;
+    data.horizontalAlignment = SWT.FILL;
+    sashComposite.setLayoutData(data);
+    
+    sashComposite.setLayout(layout);
+    
+    sashform = new SashForm(sashComposite, SWT.HORIZONTAL);
 
     FormData fdSash = new FormData();
     fdSash.left = new FormAttachment(0, 0);
@@ -598,76 +696,77 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     fdSash.right = new FormAttachment(100, 0);
     sashform.setLayoutData(fdSash);
 
-    // Set the shell size, based upon previous time...
-    WindowProperty winprop = props.getScreen(APPL_TITLE);
-    if (winprop != null)
-      winprop.setShell(shell);
-    else {
-      shell.pack();
-      shell.setMaximized(true); // Default = maximized!
-    }
-
     createPopupMenus();
     addTree();
     addTabs();
+    ((Composite) deck.getManagedObject()).layout(true, true);
 
-    // In case someone dares to press the [X] in the corner ;-)
-    shell.addShellListener(new ShellAdapter() {
-      public void shellClosed(ShellEvent e) {
-        e.doit = quitFile();
-      }
-    });
 
     // Add a browser widget
     if (props.showWelcomePageOnStartup()) {
       showWelcomePage();
     }
   }
-
-  private void initFileMenu() {
-
-    fileMenus = new org.eclipse.swt.widgets.Menu(shell, SWT.NONE);
-
-    // Add the new file toolbar items dropdowns
-    //
-    MenuItem miNewTrans = new MenuItem(fileMenus, SWT.CASCADE);
-    miNewTrans.setText(Messages.getString("Spoon.Menu.File.NewTrans")); //$NON-NLS-1$
-    miNewTrans.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent arg0) {
-        newTransFile();
-      }
-    });
-    miNewTrans.setImage(GUIResource.getInstance().getImageTransGraph());
-
-    MenuItem miNewJob = new MenuItem(fileMenus, SWT.CASCADE);
-    miNewJob.setText(Messages.getString("Spoon.Menu.File.NewJob")); //$NON-NLS-1$
-    miNewJob.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent arg0) {
-        newJobFile();
-      }
-    });
-    miNewJob.setImage(GUIResource.getInstance().getImageJobGraph());
-
-    new MenuItem(fileMenus, SWT.SEPARATOR);
-
-    MenuItem miNewDB = new MenuItem(fileMenus, SWT.CASCADE);
-    miNewDB.setText(Messages.getString("Spoon.Menu.File.NewDB")); //$NON-NLS-1$
-    miNewDB.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent arg0) {
-        newConnection();
-      }
-    });
-    miNewDB.setImage(GUIResource.getInstance().getImageConnection());
-
-    MenuItem miNewSlave = new MenuItem(fileMenus, SWT.CASCADE);
-    miNewSlave.setText(Messages.getString("Spoon.Menu.File.NewSlave")); //$NON-NLS-1$
-    miNewSlave.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent arg0) {
-        newSlaveServer();
-      }
-    });
-    miNewSlave.setImage(GUIResource.getInstance().getImageSlave());
+  
+  public void loadPerspective(String className){
+    
+    Class clazz;
+    try {
+      clazz = Class.forName(className);
+      SpoonPerspectiveManager.getInstance().activatePerspective(clazz);
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    } catch (KettleException e) {
+      e.printStackTrace();
+    }
+    
   }
+
+  // Xul Refactor
+//  private void initFileMenu() {
+//
+//    fileMenus = new org.eclipse.swt.widgets.Menu(shell, SWT.NONE);
+//
+//    // Add the new file toolbar items dropdowns
+//    //
+//    MenuItem miNewTrans = new MenuItem(fileMenus, SWT.CASCADE);
+//    miNewTrans.setText(Messages.getString("Spoon.Menu.File.NewTrans")); //$NON-NLS-1$
+//    miNewTrans.addSelectionListener(new SelectionAdapter() {
+//      public void widgetSelected(SelectionEvent arg0) {
+//        newTransFile();
+//      }
+//    });
+//    miNewTrans.setImage(GUIResource.getInstance().getImageTransGraph());
+//
+//    MenuItem miNewJob = new MenuItem(fileMenus, SWT.CASCADE);
+//    miNewJob.setText(Messages.getString("Spoon.Menu.File.NewJob")); //$NON-NLS-1$
+//    miNewJob.addSelectionListener(new SelectionAdapter() {
+//      public void widgetSelected(SelectionEvent arg0) {
+//        newJobFile();
+//      }
+//    });
+//    miNewJob.setImage(GUIResource.getInstance().getImageJobGraph());
+//
+//    new MenuItem(fileMenus, SWT.SEPARATOR);
+//
+//    MenuItem miNewDB = new MenuItem(fileMenus, SWT.CASCADE);
+//    miNewDB.setText(Messages.getString("Spoon.Menu.File.NewDB")); //$NON-NLS-1$
+//    miNewDB.addSelectionListener(new SelectionAdapter() {
+//      public void widgetSelected(SelectionEvent arg0) {
+//        newConnection();
+//      }
+//    });
+//    miNewDB.setImage(GUIResource.getInstance().getImageConnection());
+//
+//    MenuItem miNewSlave = new MenuItem(fileMenus, SWT.CASCADE);
+//    miNewSlave.setText(Messages.getString("Spoon.Menu.File.NewSlave")); //$NON-NLS-1$
+//    miNewSlave.addSelectionListener(new SelectionAdapter() {
+//      public void widgetSelected(SelectionEvent arg0) {
+//        newSlaveServer();
+//      }
+//    });
+//    miNewSlave.setImage(GUIResource.getInstance().getImageSlave());
+//  }
 
   public Shell getShell() {
     return shell;
@@ -2888,43 +2987,69 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     if (rep == null || importfile) // Load from XML
     {
       FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-      int extensionCollectionLength = Const.STRING_TRANS_AND_JOB_FILTER_EXT.length + fileExtensionMap.keySet().size();
-      String[] fileExtensions = new String[extensionCollectionLength];
-      String[] fileExtensionNames = new String[extensionCollectionLength];
+      
+  
+      LinkedHashSet<String> extensions = new LinkedHashSet<String>();
+      LinkedHashSet<String> extensionNames = new LinkedHashSet<String>();
+      StringBuffer allExtensions = new StringBuffer();
+      for(FileListener l : fileListeners){
+        for(String ext : l.getSupportedExtensions()){
+          extensions.add(ext);
+          allExtensions.append("*.").append(ext).append(";");
+        }
+        for(String name : l.getFileTypeDisplayNames(Locale.getDefault())){
+          extensionNames.add(name);
+        }
+      }
+      extensions.add("*");
+      extensionNames.add(Messages.getString("Spoon.Dialog.OpenFile.AllFiles"));
+      
+//      int extensionCollectionLength = Const.STRING_TRANS_AND_JOB_FILTER_EXT.length + fileExtensionMap.keySet().size();
+//      String[] fileExtensions = new String[extensionCollectionLength];
+//      String[] fileExtensionNames = new String[extensionCollectionLength];
 			
 			// create an 'all known types' option
-			StringBuilder allExtensions = new StringBuilder();
+			//StringBuilder allExtensions = new StringBuilder();
 			// Add the trans and job file types
-			allExtensions.append( "*." ).append(Const.STRING_TRANS_DEFAULT_EXT).append(';');
-			allExtensions.append( "*." ).append(Const.STRING_JOB_DEFAULT_EXT).append(';');
+			//allExtensions.append( "*." ).append(Const.STRING_TRANS_DEFAULT_EXT).append(';');
+			//allExtensions.append( "*." ).append(Const.STRING_JOB_DEFAULT_EXT).append(';');
 			// now build up a list of plugin types
       
-      System.arraycopy(Const.STRING_TRANS_AND_JOB_FILTER_EXT, 0, fileExtensions, 0, Const.STRING_TRANS_AND_JOB_FILTER_EXT.length);
+      //System.arraycopy(Const.STRING_TRANS_AND_JOB_FILTER_EXT, 0, fileExtensions, 0, Const.STRING_TRANS_AND_JOB_FILTER_EXT.length);
 
-      System.arraycopy(Const.getTransformationAndJobFilterNames(), 0, fileExtensionNames, 0, Const.getTransformationAndJobFilterNames().length);
+      //System.arraycopy(Const.getTransformationAndJobFilterNames(), 0, fileExtensionNames, 0, Const.getTransformationAndJobFilterNames().length);
 
       //System.arraycopy(fileExtensionMap.keySet().toArray(), 0, fileExtensions, Const.STRING_TRANS_AND_JOB_FILTER_EXT.length, fileExtensionMap.keySet().toArray().length);
 
-      Object[] exts = fileExtensionMap.keySet().toArray();
-      for (int i = 0; i < exts.length; i++) {
-        FileListener fListener = fileExtensionMap.get(exts[i]);
-        String fileExtName = "" + exts[i];
-			  String fileExt = ((String)exts[i]).toLowerCase();
-        for (Map.Entry<String, FileListener> entry : fileNodeMap.entrySet()) {
-          if (entry.getValue().equals(fListener)) {
-            fileExtName = entry.getKey();
-          }
-        }
-        fileExtensions[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length + i] = "*." + exts[i];
-			  if( !fileExt.equalsIgnoreCase("xml") && !fileExt.equalsIgnoreCase("*") && !allExtensions.toString().contains(fileExt.toLowerCase())) {
-			    allExtensions.append( "*." ).append(fileExt.toLowerCase()).append(';');
-			  }
-        fileExtensionNames[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length + i] = fileExtName;
-      }
+//      Object[] exts = fileExtensionMap.keySet().toArray();
+//      for (int i = 0; i < exts.length; i++) {
+//        FileListener fListener = fileExtensionMap.get(exts[i]);
+//        String fileExtName = "" + exts[i];
+//			  String fileExt = ((String)exts[i]).toLowerCase();
+//        for (Map.Entry<String, FileListener> entry : fileNodeMap.entrySet()) {
+//          if (entry.getValue().equals(fListener)) {
+//            fileExtName = entry.getKey();
+//          }
+//        }
+//        fileExtensions[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length + i] = "*." + exts[i];
+//			  if( !fileExt.equalsIgnoreCase("xml") && !fileExt.equalsIgnoreCase("*") && !allExtensions.toString().contains(fileExt.toLowerCase())) {
+//			    allExtensions.append( "*." ).append(fileExt.toLowerCase()).append(';');
+//			  }
+//        fileExtensionNames[Const.STRING_TRANS_AND_JOB_FILTER_EXT.length + i] = fileExtName;
+//      }
 			
-			fileExtensions[0] = allExtensions.toString();
-      dialog.setFilterExtensions(fileExtensions);
-      dialog.setFilterNames(fileExtensionNames);
+			//fileExtensions[0] = allExtensions.toString();
+			String[] exts = new String[extensions.size() + 1];
+			exts[0] = allExtensions.toString();
+			System.arraycopy(extensions.toArray(new String[extensions.size()]), 0, exts, 1, extensions.size());
+			
+			String[] extNames = new String[extensionNames.size() + 1];
+			extNames[0] = Messages.getString("Spoon.Dialog.OpenFile.AllTypes");
+      System.arraycopy(extensionNames.toArray(new String[extensionNames.size()]), 0, extNames, 1, extensionNames.size());
+      
+      dialog.setFilterExtensions(exts);
+      dialog.setFilterNames(extNames);
+      
       setFilterPath(dialog);
       String fname = dialog.open();
       if (fname != null) {
@@ -3040,9 +3165,14 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     }
   }
 
-  public void addFileListener(FileListener listener, String extension, String rootNodeName) {
-    fileExtensionMap.put(extension, listener);
-    fileNodeMap.put(rootNodeName, listener);
+  public void addFileListener(FileListener listener) {
+    this.fileListeners.add(listener);
+    for(String s : listener.getSupportedExtensions()){
+      if(fileExtensionMap.containsKey(s) == false){
+        fileExtensionMap.put(s, listener);
+      }
+    }
+//    fileNodeMap.put(rootNodeName, listener);
   }
 
   public void openFile(String fname, boolean importfile) {
@@ -3055,14 +3185,23 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       // match by extension first
       int idx = fname.lastIndexOf('.');
       if (idx != -1) {
-        String extension = fname.substring(idx + 1);
-        listener = fileExtensionMap.get(extension);
+        for(FileListener li : fileListeners){
+          if(li.accepts(fname)){
+            listener = li;
+            break;
+          }
+        }
       }
       // otherwise try by looking at the root node
       Document document = XMLHandler.loadXMLFile(fname);
       Node root = document.getDocumentElement();
       if (listener == null) {
-        listener = fileNodeMap.get(root.getNodeName());
+        for(FileListener li : fileListeners){
+          if(li.acceptsXml(root.getNodeName())){
+            listener = li;
+            break;
+          }
+        }
       }
 
       // You got to have a file name!
@@ -3096,16 +3235,10 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
    * public void newFileDropDown() { newFileDropDown(toolbar); }
    */
 
-  public void newFileDropDown(XulToolbar usedToolBar) {
-    if (usedToolBar == null) {
-      System.out.println("Blocked new file drop down attempt");
-      return; // call it a day
-    }
-
+  public void newFileDropDown() {
     // Drop down a list below the "New" icon (new.png)
     // First problem: where is that icon?
-    //
-    XulToolbarbutton button = (XulToolbarbutton) usedToolBar.getElementById("file-new"); // = usedToolBar.getButtonById("file-new");
+    XulToolbarbutton button = (XulToolbarbutton) this.mainToolbar.getElementById("file-new"); // = usedToolBar.getButtonById("file-new");
     Object object = button.getManagedObject();
     if (object instanceof ToolItem) {
       // OK, let's determine the location of this widget...
@@ -3822,7 +3955,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       String xt = meta.getDefaultExtension();
       listener = fileExtensionMap.get(xt);
     }
-
+    
     if (listener != null) {
       String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
       if (Boolean.parseBoolean(sync)) {
@@ -4828,28 +4961,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
   }
 
   public EngineMetaInterface getActiveMeta() {
-    if (tabfolder == null)
-      return null;
-    TabItem tabItem = tabfolder.getSelected();
-    if (tabItem == null)
-      return null;
-
-    // What transformation is in the active tab?
-    // TransLog, TransGraph & TransHist contain the same transformation
-    //
-    TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
-    EngineMetaInterface meta = null;
-    if (mapEntry != null) {
-      if (mapEntry.getObject() instanceof TransGraph)
-        meta = (mapEntry.getObject()).getMeta();
-      if (mapEntry.getObject() instanceof JobGraph)
-        meta = (mapEntry.getObject()).getMeta();
-    }
-    if (meta == null) {
-      meta = mapEntry.getObject().getMeta();
-    }
-
-    return meta;
+    return SpoonPerspectiveManager.getInstance().getActivePerspective().getActiveMeta();
   }
 
   public TabItemInterface getActiveTabitem() {

@@ -1,11 +1,46 @@
 package org.pentaho.di.ui.spoon;
 
-import java.net.URL;
 import java.util.List;
 
+import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
+/**
+ * Xul-based Spoon plugin. Implementations can modify the look of Spoon, register a 
+ * SpoonLifecycleListener and add a SpoonPerspective.
+ * 
+ * @author nbaker
+ *
+ */
 public interface SpoonPlugin {
-  public List<String> getOverlays();
+  
+  /**
+   * List of XulOverlays that will be applied on Spoon startup. These overlays can modify the look 
+   * of the main UI as well as any Xul-based dialog registered in Spoon.
+   * 
+   * @return list of XulOverlays
+   */
+  public List<XulOverlay> getOverlays();
+  
+  /**
+   * List of XulEventHandlers to be registered at Spoon startup. These Event Handlers can support UI
+   * added via the Overlays or replace default registered Event Handlers
+   *  
+   * @return List of XulEventHandlers
+   */
   public List<? extends XulEventHandler> getEventHandlers();
+  
+  /**
+   * Returns an optional SpoonLifecycleListener to be notified of Spoon startup and shutdown.
+   * 
+   * @return optional SpoonLifecycleListener
+   */
+  public SpoonLifecycleListener getLifecycleListener();
+  
+  /**
+   * Returns an optional SpoonPerspective.
+   * 
+   * @return optional SpoonPerspective
+   */
+  public SpoonPerspective getPerspective();
 }

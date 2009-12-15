@@ -2522,10 +2522,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     return ti != null;
   }
 
-  public void newFileDropDown() {
-    spoon.newFileDropDown(toolbar);
-  }
-
   public void openFile() {
     spoon.openFile();
   }

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
+<window id="label-test" title="Flow Test"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="modeler.init()"
+    xmlns:pen="http://www.pentaho.org/2008/xul" pen:proxyoutercontext="true" pen:padding="0" pen:spacing="0">
+    
+  <pen:include src="menubar.xul" ignoreroot="true"/>
+    
+  <toolbar id="main-toolbar" mode="icons" >
+    <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}" menu="new-file-popup" />
+    <toolbarseparator />
+    <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
+      tooltiptext="${Spoon.Tooltip.OpenTranformation}" onclick="spoon.openFile()" />
+    <toolbarbutton id="file-save" label="${Spoon.Menu.File.Save}" image="images/save.png"
+      tooltiptext="${Spoon.Tooltip.SaveCurrentTranformation}" onclick="spoon.saveFile()" />
+    <toolbarbutton id="file-save-as" label="${Spoon.Menu.File.SaveAs}" image="images/saveas.png"
+      tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="spoon.saveFileAs()" />
+    <toolbarseparator />
+  </toolbar>
+  
+  
+  <menupopup id="new-file-popup">
+    <menuitem label="${Spoon.Menubar.File.NewJob}" command="spoon.newJobFile()" image="${SpoonIcon_image}" />
+    <menuitem id="menubar-new-trans" label="${Spoon.Menubar.File.NewTrans}" command="spoon.newTransFile()" image="${ChefIcon_image}"/>
+    <menuseparator />
+    <menuitem label="${Spoon.Menubar.File.NewDatabaseConn}" command="spoon.newConnection()" image="${CNC_image}"/>
+    <menuitem label="${Spoon.Menubar.File.NewSlave}" command="spoon.newSlaveServer()" image="${Slave_image}"/>
+  </menupopup>
+  
+  
+  <deck flex="1" id="canvas-deck">
+	</deck>
+</window>

@@ -20,9 +20,11 @@ public interface SpoonInterface extends OverwritePrompter {
     public static final int STATE_CORE_OBJECTS_CHEF     = 2;   // Chef state: job entries
     public static final int STATE_CORE_OBJECTS_SPOON    = 3;   // Spoon state: steps
 
-	public static final String XUL_FILE_MENUBAR = "ui/menubar.xul";
+    public static final String XUL_FILE_MENUBAR = "ui/menubar.xul";
+	
+    public static final String XUL_FILE_MAIN = "ui/spoon.xul";
 
-	public static final String XUL_FILE_MENUS = "ui/menus.xul";
+    public static final String XUL_FILE_MENUS = "ui/menus.xul";
 
     public boolean addSpoonBrowser(String name, String urlString);
 

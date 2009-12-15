@@ -12,6 +12,9 @@
 */
 package org.pentaho.di.ui.spoon;
 
+import java.io.File;
+import java.util.Locale;
+
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -64,4 +67,31 @@ public class JobFileListener implements FileListener {
     public void syncMetaName(EngineMetaInterface meta,String name) {
     	((JobMeta)meta).setName(name);
     }
+
+    public boolean accepts(String fileName) {
+      if(fileName == null || fileName.indexOf('.') == -1){
+        return false;
+      }
+      String extension = fileName.substring(fileName.lastIndexOf('.')+1);
+      return extension.equals("kjb");
+    }
+    
+
+    public boolean acceptsXml(String nodeName) {
+      return nodeName.equals("job");
+    }
+
+    public String[] getFileTypeDisplayNames(Locale locale) {
+      return new String[]{"Jobs", "XML"};
+    }
+
+    public String[] getSupportedExtensions() {
+      return new String[]{"kjb", "xml"};
+    }
+
+    public String getRootNodeName() {
+      return "job";
+    }
+    
+    
 }
