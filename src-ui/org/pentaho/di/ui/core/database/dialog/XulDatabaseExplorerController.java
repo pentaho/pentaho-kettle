@@ -18,13 +18,21 @@
  */
 package org.pentaho.di.ui.core.database.dialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
@@ -50,6 +58,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private BindingFactory bf;
 	private Shell shell;
 	private SwtDialog dbExplorerDialog;
+	private DBCache dbcache;
+	private List<DatabaseMeta> databases;
 	private boolean isExpanded = false;
 
 	private static final String DATABASE_IMAGE = "ui/images/folder_connection.png";
@@ -63,10 +73,12 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 	private static Log logger = LogFactory.getLog(XulDatabaseExplorerController.class);
 
-	public XulDatabaseExplorerController(Shell aShell, DatabaseMeta aMeta) {
+	public XulDatabaseExplorerController(Shell aShell, DatabaseMeta aMeta, List<DatabaseMeta> aDataBases) {
 		this.model = new XulDatabaseExplorerModel(aMeta);
 		this.shell = aShell;
 		this.bf = new DefaultBindingFactory();
+		this.databases = aDataBases;
+		this.dbcache = DBCache.getInstance();
 	}
 
 	public void init() {
@@ -116,12 +128,12 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void truncate() {
-		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), DBCache.getInstance(), "-- TRUNCATE TABLE " + this.model.getTable());
+		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "-- TRUNCATE TABLE " + this.model.getTable());
 		theSqlEditor.open();
 	}
 
 	public void viewSql() {
-		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), DBCache.getInstance(), "SELECT * FROM " + this.model.getTable());
+		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "SELECT * FROM " + this.model.getTable());
 		theSqlEditor.open();
 	}
 
@@ -163,7 +175,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			PromptCallback theCallback = new PromptCallback();
 			boolean execute = true;
 			if (askLimit) {
-				XulPromptBox thePromptBox = (XulPromptBox) document.createElement("promptbox");
+				XulPromptBox thePromptBox = (XulPromptBox) this.document.createElement("promptbox");
+				thePromptBox.setModalParent(this.dbExplorerDialog.getShell());
 				thePromptBox.setTitle("Enter Max Rows");
 				thePromptBox.setMessage("Max Rows:");
 				thePromptBox.addDialogCallback(theCallback);
@@ -254,6 +267,65 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		this.databaseTree.collapseAll();
 		this.isExpanded = false;
 		this.expandCollapseButton.setImage(EXPAND_ALL_IMAGE);
+	}
+
+	public void getDDL() {
+		Database db = new Database(this.model.getDatabaseMeta());
+		try {
+			db.connect();
+			RowMetaInterface r = db.getTableFields(this.model.getTable());
+			String sql = db.getCreateTableStatement(this.model.getTable(), r, null, false, null, true);
+			SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
+			se.open();
+		} catch (KettleDatabaseException dbe) {
+			new ErrorDialog(this.dbExplorerDialog.getShell(), Messages.getString("Dialog.Error.Header"), Messages.getString("DatabaseExplorerDialog.Error.RetrieveLayout"), dbe);
+		} finally {
+			db.disconnect();
+		}
+	}
+
+	public void getDDLForOther() {
+
+		if (databases != null) {
+			Database db = new Database(this.model.getDatabaseMeta());
+			try {
+				db.connect();
+
+				RowMetaInterface r = db.getTableFields(this.model.getTable());
+
+				// Now select the other connection...
+
+				// Only take non-SAP R/3 connections....
+				List<DatabaseMeta> dbs = new ArrayList<DatabaseMeta>();
+				for (int i = 0; i < databases.size(); i++)
+					if ((databases.get(i)).getDatabaseType() != DatabaseMeta.TYPE_DATABASE_SAPR3)
+						dbs.add(databases.get(i));
+
+				String conn[] = new String[dbs.size()];
+				for (int i = 0; i < conn.length; i++)
+					conn[i] = (dbs.get(i)).getName();
+
+				EnterSelectionDialog esd = new EnterSelectionDialog(this.dbExplorerDialog.getShell(), conn, Messages.getString("DatabaseExplorerDialog.TargetDatabase.Title"), Messages.getString("DatabaseExplorerDialog.TargetDatabase.Message"));
+				String target = esd.open();
+				if (target != null) {
+					DatabaseMeta targetdbi = DatabaseMeta.findDatabase(dbs, target);
+					Database targetdb = new Database(targetdbi);
+
+					String sql = targetdb.getCreateTableStatement(this.model.getTable(), r, null, false, null, true);
+					SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
+					se.open();
+				}
+			} catch (KettleDatabaseException dbe) {
+				new ErrorDialog(this.dbExplorerDialog.getShell(), Messages.getString("Dialog.Error.Header"), Messages.getString("DatabaseExplorerDialog.Error.GenDDL"), dbe);
+			} finally {
+				db.disconnect();
+			}
+		} else {
+			MessageBox mb = new MessageBox(this.dbExplorerDialog.getShell(), SWT.NONE | SWT.ICON_INFORMATION);
+			mb.setMessage(Messages.getString("DatabaseExplorerDialog.NoConnectionsKnown.Message"));
+			mb.setText(Messages.getString("DatabaseExplorerDialog.NoConnectionsKnown.Title"));
+			mb.open();
+		}
 	}
 
 	class PromptCallback implements XulDialogCallback {

@@ -18,6 +18,8 @@
  */
 package org.pentaho.di.ui.core.database.dialog;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
@@ -35,12 +37,14 @@ public class XulDatabaseExplorerDialog {
 	private XulRunner runner;
 	private XulDatabaseExplorerController controller;
 	private DatabaseMeta databaseMeta;
+	private List<DatabaseMeta> databases;
 	private static Log logger = LogFactory.getLog(XulDatabaseExplorerDialog.class);
 	private static final String XUL = "org/pentaho/di/ui/core/database/dialog/database_explorer.xul";
 
-	public XulDatabaseExplorerDialog(Shell aShell, DatabaseMeta aDatabaseMeta) {
+	public XulDatabaseExplorerDialog(Shell aShell, DatabaseMeta aDatabaseMeta, List<DatabaseMeta> aDataBases) {
 		this.shell = aShell;
 		this.databaseMeta = aDatabaseMeta;
+		this.databases = aDataBases;
 	}
 
 	public void open() {
@@ -50,7 +54,7 @@ public class XulDatabaseExplorerDialog {
 			theLoader.setOuterContext(this.shell);
 			this.container = theLoader.loadXul(XUL);
 
-			this.controller = new XulDatabaseExplorerController(this.shell, this.databaseMeta);
+			this.controller = new XulDatabaseExplorerController(this.shell, this.databaseMeta, this.databases);
 			this.container.addEventHandler(this.controller);
 
 			this.runner = new SwtXulRunner();

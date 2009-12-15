@@ -12,8 +12,8 @@
 	  <menuitem label="Show Layout" command="dbexplorer.showLayout()"/>
 	  <menu label="DDL">
         <menupopup>
-          <menuitem label="Use Current Connection" command=""/>
-    	  <menuitem label="Select Connection" command=""/>
+          <menuitem label="Use Current Connection" command="dbexplorer.getDDL()"/>
+    	  <menuitem label="Select Connection" command="dbexplorer.getDDLForOther()"/>
         </menupopup>
       </menu>
 	  <menuitem label="View SQL" command="dbexplorer.viewSql()"/>
