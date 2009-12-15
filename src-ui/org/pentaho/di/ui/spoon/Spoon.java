@@ -576,7 +576,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     cursor_hand = new Cursor(display, SWT.CURSOR_HAND);
 
     Composite sashComposite = null;
-    
+    MainSpoonPerspective mainPerspective = null;
     try {
       xulLoader = new SwtXulLoader();
       xulLoader.setOuterContext(shell);
@@ -594,7 +594,8 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       final Composite tempSashComposite = new Composite(shell, SWT.None);
       sashComposite = tempSashComposite;
       
-      SpoonPerspectiveManager.getInstance().addPerspective(new MainSpoonPerspective(tempSashComposite, tabfolder));
+      mainPerspective = new MainSpoonPerspective(tempSashComposite, tabfolder);
+      SpoonPerspectiveManager.getInstance().addPerspective(mainPerspective);
       
       for(XulOverlay over : SpoonPluginManager.getInstance().getOverlaysforContainer("spoon")){
         mainSpoonContainer.loadOverlay(over.getOverlayUri());
@@ -699,6 +700,8 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     createPopupMenus();
     addTree();
     addTabs();
+    mainPerspective.setTabset(this.tabfolder);
+    
     ((Composite) deck.getManagedObject()).layout(true, true);
 
 

@@ -105,4 +105,8 @@ public class MainSpoonPerspective implements SpoonPerspective {
     
   }
   
+  void setTabset(TabSet tabs){
+    this.tabfolder = tabs;
+  }
+  
 }
