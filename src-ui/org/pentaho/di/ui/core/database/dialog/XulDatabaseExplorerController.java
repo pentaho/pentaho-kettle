@@ -33,7 +33,6 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.components.XulButton;
-import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -82,17 +81,17 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 		BindingConvertor<DatabaseExplorerNode, String> theTableNameConvertor = new BindingConvertor<DatabaseExplorerNode, String>() {
 
-			public String sourceToTarget(DatabaseExplorerNode value) {
-				return value.getName();
+			public String sourceToTarget(DatabaseExplorerNode aValue) {
+				return aValue.getName();
 			}
 
-			public DatabaseExplorerNode targetToSource(String value) {
+			public DatabaseExplorerNode targetToSource(String aValue) {
 				return null;
 			}
 		};
+
 		bf.createBinding(this.databaseTree, "selectedItem", this.model, "table", theTableNameConvertor);
 
-		XulMenuList theActionsList = (XulMenuList) this.document.getElementById("actionsList");
 		BindingConvertor<DatabaseExplorerNode, Boolean> isDisabledConvertor = new BindingConvertor<DatabaseExplorerNode, Boolean>() {
 			public Boolean sourceToTarget(DatabaseExplorerNode value) {
 				return !(value != null && value.isTable());
@@ -102,8 +101,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				return null;
 			}
 		};
-		bf.createBinding(this.databaseTree, "selectedItem", "actionsList", "disabled", isDisabledConvertor);
-		bf.createBinding(theActionsList, "selectedItem", this, "command");
+
+		bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUp", "disabled", isDisabledConvertor);
 
 		fireBindings();
 	}
@@ -116,44 +115,22 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		this.dbExplorerDialog.setVisible(false);
 	}
 
-	public void setCommand(Object aCommand) {
-		if (aCommand.equals("Preview first 100")) {
-			preview(false);
-		}
-
-		if (aCommand.equals("Preview x Rows")) {
-			preview(true);
-		}
-		if (aCommand.equals("Row Count")) {
-			displayRowCount();
-		}
-		if (aCommand.equals("Show Layout")) {
-			showLayout();
-		}
-		if (aCommand.equals("View SQL")) {
-			viewSql();
-		}
-		if (aCommand.equals("Truncate Table")) {
-			truncate();
-		}
-	}
-
-	private void truncate() {
+	public void truncate() {
 		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), DBCache.getInstance(), "-- TRUNCATE TABLE " + this.model.getTable());
 		theSqlEditor.open();
 	}
 
-	private void viewSql() {
+	public void viewSql() {
 		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), DBCache.getInstance(), "SELECT * FROM " + this.model.getTable());
 		theSqlEditor.open();
 	}
 
-	private void showLayout() {
+	public void showLayout() {
 		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable());
 		theStepFieldsDialog.open(false);
 	}
 
-	private void displayRowCount() {
+	public void displayRowCount() {
 
 		try {
 			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.shell, this.model.getDatabaseMeta(), this.model.getTable());

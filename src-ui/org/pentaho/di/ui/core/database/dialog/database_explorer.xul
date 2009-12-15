@@ -5,6 +5,21 @@
 	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="dbexplorer.init()"
     xmlns:pen="http://www.pentaho.org/2008/xul" >
      
+	<menupopup id="action_popup">
+	  <menuitem label="Preview first 100" command="dbexplorer.preview(false)"/>
+	  <menuitem label="Preview x Rows" command="dbexplorer.preview(true)"/>
+	  <menuitem label="Row Count" command="dbexplorer.displayRowCount()"/>
+	  <menuitem label="Show Layout" command="dbexplorer.showLayout()"/>
+	  <menu label="DDL">
+        <menupopup>
+          <menuitem label="Use Current Connection" command=""/>
+    	  <menuitem label="Select Connection" command=""/>
+        </menupopup>
+      </menu>
+	  <menuitem label="View SQL" command="dbexplorer.viewSql()"/>
+	  <menuitem label="Truncate Table" command="dbexplorer.truncate()"/>
+	</menupopup>
+	  
     <dialog width="600" height="400" id="databaseExplorerDialog" title="Database explorer on connection"
      ondialogaccept="dbexplorer.accept()"
      ondialogcancel="dbexplorer.cancel()">
@@ -13,17 +28,8 @@
 				<spacer flex="1"/>
 				<button image="ui/images/refresh.png" onclick="dbexplorer.refresh()"/>
 				<button id="expandCollapseButton" image="ui/images/ExpandAll.png" onclick="dbexplorer.expandCollapse()"/>
-				<menulist id="actionsList" disabled="true">
-				  <menupopup>
-				    <menuitem label="Actions"/>
-				    <menuitem label="Preview first 100"/>
-				    <menuitem label="Preview x Rows"/>
-				    <menuitem label="Row Count"/>
-				    <menuitem label="Show Layout"/>
-				    <menuitem label="View SQL"/>
-				    <menuitem label="Truncate Table"/>
-				  </menupopup>
-				</menulist>
+				<label value="Actions"/>
+				<button id="buttonMenuPopUp" image="ui/images/9x9_arrow_down.gif" menu="action_popup" disabled="true"/>
 			</hbox>	    			
  			<tree id="databaseTree" flex="1" editable="false" expanded="false">
 				<treecols>
@@ -41,7 +47,7 @@
 					            </treerow>
 						        <treechildren>
 						        	<treeitem container="true" open="true">
-						            	<treerow>
+						              	<treerow>
 						                	<treecell label="Table" />
 						                </treerow>
 						                <treechildren>
