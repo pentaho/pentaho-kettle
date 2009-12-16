@@ -68,7 +68,6 @@ public class SpoonPluginManager {
   
   public List<XulOverlay> getOverlaysforContainer(String id){
     List<XulOverlay> overlays = new ArrayList<XulOverlay>();
-    Pattern pat = Pattern.compile("^"+id+"\\..*$");
     
     for(SpoonPlugin p : plugins){
       if(p.getOverlays() == null){
