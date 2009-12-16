@@ -490,7 +490,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 			item.setText(4, ValueMeta.getTypeDesc(input.getValueDefaultType()[i]));
 		}
 		
-		StreamInterface infoStream = input.getStepIOMeta().getInfoStreams()[0];
+		StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
 		wStep.setText( Const.NVL(infoStream.getStepname(), "") );
 		wPreserveMemory.setSelection(input.isMemoryPreservationActive());
         wSortedList.setSelection(input.isUsingSortedList());
@@ -541,7 +541,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 			input.getValueDefaultType()[i] = ValueMeta.getType(item.getText(4));
 		}
 		
-		StreamInterface infoStream = input.getStepIOMeta().getInfoStreams()[0];
+		StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
 		infoStream.setStepMeta( transMeta.findStep( wStep.getText() ) );
 		if (infoStream.getStepMeta()==null)
 		{

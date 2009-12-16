@@ -28,15 +28,21 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.w3c.dom.Node;
 
 
@@ -63,15 +69,10 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 	/** The grouping symbol to help parse numeric data */
 	private String caseValueGroup;
 	
-	/** The values to switch over */
-	private String[] caseValues;
-	
-	/** The case target step names  (only used during serialization) */
-	private String[] caseTargetStepnames;
-	
-	/** The case target steps */
-	private StepMeta[] caseTargetSteps;
-	
+
+	/** The targets to switch over */
+	private List<SwitchCaseTarget> caseTargets;
+		
 	/** The default target step name (only used during serialization) */
 	private String defaultTargetStepname;
 	
@@ -91,11 +92,9 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		readData(stepnode);
 	}
 
-	public void allocate(int nrCases)
+	public void allocate()
 	{
-		caseValues = new String[nrCases];
-		caseTargetStepnames = new String[nrCases];
-		caseTargetSteps = new StepMeta[nrCases];
+		caseTargets = new ArrayList<SwitchCaseTarget>();
 	}
 
 	public Object clone()
@@ -118,10 +117,10 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append(XMLHandler.addTagValue("default_target_step", defaultTargetStep==null ? null : defaultTargetStep.getName())); //$NON-NLS-1$
 		
 		retval.append(XMLHandler.openTag(XML_TAG_CASE_VALUES));
-		for (int i=0;i<caseValues.length;i++) {
+		for (SwitchCaseTarget target : caseTargets) {
 			retval.append(XMLHandler.openTag(XML_TAG_CASE_VALUE));
-			retval.append(XMLHandler.addTagValue("value", caseValues[i]));
-			retval.append(XMLHandler.addTagValue("target_step", caseTargetSteps[i]!=null ? caseTargetSteps[i].getName() : null));
+			retval.append(XMLHandler.addTagValue("value", target.caseValue));
+			retval.append(XMLHandler.addTagValue("target_step", target.caseTargetStep!=null ? target.caseTargetStep.getName() : null));
 			retval.append(XMLHandler.closeTag(XML_TAG_CASE_VALUE));
 		}
 		retval.append(XMLHandler.closeTag(XML_TAG_CASE_VALUES));
@@ -144,11 +143,13 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 			
 			Node casesNode = XMLHandler.getSubNode(stepnode, XML_TAG_CASE_VALUES);
 			int nrCases = XMLHandler.countNodes(casesNode, XML_TAG_CASE_VALUE);
-			allocate(nrCases);
+			allocate();
 			for (int i=0;i<nrCases;i++) {
 				Node caseNode = XMLHandler.getSubNodeByNr(casesNode, XML_TAG_CASE_VALUE, i);
-				caseValues[i] = XMLHandler.getTagValue(caseNode, "value");
-				caseTargetStepnames[i] = XMLHandler.getTagValue(caseNode, "target_step");
+				SwitchCaseTarget target = new SwitchCaseTarget();
+				target.caseValue = XMLHandler.getTagValue(caseNode, "value");
+				target.caseTargetStepname = XMLHandler.getTagValue(caseNode, "target_step");
+				caseTargets.add(target);
 			}
 		}
 		catch(Exception e)
@@ -159,7 +160,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
-		allocate(0);
+		allocate();
 	}
 
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
@@ -176,11 +177,12 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 			defaultTargetStepname = rep.getStepAttributeString(id_step, "default_target_step"); // $NON-NLS-1$
 			
 			int nrCases = rep.countNrStepAttributes(id_step, "case_value");
-			allocate(nrCases);
-			
+			allocate();
 			for (int i=0;i<nrCases;i++) {
-				caseValues[i] = rep.getStepAttributeString(id_step, i, "case_value");
-				caseTargetStepnames[i] = rep.getStepAttributeString(id_step, i, "case_target_step");
+				SwitchCaseTarget target = new SwitchCaseTarget();
+				target.caseValue = rep.getStepAttributeString(id_step, i, "case_value");
+				target.caseTargetStepname = rep.getStepAttributeString(id_step, i, "case_target_step");
+				caseTargets.add(target);
 			}
 		}
 		catch(Exception e)
@@ -201,10 +203,11 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "case_value_group", caseValueGroup); //$NON-NLS-1$
 			
 			rep.saveStepAttribute(id_transformation, id_step, "default_target_step", defaultTargetStep==null ? null : defaultTargetStep.getName());
-			
-			for (int i=0;i<caseValues.length;i++) {
-				rep.saveStepAttribute(id_transformation, id_step, i, "case_value", caseValues[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "case_target_step", caseTargetSteps[i]!=null ? caseTargetSteps[i].getName() : null);
+
+			for (int i=0;i<caseTargets.size();i++) {
+				SwitchCaseTarget target = caseTargets.get(i);
+				rep.saveStepAttribute(id_transformation, id_step, i, "case_value", target.caseValue);
+				rep.saveStepAttribute(id_transformation, id_step, i, "case_target_step", target.caseTargetStep!=null ? target.caseTargetStep.getName() : null);
 			}
 		}
 		catch(Exception e)
@@ -212,45 +215,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 			throw new KettleException(BaseMessages.getString(PKG, "SwitchCaseMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
-	
-	public void searchInfoAndTargetSteps(List<StepMeta> steps)
-	{
-		for (int i=0;i<caseTargetStepnames.length;i++) {
-			caseTargetSteps[i] = StepMeta.findStep(steps, caseTargetStepnames[i]); 
-		}
-		defaultTargetStep = StepMeta.findStep(steps, defaultTargetStepname);
-	}
 
-    /**
-     * @return true if this step chooses both target steps
-     */
-	public boolean chosesTargetSteps()
-	{
-	    return true;
-	}
-
-	public String[] getTargetSteps()
-	{
-		List<String> names = new ArrayList<String>();
-		for (StepMeta stepMeta : caseTargetSteps) {
-			if (stepMeta!=null) {
-				names.add(stepMeta.getName());
-			}
-		}
-		if (defaultTargetStep!=null) {
-			names.add(defaultTargetStep.getName());
-		}
-        return names.toArray(new String[names.size()]);
-	}
-    
-    /**
-     * @param targetSteps The target step(s) to set
-     */
-    public void setTargetSteps(StepMeta[] targetSteps)
-    {
-    	caseTargetSteps=targetSteps;
-    }
-    
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
 		// Default: nothing changes to rowMeta
@@ -260,18 +225,16 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		CheckResult cr;
 		
-		if ( caseTargetSteps!=null )
-		{
-			for (String stepname : caseTargetStepnames) {
-				
-				int index= Const.indexOfString(stepname, output);
-				if ( index < 0 )
-				{
-					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-							             BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.TargetStepInvalid", "false", stepname), 
-							             stepinfo);
-					remarks.add(cr);
-				}
+		StepIOMetaInterface ioMeta = getStepIOMeta();
+		for (StreamInterface stream : ioMeta.getTargetStreams()) {
+			SwitchCaseTarget target = (SwitchCaseTarget) stream.getSubject();
+	
+			if ( target.caseTargetStep==null )
+			{
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
+						             BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.TargetStepInvalid", "false", target.caseTargetStepname), 
+						             stepinfo);
+				remarks.add(cr);
 			}
 		}
 
@@ -364,47 +327,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		this.caseValueGroup = caseValueGroup;
 	}
 
-	/**
-	 * @return the caseValues
-	 */
-	public String[] getCaseValues() {
-		return caseValues;
-	}
 
-	/**
-	 * @param caseValues the caseValues to set
-	 */
-	public void setCaseValues(String[] caseValues) {
-		this.caseValues = caseValues;
-	}
-
-	/**
-	 * @return the caseTargetStepnames
-	 */
-	public String[] getCaseTargetStepnames() {
-		return caseTargetStepnames;
-	}
-
-	/**
-	 * @param caseTargetStepnames the caseTargetStepnames to set
-	 */
-	public void setCaseTargetStepnames(String[] caseTargetStepnames) {
-		this.caseTargetStepnames = caseTargetStepnames;
-	}
-
-	/**
-	 * @return the caseTargetSteps
-	 */
-	public StepMeta[] getCaseTargetSteps() {
-		return caseTargetSteps;
-	}
-
-	/**
-	 * @param caseTargetSteps the caseTargetSteps to set
-	 */
-	public void setCaseTargetSteps(StepMeta[] caseTargetSteps) {
-		this.caseTargetSteps = caseTargetSteps;
-	}
 
 	/**
 	 * @return the caseValueType
@@ -457,4 +380,110 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.isContains = isContains;
     }
+    
+	/**
+     * Returns the Input/Output metadata for this step.
+     */
+    public StepIOMetaInterface getStepIOMeta() {
+    	if (ioMeta==null) {
+
+    		ioMeta = new StepIOMeta(true, false, false, false, false, true);
+
+    		// Add the targets...
+    		//
+    		for (SwitchCaseTarget target : caseTargets) {
+				StreamInterface stream = new Stream(
+						StreamType.TARGET, 
+						target.caseTargetStep, 
+						BaseMessages.getString(PKG, "SwitchCaseMeta.TargetStream.CaseTarget.Description", Const.NVL(target.caseValue, "")), 
+						StreamIcon.TARGET, 
+						target
+					);
+				ioMeta.addStream(stream);
+    		}
+
+    		// Add the default target step as a stream
+    		//
+    		if (getDefaultTargetStep()!=null) {
+    			ioMeta.addStream( new Stream(
+    					StreamType.TARGET, 
+    					getDefaultTargetStep(), 
+    					BaseMessages.getString(PKG, "SwitchCaseMeta.TargetStream.Default.Description"), 
+    					StreamIcon.TARGET, 
+    					null
+    				) );
+    		}
+    	}
+    	
+    	return ioMeta;
+    }
+    
+	@Override
+	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
+		for (StreamInterface stream : getStepIOMeta().getTargetStreams()) {
+			SwitchCaseTarget target = (SwitchCaseTarget) stream.getSubject();
+			StepMeta stepMeta = StepMeta.findStep(steps, target.caseTargetStepname);
+			target.caseTargetStep = stepMeta;
+		}
+		defaultTargetStep = StepMeta.findStep(steps, defaultTargetStepname);
+		resetStepIoMeta();
+	}
+    
+    private static StreamInterface newDefaultStream = new Stream(StreamType.TARGET, null, BaseMessages.getString(PKG, "SwitchCaseMeta.TargetStream.Default.Description"), StreamIcon.TARGET, null);
+    private static StreamInterface newCaseTargetStream = new Stream(StreamType.TARGET, null, BaseMessages.getString(PKG, "SwitchCaseMeta.TargetStream.NewCaseTarget.Description"), StreamIcon.TARGET, null);
+    
+    public List<StreamInterface> getOptionalStreams() {
+    	List<StreamInterface> list = new ArrayList<StreamInterface>();
+    	
+    	if (getDefaultTargetStep()==null) {
+    		list.add( newDefaultStream );
+    	}
+    	list.add( newCaseTargetStream );
+    	
+    	return list;
+    }
+    
+    public void handleStreamSelection(StreamInterface stream) {
+    	if (stream==newDefaultStream) {
+			setDefaultTargetStep(stream.getStepMeta());
+    	}
+    	
+    	if (stream==newCaseTargetStream) {
+			// Add the target..
+			//
+			SwitchCaseTarget target = new SwitchCaseTarget();
+			target.caseTargetStep=stream.getStepMeta();
+			target.caseValue = stream.getStepMeta().getName();
+			caseTargets.add(target);
+    	}
+    	
+    	List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
+    	for (int i=0;i<targetStreams.size();i++) {
+    		if (stream==targetStreams.get(i)) {
+    			SwitchCaseTarget target = (SwitchCaseTarget)stream.getSubject();
+    			if (target==null) { // Default! 
+    				setDefaultTargetStep(stream.getStepMeta());
+    			} else {
+    				target.caseTargetStep = stream.getStepMeta();
+    			}
+    		}
+    	}
+    	
+    	resetStepIoMeta(); // force stepIo to be recreated when it is next needed.
+    }
+
+	/**
+	 * @return the caseTargets
+	 */
+	public List<SwitchCaseTarget> getCaseTargets() {
+		return caseTargets;
+	}
+
+	/**
+	 * @param caseTargets the caseTargets to set
+	 */
+	public void setCaseTargets(List<SwitchCaseTarget> caseTargets) {
+		this.caseTargets = caseTargets;
+	}
+
 }

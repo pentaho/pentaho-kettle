@@ -17,6 +17,8 @@
 
 package org.pentaho.di.ui.trans.steps.mergerows;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -341,10 +343,10 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 	 */ 
 	public void getData()
 	{
-		StreamInterface[] infoStreams = input.getStepIOMeta().getInfoStreams();
+		List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
 		
-		wReference.setText(Const.NVL(infoStreams[0].getStepname(), ""));
-		wCompare.setText(Const.NVL(infoStreams[1].getStepname(), ""));
+		wReference.setText(Const.NVL(infoStreams.get(0).getStepname(), ""));
+		wCompare.setText(Const.NVL(infoStreams.get(1).getStepname(), ""));
         if (input.getFlagField() !=null ) wFlagfield.setText(input.getFlagField() ); 
         
         for (int i=0;i<input.getKeyFields().length;i++)
@@ -372,9 +374,9 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 	{		
 		if (Const.isEmpty(wStepname.getText())) return;
 
-		StreamInterface[] infoStreams = input.getStepIOMeta().getInfoStreams();
-		infoStreams[0].setStepMeta( transMeta.findStep( wReference.getText() ) );
-		infoStreams[1].setStepMeta( transMeta.findStep( wCompare.getText() ) );
+		List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
+		infoStreams.get(0).setStepMeta( transMeta.findStep( wReference.getText() ) );
+		infoStreams.get(1).setStepMeta( transMeta.findStep( wCompare.getText() ) );
         input.setFlagField( wFlagfield.getText());
 
         int nrKeys   = wKeys.nrNonEmpty();

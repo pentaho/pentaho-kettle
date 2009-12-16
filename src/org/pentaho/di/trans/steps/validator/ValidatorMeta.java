@@ -11,6 +11,7 @@
  
 package org.pentaho.di.trans.steps.validator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,10 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.w3c.dom.Node;
 
 
@@ -51,7 +55,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	private static Class<?> PKG = ValidatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     /** The calculations to be performed */
-    private Validation[] validations;
+    private List<Validation> validations;
     
     /** Checkbox to have all rules validated, with all the errors in the output */
     private boolean validatingAll;
@@ -73,7 +77,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
     
     public void allocate(int nrValidations)
     {
-    	validations = new Validation[nrValidations];
+    	validations = new ArrayList<Validation>(nrValidations);
     }
     
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
@@ -87,8 +91,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
         for (int i=0;i<nrCalcs;i++)
         {
             Node calcnode = XMLHandler.getSubNodeByNr(stepnode, Validation.XML_TAG, i);
-            validations[i] = new Validation(calcnode);
-            getStepIOMeta().addInfoStream(validations[i].getSourcingStepName(), null, validations[i].getName());
+            validations.add( new Validation(calcnode) );
         }
 	}
     
@@ -100,11 +103,9 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
         retval.append(XMLHandler.addTagValue("concat_errors", concatenatingErrors));
         retval.append(XMLHandler.addTagValue("concat_separator", concatenationSeparator));
         
-        StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
-        for (int i=0;i<validations.length;i++)
+        for (int i=0;i<validations.size();i++)
         {
-        	validations[i].setSourcingStepName(infoStreams[i].getStepname());  // Just to make sure
-            retval.append("       ").append(validations[i].getXML()).append(Const.CR);
+            retval.append("       ").append(validations.get(i).getXML()).append(Const.CR);
         }
         
         return retval.toString();
@@ -126,8 +127,10 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		ValidatorMeta retval = (ValidatorMeta) super.clone();
         if (validations!=null)
         {
-            retval.allocate(validations.length);
-            for (int i=0;i<validations.length;i++) retval.validations[i] = validations[i].clone();
+            retval.allocate(validations.size());
+            for (int i=0;i<validations.size();i++) {
+            	retval.validations.add(validations.get(i).clone());
+            }
         }
         else
         {
@@ -138,7 +141,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		validations = new Validation[0];
+		validations = new ArrayList<Validation>();
 		concatenationSeparator="|";
 	}
 
@@ -152,8 +155,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
         
         for (int i=0;i<nrValidationFields;i++)
         {
-        	validations[i] = new Validation(rep, id_step, i);
-            getStepIOMeta().addInfoStream(validations[i].getSourcingStepName(), null, validations[i].getName());
+        	validations.add( new Validation(rep, id_step, i) );
         }
 	}
 	
@@ -164,12 +166,9 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		rep.saveStepAttribute(id_transformation, id_step, "concat_errors", concatenatingErrors);
 		rep.saveStepAttribute(id_transformation, id_step, "concat_separator", concatenationSeparator);
 		
-        StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
-
-        for (int i=0;i<validations.length;i++)
+        for (int i=0;i<validations.size();i++)
         {
-        	validations[i].setSourcingStepName(infoStreams[i].getStepname()); // Just to make sure
-        	validations[i].saveRep(rep, id_transformation, id_step, i);
+        	validations.get(i).saveRep(rep, id_transformation, id_step, i);
         }
 	}
     
@@ -210,8 +209,6 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 		return new ValidatorData();
 	}
 
-
-
 	public boolean supportsErrorHandling() {
 		return true;
 	}
@@ -220,7 +217,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	/**
 	 * @return the validations
 	 */
-	public Validation[] getValidations() {
+	public List<Validation> getValidations() {
 		return validations;
 	}
 
@@ -228,7 +225,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
 	/**
 	 * @param validations the validations to set
 	 */
-	public void setValidations(Validation[] validations) {
+	public void setValidations(List<Validation> validations) {
 		this.validations = validations;
 	}
 
@@ -287,12 +284,57 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
     public StepIOMetaInterface getStepIOMeta() {
     	if (ioMeta==null) {
 
-    		ioMeta = new StepIOMeta(true, true, false, false);
-	    	ioMeta.setGeneralInfoDescription(BaseMessages.getString(PKG, "ValidatorMeta.InfoStream.Description"));
+    		ioMeta = new StepIOMeta(true, true, false, false, true, false);
 
+    		// Add the info sources...
+    		//
+    		for (Validation validation : validations) {
+				StreamInterface stream = new Stream(
+						StreamType.INFO,
+						validation.getSourcingStep(), 
+						BaseMessages.getString(PKG, "ValidatorMeta.InfoStream.ValidationInput.Description", Const.NVL(validation.getName(), "")), 
+						StreamIcon.INFO, 
+						validation
+					);
+				ioMeta.addStream(stream);
+    		}
     	}
     	
     	return ioMeta;
     }
-
+    
+	@Override
+	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
+		for (StreamInterface stream : getStepIOMeta().getTargetStreams()) {
+			Validation validation = (Validation) stream.getSubject();
+			StepMeta stepMeta = StepMeta.findStep(steps, validation.getSourcingStepName());
+			validation.setSourcingStep(stepMeta);
+		}
+		resetStepIoMeta();
+	}
+    
+    private static StreamInterface newValidation = new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "ValidatorMeta.NewValidation.Description"), StreamIcon.INFO, null);
+    
+    public List<StreamInterface> getOptionalStreams() {
+    	List<StreamInterface> list = new ArrayList<StreamInterface>();
+    	
+    	list.add( newValidation );
+    	
+    	return list;
+    }
+    
+    public void handleStreamSelection(StreamInterface stream) {
+    	if (stream==newValidation) {
+    		
+			// Add the info..
+			//
+    		Validation validation = new Validation();
+    		validation.setName(stream.getStepname());
+    		validation.setSourcingStep(stream.getStepMeta());
+    		validation.setSourcingValues(true);
+			validations.add(validation);
+    	}
+    	
+    	resetStepIoMeta(); // force stepIo to be recreated when it is next needed.
+    }
 }

@@ -121,7 +121,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 
 	private boolean readLookupValues() throws KettleException
 	{
-		data.infoStream = meta.getStepIOMeta().getInfoStreams()[0];
+		data.infoStream = meta.getStepIOMeta().getInfoStreams().get(0);
 		if (data.infoStream.getStepMeta()==null)
 		{
 			logError(BaseMessages.getString(PKG, "StreamLookup.Log.NoLookupStepSpecified")); //$NON-NLS-1$

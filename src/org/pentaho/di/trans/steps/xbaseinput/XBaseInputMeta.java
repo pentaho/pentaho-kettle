@@ -301,7 +301,6 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
         return null;
     }
 
-    @Override
     public void searchInfoAndTargetSteps(List<StepMeta> steps) {
         acceptingStep = StepMeta.findStep(steps, acceptingStepName);
     }
@@ -312,7 +311,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
         {
             return new String[] { acceptingStep.getName() };
         }
-        return super.getInfoSteps();
+        return null;
     }
     
     public RowMetaInterface getOutputFields(FileInputList files, String name) throws KettleStepException {

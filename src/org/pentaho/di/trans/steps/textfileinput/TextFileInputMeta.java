@@ -1062,7 +1062,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			return new String[] { acceptingStep.getName() };
 		}
-		return super.getInfoSteps();
+		return null;
 	}
 	
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException

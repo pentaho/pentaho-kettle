@@ -445,7 +445,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 		row.addRowMeta(mappingOutputRowMeta);
     }
     
-    @Override
     public String[] getInfoSteps() {
 
     	List<String> infoSteps = new ArrayList<String>();
@@ -460,7 +459,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     	return infoSteps.toArray(new String[infoSteps.size()]);
     }
     
-    @Override
     public String[] getTargetSteps() {
 
     	List<String> targetSteps = new ArrayList<String>();

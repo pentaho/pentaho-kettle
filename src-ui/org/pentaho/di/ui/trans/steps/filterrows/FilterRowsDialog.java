@@ -264,10 +264,10 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 	 */ 
 	public void getData()
 	{
-    	StreamInterface[] targetStreams = input.getStepIOMeta().getTargetStreams();
+    	List<StreamInterface> targetStreams = input.getStepIOMeta().getTargetStreams();
 
-		wTrueTo.setText(Const.NVL(targetStreams[0].getStepname(), ""));
-		wFalseTo.setText(Const.NVL(targetStreams[1].getStepname(), ""));
+		wTrueTo.setText(Const.NVL(targetStreams.get(0).getStepname(), ""));
+		wFalseTo.setText(Const.NVL(targetStreams.get(1).getStepname(), ""));
 		wStepname.selectAll();
 	}
 	
@@ -295,12 +295,10 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
             String falseStepname = wFalseTo.getText();
             if (falseStepname.length() == 0) falseStepname = null;
 
-            StreamInterface[] targetStreams = input.getStepIOMeta().getTargetStreams();
+            List<StreamInterface> targetStreams = input.getStepIOMeta().getTargetStreams();
 
-            targetStreams[0].setStepname(trueStepname);
-            targetStreams[0].setStepMeta(transMeta.findStep( trueStepname ) );
-            targetStreams[1].setStepname(falseStepname);
-            targetStreams[1].setStepMeta(transMeta.findStep( falseStepname ) );
+            targetStreams.get(0).setStepMeta(transMeta.findStep( trueStepname ) );
+            targetStreams.get(1).setStepMeta(transMeta.findStep( falseStepname ) );
             
 			stepname = wStepname.getText(); // return value
 			input.setCondition( condition );

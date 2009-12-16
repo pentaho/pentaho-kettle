@@ -78,17 +78,17 @@ public class JavaFilter extends BaseStep implements StepInterface
             //
             if (data.chosesTargetSteps)
             {
-            	StreamInterface[] targetStreams = meta.getStepIOMeta().getTargetStreams();
-            	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), targetStreams[0].getStepname(), 0);
+            	List<StreamInterface> targetStreams = meta.getStepIOMeta().getTargetStreams();
+            	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), targetStreams.get(0).getStepname(), 0);
             	if ( data.trueRowSet == null )
             	{
-            		throw new KettleException(BaseMessages.getString(PKG, "JavaFilter.Log.TargetStepInvalid", targetStreams[0].getStepname()));
+            		throw new KettleException(BaseMessages.getString(PKG, "JavaFilter.Log.TargetStepInvalid", targetStreams.get(0).getStepname()));
             	}
             	
-            	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), targetStreams[1].getStepname(), 0);
+            	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), targetStreams.get(1).getStepname(), 0);
             	if ( data.falseRowSet == null )
             	{
-            		throw new KettleException(BaseMessages.getString(PKG, "JavaFilter.Log.TargetStepInvalid", targetStreams[1].getStepname()));
+            		throw new KettleException(BaseMessages.getString(PKG, "JavaFilter.Log.TargetStepInvalid", targetStreams.get(1).getStepname()));
             	}            	
             }
 
@@ -208,17 +208,17 @@ public class JavaFilter extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-        	StreamInterface[] targetStreams = meta.getStepIOMeta().getTargetStreams();
-        	data.trueStepname = targetStreams[0].getStepname();
-        	data.falseStepname = targetStreams[1].getStepname();
+        	List<StreamInterface> targetStreams = meta.getStepIOMeta().getTargetStreams();
+        	data.trueStepname = targetStreams.get(0).getStepname();
+        	data.falseStepname = targetStreams.get(1).getStepname();
         	
-            if (targetStreams[0].getStepMeta()!=null ^ targetStreams[1].getStepMeta()!=null)
+            if (targetStreams.get(0).getStepMeta()!=null ^ targetStreams.get(1).getStepMeta()!=null)
             {
                 logError(BaseMessages.getString(PKG, "JavaFilter.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
             }
             else
             {
-            	data.chosesTargetSteps = targetStreams[0].getStepMeta()!=null && targetStreams[1].getStepMeta()!=null;
+            	data.chosesTargetSteps = targetStreams.get(0).getStepMeta()!=null && targetStreams.get(1).getStepMeta()!=null;
             	
                 return true;
             } 

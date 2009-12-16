@@ -1990,7 +1990,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
      * @since 15-FEB-2008
      */
     private void checkAlerts() {
-    	logBasic("checkAlerts");
+    	logDebug("checkAlerts");
     	//# Check the fields tab. At least one field is required.
     	//# Check the Sheets tab. At least one sheet is required.
     	//# Check the Files tab.

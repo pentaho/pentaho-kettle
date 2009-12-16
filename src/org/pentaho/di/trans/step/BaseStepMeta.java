@@ -39,6 +39,7 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 
 /*
@@ -111,45 +112,6 @@ public class BaseStepMeta implements Cloneable
 		return null;
 	}
 	
-	/**
-	 * @param steps optionally search the info step in a list of steps
-	 */
-	public void searchInfoAndTargetSteps(List<StepMeta> steps)
-	{
-	}
-
-	public boolean chosesTargetSteps()
-	{
-	    return false;
-	}
-
-	public String[] getTargetSteps()
-	{
-	    return null;
-	}
-
-	/**
-	 * @return the informational source steps, if any. Null is the default: none.
-	 */
-	public String[] getInfoSteps()
-	{
-	    return null;
-	}
-    
-    /**
-     * @param infoSteps The info step(s) to set
-     */
-    public void setInfoSteps(StepMeta[] infoSteps)
-    {
-    }
-    
-    /**
-     * @param targetSteps The target step(s) to set
-     */
-    public void setTargetSteps(StepMeta[] targetSteps)
-    {
-    }
-
 	/**
 	 * Produces the XML string that describes this step's information.
 	 * 
@@ -443,8 +405,35 @@ public class BaseStepMeta implements Cloneable
      */
     public StepIOMetaInterface getStepIOMeta() {
     	if (ioMeta==null) {
-    		ioMeta = new StepIOMeta(true, true, true, false);
+    		ioMeta = new StepIOMeta(true, true, true, false, false, false);
     	}
     	return ioMeta;
     }
+    
+    /**
+     * @return The list of optional input streams.  
+     * It allows the user to select from a list of possible actions like "New target step" 
+     */
+    public List<StreamInterface> getOptionalStreams() {
+    	List<StreamInterface> list = new ArrayList<StreamInterface>();
+    	return list;
+    }
+    
+    /**
+     * When an optional stream is selected, this method is called to handled the ETL metadata implications of that.
+     * @param stream The optional stream to handle.
+     */
+	public void handleStreamSelection(StreamInterface stream) {
+	}
+	
+	public void resetStepIoMeta() {
+		ioMeta=null;
+	}
+
+	/**
+	 * Change step names into step objects to allow them to be name-changed etc.
+	 * @param steps the steps to reference
+	 */
+	public void searchInfoAndTargetSteps(List<StepMeta> steps) {		
+	}
 }

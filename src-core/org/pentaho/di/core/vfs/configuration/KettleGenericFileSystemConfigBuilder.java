@@ -18,7 +18,6 @@ import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.provider.UriParser;
 import org.apache.commons.vfs.util.DelegatingFileSystemOptionsBuilder;
 import org.mortbay.log.Log;
 

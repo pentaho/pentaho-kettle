@@ -1701,6 +1701,16 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
 			}
     	}
     	
+	    // Have all threads started?
+	    // Are we running yet?  If not, wait a bit until all threads have been started.
+	    if (this.checkTransRunning == false) {
+	    	while (!trans.isRunning() && !stopped.get())
+	        {
+	            try { Thread.sleep(1); } catch (InterruptedException e) { }
+	        }
+	    	this.checkTransRunning = true;
+	    }
+    	
 	    // To reduce stress on the locking system we are going to allow
 	    // The buffer to grow beyond "a few" entries.
 	    // We'll only do that if the previous step has not ended...

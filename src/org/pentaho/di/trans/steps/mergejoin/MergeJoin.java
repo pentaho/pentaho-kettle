@@ -12,6 +12,7 @@
 package org.pentaho.di.trans.steps.mergejoin;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -73,16 +74,16 @@ public class MergeJoin extends BaseStep implements StepInterface
             
             // Find the RowSet to read from
             //
-            StreamInterface[] infoStreams = meta.getStepIOMeta().getInfoStreams();
+            List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
 
-            data.oneRowSet = findInputRowSet(infoStreams[0].getStepname());
+            data.oneRowSet = findInputRowSet(infoStreams.get(0).getStepname());
             if (data.oneRowSet==null) {
-            	throw new KettleException( BaseMessages.getString(PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams[0].getStepname()) );
+            	throw new KettleException( BaseMessages.getString(PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams.get(0).getStepname()) );
             }
 
-            data.twoRowSet = findInputRowSet(infoStreams[1].getStepname());
+            data.twoRowSet = findInputRowSet(infoStreams.get(1).getStepname());
             if (data.twoRowSet==null) {
-            	throw new KettleException( BaseMessages.getString(PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams[1].getStepname()) );
+            	throw new KettleException( BaseMessages.getString(PKG, "MergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams.get(1).getStepname()) );
             }
             
             data.one=getRowFrom(data.oneRowSet);
@@ -93,7 +94,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             else
             {
             	data.one=null;
-            	data.oneMeta=getTransMeta().getStepFields(infoStreams[0].getStepname());
+            	data.oneMeta=getTransMeta().getStepFields(infoStreams.get(0).getStepname());
             }
             
             data.two=getRowFrom(data.twoRowSet);
@@ -104,7 +105,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             else
             {
             	data.two=null;
-            	data.twoMeta=getTransMeta().getStepFields(infoStreams[1].getStepname());
+            	data.twoMeta=getTransMeta().getStepFields(infoStreams.get(1).getStepname());
             }
             
             // just for speed: oneMeta+twoMeta
@@ -427,8 +428,8 @@ public class MergeJoin extends BaseStep implements StepInterface
 
         if (super.init(smi, sdi))
         {
-            StreamInterface[] infoStreams = meta.getStepIOMeta().getInfoStreams();
-            if (infoStreams[0].getStepMeta()==null || infoStreams[1].getStepMeta()==null)
+            List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
+            if (infoStreams.get(0).getStepMeta()==null || infoStreams.get(1).getStepMeta()==null)
             {
                 logError(BaseMessages.getString(PKG, "MergeJoin.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
                 return false;

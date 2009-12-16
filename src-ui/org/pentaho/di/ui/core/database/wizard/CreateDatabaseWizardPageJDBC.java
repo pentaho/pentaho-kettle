@@ -220,17 +220,13 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		IWizard wiz = getWizard();
 		
 		IWizardPage nextPage;
-		switch(info.getDatabaseType())
-		{
-		case DatabaseMeta.TYPE_DATABASE_ORACLE:
+		if (info.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_ORACLE) {
 			nextPage = wiz.getPage("oracle"); // Oracle //$NON-NLS-1$
-			break;
-		case DatabaseMeta.TYPE_DATABASE_INFORMIX:
+		} else if (info.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_INFORMIX) {
 			nextPage = wiz.getPage("ifx"); // Informix //$NON-NLS-1$
-			break;
-		default: 
+		} else
+		{
 			nextPage = wiz.getPage("2"); // page 2 //$NON-NLS-1$
-			break;
 		}
 		
 		return nextPage;

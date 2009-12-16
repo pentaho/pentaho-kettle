@@ -35,13 +35,16 @@ import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.gui.OverwritePrompter;
+import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LoggingHierarchy;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -273,7 +276,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		}
 		finally
 		{
-			fireJobListeners();
+			try {
+				fireJobListeners();
+			} catch(KettleException e) {
+				result.setNrErrors(1);
+				result.setResult(false);
+				log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()));
+			}
 		}
 	}
 
@@ -361,7 +370,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 * 
 	 * @see JobListener#jobFinished(Job)
 	 */
-	private void fireJobListeners() {
+	private void fireJobListeners() throws KettleException {
 		for (JobListener jobListener : jobListeners) {
 			jobListener.jobFinished(this);
 		}
@@ -803,6 +812,23 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 				ldb.disconnect();
 			}
 		}
+		
+        // If we need to write the log channel hierarchy and lineage information, add a listener for that too... 
+        //
+        ChannelLogTable channelLogTable = jobMeta.getChannelLogTable();
+        if (channelLogTable.isDefined()) {
+            addJobListener(new JobListener() {
+            	
+            	public void jobFinished(Job job) throws KettleException {
+					try {
+						writeLogChannelInformation();
+					} catch(KettleException e) {
+						throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"), e);
+					}
+				}
+			});
+        }
+
 
 		return true;
 	}
@@ -864,6 +890,31 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			throw new KettleJobException(e); // In case something else goes wrong.
 		}
 	}
+	
+	protected void writeLogChannelInformation() throws KettleException {
+		Database db = null;
+		ChannelLogTable channelLogTable = jobMeta.getChannelLogTable();
+		try {
+			db = new Database(this, channelLogTable.getDatabaseMeta());
+			db.shareVariablesWith(this);
+			db.connect();
+			
+			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
+			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
+				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy);
+			}
+			
+			// Also time-out the log records in here...
+			//
+			db.cleanupLogRecords(channelLogTable);
+
+		} catch(Exception e) {
+			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable"), e);
+		} finally {
+			db.disconnect();
+		}
+	}
+
 	
 	public boolean isActive()
 	{
@@ -1404,5 +1455,18 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	public RepositoryDirectory getRepositoryDirectory() {
 		if (jobMeta==null) return null;
 		return jobMeta.getRepositoryDirectory();
+	}
+	
+	public List<LoggingHierarchy> getLoggingHierarchy() {
+		List<LoggingHierarchy> hierarchy = new ArrayList<LoggingHierarchy>();
+		List<String> childIds = LoggingRegistry.getInstance().getLogChannelChildren(getLogChannelId());
+		for (String childId : childIds) {
+			LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(childId);
+			if (loggingObject!=null) {
+				hierarchy.add(new LoggingHierarchy(getLogChannelId(), batchId, loggingObject));
+			}
+		}
+		
+		return hierarchy;
 	}
 }

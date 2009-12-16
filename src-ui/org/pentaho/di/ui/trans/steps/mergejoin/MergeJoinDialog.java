@@ -17,6 +17,8 @@
 
 package org.pentaho.di.ui.trans.steps.mergejoin;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -349,10 +351,10 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 	 */ 
 	public void getData()
 	{
-        StreamInterface[] infoStreams = input.getStepIOMeta().getInfoStreams();
+        List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
 
-		wStep1.setText(Const.NVL(infoStreams[0].getStepname(), ""));
-		wStep2.setText(Const.NVL(infoStreams[1].getStepname(), ""));
+		wStep1.setText(Const.NVL(infoStreams.get(0).getStepname(), ""));
+		wStep2.setText(Const.NVL(infoStreams.get(1).getStepname(), ""));
 		String joinType = input.getJoinType();
 		if (joinType != null && joinType.length() > 0)
 			wType.setText(joinType);
@@ -382,10 +384,10 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     
     private void getMeta(MergeJoinMeta meta)
     {      
-    	StreamInterface[] infoStreams = meta.getStepIOMeta().getInfoStreams();
+    	List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
 
-        infoStreams[0].setStepMeta( transMeta.findStep( wStep1.getText() ) );
-        infoStreams[1].setStepMeta( transMeta.findStep( wStep2.getText() ) );
+        infoStreams.get(0).setStepMeta( transMeta.findStep( wStep1.getText() ) );
+        infoStreams.get(1).setStepMeta( transMeta.findStep( wStep2.getText() ) );
         meta.setJoinType(wType.getText());
 
         int nrKeys1   = wKeys1.nrNonEmpty();
@@ -446,9 +448,9 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         
         try
         {
-            StreamInterface[] infoStreams = input.getStepIOMeta().getInfoStreams();
+            List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
 
-            StepMeta stepMeta = transMeta.findStep(infoStreams[0].getStepname());
+            StepMeta stepMeta = transMeta.findStep(infoStreams.get(0).getStepname());
             if (stepMeta!=null)
             {
                 RowMetaInterface prev = transMeta.getStepFields(stepMeta);
@@ -471,9 +473,9 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 
         try
         {
-            StreamInterface[] infoStreams = input.getStepIOMeta().getInfoStreams();
+            List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
 
-            StepMeta stepMeta = transMeta.findStep(infoStreams[1].getStepname());
+            StepMeta stepMeta = transMeta.findStep(infoStreams.get(1).getStepname());
             if (stepMeta!=null)
             {
                 RowMetaInterface prev = transMeta.getStepFields(stepMeta);

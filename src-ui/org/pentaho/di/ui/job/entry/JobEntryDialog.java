@@ -172,7 +172,7 @@ public class JobEntryDialog extends Dialog {
   public void addDatabases(CCombo wConnection, int databaseType) {
     for (int i = 0; i < jobMeta.nrDatabases(); i++) {
       DatabaseMeta ci = jobMeta.getDatabase(i);
-      if (ci.getDatabaseType()==databaseType || databaseType<0)
+      if (databaseType<0 || ci.getDatabaseType() == databaseType)
       {
     	  wConnection.add(ci.getName());
       }

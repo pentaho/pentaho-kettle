@@ -32,6 +32,7 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.w3c.dom.Node;
 
 
@@ -253,4 +254,28 @@ public interface StepMetaInterface
      * Returns the Input/Output metadata for this step.
      */
     public StepIOMetaInterface getStepIOMeta();
+
+    /**
+     * @return The list of optional input streams.  
+     * It allows the user to select from a list of possible actions like "New target step" 
+     */
+    public List<StreamInterface> getOptionalStreams();
+
+    /**
+     * When an optional stream is selected, this method is called to handled the ETL metadata implications of that.
+     * @param stream The optional stream to handle.
+     */
+	public void handleStreamSelection(StreamInterface stream);
+	
+	/**
+	 * For steps that handle dynamic input (info) or output (target) streams, it is useful to be able to force the recreate the StepIoMeta definition.
+	 * By default this definition is cached. 
+	 */
+	public void resetStepIoMeta();
+
+	/**
+	 * Change step names into step objects to allow them to be name-changed etc.
+	 * @param steps the steps to reference
+	 */
+	public void searchInfoAndTargetSteps(List<StepMeta> steps);
 }

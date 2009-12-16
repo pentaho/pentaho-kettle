@@ -12,23 +12,31 @@ import java.util.List;
  */
 public class DelayTimer implements Runnable {
 	
-	private int	delayInSeconds;
+	private int	delayInMiliseconds;
+	private boolean stopped;
 	
 	private List<DelayListener> delayListeners;
+	private long	start;
 
-	public DelayTimer(int delayInSeconds) {
-		this.delayInSeconds = delayInSeconds;
+	public DelayTimer(int delayInMiliseconds) {
+		this.delayInMiliseconds = delayInMiliseconds;
 		this.delayListeners = new ArrayList<DelayListener>();
+		
+		stopped=false;
 	}
 
-	public DelayTimer(int delayInSeconds, DelayListener delayListener) {
-		this(delayInSeconds);
+	public DelayTimer(int delayInMilliseconds, DelayListener delayListener) {
+		this(delayInMilliseconds);
 		addDelayListener(delayListener);
 	}
 	
+	public void reset() {
+		start = System.currentTimeMillis();
+	}
+	
 	public void run() {
-		long start = System.currentTimeMillis();
-		while ( (System.currentTimeMillis()-start)<(delayInSeconds*1000) ) {
+		reset();
+		while ( (System.currentTimeMillis()-start)<(delayInMiliseconds) && !stopped ) {
 			try {
 				Thread.sleep(25);
 			} catch (InterruptedException e) {
@@ -44,21 +52,26 @@ public class DelayTimer implements Runnable {
 		}
 	}
 	
+	public void stop() {
+		stopped=true;
+	}
+	
 	public void addDelayListener(DelayListener delayListener) {
 		delayListeners.add(delayListener);
 	}
 
 	/**
-	 * @return the delayInSeconds
+	 * @return the delay in milliseconds
 	 */
-	public int getDelayInSeconds() {
-		return delayInSeconds;
+	public int getDelayInMilliseconds() {
+		return delayInMiliseconds;
 	}
 
 	/**
-	 * @param delayInSeconds the delayInSeconds to set
+	 * @param delayInMilliseconds the delay in milliseconds to set
 	 */
-	public void setDelayInSeconds(int delayInSeconds) {
-		this.delayInSeconds = delayInSeconds;
+	public void setDelayInSeconds(int delayInMilliseconds) {
+		this.delayInMiliseconds = delayInMilliseconds;
 	}
+
 }

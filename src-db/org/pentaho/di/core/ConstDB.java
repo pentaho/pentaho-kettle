@@ -17,8 +17,7 @@ public class ConstDB {
 
 		for (DatabaseMeta db : databases)
 		{
-			if (db.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SAPR3)
-			{
+			if (db.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SAPR3) {
 				sap.add(db);
 			}
 		}

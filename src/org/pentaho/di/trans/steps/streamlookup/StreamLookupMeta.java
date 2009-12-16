@@ -45,6 +45,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.w3c.dom.Node;
@@ -252,8 +253,8 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 			int nrkeys, nrvalues;
 			
 			String lookupFromStepname = XMLHandler.getTagValue(stepnode, "from"); //$NON-NLS-1$
-			StreamInterface infoStream = getStepIOMeta().getInfoStreams()[0];
-			infoStream.setStepname(lookupFromStepname);
+			StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
+			infoStream.setSubject(lookupFromStepname);
             
             inputSorted = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "input_sorted")); //$NON-NLS-1$ //$NON-NLS-2$
             memoryPreservationActive = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "preserve_memory")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -289,6 +290,13 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		catch(Exception e)
 		{
 			throw new KettleXMLException(BaseMessages.getString(PKG, "StreamLookupMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+		}
+	}
+	
+	@Override
+	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
+		for (StreamInterface stream : getStepIOMeta().getTargetStreams()) {
+			stream.setStepMeta( StepMeta.findStep(steps, (String)stream.getSubject()) );
 		}
 	}
 	
@@ -359,7 +367,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-        StreamInterface infoStream = getStepIOMeta().getInfoStreams()[0];
+        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 		retval.append("    "+XMLHandler.addTagValue("from", infoStream.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("    "+XMLHandler.addTagValue("input_sorted", inputSorted)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    "+XMLHandler.addTagValue("preserve_memory", memoryPreservationActive)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -394,8 +402,8 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			String lookupFromStepname =  rep.getStepAttributeString (id_step, "lookup_from_step"); //$NON-NLS-1$
-			StreamInterface infoStream = getStepIOMeta().getInfoStreams()[0];
-			infoStream.setStepname(lookupFromStepname);
+			StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
+			infoStream.setSubject(lookupFromStepname);
 
             inputSorted = rep.getStepAttributeBoolean(id_step, "input_sorted"); //$NON-NLS-1$
 			memoryPreservationActive = rep.getStepAttributeBoolean(id_step, "preserve_memory"); // $NON-NLS-1$
@@ -431,7 +439,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-	        StreamInterface infoStream = getStepIOMeta().getInfoStreams()[0];
+	        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 			rep.saveStepAttribute(id_transformation, id_step, "lookup_from_step",  infoStream.getStepname()); //$NON-NLS-1$ //$NON-NLS-2$
             rep.saveStepAttribute(id_transformation, id_step, "input_sorted", inputSorted); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "preserve_memory", memoryPreservationActive); // $NON-NLS-1$
@@ -562,7 +570,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 		// See if the source step is filled in!
-        StreamInterface infoStream = getStepIOMeta().getInfoStreams()[0];
+        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
 		if (infoStream.getStepMeta()==null)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "StreamLookupMeta.CheckResult.SourceStepNotSelected"), stepMeta); //$NON-NLS-1$
@@ -658,9 +666,9 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
     public StepIOMetaInterface getStepIOMeta() {
     	if (ioMeta==null) {
 
-    		ioMeta = new StepIOMeta(true, true, false, false);
+    		ioMeta = new StepIOMeta(true, true, false, false, false, false);
     	
-	    	StreamInterface stream = new Stream(StreamType.INFO, null, null, BaseMessages.getString(PKG, "StreamLookupMeta.InfoStream.Description"));
+	    	StreamInterface stream = new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "StreamLookupMeta.InfoStream.Description"), StreamIcon.INFO, null);
 	    	ioMeta.addStream(stream);
     	}
     	

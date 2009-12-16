@@ -12,7 +12,6 @@
 */
 package org.pentaho.di.ui.spoon;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,13 +34,13 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.AreaOwner.AreaType;
+import org.pentaho.di.ui.spoon.trans.TransGraph;
 
 
 
@@ -63,6 +62,11 @@ public class TransPainter
 	
 	public static final String[] magnificationDescriptions = 
 		new String[] { "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% "};
+	
+	private static final int	MINI_ICON_MARGIN = 5;
+	private static final int	MINI_ICON_TRIANGLE_BASE = 10;
+	private static final int	MINI_ICON_DISTANCE = 7;
+	private static final int	MINI_ICON_SKEW = 0;
 
 	public final double theta = Math.toRadians(11); // arrowhead sharpness
 	
@@ -85,13 +89,13 @@ public class TransPainter
     private Color        black;
     private Color        red;
     //private Color        yellow;
-    private Color        orange;
-    private Color        green;
+    // private Color        orange;
+    // private Color        green;
     private Color        blue;
     // private Color        magenta;
     private Color        gray;
     private Color        lightGray;
-    //private Color        darkGray;
+    private Color        darkGray;
 
     private Font         noteFont;
     private Font         graphFont;
@@ -117,19 +121,9 @@ public class TransPainter
 	private Point       endHopLocation;
 	private StepMeta    endHopStep;
 	private StepMeta       noInputStep;
-	private boolean     showingHopInputIcons;
 	private StreamType	candidateHopType;
 	private boolean 	startErrorHopStep;
-
-    public TransPainter(TransMeta transMeta)
-    {
-        this(transMeta, transMeta.getMaximum(), null, null, null, null, null, new ArrayList<AreaOwner>(), null);
-    }
-
-    public TransPainter(TransMeta transMeta, Point area)
-    {
-        this(transMeta, area, null, null, null, null, null, new ArrayList<AreaOwner>(), null);
-    }
+	private StepMeta showTargetStreamsStep;
 
     public TransPainter(TransMeta transMeta, 
                         Point area, 
@@ -145,13 +139,13 @@ public class TransPainter
         this.black          = GUIResource.getInstance().getColorBlack();
         this.red            = GUIResource.getInstance().getColorRed();
         //this.yellow         = GUIResource.getInstance().getColorYellow();
-        this.orange         = GUIResource.getInstance().getColorOrange();
-        this.green          = GUIResource.getInstance().getColorGreen();
+        // this.orange         = GUIResource.getInstance().getColorOrange();
+        // this.green          = GUIResource.getInstance().getColorGreen();
         this.blue           = GUIResource.getInstance().getColorBlue();
         // this.magenta        = GUIResource.getInstance().getColorMagenta();
         this.gray           = GUIResource.getInstance().getColorGray();
         this.lightGray      = GUIResource.getInstance().getColorLightGray();
-        //this.darkGray       = GUIResource.getInstance().getColorDarkGray();
+        this.darkGray       = GUIResource.getInstance().getColorDarkGray();
         
         this.area           = area;
         this.hori           = hori;
@@ -283,7 +277,17 @@ public class TransPainter
 	        		gc.setForeground(GUIResource.getInstance().getColorBlue());
 	        	}
 	        	drawArrow(gc, fr.x+iconsize/2, fr.y+iconsize/2, to.x, to.y, theta, calcArrowLength(), 1.2, startHopStep, endHopStep==null ? endHopLocation : endHopStep);
+	        }  else if (endHopStep!=null && endHopLocation!=null) {
+	        	Point fr = endHopLocation;
+	        	Point to = endHopStep.getLocation();
+	        	if (startHopStep==null) {
+	        		gc.setForeground(GUIResource.getInstance().getColorGray());
+	        	} else {
+	        		gc.setForeground(GUIResource.getInstance().getColorBlue());
+	        	}
+	        	drawArrow(gc, fr.x, fr.y, to.x+iconsize/2, to.y+iconsize/2, theta, calcArrowLength(), 1.2, startHopStep==null ? endHopLocation : startHopStep, endHopStep);
 	        }
+
         }
         
         for (int i = 0; i < transMeta.nrSteps(); i++)
@@ -661,11 +665,183 @@ public class TransPainter
         	gc.setAlpha(alpha);
         }
 
-
-        
         // Optionally drawn the mouse-over information
         //
-        if (ioMeta.isInputAcceptor() && /*candidate==null && */ !stepMeta.equals(startHopStep) && ((mouseOverSteps.contains(stepMeta)) || showingHopInputIcons) ) {
+        if (mouseOverSteps.contains(stepMeta)) {
+        	Image[] miniIcons = new Image[] {
+                GUIResource.getInstance().getImageHopInput(),
+                GUIResource.getInstance().getImageEdit(),
+                GUIResource.getInstance().getImageContextMenu(),
+                GUIResource.getInstance().getImageHopOutput(),
+        	};
+        	
+        	int totalHeight=0;
+        	int totalIconsWidth=0;
+        	int totalWidth=2*MINI_ICON_MARGIN;
+        	for (Image miniIcon : miniIcons) {
+        		Rectangle bounds = miniIcon.getBounds();
+        		totalWidth+=bounds.width+MINI_ICON_MARGIN;
+        		totalIconsWidth+=bounds.width+MINI_ICON_MARGIN;
+        		if (bounds.height>totalHeight) totalHeight=bounds.height;
+        	}
+        	totalHeight+=2*MINI_ICON_MARGIN;
+        	        	
+        	gc.setFont(GUIResource.getInstance().getFontSmall());
+        	String trimmedName = stepMeta.getName().length()<30 ? stepMeta.getName() : stepMeta.getName().substring(0,30);
+        	org.eclipse.swt.graphics.Point nameExtent = gc.textExtent(trimmedName);
+        	nameExtent.y+=2*MINI_ICON_MARGIN;
+        	nameExtent.x+=3*MINI_ICON_MARGIN;
+        	totalHeight+=nameExtent.y;
+        	if (nameExtent.x>totalWidth) totalWidth=nameExtent.x;
+
+        	int areaX = screen.x+iconsize/2-totalWidth/2+MINI_ICON_SKEW;
+        	int areaY = screen.y+iconsize+MINI_ICON_DISTANCE;
+
+        	gc.setForeground(darkGray);
+        	gc.setBackground(lightGray);
+        	gc.setLineWidth(1);
+        	gc.fillRoundRectangle(areaX, areaY, totalWidth, totalHeight, 7, 7);
+        	gc.drawRoundRectangle(areaX, areaY, totalWidth, totalHeight, 7, 7);
+
+        	gc.setBackground(background);
+        	gc.fillRoundRectangle(areaX+2, areaY+2, totalWidth-MINI_ICON_MARGIN+1, nameExtent.y-MINI_ICON_MARGIN, 7, 7);
+        	gc.setForeground(black);
+        	gc.drawText(trimmedName, areaX+(totalWidth-nameExtent.x)/2+MINI_ICON_MARGIN, areaY+MINI_ICON_MARGIN, true);
+        	gc.setForeground(darkGray);
+        	gc.setBackground(lightGray);
+
+        	gc.setFont(GUIResource.getInstance().getFontGraph());
+        	areaOwners.add(new AreaOwner(AreaType.STEP_MINI_ICONS_BALLOON, areaX, areaY, totalWidth, totalHeight, stepMeta, ioMeta));
+
+        	
+        	gc.fillPolygon(new int[] { areaX+totalWidth/2-MINI_ICON_TRIANGLE_BASE/2+1, areaY+2, areaX+totalWidth/2+MINI_ICON_TRIANGLE_BASE/2, areaY+2, areaX+totalWidth/2-MINI_ICON_SKEW, areaY-MINI_ICON_DISTANCE-5, });
+        	
+        	gc.drawPolyline(new int[] { areaX+totalWidth/2-MINI_ICON_TRIANGLE_BASE/2+1, areaY, areaX+totalWidth/2-MINI_ICON_SKEW, areaY-MINI_ICON_DISTANCE-5, areaX+totalWidth/2+MINI_ICON_TRIANGLE_BASE/2, areaY, areaX+totalWidth/2-MINI_ICON_SKEW, areaY-MINI_ICON_DISTANCE-5, });
+
+        	gc.setBackground(background);
+        	
+        	// Put on the icons...
+        	//
+        	int xIcon = areaX+(totalWidth-totalIconsWidth)/2+MINI_ICON_MARGIN;
+        	int yIcon = areaY+5+nameExtent.y;
+        	for (int i=0;i<miniIcons.length;i++) {
+        		Image miniIcon = miniIcons[i];
+        		Rectangle bounds = miniIcon.getBounds();
+        		boolean enabled=false;
+        		switch(i) {
+        		case 0: // INPUT
+        			enabled=ioMeta.isInputAcceptor() || ioMeta.isInputDynamic();
+                	areaOwners.add(new AreaOwner(AreaType.STEP_INPUT_HOP_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, ioMeta));
+        			break;
+        		case 1: // EDIT
+        			enabled=true;
+                	areaOwners.add(new AreaOwner(AreaType.STEP_EDIT_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, ioMeta));
+        			break;
+        		case 2: // STEP_MENU
+        			enabled=true;
+        			areaOwners.add(new AreaOwner(AreaType.STEP_MENU_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, ioMeta));
+                	break;
+        		case 3: // OUTPUT
+        			enabled=ioMeta.isOutputProducer() || ioMeta.isOutputDynamic();
+                	areaOwners.add(new AreaOwner(AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, ioMeta));
+        			break;
+        		}
+        		if (enabled) {
+        			gc.setAlpha(255);
+        		} else {
+        			gc.setAlpha(100);
+        		}
+        		gc.drawImage(miniIcon, xIcon, yIcon);
+        		xIcon+=miniIcon.getBounds().width+5;
+        	}
+        	
+        	// OK, see if we need to show a slide-out for target streams...
+        	//
+        	if (showTargetStreamsStep!=null) {
+        		ioMeta = showTargetStreamsStep.getStepMetaInterface().getStepIOMeta();
+        		List<StreamInterface> targetStreams = ioMeta.getTargetStreams();
+        		int targetsWidth=0;
+        		int targetsHeight=0;;
+        		for (int i=0;i<targetStreams.size();i++) {
+        			String description = targetStreams.get(i).getDescription(); 
+        			org.eclipse.swt.graphics.Point extent = gc.textExtent(description);
+        			if (extent.x>targetsWidth) targetsWidth=extent.x;
+        			targetsHeight+=extent.y+MINI_ICON_MARGIN;
+        		}
+        		targetsWidth+=MINI_ICON_MARGIN;
+        		
+            	gc.setBackground(lightGray);
+        		gc.fillRoundRectangle(areaX, areaY+totalHeight+2, targetsWidth, targetsHeight, 7, 7);
+        		gc.drawRoundRectangle(areaX, areaY+totalHeight+2, targetsWidth, targetsHeight, 7, 7);
+
+        		int targetY=areaY+totalHeight+MINI_ICON_MARGIN;
+        		for (int i=0;i<targetStreams.size();i++) {
+        			String description = targetStreams.get(i).getDescription(); 
+        			org.eclipse.swt.graphics.Point extent = gc.textExtent(description);
+        			gc.drawText(description, areaX+MINI_ICON_MARGIN, targetY, true);
+        			if (i<targetStreams.size()-1) {
+        				gc.drawLine(areaX+MINI_ICON_MARGIN/2, targetY+extent.y+3, areaX+targetsWidth-MINI_ICON_MARGIN/2, targetY+extent.y+2);
+        			}
+        			
+                	areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON_OPTION, areaX, targetY, targetsWidth, extent.y+MINI_ICON_MARGIN, stepMeta, targetStreams.get(i)));
+
+        			targetY+=extent.y+MINI_ICON_MARGIN;
+        		}
+        		
+            	gc.setBackground(background);
+        	}
+        }
+        
+        /*
+        if (streamOptions!=null) {
+        	int xOptions = streamOptions.getLocation().x;
+        	int yOptions = streamOptions.getLocation().y;
+        	int widthOptions = 0;
+        	int heightOptions = 0;
+        	
+        	for (int i=0;i<streamOptions.getOptions().size();i++) {
+        		StreamInterface stream = streamOptions.getOptions().get(i);
+        		int width = MINI_ICON_MARGIN;
+        		int height = 0;
+        		Image miniIcon = null;
+        		switch(stream.getStreamIcon()) {
+        		case TRUE   : miniIcon = GUIResource.getInstance().getImageTrue(); break;
+        		case FALSE  : miniIcon = GUIResource.getInstance().getImageTrue(); break;
+        		case ERROR  : miniIcon = GUIResource.getInstance().getImageErrorHop(); break;
+        		case INFO   : miniIcon = GUIResource.getInstance().getImageInfoHop(); break;
+        		case TARGET : miniIcon = GUIResource.getInstance().getImageHopTarget(); break;
+        		case INPUT  : miniIcon = GUIResource.getInstance().getImageHopInput(); break;
+        		case OUTPUT : miniIcon = GUIResource.getInstance().getImageHopOutput(); break;
+        		default: miniIcon = GUIResource.getInstance().getImageArrow(); break;
+        		}
+        		Rectangle iconBounds = miniIcon.getBounds();
+        		width+=iconBounds.width;
+        		height+=iconBounds.height;
+        		
+        		width+=MINI_ICON_MARGIN;
+        		org.eclipse.swt.graphics.Point textExtent = gc.textExtent(stream.getDescription());
+        		width+=textExtent.x+MINI_ICON_MARGIN;
+        		height+=textExtent.y+MINI_ICON_MARGIN;
+        		
+        		if (width>widthOptions) widthOptions=width;
+        		heightOptions+=height;
+        	}
+        	
+        	gc.setBackground(lightGray);
+        	gc.setForeground(darkGray);
+        	gc.fillRoundRectangle(xOptions, yOptions, widthOptions, heightOptions, 7, 7);
+        	gc.drawRoundRectangle(xOptions, yOptions, widthOptions, heightOptions, 7, 7);
+        	
+        	for (int i=0;i<streamOptions.getOptions().size();i++) {
+        		StreamInterface stream = streamOptions.getOptions().get(i);
+        	
+        	
+        }
+        */
+        
+
+        /*
+        if (ioMeta.isInputAcceptor() && !stepMeta.equals(startHopStep) && ((mouseOverSteps.contains(stepMeta)) || showingHopInputIcons) ) {
         	// Draw the input hop icon next to the step...
         	//
         	Image hopInput = GUIResource.getInstance().getImageHopInput();
@@ -727,6 +903,7 @@ public class TransPainter
           	gc.drawImage(hopError, xIcon, yIcon);
           	areaOwners.add(new AreaOwner(AreaType.STEP_ERROR_HOP_ICON, xIcon, yIcon, bounds.width, bounds.height, stepMeta, ioMeta));
           }
+          */
     }
 
     public static final Point getNamePosition(GC gc, String string, Point screen, int iconsize)
@@ -741,7 +918,7 @@ public class TransPainter
 
     private void drawLine(GC gc, StepMeta fs, StepMeta ts, TransHopMeta hi, boolean is_candidate)
     {
-        StepMetaInterface fsii = fs.getStepMetaInterface();
+        // StepMetaInterface fsii = fs.getStepMetaInterface();
         // StepMetaInterface tsii = ts.getStepMetaInterface();
 
         int line[] = getLine(fs, ts);
@@ -758,7 +935,6 @@ public class TransPainter
         {
             if (hi.isEnabled())
             {
-                String[] targetSteps = fsii.getStepIOMeta().getTargetStepnames();
                 if (fs.isSendingErrorRowsToStep(ts))
                 {
                     col = red;
@@ -767,47 +943,7 @@ public class TransPainter
                 }
                 else
                 {
-                    if (Const.isEmpty(targetSteps)) // Normal link: distribute or copy data...
-                    {
-                    	col = black;
-                    }
-                    else
-                    {
-                        // Visual check to see if the target step is specified...
-                    	//
-                        // Draw different color for Filter steps
-                        // Those can point to 2 different target steps
-                        // Index 0 is green (true)
-                        // Index 1 is red (false)
-                        //
-                        if (targetSteps.length==2) {
-                        	int index = Const.indexOfString(ts.getName(), targetSteps);
-                        	if (index==0) {
-                        		col = green;
-                        	} else if (index==1) {
-                        		col = red;
-                        	} else {
-                        		if (Const.isEmpty(targetSteps[0]) && Const.isEmpty(targetSteps[1])) {
-                        			col = black; 
-                        		} else {
-	                                linestyle = SWT.LINE_DASH;
-	                                activeLinewidth= 2;
-	                        		col = orange; // Index not found / -1  TODO : figure out a way to put an error icon with tooltip on this hop.
-                        		}
-                        	}
-                        } else { 
-	                        if (Const.indexOfString(ts.getName(), targetSteps) >= 0)
-	                        {
-	                            col = black;
-	                        }
-	                        else
-	                        {
-	                            linestyle = SWT.LINE_DOT;
-                                activeLinewidth= 2;
-	                            col = orange;         // TODO : figure out a way to put an error icon with tooltip on this hop.
-	                        }
-                        }
-                    }
+                	col = black;
                 }
             }
             else
@@ -820,8 +956,8 @@ public class TransPainter
         // Check to see if the source step is an info step for the target step.
         //
         StepIOMetaInterface ioMeta = ts.getStepMetaInterface().getStepIOMeta();
-        StreamInterface[] infoStreams = ioMeta.getInfoStreams();
-        if (!Const.isEmpty(infoStreams)) {
+        List<StreamInterface> infoStreams = ioMeta.getInfoStreams();
+        if (!infoStreams.isEmpty()) {
         	// Check this situation, the source step can't run in multiple copies!
         	//
         	for (StreamInterface stream : infoStreams) {
@@ -1003,7 +1139,17 @@ public class TransPainter
 	        boolean errorHop = fs.isSendingErrorRowsToStep(ts) || (startErrorHopStep && fs.equals(startHopStep));
 	        boolean targetHop = Const.indexOfString(ts.getName(), fs.getStepMetaInterface().getStepIOMeta().getTargetStepnames())>=0;
 
-	        if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop && !targetHop) {
+	        if (targetHop) {
+	        	StepIOMetaInterface ioMeta = fs.getStepMetaInterface().getStepIOMeta();
+	        	StreamInterface targetStream = ioMeta.findTargetStream(ts);
+	        	if (targetStream!=null) {
+		        	Image hopsIcon = TransGraph.getStreamIconImage(targetStream.getStreamIcon());
+		        	gc.drawImage(hopsIcon, mx, my);
+		        	if (!shadow) {
+		    			areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON, mx, my, hopsIcon.getBounds().width, hopsIcon.getBounds().height, fs, targetStream));
+		    		}
+	        	}
+	        } else  if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop) {
 		        
 	        	Image copyHopsIcon = GUIResource.getInstance().getImageCopyHop();
 	        	gc.drawImage(copyHopsIcon, mx, my);
@@ -1018,7 +1164,7 @@ public class TransPainter
 	        	Image copyHopsIcon = GUIResource.getInstance().getImageErrorHop();
 		        gc.drawImage(copyHopsIcon, mx, my);
 	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(AreaType.HOP_ERROR_ICON, mx, my, copyHopsIcon.getBounds().width, copyHopsIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_HOP_TYPE_ERROR));
+	    			areaOwners.add(new AreaOwner(AreaType.HOP_ERROR_ICON, mx, my, copyHopsIcon.getBounds().width, copyHopsIcon.getBounds().height, fs, ts));
 	    		}
 		        mx+=16;
             }
@@ -1030,7 +1176,7 @@ public class TransPainter
 	        	Image hopIcon = GUIResource.getInstance().getImageInfoHop();
         		gc.drawImage(hopIcon, mx, my);
 	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_ICON, mx, my, hopIcon.getBounds().width, hopIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_HOP_TYPE_INFO));
+	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_ICON, mx, my, hopIcon.getBounds().width, hopIcon.getBounds().height, fs, ts));
 	    		}
 		        mx+=16;
 	        }
@@ -1052,7 +1198,7 @@ public class TransPainter
 	        	        	Image errorHopsIcon = GUIResource.getInstance().getImageErrorHop();
 	        	        	gc.drawImage(errorHopsIcon, mx, my);
 	        	        	if (!shadow) {
-	        	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_STEP_COPIES_ERROR, mx, my, errorHopsIcon.getBounds().width, errorHopsIcon.getBounds().height, new StepMeta[] { fs, ts, }, STRING_INFO_STEP_COPIES));
+	        	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_STEP_COPIES_ERROR, mx, my, errorHopsIcon.getBounds().width, errorHopsIcon.getBounds().height, fs, ts));
 	        	    		}
 	        		        mx+=16;
 	        				
@@ -1123,13 +1269,6 @@ public class TransPainter
 	}
 	
 	/**
-	 * @param showingHopInputIcons the showingHopInputIcons to set
-	 */
-	public void setShowingHopInputIcons(boolean showingHopInputIcons) {
-		this.showingHopInputIcons = showingHopInputIcons;
-	}
-
-	/**
 	 * @param startHopStep the startHopStep to set
 	 */
 	public void setStartHopStep(StepMeta startHopStep) {
@@ -1164,5 +1303,20 @@ public class TransPainter
 	public void setStartErrorHopStep(boolean startErrorHopStep) {
 		this.startErrorHopStep = startErrorHopStep;
 	}
+
+	/**
+	 * @return the showTargetStreamsStep
+	 */
+	public StepMeta getShowTargetStreamsStep() {
+		return showTargetStreamsStep;
+	}
+
+	/**
+	 * @param showTargetStreamsStep the showTargetStreamsStep to set
+	 */
+	public void setShowTargetStreamsStep(StepMeta showTargetStreamsStep) {
+		this.showTargetStreamsStep = showTargetStreamsStep;
+	}
 	
+
 }

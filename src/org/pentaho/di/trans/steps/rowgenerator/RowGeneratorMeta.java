@@ -507,6 +507,6 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
      * The generator step only produces output, does not accept input!
      */
     public StepIOMetaInterface getStepIOMeta() {
-    	return new StepIOMeta(false, true, false, false);
+    	return new StepIOMeta(false, true, false, false, false, false);
     }
 }

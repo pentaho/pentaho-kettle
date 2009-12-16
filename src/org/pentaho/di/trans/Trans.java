@@ -1627,7 +1627,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		} finally {
 			db.disconnect();
 		}
-		
 	}
 
 	protected void writeStepLogInformation() throws KettleException {

@@ -11,6 +11,8 @@
 
 package org.pentaho.di.trans.steps.mergerows;
 
+import java.util.List;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -62,10 +64,10 @@ public class MergeRows extends BaseStep implements StepInterface
             
             // Find the appropriate RowSet 
             //
-            StreamInterface[] infoStreams = meta.getStepIOMeta().getInfoStreams();
+            List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
             
-            data.oneRowSet = findInputRowSet(infoStreams[0].getStepname());
-            data.twoRowSet = findInputRowSet(infoStreams[1].getStepname());
+            data.oneRowSet = findInputRowSet(infoStreams.get(0).getStepname());
+            data.twoRowSet = findInputRowSet(infoStreams.get(1).getStepname());
             
     		data.one=getRowFrom(data.oneRowSet);
             data.two=getRowFrom(data.twoRowSet);
@@ -222,9 +224,9 @@ public class MergeRows extends BaseStep implements StepInterface
 
         if (super.init(smi, sdi))
         {
-            StreamInterface[] infoStreams = meta.getStepIOMeta().getInfoStreams();
+            List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
 
-            if (infoStreams[0].getStepMeta()!=null ^ infoStreams[1].getStepMeta()!=null)
+            if (infoStreams.get(0).getStepMeta()!=null ^ infoStreams.get(1).getStepMeta()!=null)
             {
                 logError(BaseMessages.getString(PKG, "MergeRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
             }

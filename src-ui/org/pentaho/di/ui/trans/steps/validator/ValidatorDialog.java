@@ -57,7 +57,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.validator.Validation;
 import org.pentaho.di.trans.steps.validator.ValidatorMeta;
@@ -160,9 +159,9 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Just to make sure everything is nicely in sync...
 		//
-		StreamInterface[] infoStreams = input.getStepIOMeta().getInfoStreams();
-		for (int i=0;i<infoStreams.length;i++) {
-			input.getValidations()[i].setSourcingStepName(infoStreams[i].getStepname());
+		java.util.List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
+		for (int i=0;i<infoStreams.size();i++) {
+			input.getValidations().get(i).setSourcingStepName(infoStreams.get(i).getStepname());
 		}
 
 		selectedField = null;
@@ -1054,7 +1053,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 		
 		wSourceValues.setSelection(field.isSourcingValues());
-		wSourceStep.setText( field.getSourcingStepName() );
+		wSourceStep.setText( Const.NVL(field.getSourcingStepName(), "") );
 		wSourceField.setText(Const.NVL(field.getSourcingField(), ""));
 	}
 	
@@ -1165,8 +1164,8 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Select the first available field...
 		//
-		if (input.getValidations().length>0) {
-			Validation validatorField = input.getValidations()[0];
+		if (input.getValidations().size()>0) {
+			Validation validatorField = input.getValidations().get(0);
 			String description = validatorField.getName();
 			int index = wValidationsList.indexOf(description);
 			if (index>=0) {
@@ -1206,14 +1205,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		input.setConcatenatingErrors(wConcatErrors.getSelection());
 		input.setConcatenationSeparator(wConcatSeparator.getText());
 		
-		Validation[] fields = selectionList.toArray(new Validation[selectionList.size()]);
-		input.setValidations(fields);
-		
-		StepIOMetaInterface ioMeta = input.getStepIOMeta();
-		ioMeta.clearStreams();
-		for (Validation validation : fields) {
-			ioMeta.addInfoStream(validation.getSourcingStepName(), transMeta.findStep(validation.getSourcingStepName()), validation.getName());
-		}
+		input.setValidations(selectionList);
 		
 		dispose();
 	}

@@ -1017,7 +1017,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         {
             return new String[] { acceptingStep.getName() };
         }
-        return super.getInfoSteps();
+        return null;
     }
 
     public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)

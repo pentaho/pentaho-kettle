@@ -127,7 +127,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		}
     
 		// Select a default: the first
-		if (info.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_NONE) 
+		if (info.getDatabaseType() <= 0) 
 		{
 			wDBType.select(0);
 		}
@@ -282,7 +282,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 			nextPage = wiz.getPage(info.getDatabaseTypeDesc());; // e.g. SAPR3
 			break;		
 		default: // Generic or Native
-			if(info.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GENERIC)
+			if(info.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_GENERIC)
 			{	// Generic
 				nextPage = wiz.getPage("generic");; // generic //$NON-NLS-1$
 			} else { // Native

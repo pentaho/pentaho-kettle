@@ -142,8 +142,8 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
   protected Control addDbConnectionInputs() {
 	List<String> ibConnections = new ArrayList<String>();
 	for (DatabaseMeta dbMeta : transMeta.getDatabases()) {
-		if (dbMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL ||
-		    dbMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_INFOBRIGHT) 
+		if (dbMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL ||
+		    dbMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_INFOBRIGHT ) 
 		{
 			ibConnections.add(dbMeta.getName());
 		}

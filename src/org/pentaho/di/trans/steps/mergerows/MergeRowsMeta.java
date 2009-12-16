@@ -40,6 +40,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.w3c.dom.Node;
@@ -150,9 +151,9 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
         retval.append(XMLHandler.addTagValue("flag_field", flagField));         //$NON-NLS-1$
 
-        StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
-		retval.append(XMLHandler.addTagValue("reference", infoStreams[0].getStepname()));		 //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("compare", infoStreams[1].getStepname()));		 //$NON-NLS-1$
+        List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+		retval.append(XMLHandler.addTagValue("reference", infoStreams.get(0).getStepname()));		 //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("compare", infoStreams.get(1).getStepname()));		 //$NON-NLS-1$
 		retval.append("    <compare>"+Const.CR); //$NON-NLS-1$
 				
 		retval.append("    </compare>"+Const.CR); //$NON-NLS-1$
@@ -188,12 +189,12 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
             
             flagField = XMLHandler.getTagValue(stepnode, "flag_field"); //$NON-NLS-1$
             
-            StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
-            StreamInterface referenceStream = infoStreams[0];
-            StreamInterface compareStream = infoStreams[1];
+            List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+            StreamInterface referenceStream = infoStreams.get(0);
+            StreamInterface compareStream = infoStreams.get(1);
 
-			compareStream.setStepname( XMLHandler.getTagValue(stepnode, "compare") ); //$NON-NLS-1$
-			referenceStream.setStepname( XMLHandler.getTagValue(stepnode, "reference") ); //$NON-NLS-1$
+			compareStream.setSubject( XMLHandler.getTagValue(stepnode, "compare") ); //$NON-NLS-1$
+			referenceStream.setSubject( XMLHandler.getTagValue(stepnode, "reference") ); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -227,12 +228,12 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
             flagField  =   rep.getStepAttributeString (id_step, "flag_field");  //$NON-NLS-1$
 
-            StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
-            StreamInterface referenceStream = infoStreams[0];
-            StreamInterface compareStream = infoStreams[1];
+            List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+            StreamInterface referenceStream = infoStreams.get(0);
+            StreamInterface compareStream = infoStreams.get(1);
 
-			referenceStream.setStepname( rep.getStepAttributeString (id_step, "reference") );  //$NON-NLS-1$
-			compareStream.setStepname( rep.getStepAttributeString (id_step, "compare") );  //$NON-NLS-1$
+			referenceStream.setSubject( rep.getStepAttributeString (id_step, "reference") );  //$NON-NLS-1$
+			compareStream.setSubject( rep.getStepAttributeString (id_step, "compare") );  //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -240,6 +241,13 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
+	@Override
+	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
+		for (StreamInterface stream : getStepIOMeta().getTargetStreams()) {
+			stream.setStepMeta( StepMeta.findStep(steps, (String)stream.getSubject()) );
+		}
+	}
+	
 	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	{
 		try
@@ -256,9 +264,9 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
             rep.saveStepAttribute(id_transformation, id_step, "flag_field", flagField); //$NON-NLS-1$
 
-            StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
-            StreamInterface referenceStream = infoStreams[0];
-            StreamInterface compareStream = infoStreams[1];
+            List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+            StreamInterface referenceStream = infoStreams.get(0);
+            StreamInterface compareStream = infoStreams.get(1);
 
 			rep.saveStepAttribute(id_transformation, id_step, "reference", referenceStream.getStepname()); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "compare", compareStream.getStepname()); //$NON-NLS-1$
@@ -308,9 +316,9 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		CheckResult cr;
 		
-        StreamInterface[] infoStreams = getStepIOMeta().getInfoStreams();
-        StreamInterface referenceStream = infoStreams[0];
-        StreamInterface compareStream = infoStreams[1];
+        List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+        StreamInterface referenceStream = infoStreams.get(0);
+        StreamInterface compareStream = infoStreams.get(1);
 
 		if (referenceStream.getStepname()!=null && compareStream.getStepname()!=null)
 		{
@@ -346,10 +354,10 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
     public StepIOMetaInterface getStepIOMeta() {
     	if (ioMeta==null) {
 
-    		ioMeta = new StepIOMeta(true, true, false, false);
+    		ioMeta = new StepIOMeta(true, true, false, false, false, false);
     	
-	    	ioMeta.addStream( new Stream(StreamType.INFO, BaseMessages.getString(PKG, "MergeRowsMeta.InfoStream.FirstStream.Description")));
-	    	ioMeta.addStream(new Stream(StreamType.INFO, BaseMessages.getString(PKG, "MergeRowsMeta.InfoStream.SecondStream.Description")));
+	    	ioMeta.addStream( new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "MergeRowsMeta.InfoStream.FirstStream.Description"), StreamIcon.INFO, null) );
+	    	ioMeta.addStream( new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "MergeRowsMeta.InfoStream.SecondStream.Description"), StreamIcon.INFO, null) );
     	}
     	
     	return ioMeta;

@@ -437,8 +437,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	{
 	    if (getStepMetaInterface()!=null)
 	    {
-	    	StreamInterface[] targetStreams = getStepMetaInterface().getStepIOMeta().getTargetStreams();
-	        return !Const.isEmpty(targetStreams);
+	    	List<StreamInterface> targetStreams = getStepMetaInterface().getStepIOMeta().getTargetStreams();
+	        return targetStreams.isEmpty();
 	    }
 	    return false;
 	}

@@ -84,14 +84,14 @@ public class Validator extends BaseStep implements StepInterface
 				return false;
 			}
 
-			data.fieldIndexes = new int[meta.getValidations().length];
+			data.fieldIndexes = new int[meta.getValidations().size()];
 
 			// Calculate the indexes of the values and arguments in the target data or temporary data
             // We do this in advance to save time later on.
             //
-            for (int i=0;i<meta.getValidations().length;i++)
+            for (int i=0;i<meta.getValidations().size();i++)
             {
-                Validation field = meta.getValidations()[i];
+                Validation field = meta.getValidations().get(i);
                 
                 if (!Const.isEmpty(field.getFieldName())) 
                 {
@@ -174,15 +174,15 @@ public class Validator extends BaseStep implements StepInterface
 	}
 
 	private void readSourceValuesFromInfoSteps() throws KettleStepException {
-        for (int i=0;i<meta.getValidations().length;i++)
+        for (int i=0;i<meta.getValidations().size();i++)
         {
-            Validation field = meta.getValidations()[i];
-            StreamInterface[] streams = meta.getStepIOMeta().getInfoStreams();
+            Validation field = meta.getValidations().get(i);
+            List<StreamInterface> streams = meta.getStepIOMeta().getInfoStreams();
             
             // If we need to source the allowed values data from a different step, we do this here as well
             //
             if (field.isSourcingValues()) {
-            	if (streams[i].getStepMeta()==null) {
+            	if (streams.get(i).getStepMeta()==null) {
             		throw new KettleStepException("There is no valid source step specified for the allowed values of validation ["+field.getName()+"]");
             	}
             	if (Const.isEmpty(field.getSourcingField())) {
@@ -192,7 +192,7 @@ public class Validator extends BaseStep implements StepInterface
             	// Still here : OK, read the data from the specified step...
             	// The data is stored in data.listValues[i] and data.constantsMeta
             	//
-            	RowSet allowedRowSet = findInputRowSet(streams[i].getStepname()); 
+            	RowSet allowedRowSet = findInputRowSet(streams.get(i).getStepname()); 
             	int fieldIndex=-1;
             	List<Object> allowedValues = new ArrayList<Object>();
             	Object[] allowedRowData = getRowFrom(allowedRowSet);
@@ -230,9 +230,9 @@ public class Validator extends BaseStep implements StepInterface
     {
     	List<KettleValidatorException> exceptions = new ArrayList<KettleValidatorException>();
     	
-        for (int i=0;i<meta.getValidations().length;i++)
+        for (int i=0;i<meta.getValidations().size();i++)
         {
-            Validation field = meta.getValidations()[i];
+            Validation field = meta.getValidations().get(i);
             
             int valueIndex = data.fieldIndexes[i];
             ValueMetaInterface validatorMeta = data.constantsMeta[i];
@@ -406,15 +406,15 @@ public class Validator extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.constantsMeta = new ValueMetaInterface[meta.getValidations().length];
-			data.minimumValue = new Object[meta.getValidations().length];
-			data.maximumValue = new Object[meta.getValidations().length];
-			data.listValues = new Object[meta.getValidations().length][];
-			data.patternExpected = new Pattern[meta.getValidations().length];
-			data.patternDisallowed = new Pattern[meta.getValidations().length];
+			data.constantsMeta = new ValueMetaInterface[meta.getValidations().size()];
+			data.minimumValue = new Object[meta.getValidations().size()];
+			data.maximumValue = new Object[meta.getValidations().size()];
+			data.listValues = new Object[meta.getValidations().size()][];
+			data.patternExpected = new Pattern[meta.getValidations().size()];
+			data.patternDisallowed = new Pattern[meta.getValidations().size()];
 
-			for (int i=0;i<meta.getValidations().length;i++) {
-				Validation field = meta.getValidations()[i];
+			for (int i=0;i<meta.getValidations().size();i++) {
+				Validation field = meta.getValidations().get(i);
 				data.constantsMeta[i] = new ValueMeta(field.getFieldName(), field.getDataType());
 				data.constantsMeta[i].setConversionMask(field.getConversionMask());
 				data.constantsMeta[i].setDecimalSymbol(field.getDecimalSymbol());

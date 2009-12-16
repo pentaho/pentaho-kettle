@@ -274,6 +274,10 @@ public class GUIResource
     private Image imageHopTarget;
 
     private Image imageLocked;
+
+    private Image imageTrue;
+    private Image imageFalse;
+    private Image imageContextMenu;
     
 
     private Map<String,Image> imageMap;
@@ -462,6 +466,9 @@ public class GUIResource
 		    imageHopTarget.dispose();
 		    imageKeySmall.dispose();
 		    imageColumnSmall.dispose();
+		    imageTrue.dispose();
+		    imageFalse.dispose();
+		    imageContextMenu.dispose();
 
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -696,6 +703,10 @@ public class GUIResource
     imageHopTarget = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("HopTarget_image")); // , "ui/images/hop-target.png;
 
     imageLocked = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Locked_image")); // , "ui/images/locked.png;
+
+    imageTrue = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("True_image")); // , "ui/images/true.png;
+    imageFalse = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("False_image")); // , "ui/images/false.png;
+    imageContextMenu = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ContextMenu_image")); // , "ui/images/context_menu.png;
 
     imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
@@ -1779,6 +1790,8 @@ public class GUIResource
 	    return imageLocked;
   }
   
+  
+  
   /**
    * Loads an image from a location once.  The second time, the image comes from a cache.
    * Because of this, it's important to never dispose of the image you get from here. (easy!)
@@ -1802,5 +1815,26 @@ public class GUIResource
   public Map<String, Image> getImageMap() {
 	return imageMap;
   }
+
+/**
+ * @return the imageTrue
+ */
+public Image getImageTrue() {
+	return imageTrue;
+}
+
+/**
+ * @return the imageFalse
+ */
+public Image getImageFalse() {
+	return imageFalse;
+}
+
+/**
+ * @return the imageContextMenu
+ */
+public Image getImageContextMenu() {
+	return imageContextMenu;
+}
   
 }

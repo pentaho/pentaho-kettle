@@ -31,8 +31,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
@@ -930,7 +930,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							if (!Const.isEmpty(keyLookup))
 							{
 								int nrfields = keyLookup.length;
-								if (nrfields>32 && databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
+								if (nrfields>32 && databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_ORACLE)
 								{
 									nrfields=32;  // Oracle indexes are limited to 32 fields...
 								}

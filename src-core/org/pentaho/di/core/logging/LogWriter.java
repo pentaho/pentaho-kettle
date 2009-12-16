@@ -425,13 +425,12 @@ public class LogWriter
 	
 	/*
 	public void logMinimal(LogMessageInterface message)  { println(LOG_LEVEL_MINIMAL, message) ; }
-    public void logBasic(LogMessageInterface message)    { println(LOG_LEVEL_BASIC, message) ; }
 	public void logDetailed(LogMessageInterface message) { println(LOG_LEVEL_DETAILED, message); }
 	public void logDebug(LogMessageInterface message)    { println(LOG_LEVEL_DEBUG, message); }
 	public void logRowlevel(LogMessageInterface message) { println(LOG_LEVEL_ROWLEVEL, message); }
 	public void logError(LogMessageInterface message)    { println(LOG_LEVEL_ERROR, message); }
 	*/
-	
+
 	@Deprecated  //temporarily needed for Version Checker
     public void logBasic(String subject, String message, Object[] arguments) {
     	LogChannel log = new LogChannel(subject);

@@ -24,9 +24,9 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.database.dialect.SAPR3DatabaseDialect;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
@@ -186,9 +186,9 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 	{
 		wHostname.setText(Const.NVL(info.getHostname(), "")); //$NON-NLS-1$
 
-		wSAPLanguage.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
-		wSAPSystemNumber.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
-		wSAPClient.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
+		wSAPLanguage.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseDialect.ATTRIBUTE_SAP_LANGUAGE, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
+		wSAPSystemNumber.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseDialect.ATTRIBUTE_SAP_SYSTEM_NUMBER, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
+		wSAPClient.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseDialect.ATTRIBUTE_SAP_CLIENT, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	public boolean canFlipToNextPage()
@@ -222,17 +222,17 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 
 		if (wSAPLanguage.getText()!=null && wSAPLanguage.getText().length()>0) 
 		{
-	        info.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE,     wSAPLanguage.getText());
+	        info.getAttributes().put(SAPR3DatabaseDialect.ATTRIBUTE_SAP_LANGUAGE,     wSAPLanguage.getText());
 		}
 		
 		if (wSAPSystemNumber.getText()!=null && wSAPSystemNumber.getText().length()>0)
 		{
-			info.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, wSAPSystemNumber.getText());
+			info.getAttributes().put(SAPR3DatabaseDialect.ATTRIBUTE_SAP_SYSTEM_NUMBER, wSAPSystemNumber.getText());
 		}
 
 		if (wSAPClient.getText()!=null && wSAPClient.getText().length()>0)
 		{
-	        info.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT,       wSAPClient.getText());
+	        info.getAttributes().put(SAPR3DatabaseDialect.ATTRIBUTE_SAP_CLIENT,       wSAPClient.getText());
 		}
 
 		return info;

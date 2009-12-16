@@ -45,6 +45,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.switchcase.SwitchCaseMeta;
+import org.pentaho.di.trans.steps.switchcase.SwitchCaseTarget;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -275,7 +276,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		wValues=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
-						      input.getCaseValues().length,  
+						      input.getStepIOMeta().getTargetStreams().size(),  
 						      lsMod,
 						      props
 						      );
@@ -356,11 +357,17 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		wGroupingSymbol.setText(Const.NVL(input.getCaseValueGroup(), ""));
 		wConversionMask.setText(Const.NVL(input.getCaseValueFormat(), ""));
 		
-		for (int i=0;i<input.getCaseValues().length;i++) {
+		for (int i=0;i<input.getCaseTargets().size();i++) {
 			TableItem item = wValues.table.getItem(i);
-			item.setText(1, Const.NVL(input.getCaseValues()[i], "")); // The value
-			item.setText(2, input.getCaseTargetSteps()[i]==null ? "" : input.getCaseTargetSteps()[i].getName()); // The target step name
+			SwitchCaseTarget target = input.getCaseTargets().get(i);
+			if (target!=null) {
+				item.setText(1, Const.NVL(target.caseValue, "")); // The value
+				item.setText(2, target.caseTargetStep==null ? "" : target.caseTargetStep.getName()); // The target step name
+			}
 		}
+		wValues.removeEmptyRows();
+		wValues.setRowNums();
+		wValues.optWidth(true);
 		
 		wDefaultTarget.setText(input.getDefaultTargetStep()==null ? "" : input.getDefaultTargetStep().getName()); // default target step name
 		
@@ -386,11 +393,15 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
 		input.setCaseValueGroup(wGroupingSymbol.getText());
 		
 		int nrValues = wValues.nrNonEmpty();
-		input.allocate(nrValues);
+		input.allocate();
+		
 		for (int i=0;i<nrValues;i++) {
 			TableItem item = wValues.getNonEmpty(i);
-			input.getCaseValues()[i] = item.getText(1);
-			input.getCaseTargetSteps()[i] = transMeta.findStep(item.getText(2));
+			
+			SwitchCaseTarget target = new SwitchCaseTarget();
+			target.caseValue = item.getText(1);
+			target.caseTargetStep = transMeta.findStep(item.getText(2));
+			input.getCaseTargets().add(target);
 		}
 		
 		input.setDefaultTargetStep( transMeta.findStep(wDefaultTarget.getText()));

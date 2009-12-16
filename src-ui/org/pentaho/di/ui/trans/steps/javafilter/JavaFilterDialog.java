@@ -285,10 +285,10 @@ public class JavaFilterDialog extends BaseStepDialog implements StepDialogInterf
 	 */ 
 	public void getData()
 	{
-    	StreamInterface[] targetStreams = input.getStepIOMeta().getTargetStreams();
+    	List<StreamInterface> targetStreams = input.getStepIOMeta().getTargetStreams();
 
-		wTrueTo.setText(Const.NVL(targetStreams[0].getStepname(), ""));
-		wFalseTo.setText(Const.NVL(targetStreams[1].getStepname(), ""));
+		wTrueTo.setText(Const.NVL(targetStreams.get(0).getStepname(), ""));
+		wFalseTo.setText(Const.NVL(targetStreams.get(1).getStepname(), ""));
 		wCondition.setText(Const.NVL(input.getCondition(), ""));
 
 		wStepname.selectAll();
@@ -310,12 +310,10 @@ public class JavaFilterDialog extends BaseStepDialog implements StepDialogInterf
 		String trueStepname = Const.NVL(wTrueTo.getText(), null);
         String falseStepname = Const.NVL(wFalseTo.getText(), null);
 
-        StreamInterface[] targetStreams = input.getStepIOMeta().getTargetStreams();
+        List<StreamInterface> targetStreams = input.getStepIOMeta().getTargetStreams();
 
-        targetStreams[0].setStepname(trueStepname);
-        targetStreams[0].setStepMeta(transMeta.findStep( trueStepname ) );
-        targetStreams[1].setStepname(falseStepname);
-        targetStreams[1].setStepMeta(transMeta.findStep( falseStepname ) );
+        targetStreams.get(0).setStepMeta(transMeta.findStep( trueStepname ) );
+        targetStreams.get(1).setStepMeta(transMeta.findStep( falseStepname ) );
         
         input.setCondition(wCondition.getText());
 		

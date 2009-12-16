@@ -11,6 +11,8 @@
 
 package org.pentaho.di.trans.steps.switchcase;
 
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -21,9 +23,11 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 /**
  * Filters input rows base on conditions.
@@ -70,14 +74,17 @@ public class SwitchCase extends BaseStep implements StepInterface
             data.inputValueMeta = getInputRowMeta().getValueMeta(data.fieldIndex); 
             
         	try {
-	        	for (int i=0;i<meta.getCaseTargetSteps().length;i++) {
-	        		if (meta.getCaseTargetSteps()[i]==null) {
-	        			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue", meta.getCaseValues()[i])); //$NON-NLS-1$
+        		StepIOMetaInterface ioMeta = meta.getStepIOMeta();
+        		List<StreamInterface> targetStreams = ioMeta.getTargetStreams();
+        		for (int i=0;i<targetStreams.size();i++) {
+        			SwitchCaseTarget target = (SwitchCaseTarget) targetStreams.get(i).getSubject();
+	        		if (target.caseTargetStep==null) {
+	        			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue", target.caseValue)); //$NON-NLS-1$
 	        		} else {
-	        			RowSet rowSet = findOutputRowSet(meta.getCaseTargetSteps()[i].getName());
+	        			RowSet rowSet = findOutputRowSet(target.caseTargetStep.getName());
 	        			if (rowSet!=null) {
 		            		try {
-		            			Object value = data.valueMeta.convertDataFromString(meta.getCaseValues()[i], data.stringValueMeta, null, null, ValueMeta.TRIM_TYPE_NONE);
+		            			Object value = data.valueMeta.convertDataFromString(target.caseValue, data.stringValueMeta, null, null, ValueMeta.TRIM_TYPE_NONE);
 		            			
 		            			// If we have a value and a rowset, we can store the combination in the map
 		            			//
@@ -89,10 +96,10 @@ public class SwitchCase extends BaseStep implements StepInterface
 		            			
 		            		}
 		            		catch(Exception e) {
-		            			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.UnableToConvertValue", meta.getCaseValues()[i]), e); //$NON-NLS-1$
+		            			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.UnableToConvertValue", target.caseValue), e); //$NON-NLS-1$
 		            		}
 	        			} else {
-	            			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep", meta.getCaseTargetSteps()[i].getName())); //$NON-NLS-1$
+	            			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.UnableToFindTargetRowSetForStep", target.caseTargetStep)); //$NON-NLS-1$
 	        			}
 	        		}
 	        	}

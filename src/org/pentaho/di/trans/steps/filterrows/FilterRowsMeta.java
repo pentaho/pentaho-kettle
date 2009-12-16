@@ -29,8 +29,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -41,6 +41,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.w3c.dom.Node;
@@ -114,9 +115,9 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer(200);
         
-        StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
-		retval.append(XMLHandler.addTagValue("send_true_to", targetStreams[0].getStepname()));		 //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("send_false_to", targetStreams[1].getStepname()));		 //$NON-NLS-1$
+        List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
+		retval.append(XMLHandler.addTagValue("send_true_to", targetStreams.get(0).getStepname()));		 //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("send_false_to", targetStreams.get(1).getStepname()));		 //$NON-NLS-1$
 		retval.append("    <compare>").append(Const.CR); //$NON-NLS-1$
 		
 		if (condition!=null)
@@ -133,10 +134,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
+			List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-			targetStreams[1].setStepname( XMLHandler.getTagValue(stepnode, "send_true_to") ); //$NON-NLS-1$
-			targetStreams[1].setStepname( XMLHandler.getTagValue(stepnode, "send_false_to") ); //$NON-NLS-1$
+			targetStreams.get(0).setSubject( XMLHandler.getTagValue(stepnode, "send_true_to") ); //$NON-NLS-1$
+			targetStreams.get(1).setSubject( XMLHandler.getTagValue(stepnode, "send_false_to") ); //$NON-NLS-1$
 
 			Node compare = XMLHandler.getSubNode(stepnode, "compare"); //$NON-NLS-1$
 			Node condnode = XMLHandler.getSubNode(compare, "condition"); //$NON-NLS-1$
@@ -207,10 +208,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			allocate();
 
-			StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
+			List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-			targetStreams[0].setStepname( rep.getStepAttributeString (id_step, "send_true_to") );  //$NON-NLS-1$
-			targetStreams[1].setStepname( rep.getStepAttributeString (id_step, "send_false_to") );  //$NON-NLS-1$
+			targetStreams.get(0).setSubject( rep.getStepAttributeString (id_step, "send_true_to") );  //$NON-NLS-1$
+			targetStreams.get(1).setSubject( rep.getStepAttributeString (id_step, "send_false_to") );  //$NON-NLS-1$
 
 			condition = rep.loadConditionFromStepAttribute(id_step, "id_condition");
 
@@ -220,6 +221,13 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 			throw new KettleException(BaseMessages.getString(PKG, "FilterRowsMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
+	
+	@Override
+	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
+		for (StreamInterface stream : getStepIOMeta().getTargetStreams()) {
+			stream.setStepMeta( StepMeta.findStep(steps, (String)stream.getSubject()) );
+		}
+	}
 
 	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	{
@@ -227,11 +235,11 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (condition!=null) 
 			{
-				StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
+				List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
 				rep.saveConditionStepAttribute(id_transformation, id_step, "id_condition", condition);
-				rep.saveStepAttribute(id_transformation, id_step, "send_true_to", targetStreams[0].getStepname()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, "send_false_to", targetStreams[1].getStepname()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, "send_true_to", targetStreams.get(0).getStepname()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, "send_false_to", targetStreams.get(1).getStepname()); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -260,15 +268,15 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
 		
-		StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
+		List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-		if (targetStreams[0].getStepname()!=null && targetStreams[1].getStepname()!=null)
+		if (targetStreams.get(0).getStepname()!=null && targetStreams.get(1).getStepname()!=null)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.BothTrueAndFalseStepSpecified"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
-		if (targetStreams[0].getStepname()==null && targetStreams[1].getStepname()==null)
+		if (targetStreams.get(0).getStepname()==null && targetStreams.get(1).getStepname()==null)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.NeitherTrueAndFalseStepSpecified"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
@@ -279,25 +287,25 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 				
-		if ( targetStreams[0].getStepname()!=null )
+		if ( targetStreams.get(0).getStepname()!=null )
 		{
-			int trueTargetIdx = Const.indexOfString(targetStreams[0].getStepname(), output);
+			int trueTargetIdx = Const.indexOfString(targetStreams.get(0).getStepname(), output);
 			if ( trueTargetIdx < 0 )
 			{
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-						             BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", "true", targetStreams[0].getStepname() ), 
+						             BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", "true", targetStreams.get(0).getStepname() ), 
 						             stepinfo);
 				remarks.add(cr);
 			}
 		}
 
-		if ( targetStreams[1].getStepname()!=null )
+		if ( targetStreams.get(1).getStepname()!=null )
 		{
-			int falseTargetIdx = Const.indexOfString(targetStreams[1].getStepname(), output);
+			int falseTargetIdx = Const.indexOfString(targetStreams.get(1).getStepname(), output);
 			if ( falseTargetIdx < 0 )
 			{
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-						             BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", "false", targetStreams[1].getStepname()), 
+						             BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", "false", targetStreams.get(1).getStepname()), 
 						             stepinfo);
 				remarks.add(cr);
 			}
@@ -385,10 +393,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
     public StepIOMetaInterface getStepIOMeta() {
     	if (ioMeta==null) {
 
-    		ioMeta = new StepIOMeta(true, true, false, false);
+    		ioMeta = new StepIOMeta(true, true, false, false, false, false);
     	
-	    	ioMeta.addStream( new Stream(StreamType.TARGET, BaseMessages.getString(PKG, "FilterRowsMeta.InfoStream.True.Description")) );
-	    	ioMeta.addStream( new Stream(StreamType.TARGET, BaseMessages.getString(PKG, "FilterRowsMeta.InfoStream.False.Description")) );
+	    	ioMeta.addStream( new Stream(StreamType.TARGET, null, BaseMessages.getString(PKG, "FilterRowsMeta.InfoStream.True.Description"), StreamIcon.TRUE, null) );
+	    	ioMeta.addStream( new Stream(StreamType.TARGET, null, BaseMessages.getString(PKG, "FilterRowsMeta.InfoStream.False.Description"), StreamIcon.FALSE, null) );
     	}
     	
     	return ioMeta;

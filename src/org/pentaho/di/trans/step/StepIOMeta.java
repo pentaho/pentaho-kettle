@@ -3,14 +3,15 @@ package org.pentaho.di.trans.step;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
-import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 
 public class StepIOMeta implements StepIOMetaInterface {
 	private boolean inputAcceptor;
 	private boolean outputProducer;
 	private boolean	inputOptional;
+	private boolean outputDynamic;
+	private boolean inputDynamic;
+	
 	private List<StreamInterface> streams;
 	private boolean	sortedDataRequired;
 	
@@ -21,12 +22,14 @@ public class StepIOMeta implements StepIOMetaInterface {
 	 * @param inputAcceptor
 	 * @param outputProducer
 	 */
-	public StepIOMeta(boolean inputAcceptor, boolean outputProducer, boolean inputOptional, boolean sortedDataRequired) {
+	public StepIOMeta(boolean inputAcceptor, boolean outputProducer, boolean inputOptional, boolean sortedDataRequired, boolean inputDynamic, boolean outputDynamic) {
 		this.inputAcceptor = inputAcceptor;
 		this.outputProducer = outputProducer;
 		this.inputOptional = inputOptional;
 		this.sortedDataRequired = sortedDataRequired;
 		this.streams = new ArrayList<StreamInterface>();
+		this.inputDynamic = inputDynamic;
+		this.outputDynamic = outputDynamic;
 	}
 	
 	/**
@@ -69,9 +72,11 @@ public class StepIOMeta implements StepIOMetaInterface {
 	}
 	
 	/**
-	 * Get the info streams of this step...
+	 * @return the info streams of this step.
+	 * Important: Modifying this list does not have any effect on the Steps IO metadata.
+	 *  
 	 */
-	public StreamInterface[] getInfoStreams() {
+	public List<StreamInterface> getInfoStreams() {
 		List<StreamInterface> list = new ArrayList<StreamInterface>();
 		for (StreamInterface stream : streams) {
 			if (stream.getStreamType().equals(StreamInterface.StreamType.INFO)) {
@@ -79,13 +84,15 @@ public class StepIOMeta implements StepIOMetaInterface {
 			}
 		}
 		
-		return list.toArray(new StreamInterface[list.size()]);
+		return list;
 	}
 
 	/**
-	 * Get the target streams of this step...
+	 * @return the target streams of this step.
+	 * Important: Modifying this list does not have any effect on the Steps IO metadata.
+	 *  
 	 */
-	public StreamInterface[] getTargetStreams() {
+	public List<StreamInterface> getTargetStreams() {
 		List<StreamInterface> list = new ArrayList<StreamInterface>();
 		for (StreamInterface stream : streams) {
 			if (stream.getStreamType().equals(StreamInterface.StreamType.TARGET)) {
@@ -93,7 +100,7 @@ public class StepIOMeta implements StepIOMetaInterface {
 			}
 		}
 		
-		return list.toArray(new StreamInterface[list.size()]);
+		return list;
 	}
 	
 
@@ -116,24 +123,24 @@ public class StepIOMeta implements StepIOMetaInterface {
 	}
 
 	public String[] getInfoStepnames() {
-		StreamInterface[] infoStreams = getInfoStreams();
-		String[] names = new String[infoStreams.length];
+		List<StreamInterface> infoStreams = getInfoStreams();
+		String[] names = new String[infoStreams.size()];
 		for (int i=0;i<names.length;i++) {
-			names[i] = infoStreams[i].getStepname();
+			names[i] = infoStreams.get(i).getStepname();
 		}
 		return names;
 	}
 
 	public String[] getTargetStepnames() {
-		StreamInterface[] targetStreams = getTargetStreams();
-		String[] names = new String[targetStreams.length];
+		List<StreamInterface> targetStreams = getTargetStreams();
+		String[] names = new String[targetStreams.size()];
 		for (int i=0;i<names.length;i++) {
-			names[i] = targetStreams[i].getStepname();
+			names[i] = targetStreams.get(i).getStepname();
 		}
 		return names;
 	}
-
-    /**
+	
+	/**
      * Replace the info steps with the supplied source steps.
      * 
      * @param infoSteps
@@ -151,14 +158,6 @@ public class StepIOMeta implements StepIOMetaInterface {
 				throw new RuntimeException("We expect all possible info streams to be pre-populated!");
 			}
 			streams.get(i).setStepMeta(infoSteps[i]);
-		}
-	}
-	
-	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
-		for (StreamInterface stream : streams) {
-			if (stream.getStreamType()==StreamType.INFO || stream.getStreamType()==StreamType.TARGET) {
-				stream.searchInfoAndTargetSteps(steps);
-			}
 		}
 	}
 
@@ -189,17 +188,50 @@ public class StepIOMeta implements StepIOMetaInterface {
 	public void setGeneralTargetDescription(String generalTargetDescription) {
 		this.generalTargetDescription = generalTargetDescription;
 	}
-
-	public void addInfoStream(String stepname, StepMeta stepMeta, String extraInfo) {
-		streams.add(new Stream(StreamType.INFO, stepname, stepMeta, generalInfoDescription+extraInfo));
-		
-	}
-
-	public void addTargetStream(String stepname, StepMeta stepMeta, String extraInfo) {
-		streams.add(new Stream(StreamType.TARGET, stepname, stepMeta, generalTargetDescription+extraInfo));
-	}
 	
 	public void clearStreams() {
 		streams.clear();
+	}
+
+	/**
+	 * @return the outputDynamic
+	 */
+	public boolean isOutputDynamic() {
+		return outputDynamic;
+	}
+
+	/**
+	 * @param outputDynamic the outputDynamic to set
+	 */
+	public void setOutputDynamic(boolean outputDynamic) {
+		this.outputDynamic = outputDynamic;
+	}
+
+	/**
+	 * @return the inputDynamic
+	 */
+	public boolean isInputDynamic() {
+		return inputDynamic;
+	}
+
+	/**
+	 * @param inputDynamic the inputDynamic to set
+	 */
+	public void setInputDynamic(boolean inputDynamic) {
+		this.inputDynamic = inputDynamic;
+	}
+	
+	public StreamInterface findTargetStream(StepMeta targetStep) {
+		for (StreamInterface stream : getTargetStreams()) {
+			if (targetStep.equals(stream.getStepMeta())) return stream;
+		}
+		return null;
+	}
+	
+	public StreamInterface findInfoStream(StepMeta infoStep) {
+		for (StreamInterface stream : getInfoStreams()) {
+			if (infoStep.equals(stream.getStepMeta())) return stream;
+		}
+		return null;
 	}
 }

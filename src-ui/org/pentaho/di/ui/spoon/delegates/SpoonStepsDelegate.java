@@ -127,6 +127,10 @@ public class SpoonStepsDelegate extends SpoonDelegate
 
 			if (!Const.isEmpty(stepname))
 			{
+				// Force the recreation of the step IO metadata object. (cached by default)
+				//
+				stepMeta.getStepMetaInterface().resetStepIoMeta();
+				
 				// 
 				// See if the new name the user enter, doesn't collide with
 				// another step.

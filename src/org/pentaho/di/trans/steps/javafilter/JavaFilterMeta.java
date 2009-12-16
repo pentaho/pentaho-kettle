@@ -40,6 +40,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.w3c.dom.Node;
@@ -78,10 +79,10 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
     
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases,  Map<String, Counter> counters) throws KettleXMLException
 	{
-		StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
+		List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-		targetStreams[0].setStepname( XMLHandler.getTagValue(stepnode, "send_true_to") ); //$NON-NLS-1$
-		targetStreams[1].setStepname( XMLHandler.getTagValue(stepnode, "send_false_to") ); //$NON-NLS-1$
+		targetStreams.get(0).setSubject( XMLHandler.getTagValue(stepnode, "send_true_to") ); //$NON-NLS-1$
+		targetStreams.get(1).setSubject( XMLHandler.getTagValue(stepnode, "send_false_to") ); //$NON-NLS-1$
 
 		condition = XMLHandler.getTagValue(stepnode, "condition");
 	}
@@ -90,9 +91,9 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
-		retval.append(XMLHandler.addTagValue("send_true_to", targetStreams[0].getStepname()));		 //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("send_false_to", targetStreams[1].getStepname()));		 //$NON-NLS-1$
+        List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
+		retval.append(XMLHandler.addTagValue("send_true_to", targetStreams.get(0).getStepname()));		 //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("send_false_to", targetStreams.get(1).getStepname()));		 //$NON-NLS-1$
         
         retval.append(XMLHandler.addTagValue("condition", condition));
 
@@ -123,20 +124,27 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException 
 	{
-		StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
+		List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-		targetStreams[0].setStepname( rep.getStepAttributeString (id_step, "send_true_to") );  //$NON-NLS-1$
-		targetStreams[1].setStepname( rep.getStepAttributeString (id_step, "send_false_to") );  //$NON-NLS-1$
+		targetStreams.get(0).setSubject( rep.getStepAttributeString (id_step, "send_true_to") );  //$NON-NLS-1$
+		targetStreams.get(1).setSubject( rep.getStepAttributeString (id_step, "send_false_to") );  //$NON-NLS-1$
 
 		condition = rep.getStepAttributeString(id_step, "condition");
+	}
+
+	@Override
+	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
+		for (StreamInterface stream : getStepIOMeta().getTargetStreams()) {
+			stream.setStepMeta( StepMeta.findStep(steps, (String)stream.getSubject()) );
+		}
 	}
 	
 	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	{
-		StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
+		List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-		rep.saveStepAttribute(id_transformation, id_step, "send_true_to", targetStreams[0].getStepname()); //$NON-NLS-1$
-		rep.saveStepAttribute(id_transformation, id_step, "send_false_to", targetStreams[1].getStepname()); //$NON-NLS-1$
+		rep.saveStepAttribute(id_transformation, id_step, "send_true_to", targetStreams.get(0).getStepname()); //$NON-NLS-1$
+		rep.saveStepAttribute(id_transformation, id_step, "send_false_to", targetStreams.get(1).getStepname()); //$NON-NLS-1$
 
 		rep.saveStepAttribute(id_transformation, id_step, "condition", condition);
 	}
@@ -146,15 +154,15 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
 		
-		StreamInterface[] targetStreams = getStepIOMeta().getTargetStreams();
+		List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
 
-		if (targetStreams[0].getStepname()!=null && targetStreams[1].getStepname()!=null)
+		if (targetStreams.get(0).getStepname()!=null && targetStreams.get(1).getStepname()!=null)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.BothTrueAndFalseStepSpecified"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
-		if (targetStreams[0].getStepname()==null && targetStreams[1].getStepname()==null)
+		if (targetStreams.get(0).getStepname()==null && targetStreams.get(1).getStepname()==null)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.NeitherTrueAndFalseStepSpecified"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
@@ -165,25 +173,25 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 				
-		if ( targetStreams[0].getStepname()!=null )
+		if ( targetStreams.get(0).getStepname()!=null )
 		{
-			int trueTargetIdx = Const.indexOfString(targetStreams[0].getStepname(), output);
+			int trueTargetIdx = Const.indexOfString(targetStreams.get(0).getStepname(), output);
 			if ( trueTargetIdx < 0 )
 			{
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-						             BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.TargetStepInvalid", "true", targetStreams[0].getStepname() ), 
+						             BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.TargetStepInvalid", "true", targetStreams.get(0).getStepname() ), 
 						             stepinfo);
 				remarks.add(cr);
 			}
 		}
 
-		if ( targetStreams[1].getStepname()!=null )
+		if ( targetStreams.get(1).getStepname()!=null )
 		{
-			int falseTargetIdx = Const.indexOfString(targetStreams[1].getStepname(), output);
+			int falseTargetIdx = Const.indexOfString(targetStreams.get(1).getStepname(), output);
 			if ( falseTargetIdx < 0 )
 			{
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-						             BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.TargetStepInvalid", "false", targetStreams[1].getStepname()), 
+						             BaseMessages.getString(PKG, "JavaFilterMeta.CheckResult.TargetStepInvalid", "false", targetStreams.get(1).getStepname()), 
 						             stepinfo);
 				remarks.add(cr);
 			}
@@ -246,10 +254,10 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
     public StepIOMetaInterface getStepIOMeta() {
     	if (ioMeta==null) {
 
-    		ioMeta = new StepIOMeta(true, true, false, false);
+    		ioMeta = new StepIOMeta(true, true, false, false, false, false);
     	
-	    	ioMeta.addStream( new Stream(StreamType.TARGET, BaseMessages.getString(PKG, "JavaFilterMeta.InfoStream.True.Description")) );
-	    	ioMeta.addStream( new Stream(StreamType.TARGET, BaseMessages.getString(PKG, "JavaFilterMeta.InfoStream.False.Description")) );
+	    	ioMeta.addStream( new Stream(StreamType.TARGET, null, BaseMessages.getString(PKG, "JavaFilterMeta.InfoStream.True.Description"), StreamIcon.TRUE, null) );
+	    	ioMeta.addStream( new Stream(StreamType.TARGET, null, BaseMessages.getString(PKG, "JavaFilterMeta.InfoStream.False.Description"), StreamIcon.TRUE, null) );
     	}
     	
     	return ioMeta;

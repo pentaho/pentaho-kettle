@@ -846,8 +846,11 @@ public class DatabaseExplorerDialog extends Dialog
                 
                 // Only take non-SAP R/3 connections....
                 List<DatabaseMeta> dbs = new ArrayList<DatabaseMeta>();
-                for (int i=0;i<databases.size();i++) 
-                    if ((databases.get(i)).getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_SAPR3) dbs.add(databases.get(i));
+                for (int i=0;i<databases.size();i++) { 
+                    if ((databases.get(i)).getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SAPR3) {
+                    	dbs.add(databases.get(i));
+                    }
+                }
                 
                 String conn[] = new String[dbs.size()];
     			for (int i=0;i<conn.length;i++) conn[i] = (dbs.get(i)).getName();
@@ -969,7 +972,7 @@ public class DatabaseExplorerDialog extends Dialog
 				{
                     schemaName = null;
 					tableName = table;
- 					if (dbMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
+ 					if (dbMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL) {
  						String st[] = tableName.split("\\.",2);
  						if (st.length>1) { // we have a dot in there and need to separate
  		                    schemaName = st[0];

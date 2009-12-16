@@ -768,7 +768,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             {
                 data.prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
             }
-            if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL)
             {
                 data.prepStatementLookup.setFetchSize(0); // Make sure to DISABLE Streaming Result sets
             }
@@ -815,8 +815,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             }
             else
             {
-                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_INFORMIX) 
-                {
+                if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_INFORMIX) {
                     sql+="0, "; // placeholder on informix!    
                 }
             }
@@ -1486,6 +1485,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 }
                 else
                 {
+                	
+                	/*
+                	 * TODO: migrate this to a new method DatabaseMeta.getSQLInsertUnknownDimensionRow(String keyField, String versionField);
+                	 * 
                     switch(databaseMeta.getDatabaseType())
                     {
                     case DatabaseMeta.TYPE_DATABASE_CACHE       :
@@ -1501,7 +1504,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
                     case DatabaseMeta.TYPE_DATABASE_ACCESS      :  
                     case DatabaseMeta.TYPE_DATABASE_DERBY       :  isql = "insert into "+data.schemaTable+"("+databaseMeta.quoteField(meta.getVersionField())+") values (1)"; break;
                     default: isql = "insert into "+data.schemaTable+"("+databaseMeta.quoteField(meta.getKeyField())+", "+databaseMeta.quoteField(meta.getVersionField())+") values (0, 1)"; break;
-                    }                   
+                    }
+                    */                  
                 }
                 
                 data.db.execStatement(databaseMeta.stripCR(isql));

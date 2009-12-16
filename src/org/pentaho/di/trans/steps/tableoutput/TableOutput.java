@@ -550,8 +550,9 @@ public class TableOutput extends BaseStep implements StepInterface
                 // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
                 //
                 data.specialErrorHandling = getStepMeta().isDoingErrorHandling() && 
-	        		( meta.getDatabaseMeta().getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES || 
-	              		  meta.getDatabaseMeta().getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GREENPLUM );
+	        		( meta.getDatabaseMeta().getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES || 
+	              	  meta.getDatabaseMeta().getDatabaseType() == DatabaseMeta.TYPE_DATABASE_GREENPLUM
+	              	);
                 
                 if (data.batchMode && data.specialErrorHandling )
                 {

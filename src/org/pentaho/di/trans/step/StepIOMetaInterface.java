@@ -10,8 +10,8 @@ public interface StepIOMetaInterface {
 	public boolean isOutputProducer();
 	public boolean isInputOptional();
 	public boolean isSortedDataRequired();
-	public StreamInterface[] getInfoStreams();
-	public StreamInterface[] getTargetStreams();
+	public List<StreamInterface> getInfoStreams();
+	public List<StreamInterface> getTargetStreams();
 	
 	public String[] getInfoStepnames();
 	public String[] getTargetStepnames();
@@ -29,13 +29,7 @@ public interface StepIOMetaInterface {
 	 * @param stream The stream to add
 	 */
 	public void addStream(StreamInterface stream);
-	
-	/**
-	 * Change step names into step objects for the info and target streams.  We do this to allow them to be name-changed etc.
-	 * @param steps the steps to reference
-	 */
-	public void searchInfoAndTargetSteps(List<StepMeta> steps);
-	
+		
 	/**
 	 * Set the general info stream description
 	 * @param string the info streams description
@@ -47,28 +41,37 @@ public interface StepIOMetaInterface {
 	 * @param string the target streams description
 	 */
 	public void setGeneralTargetDescription(String string);
-	
+			
 	/**
-	 * Utility method : add an info stream with the default description, referencing the specified step name and step
-	 * 
-	 * @param stepname
-	 * @param stepMeta
-	 * @param extraInfo extra text to be added to the general info stream description
+	 * @return the generalTargetDescription
 	 */
-	public void addInfoStream(String stepname, StepMeta stepMeta, String extraInfo);	
+	public String getGeneralTargetDescription();
 
 	/**
-	 * Utility method : add a target stream with the default description, referencing the specified step name and step
-	 * 
-	 * @param stepname
-	 * @param stepMeta
-	 * @param extraInfo extra text to be added to the general info stream description
+	 * @return the generalInfoDescription
 	 */
-	public void addTargetStream(String stepname, StepMeta stepMeta, String extraInfo);	
+	public String getGeneralInfoDescription();
+
+	/**
+	 * @return true if the output targets of this step are dynamic (variable)
+	 */
+	public boolean isOutputDynamic();
+
+	/**
+	 * @param outputDynamic set to true if the output targets of this step are dynamic (variable)
+	 */
+	public void setOutputDynamic(boolean outputDynamic);
 	
 	/**
-	 * Remove all defined streams
+	 * @return true if the input info sources of this step are dynamic (variable)
 	 */
-	public void clearStreams();
+	public boolean isInputDynamic();
 
+	/**
+	 * @param inputDynamic set to true if the input info sources of this step are dynamic (variable)
+	 */
+	public void setInputDynamic(boolean inputDynamic);
+
+	public StreamInterface findTargetStream(StepMeta targetStep);
+	public StreamInterface findInfoStream(StepMeta infoStep);
 }

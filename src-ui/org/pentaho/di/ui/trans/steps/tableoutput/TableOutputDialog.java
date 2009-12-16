@@ -1169,9 +1169,10 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     	
     	// If we are on PostgreSQL (and look-a-likes), error handling is not supported. (PDI-366)
     	enableBatch = enableBatch && !(
-    			databaseMeta!=null && 
-    				( databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES || 
-    					databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GREENPLUM )
+    				databaseMeta!=null && 
+    				( databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES || 
+    				  databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_GREENPLUM
+    				)
     				&& hasErrorHandling
     			 	);
 

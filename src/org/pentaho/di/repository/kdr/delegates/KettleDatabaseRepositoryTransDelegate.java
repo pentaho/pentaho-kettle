@@ -425,7 +425,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                for (int i = 0; i < transMeta.nrSteps(); i++)
 	                {
 	                    StepMetaInterface sii = transMeta.getStep(i).getStepMetaInterface();
-	                    sii.getStepIOMeta().searchInfoAndTargetSteps(transMeta.getSteps());
+	                    sii.searchInfoAndTargetSteps(transMeta.getSteps());
 	                }
 	
 	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$

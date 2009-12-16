@@ -118,8 +118,8 @@ public class TransBuilderFilter
             condition.setFunction(Condition.FUNC_SMALLER);
             condition.setRightExact(new ValueMetaAndData("constant", new Long(6)));
             cMeta.setCondition(condition);
-            cMeta.getStepIOMeta().getTargetStreams()[0].setStepMeta(dStep);
-            cMeta.getStepIOMeta().getTargetStreams()[1].setStepMeta(eStep);
+            cMeta.getStepIOMeta().getTargetStreams().get(0).setStepMeta(dStep);
+            cMeta.getStepIOMeta().getTargetStreams().get(1).setStepMeta(eStep);
             StepMeta cStep = new StepMeta("C", cMeta);
             cStep.setLocation(200,100);
             cStep.setDraw(true);

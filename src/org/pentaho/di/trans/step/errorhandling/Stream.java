@@ -1,7 +1,5 @@
 package org.pentaho.di.trans.step.errorhandling;
 
-import java.util.List;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.trans.step.StepMeta;
 
@@ -10,8 +8,9 @@ public class Stream implements StreamInterface {
 
 	private String description;
 	private StreamType streamType;
-	private String stepname;
 	private StepMeta stepMeta;
+	private StreamIcon	streamIcon;
+	private Object subject;
 	
 	/**
 	 * @param streamType
@@ -19,31 +18,25 @@ public class Stream implements StreamInterface {
 	 * @param stepMeta
 	 * @param description
 	 */
-	public Stream(StreamType streamType, String stepname, StepMeta stepMeta, String description) {
+	public Stream(StreamType streamType, StepMeta stepMeta, String description, StreamIcon streamIcon, Object subject) {
 		this.streamType = streamType;
-		this.stepname = stepname;
 		this.stepMeta = stepMeta;
 		this.description = description;
-	}
-
-	/**
-	 * @param streamType
-	 * @param description
-	 */
-	public Stream(StreamType streamType, String description) {
-		this(streamType, null, null, description);
+		this.streamIcon = streamIcon;
+		this.subject = subject;
 	}
 
 	public String toString() {
-		if (Const.isEmpty(getStepname())) {
+		if (stepMeta==null) {
 			return "Stream type "+streamType+Const.CR+description;
 		} else {
-			return "Stream type "+streamType+" for step '"+getStepname()+"'"+Const.CR+description;
+			return "Stream type "+streamType+" for step '"+stepMeta.getName()+"'"+Const.CR+description;
 		}
 	}
 	
-	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
-		stepMeta = StepMeta.findStep(steps, stepname);
+	public String getStepname() {
+		if (stepMeta==null) return null;
+		return stepMeta.getName();
 	}
 	
 	/**
@@ -70,19 +63,6 @@ public class Stream implements StreamInterface {
 	public void setStreamType(StreamType streamType) {
 		this.streamType = streamType;
 	}
-	/**
-	 * @return the stepname
-	 */
-	public String getStepname() {
-		if (stepMeta!=null) return stepMeta.getName();
-		return stepname;
-	}
-	/**
-	 * @param stepname the stepname to set
-	 */
-	public void setStepname(String stepname) {
-		this.stepname = stepname;
-	}
 
 	/**
 	 * @return the stepMeta
@@ -96,6 +76,34 @@ public class Stream implements StreamInterface {
 	 */
 	public void setStepMeta(StepMeta stepMeta) {
 		this.stepMeta = stepMeta;
+	}
+
+	/**
+	 * @return the streamIcon
+	 */
+	public StreamIcon getStreamIcon() {
+		return streamIcon;
+	}
+
+	/**
+	 * @param streamIcon the streamIcon to set
+	 */
+	public void setStreamIcon(StreamIcon streamIcon) {
+		this.streamIcon = streamIcon;
+	}
+
+	/**
+	 * @return the subject
+	 */
+	public Object getSubject() {
+		return subject;
+	}
+
+	/**
+	 * @param subject the subject to set
+	 */
+	public void setSubject(Object subject) {
+		this.subject = subject;
 	}
 	
 

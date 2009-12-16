@@ -10,6 +10,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
 public class Validation implements Cloneable {
@@ -37,6 +38,7 @@ public class Validation implements Cloneable {
 	private String[] allowedValues;
 	private boolean  sourcingValues;
 	private String   sourcingStepName;
+	private StepMeta sourcingStep;
 	private String   sourcingField;
 	
 	private String   startString;
@@ -641,5 +643,19 @@ public class Validation implements Cloneable {
 	 */
 	public void setSourcingStepName(String sourcingStepName) {
 		this.sourcingStepName = sourcingStepName;
+	}
+
+	/**
+	 * @return the sourcingStep
+	 */
+	public StepMeta getSourcingStep() {
+		return sourcingStep;
+	}
+
+	/**
+	 * @param sourcingStep the sourcingStep to set
+	 */
+	public void setSourcingStep(StepMeta sourcingStep) {
+		this.sourcingStep = sourcingStep;
 	}
 }

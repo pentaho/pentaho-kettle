@@ -418,7 +418,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 						// User has specified a connection, We can continue ...
 						Database db = new Database(this, connection);
 						
-						if(db.getDatabaseMeta().getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_MSSQL)
+						if(db.getDatabaseMeta().getDatabaseType() != DatabaseMeta.TYPE_DATABASE_MSSQL)
 						{
 							logError(BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.DbNotMSSQL",connection.getDatabaseName()));
 							return result;

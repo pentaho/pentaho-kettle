@@ -50,6 +50,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -70,6 +71,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
@@ -121,6 +123,8 @@ import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
@@ -163,7 +167,7 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * @since 17-mei-2003
  * 
  */
-public class TransGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener {
+public class TransGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private LogChannelInterface log;
@@ -220,8 +224,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private TransHopMeta candidate;
   
-  private boolean showHopInputIcons;
-
   private Point drop_candidate;
 
   private Spoon spoon;
@@ -319,10 +321,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private StreamType candidateHopType;
 
-  private StreamInterface	startTargetHopStream;
-  
-  
 
+  private Map<StepMeta, DelayTimer> delayTimers;
+
+  private StepMeta showTargetStreamsStep;
+
+ 
   public void setCurrentNote(NotePadMeta ni) {
     this.ni = ni;
   }
@@ -356,6 +360,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     this.log = spoon.getLog();
 
     this.mouseOverSteps = new ArrayList<StepMeta>();
+    this.delayTimers = new HashMap<StepMeta, DelayTimer>();
     
     transLogDelegate = new TransLogDelegate(spoon, this);
     transGridDelegate = new TransGridDelegate(spoon, this);
@@ -480,6 +485,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     canvas.addMouseListener(this);
     canvas.addMouseMoveListener(this);
+    canvas.addMouseTrackListener(this);
 
     // Drag & Drop for steps
     Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
@@ -711,128 +717,143 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     public void mouseDown(MouseEvent e) {
 
-      boolean alt = (e.stateMask & SWT.ALT) != 0;
-      boolean control = (e.stateMask & SWT.CONTROL) != 0;
-      boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+		boolean alt = (e.stateMask & SWT.ALT) != 0;
+		boolean control = (e.stateMask & SWT.CONTROL) != 0;
+		boolean shift = (e.stateMask & SWT.SHIFT) != 0;
 
-      last_button = e.button;
-      Point real = screen2real(e.x, e.y);
-      lastclick = new Point(real.x, real.y);
+		last_button = e.button;
+		Point real = screen2real(e.x, e.y);
+		lastclick = new Point(real.x, real.y);
 
-      // Hide the tooltip!
-      hideToolTips();
+		// Hide the tooltip!
+		hideToolTips();
 
-      // Set the pop-up menu
-      if (e.button == 3) {
-        setMenu(real.x, real.y);
-        return;
-      }
-      
-      // A single left click on one of the area owners...
-      //
-      if (e.button==1) {
-    	  AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
-    	  if (areaOwner!=null) {
-    		  switch(areaOwner.getAreaType()) {
-    		  case STEP_OUTPUT_HOP_ICON:
- 		    	 // Click on the output icon means: start of drag
- 	    		 // Action: We show the input icons on the other steps...
- 	    		 //
- 	    		 showHopInputIcons = true;
-     			 selectedStep = null;
- 	    		 startHopStep = (StepMeta)areaOwner.getParent();
- 	    		 candidateHopType = null;
- 	    		 startErrorHopStep = false;
- 	    		 startTargetHopStream= null;
- 	    		 break;
-    		  case STEP_INFO_HOP_ICON:
-    			  // See if we have a start hop step set...
-    			  // If so, we can create a new info hop...
-    			  //
-    			  if (startHopStep!=null) {
-    				  StepMeta stepMeta = (StepMeta)areaOwner.getParent();
-    				  StreamInterface stream = (StreamInterface)areaOwner.getOwner();
-    				  candidate = new TransHopMeta(startHopStep, stepMeta);
-    				  stream.setStepMeta(startHopStep);
-    			  }
-    		      startHopStep=null;
-    		      break;
-    		  case STEP_INPUT_HOP_ICON:
-  		    	 // Click on the input icon means: create a new hop
-  	    		 //
-    			  if (startHopStep!=null) {
-    				  StepMeta stepMeta = (StepMeta)areaOwner.getParent();
-    				  candidate = new TransHopMeta(startHopStep, stepMeta);
-    			  }
-  	    		 break;
-    		  case STEP_ERROR_HOP_ICON:
-   		    	 // Click on the error icon means: create a new error hop 
-   	    		 //
-     			  if (startHopStep==null) {
-     				 startHopStep = (StepMeta)areaOwner.getParent();
-     				  startErrorHopStep = true;
-     			  }
-   	    		 break;
-    		  case STEP_TARGET_HOP_ICON:
-    		      // Click on the target icon means: create a new target hop 
-    	    	  //
-      			  if (startHopStep==null) {
-      				 startHopStep = (StepMeta)areaOwner.getParent();
-      				 startTargetHopStream = (StreamInterface)areaOwner.getOwner();
-      			  }
-    	    		 break;
-    		  default:
-    		      startHopStep=null;
-    		  }
-    	  }
-      }
-      
-      if (candidate!=null) {
-    	  addCandidateAsHop();
-      }
-      
-      // Did we click on a step?
-      StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
-      if (stepMeta != null) {
-        // ALT-Click: edit error handling
-        if (e.button == 1 && alt && stepMeta.supportsErrorHandling()) {
-          spoon.editStepErrorHandling(transMeta, stepMeta);
-          return;
-        } 
-        // SHIFT CLICK is start of drag to create a new hop
-        //
-        else if (e.button== 2 || (e.button==1 && shift)) {
-        	startHopStep = stepMeta;
-        } else {
-	        selectedSteps = transMeta.getSelectedSteps();
-	        selectedStep = stepMeta;
-	        // 
-	        // When an icon is moved that is not selected, it gets
-	        // selected too late.
-	        // It is not captured here, but in the mouseMoveListener...
-	        previous_step_locations = transMeta.getSelectedStepLocations();
-	
-	        Point p = stepMeta.getLocation();
-	        iconoffset = new Point(real.x - p.x, real.y - p.y);
-        }
-      } else {
-        // Did we hit a note?
-        NotePadMeta ni = transMeta.getNote(real.x, real.y);
-        if (ni != null && last_button == 1) {
-          selectedNotes = transMeta.getSelectedNotes();
-          selectedNote = ni;
-          Point loc = ni.getLocation();
+		// Set the pop-up menu
+		if (e.button == 3) {
+			setMenu(real.x, real.y);
+			return;
+		}
 
-          previous_note_locations = transMeta.getSelectedNoteLocations();
+		// A single left click on one of the area owners...
+		//
+		if (e.button == 1) {
+			AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+			if (areaOwner != null) {
+				switch (areaOwner.getAreaType()) {
+				case STEP_OUTPUT_HOP_ICON:
+					// Click on the output icon means: start of drag
+					// Action: We show the input icons on the other steps...
+					//
+					{
+						selectedStep = null;
+						startHopStep = (StepMeta) areaOwner.getParent();
+						candidateHopType = null;
+						startErrorHopStep = false;
+						// stopStepMouseOverDelayTimer(startHopStep);
+					}
+					break;
 
-          noteoffset = new Point(real.x - loc.x, real.y - loc.y);
-        } else {
-          if (!control)
-            selectionRegion = new Rectangle(real.x, real.y, 0, 0);
-        }
-      }
-      redraw();
-    }
+				case STEP_INPUT_HOP_ICON:
+					// Click on the input icon means: start to a new hop
+					// In this case, we set the end hop step...
+					//
+					{
+						selectedStep = null;
+						startHopStep = null;
+						endHopStep = (StepMeta) areaOwner.getParent();
+						candidateHopType = null;
+						startErrorHopStep = false;
+						// stopStepMouseOverDelayTimer(endHopStep);
+					}
+					break;
+
+				case HOP_ERROR_ICON:
+					// Click on the error icon means: Edit error handling
+					//
+					{
+						StepMeta stepMeta = (StepMeta) areaOwner.getParent();
+						spoon.editStepErrorHandling(transMeta, stepMeta);
+					}
+					break;
+
+				case STEP_TARGET_HOP_ICON_OPTION:
+					// Below, see showStepTargetOptions()
+					break;
+
+				case STEP_EDIT_ICON:
+					{
+						clearSettings();
+						currentStep = (StepMeta) areaOwner.getParent();
+						stopStepMouseOverDelayTimer(currentStep);
+						editStep();
+					}
+					break;
+
+				case STEP_MENU_ICON:
+					clearSettings();
+					StepMeta stepMeta = (StepMeta) areaOwner.getParent();
+					setMenu(stepMeta.getLocation().x, stepMeta.getLocation().y);
+					break;
+					
+				case STEP_ICON :
+					stepMeta = (StepMeta) areaOwner.getOwner();
+					currentStep = stepMeta;
+					
+					if (candidate != null) {
+						addCandidateAsHop(e.x, e.y);
+					}
+					// ALT-Click: edit error handling
+					//
+					if (e.button == 1 && alt && stepMeta.supportsErrorHandling()) {
+						spoon.editStepErrorHandling(transMeta, stepMeta);
+						return;
+					}
+					
+					// SHIFT CLICK is start of drag to create a new hop
+					//
+					else if (e.button == 2 || (e.button == 1 && shift)) {
+						startHopStep = stepMeta;
+					} else {
+						selectedSteps = transMeta.getSelectedSteps();
+						selectedStep = stepMeta;
+						// 
+						// When an icon is moved that is not selected, it gets
+						// selected too late.
+						// It is not captured here, but in the mouseMoveListener...
+						//
+						previous_step_locations = transMeta.getSelectedStepLocations();
+
+						Point p = stepMeta.getLocation();
+						iconoffset = new Point(real.x - p.x, real.y - p.y);
+					}
+					redraw();
+					break;
+				
+				case NOTE:
+					ni = (NotePadMeta) areaOwner.getOwner();
+					selectedNotes = transMeta.getSelectedNotes();
+					selectedNote = ni;
+					Point loc = ni.getLocation();
+
+					previous_note_locations = transMeta.getSelectedNoteLocations();
+
+					noteoffset = new Point(real.x - loc.x, real.y - loc.y);
+
+					redraw();
+					break;
+
+				}
+			} else {
+				// No area-owner means: background:
+				//
+				startHopStep = null;
+				if (!control) {
+					selectionRegion = new Rectangle(real.x, real.y, 0, 0);
+				}
+				redraw();
+			}
+		}
+	}
 
 	public void mouseUp(MouseEvent e) {
       boolean control = (e.stateMask & SWT.CONTROL) != 0;
@@ -845,7 +866,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       // Quick new hop option? (drag from one step to another)
       //
       if (candidate != null) {
-    	addCandidateAsHop();
+    	addCandidateAsHop(e.x, e.y);
     	redraw();
       }
       // Did we select a region on the screen? Mark steps in region as
@@ -859,6 +880,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           transMeta.unselectAll();
           selectInRect(transMeta, selectionRegion);
           selectionRegion = null;
+          stopStepMouseOverDelayTimers();
           redraw();
         }
         // Clicked on an icon?
@@ -990,44 +1012,177 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
               selectedNote = null;
               startHopStep = null;
               endHopLocation = null;
+            } else {
+            	AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+            	if (areaOwner==null && selectionRegion==null) {
+	            	// Hit absolutely nothing: clear the settings
+	            	//
+	          	  	clearSettings();
+            	}
             }
-          }
+          } 
         }
       }
 
       last_button = 0;
     }
   
-    private void addCandidateAsHop() {
-      if (transMeta.findTransHop(candidate) == null) {
-        spoon.newHop(transMeta, candidate);
-      }
-	  if (startErrorHopStep) {
-		  // Automatically configure the step error handling too!
-		  //
-		  StepErrorMeta errorMeta = candidate.getFromStep().getStepErrorMeta();
-		  if (errorMeta==null) {
-			  errorMeta=new StepErrorMeta(transMeta, candidate.getFromStep());
-		  }
-		  errorMeta.setEnabled(true);
-		  errorMeta.setTargetStep(candidate.getToStep());
-		  candidate.getFromStep().setStepErrorMeta(errorMeta);
-		  startErrorHopStep=false;
-	  }
-	  if (startTargetHopStream!=null) {
-		  // Auto-configure the target in the source step...
-		  //
-		  startTargetHopStream.setStepMeta(candidate.getToStep());
-		  startTargetHopStream.setStepname(candidate.getToStep().getName());
-		  startTargetHopStream=null;
-	  }
-	  
-      candidate = null;
-      selectedSteps = null;
-      startHopStep = null;
-      endHopLocation = null;
-      // redraw();
+    private void addCandidateAsHop(int mouseX, int mouseY) {
+
+    	boolean forward = startHopStep!=null;
+    	
+    	StepMeta fromStep = candidate.getFromStep();
+    	StepMeta toStep = candidate.getToStep();
+    	
+    	// See what the options are.
+    	// - Does the source step has multiple stream options?
+    	// - Does the target step have multiple input stream options?
+    	//
+    	List<StreamInterface> streams=new ArrayList<StreamInterface>();
+    	
+    	StepIOMetaInterface fromIoMeta = fromStep.getStepMetaInterface().getStepIOMeta();
+    	List<StreamInterface> targetStreams = fromIoMeta.getTargetStreams();
+    	if (forward) {
+    		streams.addAll(targetStreams);
+    	}
+    	
+    	StepIOMetaInterface toIoMeta = toStep.getStepMetaInterface().getStepIOMeta();
+    	List<StreamInterface> infoStreams = toIoMeta.getInfoStreams();
+    	if (!forward) {
+    		streams.addAll(infoStreams);
+    	}
+    	
+    	if (forward) {
+    		if (fromIoMeta.isOutputProducer() && toStep.equals(currentStep)) {
+    			streams.add( new Stream(StreamType.OUTPUT, fromStep, "Main output of step", StreamIcon.OUTPUT, null) );
+    		}
+
+        	if (fromStep.supportsErrorHandling() && toStep.equals(currentStep)) {
+        		streams.add( new Stream(StreamType.ERROR, fromStep, "Error handling of step", StreamIcon.ERROR, null) );
+        	}
+    	} else {
+	    	if (toIoMeta.isInputAcceptor() && fromStep.equals(currentStep)) {
+	    		streams.add( new Stream(StreamType.INPUT, toStep, "Main input of step", StreamIcon.INPUT, null) );
+	    	}
+
+        	if (fromStep.supportsErrorHandling() && fromStep.equals(currentStep)) {
+        		streams.add( new Stream(StreamType.ERROR, fromStep, "Error handling of step", StreamIcon.ERROR, null) );
+        	}
+    	}
+    	
+    	// Targets can be dynamically added to this step...
+    	//
+    	if (forward) {
+    		streams.addAll( fromStep.getStepMetaInterface().getOptionalStreams() );
+    	} else {
+    		streams.addAll( toStep.getStepMetaInterface().getOptionalStreams() );
+    	}
+    	
+    	// Show a list of options on the canvas...
+    	//
+    	if (streams.size()>1) {
+    		// Show a pop-up menu with all the possible options...
+    		//
+    		Menu menu = new Menu(canvas);
+    		for (final StreamInterface stream : streams) {
+    			MenuItem item = new MenuItem(menu, SWT.NONE);
+    			item.setText(Const.NVL(stream.getDescription(), ""));
+    			item.setImage(getStreamIconImage(stream.getStreamIcon()));
+    			item.addSelectionListener(new SelectionAdapter() {
+    				public void widgetSelected(SelectionEvent e) {
+    					addHop(stream);
+    				}
+				});
+    		}
+    		menu.setLocation(canvas.toDisplay(mouseX, mouseY));
+    		menu.setVisible(true);
+
+    		return;
+    	} if (streams.size()==1) {
+    			addHop(streams.get(0));
+    	} else {
+    		return;
+    	}
+    	
+    	/*
+    	
+		if (transMeta.findTransHop(candidate) == null) {
+			spoon.newHop(transMeta, candidate);
+		}
+		if (startErrorHopStep) {
+			addErrorHop();
+		}
+		if (startTargetHopStream != null) {
+			// Auto-configure the target in the source step...
+			//
+			startTargetHopStream.setStepMeta(candidate.getToStep());
+			startTargetHopStream.setStepname(candidate.getToStep().getName());
+			startTargetHopStream = null;
+		}
+		*/
+		candidate = null;
+		selectedSteps = null;
+		startHopStep = null;
+		endHopLocation = null;
+		startErrorHopStep = false;
+		
+		// redraw();
 	}
+    
+    protected void addHop(StreamInterface stream) {
+		switch(stream.getStreamType()) {
+		case ERROR  : 
+			addErrorHop(); 
+			spoon.newHop(transMeta, candidate); 
+			break;
+		case INPUT:
+			spoon.newHop(transMeta, candidate); 
+			break;
+		case OUTPUT :
+			candidate.getFromStep().setStepErrorMeta(null);
+			spoon.newHop(transMeta, candidate); 
+			break;
+		case INFO   :  
+			stream.setStepMeta(candidate.getFromStep());
+			candidate.getToStep().getStepMetaInterface().handleStreamSelection(stream);
+			spoon.newHop(transMeta, candidate);
+			break;
+		case TARGET :
+			// We connect a target of the source step to an output step...
+			//
+			stream.setStepMeta(candidate.getToStep());
+			candidate.getFromStep().getStepMetaInterface().handleStreamSelection(stream);
+			spoon.newHop(transMeta, candidate);
+			break;
+		
+		}
+		clearSettings();
+	}
+
+	private void addErrorHop() {
+		// Automatically configure the step error handling too!
+		//
+		StepErrorMeta errorMeta = candidate.getFromStep().getStepErrorMeta();
+		if (errorMeta == null) {
+			errorMeta = new StepErrorMeta(transMeta, candidate.getFromStep());
+		}
+		errorMeta.setEnabled(true);
+		errorMeta.setTargetStep(candidate.getToStep());
+		candidate.getFromStep().setStepErrorMeta(errorMeta);
+	}
+
+	public static Image getStreamIconImage(StreamIcon streamIcon) {
+		switch(streamIcon) {
+		case TRUE   : return GUIResource.getInstance().getImageTrue();
+		case FALSE  : return GUIResource.getInstance().getImageFalse();
+		case ERROR  : return GUIResource.getInstance().getImageErrorHop();
+		case INFO   : return GUIResource.getInstance().getImageInfoHop();
+		case TARGET : return GUIResource.getInstance().getImageHopTarget();
+		case INPUT  : return GUIResource.getInstance().getImageHopInput();
+		case OUTPUT : return GUIResource.getInstance().getImageHopOutput();
+		default:      return GUIResource.getInstance().getImageArrow();
+		}
+    }
 
 	public void mouseMove(MouseEvent e) {
         boolean shift = (e.stateMask & SWT.SHIFT) != 0;
@@ -1051,42 +1206,24 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           noteoffset = new Point(0, 0);
         }
         Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
-
-        // Show a tool tip upon mouse-over of an object on the canvas
-        //
-        if (!helpTip.isVisible()) {
-          setToolTip(real.x, real.y, e.x, e.y);
-        }
         
         // Moved over an area?
         //
-        endHopStep=null;
         AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
         if (areaOwner!=null) {
-        	endHopStep = null;
         	switch (areaOwner.getAreaType()) {
         	case STEP_ICON :
-        		final StepMeta stepMeta = (StepMeta) areaOwner.getOwner(); 
-        		if (!mouseOverSteps.contains(stepMeta)) {
-        			addStepMouseOverDelayTimer(stepMeta);
-        			redraw();
-        		}
+	        	{
+	        		StepMeta stepMeta = (StepMeta) areaOwner.getOwner();
+	        		resetDelayTimer(stepMeta);
+	        	}
     			break;
-        	case STEP_INFO_HOP_ICON :
-        		if (startHopStep!=null) {
-					candidateHopType = StreamType.INFO;
-					endHopStep = (StepMeta)areaOwner.getParent();
-					redraw();
-        		}
-        		break;
-        	case STEP_INPUT_HOP_ICON :
-        		if (startHopStep!=null) {
-        			 endHopStep = (StepMeta)areaOwner.getParent();
-        			 redraw();
-        			 candidateHopType = null;
-        		}
-        		break;
-        	case STEP_OUTPUT_HOP_ICON :
+
+        	case STEP_MINI_ICONS_BALLOON : // Give the timer a bit more time 
+	        	{
+	        		StepMeta stepMeta = (StepMeta)areaOwner.getParent();
+	        		resetDelayTimer(stepMeta);
+	        	}
         		break;
             default:
             	break;
@@ -1159,6 +1296,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
               for (int i = 0; i < selectedSteps.length; i++) {
                 StepMeta stepMeta = selectedSteps[i];
                 PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+                stopStepMouseOverDelayTimer(stepMeta);
               }
             }
             // Adjust location of selected hops...
@@ -1174,40 +1312,46 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     	
         // Are we creating a new hop with the middle button or pressing SHIFT?
         //
-        else if (startHopStep!=null) {
+        else if ((startHopStep!=null && endHopStep==null) || (endHopStep!=null && startHopStep==null)) {
         	StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
             endHopLocation = new Point(real.x, real.y);
-            if (stepMeta != null && !startHopStep.equals(stepMeta)) {
+            if (stepMeta != null && ((startHopStep!=null && !startHopStep.equals(stepMeta)) || (endHopStep!=null && !endHopStep.equals(stepMeta))) ) {
             	StepIOMetaInterface ioMeta = stepMeta.getStepMetaInterface().getStepIOMeta();
             	if (candidate == null) {
             		// See if the step accepts input.  If not, we can't create a new hop...
             		//
-            		if (ioMeta.isInputAcceptor()) {
-		                candidate = new TransHopMeta(startHopStep, stepMeta);
-		                endHopLocation=null;
-            		} else {
-            			noInputStep=stepMeta;
-            			toolTip.setImage(null);
-            			toolTip.setText("This step does not accept any input from other steps");
-            			toolTip.show(new org.eclipse.swt.graphics.Point(real.x, real.y));
+            		if (startHopStep!=null) {
+            			if (ioMeta.isInputAcceptor()) {
+			                candidate = new TransHopMeta(startHopStep, stepMeta);
+			                endHopLocation=null;
+            			} else {
+	            			noInputStep=stepMeta;
+	            			toolTip.setImage(null);
+	            			toolTip.setText("This step does not accept any input from other steps");
+	            			toolTip.show(new org.eclipse.swt.graphics.Point(real.x, real.y));
+            			}
+            		} else if (endHopStep!=null) {
+            			if (ioMeta.isOutputProducer()) {
+			                candidate = new TransHopMeta(stepMeta, endHopStep);
+			                endHopLocation=null;
+            			} else {
+	            			noInputStep=stepMeta;
+	            			toolTip.setImage(null);
+	            			toolTip.setText("This step doesn't pass any output to other steps. (except perhaps for targetted output)");
+	            			toolTip.show(new org.eclipse.swt.graphics.Point(real.x, real.y));
+            			}
             		}
                 }
             } else {
               if (candidate != null) {
                 candidate = null;
                 redraw();
-              } else {
-            	  if (!showHopInputIcons) {
-            		  showHopInputIcons=true;
-            	  }
               }
           }
             
       	  redraw();
-        } else {
-        	  showHopInputIcons = false;
-        	  redraw();
         }
+        
         // Move around notes & steps
         //
         if (selectedNote != null) {
@@ -1242,17 +1386,118 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         }
       }
     
-  private void addStepMouseOverDelayTimer(final StepMeta stepMeta) {
+  private void resetDelayTimer(StepMeta stepMeta) {
+		DelayTimer delayTimer = delayTimers.get(stepMeta);
+		if (delayTimer!=null) {
+			delayTimer.reset();
+		}
+  }
+
+  public void mouseHover(MouseEvent e) {
+	  
+	  boolean tip = true;
+	  
+	  toolTip.hide();
+	  Point real = screen2real(e.x, e.y);
+	  
+      AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+      if (areaOwner!=null) {
+      	switch (areaOwner.getAreaType()) {
+      	case STEP_ICON :
+      		StepMeta stepMeta = (StepMeta) areaOwner.getOwner(); 
+      		if (!mouseOverSteps.contains(stepMeta)) {
+      			addStepMouseOverDelayTimer(stepMeta);
+      			redraw();
+      			tip=false;
+      		}
+  			break;
+      	}
+      }
+      
+      if (tip) {
+          // Show a tool tip upon mouse-over of an object on the canvas
+          //
+          if (!helpTip.isVisible()) {
+            setToolTip(real.x, real.y, e.x, e.y);
+          }
+      }
+  }
+  
+  /*
+  private void showStepTargetOptions(final StepMeta stepMeta, StepIOMetaInterface ioMeta, int x, int y) {
+	
+	  if (!Const.isEmpty(ioMeta.getTargetStepnames())) {
+		  final Menu menu = new Menu(canvas);
+		  for (final StreamInterface stream : ioMeta.getTargetStreams()) {
+			  MenuItem menuItem = new MenuItem(menu, SWT.NONE);
+			  menuItem.setText(stream.getDescription());
+			  menuItem.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent arg0) {
+		    		      // Click on the target icon means: create a new target hop 
+		    	    	  //
+		      			  if (startHopStep==null) {
+		      				 startHopStep = stepMeta;
+		      			  }
+		      			  menu.setVisible(false);
+		      			  menu.dispose();
+		      			  redraw();
+					}
+			  	});
+		  }
+		  menu.setLocation(x, y);
+		  menu.setVisible(true);
+		  resetDelayTimer(stepMeta);
+		  
+		  //showTargetStreamsStep = stepMeta;
+	  }
+  }
+  */
+
+  public void mouseEnter(MouseEvent arg0) {
+  }
+  
+  public void mouseExit(MouseEvent arg0) {
+  }
+  
+  private synchronized void addStepMouseOverDelayTimer(final StepMeta stepMeta) {
+	  
+	  // Don't add the same mouse over delay timer twice...
+	  //
+	  if (mouseOverSteps.contains(stepMeta)) return;
+	  
 	  mouseOverSteps.add(stepMeta);
-		new Thread(new DelayTimer(3, new DelayListener() {
+	  
+	  DelayTimer delayTimer = new DelayTimer(2500, new DelayListener() {
 			public void expired() {
 				mouseOverSteps.remove(stepMeta);
+				delayTimers.remove(stepMeta);
+				showTargetStreamsStep=null;
 				asyncRedraw();
 			}
-		})).start();
+		});
+	  
+	  new Thread(delayTimer).start();
+	  
+	  delayTimers.put(stepMeta, delayTimer);
+  }
+  
+  private void stopStepMouseOverDelayTimer(final StepMeta stepMeta) {
+	  DelayTimer delayTimer = delayTimers.get(stepMeta);
+	  if (delayTimer!=null) {
+		  delayTimer.stop();
+	  }
+  }
+  
+  private void stopStepMouseOverDelayTimers() {
+	for (DelayTimer timer : delayTimers.values()) {
+		timer.stop();
 	}
-
-	protected void asyncRedraw() {
+  }
+  
+  
+	
+  protected void asyncRedraw() {
 		spoon.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				if (!TransGraph.this.isDisposed()) {
@@ -1595,11 +1840,14 @@ private void addToolBar() {
     last_button = 0;
     iconoffset = null;
     startHopStep = null;
+    endHopStep = null;
     endHopLocation = null;
-    showHopInputIcons =false;
     mouseOverSteps.clear();
-    for (int i = 0; i < transMeta.nrTransHops(); i++)
+    for (int i = 0; i < transMeta.nrTransHops(); i++) {
       transMeta.getTransHop(i).split = false;
+    }
+    
+    stopStepMouseOverDelayTimers();
   }
 
   public String[] getDropStrings(String str, String sep) {
@@ -2240,20 +2488,21 @@ private void addToolBar() {
 				tipImage = GUIResource.getInstance().getImageCopyHop();
 				break;
 			case HOP_INFO_ICON:
-				StepMeta from = ((StepMeta[]) (areaOwner.getParent()))[0];
-				StepMeta to = ((StepMeta[]) (areaOwner.getParent()))[1];
+				StepMeta from = (StepMeta) areaOwner.getParent();
+				StepMeta to = (StepMeta) areaOwner.getOwner();
 				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeInfo", to.getName(), from.getName(), Const.CR));
 				tipImage = GUIResource.getInstance().getImageInfoHop();
 				break;
 			case HOP_ERROR_ICON:
-				from = ((StepMeta[]) (areaOwner.getParent()))[0];
-				to = ((StepMeta[]) (areaOwner.getParent()))[1];
+				from = (StepMeta) areaOwner.getParent();
+				to = (StepMeta) areaOwner.getOwner();
+				areaOwner.getOwner();
 				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeError", from.getName(), to.getName(), Const.CR));
 				tipImage = GUIResource.getInstance().getImageErrorHop();
 				break;
 			case HOP_INFO_STEP_COPIES_ERROR:
-				from = ((StepMeta[]) (areaOwner.getParent()))[0];
-				to = ((StepMeta[]) (areaOwner.getParent()))[1];
+				from = (StepMeta) areaOwner.getParent();
+				to = (StepMeta) areaOwner.getOwner();
 				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.InfoStepCopies", from.getName(), to.getName(), Const.CR));
 				tipImage = GUIResource.getInstance().getImageStepError();
 				break;
@@ -2274,19 +2523,29 @@ private void addToolBar() {
 				break;
 			case STEP_INFO_HOP_ICON:
 				// subjectStep = (StepMeta) (areaOwner.getParent());
-				StreamInterface stream = (StreamInterface) areaOwner.getOwner();
-				tip.append(BaseMessages.getString(PKG, "TransGraph.StepInfoConnector.Tooltip")+Const.CR+stream.toString());
+				// StreamInterface stream = (StreamInterface) areaOwner.getOwner();
+				StepIOMetaInterface ioMeta = (StepIOMetaInterface) areaOwner.getOwner();
+				tip.append(BaseMessages.getString(PKG, "TransGraph.StepInfoConnector.Tooltip")+Const.CR+ioMeta.toString());
 				tipImage = GUIResource.getInstance().getImageHopOutput();
 				break;
 			case STEP_TARGET_HOP_ICON:
-				// subjectStep = (StepMeta) (areaOwner.getParent());
-				stream = (StreamInterface) areaOwner.getOwner();
-				tip.append(BaseMessages.getString(PKG, "TransGraph.StepTargetConnector.Tooltip")+Const.CR+stream.toString());
+				StreamInterface stream = (StreamInterface) areaOwner.getOwner();
+				tip.append(stream.getDescription());
 				tipImage = GUIResource.getInstance().getImageHopOutput();
 				break;
 			case STEP_ERROR_HOP_ICON:
-				tip.append(BaseMessages.getString(PKG, "TransGraph.StepSupportsErrorHandling.Tooltip"));
+				StepMeta stepMeta = (StepMeta)areaOwner.getParent();
+				if (stepMeta.supportsErrorHandling()) {
+					tip.append(BaseMessages.getString(PKG, "TransGraph.StepSupportsErrorHandling.Tooltip"));
+				} else {
+					tip.append(BaseMessages.getString(PKG, "TransGraph.StepDoesNotSupportsErrorHandling.Tooltip"));
+				}
 				tipImage = GUIResource.getInstance().getImageHopOutput();
+				break;
+			case STEP_EDIT_ICON:
+				stepMeta = (StepMeta) (areaOwner.getParent());
+				tip.append(BaseMessages.getString(PKG, "TransGraph.EditStep.Tooltip"));
+				tipImage = GUIResource.getInstance().getImageEdit();
 				break;
 			}
 		}
@@ -2469,17 +2728,22 @@ private void addToolBar() {
   }
 
   public Image getTransformationImage(Device device, int x, int y, boolean branded, float magnificationFactor) {
-    TransPainter transPainter = new TransPainter(transMeta, new Point(x, y), hori, vert, candidate, drop_candidate,
-        selectionRegion, areaOwners, mouseOverSteps);
+    TransPainter transPainter = new TransPainter(
+    		transMeta, new Point(x, y), hori, vert, candidate, drop_candidate,
+    		selectionRegion, 
+    		areaOwners, 
+    		mouseOverSteps
+    	);
+    
     transPainter.setMagnification(magnificationFactor);
     transPainter.setStepLogMap(stepLogMap);
-    transPainter.setShowingHopInputIcons(showHopInputIcons);
     transPainter.setStartHopStep(startHopStep);
     transPainter.setEndHopLocation(endHopLocation);
     transPainter.setNoInputStep(noInputStep);
     transPainter.setEndHopStep(endHopStep);
     transPainter.setCandidateHopType(candidateHopType);
     transPainter.setStartErrorHopStep(startErrorHopStep);
+    transPainter.setShowTargetStreamsStep(showTargetStreamsStep);
     Image img = transPainter.getTransformationImage(device, PropsUI.getInstance().isBrandingActive());
 
     return img;
