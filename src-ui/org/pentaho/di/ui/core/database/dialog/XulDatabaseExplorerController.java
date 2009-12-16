@@ -53,6 +53,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 	private XulDatabaseExplorerModel model;
 	private Binding databaseTreeBinding;
+	private Binding selectedTableBinding;
+	private Binding selectedSchemaBinding;
 	private XulTree databaseTree;
 	private XulButton expandCollapseButton;
 	private BindingFactory bf;
@@ -60,7 +62,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private SwtDialog dbExplorerDialog;
 	private DBCache dbcache;
 	private List<DatabaseMeta> databases;
-	private boolean isExpanded = false;
+	private boolean isExpanded;
+	private boolean isSplitSchemaAndTable;
 
 	private static final String DATABASE_IMAGE = "ui/images/folder_connection.png";
 	private static final String FOLDER_IMAGE = "ui/images/BOL.png";
@@ -94,15 +97,34 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		BindingConvertor<DatabaseExplorerNode, String> theTableNameConvertor = new BindingConvertor<DatabaseExplorerNode, String>() {
 
 			public String sourceToTarget(DatabaseExplorerNode aValue) {
-				return aValue.getName();
+				String theTable = null;
+				if (aValue.isTable()) {
+					theTable = aValue.getName();
+				}
+				return theTable;
 			}
 
 			public DatabaseExplorerNode targetToSource(String aValue) {
 				return null;
 			}
 		};
+		this.bf.createBinding(this.databaseTree, "selectedItem", this.model, "table", theTableNameConvertor);
 
-		bf.createBinding(this.databaseTree, "selectedItem", this.model, "table", theTableNameConvertor);
+		BindingConvertor<String, List<DatabaseExplorerNode>> theSelectedItemsConvertor = new BindingConvertor<String, List<DatabaseExplorerNode>>() {
+
+			public String targetToSource(List<DatabaseExplorerNode> aValue) {
+				return null;
+			}
+
+			public List<DatabaseExplorerNode> sourceToTarget(String aValue) {
+				DatabaseExplorerNode theNode = XulDatabaseExplorerController.this.model.findBy(aValue);
+				List<DatabaseExplorerNode> theResult = new ArrayList<DatabaseExplorerNode>();
+				theResult.add(theNode);
+				return theResult;
+			}
+		};
+		this.selectedTableBinding = this.bf.createBinding(this.model, "table", this.databaseTree, "selectedItems", theSelectedItemsConvertor);
+		this.selectedSchemaBinding = this.bf.createBinding(this.model, "schema", this.databaseTree, "selectedItems", theSelectedItemsConvertor);
 
 		BindingConvertor<DatabaseExplorerNode, Boolean> isDisabledConvertor = new BindingConvertor<DatabaseExplorerNode, Boolean>() {
 			public Boolean sourceToTarget(DatabaseExplorerNode value) {
@@ -113,10 +135,33 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				return null;
 			}
 		};
-
-		bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUp", "disabled", isDisabledConvertor);
+		this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUp", "disabled", isDisabledConvertor);
 
 		fireBindings();
+	}
+
+	public void setSplitSchemaAndTable(boolean aSplit) {
+		this.isSplitSchemaAndTable = aSplit;
+	}
+
+	public boolean getSplitSchemaAndTable() {
+		return this.isSplitSchemaAndTable;
+	}
+
+	public void setSelectedTable(String aTable) {
+		this.model.setTable(aTable);
+	}
+
+	public String getSelectedTable() {
+		return this.model.getTable();
+	}
+
+	public void setSelectedSchema(String aSchema) {
+		this.model.setSchema(aSchema);
+	}
+
+	public String getSelectedSchema() {
+		return this.model.getSchema();
 	}
 
 	public void accept() {
@@ -149,6 +194,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			Long theCount = pd.open();
 			if (theCount != null) {
 				XulMessageBox theMessageBox = (XulMessageBox) document.createElement("messagebox");
+				theMessageBox.setModalParent(this.dbExplorerDialog.getShell());
 				theMessageBox.setTitle(Messages.getString("DatabaseExplorerDialog.TableSize.Title"));
 				theMessageBox.setMessage(Messages.getString("DatabaseExplorerDialog.TableSize.Message", this.model.getTable(), theCount.toString()));
 				theMessageBox.open();
@@ -161,6 +207,13 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private void fireBindings() {
 		try {
 			this.databaseTreeBinding.fireSourceChanged();
+			if (this.getSelectedTable() != null) {
+				this.selectedTableBinding.fireSourceChanged();
+			}
+
+			if (this.getSelectedSchema() != null) {
+				this.selectedSchemaBinding.fireSourceChanged();
+			}
 		} catch (Exception e) {
 			logger.info(e);
 		}
@@ -250,7 +303,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void expandCollapse() {
-		if (isExpanded) {
+		if (this.isExpanded) {
 			collapse();
 		} else {
 			expand();
@@ -347,6 +400,20 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 		public int getLimit() {
 			return this.limit;
+		}
+	}
+
+	class SelectedItemsConvertor extends BindingConvertor<String, List<DatabaseExplorerNode>> {
+
+		public String targetToSource(List<DatabaseExplorerNode> aValue) {
+			return null;
+		}
+
+		public List<DatabaseExplorerNode> sourceToTarget(String aValue) {
+			DatabaseExplorerNode theNode = XulDatabaseExplorerController.this.model.findBy(aValue);
+			List<DatabaseExplorerNode> theResult = new ArrayList<DatabaseExplorerNode>();
+			theResult.add(theNode);
+			return theResult;
 		}
 	}
 }

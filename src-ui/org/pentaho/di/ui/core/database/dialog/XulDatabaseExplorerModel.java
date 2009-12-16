@@ -18,6 +18,8 @@
  */
 package org.pentaho.di.ui.core.database.dialog;
 
+import java.util.ListIterator;
+
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.util.AbstractModelNode;
@@ -27,6 +29,7 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 	private XulDatabaseExplorerNode database;
 	private DatabaseMeta databaseMeta;
 	private String table;
+	private String schema;
 
 	public XulDatabaseExplorerModel(DatabaseMeta aDatabaseMeta) {
 		this.database = new XulDatabaseExplorerNode();
@@ -45,14 +48,43 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 		this.database = aDatabase;
 	}
 
-	public static class XulDatabaseExplorerNode extends AbstractModelNode<DatabaseExplorerNode> {
-	}
-
 	public void setTable(String aTable) {
 		this.table = aTable;
 	}
 
 	public String getTable() {
 		return this.table;
+	}
+
+	public void setSchema(String aSchema) {
+		this.schema = aSchema;
+	}
+
+	public String getSchema() {
+		return this.schema;
+	}
+
+	public DatabaseExplorerNode findBy(String aName) {
+		ListIterator<DatabaseExplorerNode> theNodes = this.database.listIterator();
+		return drillDown(theNodes, aName);
+	}
+
+	private DatabaseExplorerNode drillDown(ListIterator<DatabaseExplorerNode> aNodes, String aName) {
+		DatabaseExplorerNode theNode = null;
+		while (aNodes.hasNext()) {
+			theNode = aNodes.next();
+			if (theNode.getName().equals(aName)) {
+				break;
+			} else {
+				theNode = drillDown(theNode.getChildren().listIterator(), aName);
+				if (theNode != null) {
+					break;
+				}
+			}
+		}
+		return theNode;
+	}
+
+	public static class XulDatabaseExplorerNode extends AbstractModelNode<DatabaseExplorerNode> {
 	}
 }

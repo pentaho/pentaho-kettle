@@ -45,16 +45,16 @@ public class XulDatabaseExplorerDialog {
 		this.shell = aShell;
 		this.databaseMeta = aDatabaseMeta;
 		this.databases = aDataBases;
+		this.controller = new XulDatabaseExplorerController(this.shell, this.databaseMeta, this.databases);
 	}
 
-	public void open() {
+	public Object open() {
 		try {
 
 			SwtXulLoader theLoader = new SwtXulLoader();
 			theLoader.setOuterContext(this.shell);
 			this.container = theLoader.loadXul(XUL);
 
-			this.controller = new XulDatabaseExplorerController(this.shell, this.databaseMeta, this.databases);
 			this.container.addEventHandler(this.controller);
 
 			this.runner = new SwtXulRunner();
@@ -67,5 +67,30 @@ public class XulDatabaseExplorerDialog {
 		} catch (Exception e) {
 			logger.info(e);
 		}
+		return this.controller.getSelectedTable();
+	}
+
+	public void setSelectedSchema(String aSchema) {
+		this.controller.setSelectedSchema(aSchema);
+	}
+
+	public String getSchemaName() {
+		return this.controller.getSelectedSchema();
+	}
+
+	public void setSelectedTable(String aTable) {
+		this.controller.setSelectedTable(aTable);
+	}
+
+	public String getTableName() {
+		return this.controller.getSelectedTable();
+	}
+
+	public void setSplitSchemaAndTable(boolean aSplit) {
+		this.controller.setSplitSchemaAndTable(aSplit);
+	}
+
+	public boolean getSplitSchemaAndTable() {
+		return this.controller.getSplitSchemaAndTable();
 	}
 }
