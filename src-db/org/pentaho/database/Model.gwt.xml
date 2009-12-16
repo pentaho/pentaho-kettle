@@ -1,0 +1,8 @@
+<module>
+  <source path="">
+        <exclude name ="**/dialect/**"/>
+        <exclude name ="**/util/DatabaseUtil.java"/>
+        <exclude name ="**/DatabaseConnectionService.java"/>
+        <exclude name ="**/DatabaseDialectService.java"/>
+  </source>
+</module>
