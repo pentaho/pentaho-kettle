@@ -4,22 +4,7 @@
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="dbexplorer.init()"
     xmlns:pen="http://www.pentaho.org/2008/xul" >
-     
-	<menupopup id="action_popup">
-	  <menuitem label="Preview first 100" command="dbexplorer.preview(false)"/>
-	  <menuitem label="Preview x Rows" command="dbexplorer.preview(true)"/>
-	  <menuitem label="Row Count" command="dbexplorer.displayRowCount()"/>
-	  <menuitem label="Show Layout" command="dbexplorer.showLayout()"/>
-	  <menu label="DDL">
-        <menupopup>
-          <menuitem label="Use Current Connection" command="dbexplorer.getDDL()"/>
-    	  <menuitem label="Select Connection" command="dbexplorer.getDDLForOther()"/>
-        </menupopup>
-      </menu>
-	  <menuitem label="View SQL" command="dbexplorer.viewSql()"/>
-	  <menuitem label="Truncate Table" command="dbexplorer.truncate()"/>
-	</menupopup>
-	  
+      
     <dialog width="600" height="400" id="databaseExplorerDialog" title="Database explorer on connection"
      appicon="ui/images/cnc.png"
      ondialogaccept="dbexplorer.accept()"
@@ -27,12 +12,12 @@
 	    <vbox flex="1" id="mainVBox">
 			<hbox>
 				<spacer flex="1"/>
-				<button image="ui/images/refresh.png" onclick="dbexplorer.refresh()"/>
-				<button id="expandCollapseButton" image="ui/images/ExpandAll.png" onclick="dbexplorer.expandCollapse()"/>
-				<label value="Actions"/>
+				<button image="ui/images/refresh.png" onclick="dbexplorer.refresh()" tooltiptext="${tooltip_refresh}"/>
+				<button id="expandCollapseButton" image="ui/images/ExpandAll.png" onclick="dbexplorer.expandCollapse()" tooltiptext="${tooltip_expand_collapse}"/>
+				<label value="Actions" id="action_label"/>
 				<button id="buttonMenuPopUp" image="ui/images/9x9_arrow_down.gif" menu="action_popup" disabled="true"/>
-			</hbox>	    			
- 			<tree id="databaseTree" flex="1" editable="false" expanded="false">
+			</hbox>
+ 			<tree id="databaseTree" flex="1" editable="false" expanded="false"  context="action_popup">
 				<treecols>
               		<treecol flex="1" label="" primary="true" editable="false" pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" />
             	</treecols>
@@ -61,5 +46,23 @@
 				</treechildren>
 			</tree>
 	    </vbox>
+	    
+	    
+		<menupopup id="action_popup">
+		  <menuitem label="Preview first 100" command="dbexplorer.preview(false)"/>
+		  <menuitem label="Preview x Rows" command="dbexplorer.preview(true)"/>
+		  <menuitem label="Row Count" command="dbexplorer.displayRowCount()"/>
+		  <menuitem label="Show Layout" command="dbexplorer.showLayout()"/>
+		  <menu label="DDL">
+	        <menupopup>
+	          <menuitem label="Use Current Connection" command="dbexplorer.getDDL()"/>
+	    	  <menuitem label="Select Connection" command="dbexplorer.getDDLForOther()"/>
+	        </menupopup>
+	      </menu>
+		  <menuitem label="View SQL" command="dbexplorer.viewSql()"/>
+		  <menuitem label="Truncate Table" command="dbexplorer.truncate()"/>
+		</menupopup>
+	
 	</dialog>
+	
 </window>

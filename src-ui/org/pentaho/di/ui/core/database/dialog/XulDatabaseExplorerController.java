@@ -41,6 +41,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -57,6 +58,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private Binding selectedSchemaBinding;
 	private XulTree databaseTree;
 	private XulButton expandCollapseButton;
+	private XulLabel actionLabel;
 	private BindingFactory bf;
 	private Shell shell;
 	private SwtDialog dbExplorerDialog;
@@ -87,6 +89,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	public void init() {
 		createDatabaseNodes();
 		this.dbExplorerDialog = (SwtDialog) this.document.getElementById("databaseExplorerDialog");
+		this.actionLabel = (XulLabel) document.getElementById("action_label");
 		this.bf.setDocument(super.document);
 		this.bf.setBindingType(Type.ONE_WAY);
 
@@ -136,7 +139,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			}
 		};
 		this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUp", "disabled", isDisabledConvertor);
-
+    this.bf.createBinding(this.databaseTree, "selectedItem", actionLabel, "disabled", isDisabledConvertor);
+		
 		fireBindings();
 	}
 
