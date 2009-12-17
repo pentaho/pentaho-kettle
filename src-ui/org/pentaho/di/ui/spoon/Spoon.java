@@ -205,6 +205,7 @@ import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.repository.dialog.UserDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryObjectReference;
+import org.pentaho.di.ui.spoon.SpoonLifecycleListener.LifeCycleEvent;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
@@ -670,6 +671,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     shell.addShellListener(new ShellAdapter() {
       public void shellClosed(ShellEvent e) {
         e.doit = quitFile();
+        SpoonPluginManager.getInstance().notifyLifecycleListeners(LifeCycleEvent.SHUTDOWN);
       }
     });
 
@@ -704,6 +706,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
     
     ((Composite) deck.getManagedObject()).layout(true, true);
 
+    SpoonPluginManager.getInstance().notifyLifecycleListeners(LifeCycleEvent.STARTUP);
 
     // Add a browser widget
     if (props.showWelcomePageOnStartup()) {

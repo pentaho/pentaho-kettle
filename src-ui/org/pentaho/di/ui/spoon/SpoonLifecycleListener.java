@@ -8,5 +8,6 @@ package org.pentaho.di.ui.spoon;
  *
  */
 public interface SpoonLifecycleListener {
-
+  public enum LifeCycleEvent{STARTUP, SHUTDOWN};
+  void onEvent(LifeCycleEvent evt);
 }

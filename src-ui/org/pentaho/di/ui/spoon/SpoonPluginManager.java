@@ -5,8 +5,8 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
+import org.pentaho.di.ui.spoon.SpoonLifecycleListener.LifeCycleEvent;
 import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionStoreException;
@@ -92,5 +92,14 @@ public class SpoonPluginManager {
       }
     }
     return handlers;
+  }
+  
+  public void notifyLifecycleListeners(LifeCycleEvent evt){
+    for(SpoonPlugin p : plugins){
+      SpoonLifecycleListener listener = p.getLifecycleListener();
+      if(listener != null){
+        listener.onEvent(evt);
+      }
+    }
   }
 }
