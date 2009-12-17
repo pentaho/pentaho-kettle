@@ -46,6 +46,7 @@ import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.swt.tags.SwtButton;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
@@ -55,7 +56,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private XulDatabaseExplorerModel model;
 	private Binding databaseTreeBinding;
 	private Binding selectedTableBinding;
-	private Binding selectedSchemaBinding;
+	// private Binding selectedSchemaBinding;
 	private XulTree databaseTree;
 	private XulButton expandCollapseButton;
 	private XulLabel actionLabel;
@@ -66,6 +67,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private List<DatabaseMeta> databases;
 	private boolean isExpanded;
 	private boolean isSplitSchemaAndTable;
+	private boolean isJustLook;
 
 	private static final String DATABASE_IMAGE = "ui/images/folder_connection.png";
 	private static final String FOLDER_IMAGE = "ui/images/BOL.png";
@@ -78,18 +80,24 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 	private static Log logger = LogFactory.getLog(XulDatabaseExplorerController.class);
 
-	public XulDatabaseExplorerController(Shell aShell, DatabaseMeta aMeta, List<DatabaseMeta> aDataBases) {
+	public XulDatabaseExplorerController(Shell aShell, DatabaseMeta aMeta, List<DatabaseMeta> aDataBases, boolean aLook) {
 		this.model = new XulDatabaseExplorerModel(aMeta);
 		this.shell = aShell;
 		this.bf = new DefaultBindingFactory();
 		this.databases = aDataBases;
 		this.dbcache = DBCache.getInstance();
+		this.isJustLook = aLook;
 	}
 
 	public void init() {
+
+		if (this.isJustLook) {
+			SwtButton theCancelButton = (SwtButton) this.document.getElementById("databaseExplorerDialog_accept");
+			theCancelButton.setVisible(false);
+		}
+
 		createDatabaseNodes();
 		this.dbExplorerDialog = (SwtDialog) this.document.getElementById("databaseExplorerDialog");
-		this.actionLabel = (XulLabel) document.getElementById("action_label");
 		this.bf.setDocument(super.document);
 		this.bf.setBindingType(Type.ONE_WAY);
 
@@ -127,7 +135,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			}
 		};
 		this.selectedTableBinding = this.bf.createBinding(this.model, "table", this.databaseTree, "selectedItems", theSelectedItemsConvertor);
-		this.selectedSchemaBinding = this.bf.createBinding(this.model, "schema", this.databaseTree, "selectedItems", theSelectedItemsConvertor);
+		// this.selectedSchemaBinding = this.bf.createBinding(this.model, "schema",
+		// this.databaseTree, "selectedItems", theSelectedItemsConvertor);
 
 		BindingConvertor<DatabaseExplorerNode, Boolean> isDisabledConvertor = new BindingConvertor<DatabaseExplorerNode, Boolean>() {
 			public Boolean sourceToTarget(DatabaseExplorerNode value) {
@@ -139,8 +148,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			}
 		};
 		this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUp", "disabled", isDisabledConvertor);
-    this.bf.createBinding(this.databaseTree, "selectedItem", actionLabel, "disabled", isDisabledConvertor);
-		
+
 		fireBindings();
 	}
 
@@ -169,10 +177,11 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void accept() {
-		this.cancel();
+		this.dbExplorerDialog.setVisible(false);
 	}
 
 	public void cancel() {
+		this.model.setTable(null);
 		this.dbExplorerDialog.setVisible(false);
 	}
 
@@ -214,10 +223,9 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			if (this.getSelectedTable() != null) {
 				this.selectedTableBinding.fireSourceChanged();
 			}
-
-			if (this.getSelectedSchema() != null) {
-				this.selectedSchemaBinding.fireSourceChanged();
-			}
+			// if (this.getSelectedSchema() != null) {
+			// this.selectedSchemaBinding.fireSourceChanged();
+			// }
 		} catch (Exception e) {
 			logger.info(e);
 		}

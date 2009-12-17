@@ -18,14 +18,7 @@
  */
 package org.pentaho.di.ui.core.database.dialog;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,11 +41,11 @@ public class XulDatabaseExplorerDialog {
 	private static Log logger = LogFactory.getLog(XulDatabaseExplorerDialog.class);
 	private static final String XUL = "org/pentaho/di/ui/core/database/dialog/database_explorer.xul";
 
-	public XulDatabaseExplorerDialog(Shell aShell, DatabaseMeta aDatabaseMeta, List<DatabaseMeta> aDataBases) {
+	public XulDatabaseExplorerDialog(Shell aShell, DatabaseMeta aDatabaseMeta, List<DatabaseMeta> aDataBases, boolean aLook) {
 		this.shell = aShell;
 		this.databaseMeta = aDatabaseMeta;
 		this.databases = aDataBases;
-		this.controller = new XulDatabaseExplorerController(this.shell, this.databaseMeta, this.databases);
+		this.controller = new XulDatabaseExplorerController(this.shell, this.databaseMeta, this.databases, aLook);
 	}
 
 	public Object open() {
@@ -60,7 +53,6 @@ public class XulDatabaseExplorerDialog {
 
 			SwtXulLoader theLoader = new SwtXulLoader();
 			theLoader.setOuterContext(this.shell);
-			
 			this.container = theLoader.loadXul(XUL, new XulDatabaseExplorerResourceBundle());
 
 			this.container.addEventHandler(this.controller);
@@ -101,16 +93,4 @@ public class XulDatabaseExplorerDialog {
 	public boolean getSplitSchemaAndTable() {
 		return this.controller.getSplitSchemaAndTable();
 	}
-	
-	private static class XulDatabaseExplorerResourceBundle extends ResourceBundle{
-	  @Override
-	  public Enumeration<String> getKeys() {
-	    return null;
-	  }
-	  @Override
-	  protected Object handleGetObject(String key) {
-	    return Messages.getString(key);
-	  }
-	}
-
 }
