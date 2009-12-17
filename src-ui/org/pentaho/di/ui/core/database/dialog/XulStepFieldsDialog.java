@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -36,13 +37,15 @@ public class XulStepFieldsDialog {
 	private XulRunner runner;
 	private XulStepFieldsController controller;
 	private DatabaseMeta databaseMeta;
+	private RowMetaInterface rowMeta;
 	private static Log logger = LogFactory.getLog(XulStepFieldsDialog.class);
 	private static final String XUL = "org/pentaho/di/ui/core/database/dialog/step_fields.xul";
 
-	public XulStepFieldsDialog(Shell aShell, int aStyle, DatabaseMeta aDatabaseMeta, String aTableName) {
+	public XulStepFieldsDialog(Shell aShell, int aStyle, DatabaseMeta aDatabaseMeta, String aTableName, RowMetaInterface anInput) {
 		this.shell = aShell;
 		this.table = aTableName;
 		this.databaseMeta = aDatabaseMeta;
+		this.rowMeta = anInput;
 	}
 
 	public void open(boolean isAcceptButtonHidden) {
@@ -51,7 +54,7 @@ public class XulStepFieldsDialog {
 			theLoader.setOuterContext(this.shell);
 			this.container = theLoader.loadXul(XUL);
 
-			this.controller = new XulStepFieldsController(this.shell, this.databaseMeta, this.table);
+			this.controller = new XulStepFieldsController(this.shell, this.databaseMeta, this.table, this.rowMeta);
 			this.controller.setShowAcceptButton(isAcceptButtonHidden);
 			this.container.addEventHandler(this.controller);
 

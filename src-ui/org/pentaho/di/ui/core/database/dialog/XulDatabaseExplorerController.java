@@ -183,7 +183,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void showLayout() {
-		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable());
+		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable(), null);
 		theStepFieldsDialog.open(false);
 	}
 

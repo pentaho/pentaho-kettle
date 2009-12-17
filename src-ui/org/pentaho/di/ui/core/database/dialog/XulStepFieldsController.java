@@ -44,17 +44,18 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 	private Binding acceptButtonBinding;
 	private XulTree stepFieldsTree;
 	private XulStepFieldsModel model;
-	private String selectedStep;
 	private Boolean showAcceptButton;
+	private RowMetaInterface rowMetaInterface;
 
 	private static Log logger = LogFactory.getLog(XulStepFieldsController.class);
 
-	public XulStepFieldsController(Shell aShell, DatabaseMeta aDatabaseMeta, String aTable) {
+	public XulStepFieldsController(Shell aShell, DatabaseMeta aDatabaseMeta, String aTable, RowMetaInterface anInput) {
 		this.shell = aShell;
 		this.databaseMeta = aDatabaseMeta;
 		this.table = aTable;
 		this.bf = new DefaultBindingFactory();
 		this.model = new XulStepFieldsModel();
+		this.rowMetaInterface = anInput;
 	}
 
 	public void init() {
@@ -100,17 +101,19 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 
 	private void createStepFieldNodes() {
 
-		String theSql = this.databaseMeta.getSQLQueryFields(this.table);
-		GetQueryFieldsProgressDialog theProgressDialog = new GetQueryFieldsProgressDialog(this.shell, this.databaseMeta, theSql);
-		RowMetaInterface theRowMeta = theProgressDialog.open();
+		if (this.rowMetaInterface == null) {
+			String theSql = this.databaseMeta.getSQLQueryFields(this.table);
+			GetQueryFieldsProgressDialog theProgressDialog = new GetQueryFieldsProgressDialog(this.shell, this.databaseMeta, theSql);
+			this.rowMetaInterface = theProgressDialog.open();
+		}
 
 		this.model.setStepName("Step name:" + this.table);
 
-		if (theRowMeta != null) {
+		if (this.rowMetaInterface != null) {
 			StepFieldNode theStep = null;
-			for (int i = 0; i < theRowMeta.size(); i++) {
+			for (int i = 0; i < this.rowMetaInterface.size(); i++) {
 				theStep = new StepFieldNode();
-				ValueMetaInterface theMetaInterface = theRowMeta.getValueMeta(i);
+				ValueMetaInterface theMetaInterface = this.rowMetaInterface.getValueMeta(i);
 				theStep.setFieldName(theMetaInterface.getName());
 				theStep.setType(theMetaInterface.getTypeDesc());
 				theStep.setLength(Integer.toString(theMetaInterface.getLength()));
@@ -131,13 +134,12 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 		StepFieldNode theSelectedStep = (StepFieldNode) this.stepFieldsTree.getSelectedItem();
 		if (theSelectedStep != null) {
 			XulDialog theStepsDialog = (XulDialog) document.getElementById("stepFieldsDialog");
-			this.selectedStep = theSelectedStep.getFieldName();
 			theStepsDialog.hide();
 		}
 	}
 
 	public String getSelectedStep() {
-		return this.selectedStep;
+		return this.table;
 	}
 
 	public String getName() {
