@@ -5,7 +5,7 @@
 	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="stepFields.init()"
     xmlns:pen="http://www.pentaho.org/2008/xul" >
      
-    <dialog width="800" height="600" id="stepFieldsDialog" title="Step fields and their origin" 
+    <dialog width="800" height="600" id="stepFieldsDialog" title="Step fields and their origin" appicon="ui/images/cnc.png"
      buttons="accept,cancel"
      buttonlabelcancel="Cancel"
      buttonlabelaccept="Edit Origin Step"
