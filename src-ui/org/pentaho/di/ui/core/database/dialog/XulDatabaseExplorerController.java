@@ -92,8 +92,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	public void init() {
 
 		if (this.isJustLook) {
-			SwtButton theCancelButton = (SwtButton) this.document.getElementById("databaseExplorerDialog_accept");
-			theCancelButton.setVisible(false);
+			SwtButton theAcceptButton = (SwtButton) this.document.getElementById("databaseExplorerDialog_accept");
+			theAcceptButton.setVisible(false);
 		}
 
 		createDatabaseNodes();
@@ -149,7 +149,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			}
 		};
 		this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUp", "disabled", isDisabledConvertor);
-    this.bf.createBinding(this.databaseTree, "selectedItem", actionLabel, "disabled", isDisabledConvertor);
+		this.bf.createBinding(this.databaseTree, "selectedItem", actionLabel, "disabled", isDisabledConvertor);
 		fireBindings();
 	}
 
@@ -167,6 +167,10 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 	public String getSelectedTable() {
 		return this.model.getTable();
+	}
+
+	public DatabaseMeta getDatabaseMeta() {
+		return this.model.getDatabaseMeta();
 	}
 
 	public void setSelectedSchema(String aSchema) {
