@@ -98,6 +98,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 		createDatabaseNodes();
 		this.dbExplorerDialog = (SwtDialog) this.document.getElementById("databaseExplorerDialog");
+		this.actionLabel = (XulLabel) document.getElementById("action_label");
 		this.bf.setDocument(super.document);
 		this.bf.setBindingType(Type.ONE_WAY);
 
@@ -148,7 +149,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			}
 		};
 		this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUp", "disabled", isDisabledConvertor);
-
+    this.bf.createBinding(this.databaseTree, "selectedItem", actionLabel, "disabled", isDisabledConvertor);
 		fireBindings();
 	}
 
