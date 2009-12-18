@@ -18,7 +18,9 @@
  */
 package org.pentaho.di.ui.core.database.dialog;
 
+import java.util.Enumeration;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,5 +94,17 @@ public class XulDatabaseExplorerDialog {
 
 	public boolean getSplitSchemaAndTable() {
 		return this.controller.getSplitSchemaAndTable();
+	}
+
+	private static class XulDatabaseExplorerResourceBundle extends ResourceBundle {
+		@Override
+		public Enumeration<String> getKeys() {
+			return null;
+		}
+
+		@Override
+		protected Object handleGetObject(String key) {
+			return Messages.getString(key);
+		}
 	}
 }
