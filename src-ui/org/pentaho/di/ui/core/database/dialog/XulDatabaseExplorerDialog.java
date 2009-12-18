@@ -26,9 +26,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
@@ -55,7 +58,21 @@ public class XulDatabaseExplorerDialog {
 
 			SwtXulLoader theLoader = new SwtXulLoader();
 			theLoader.setOuterContext(this.shell);
+
 			this.container = theLoader.loadXul(XUL, new XulDatabaseExplorerResourceBundle());
+
+			SpoonPluginManager theSpoonPluginManager = SpoonPluginManager.getInstance();
+			List<XulOverlay> theXulOverlays = theSpoonPluginManager.getOverlaysforContainer("database_dialog");
+			List<XulEventHandler> theXulEventHandlers = theSpoonPluginManager.getEventHandlersforContainer("database_dialog");
+
+			for (XulEventHandler handler : theXulEventHandlers) {
+				handler.setData(this.controller);
+				this.container.addEventHandler(handler);
+			}
+
+			for (XulOverlay overlay : theXulOverlays) {
+				this.container.loadOverlay(overlay.getOverlayUri());
+			}
 
 			this.container.addEventHandler(this.controller);
 

@@ -51,7 +51,10 @@ import org.pentaho.di.ui.core.widget.TableView;
  * 
  * @author Matt
  * @since 19-06-2003
+ * 
+ * This class has been deprecated as now it is being replaced by its XUL version.
  */
+@Deprecated
 public class StepFieldsDialog extends Dialog
 {
 	private Label        wlStepname;

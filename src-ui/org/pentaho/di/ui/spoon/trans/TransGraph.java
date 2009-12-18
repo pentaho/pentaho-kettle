@@ -80,6 +80,7 @@ import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
@@ -111,6 +112,7 @@ import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.database.dialog.XulStepFieldsDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -2125,8 +2127,16 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     RowMetaInterface fields = op.getFields();
 
     if (fields != null && fields.size() > 0) {
-      StepFieldsDialog sfd = new StepFieldsDialog(shell, transMeta, SWT.NONE, stepMeta.getName(), fields);
-      String sn = (String) sfd.open();
+    	
+    	//Entry point removed for the old SpetFieldsDialog (now deprecated)
+      //StepFieldsDialog sfd = new StepFieldsDialog(shell, transMeta, SWT.NONE, stepMeta.getName(), fields);
+      //String sn = (String) sfd.open();
+    	
+      DatabaseMeta databaseMeta = (DatabaseMeta) spoon.getSelectionObject();
+    	XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.shell, SWT.NONE, databaseMeta, stepMeta.getName(), fields);
+  		theStepFieldsDialog.open(true);
+  		String sn = theStepFieldsDialog.getSelectedStep();  		
+    	
       if (sn != null) {
         StepMeta esi = transMeta.findStep(sn);
         if (esi != null) {
