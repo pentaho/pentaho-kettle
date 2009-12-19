@@ -29,6 +29,8 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -58,6 +60,9 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 {
 	private static Class<?> PKG = JobEntryHTTP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+    private static final String[] FILETYPES = new String[] {
+       BaseMessages.getString(PKG, "JobHTTP.Filetype.All") };
+	
     private Label wlName;
 
     private Text wName;
@@ -87,6 +92,10 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     private TextVar wTargetFile;
 
     private FormData fdlTargetFile, fdTargetFile;
+    
+    private Button wbTargetFile;
+    
+    private FormData fdbTargetFile;
 
     private Label wlAppend;
 
@@ -109,6 +118,10 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     private Label wlUploadFile;
 
     private TextVar wUploadFile;
+    
+    private Button wbUploadFile;
+    
+    private FormData fdbUploadFile;
 
     private FormData fdlUploadFile, fdUploadFile;
 
@@ -145,6 +158,13 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     private Button wOK, wCancel;
 
     private Listener lsOK, lsCancel;
+    
+    private Group wAuthentication, wUpLoadFile, wTargetFileGroup;
+    private FormData fdAuthentication, fdUpLoadFile, fdTargetFileGroup;
+    
+    private Label wlAddFilenameToResult;
+    private Button wAddFilenameToResult;
+    private FormData fdlAddFilenameToResult, fdAddFilenameToResult;
 
     private JobEntryHTTP jobEntry;
 
@@ -214,7 +234,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         props.setLook(wlURL);
         fdlURL = new FormData();
         fdlURL.left = new FormAttachment(0, 0);
-        fdlURL.top = new FormAttachment(wName, margin);
+        fdlURL.top = new FormAttachment(wName, 2*margin);
         fdlURL.right = new FormAttachment(middle, -margin);
         wlURL.setLayoutData(fdlURL);
         wURL = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(PKG, "JobHTTP.URL.Tooltip"));
@@ -222,7 +242,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wURL.addModifyListener(lsMod);
         fdURL = new FormData();
         fdURL.left = new FormAttachment(middle, 0);
-        fdURL.top = new FormAttachment(wName, margin);
+        fdURL.top = new FormAttachment(wName, 2*margin);
         fdURL.right = new FormAttachment(100, 0);
         wURL.setLayoutData(fdURL);
 
@@ -269,28 +289,274 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdFieldURL.top = new FormAttachment(wRunEveryRow, margin);
         fdFieldURL.right = new FormAttachment(100, 0);
         wFieldURL.setLayoutData(fdFieldURL);
+        
+	     // ////////////////////////
+	     // START OF AuthenticationGROUP///
+	     // /
+	    wAuthentication= new Group(shell, SWT.SHADOW_NONE);
+	    props.setLook(wAuthentication);
+	    wAuthentication.setText(BaseMessages.getString(PKG, "JobHTTP.Authentication.Group.Label"));
 
+	    FormLayout  AuthenticationgroupLayout = new FormLayout();
+	    AuthenticationgroupLayout .marginWidth = 10;
+	    AuthenticationgroupLayout .marginHeight = 10;
+	    wAuthentication.setLayout(AuthenticationgroupLayout );
+
+
+	    
+        // UserName line
+        wlUserName = new Label(wAuthentication, SWT.RIGHT);
+        wlUserName.setText(BaseMessages.getString(PKG, "JobHTTP.UploadUser.Label"));
+        props.setLook(wlUserName);
+        fdlUserName = new FormData();
+        fdlUserName.left = new FormAttachment(0, 0);
+        fdlUserName.top = new FormAttachment(wFieldURL, margin);
+        fdlUserName.right = new FormAttachment(middle, -margin);
+        wlUserName.setLayoutData(fdlUserName);
+        wUserName = new TextVar(jobMeta, wAuthentication, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wUserName);
+        wUserName.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.UploadUser.Tooltip"));
+        wUserName.addModifyListener(lsMod);
+        fdUserName = new FormData();
+        fdUserName.left = new FormAttachment(middle, 0);
+        fdUserName.top = new FormAttachment(wFieldURL, margin);
+        fdUserName.right = new FormAttachment(100, 0);
+        wUserName.setLayoutData(fdUserName);
+
+        // Password line
+        wlPassword = new Label(wAuthentication, SWT.RIGHT);
+        wlPassword.setText(BaseMessages.getString(PKG, "JobHTTP.UploadPassword.Label"));
+        props.setLook(wlPassword);
+        fdlPassword = new FormData();
+        fdlPassword.left = new FormAttachment(0, 0);
+        fdlPassword.top = new FormAttachment(wUserName, margin);
+        fdlPassword.right = new FormAttachment(middle, -margin);
+        wlPassword.setLayoutData(fdlPassword);
+        wPassword = new TextVar(jobMeta, wAuthentication, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wPassword);
+        wPassword.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.UploadPassword.Tooltip"));
+        wPassword.setEchoChar('*');
+        wPassword.addModifyListener(lsMod);
+        fdPassword = new FormData();
+        fdPassword.left = new FormAttachment(middle, 0);
+        fdPassword.top = new FormAttachment(wUserName, margin);
+        fdPassword.right = new FormAttachment(100, 0);
+        wPassword.setLayoutData(fdPassword);
+
+        // ProxyServer line
+        wlProxyServer = new Label(wAuthentication, SWT.RIGHT);
+        wlProxyServer.setText(BaseMessages.getString(PKG, "JobHTTP.ProxyHost.Label"));
+        props.setLook(wlProxyServer);
+        fdlProxyServer = new FormData();
+        fdlProxyServer.left = new FormAttachment(0, 0);
+        fdlProxyServer.top = new FormAttachment(wPassword, 3*margin);
+        fdlProxyServer.right = new FormAttachment(middle, -margin);
+        wlProxyServer.setLayoutData(fdlProxyServer);
+        wProxyServer = new TextVar(jobMeta, wAuthentication, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wProxyServer);
+        wProxyServer.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.ProxyHost.Tooltip"));
+        wProxyServer.addModifyListener(lsMod);
+        fdProxyServer = new FormData();
+        fdProxyServer.left = new FormAttachment(middle, 0);
+        fdProxyServer.top = new FormAttachment(wPassword, 3*margin);
+        fdProxyServer.right = new FormAttachment(100, 0);
+        wProxyServer.setLayoutData(fdProxyServer);
+
+        // ProxyPort line
+        wlProxyPort = new Label(wAuthentication, SWT.RIGHT);
+        wlProxyPort.setText(BaseMessages.getString(PKG, "JobHTTP.ProxyPort.Label"));
+        props.setLook(wlProxyPort);
+        fdlProxyPort = new FormData();
+        fdlProxyPort.left = new FormAttachment(0, 0);
+        fdlProxyPort.top = new FormAttachment(wProxyServer, margin);
+        fdlProxyPort.right = new FormAttachment(middle, -margin);
+        wlProxyPort.setLayoutData(fdlProxyPort);
+        wProxyPort = new TextVar(jobMeta, wAuthentication, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wProxyPort);
+        wProxyPort.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.ProxyPort.Tooltip"));
+        wProxyPort.addModifyListener(lsMod);
+        fdProxyPort = new FormData();
+        fdProxyPort.left = new FormAttachment(middle, 0);
+        fdProxyPort.top = new FormAttachment(wProxyServer, margin);
+        fdProxyPort.right = new FormAttachment(100, 0);
+        wProxyPort.setLayoutData(fdProxyPort);
+
+        // IgnoreHosts line
+        wlNonProxyHosts = new Label(wAuthentication, SWT.RIGHT);
+        wlNonProxyHosts.setText(BaseMessages.getString(PKG, "JobHTTP.ProxyIgnoreRegexp.Label"));
+        props.setLook(wlNonProxyHosts);
+        fdlNonProxyHosts = new FormData();
+        fdlNonProxyHosts.left = new FormAttachment(0, 0);
+        fdlNonProxyHosts.top = new FormAttachment(wProxyPort, margin);
+        fdlNonProxyHosts.right = new FormAttachment(middle, -margin);
+        wlNonProxyHosts.setLayoutData(fdlNonProxyHosts);
+        wNonProxyHosts = new TextVar(jobMeta, wAuthentication, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wNonProxyHosts);
+        wNonProxyHosts.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.ProxyIgnoreRegexp.Tooltip"));
+        wNonProxyHosts.addModifyListener(lsMod);
+        fdNonProxyHosts = new FormData();
+        fdNonProxyHosts.left = new FormAttachment(middle, 0);
+        fdNonProxyHosts.top = new FormAttachment(wProxyPort, margin);
+        fdNonProxyHosts.right = new FormAttachment(100, 0);
+        wNonProxyHosts.setLayoutData(fdNonProxyHosts);
+        
+
+	    fdAuthentication= new FormData();
+	    fdAuthentication.left = new FormAttachment(0, margin);
+	    fdAuthentication.top = new FormAttachment(wFieldURL, margin);
+	    fdAuthentication.right = new FormAttachment(100, -margin);
+	    wAuthentication.setLayoutData(fdAuthentication);
+	    // ///////////////////////////////////////////////////////////
+	    // / END OF AuthenticationGROUP GROUP
+	    // ///////////////////////////////////////////////////////////
+        
+	     // ////////////////////////
+	     // START OF UpLoadFileGROUP///
+	     // /
+	    wUpLoadFile= new Group(shell, SWT.SHADOW_NONE);
+	    props.setLook(wUpLoadFile);
+	    wUpLoadFile.setText(BaseMessages.getString(PKG, "JobHTTP.UpLoadFile.Group.Label"));
+
+	    FormLayout  UpLoadFilegroupLayout = new FormLayout();
+	    UpLoadFilegroupLayout .marginWidth = 10;
+	    UpLoadFilegroupLayout .marginHeight = 10;
+	    wUpLoadFile.setLayout(UpLoadFilegroupLayout );
+
+	    
+        // UploadFile line
+        wlUploadFile = new Label(wUpLoadFile, SWT.RIGHT);
+        wlUploadFile.setText(BaseMessages.getString(PKG, "JobHTTP.UploadFile.Label"));
+        props.setLook(wlUploadFile);
+        fdlUploadFile = new FormData();
+        fdlUploadFile.left = new FormAttachment(0, 0);
+        fdlUploadFile.top = new FormAttachment(wAuthentication, margin);
+        fdlUploadFile.right = new FormAttachment(middle, -margin);
+        wlUploadFile.setLayoutData(fdlUploadFile);
+        
+        wbUploadFile=new Button(wUpLoadFile, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbUploadFile);
+ 		wbUploadFile.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+ 		fdbUploadFile=new FormData();
+ 		fdbUploadFile.right= new FormAttachment(100, 0);
+ 		fdbUploadFile.top  = new FormAttachment(wAuthentication, margin);
+		wbUploadFile.setLayoutData(fdbUploadFile);
+        
+        wUploadFile = new TextVar(jobMeta, wUpLoadFile, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wUploadFile);
+        wUploadFile.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.UploadFile.Tooltip"));
+        wUploadFile.addModifyListener(lsMod);
+        fdUploadFile = new FormData();
+        fdUploadFile.left = new FormAttachment(middle, 0);
+        fdUploadFile.top = new FormAttachment(wAuthentication, margin);
+        fdUploadFile.right = new FormAttachment(wbUploadFile, -margin);
+        wUploadFile.setLayoutData(fdUploadFile);
+        
+        // Whenever something changes, set the tooltip to the expanded version:
+        wUploadFile.addModifyListener(new ModifyListener()
+			{
+				public void modifyText(ModifyEvent e)
+				{
+					wUploadFile.setToolTipText(jobMeta.environmentSubstitute( wUploadFile.getText() ) );
+				}
+			}
+		);
+
+        wbUploadFile.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					dialog.setFilterExtensions(new String[] {"*"});
+					if (wUploadFile.getText()!=null)
+					{
+						dialog.setFileName(jobMeta.environmentSubstitute(wUploadFile.getText()) );
+					}
+					dialog.setFilterNames(FILETYPES);
+					if (dialog.open()!=null)
+					{
+						wUploadFile.setText(dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName());
+					}
+				}
+			}
+		);
+
+        
+        fdUpLoadFile= new FormData();
+	    fdUpLoadFile.left = new FormAttachment(0, margin);
+	    fdUpLoadFile.top = new FormAttachment(wAuthentication, margin);
+	    fdUpLoadFile.right = new FormAttachment(100, -margin);
+	    wUpLoadFile.setLayoutData(fdUpLoadFile);
+	    // ///////////////////////////////////////////////////////////
+	    // / END OF UpLoadFileGROUP GROUP
+	    // ///////////////////////////////////////////////////////////
+        
+	     // ////////////////////////
+	     // START OF TargetFileGroupGROUP///
+	     // /
+	    wTargetFileGroup= new Group(shell, SWT.SHADOW_NONE);
+	    props.setLook(wTargetFileGroup);
+	    wTargetFileGroup.setText(BaseMessages.getString(PKG, "JobHTTP.TargetFileGroup.Group.Label"));
+
+	    FormLayout  TargetFileGroupgroupLayout = new FormLayout();
+	    TargetFileGroupgroupLayout .marginWidth = 10;
+	    TargetFileGroupgroupLayout .marginHeight = 10;
+	    wTargetFileGroup.setLayout(TargetFileGroupgroupLayout );
+	    
+	    
         // TargetFile line
-        wlTargetFile = new Label(shell, SWT.RIGHT);
+        wlTargetFile = new Label(wTargetFileGroup, SWT.RIGHT);
         wlTargetFile.setText(BaseMessages.getString(PKG, "JobHTTP.TargetFile.Label"));
         props.setLook(wlTargetFile);
         fdlTargetFile = new FormData();
         fdlTargetFile.left = new FormAttachment(0, 0);
-        fdlTargetFile.top = new FormAttachment(wFieldURL, margin);
+        fdlTargetFile.top = new FormAttachment(wUploadFile, margin);
         fdlTargetFile.right = new FormAttachment(middle, -margin);
         wlTargetFile.setLayoutData(fdlTargetFile);
-        wTargetFile = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        
+
+        wbTargetFile=new Button(wTargetFileGroup, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbTargetFile);
+ 		wbTargetFile.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+ 		fdbTargetFile=new FormData();
+ 		fdbTargetFile.right= new FormAttachment(100, 0);
+ 		fdbTargetFile.top  = new FormAttachment(wUploadFile, margin);
+		wbTargetFile.setLayoutData(fdbTargetFile);
+        
+        wTargetFile = new TextVar(jobMeta, wTargetFileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTargetFile);
         wTargetFile.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.TargetFile.Tooltip"));
         wTargetFile.addModifyListener(lsMod);
         fdTargetFile = new FormData();
         fdTargetFile.left = new FormAttachment(middle, 0);
-        fdTargetFile.top = new FormAttachment(wFieldURL, margin);
-        fdTargetFile.right = new FormAttachment(100, 0);
+        fdTargetFile.top = new FormAttachment(wUploadFile, margin);
+        fdTargetFile.right = new FormAttachment(wbTargetFile, -margin);
         wTargetFile.setLayoutData(fdTargetFile);
+        
+        wbTargetFile.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+					dialog.setFilterExtensions(new String[] {"*"});
+					if (wTargetFile.getText()!=null)
+					{
+						dialog.setFileName(jobMeta.environmentSubstitute(wTargetFile.getText()) );
+					}
+					dialog.setFilterNames(FILETYPES);
+					if (dialog.open()!=null)
+					{
+						wTargetFile.setText(dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName());
+					}
+				}
+			}
+		);
 
         // Append line
-        wlAppend = new Label(shell, SWT.RIGHT);
+        wlAppend = new Label(wTargetFileGroup, SWT.RIGHT);
         wlAppend.setText(BaseMessages.getString(PKG, "JobHTTP.TargetFileAppend.Label"));
         props.setLook(wlAppend);
         fdlAppend = new FormData();
@@ -298,7 +564,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlAppend.top = new FormAttachment(wTargetFile, margin);
         fdlAppend.right = new FormAttachment(middle, -margin);
         wlAppend.setLayoutData(fdlAppend);
-        wAppend = new Button(shell, SWT.CHECK);
+        wAppend = new Button(wTargetFileGroup, SWT.CHECK);
         props.setLook(wAppend);
         wAppend.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.TargetFileAppend.Tooltip"));
         fdAppend = new FormData();
@@ -308,7 +574,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wAppend.setLayoutData(fdAppend);
 
         // DateTimeAdded line
-        wlDateTimeAdded = new Label(shell, SWT.RIGHT);
+        wlDateTimeAdded = new Label(wTargetFileGroup, SWT.RIGHT);
         wlDateTimeAdded.setText(BaseMessages.getString(PKG, "JobHTTP.TargetFilenameAddDate.Label"));
         props.setLook(wlDateTimeAdded);
         fdlDateTimeAdded = new FormData();
@@ -316,7 +582,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlDateTimeAdded.top = new FormAttachment(wAppend, margin);
         fdlDateTimeAdded.right = new FormAttachment(middle, -margin);
         wlDateTimeAdded.setLayoutData(fdlDateTimeAdded);
-        wDateTimeAdded = new Button(shell, SWT.CHECK);
+        wDateTimeAdded = new Button(wTargetFileGroup, SWT.CHECK);
         props.setLook(wDateTimeAdded);
         wDateTimeAdded.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.TargetFilenameAddDate.Tooltip"));
         fdDateTimeAdded = new FormData();
@@ -333,7 +599,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         });
 
         // TargetExt line
-        wlTargetExt = new Label(shell, SWT.RIGHT);
+        wlTargetExt = new Label(wTargetFileGroup, SWT.RIGHT);
         wlTargetExt.setText(BaseMessages.getString(PKG, "JobHTTP.TargetFileExt.Label"));
         props.setLook(wlTargetExt);
         fdlTargetExt = new FormData();
@@ -341,7 +607,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlTargetExt.top = new FormAttachment(wDateTimeAdded, margin);
         fdlTargetExt.right = new FormAttachment(middle, -margin);
         wlTargetExt.setLayoutData(fdlTargetExt);
-        wTargetExt = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wTargetExt = new TextVar(jobMeta, wTargetFileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTargetExt);
         wTargetExt.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.TargetFileExt.Tooltip"));
         wTargetExt.addModifyListener(lsMod);
@@ -350,136 +616,42 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdTargetExt.top = new FormAttachment(wDateTimeAdded, margin);
         fdTargetExt.right = new FormAttachment(100, 0);
         wTargetExt.setLayoutData(fdTargetExt);
+        
+        // Add filenames to result filenames...
+        wlAddFilenameToResult = new Label(wTargetFileGroup, SWT.RIGHT);
+        wlAddFilenameToResult.setText(BaseMessages.getString(PKG, "JobHTTP.AddFilenameToResult.Label"));
+        props.setLook(wlAddFilenameToResult);
+        fdlAddFilenameToResult = new FormData();
+        fdlAddFilenameToResult.left = new FormAttachment(0, 0);
+        fdlAddFilenameToResult.top = new FormAttachment(wTargetExt, margin);
+        fdlAddFilenameToResult.right = new FormAttachment(middle, -margin);
+        wlAddFilenameToResult.setLayoutData(fdlAddFilenameToResult);
+        wAddFilenameToResult = new Button(wTargetFileGroup, SWT.CHECK);
+        wAddFilenameToResult.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.AddFilenameToResult.Tooltip"));
+        props.setLook(wAddFilenameToResult);
+        fdAddFilenameToResult = new FormData();
+        fdAddFilenameToResult.left = new FormAttachment(middle, 0);
+        fdAddFilenameToResult.top = new FormAttachment(wTargetExt, margin);
+        fdAddFilenameToResult.right = new FormAttachment(100, 0);
+        wAddFilenameToResult.setLayoutData(fdAddFilenameToResult);
+        
+      
 
-        Label lSeparator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.LINE_SOLID);
-        FormData fdSep = new FormData();
-        fdSep.left = new FormAttachment(0, 0);
-        fdSep.right = new FormAttachment(100, 0);
-        fdSep.top = new FormAttachment(wTargetExt, 15);
-        lSeparator.setLayoutData(fdSep);
-
-        // UploadFile line
-        wlUploadFile = new Label(shell, SWT.RIGHT);
-        wlUploadFile.setText(BaseMessages.getString(PKG, "JobHTTP.UploadFile.Label"));
-        props.setLook(wlUploadFile);
-        fdlUploadFile = new FormData();
-        fdlUploadFile.left = new FormAttachment(0, 0);
-        fdlUploadFile.top = new FormAttachment(lSeparator, margin + 15);
-        fdlUploadFile.right = new FormAttachment(middle, -margin);
-        wlUploadFile.setLayoutData(fdlUploadFile);
-        wUploadFile = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wUploadFile);
-        wUploadFile.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.UploadFile.Tooltip"));
-        wUploadFile.addModifyListener(lsMod);
-        fdUploadFile = new FormData();
-        fdUploadFile.left = new FormAttachment(middle, 0);
-        fdUploadFile.top = new FormAttachment(lSeparator, margin + 15);
-        fdUploadFile.right = new FormAttachment(100, 0);
-        wUploadFile.setLayoutData(fdUploadFile);
-
-        // UserName line
-        wlUserName = new Label(shell, SWT.RIGHT);
-        wlUserName.setText(BaseMessages.getString(PKG, "JobHTTP.UploadUser.Label"));
-        props.setLook(wlUserName);
-        fdlUserName = new FormData();
-        fdlUserName.left = new FormAttachment(0, 0);
-        fdlUserName.top = new FormAttachment(wUploadFile, margin * 5);
-        fdlUserName.right = new FormAttachment(middle, -margin);
-        wlUserName.setLayoutData(fdlUserName);
-        wUserName = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wUserName);
-        wUserName.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.UploadUser.Tooltip"));
-        wUserName.addModifyListener(lsMod);
-        fdUserName = new FormData();
-        fdUserName.left = new FormAttachment(middle, 0);
-        fdUserName.top = new FormAttachment(wUploadFile, margin * 5);
-        fdUserName.right = new FormAttachment(100, 0);
-        wUserName.setLayoutData(fdUserName);
-
-        // Password line
-        wlPassword = new Label(shell, SWT.RIGHT);
-        wlPassword.setText(BaseMessages.getString(PKG, "JobHTTP.UploadPassword.Label"));
-        props.setLook(wlPassword);
-        fdlPassword = new FormData();
-        fdlPassword.left = new FormAttachment(0, 0);
-        fdlPassword.top = new FormAttachment(wUserName, margin);
-        fdlPassword.right = new FormAttachment(middle, -margin);
-        wlPassword.setLayoutData(fdlPassword);
-        wPassword = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wPassword);
-        wPassword.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.UploadPassword.Tooltip"));
-        wPassword.setEchoChar('*');
-        wPassword.addModifyListener(lsMod);
-        fdPassword = new FormData();
-        fdPassword.left = new FormAttachment(middle, 0);
-        fdPassword.top = new FormAttachment(wUserName, margin);
-        fdPassword.right = new FormAttachment(100, 0);
-        wPassword.setLayoutData(fdPassword);
-
-        // ProxyServer line
-        wlProxyServer = new Label(shell, SWT.RIGHT);
-        wlProxyServer.setText(BaseMessages.getString(PKG, "JobHTTP.ProxyHost.Label"));
-        props.setLook(wlProxyServer);
-        fdlProxyServer = new FormData();
-        fdlProxyServer.left = new FormAttachment(0, 0);
-        fdlProxyServer.top = new FormAttachment(wPassword, margin * 5);
-        fdlProxyServer.right = new FormAttachment(middle, -margin);
-        wlProxyServer.setLayoutData(fdlProxyServer);
-        wProxyServer = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wProxyServer);
-        wProxyServer.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.ProxyHost.Tooltip"));
-        wProxyServer.addModifyListener(lsMod);
-        fdProxyServer = new FormData();
-        fdProxyServer.left = new FormAttachment(middle, 0);
-        fdProxyServer.top = new FormAttachment(wPassword, margin * 5);
-        fdProxyServer.right = new FormAttachment(100, 0);
-        wProxyServer.setLayoutData(fdProxyServer);
-
-        // ProxyPort line
-        wlProxyPort = new Label(shell, SWT.RIGHT);
-        wlProxyPort.setText(BaseMessages.getString(PKG, "JobHTTP.ProxyPort.Label"));
-        props.setLook(wlProxyPort);
-        fdlProxyPort = new FormData();
-        fdlProxyPort.left = new FormAttachment(0, 0);
-        fdlProxyPort.top = new FormAttachment(wProxyServer, margin);
-        fdlProxyPort.right = new FormAttachment(middle, -margin);
-        wlProxyPort.setLayoutData(fdlProxyPort);
-        wProxyPort = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wProxyPort);
-        wProxyPort.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.ProxyPort.Tooltip"));
-        wProxyPort.addModifyListener(lsMod);
-        fdProxyPort = new FormData();
-        fdProxyPort.left = new FormAttachment(middle, 0);
-        fdProxyPort.top = new FormAttachment(wProxyServer, margin);
-        fdProxyPort.right = new FormAttachment(100, 0);
-        wProxyPort.setLayoutData(fdProxyPort);
-
-        // IgnoreHosts line
-        wlNonProxyHosts = new Label(shell, SWT.RIGHT);
-        wlNonProxyHosts.setText(BaseMessages.getString(PKG, "JobHTTP.ProxyIgnoreRegexp.Label"));
-        props.setLook(wlNonProxyHosts);
-        fdlNonProxyHosts = new FormData();
-        fdlNonProxyHosts.left = new FormAttachment(0, 0);
-        fdlNonProxyHosts.top = new FormAttachment(wProxyPort, margin);
-        fdlNonProxyHosts.right = new FormAttachment(middle, -margin);
-        wlNonProxyHosts.setLayoutData(fdlNonProxyHosts);
-        wNonProxyHosts = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wNonProxyHosts);
-        wNonProxyHosts.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.ProxyIgnoreRegexp.Tooltip"));
-        wNonProxyHosts.addModifyListener(lsMod);
-        fdNonProxyHosts = new FormData();
-        fdNonProxyHosts.left = new FormAttachment(middle, 0);
-        fdNonProxyHosts.top = new FormAttachment(wProxyPort, margin);
-        fdNonProxyHosts.right = new FormAttachment(100, 0);
-        wNonProxyHosts.setLayoutData(fdNonProxyHosts);
+        fdTargetFileGroup= new FormData();
+	    fdTargetFileGroup.left = new FormAttachment(0, margin);
+	    fdTargetFileGroup.top = new FormAttachment(wUpLoadFile, margin);
+	    fdTargetFileGroup.right = new FormAttachment(100, -margin);
+	    wTargetFileGroup.setLayoutData(fdTargetFileGroup);
+	    // ///////////////////////////////////////////////////////////
+	    // / END OF TargetFileGroupGROUP GROUP
+	    // ///////////////////////////////////////////////////////////
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin,
-            wNonProxyHosts);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin,	wTargetFileGroup);
 
         // Add listeners
         lsCancel = new Listener()
@@ -583,7 +755,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wProxyServer.setText(Const.NVL(jobEntry.getProxyHostname(), ""));
         wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
         wNonProxyHosts.setText(Const.NVL(jobEntry.getNonProxyHosts(), ""));
-
+		wAddFilenameToResult.setSelection(jobEntry.isAddFilenameToResult());
         setFlags();
     }
 
@@ -622,7 +794,8 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         jobEntry.setProxyHostname(wProxyServer.getText());
         jobEntry.setProxyPort(wProxyPort.getText());
         jobEntry.setNonProxyHosts(wNonProxyHosts.getText());
-
+		jobEntry.setAddFilenameToResult(wAddFilenameToResult.getSelection());
+		
         dispose();
     }
 

@@ -48,6 +48,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -67,6 +68,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+  private static Class<?> PKG = JobEntryHTTP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	  
   private static final String URL_FIELDNAME = "URL";
 
   // Base info
@@ -99,11 +102,14 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   private String username;
 
   private String password;
+  
+  private boolean addfilenameresult;
 
   public JobEntryHTTP(String n)
   {
     super(n, "");
     url = null;
+    addfilenameresult=true;
     setID(-1L);
   }
 
@@ -140,6 +146,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHostname));
     retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort));
     retval.append("      ").append(XMLHandler.addTagValue("non_proxy_hosts", nonProxyHosts));
+    retval.append("      ").append(XMLHandler.addTagValue("addfilenameresult", addfilenameresult));
+    
 
     return retval.toString();
   }
@@ -166,6 +174,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       proxyHostname = XMLHandler.getTagValue(entrynode, "proxy_host");
       proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port");
       nonProxyHosts = XMLHandler.getTagValue(entrynode, "non_proxy_hosts");
+      addfilenameresult = "Y".equalsIgnoreCase(Const.NVL(XMLHandler.getTagValue(entrynode, "addfilenameresult"), "Y"));
+      
     } catch (KettleXMLException xe)
     {
       throw new KettleXMLException("Unable to load job entry of type 'HTTP' from XML node", xe);
@@ -197,6 +207,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         proxyPort = Integer.toString(intPort);
 
       nonProxyHosts = rep.getJobEntryAttributeString(id_jobentry, "non_proxy_hosts");
+      addfilenameresult = "Y".equalsIgnoreCase(Const.NVL(rep.getJobEntryAttributeString(id_jobentry, "addfilenameresult"), "Y"));
+      
     } catch (KettleException dbe)
     {
       throw new KettleException("Unable to load job entry of type 'HTTP' from the repository for id_jobentry="
@@ -225,6 +237,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHostname);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "non_proxy_hosts", nonProxyHosts);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "addfilenameresult", addfilenameresult);
+      
     } 
     catch (KettleDatabaseException dbe)
     {
@@ -273,7 +287,15 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   {
     this.nonProxyHosts = nonProxyHosts;
   }
-
+  public boolean isAddFilenameToResult()
+  {
+    return addfilenameresult;
+  }
+  
+  public void setAddFilenameToResult(boolean addfilenameresult)
+  {
+    this.addfilenameresult = addfilenameresult;
+  }
   public String getPassword()
   {
     return password;
@@ -326,7 +348,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     Result result = previousResult;
     result.setResult(false);
 
-    logBasic("Start of HTTP job entry.");
+    logBasic(BaseMessages.getString(PKG, "JobHTTP.StartJobEntry"));
 
     // Get previous result rows...
     List<RowMetaAndData> resultRows;
@@ -343,7 +365,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       if (resultRows == null)
       {
         result.setNrErrors(1);
-        logError("Unable to get result from previous job entry : can't continue.");
+        logError(BaseMessages.getString(PKG, "JobHTTP.Error.UnableGetResultPrevious"));
         return result;
       }
     } else
@@ -352,7 +374,6 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       RowMetaAndData row = new RowMetaAndData();
       row.addValue(new ValueMeta(urlFieldnameToUse, ValueMetaInterface.TYPE_STRING), environmentSubstitute(url));
       resultRows.add(row);
-      System.out.println("Added one row to rows: " + row);
     }
 
     URL server = null;
@@ -374,7 +395,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       {
         String urlToUse = environmentSubstitute(row.getString(urlFieldnameToUse, ""));
 
-        logBasic("Connecting to URL: " + urlToUse);
+        logBasic(BaseMessages.getString(PKG, "JobHTTP.Log.ConnectingURL", urlToUse));
 
         if (!Const.isEmpty(proxyHostname))
         {
@@ -426,7 +447,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         String realUploadFilename = environmentSubstitute(uploadFilename);
         if (!Const.isEmpty(realUploadFilename))
         {
-          if(log.isDetailed()) logDetailed("Start sending content of file [" + realUploadFilename + "] to server.");
+          if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobHTTP.Log.SendingFile", realUploadFilename));
 
           connection.setDoOutput(true);
 
@@ -447,16 +468,15 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           fileStream.close();
           fileStream = null;
 
-          if(log.isDetailed()) logDetailed("Finished sending content to server.");
+          if(log.isDetailed()) logDetailed(BaseMessages.getString("JobHTTP.Log.FinishedSendingFile"));
         }
 
-        if(log.isDetailed()) logDetailed("Start reading reply from webserver.");
+        if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobHTTP.Log.StartReadingReply"));
 
         // Read the result from the server...
         input = server.openStream();
         Date date = new Date(connection.getLastModified());
-        logBasic("Resource type: \"" + connection.getContentType() + "\", last modified on: \"" + date
-            + "\".");
+        logBasic(BaseMessages.getString(PKG, "JobHTTP.Log.ReplayInfo", connection.getContentType(),date));
 
         int oneChar;
         long bytesRead = 0L;
@@ -466,29 +486,30 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           bytesRead++;
         }
 
-        logBasic("Finished writing " + bytesRead + " bytes to result file [" + realTargetFile + "]");
+        logBasic(BaseMessages.getString(PKG, "JobHTTP.Log.FinisedWritingReply", bytesRead, realTargetFile));
 
-        // Add to the result files...
-        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realTargetFile, this),
-            parentJob.getJobname(), toString());
-        result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+        if(addfilenameresult) {
+	        // Add to the result files...
+	        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realTargetFile, this),
+	            parentJob.getJobname(), toString());
+	        result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+        }
 
         result.setResult(true);
       } catch (MalformedURLException e)
       {
         result.setNrErrors(1);
-        logError("The specified URL is not valid [" + url + "] : " + e.getMessage());
+        logError(BaseMessages.getString(PKG, "JobHTTP.Error.NotValidURL", url, e.getMessage()));
         logError(Const.getStackTracker(e));
       } catch (IOException e)
       {
         result.setNrErrors(1);
-        logError("I was unable to save the HTTP result to file because of a I/O error: "
-            + e.getMessage());
+        logError(BaseMessages.getString(PKG, "JobHTTP.Error.CanNotSaveHTTPResult",e.getMessage()));
         logError(Const.getStackTracker(e));
       } catch (Exception e)
       {
         result.setNrErrors(1);
-        logError("Error getting file from HTTP : " + e.getMessage());
+        logError(BaseMessages.getString(PKG, "JobHTTP.Error.ErrorGettingFromHTTP",e.getMessage()));
         logError(Const.getStackTracker(e));
       } finally
       {
@@ -506,7 +527,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
             outputFile.close();
         } catch (Exception e)
         {
-          logError("Unable to close streams : " + e.getMessage());
+          logError(BaseMessages.getString(PKG, "JobHTTP.Error.CanNotCloseStream", e.getMessage()));
           result.setNrErrors(1);
         }
 
