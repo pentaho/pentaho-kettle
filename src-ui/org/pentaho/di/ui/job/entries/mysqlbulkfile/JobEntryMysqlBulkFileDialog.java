@@ -330,7 +330,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 				dialog.setFilterExtensions(new String[] { "*.txt", "*.csv", "*" });
 				if (wFilename.getText() != null)
 				{

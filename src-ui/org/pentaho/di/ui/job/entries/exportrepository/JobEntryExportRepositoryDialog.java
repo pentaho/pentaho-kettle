@@ -567,7 +567,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 					dialog.setFilterExtensions(new String[] {"*.xml",".*"});
 					if (wTargetFilename.getText()!=null)
 					{

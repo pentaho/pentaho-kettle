@@ -1080,7 +1080,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 					dialog.setFilterExtensions(new String[] {"*.xls", "*.*"});
 					if (wFilename.getText()!=null)
 					{

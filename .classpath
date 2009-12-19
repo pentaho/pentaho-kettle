@@ -110,10 +110,10 @@
 	<classpathentry kind="lib" path="libext/jackcess-1.1.19.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.42.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-2.7.jar"/>
-	<classpathentry kind="lib" path="libswt/linux/x86/swt.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/kettle-vfs-20091118.jar"/>
+	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

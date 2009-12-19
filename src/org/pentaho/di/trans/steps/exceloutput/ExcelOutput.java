@@ -566,16 +566,19 @@ public class ExcelOutput extends BaseStep implements StepInterface
 
 			if ( data.workbook != null )
 			{
-				if(meta.isAutoSizeColums())
+				if(data.fieldsWidth!=null)
 				{
-					// auto resize columns
-					int nrfields=data.fieldsWidth.length;
-					for(int i=0;i<nrfields;i++)
+					if(meta.isAutoSizeColums())
 					{
-						data.sheet.setColumnView(i,data.fieldsWidth[i]);
+						// auto resize columns
+						int nrfields=data.fieldsWidth.length;
+						for(int i=0;i<nrfields;i++)
+						{
+							data.sheet.setColumnView(i,data.fieldsWidth[i]);
+						}
 					}
+					data.fieldsWidth=null;
 				}
-				data.fieldsWidth=null;
 			    data.workbook.write();
                 data.workbook.close();
                 data.workbook = null;

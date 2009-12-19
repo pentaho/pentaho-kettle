@@ -189,7 +189,7 @@ public class JobEntryCreateFileDialog extends JobEntryDialog implements JobEntry
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 					dialog.setFilterExtensions(new String[] {"*"});
 					if (wFilename.getText()!=null)
 					{

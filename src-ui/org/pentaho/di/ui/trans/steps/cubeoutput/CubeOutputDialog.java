@@ -225,7 +225,7 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 					dialog.setFilterExtensions(new String[] {"*.cube", "*"}); //$NON-NLS-1$ //$NON-NLS-2$
 					if (wFilename.getText()!=null)
 					{

@@ -893,7 +893,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 					dialog.setFilterExtensions(new String[] {"*.txt", "*.TXT", "*"});
 					if (wFilename.getText()!=null)
 					{

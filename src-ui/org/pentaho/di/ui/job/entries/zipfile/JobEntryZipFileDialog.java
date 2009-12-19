@@ -435,7 +435,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 					//dialog.setFilterExtensions(new String[] {"*"});
 					dialog.setFilterExtensions(new String[] {"*.zip;*.ZIP", "*"});
 					if (wZipFilename.getText()!=null)

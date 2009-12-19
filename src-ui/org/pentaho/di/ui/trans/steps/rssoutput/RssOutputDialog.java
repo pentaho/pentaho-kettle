@@ -1589,7 +1589,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 					dialog.setFilterExtensions(new String[] {"*.txt", "*.TXT", "*"});
 					if (wFilename.getText()!=null)
 					{
