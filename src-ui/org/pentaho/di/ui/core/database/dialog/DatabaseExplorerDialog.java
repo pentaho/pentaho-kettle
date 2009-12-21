@@ -37,28 +37,4 @@ public class DatabaseExplorerDialog extends XulDatabaseExplorerDialog {
 	public DatabaseExplorerDialog(Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean aLook) {
 		super(parent, conn, databases, aLook);
 	}
-
-	public Object open() {
-		return super.open();
-	}
-
-	public void setSelectedSchema(String aSchema) {
-		super.setSelectedSchema(aSchema);
-	}
-
-	public void setSelectedTable(String aTable) {
-		super.setSelectedTable(aTable);
-	}
-
-	public void setSplitSchemaAndTable(boolean isSplit) {
-		super.setSplitSchemaAndTable(isSplit);
-	}
-
-	public String getSchemaName() {
-		return super.getSchemaName();
-	}
-
-	public String getTableName() {
-		return super.getTableName();
-	}
 }
