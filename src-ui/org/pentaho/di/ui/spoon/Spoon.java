@@ -2954,7 +2954,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       StringBuffer allExtensions = new StringBuffer();
       for(FileListener l : fileListeners){
         for(String ext : l.getSupportedExtensions()){
-          extensions.add(ext);
+          extensions.add("*."+ext);
           allExtensions.append("*.").append(ext).append(";");
         }
         for(String name : l.getFileTypeDisplayNames(Locale.getDefault())){
