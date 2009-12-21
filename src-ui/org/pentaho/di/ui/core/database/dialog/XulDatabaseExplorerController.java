@@ -318,6 +318,10 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			logger.info(e);
 		}
 	}
+	
+	public void close() {
+		this.dbExplorerDialog.setVisible(false);
+	}
 
 	public void expandCollapse() {
 		if (this.isExpanded) {
