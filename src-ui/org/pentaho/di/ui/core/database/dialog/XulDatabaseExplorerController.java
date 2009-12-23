@@ -110,7 +110,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 			public String sourceToTarget(DatabaseExplorerNode aValue) {
 				String theTable = null;
-				if (aValue.isTable()) {
+				if (aValue != null && aValue.isTable()) {
 					theTable = aValue.getName();
 				}
 				return theTable;
