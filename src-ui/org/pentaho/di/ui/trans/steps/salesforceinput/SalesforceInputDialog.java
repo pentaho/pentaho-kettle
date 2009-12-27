@@ -185,8 +185,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX
-				| SWT.MIN);
+		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
 		props.setLook(shell);
 		setShellImage(shell, input);
 
@@ -1465,6 +1464,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	}
 
 	private void ok() {
+		if (Const.isEmpty(wStepname.getText())) return;
+
+		stepname = wStepname.getText();
 		try {
 			getInfo(input);
 		} catch (KettleException e) {
@@ -1521,10 +1523,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			field.setCurrencySymbol(item.getText(7));
 			field.setDecimalSymbol(item.getText(8));
 			field.setGroupSymbol(item.getText(9));
-			field.setTrimType(SalesforceInputField
-					.getTrimTypeByDesc(item.getText(10)));
-			field.setRepeated(BaseMessages.getString(PKG, "System.Combo.Yes")
-					.equalsIgnoreCase(item.getText(11)));
+			field.setTrimType(SalesforceInputField.getTrimTypeByDesc(item.getText(10)));
+			field.setRepeated(BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(11)));
 
 			in.getInputFields()[i] = field;
 		}
