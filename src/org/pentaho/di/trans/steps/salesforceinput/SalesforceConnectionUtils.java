@@ -21,9 +21,9 @@ public class SalesforceConnectionUtils {
 	
 	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	public static final String LIB_VERION="10.0";
+	public static final String LIB_VERION="16.0";
 	
-	public static final String TARGET_DEFAULT_URL= "https://www.salesforce.com/services/Soap/u/10.0";
+	public static final String TARGET_DEFAULT_URL= "https://www.salesforce.com/services/Soap/u/16.0";
 	
 	/**
 	 * The records filter description
@@ -49,7 +49,6 @@ public class SalesforceConnectionUtils {
 		"AccountContactRole",
 		"AccountPartner",
 		"AccountShare",
-		"ActivityHistory",
 		"AdditionalNumber",
 		"ApexClass",
 		"ApexTrigger",
@@ -81,7 +80,6 @@ public class SalesforceConnectionUtils {
 		"ContractStatus",
 		"Document",
 		"DocumentAttachmentMap",
-		"EmailStatus",
 		"EmailTemplate",
 		"Event",
 		"EventAttendee",
@@ -95,10 +93,7 @@ public class SalesforceConnectionUtils {
 		"LeadShare",
 		"LeadStatus",
 		"MailmergeTemplate",
-		"Name",
 		"Note",
-		"NoteAndAttachment",
-		"OpenActivity",
 		"Opportunity",
 		"OpportunityCompetitor",
 		"OpportunityContactRole",
@@ -114,7 +109,6 @@ public class SalesforceConnectionUtils {
 		"Pricebook2",
 		"PricebookEntry",
 		"ProcessInstance",
-		"ProcessInstanceHistory",
 		"ProcessInstanceStep",
 		"ProcessInstanceWorkitem",
 		"Product2",
@@ -133,7 +127,7 @@ public class SalesforceConnectionUtils {
 		"UserLicense",
 		"UserPreference",
 		"UserRole",
-		"WebLink",
+		"WebLink"
 	};
 	
 	public static String getRecordsFilterDesc(int i) {

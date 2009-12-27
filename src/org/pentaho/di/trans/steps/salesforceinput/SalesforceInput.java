@@ -129,7 +129,8 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			 }
 			
 			// create a Salesforce connection
-			data.connection= new SalesforceConnection(log, realUrl, realUser,environmentSubstitute(meta.getPassword()), 
+			data.connection= new SalesforceConnection(log, realUrl, 
+					realUser,environmentSubstitute(meta.getPassword()), 
 					Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
 			
 		    // Build query if needed
@@ -166,8 +167,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		}
 		
 		Object[] outputRowData=null;
-        boolean sendToErrorRow=false;
-		String errorMessage = null;
+
 		try  {	
 			// get one row ...
 			outputRowData =getOneRow();
@@ -189,11 +189,12 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		    return true; 
 		} 
 		catch(KettleException e) {
+	        boolean sendToErrorRow=false;
+			String errorMessage = null;
 			if (getStepMeta().isDoingErrorHandling()) {
 		         sendToErrorRow = true;
 		         errorMessage = e.toString();
-			}
-			else {
+			} else {
 				logError(BaseMessages.getString(PKG, "SalesforceInput.log.Exception", e.getMessage()));
                 logError(Const.getStackTracker(e));
 				setErrors(1);
@@ -356,7 +357,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			}
 		break;
 	}
-		return sql;
+	return sql;
   }
 	 
 	/**
