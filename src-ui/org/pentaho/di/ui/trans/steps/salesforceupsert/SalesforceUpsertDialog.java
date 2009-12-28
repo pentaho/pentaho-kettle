@@ -599,7 +599,6 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 		// Set the shell size, based upon previous time...
 		setSize();
 		getData(input);
-		setModuleFieldCombo();
 		input.setChanged(changed);
 
 		shell.open();
@@ -699,16 +698,13 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 	      	  // loop through the objects and find build the list of fields
 	          Field[] fields = getModuleFields();
 	          String[] fieldList = new String[fields.length];    
-	            for (int i = 0; i < fields.length; i++) 
-	            {
+	          for (int i = 0; i < fields.length; i++)  {
 	            	fieldList[i] = fields[i].getName();
-	            } //for
+	           } //for
 	           wUpsertField.setItems(fieldList);
-		 
 			  
 			  if(!Const.isEmpty(selectedField)) wUpsertField.setText(selectedField);
-		  }catch(Exception e)
-		  {
+		  }catch(Exception e)  {
 				new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceUpsertDialog.ErrorRetrieveModules.DialogTitle"),
 						BaseMessages.getString(PKG, "SalesforceUpsertDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
 		  }
@@ -987,43 +983,47 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
         // return fields
         ciReturn[1].setComboValues(fieldNames);
     }
-	private void setModuleFieldCombo(){
 
-		Runnable fieldLoader = new Runnable() {
-			public void run() {
-				//clear
-				for (int i = 0; i < tableFieldColumns.size(); i++) {
-					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
-					colInfo.setComboValues(new String[] {});
-				}
-				if(wModule.isDisposed()) return;
-				String selectedModule= transMeta.environmentSubstitute(wModule.getText());
-				if (!Const.isEmpty(selectedModule)) {
-					try {
-			    		
-							// loop through the objects and find build the list of fields
-					        Field[] fields = getModuleFields(); 
-					        String[] fieldsName = new String[fields.length];
-					        for (int i = 0; i < fields.length; i++)  {
-					        	fieldsName[i]=fields[i].getName();
-				            } 
-							if (null != fields) {
-								for (int i = 0; i < tableFieldColumns.size(); i++) {
-									ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
-									colInfo.setComboValues(fieldsName);
-								}
-							}
-					}catch (Exception e) {
-						for (int i = 0; i < tableFieldColumns.size(); i++) {
-							ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
-							colInfo.setComboValues(new String[] {});
-						}
-						// ignore any errors here. drop downs will not be
-						// filled, but no problem for the user
+	
+	public void setModuleFieldCombo() {
+		Display display = shell.getDisplay();
+		if (!(display==null || display.isDisposed())) {
+			display.asyncExec(new Runnable () {
+				public void run() {
+					//clear
+					for (int i = 0; i < tableFieldColumns.size(); i++) {
+						ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+						colInfo.setComboValues(new String[] {});
 					}
+					if(wModule.isDisposed()) return;
+					String selectedModule= transMeta.environmentSubstitute(wModule.getText());
+					if (!Const.isEmpty(selectedModule)) {
+						try {
+								// loop through the objects and find build the list of fields
+						        Field[] fields = getModuleFields(); 
+						        String[] fieldsName = new String[fields.length];
+						        for (int i = 0; i < fields.length; i++)  {
+						        	fieldsName[i]=fields[i].getName();
+					            } 
+								if (null != fields) {
+									for (int i = 0; i < tableFieldColumns.size(); i++) {
+										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+										colInfo.setComboValues(fieldsName);
+									}
+								}
+						}catch (Exception e) {
+							for (int i = 0; i < tableFieldColumns.size(); i++) {
+								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
+								colInfo.setComboValues(new String[] {});
+							}
+							// ignore any errors here. drop downs will not be
+							// filled, but no problem for the user
+						}
+					}
+			
 				}
-			}
-		};
-		shell.getDisplay().asyncExec(fieldLoader);
+			});
+		}
 	}
+	
 }

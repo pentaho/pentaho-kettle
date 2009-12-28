@@ -1039,6 +1039,6 @@
 		<class-name>org.pentaho.di.trans.steps.salesforceupsert.SalesforceUpsertMeta</class-name>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceUpsert</tooltip>
-		<image-uri>ui/images/FFO.png</image-uri>
+		<image-uri>ui/images/SFU.png</image-uri>
 	</step>
 </steps>
