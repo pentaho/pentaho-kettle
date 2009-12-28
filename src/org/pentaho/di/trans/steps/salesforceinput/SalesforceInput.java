@@ -56,65 +56,6 @@ public class SalesforceInput extends BaseStep implements StepInterface
 	{
 		if(first){
 			first=false;
-			String soQL=environmentSubstitute(meta.getQuery());
-			// check target URL
-			String realUrl=environmentSubstitute(meta.getTargetURL());
-			if(Const.isEmpty(realUrl))
-				throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.TargetURLMissing.Error"));
-			
-			// check username
-			String realUser=environmentSubstitute(meta.getUserName());
-			if(Const.isEmpty(realUser))
-				throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.UsernameMissing.Error"));
-			
-			
-			if(meta.isSpecifyQuery()) {
-				// Check if user specified a query 
-				 if (Const.isEmpty(soQL)) {
-					 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.QueryMissing.DialogMessage"));
-				 }
-			}else {
-				data.Module=environmentSubstitute(meta.getModule());
-				// Check if module is specified 
-				 if (Const.isEmpty(data.Module)) {
-					 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ModuleMissing.DialogMessage"));
-				 }
-				 // check records filter
-				 if(meta.getRecordsFilter()!=SalesforceConnectionUtils.RECORDS_FILTER_ALL){
-					 String realFromDateString=environmentSubstitute(meta.getReadFrom());
-					 if(Const.isEmpty(realFromDateString))
-						 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.FromDateMissing.DialogMessage")); 
-					  
-					 String realToDateString=environmentSubstitute(meta.getReadTo());
-					 if(Const.isEmpty(realToDateString))
-						 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ToDateMissing.DialogMessage")); 
-					 try{
-						 SimpleDateFormat startDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						 SimpleDateFormat endDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						 startDate.parse(realFromDateString);
-						 endDate.parse(realToDateString);
-						 
-						 data.startCal = (GregorianCalendar) startDate.getCalendar();
-						 data.endCal = (GregorianCalendar)endDate.getCalendar(); 
-					 }catch(Exception e) {
-						 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorParsingDate"),e);
-					 }
-				 }
-			}
-			  // Check if username is specified 
-			 if (Const.isEmpty(meta.getUserName())){
-				 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.UsernameMissing.DialogMessage"));
-			 }
-			 
-			data.limit=Const.toLong(environmentSubstitute(meta.getRowLimit()),0);
-			
-			// get total fields in the grid
-			data.nrfields = meta.getInputFields().length;
-			
-			 // Check if field list is filled 
-			 if (data.nrfields==0) {
-				 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsMissing.DialogMessage"));
-			 }
 		
 		    // Create the output row meta-data
             data.outputRowMeta = new RowMeta();
@@ -128,32 +69,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
 			 }
 			
-			// create a Salesforce connection
-			data.connection= new SalesforceConnection(log, realUrl, 
-					realUser,environmentSubstitute(meta.getPassword()), 
-					Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
-			
-		    // Build query if needed
-		    if(meta.isSpecifyQuery()) {
-		    	// Free hand SOQL Query
-		    	data.connection.setSQL(soQL.replace("\n\r", "").replace("\n", ""));
-		    } else {
-		    	// retrieve data from a module
-		    	// Set condition if needed
-		    	String realCondition=environmentSubstitute(meta.getCondition());
-		    	if(!Const.isEmpty(realCondition)) data.connection.setCondition(realCondition);
-		    	// Set module
-		    	data.connection.setModule(data.Module);
-		    	// Set calendars for update or deleted records
-		    	if(meta.getRecordsFilter()!=SalesforceConnectionUtils.RECORDS_FILTER_ALL)
-		    		data.connection.setCalendar(meta.getRecordsFilter(), data.startCal, data.endCal);
-		    	// Build now SOQL
-		    	data.connection.setSQL(BuiltSOQl());
-		    }
-		    
-		    // Now connect ...
-		    data.connection.connect();	
-		    // We are connected, so let's query Salesforce
+		    // Let's query Salesforce
 		    data.connection.query(meta.isSpecifyQuery());
 		    
 		    data.limitReached = true;
@@ -237,8 +153,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 							// We returned more result (query is not done yet)
 							int nr=data.connection.getRecordsCount();
 							data.nrRecords+=nr;
-							if(log.isDetailed()) logDetailed(
-									BaseMessages.getString(PKG, "SalesforceInput.Log.QueryMoreRetrieved",""+nr));
+							if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.QueryMoreRetrieved",""+nr));
 							
 							// We need here to initialize recordIndex
 							data.recordIndex=0;
@@ -369,12 +284,113 @@ public class SalesforceInput extends BaseStep implements StepInterface
        Object[] rowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
 	    return rowData;
 	}
+	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi){
 		meta=(SalesforceInputMeta)smi;
 		data=(SalesforceInputData)sdi;
 		
 		if (super.init(smi, sdi))
 		{
+			// get total fields in the grid
+			data.nrfields = meta.getInputFields().length;
+			
+			 // Check if field list is filled 
+			 if (data.nrfields==0) {
+				 log.logError(BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsMissing.DialogMessage"));
+				 return false;
+			 }
+			 
+			String soQL=environmentSubstitute(meta.getQuery());
+			// check target URL
+			String realUrl=environmentSubstitute(meta.getTargetURL());
+			if(Const.isEmpty(realUrl)) {
+				log.logError(BaseMessages.getString(PKG, "SalesforceInput.TargetURLMissing.Error"));
+				return false;
+			}
+			// check username
+			String realUser=environmentSubstitute(meta.getUserName());
+			if(Const.isEmpty(realUser)) {
+				log.logError(BaseMessages.getString(PKG, "SalesforceInput.UsernameMissing.Error"));
+				return false;
+			}
+			try  
+			{
+				
+				if(meta.isSpecifyQuery()) {
+					// Check if user specified a query 
+					 if (Const.isEmpty(soQL)) {
+						 log.logError(BaseMessages.getString(PKG, "SalesforceInputDialog.QueryMissing.DialogMessage"));
+						 return false;
+					 }
+				}else {
+					data.Module=environmentSubstitute(meta.getModule());
+					// Check if module is specified 
+					 if (Const.isEmpty(data.Module)) {
+						 log.logError(BaseMessages.getString(PKG, "SalesforceInputDialog.ModuleMissing.DialogMessage"));
+						 return false;
+					 }
+					 // check records filter
+					 if(meta.getRecordsFilter()!=SalesforceConnectionUtils.RECORDS_FILTER_ALL){
+						 String realFromDateString=environmentSubstitute(meta.getReadFrom());
+						 if(Const.isEmpty(realFromDateString)) {
+							 log.logError(BaseMessages.getString(PKG, "SalesforceInputDialog.FromDateMissing.DialogMessage")); 
+							 return false;
+						 }
+						 String realToDateString=environmentSubstitute(meta.getReadTo());
+						 if(Const.isEmpty(realToDateString)) {
+							 log.logError(BaseMessages.getString(PKG, "SalesforceInputDialog.ToDateMissing.DialogMessage")); 
+							 return false;
+						 }
+						 try{
+							 SimpleDateFormat startDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							 SimpleDateFormat endDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							 startDate.parse(realFromDateString);
+							 endDate.parse(realToDateString);
+							 
+							 data.startCal = (GregorianCalendar) startDate.getCalendar();
+							 data.endCal = (GregorianCalendar)endDate.getCalendar(); 
+						 }catch(Exception e) {
+							 log.logError(BaseMessages.getString(PKG, "SalesforceInput.ErrorParsingDate"),e);
+							 return false;
+						 }
+					 }
+				}
+				 
+				data.limit=Const.toLong(environmentSubstitute(meta.getRowLimit()),0);
+				
+				// create a Salesforce connection
+				data.connection= new SalesforceConnection(log, realUrl, 
+						realUser,environmentSubstitute(meta.getPassword()), 
+						Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
+				
+			    // Build query if needed
+			    if(meta.isSpecifyQuery()) {
+			    	// Free hand SOQL Query
+			    	data.connection.setSQL(soQL.replace("\n\r", "").replace("\n", ""));
+			    } else {
+			    	// retrieve data from a module
+			    	// Set condition if needed
+			    	String realCondition=environmentSubstitute(meta.getCondition());
+			    	if(!Const.isEmpty(realCondition)) data.connection.setCondition(realCondition);
+			    	// Set module
+			    	data.connection.setModule(data.Module);
+			    	// Set calendars for update or deleted records
+			    	if(meta.getRecordsFilter()!=SalesforceConnectionUtils.RECORDS_FILTER_ALL)
+			    		data.connection.setCalendar(meta.getRecordsFilter(), data.startCal, data.endCal);
+			    	// Build now SOQL
+			    	data.connection.setSQL(BuiltSOQl());
+			    }
+			    
+			    // Now connect ...
+			    data.connection.connect();	
+
+				 return true;
+			} 
+			catch(KettleException ke) 
+			{ 
+				logError(BaseMessages.getString(PKG, "SalesforceInput.Log.ErrorOccurredDuringStepInitialize")+ke.getMessage()); //$NON-NLS-1$
+			}
+
 			return true;
 		}
 		return false;

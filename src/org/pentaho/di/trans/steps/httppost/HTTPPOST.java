@@ -14,7 +14,6 @@ package org.pentaho.di.trans.steps.httppost;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -46,6 +45,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class HTTPPOST extends BaseStep implements StepInterface
 {
+	
 	private static Class<?> PKG = HTTPPOSTMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private static final String CONTENT_TYPE = "Content-type";
@@ -108,9 +108,10 @@ public class HTTPPOST extends BaseStep implements StepInterface
 	        		data.bodyParameters[i].setValue(data.inputRowMeta.getString(rowData,data.body_parameters_nrs[i]));
 	        		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.BodyValue",data.bodyParameters[i].getName(),data.inputRowMeta.getString(rowData,data.body_parameters_nrs[i])));
 		        }
+		        post.setRequestBody(data.bodyParameters);
 	        }
             
-            post.setRequestBody(data.bodyParameters);
+            
 
             // QUERY PARAMETERS
             if(data.useQueryParameters)
@@ -147,7 +148,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             
             // Execute request
             // 
-            InputStream inputStream=null;
+            InputStreamReader inputStreamReader=null;
             Object[] newRow = null;
             try
             {
@@ -166,7 +167,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
                     if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.Encoding",encoding));
 
 	                // the response
-                    InputStreamReader inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream(),encoding); 
+                    inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream(),encoding); 
                     StringBuffer bodyBuffer = new StringBuffer(); 
                      
                     int c;
@@ -192,7 +193,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             }
             finally
             {
-            	if(inputStream!=null) inputStream.close(); 
+            	if(inputStreamReader!=null) inputStreamReader.close(); 
                 // Release current connection to the connection pool once you are done
             	post.releaseConnection();
             }
@@ -209,9 +210,6 @@ public class HTTPPOST extends BaseStep implements StepInterface
 		meta=(HTTPPOSTMeta)smi;
 		data=(HTTPPOSTData)sdi;
 		
-		 boolean sendToErrorRow=false;
-		 String errorMessage = null;
-
 		Object[] r=getRow();       // Get row from input rowset & set row busy!
 		if (r==null)  // no more input to be expected...
 		{
@@ -341,6 +339,9 @@ public class HTTPPOST extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
+			 boolean sendToErrorRow=false;
+			 String errorMessage = null;
+			 
 			if (getStepMeta().isDoingErrorHandling())
 			{
 		         sendToErrorRow = true;

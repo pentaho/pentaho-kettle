@@ -571,10 +571,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
         
         retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
         retval.append("    ").append(XMLHandler.addTagValue("loopxpath", loopxpath));
-        
         retval.append("    ").append(XMLHandler.addTagValue("IsInFields", inFields));
-        retval.append("    ").append(XMLHandler.addTagValue("IsAFile", IsAFile));
-        
+        retval.append("    ").append(XMLHandler.addTagValue("IsAFile", IsAFile));        
         retval.append("    ").append(XMLHandler.addTagValue("XmlField", xmlField));
         retval.append("    ").append(XMLHandler.addTagValue("prunePath", prunePath));
         

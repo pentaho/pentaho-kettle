@@ -75,7 +75,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 import com.sforce.soap.partner.Field;
 
@@ -172,8 +171,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	
 	private FormData fdTest;
     private Listener lsTest;
-    
-	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
+  
     
 	public SalesforceInputDialog(Shell parent, Object in, TransMeta transMeta,
 			String sname) {
@@ -227,6 +225,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
 		wTabFolder = new CTabFolder(shell, SWT.BORDER);
 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+		
+		
 
 		// ////////////////////////
 		// START OF FILE TAB ///
@@ -281,7 +281,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         wPassword = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceInputDialog.Password.Label"), 
         		BaseMessages.getString(PKG, "SalesforceInputDialog.Password.Tooltip"));
         props.setLook(wPassword);
-        wPassword.setEchoChar('*');
+        //wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
         fdPassword = new FormData();
         fdPassword.left = new FormAttachment(0, 0);
@@ -423,10 +423,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             }
         );
 		
-		// Text Higlighting
-		lineStyler = new SQLValuesHighlight();
-		wQuery.addLineStyleListener(lineStyler);
-		wCondition.addLineStyleListener(lineStyler);
+		
 		
         FormData fdSettingsGroup= new FormData();
         fdSettingsGroup.left = new FormAttachment(0, 0);
@@ -988,9 +985,14 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		colinf[1].setUsingVariables(true);
 		colinf[1].setToolTip(BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsTable.Field.Column.Tooltip"));
 
-		wFields = new TableView(transMeta,wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI,
-				colinf, FieldsRows, lsMod, props);
-
+		wFields=new TableView(transMeta,wFieldsComp, 
+			      SWT.FULL_SELECTION | SWT.MULTI, 
+			      colinf, 
+			      FieldsRows,  
+			      lsMod,
+				  props
+			      );
+		
 		fdFields = new FormData();
 		fdFields.left = new FormAttachment(0, 0);
 		fdFields.top = new FormAttachment(0, 0);
@@ -1014,7 +1016,10 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		fdTabFolder.right = new FormAttachment(100, 0);
 		fdTabFolder.bottom = new FormAttachment(100, -50);
 		wTabFolder.setLayoutData(fdTabFolder);
+		
+		
 
+		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 
@@ -1024,8 +1029,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin,
-				wTabFolder);
+		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
 		// Add listeners
 		lsOK = new Listener() {
@@ -1197,47 +1201,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			mb.open(); 
 		}
 	}
-  /*private void getModulesList()
-  {
-	  if (!gotModule){
-		  SalesforceConnection connection=null;
-		  try{
-			 SalesforceInputMeta meta = new SalesforceInputMeta();
-			 getInfo(meta);
-			  
-			 // get real values
-			 String realURL=transMeta.environmentSubstitute(meta.getTargetURL());
-			 String realUsername=transMeta.environmentSubstitute(meta.getUserName());
-			 String realPassword=transMeta.environmentSubstitute(meta.getPassword());
-			 int realTimeOut=Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()),0);
 
-			  connection=new SalesforceConnection(realURL,realUsername,realPassword,realTimeOut); 
-			  connection.connect();
-	
-			  String selectedField=wModule.getText();
-			  wModule.removeAll();
-			  
-			  DescribeGlobalResult describeGlobalResult = connection.getBinding().describeGlobal();
-			  // let's get all objects
-			  String[] types = describeGlobalResult.getTypes();
-			  wModule.setItems(types);
-			  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
-			  
-		      gotModule = true;
-        	  getModulesListError = false;        	  
-			  
-		  }catch(Exception e)
-		  {
-				new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorRetrieveModules.DialogTitle"),
-						BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
-				getModulesListError = true;
-		  }finally{
-				if(connection!=null) {
-					try {connection.close();}catch(Exception e){};
-				}
-		  }
-	   }
-  }*/
 
   protected void setQueryToolTip()
   {
@@ -1297,10 +1261,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING));    
 			}
 		}else{
-			connection.setModule(realModule);
 			connection.connect();
 
-            Field[] fields = connection.getModuleFields();
+            Field[] fields = connection.getModuleFields(realModule);
             
             for (int i = 0; i < fields.length; i++)  {
             	String FieldLabel= fields[i].getLabel();	

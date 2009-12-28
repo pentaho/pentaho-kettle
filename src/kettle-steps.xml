@@ -1033,5 +1033,12 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetTableNames</tooltip>
 		<image-uri>ui/images/GTN.png</image-uri>
 	</step>
-
+	
+	<step id="SalesforceOutput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceOutput</description>
+		<class-name>org.pentaho.di.trans.steps.salesforceoutput.SalesforceOutputMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceOutput</tooltip>
+		<image-uri>ui/images/FFO.png</image-uri>
+	</step>
 </steps>

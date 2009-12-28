@@ -36,6 +36,7 @@ import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.partner.SessionHeader;
 import com.sforce.soap.partner.SforceServiceLocator;
 import com.sforce.soap.partner.SoapBindingStub;
+import com.sforce.soap.partner.UpsertResult;
 import com.sforce.soap.partner.sobject.SObject;
 
 public class SalesforceConnection {
@@ -101,6 +102,7 @@ public class SalesforceConnection {
 				
 		if(log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.NewConnection"));
 	}
+
 	public void setCalendar(int recordsFilter,GregorianCalendar startDate, GregorianCalendar endDate) throws KettleException {
 		 this.startDate=startDate;
 		 this.endDate=endDate;
@@ -145,10 +147,11 @@ public class SalesforceConnection {
 			if (log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL", binding._getProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY)));
 		      
 	        //  Set timeout
-	      	if(this.timeout>0) binding.setTimeout(this.timeout);
+	      	if(this.timeout>0) {
+	      		binding.setTimeout(this.timeout);
+	      		 if (log.isDebug())  logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SettingTimeout",""+this.timeout));
+	      	}
 	        
-	      	 if (this.timeout>0 && log.isDebug()) 
-	      		logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SettingTimeout",""+this.timeout));
 	      	
 	      	// Set URL
 	      	this.binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, this.url);
@@ -197,8 +200,8 @@ public class SalesforceConnection {
 	    	this.serverTimestamp= this.binding.getServerTimestamp().toString();
 	 		if(log.isDebug()) BaseMessages.getString(PKG, "SalesforceInput.Log.ServerTimestamp",""+this.serverTimestamp);
 	 		
-	        
-	       if(log.isDebug()) logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));
+	       if(log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));
+		
 		}catch(Exception e){
 			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.Connection"), e);
 		}
@@ -268,6 +271,7 @@ public class SalesforceConnection {
 				if(this.loginResult!=null) this.loginResult=null;
 				if(this.userInfo!=null) this.userInfo=null;
 
+				if(log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.ConnectionClosed"));
 			}catch(Exception e){
 				throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.ClosingConnection"),e);
 			};
@@ -312,12 +316,12 @@ public class SalesforceConnection {
 			 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.QueringMore"),e);
 		 }
 	}
-  public Field[] getModuleFields() throws KettleException
+  public Field[] getModuleFields(String module) throws KettleException
   {
 	  DescribeSObjectResult describeSObjectResult=null;
 	  try  {
 		  // Get object
-	      describeSObjectResult = this.binding.describeSObject(this.module);
+	      describeSObjectResult = this.binding.describeSObject(module);
 	      if(describeSObjectResult==null) return null;
      
 		   if(!describeSObjectResult.isQueryable()){
@@ -333,6 +337,15 @@ public class SalesforceConnection {
 	   }
   }  
   
+  public UpsertResult[] upsert(String upsertField, SObject[] sfBuffer) throws KettleException
+  {
+	  try {
+		  return getBinding().upsert(upsertField, sfBuffer);
+	  }catch(Exception e) {
+		  throw new KettleException("Erreur while doing upsert operation!", e);
+	  }
+  }
+
   public String toString()
   {
 	  return "SalesforceConnection";

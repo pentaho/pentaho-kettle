@@ -436,7 +436,6 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         fdFilterString.right = new FormAttachment(100, 0);
         fdFilterString.bottom = new FormAttachment(100, -margin);
         wFilterString.setLayoutData(fdFilterString);
-        //SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(wSearchGroup, wFilterString, transMeta);
         wFilterString.addKeyListener(new ControlSpaceKeyAdapter(transMeta, wFilterString));
         
 		
