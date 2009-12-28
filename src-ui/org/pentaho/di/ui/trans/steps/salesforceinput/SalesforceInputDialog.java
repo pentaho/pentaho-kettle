@@ -1176,7 +1176,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			String realPassword=transMeta.environmentSubstitute(meta.getPassword());
 			int realTimeOut=Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()),0);
 
-			connection=new SalesforceConnection(log, realURL,realUsername,realPassword,realTimeOut); 
+			connection=new SalesforceConnection(log, realURL,realUsername,realPassword); 
+			connection.setTimeOut(realTimeOut);
 			connection.connect();
 			
 		}
@@ -1225,7 +1226,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		String realPassword=transMeta.environmentSubstitute(meta.getPassword());
 		int realTimeOut=Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()),0);
 
-		connection=new SalesforceConnection(log, realURL,realUsername,realPassword,realTimeOut); 
+		connection=new SalesforceConnection(log, realURL,realUsername,realPassword);
+		connection.setTimeOut(realTimeOut);
 		if(meta.isSpecifyQuery())   {
 			// Free hand SOQL
 			String realQuery=transMeta.environmentSubstitute(meta.getQuery());

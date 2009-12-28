@@ -70,13 +70,13 @@ public class SalesforceConnection {
 	/**
 	 * Construct a new Salesforce Connection
 	 */
-	public SalesforceConnection(LogChannelInterface logInterface, String url, String username, String password, int timeout) throws KettleException {
+	public SalesforceConnection(LogChannelInterface logInterface, String url, String username, String password) throws KettleException {
 		this.log=LogWriter.getInstance();
 		this.logInterface = logInterface;
 		this.url=url;
 		this.username=username;
 		this.password=password;
-		this.timeout=timeout;
+		this.timeout=0;
 	
 		this.binding=null;
 		this.loginResult = null;
@@ -102,7 +102,7 @@ public class SalesforceConnection {
 				
 		if(log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.NewConnection"));
 	}
-
+    
 	public void setCalendar(int recordsFilter,GregorianCalendar startDate, GregorianCalendar endDate) throws KettleException {
 		 this.startDate=startDate;
 		 this.endDate=endDate;
@@ -139,7 +139,9 @@ public class SalesforceConnection {
 	public SoapBindingStub getBinding(){
 		return this.binding;
 	}
-
+	public void setTimeOut(int timeout){
+		this.timeout=timeout;
+	}
 	public void connect() throws KettleException{
 
 		try{

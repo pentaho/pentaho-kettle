@@ -14,7 +14,7 @@
  
  
 
-package org.pentaho.di.trans.steps.salesforceoutput;
+package org.pentaho.di.trans.steps.salesforceupsert;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -28,14 +28,14 @@ import com.sforce.soap.partner.sobject.SObject;
  * @author Samatar
  * @since 10-06-2007
  */
-public class SalesforceOutputData extends BaseStepData implements StepDataInterface 
+public class SalesforceUpsertData extends BaseStepData implements StepDataInterface 
 {
 	public RowMetaInterface inputRowMeta;
 	public RowMetaInterface outputRowMeta;
-	public RowMetaInterface formatRowMeta;
+
     public int nrfields;
     public String realURL;
-    public String Module;
+    public String realModule;
     public int[] fieldnrs;
 
 	public SalesforceConnection connection;
@@ -44,12 +44,14 @@ public class SalesforceOutputData extends BaseStepData implements StepDataInterf
 	public SObject[] sfBuffer;
 	public Object[][] outputBuffer; 
 	public int iBufferPos;
+	
+	public String realSalesforceFieldName;
     
     
 	/**
 	 * 
 	 */
-	public SalesforceOutputData()
+	public SalesforceUpsertData()
 	{
 		super();
 
@@ -58,7 +60,8 @@ public class SalesforceOutputData extends BaseStepData implements StepDataInterf
 		connection=null;
 		realURL=null;
 		sr=null;
-		
+		realModule=null;
+		realSalesforceFieldName=null;
 		iBufferPos=0;
 	}
 }

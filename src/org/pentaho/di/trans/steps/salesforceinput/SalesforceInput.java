@@ -360,8 +360,11 @@ public class SalesforceInput extends BaseStep implements StepInterface
 				
 				// create a Salesforce connection
 				data.connection= new SalesforceConnection(log, realUrl, 
-						realUser,environmentSubstitute(meta.getPassword()), 
-						Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
+						realUser,environmentSubstitute(meta.getPassword()));
+				
+				// set timeout
+				data.connection.setTimeOut(Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
+				
 				
 			    // Build query if needed
 			    if(meta.isSpecifyQuery()) {

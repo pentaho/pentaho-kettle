@@ -13,7 +13,7 @@
  ***************************************************************************************/
  
 
-package org.pentaho.di.ui.trans.steps.salesforceoutput;
+package org.pentaho.di.ui.trans.steps.salesforceupsert;
 
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
-import org.pentaho.di.trans.steps.salesforceoutput.SalesforceOutputMeta;
+import org.pentaho.di.trans.steps.salesforceupsert.SalesforceUpsertMeta;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -78,9 +78,9 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.util.StringUtil;
 
-public class SalesforceOutputDialog extends BaseStepDialog implements StepDialogInterface {
+public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialogInterface {
 	
-	private static Class<?> PKG = SalesforceOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = SalesforceUpsertMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
 	private CTabFolder wTabFolder;
 	private FormData fdTabFolder;
@@ -119,7 +119,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 	private Listener			lsGetLU;
 	
 
-	private SalesforceOutputMeta input;
+	private SalesforceUpsertMeta input;
 
     private LabelTextVar wUserName,wURL,wPassword;
     
@@ -138,17 +138,23 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 	private Group wConnectionGroup;
 	private FormData fdConnectionGroup;
 	
-	private Group wSettingsGroup;
-	private FormData fdSettingsGroup;
+	private Group wSettingsGroup, wOutFieldsGroup;
+	private FormData fdSettingsGroup, fdOutFieldsGroup;
+	
+	private Label wlSalesforceIDFieldName;
+	private FormData fdlSalesforceIDFieldName;
+	
+	private TextVar wSalesforceIDFieldName;
+	private FormData fdSalesforceIDFieldName;
     
 	/**
 	 * List of ColumnInfo that should have the field names of the selected database table
 	 */
 	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
     
-	public SalesforceOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
+	public SalesforceUpsertDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
 		super(parent, (BaseStepMeta) in, transMeta, sname);
-		input = (SalesforceOutputMeta) in;
+		input = (SalesforceUpsertMeta) in;
         inputFields =new HashMap<String, Integer>();
 	}
 
@@ -187,7 +193,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.DialogTitle"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -218,7 +224,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 		// START OF FILE TAB ///
 		// ////////////////////////
 		wGeneralTab = new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.General.Tab"));
+		wGeneralTab.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.General.Tab"));
 
 		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
 		props.setLook(wGeneralComp);
@@ -234,7 +240,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 
 		wConnectionGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wConnectionGroup);
-		wConnectionGroup.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.ConnectionGroup.Label"));
+		wConnectionGroup.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.ConnectionGroup.Label"));
 		
 		FormLayout connectionGroupLayout = new FormLayout();
 		connectionGroupLayout.marginWidth = 10;
@@ -242,7 +248,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 		wConnectionGroup.setLayout(connectionGroupLayout);
 		
 	     // Webservice URL
-        wURL = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceOutputDialog.URL.Label"), BaseMessages.getString(PKG, "SalesforceOutputDialog.URL.Tooltip"));
+        wURL = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceUpsertDialog.URL.Label"), BaseMessages.getString(PKG, "SalesforceUpsertDialog.URL.Tooltip"));
         props.setLook(wURL);
         wURL.addModifyListener(lsMod);
         fdURL = new FormData();
@@ -253,7 +259,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
         
 
 	     // UserName line
-        wUserName = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceOutputDialog.User.Label"), BaseMessages.getString(PKG, "SalesforceOutputDialog.User.Tooltip"));
+        wUserName = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceUpsertDialog.User.Label"), BaseMessages.getString(PKG, "SalesforceUpsertDialog.User.Tooltip"));
         props.setLook(wUserName);
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
@@ -263,7 +269,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
         wUserName.setLayoutData(fdUserName);
 		
         // Password line
-        wPassword = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceOutputDialog.Password.Label"), BaseMessages.getString(PKG, "SalesforceOutputDialog.Password.Tooltip"));
+        wPassword = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceUpsertDialog.Password.Label"), BaseMessages.getString(PKG, "SalesforceUpsertDialog.Password.Tooltip"));
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -284,10 +290,10 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 
 		// Test Salesforce connection button
 		wTest=new Button(wConnectionGroup,SWT.PUSH);
-		wTest.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.TestConnection.Label"));
+		wTest.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.TestConnection.Label"));
  		props.setLook(wTest);
 		fdTest=new FormData();
-		wTest.setToolTipText(BaseMessages.getString(PKG, "SalesforceOutputDialog.TestConnection.Tooltip"));
+		wTest.setToolTipText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.TestConnection.Tooltip"));
 		//fdTest.left = new FormAttachment(middle, 0);
 		fdTest.top  = new FormAttachment(wPassword, margin);
 		fdTest.right= new FormAttachment(100, 0);
@@ -309,7 +315,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 
 		wSettingsGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wSettingsGroup);
-		wSettingsGroup.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.SettingsGroup.Label"));
+		wSettingsGroup.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.SettingsGroup.Label"));
 		
 		FormLayout settingGroupLayout = new FormLayout();
 		settingGroupLayout.marginWidth = 10;
@@ -318,7 +324,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 		
 		// BatchSize value
 		wlBatchSize = new Label(wSettingsGroup, SWT.RIGHT);
-		wlBatchSize.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.Limit.Label"));
+		wlBatchSize.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.Limit.Label"));
 		props.setLook(wlBatchSize);
 		fdlBatchSize = new FormData();
 		fdlBatchSize.left = new FormAttachment(0, 0);
@@ -338,7 +344,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 		
  		// Module
 		wlModule=new Label(wSettingsGroup, SWT.RIGHT);
-        wlModule.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.Module.Label"));
+        wlModule.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.Module.Label"));
         props.setLook(wlModule);
         fdlModule=new FormData();
         fdlModule.left = new FormAttachment(0, 0);
@@ -359,7 +365,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
         
     	// Upsert Field
 		wlUpsertField=new Label(wSettingsGroup, SWT.RIGHT);
-        wlUpsertField.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.Upsert.Label"));
+        wlUpsertField.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.Upsert.Label"));
         props.setLook(wlUpsertField);
         fdlUpsertField=new FormData();
         fdlUpsertField.left = new FormAttachment(0, 0);
@@ -397,28 +403,72 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 		///////////////////////////////// 
 		// END OF Settings GROUP  //
 		///////////////////////////////// 
+		
+		
+		///////////////////////////////// 
+		// START OF OutFields GROUP  //
+		///////////////////////////////// 
+
+		wOutFieldsGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		props.setLook(wOutFieldsGroup);
+		wOutFieldsGroup.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.OutFieldsGroup.Label"));
+		
+		FormLayout OutFieldsGroupLayout = new FormLayout();
+		OutFieldsGroupLayout.marginWidth = 10;
+		OutFieldsGroupLayout.marginHeight = 10;
+		wOutFieldsGroup.setLayout(OutFieldsGroupLayout);
+		
+		// SalesforceIDFieldName 
+		wlSalesforceIDFieldName= new Label(wOutFieldsGroup, SWT.RIGHT);
+		wlSalesforceIDFieldName.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.SalesforceIDFieldName.Label"));
+		props.setLook(wlSalesforceIDFieldName);
+		fdlSalesforceIDFieldName= new FormData();
+		fdlSalesforceIDFieldName.left = new FormAttachment(0, 0);
+		fdlSalesforceIDFieldName.top = new FormAttachment(wSettingsGroup, margin);
+		fdlSalesforceIDFieldName.right = new FormAttachment(middle, -margin);
+		wlSalesforceIDFieldName.setLayoutData(fdlSalesforceIDFieldName);
+		wSalesforceIDFieldName= new TextVar(transMeta,wOutFieldsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wSalesforceIDFieldName);
+		wSalesforceIDFieldName.setToolTipText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.SalesforceIDFieldName.Tooltip"));
+		wSalesforceIDFieldName.addModifyListener(lsMod);
+		fdSalesforceIDFieldName= new FormData();
+		fdSalesforceIDFieldName.left = new FormAttachment(middle, 0);
+		fdSalesforceIDFieldName.top = new FormAttachment(wSettingsGroup, margin);
+		fdSalesforceIDFieldName.right = new FormAttachment(100, 0);
+		wSalesforceIDFieldName.setLayoutData(fdSalesforceIDFieldName);
+	
+		fdOutFieldsGroup = new FormData();
+		fdOutFieldsGroup.left = new FormAttachment(0, margin);
+		fdOutFieldsGroup.top = new FormAttachment(wSettingsGroup, margin);
+		fdOutFieldsGroup.right = new FormAttachment(100, -margin);
+		wOutFieldsGroup.setLayoutData(fdOutFieldsGroup);
+		
+		///////////////////////////////// 
+		// END OF OutFields GROUP  //
+		///////////////////////////////// 
+		
         
 		// THE UPDATE/INSERT TABLE
 		wlReturn = new Label(wGeneralComp, SWT.NONE);
-		wlReturn.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.UpdateFields.Label")); //$NON-NLS-1$
+		wlReturn.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.UpdateFields.Label")); //$NON-NLS-1$
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
-		fdlReturn.top = new FormAttachment(wSettingsGroup, margin);
+		fdlReturn.top = new FormAttachment(wOutFieldsGroup, margin);
 		wlReturn.setLayoutData(fdlReturn);
 
 		int UpInsCols = 2;
 		int UpInsRows = (input.getUpdateLookup() != null ? input.getUpdateLookup().length : 1);
 
 		ciReturn = new ColumnInfo[UpInsCols];
-		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceOutputDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceOutputDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpsertDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpsertDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		tableFieldColumns.add(ciReturn[0]);
 		wReturn = new TableView(transMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
 
 		wGetLU = new Button(wGeneralComp, SWT.PUSH);
-		wGetLU.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.GetAndUpdateFields.Label")); //$NON-NLS-1$
+		wGetLU.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.GetAndUpdateFields.Label")); //$NON-NLS-1$
 		fdGetLU = new FormData();
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
@@ -426,7 +476,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 		
 		
 		wDoMapping = new Button(wGeneralComp, SWT.PUSH);
-		wDoMapping.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.EditMapping.Label")); //$NON-NLS-1$
+		wDoMapping.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.EditMapping.Label")); //$NON-NLS-1$
 		fdDoMapping = new FormData();
 		fdDoMapping.top   = new FormAttachment(wGetLU, margin);
 		fdDoMapping.right = new FormAttachment(100, 0);
@@ -579,8 +629,8 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceOutputDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
-					BaseMessages.getString(PKG, "SalesforceOutputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceUpsertDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
+					BaseMessages.getString(PKG, "SalesforceUpsertDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
 		}
 	}
  public void checkPasswordVisible()
@@ -602,7 +652,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 	 SalesforceConnection connection=null;
 	try
      {
-			SalesforceOutputMeta meta = new SalesforceOutputMeta();
+			SalesforceUpsertMeta meta = new SalesforceUpsertMeta();
 			getInfo(meta);
 			
 			// check if the user is given
@@ -610,7 +660,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 			
 			connection=new SalesforceConnection(log, transMeta.environmentSubstitute(meta.getTargetURL()),
 					transMeta.environmentSubstitute(meta.getUserName()),
-					transMeta.environmentSubstitute(meta.getPassword()), 0); 
+					transMeta.environmentSubstitute(meta.getPassword())); 
 			connection.connect();
 			
 			successConnection=true;
@@ -627,13 +677,13 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 		
 		if(successConnection) {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-			mb.setMessage(BaseMessages.getString(PKG, "SalesforceOutputDialog.Connected.OK",wUserName.getText()) +Const.CR);
-			mb.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.Connected.Title.Ok")); 
+			mb.setMessage(BaseMessages.getString(PKG, "SalesforceUpsertDialog.Connected.OK",wUserName.getText()) +Const.CR);
+			mb.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.Connected.Title.Ok")); 
 			mb.open();
 		}else{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "SalesforceOutputDialog.Connected.NOK",wUserName.getText(),msgError));
-			mb.setText(BaseMessages.getString(PKG, "SalesforceOutputDialog.Connected.Title.Error")); 
+			mb.setMessage(BaseMessages.getString(PKG, "SalesforceUpsertDialog.Connected.NOK",wUserName.getText(),msgError));
+			mb.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.Connected.Title.Error")); 
 			mb.open(); 
 		}
 		
@@ -659,8 +709,8 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 			  if(!Const.isEmpty(selectedField)) wUpsertField.setText(selectedField);
 		  }catch(Exception e)
 		  {
-				new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceOutputDialog.ErrorRetrieveModules.DialogTitle"),
-						BaseMessages.getString(PKG, "SalesforceOutputDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
+				new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceUpsertDialog.ErrorRetrieveModules.DialogTitle"),
+						BaseMessages.getString(PKG, "SalesforceUpsertDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
 		  }
 
   }
@@ -669,19 +719,19 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 	 * dialog.
 	 * 
 	 * @param in
-	 *            The SalesforceOutputMeta object to obtain the data from.
+	 *            The SalesforceUpsertMeta object to obtain the data from.
 	 */
-	public void getData(SalesforceOutputMeta in) 
+	public void getData(SalesforceUpsertMeta in) 
 	{
 		wURL.setText(Const.NVL(in.getTargetURL(),""));
 		wUserName.setText(Const.NVL(in.getUserName(),""));
 		wPassword.setText(Const.NVL(in.getPassword(),""));
-		wBatchSize.setText("10");
+		wBatchSize.setText(in.getBatchSize());
 		wModule.setText(Const.NVL(in.getModule(), "Account"));
 		wUpsertField.setText(Const.NVL(in.getUpsertField(), "Id"));
 		wBatchSize.setText("" + in.getBatchSize());
-		
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SalesforceOutputDialog.Log.GettingFieldsInfo"));
+		wSalesforceIDFieldName.setText(Const.NVL(in.getSalesforceIDFieldName(),""));
+		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SalesforceUpsertDialog.Log.GettingFieldsInfo"));
 
 		if (input.getUpdateLookup() != null)
 			for (int i = 0; i < input.getUpdateLookup().length; i++)
@@ -712,22 +762,23 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 			getInfo(input);
 		} catch (KettleException e) {
 			new ErrorDialog(
-					shell,BaseMessages.getString(PKG, "SalesforceOutputDialog.ErrorValidateData.DialogTitle"),
-					BaseMessages.getString(PKG, "SalesforceOutputDialog.ErrorValidateData.DialogMessage"),	e);
+					shell,BaseMessages.getString(PKG, "SalesforceUpsertDialog.ErrorValidateData.DialogTitle"),
+					BaseMessages.getString(PKG, "SalesforceUpsertDialog.ErrorValidateData.DialogMessage"),	e);
 		}
 		dispose();
 	}
 
-	private void getInfo(SalesforceOutputMeta in) throws KettleException {
+	private void getInfo(SalesforceUpsertMeta in) throws KettleException {
 		stepname = wStepname.getText(); // return value
 
-		// copy info to SalesforceOutputMeta class (input)
+		// copy info to SalesforceUpsertMeta class (input)
 		in.setTargetURL(Const.NVL(wURL.getText(),SalesforceConnectionUtils.TARGET_DEFAULT_URL));
-		in.setUserName(Const.NVL(wUserName.getText(),""));
-		in.setPassword(Const.NVL(wPassword.getText(),""));
+		in.setUserName(wUserName.getText());
+		in.setPassword(wPassword.getText());
 		in.setModule(Const.NVL(wModule.getText(),"Account"));
 		in.setUpsertField(Const.NVL(wUpsertField.getText(), "Id"));
-		in.setBatchSize(Const.NVL(wBatchSize.getText(),"0"));
+		in.setSalesforceIDFieldName(wSalesforceIDFieldName.getText());
+		in.setBatchSize(wBatchSize.getText());
 
 		int nrfields = wReturn.nrNonEmpty();
 
@@ -747,7 +798,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
         if (Const.isEmpty(wModule.getText()))
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(BaseMessages.getString(PKG, "SalesforceOutputDialog.ModuleMissing.DialogMessage"));
+            mb.setMessage(BaseMessages.getString(PKG, "SalesforceUpsertDialog.ModuleMissing.DialogMessage"));
             mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
             mb.open(); 
             return false;
@@ -760,7 +811,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
         if (Const.isEmpty(wUserName.getText()))
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(BaseMessages.getString(PKG, "SalesforceOutputDialog.UsernameMissing.DialogMessage"));
+            mb.setMessage(BaseMessages.getString(PKG, "SalesforceUpsertDialog.UsernameMissing.DialogMessage"));
             mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
             mb.open(); 
             return false;
@@ -774,7 +825,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 	
 	private Field[] getModuleFields() throws KettleException
 	{
-		  SalesforceOutputMeta meta = new SalesforceOutputMeta();
+		  SalesforceUpsertMeta meta = new SalesforceUpsertMeta();
 		  getInfo(meta);
 		  
 		  SalesforceConnection connection=null;
@@ -783,7 +834,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 			  String selectedModule=transMeta.environmentSubstitute(meta.getModule());
 			  connection=new SalesforceConnection(log, transMeta.environmentSubstitute(meta.getTargetURL()),
 					  transMeta.environmentSubstitute(meta.getUserName()),
-					  transMeta.environmentSubstitute(meta.getPassword()),0); 
+					  transMeta.environmentSubstitute(meta.getPassword())); 
 			  connection.connect();
 			
 			  return connection.getModuleFields(selectedModule);
@@ -812,14 +863,14 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 		try {
 			sourceFields = transMeta.getPrevStepFields(stepMeta);
 		} catch(KettleException e) {
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceOutputDialog.DoMapping.UnableToFindSourceFields.Title"), BaseMessages.getString(PKG, "SalesforceOutputDialog.DoMapping.UnableToFindSourceFields.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceUpsertDialog.DoMapping.UnableToFindSourceFields.Title"), BaseMessages.getString(PKG, "SalesforceUpsertDialog.DoMapping.UnableToFindSourceFields.Message"), e);
 			return;
 		}
 
 		  SalesforceConnection connection=null;
 		  try {
 			  
-			  SalesforceOutputMeta meta = new SalesforceOutputMeta();
+			  SalesforceUpsertMeta meta = new SalesforceUpsertMeta();
 			  getInfo(meta);
 			  
 			  // get real values
@@ -829,7 +880,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 			  
 			  connection=new SalesforceConnection(log, transMeta.environmentSubstitute(meta.getTargetURL()),
 					  transMeta.environmentSubstitute(meta.getUserName()),
-					  transMeta.environmentSubstitute(meta.getPassword()),0); 
+					  transMeta.environmentSubstitute(meta.getPassword())); 
 			  connection.connect();
 			
 			  Field[] fields = connection.getModuleFields(selectedModule);
@@ -837,7 +888,7 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 	            	targetFields.addValueMeta(new ValueMeta(fields[i].getName()));
 	           } 
 		  }catch(Exception e) {
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceOutputDialog.DoMapping.UnableToFindTargetFields.Title"), BaseMessages.getString(PKG, "SalesforceOutputDialog.DoMapping.UnableToFindTargetFields.Message"), e);
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceUpsertDialog.DoMapping.UnableToFindTargetFields.Title"), BaseMessages.getString(PKG, "SalesforceUpsertDialog.DoMapping.UnableToFindTargetFields.Message"), e);
 				return;
 		  } finally{
 				if(connection!=null) {
@@ -886,20 +937,20 @@ public class SalesforceOutputDialog extends BaseStepDialog implements StepDialog
 			
 			String message="";
 			if (missingSourceFields.length()>0) {
-				message+=BaseMessages.getString(PKG, "SalesforceOutputDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
+				message+=BaseMessages.getString(PKG, "SalesforceUpsertDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString())+Const.CR;
 			}
 			if (missingTargetFields.length()>0) {
-				message+=BaseMessages.getString(PKG, "SalesforceOutputDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
+				message+=BaseMessages.getString(PKG, "SalesforceUpsertDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString())+Const.CR;
 			}
 			message+=Const.CR;
-			message+=BaseMessages.getString(PKG, "SalesforceOutputDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
+			message+=BaseMessages.getString(PKG, "SalesforceUpsertDialog.DoMapping.SomeFieldsNotFoundContinue")+Const.CR;
 			MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-			boolean goOn = MessageDialog.openConfirm(shell, BaseMessages.getString(PKG, "SalesforceOutputDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
+			boolean goOn = MessageDialog.openConfirm(shell, BaseMessages.getString(PKG, "SalesforceUpsertDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
 			if (!goOn) {
 				return;
 			}
 		}
-		EnterMappingDialog d = new EnterMappingDialog(SalesforceOutputDialog.this.shell, sourceFields.getFieldNames(), targetFields.getFieldNames(), mappings);
+		EnterMappingDialog d = new EnterMappingDialog(SalesforceUpsertDialog.this.shell, sourceFields.getFieldNames(), targetFields.getFieldNames(), mappings);
 		mappings = d.open();
 
 		// mappings == null if the user pressed cancel

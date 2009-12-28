@@ -20,7 +20,7 @@
  * 
  */
 
-package org.pentaho.di.trans.steps.salesforceoutput;
+package org.pentaho.di.trans.steps.salesforceupsert;
 
 import org.w3c.dom.Node;
 
@@ -53,9 +53,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.di.i18n.BaseMessages;
 
-public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterface
+public class SalesforceUpsertMeta extends BaseStepMeta implements StepMetaInterface
 {	
-	private static Class<?> PKG = SalesforceOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = SalesforceUpsertMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
 	/** The salesforce url*/
 	private String targeturl;
@@ -81,8 +81,10 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 	/** Batch size */
 	private String batchSize;
 	
+	private String salesforceIDFieldName;
 	
-	public SalesforceOutputMeta()
+	
+	public SalesforceUpsertMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
@@ -177,7 +179,7 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 	 */
 	public String getUpsertField()
 	{
-				return this.UpsertField;
+		return this.UpsertField;
 	}
 	
 	/**
@@ -193,14 +195,21 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 	 */
 	public String getBatchSize()
 	{
-				return this.batchSize;
+		return this.batchSize;
 	}
 
 	public int getBatchSizeInt()
 	{
 		return Const.toInt(this.batchSize, 10);
 	}
-	
+	public String getSalesforceIDFieldName()
+	{
+		return this.salesforceIDFieldName;
+	}
+	public void setSalesforceIDFieldName(String salesforceIDFieldName)
+	{
+		this.salesforceIDFieldName=salesforceIDFieldName;
+	}
     
 	/**
 	 * @return Returns the targeturl.
@@ -226,7 +235,7 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 
 	public Object clone()
 	{
-		SalesforceOutputMeta retval = (SalesforceOutputMeta)super.clone();
+		SalesforceUpsertMeta retval = (SalesforceUpsertMeta)super.clone();
 
 		int nrvalues  = updateLookup.length;
 
@@ -250,8 +259,8 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 		retval.append("    "+XMLHandler.addTagValue("module",   module));
 		retval.append("    "+XMLHandler.addTagValue("upsertfield",   UpsertField));
 		retval.append("    "+XMLHandler.addTagValue("batchSize",   batchSize));
+		retval.append("    "+XMLHandler.addTagValue("salesforceIDFieldName",   salesforceIDFieldName));
 		
-        
 		retval.append("    <fields>"+Const.CR);
 		
 		for (int i=0;i<updateLookup.length;i++)
@@ -282,6 +291,7 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 			UpsertField = XMLHandler.getTagValue(stepnode, "upsertfield");
 
 			batchSize = XMLHandler.getTagValue(stepnode, "batchSize");
+			salesforceIDFieldName = XMLHandler.getTagValue(stepnode, "salesforceIDFieldName");
 			
 			Node fields     = XMLHandler.getSubNode(stepnode,  "fields");
 			int nrFields    = XMLHandler.countNodes(fields,    "field");
@@ -317,6 +327,7 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 		module = "Account";
 		UpsertField = "Id";
 		batchSize="10";
+		salesforceIDFieldName="Id";
 		
 		int nrFields =0;
 		allocate(nrFields);	
@@ -332,16 +343,14 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 	/* This function adds meta data to the rows being pushed out */
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-	/*		
-		if (includeRowNumber && !Const.isEmpty(rowNumberField))
+		String realfieldname= space.environmentSubstitute(getSalesforceIDFieldName());
+		if (!Const.isEmpty(realfieldname))
 		{
-		*/
-			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute("ID"), ValueMeta.TYPE_STRING);
+			ValueMetaInterface v = new ValueMeta(realfieldname, ValueMeta.TYPE_STRING);
 	        v.setLength(18);
 			v.setOrigin(name);
 			r.addValueMeta(v);
-/*		}
-	*/
+		}
 	}
 	
 	
@@ -357,7 +366,7 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 			username		 =  rep.getStepAttributeString(id_step, "username");
 			password		 =  rep.getStepAttributeString(id_step, "password");
 			batchSize = rep.getStepAttributeString(id_step, "batchSize");
-
+			salesforceIDFieldName = rep.getStepAttributeString(id_step, "salesforceIDFieldName");
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
 			allocate(nrFields);
 
@@ -370,7 +379,7 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputMeta.Exception.ErrorReadingRepository"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsertMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -385,6 +394,8 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 			rep.saveStepAttribute(id_transformation, id_step, "upsertfield",   UpsertField);
 			rep.saveStepAttribute(id_transformation, id_step, "username",   username);
 			rep.saveStepAttribute(id_transformation, id_step, "password",   password);
+			rep.saveStepAttribute(id_transformation, id_step, "salesforceIDFieldName",   salesforceIDFieldName);
+			
 			for (int i=0;i<updateLookup.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",    updateLookup[i]); //$NON-NLS-1$
@@ -394,7 +405,7 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsertMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 	
@@ -405,37 +416,37 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 
 		// See if we get input...
 		if (input.length>0)	
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoInputExpected"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceUpsertMeta.CheckResult.NoInputExpected"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoInput"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceUpsertMeta.CheckResult.NoInput"), stepMeta);
 		remarks.add(cr);
 		
 		// check URL
 		if(Const.isEmpty(targeturl))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoURL"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceUpsertMeta.CheckResult.NoURL"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.URLOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceUpsertMeta.CheckResult.URLOk"), stepMeta);
 		remarks.add(cr);
 		
 		// check username
 		if(Const.isEmpty(username))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoUsername"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceUpsertMeta.CheckResult.NoUsername"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.UsernameOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceUpsertMeta.CheckResult.UsernameOk"), stepMeta);
 		remarks.add(cr);
 		
 		// check module
 		if(Const.isEmpty(module))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoModule"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceUpsertMeta.CheckResult.NoModule"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.ModuleOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceUpsertMeta.CheckResult.ModuleOk"), stepMeta);
 		remarks.add(cr);
 		
 		// check return fields
 		if(updateLookup.length==0)
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoFields"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceUpsertMeta.CheckResult.NoFields"), stepMeta);
 		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.FieldsOk"), stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceUpsertMeta.CheckResult.FieldsOk"), stepMeta);
 		remarks.add(cr);
 		
 	
@@ -443,12 +454,12 @@ public class SalesforceOutputMeta extends BaseStepMeta implements StepMetaInterf
 	
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
 	{
-		return new SalesforceOutput(stepMeta, stepDataInterface, cnr, transMeta, trans);
+		return new SalesforceUpsert(stepMeta, stepDataInterface, cnr, transMeta, trans);
 	}
 
 	public StepDataInterface getStepData()
 	{
-		return new SalesforceOutputData();
+		return new SalesforceUpsertData();
 	}
 	
 	 public boolean supportsErrorHandling()

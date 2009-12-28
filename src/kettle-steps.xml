@@ -1034,11 +1034,11 @@
 		<image-uri>ui/images/GTN.png</image-uri>
 	</step>
 	
-	<step id="SalesforceOutput">
-		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceOutput</description>
-		<class-name>org.pentaho.di.trans.steps.salesforceoutput.SalesforceOutputMeta</class-name>
+	<step id="SalesforceUpsert">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceUpsert</description>
+		<class-name>org.pentaho.di.trans.steps.salesforceupsert.SalesforceUpsertMeta</class-name>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
-		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceOutput</tooltip>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceUpsert</tooltip>
 		<image-uri>ui/images/FFO.png</image-uri>
 	</step>
 </steps>
