@@ -1055,4 +1055,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceUpdate</tooltip>
 		<image-uri>ui/images/SFUD.png</image-uri>
 	</step>
+		<step id="SalesforceDelete">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceDelete</description>
+		<class-name>org.pentaho.di.trans.steps.salesforcedelete.SalesforceDeleteMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceDelete</tooltip>
+		<image-uri>ui/images/SFD.png</image-uri>
+	</step>
 </steps>

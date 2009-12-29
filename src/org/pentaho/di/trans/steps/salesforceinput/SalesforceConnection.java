@@ -365,10 +365,10 @@ public class SalesforceConnection {
 		  throw new KettleException("Erreur while doing update operation!", e);
 	  }
   }
-  public DeleteResult[] delete(String[] sfBuffer) throws KettleException
+  public DeleteResult[] delete(String[] id) throws KettleException
   {
 	  try {
-		  return getBinding().delete(sfBuffer);
+		  return getBinding().delete(id);
 	  }catch(Exception e) {
 		  throw new KettleException("Erreur while doing delete operation!", e);
 	  }

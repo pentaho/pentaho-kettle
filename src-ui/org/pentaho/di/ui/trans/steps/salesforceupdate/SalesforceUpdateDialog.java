@@ -721,7 +721,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 					  transMeta.environmentSubstitute(meta.getUserName()),
 					  transMeta.environmentSubstitute(meta.getPassword())); 
 			  connection.connect();
-			
+			  
 			  return connection.getModuleFields(selectedModule);
 		  }
 		  catch(Exception e) {
