@@ -39,7 +39,7 @@ public class SalesforceUpsertData extends BaseStepData implements StepDataInterf
     public int[] fieldnrs;
 
 	public SalesforceConnection connection;
-	public UpsertResult[] sr;
+	public UpsertResult[] upsertResult;
 	
 	public SObject[] sfBuffer;
 	public Object[][] outputBuffer; 
@@ -59,7 +59,7 @@ public class SalesforceUpsertData extends BaseStepData implements StepDataInterf
 		
 		connection=null;
 		realURL=null;
-		sr=null;
+		upsertResult=null;
 		realModule=null;
 		realSalesforceFieldName=null;
 		iBufferPos=0;

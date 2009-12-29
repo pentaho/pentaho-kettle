@@ -25,6 +25,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 
+import com.sforce.soap.partner.DeleteResult;
 import com.sforce.soap.partner.DeletedRecord;
 import com.sforce.soap.partner.DescribeSObjectResult;
 import com.sforce.soap.partner.Field;
@@ -33,6 +34,7 @@ import com.sforce.soap.partner.GetUpdatedResult;
 import com.sforce.soap.partner.GetUserInfoResult;
 import com.sforce.soap.partner.LoginResult;
 import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.partner.SaveResult;
 import com.sforce.soap.partner.SessionHeader;
 import com.sforce.soap.partner.SforceServiceLocator;
 import com.sforce.soap.partner.SoapBindingStub;
@@ -347,7 +349,30 @@ public class SalesforceConnection {
 		  throw new KettleException("Erreur while doing upsert operation!", e);
 	  }
   }
-
+  public SaveResult[] insert(SObject[] sfBuffer) throws KettleException
+  {
+	  try {
+		  return getBinding().create(sfBuffer);
+	  }catch(Exception e) {
+		  throw new KettleException("Erreur while doing insert operation!", e);
+	  }
+  }
+  public SaveResult[] update(SObject[] sfBuffer) throws KettleException
+  {
+	  try {
+		  return getBinding().update(sfBuffer);
+	  }catch(Exception e) {
+		  throw new KettleException("Erreur while doing update operation!", e);
+	  }
+  }
+  public DeleteResult[] delete(String[] sfBuffer) throws KettleException
+  {
+	  try {
+		  return getBinding().delete(sfBuffer);
+	  }catch(Exception e) {
+		  throw new KettleException("Erreur while doing delete operation!", e);
+	  }
+  }
   public String toString()
   {
 	  return "SalesforceConnection";
