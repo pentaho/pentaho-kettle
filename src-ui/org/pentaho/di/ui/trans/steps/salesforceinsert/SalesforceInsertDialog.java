@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-import com.sforce.soap.partner.Field;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
@@ -696,9 +695,10 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 			getInfo(input);
 		} catch (KettleException e) {
 			new ErrorDialog(
-					shell,BaseMessages.getString(PKG, "SalesforceInsertDialog.ErrorValidateData.DialogTitle"),
-					BaseMessages.getString(PKG, "SalesforceInsertDialog.ErrorValidateData.DialogMessage"),	e);
+			shell,BaseMessages.getString(PKG, "SalesforceInsertDialog.ErrorValidateData.DialogTitle"),
+			BaseMessages.getString(PKG, "SalesforceInsertDialog.ErrorValidateData.DialogMessage"),	e);
 		}
+
 		dispose();
 	}
 
@@ -756,26 +756,26 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 		return this.getClass().getName();
 	}
 	
-	private Field[] getModuleFields() throws KettleException
+	private String[] getModuleFields() throws KettleException
 	{
 		  SalesforceInsertMeta meta = new SalesforceInsertMeta();
 		  getInfo(meta);
-		  
+
 		  SalesforceConnection connection=null;
+		  String url = transMeta.environmentSubstitute(meta.getTargetURL());
 		  try {
-			  
 			  String selectedModule=transMeta.environmentSubstitute(meta.getModule());
-			  connection=new SalesforceConnection(log, transMeta.environmentSubstitute(meta.getTargetURL()),
-					  transMeta.environmentSubstitute(meta.getUserName()),
-					  transMeta.environmentSubstitute(meta.getPassword())); 
+			  String[] fieldsName = SalesforceConnectionUtils.getFields(selectedModule);
+			  if(fieldsName!=null) return fieldsName;
+			  // Define a new Salesforce connection
+			  connection=new SalesforceConnection(log, url, transMeta.environmentSubstitute(meta.getUserName()),transMeta.environmentSubstitute(meta.getPassword())); 
+			  // connect to Salesforce
 			  connection.connect();
-			
-			  return connection.getModuleFields(selectedModule);
-		  }
-		  catch(Exception e) {
-			  throw new KettleException("Erreur getting fields from module [" + transMeta.environmentSubstitute(meta.getTargetURL()) + "]!", e);
-		  }
-		  finally{
+			  // return fieldsname for the module
+			  return connection.getModuleFieldsName(selectedModule);
+		   } catch(Exception e) {
+			  throw new KettleException("Erreur getting fields from module [" + url + "]!", e);
+		   } finally{
 			  if(connection!=null) {
 					try {connection.close();}catch(Exception e){};
 				}
@@ -788,6 +788,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 	 */
 	private void generateMappings() {
 
+		if(!checkInput()) return;
+		
 		// Determine the source and target fields...
 		//
 		RowMetaInterface sourceFields;
@@ -800,33 +802,15 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 			return;
 		}
 
-		  SalesforceConnection connection=null;
-		  try {
+		try {
 			  
-			  SalesforceInsertMeta meta = new SalesforceInsertMeta();
-			  getInfo(meta);
-			  
-			  // get real values
-			  String selectedModule=transMeta.environmentSubstitute(wModule.getText());
-			  
-			  checkInput();
-			  
-			  connection=new SalesforceConnection(log, transMeta.environmentSubstitute(meta.getTargetURL()),
-					  transMeta.environmentSubstitute(meta.getUserName()),
-					  transMeta.environmentSubstitute(meta.getPassword())); 
-			  connection.connect();
-			
-			  Field[] fields = connection.getModuleFields(selectedModule);
+			  String[] fields = getModuleFields();
 			  for (int i = 0; i < fields.length; i++)  {
-	            	targetFields.addValueMeta(new ValueMeta(fields[i].getName()));
+	            	targetFields.addValueMeta(new ValueMeta(fields[i]));
 	           } 
 		  }catch(Exception e) {
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceInsertDialog.DoMapping.UnableToFindTargetFields.Title"), BaseMessages.getString(PKG, "SalesforceInsertDialog.DoMapping.UnableToFindTargetFields.Message"), e);
 				return;
-		  } finally{
-				if(connection!=null) {
-					try {connection.close();}catch(Exception e){};
-				}
 		  }
 		  
 		String[] inputNames = new String[sourceFields.size()];
@@ -937,17 +921,17 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 					if (!Const.isEmpty(selectedModule)) {
 						try {
 								// loop through the objects and find build the list of fields
-						        Field[] fields = getModuleFields(); 
-						        String[] fieldsName = new String[fields.length];
-						        for (int i = 0; i < fields.length; i++)  {
-						        	fieldsName[i]=fields[i].getName();
-					            } 
-								if (null != fields) {
+							    String[] fieldsName = SalesforceConnectionUtils.getFields(selectedModule);
+							    if(fieldsName==null) {
+							        fieldsName = getModuleFields(); 
+							    }
+	
+							    if(fieldsName!=null) {
 									for (int i = 0; i < tableFieldColumns.size(); i++) {
 										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
 										colInfo.setComboValues(fieldsName);
 									}
-								}
+							}
 						}catch (Exception e) {
 							for (int i = 0; i < tableFieldColumns.size(); i++) {
 								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
@@ -962,5 +946,38 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 			});
 		}
 	}
-	
+	/*private void myTest() throws KettleException
+	{
+		  SalesforceInsertMeta meta = new SalesforceInsertMeta();
+		  getInfo(meta);
+
+		  SalesforceConnection connection=null;
+		  String url = transMeta.environmentSubstitute(meta.getTargetURL());
+		  try {
+			  // Define a new Salesforce connection
+			  connection=new SalesforceConnection(log, url, transMeta.environmentSubstitute(meta.getUserName()),transMeta.environmentSubstitute(meta.getPassword())); 
+			  // connect to Salesforce
+			  connection.connect();
+			  // return fieldsname for the module
+			  String[] modules = SalesforceConnectionUtils.modulesList;
+			  for (int i=0; i<modules.length; i++) {
+				  String fields[]= connection.getModuleFieldsName(modules[i]);
+				  String concat="fieldsHash.put(\"" + modules[i].toUpperCase() + "\",		new String[] {";
+				  for (int j=0; j<fields.length; j++) {
+					  if(j==0)
+						  concat+="\"" + fields[j]+"\"";
+					  else
+						  concat+=" ,\"" + fields[j]+"\"";
+				  }
+				  concat+="}); ";
+				  System.out.println(concat);
+			  }
+		   } catch(Exception e) {
+			  throw new KettleException("Erreur getting fields from module [" + url + "]!", e);
+		   } finally{
+			  if(connection!=null) {
+					try {connection.close();}catch(Exception e){};
+				}
+		  }
+	}*/
 }

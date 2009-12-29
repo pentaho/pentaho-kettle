@@ -340,7 +340,18 @@ public class SalesforceConnection {
 		   if(describeSObjectResult!=null) describeSObjectResult=null;
 	   }
   }  
-  
+  public String[] getModuleFieldsName(String module) throws KettleException
+  {
+	  Field[] fields= getModuleFields(module);
+	  if(fields!=null) {
+		    String[] fieldsName = new String[fields.length];
+	        for (int i = 0; i < fields.length; i++)  {
+	        	fieldsName[i]=fields[i].getName();
+             } 
+	        return fieldsName;
+	  }
+	  return null;
+  }
   public UpsertResult[] upsert(String upsertField, SObject[] sfBuffer) throws KettleException
   {
 	  try {

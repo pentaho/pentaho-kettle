@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-import com.sforce.soap.partner.Field;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
@@ -621,6 +620,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SalesforceUpdateDialog.Log.GettingFieldsInfo"));
 
 		if (input.getUpdateLookup() != null)
+		{
 			for (int i = 0; i < input.getUpdateLookup().length; i++)
 			{
 				TableItem item = wReturn.table.getItem(i);
@@ -629,7 +629,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 				if (input.getUpdateStream()[i] != null)
 					item.setText(2, input.getUpdateStream()[i]);
 			}
-		
+		}
 
 		wReturn.removeEmptyRows();
 		wReturn.setRowNums();
@@ -708,38 +708,46 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 		return this.getClass().getName();
 	}
 	
-	private Field[] getModuleFields() throws KettleException
+	private String[] getModuleFields() throws KettleException
 	{
 		  SalesforceUpdateMeta meta = new SalesforceUpdateMeta();
 		  getInfo(meta);
-		  
+
 		  SalesforceConnection connection=null;
+		  String url = transMeta.environmentSubstitute(meta.getTargetURL());
 		  try {
-			  
 			  String selectedModule=transMeta.environmentSubstitute(meta.getModule());
-			  connection=new SalesforceConnection(log, transMeta.environmentSubstitute(meta.getTargetURL()),
-					  transMeta.environmentSubstitute(meta.getUserName()),
-					  transMeta.environmentSubstitute(meta.getPassword())); 
+			  String[] fieldsName = null;
+			  if(!meta.isMetaRetrievedFromSalesforce()) {
+				  // We need here to retrieve meta from Salesforce
+				  fieldsName=SalesforceConnectionUtils.getFields(selectedModule);
+				  if(fieldsName!=null) return fieldsName;
+			  }
+			 
+			  // Define a new Salesforce connection
+			  connection=new SalesforceConnection(log, url, transMeta.environmentSubstitute(meta.getUserName()),transMeta.environmentSubstitute(meta.getPassword())); 
+			  // connect to Salesforce
 			  connection.connect();
-			  
-			  return connection.getModuleFields(selectedModule);
-		  }
-		  catch(Exception e) {
-			  throw new KettleException("Erreur getting fields from module [" + transMeta.environmentSubstitute(meta.getTargetURL()) + "]!", e);
-		  }
-		  finally{
+			  // return fieldsname for the module
+			  return connection.getModuleFieldsName(selectedModule);
+		   } catch(Exception e) {
+			  throw new KettleException("Erreur getting fields from module [" + url + "]!", e);
+		   } finally{
 			  if(connection!=null) {
 					try {connection.close();}catch(Exception e){};
 				}
 		  }
 	}
+	
 	/**
 	 * Reads in the fields from the previous steps and from the ONE next step and opens an 
 	 * EnterMappingDialog with this information. After the user did the mapping, those information 
 	 * is put into the Select/Rename table.
 	 */
 	private void generateMappings() {
-
+		
+		if(!checkInput()) return;
+		
 		// Determine the source and target fields...
 		//
 		RowMetaInterface sourceFields;
@@ -752,33 +760,15 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 			return;
 		}
 
-		  SalesforceConnection connection=null;
-		  try {
+		try {
 			  
-			  SalesforceUpdateMeta meta = new SalesforceUpdateMeta();
-			  getInfo(meta);
-			  
-			  // get real values
-			  String selectedModule=transMeta.environmentSubstitute(wModule.getText());
-			  
-			  checkInput();
-			  
-			  connection=new SalesforceConnection(log, transMeta.environmentSubstitute(meta.getTargetURL()),
-					  transMeta.environmentSubstitute(meta.getUserName()),
-					  transMeta.environmentSubstitute(meta.getPassword())); 
-			  connection.connect();
-			
-			  Field[] fields = connection.getModuleFields(selectedModule);
+			  String[] fields = getModuleFields();
 			  for (int i = 0; i < fields.length; i++)  {
-	            	targetFields.addValueMeta(new ValueMeta(fields[i].getName()));
+	            	targetFields.addValueMeta(new ValueMeta(fields[i]));
 	           } 
 		  }catch(Exception e) {
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "SalesforceUpdateDialog.DoMapping.UnableToFindTargetFields.Title"), BaseMessages.getString(PKG, "SalesforceUpdateDialog.DoMapping.UnableToFindTargetFields.Message"), e);
 				return;
-		  } finally{
-				if(connection!=null) {
-					try {connection.close();}catch(Exception e){};
-				}
 		  }
 		  
 		String[] inputNames = new String[sourceFields.size()];
@@ -787,7 +777,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 			inputNames[i] = value.getName()+
 			     EnterMappingDialog.STRING_ORIGIN_SEPARATOR+value.getOrigin()+")";
 		}
-
+		
 		// Create the existing mapping list...
 		//
 		List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
@@ -888,18 +878,15 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 					String selectedModule= transMeta.environmentSubstitute(wModule.getText());
 					if (!Const.isEmpty(selectedModule)) {
 						try {
-								// loop through the objects and find build the list of fields
-						        Field[] fields = getModuleFields(); 
-						        String[] fieldsName = new String[fields.length];
-						        for (int i = 0; i < fields.length; i++)  {
-						        	fieldsName[i]=fields[i].getName();
-					            } 
-								if (null != fields) {
-									for (int i = 0; i < tableFieldColumns.size(); i++) {
-										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
-										colInfo.setComboValues(fieldsName);
-									}
+							// loop through the objects and find build the list of fields
+						    String[] fieldsName = getModuleFields();
+
+						    if(fieldsName!=null) {
+								for (int i = 0; i < tableFieldColumns.size(); i++) {
+									ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+									colInfo.setComboValues(fieldsName);
 								}
+						    }
 						}catch (Exception e) {
 							for (int i = 0; i < tableFieldColumns.size(); i++) {
 								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);

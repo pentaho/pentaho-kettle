@@ -76,6 +76,10 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 	/** Batch size */
 	private String batchSize;
 	
+	/**  In order to not stuck in GUI while getting meta (fields, module)
+	 * all fields name are in SalesforceConnectionUtils     */
+	private boolean retrieveMetaFromSalesforce=true;
+	
 	
 	
 	public SalesforceUpdateMeta()
@@ -419,8 +423,13 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 	}
 	
 	 public boolean supportsErrorHandling()
-    {
-	        return true;
-    }
+     {
+	    return true;
+     }
+	 
+	 public boolean isMetaRetrievedFromSalesforce()
+	 {
+		return retrieveMetaFromSalesforce; 
+	 }
 
 }
