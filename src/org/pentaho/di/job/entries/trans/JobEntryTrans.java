@@ -491,15 +491,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
 		Log4jFileAppender appender = null;
         int backupLogLevel = log.getLogLevel();
+        String logFilename="";
         if (setLogfile)
         {
             try
             {
-                appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true,setAppendLogfile);
+            	logFilename=environmentSubstitute(getLogFilename());
+                appender = LogWriter.createFileAppender(logFilename, true,setAppendLogfile);
             }
             catch(KettleException e)
             {
-                log.logError(toString(), Messages.getString("JobTrans.Error.UnableOpenAppender",getLogFilename(),e.toString()));
+                log.logError(toString(), Messages.getString("JobTrans.Error.UnableOpenAppender",logFilename,e.toString()));
                 
                 log.logError(toString(), Const.getStackTracker(e));
                 result.setNrErrors(1);
@@ -934,7 +936,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
                         if (setLogfile)
                         {
-                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(getLogFilename(), this), parentJob.getJobname(), toString());
+                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(logFilename, this), parentJob.getJobname(), toString());
                             result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
         				}
                     }
