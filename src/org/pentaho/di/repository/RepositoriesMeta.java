@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleRepositoryNotSupportedException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
@@ -212,11 +213,27 @@ public class RepositoriesMeta
 					//
 		    		id=KettleDatabaseRepositoryMeta.REPOSITORY_TYPE_ID;
 				}
-				RepositoryMeta repositoryMeta = RepositoryLoader.createRepositoryMeta(id);
-				repositoryMeta.loadXML(repnode, databases);
-
-				addRepository(repositoryMeta);
-				log.logDebug("Read repository : "+repositoryMeta.getName());
+				try {
+  				RepositoryMeta repositoryMeta = RepositoryLoader.createRepositoryMeta(id);
+  				repositoryMeta.loadXML(repnode, databases);
+  
+  				addRepository(repositoryMeta);
+  				log.logDebug("Read repository : "+repositoryMeta.getName());
+				} catch (KettleException ex) {
+				  // Get to the root cause
+				  Throwable cause = ex;
+				  while(cause.getCause() != null) {
+				    cause = cause.getCause();
+				  }
+				  
+				  if(cause instanceof KettleRepositoryNotSupportedException) {
+				    // If the root cause is a KettleRepositoryNotSupportedException, do not fail
+				    log.logDebug("Repository type [" + id + "] is unrecognized");
+				  } else {
+				    // Unexpected exception, pass it up
+				    throw ex;
+				  }
+				}
 			}
 		}
 		catch(Exception e)

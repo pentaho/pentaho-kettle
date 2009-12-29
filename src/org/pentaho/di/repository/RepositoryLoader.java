@@ -20,6 +20,7 @@ import org.pentaho.di.core.config.ConfigManager;
 import org.pentaho.di.core.config.KettleConfig;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleRepositoryNotSupportedException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -170,7 +171,7 @@ public class RepositoryLoader {
 	    	RepositoryLoader loader = RepositoryLoader.getInstance();
 	    	RepositoryPluginMeta pluginMeta = loader.findPluginMeta(id);
 	    	if (pluginMeta==null) {
-	    		throw new KettleException("Unable to find repository plugin for id ["+id+"]");
+	    		throw new KettleRepositoryNotSupportedException("Unable to find repository plugin for id ["+id+"]");
 	    	}
     		ClassLoader classLoader = getInstance().getClassLoader(pluginMeta);
     		Class<?> clazz = classLoader.loadClass(pluginMeta.getMetaClassName());
