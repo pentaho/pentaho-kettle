@@ -359,12 +359,11 @@ public class SalesforceInput extends BaseStep implements StepInterface
 				data.limit=Const.toLong(environmentSubstitute(meta.getRowLimit()),0);
 				
 				// create a Salesforce connection
-				data.connection= new SalesforceConnection(log, realUrl, 
-						realUser,environmentSubstitute(meta.getPassword()));
-				
+				data.connection= new SalesforceConnection(log, realUrl, realUser,environmentSubstitute(meta.getPassword()));
 				// set timeout
 				data.connection.setTimeOut(Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
-				
+				// Do we ue compression?
+				if(meta.isUsingCompression()) data.connection.setUsingCompression(true);
 				
 			    // Build query if needed
 			    if(meta.isSpecifyQuery()) {

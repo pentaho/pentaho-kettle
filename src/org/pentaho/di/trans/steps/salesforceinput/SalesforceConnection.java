@@ -19,6 +19,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.axis.message.MessageElement;
+import org.apache.axis.transport.http.HTTPConstants;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -65,6 +66,10 @@ public class SalesforceConnection {
 	private String fieldsList;
 	private int queryResultSize;
 	private int recordsCount;
+	private boolean useCompression;
+	
+
+
 
 	private LogChannelInterface	logInterface;
 	
@@ -76,9 +81,9 @@ public class SalesforceConnection {
 		this.log=LogWriter.getInstance();
 		this.logInterface = logInterface;
 		this.url=url;
-		this.username=username;
-		this.password=password;
-		this.timeout=0;
+		setUsername(username);
+		setPassword(password);
+		setTimeOut(0);
 	
 		this.binding=null;
 		this.loginResult = null;
@@ -94,13 +99,14 @@ public class SalesforceConnection {
 		this.fieldsList=null;
 		this.queryResultSize=0;
 		this.recordsCount=0;
-		
+		setUsingCompression(false);
+
 		
 		// check target URL
 		if(Const.isEmpty(this.url))	throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.TargetURLMissing.Error"));
 		
 		// check username
-		if(Const.isEmpty(this.username)) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.UsernameMissing.Error"));
+		if(Const.isEmpty(getUsername())) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.UsernameMissing.Error"));
 				
 		if(log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.NewConnection"));
 	}
@@ -112,6 +118,9 @@ public class SalesforceConnection {
 	}
 	public void setCondition(String condition) {
 		this.condition=condition;
+	}
+	public String getCondition() {
+		return this.condition;
 	}
 	public void setSQL(String sql) {
 		this.sql=sql;
@@ -144,6 +153,32 @@ public class SalesforceConnection {
 	public void setTimeOut(int timeout){
 		this.timeout=timeout;
 	}
+	public int getTimeOut(){
+		return this.timeout;
+	}
+	public boolean isUsingCompression() {
+		return this.useCompression;
+	}
+	public void setUsingCompression(boolean useCompression) {
+		this.useCompression=useCompression;
+	}
+	public String getUsername() {
+		return this.username;
+	}
+
+	public void setUsername(String value) {
+		this.username = value;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String value) {
+		this.password = value;
+	}
+
+
 	public void connect() throws KettleException{
 
 		try{
@@ -151,29 +186,34 @@ public class SalesforceConnection {
 			if (log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL", binding._getProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY)));
 		      
 	        //  Set timeout
-	      	if(this.timeout>0) {
-	      		binding.setTimeout(this.timeout);
+	      	if(getTimeOut()>0) {
+	      		binding.setTimeout(getTimeOut());
 	      		 if (log.isDebug())  logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SettingTimeout",""+this.timeout));
 	      	}
 	        
 	      	
 	      	// Set URL
-	      	this.binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, this.url);
+	      	this.binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY, getURL());
+	      	
+	      	// Do we need compression?
+	      	if(isUsingCompression()) {
+	      		binding._setProperty(HTTPConstants.MC_ACCEPT_GZIP, useCompression);
+	      		binding._setProperty(HTTPConstants.MC_GZIP_REQUEST, useCompression);
+	      	}
 	        
 	        // Attempt the login giving the user feedback
-		     
 	        if (log.isDetailed()) {
 	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginNow"));
 	        	logInterface.logDetailed("----------------------------------------->");
-	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL",this.url));
-	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginUsername",username));
-	        	if(this.module!=null) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginModule", this.module));
-	        	if(this.condition!=null) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginCondition",this.condition));
+	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL",getURL()));
+	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginUsername",getUsername()));
+	        	if(getModule()!=null) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginModule", getModule()));
+	        	if(getCondition()!=null) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginCondition",getCondition()));
 	        	logInterface.logDetailed("<-----------------------------------------");
 	        }
 	        
 	        // Login
-	        this.loginResult = this.binding.login(this.username, this.password);
+	        this.loginResult = this.binding.login(getUsername(), getPassword());
 	        
 	        if (log.isDebug()) {
 	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SessionId") + " : " + this.loginResult.getSessionId());
@@ -213,7 +253,7 @@ public class SalesforceConnection {
 
 	 public void query(boolean specifyQuery) throws KettleException {
 		 
-		if(this.binding==null)  throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Exception.CanNotGetBiding"));
+		if(getBinding()==null)  throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Exception.CanNotGetBiding"));
 		
 	    try{
 	    	if(!specifyQuery){
@@ -223,7 +263,7 @@ public class SalesforceConnection {
 			    if(!describeSObjectResult.isQueryable()) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ObjectNotQueryable",module));
 		    }
 		    			        
-		    if (this.sql!=null && log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.SQLString") + " : " +  this.sql);        
+		    if (getSQL()!=null && log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.SQLString") + " : " +  getSQL());        
 		  
 			switch (this.recordsFilter) {
 				case SalesforceConnectionUtils.RECORDS_FILTER_UPDATED:

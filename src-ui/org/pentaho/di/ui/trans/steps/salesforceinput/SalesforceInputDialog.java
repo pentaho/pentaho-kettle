@@ -98,9 +98,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	
 	private FormData fdlTimeOut,fdTimeOut,fdFields,fdUserName,fdURL,fdPassword,fdCondition;
 	
-	private FormData fdlCondition,fdlInclRownum,fdRownum,fdInclRownumField;
+	private FormData fdlCondition,fdlInclRownum,fdRownum,fdInclRownumField, fdUseCompression, fdlUseCompression;
 
-	private Button wInclURL,wInclModule,wInclRownum;
+	private Button wInclURL,wInclModule,wInclRownum, wUseCompression;
 	
 	private FormData fdInclSQLField;
 	
@@ -112,7 +112,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	
 	private Group wConnectionGroup, wSettingsGroup;
 	
-	private Label wlInclTimestampField,wlInclTimestamp;
+	private Label wlInclTimestampField,wlInclTimestamp, wlUseCompression;
 	
 	private FormData fdlInclSQL,fdInclSQL,fdlInclSQLField;
 	
@@ -888,13 +888,32 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		fdTimeOut.right = new FormAttachment(100, 0);
 		wTimeOut.setLayoutData(fdTimeOut);
 		
+		
+		// Use compression?
+		wlUseCompression=new Label(wContentComp, SWT.RIGHT);
+		wlUseCompression.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.UseCompression.Label"));
+ 		props.setLook(wlUseCompression);
+		fdlUseCompression=new FormData();
+		fdlUseCompression.left = new FormAttachment(0, 0);
+		fdlUseCompression.top  = new FormAttachment(wTimeOut, margin);
+		fdlUseCompression.right= new FormAttachment(middle, -margin);
+		wlUseCompression.setLayoutData(fdlUseCompression);
+		wUseCompression=new Button(wContentComp, SWT.CHECK );
+ 		props.setLook(wUseCompression);
+		wUseCompression.setToolTipText(BaseMessages.getString(PKG, "SalesforceInputDialog.UseCompression.Tooltip"));
+		fdUseCompression=new FormData();
+		fdUseCompression.left = new FormAttachment(middle, 0);
+		fdUseCompression.top  = new FormAttachment(wTimeOut, margin);
+		wUseCompression.setLayoutData(fdUseCompression);
+
+		
 		// Limit rows
 		wlLimit = new Label(wContentComp, SWT.RIGHT);
 		wlLimit.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Limit.Label"));
 		props.setLook(wlLimit);
 		fdlLimit = new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.top = new FormAttachment(wTimeOut, margin);
+		fdlLimit.top = new FormAttachment(wUseCompression, margin);
 		fdlLimit.right = new FormAttachment(middle, -margin);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit = new TextVar(transMeta,wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -902,7 +921,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wLimit.addModifyListener(lsMod);
 		fdLimit = new FormData();
 		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top = new FormAttachment(wTimeOut, margin);
+		fdLimit.top = new FormAttachment(wUseCompression, margin);
 		fdLimit.right = new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 
@@ -1362,7 +1381,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wInclRownum.setSelection(in.includeRowNumber());
 		
 		wTimeOut.setText("" + in.getTimeOut());
-			
+		wUseCompression.setSelection(in.isUsingCompression());
 		wLimit.setText("" + in.getRowLimit());
 
 		wReadFrom.setText(Const.NVL(in.getReadFrom(),""));
@@ -1454,7 +1473,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		
 		in.setSpecifyQuery(wspecifyQuery.getSelection());
 		in.setQuery(Const.NVL(wQuery.getText(),""));
-		
+		in.setUseCompression(wUseCompression.getSelection());
 		in.setTimeOut(Const.NVL(wTimeOut.getText(),"0"));
 		in.setRowLimit(Const.NVL(wLimit.getText(),"0"));
 		in.setTargetURLField(Const.NVL(wInclURLField.getText(),""));
