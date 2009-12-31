@@ -11,8 +11,10 @@
  
 package org.pentaho.di.trans.steps.fixedinput;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.vfs.FileObject;
@@ -246,8 +248,8 @@ public class FixedInput extends BaseStep implements StepInterface
 				FileObject fileObject = KettleVFS.getFileObject(data.filename, getTransMeta());
 				try
 				{
-					FileInputStream fileInputStream = new FileInputStream(fileObject.getName().getPathDecoded());
-					data.fc = fileInputStream.getChannel();
+					InputStream fileInputStream = KettleVFS.getInputStream(data.filename, getTransMeta());
+					data.is = new BufferedInputStream(fileInputStream);
 					data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
 				}
 				catch(IOException e) {
@@ -286,7 +288,7 @@ public class FixedInput extends BaseStep implements StepInterface
 	             
 	                logBasic("Step #"+data.stepNumber+" is skipping "+bytesToSkip+" to position in file, then it's reading "+data.rowsToRead+" rows.");
 
-                    data.fc.position(bytesToSkip);
+                    data.is.skip(bytesToSkip);
 				}
 								
 				return true;
@@ -302,8 +304,8 @@ public class FixedInput extends BaseStep implements StepInterface
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
 		
 		try {
-			if (data.fc!=null) {
-				data.fc.close();
+			if (data.is!=null) {
+				data.is.close();
 			}
 		} catch (IOException e) {
 			logError("Unable to close file channel for file '"+meta.getFilename()+"' : "+e.toString());

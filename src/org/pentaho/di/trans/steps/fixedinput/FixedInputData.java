@@ -12,9 +12,9 @@
 
 package org.pentaho.di.trans.steps.fixedinput;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class FixedInputData extends BaseStepData implements StepDataInterface
 {
 
-	public FileChannel fc;
+  public BufferedInputStream is;
 	public ByteBuffer bb;
 	public RowMetaInterface outputRowMeta;
 	public RowMetaInterface convertRowMeta;
@@ -51,6 +51,8 @@ public class FixedInputData extends BaseStepData implements StepDataInterface
 	public long fileSize;
 	public long rowsToRead;
 	private int loadPoint;
+	
+	private byte[] buff = null;
 			
 	/**
 	 * 
@@ -96,12 +98,16 @@ public class FixedInputData extends BaseStepData implements StepDataInterface
 
 	public void readBufferFromFile() throws IOException {
 		bb.position(0);
-		int n = fc.read( bb );
+		if(buff == null) {
+		  buff = new byte[preferredBufferSize];
+		}
+		int n = is.read( buff );
 		if( n == -1) {
 			// Nothing more to be found in the file...
 			stopReading=true;
 		}
 		else {
+		  bb.put(buff, 0, n);
 			// adjust the highest used position...
 			//
 			bufferSize += n; 
