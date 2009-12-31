@@ -78,7 +78,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 	
 	/**  In order to not stuck in GUI while getting meta (fields, module)
 	 * all fields name are in SalesforceConnectionUtils     */
-	private boolean retrieveMetaFromSalesforce=true;
+	private boolean retrieveMetaFromSalesforce=false;
 	
 	
 	
@@ -155,7 +155,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 	 */
 	public String getModule()
 	{
-				return module;
+		return module;
 	}
 	/**
 	 * @param module The module to set.
@@ -318,9 +318,8 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 	}
 	
 	
-	public void readRep(Repository rep, ObjectId id_step,
-			List<DatabaseMeta> databases, Map<String, Counter> counters)
-	    throws KettleException
+	public void readRep(Repository rep, ObjectId id_step,List<DatabaseMeta> databases, Map<String, Counter> counters)
+	throws KettleException
 	{
 		try
 		{
@@ -408,8 +407,6 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 		else
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SalesforceUpdateMeta.CheckResult.FieldsOk"), stepMeta);
 		remarks.add(cr);
-		
-	
 	}
 	
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)

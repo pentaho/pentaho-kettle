@@ -183,9 +183,8 @@ public class PartitionsController extends AbstractXulEventHandler {
         }
       }
     } catch (KettleException e) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG,
-          "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, //$NON-NLS-1$
-          "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
+      new ErrorDialog(shell, BaseMessages.getString(PKG,"RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshPartitions();
     }
