@@ -573,4 +573,22 @@ public class StringUtil
 		  } catch(Exception e)   {return false; }
 		  return true;
 	}
+    /**
+     * remove specification from variable
+     * 
+     * @param variable the variable to look for, with the $ or % variable specification.
+     * @return the variable name
+     */
+    public static final String getVariableName(String variable)
+    {
+	    variable=variable.trim();
+	    if(variable.startsWith(UNIX_OPEN) || variable.startsWith(WINDOWS_OPEN) || variable.startsWith(HEX_OPEN))
+	    	variable=variable.substring(2, variable.length());
+	    if(variable.endsWith(UNIX_CLOSE) || variable.endsWith(HEX_CLOSE))
+	    	variable=variable.substring(0, variable.length()-1);
+	    if(variable.endsWith(WINDOWS_CLOSE))
+	    	variable=variable.substring(0, variable.length()-2);
+	    
+	    return variable;
+    }
 }

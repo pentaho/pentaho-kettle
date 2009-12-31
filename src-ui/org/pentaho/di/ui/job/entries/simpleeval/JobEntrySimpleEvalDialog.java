@@ -50,6 +50,7 @@ import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
+
 /**
  * This dialog allows you to edit the XML valid job entry settings.
  *
@@ -84,6 +85,11 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
     
 	private Group wSuccessOn,wSource;
     private FormData fdSuccessOn,fdSource;
+    
+    private Label wlsuccessWhenSet;
+    private FormData fdlsuccessWhenSet;
+    private Button wSuccessWhenSet;
+    private FormData fdSuccessWhenSet;
 
 	private Label wlSuccessCondition,wlValueType,wlFieldType,wlMask;
 	private CCombo wSuccessCondition,wValueType,wFieldType;
@@ -94,6 +100,10 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 	private Label wlSuccessNumberCondition;
 	private CCombo wSuccessNumberCondition;
 	private FormData fdlSuccessNumberCondition, fdSuccessNumberCondition;
+	
+	private Label wlSuccessBooleanCondition;
+	private CCombo wSuccessBooleanCondition;
+	private FormData fdlSuccessBooleanCondition, fdSuccessBooleanCondition;
 	
 	private Label wlCompareValue;
 	private TextVar wCompareValue;
@@ -227,7 +237,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 			public void widgetSelected(SelectionEvent e)
 			{
 				
-				displayCorrectValueType();				
+				refresh();				
 				
 			}
 		});
@@ -297,7 +307,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 			public void widgetSelected(SelectionEvent e)
 			{
 				
-				activeMask();				
+				refresh();				
 				
 			}
 		});
@@ -354,7 +364,34 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 
 	    wSuccessOn.setLayout(successongroupLayout);
 		
-
+	    
+	     // Success when variable is not set?
+       wlsuccessWhenSet = new Label(wSuccessOn, SWT.RIGHT);
+       wlsuccessWhenSet.setText(BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenSet.Label"));
+       props.setLook(wlsuccessWhenSet);
+       fdlsuccessWhenSet = new FormData();
+       fdlsuccessWhenSet.left = new FormAttachment(0, 0);
+       fdlsuccessWhenSet.top = new FormAttachment(wVariableName, margin);
+       fdlsuccessWhenSet.right = new FormAttachment(middle, -margin);
+       wlsuccessWhenSet.setLayoutData(fdlsuccessWhenSet);
+       wSuccessWhenSet = new Button(wSuccessOn, SWT.CHECK);
+       wSuccessWhenSet.setToolTipText(BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenSet.Tooltip"));
+       props.setLook(wSuccessWhenSet);
+       fdSuccessWhenSet = new FormData();
+       fdSuccessWhenSet.left = new FormAttachment(middle, 0);
+       fdSuccessWhenSet.top = new FormAttachment(wVariableName, margin);
+       fdSuccessWhenSet.right = new FormAttachment(100, 0);
+       wSuccessWhenSet.setLayoutData(fdSuccessWhenSet);
+       wSuccessWhenSet.addSelectionListener(new SelectionAdapter()
+       {
+           public void widgetSelected(SelectionEvent e)
+           {
+				refresh();
+				jobEntry.setChanged();
+           }
+       });
+	    
+	    
 	    //Success Condition
 	  	wlSuccessCondition = new Label(wSuccessOn, SWT.RIGHT);
 	  	wlSuccessCondition.setText(BaseMessages.getString(PKG, "JobSimpleEval.SuccessCondition.Label"));
@@ -362,18 +399,17 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 	  	fdlSuccessCondition = new FormData();
 	  	fdlSuccessCondition.left = new FormAttachment(0, 0);
 	  	fdlSuccessCondition.right = new FormAttachment(middle, 0);
-	  	fdlSuccessCondition.top = new FormAttachment(wVariableName, margin);
+	  	fdlSuccessCondition.top = new FormAttachment(wSuccessWhenSet, margin);
 	  	wlSuccessCondition.setLayoutData(fdlSuccessCondition);
 	  	
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenEqual.Label"));
-	  	wSuccessCondition.add(BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenDifferent.Label"));
+	  	wSuccessCondition.setItems(JobEntrySimpleEval.successConditionDesc);
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
 		props.setLook(wSuccessCondition);
 		fdSuccessCondition= new FormData();
 		fdSuccessCondition.left = new FormAttachment(middle, 0);
-		fdSuccessCondition.top = new FormAttachment(wVariableName, margin);
+		fdSuccessCondition.top = new FormAttachment(wSuccessWhenSet, margin);
 		fdSuccessCondition.right = new FormAttachment(100, 0);
 		wSuccessCondition.setLayoutData(fdSuccessCondition);
 		wSuccessCondition.addSelectionListener(new SelectionAdapter()
@@ -391,7 +427,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 	  	fdlSuccessNumberCondition = new FormData();
 	  	fdlSuccessNumberCondition.left = new FormAttachment(0, 0);
 	  	fdlSuccessNumberCondition.right = new FormAttachment(middle, -margin);
-	  	fdlSuccessNumberCondition.top = new FormAttachment(wVariableName, margin);
+	  	fdlSuccessNumberCondition.top = new FormAttachment(wSuccessWhenSet, margin);
 	  	wlSuccessNumberCondition.setLayoutData(fdlSuccessNumberCondition);
 	  	
 	  	wSuccessNumberCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
@@ -401,19 +437,47 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		props.setLook(wSuccessNumberCondition);
 		fdSuccessNumberCondition= new FormData();
 		fdSuccessNumberCondition.left = new FormAttachment(middle, 0);
-		fdSuccessNumberCondition.top = new FormAttachment(wVariableName, margin);
+		fdSuccessNumberCondition.top = new FormAttachment(wSuccessWhenSet, margin);
 		fdSuccessNumberCondition.right = new FormAttachment(100, 0);
 		wSuccessNumberCondition.setLayoutData(fdSuccessNumberCondition);
 		wSuccessNumberCondition.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				activeSuccessCondition();
+				refresh();
 				
 			}
 		});
 
-		
+	    //Success Boolean Condition
+	  	wlSuccessBooleanCondition = new Label(wSuccessOn, SWT.RIGHT);
+	  	wlSuccessBooleanCondition.setText(BaseMessages.getString(PKG, "JobSimpleEval.SuccessBooleanCondition.Label"));
+	  	props.setLook(wlSuccessBooleanCondition);
+	  	fdlSuccessBooleanCondition = new FormData();
+	  	fdlSuccessBooleanCondition.left = new FormAttachment(0, 0);
+	  	fdlSuccessBooleanCondition.right = new FormAttachment(middle, -margin);
+	  	fdlSuccessBooleanCondition.top = new FormAttachment(wSuccessWhenSet, margin);
+	  	wlSuccessBooleanCondition.setLayoutData(fdlSuccessBooleanCondition);
+	  	
+	  	wSuccessBooleanCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+	  	wSuccessBooleanCondition.setItems(JobEntrySimpleEval.successBooleanConditionDesc);
+	  	wSuccessBooleanCondition.select(0); // +1: starts at -1
+	  	
+		props.setLook(wSuccessBooleanCondition);
+		fdSuccessBooleanCondition= new FormData();
+		fdSuccessBooleanCondition.left = new FormAttachment(middle, 0);
+		fdSuccessBooleanCondition.top = new FormAttachment(wSuccessWhenSet, margin);
+		fdSuccessBooleanCondition.right = new FormAttachment(100, 0);
+		wSuccessBooleanCondition.setLayoutData(fdSuccessBooleanCondition);
+		wSuccessBooleanCondition.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				refresh();
+				
+			}
+		});
+
 
 		// Compare with value
 		wlCompareValue= new Label(wSuccessOn, SWT.RIGHT);
@@ -536,9 +600,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
 		getData();
-		displayCorrectValueType();
-		activeMask();
-
+		refresh();
 
 		wTabFolder.setSelection(0);
 		BaseStepDialog.setSize(shell);
@@ -557,70 +619,6 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		props.setScreen(winprop);
 		shell.dispose();
 	}
-	private void activeSuccessCondition()
-	{
-		if(wFieldType.getSelectionIndex()==0)
-		{
-			wlCompareValue.setVisible(true);
-			wCompareValue.setVisible(true);
-			wlMinValue.setVisible(false);
-			wMinValue.setVisible(false);
-			wlMaxValue.setVisible(false);	
-			wMaxValue.setVisible(false);
-		}else
-		{
-			if(wSuccessNumberCondition.getSelectionIndex()==6)
-			{
-				wlCompareValue.setVisible(false);
-				wCompareValue.setVisible(false);
-				wlMinValue.setVisible(true);
-				wMinValue.setVisible(true);
-				wlMaxValue.setVisible(true);	
-				wMaxValue.setVisible(true);
-			}else
-			{
-				wlCompareValue.setVisible(true);
-				wCompareValue.setVisible(true);
-				wlMinValue.setVisible(false);
-				wMinValue.setVisible(false);
-				wlMaxValue.setVisible(false);	
-				wMaxValue.setVisible(false);
-			}
-		}
-	}
-	private void activeMask()
-	{
-
-		if(!Const.isEmpty(wFieldType.getText()))
-		{
-			wlMask.setVisible(wFieldType.getSelectionIndex()==2);
-			wMask.setVisible(wFieldType.getSelectionIndex()==2);
-			if(wFieldType.getSelectionIndex()==0)
-			{
-				wlSuccessCondition.setVisible(true);
-				wSuccessCondition.setVisible(true);
-				wlSuccessNumberCondition.setVisible(false);
-				wSuccessNumberCondition.setVisible(false);
-			}
-			else
-			{				
-				wlSuccessCondition.setVisible(false);
-				wSuccessCondition.setVisible(false);
-				wlSuccessNumberCondition.setVisible(true);
-				wSuccessNumberCondition.setVisible(true);
-			}
-		}else
-		{
-			wlMask.setVisible(false);
-			wMask.setVisible(false);
-			
-			wlSuccessCondition.setVisible(false);
-			wSuccessCondition.setVisible(false);
-			wlSuccessNumberCondition.setVisible(false);
-			wSuccessNumberCondition.setVisible(false);
-		}
-		activeSuccessCondition();
-	}
 	
 
 	/**
@@ -633,7 +631,7 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		wValueType.setText(JobEntrySimpleEval.getValueTypeDesc(jobEntry.valuetype));
 		if (jobEntry.getFieldName()    != null) wFieldName.setText( jobEntry.getFieldName() );
 		if (jobEntry.getVariableName() != null) wVariableName.setText( jobEntry.getVariableName() );
-		
+		wSuccessWhenSet.setSelection(jobEntry.isSuccessWhenVarSet());
 		wFieldType.setText(JobEntrySimpleEval.getFieldTypeDesc(jobEntry.fieldtype));
 		if (jobEntry.getMask()!= null) wMask.setText( jobEntry.getMask() );
 		if (jobEntry.getCompareValue()!= null) wCompareValue.setText( jobEntry.getCompareValue() );
@@ -641,14 +639,51 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		if (jobEntry.getMaxValue()!= null) wMaxValue.setText( jobEntry.getMaxValue() );
 		wSuccessCondition.setText(JobEntrySimpleEval.getSuccessConditionDesc(jobEntry.successcondition));
 		wSuccessNumberCondition.setText(JobEntrySimpleEval.getSuccessNumberConditionDesc(jobEntry.successnumbercondition));
-		
+		wSuccessBooleanCondition.setText(JobEntrySimpleEval.getSuccessBooleanConditionDesc(jobEntry.successbooleancondition));
 	}
-	private void displayCorrectValueType()
+	private void refresh()
 	{
-		wlFieldName.setVisible(wValueType.getSelectionIndex()==0);
-		wFieldName.setVisible(wValueType.getSelectionIndex()==0);
-		wlVariableName.setVisible(wValueType.getSelectionIndex()!=0);
-		wVariableName.setVisible(wValueType.getSelectionIndex()!=0);
+		 boolean evaluatepreviousRowField=JobEntrySimpleEval.getValueTypeByDesc(wValueType.getText())==JobEntrySimpleEval.VALUE_TYPE_FIELD;
+		 boolean evaluateVariable=JobEntrySimpleEval.getValueTypeByDesc(wValueType.getText())==JobEntrySimpleEval.VALUE_TYPE_VARIABLE;
+		 wlVariableName.setVisible(evaluateVariable);
+		 wVariableName.setVisible(evaluateVariable);
+		 wlFieldName.setVisible(evaluatepreviousRowField);
+		 wFieldName.setVisible(evaluatepreviousRowField);
+		 wlsuccessWhenSet.setVisible(evaluateVariable);
+		 wSuccessWhenSet.setVisible(evaluateVariable);
+		 
+		 boolean successWhenSet=wSuccessWhenSet.getSelection() && evaluateVariable;
+		 
+		 wlFieldType.setVisible(!successWhenSet);
+		 wFieldType.setVisible(!successWhenSet);
+		 
+		 boolean valueTypeDate=JobEntrySimpleEval.getFieldTypeByDesc(wFieldType.getText())==JobEntrySimpleEval.FIELD_TYPE_DATE_TIME;
+		 wlMask.setVisible(!successWhenSet && valueTypeDate);
+		 wMask.setVisible(!successWhenSet && valueTypeDate);
+		 
+		 boolean valueTypeString=JobEntrySimpleEval.getFieldTypeByDesc(wFieldType.getText())==JobEntrySimpleEval.FIELD_TYPE_STRING;
+		 wlSuccessCondition.setVisible(!successWhenSet && valueTypeString);
+		 wSuccessCondition.setVisible(!successWhenSet && valueTypeString);
+
+		 
+		 boolean valueTypeNumber=JobEntrySimpleEval.getFieldTypeByDesc(wFieldType.getText())==JobEntrySimpleEval.FIELD_TYPE_NUMBER
+		 	|| JobEntrySimpleEval.getFieldTypeByDesc(wFieldType.getText())==JobEntrySimpleEval.FIELD_TYPE_DATE_TIME;
+		 wlSuccessNumberCondition.setVisible(!successWhenSet && valueTypeNumber);
+		 wSuccessNumberCondition.setVisible(!successWhenSet && valueTypeNumber);
+		 
+		 boolean valueTypeBoolean=JobEntrySimpleEval.getFieldTypeByDesc(wFieldType.getText())==JobEntrySimpleEval.FIELD_TYPE_BOOLEAN;
+		 wlSuccessBooleanCondition.setVisible(!successWhenSet && valueTypeBoolean);
+		 wSuccessBooleanCondition.setVisible(!successWhenSet && valueTypeBoolean);
+		 
+		 boolean compareValue=valueTypeString || (!valueTypeString 
+				 && JobEntrySimpleEval.getSuccessNumberConditionByDesc(wSuccessNumberCondition.getText())
+				 !=JobEntrySimpleEval.SUCCESS_NUMBER_CONDITION_BETWEEN);
+		 wlCompareValue.setVisible(!successWhenSet && compareValue && !valueTypeBoolean);
+		 wCompareValue.setVisible(!successWhenSet && compareValue && !valueTypeBoolean);
+		 wlMinValue.setVisible(!successWhenSet && !compareValue && !valueTypeBoolean);
+		 wMinValue.setVisible(!successWhenSet && !compareValue && !valueTypeBoolean);
+		 wlMaxValue.setVisible(!successWhenSet && !compareValue && !valueTypeBoolean);
+		 wMaxValue.setVisible(!successWhenSet && !compareValue && !valueTypeBoolean);
 	}
 	private void cancel()
 	{
@@ -681,6 +716,8 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		jobEntry.setMaxValue(wMaxValue.getText());
 		jobEntry.successcondition=  JobEntrySimpleEval.getSuccessConditionByDesc(wSuccessCondition.getText());
 		jobEntry.successnumbercondition=  JobEntrySimpleEval.getSuccessNumberConditionByDesc(wSuccessNumberCondition.getText());
+		jobEntry.successbooleancondition=  JobEntrySimpleEval.getSuccessBooleanConditionByDesc(wSuccessBooleanCondition.getText());
+		jobEntry.setSuccessWhenVarSet(wSuccessWhenSet.getSelection());
 		dispose();
 	}
 
