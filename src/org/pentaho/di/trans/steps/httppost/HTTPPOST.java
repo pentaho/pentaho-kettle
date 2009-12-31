@@ -107,8 +107,9 @@ public class HTTPPOST extends BaseStep implements StepInterface
 	        		data.bodyParameters[i].setValue(data.inputRowMeta.getString(rowData,data.body_parameters_nrs[i]));
 	        		if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.BodyValue",data.bodyParameters[i].getName(),data.inputRowMeta.getString(rowData,data.body_parameters_nrs[i])));
 		        }
+		        post.setRequestBody(data.bodyParameters);
 	        }
-            post.setRequestBody(data.bodyParameters);
+         
 
             // QUERY PARAMETERS
             if(data.useQueryParameters)
