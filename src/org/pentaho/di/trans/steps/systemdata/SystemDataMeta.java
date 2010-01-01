@@ -133,6 +133,22 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
     public final static int TYPE_SYSTEM_INFO_THIS_YEAR_END     =  77;
     public final static int TYPE_SYSTEM_INFO_NEXT_YEAR_START   =  78;
     public final static int TYPE_SYSTEM_INFO_NEXT_YEAR_END     =  79;
+    // Previous result
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_RESULT     =  80;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_EXIT_STATUS     =  81;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_ENTRY_NR     =  82;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ERRORS     =  83;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_INPUT     =  84;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_OUTPUT     =  85;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_READ     =  86;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_UPDATED     =  87;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_WRITTEN     =  88;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_DELETED     =  89;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED     =  90;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ROWS     =  91;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED     =  92;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES     =  93;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED     =  94;
 
     public static final SystemDataMetaFunction functions[] = new SystemDataMetaFunction[] {
             null,
@@ -230,7 +246,24 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_YEAR_START   , "next year start",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextYearStart")),
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_YEAR_END   , "next year end",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.NextYearEnd")),
             
-};
+            // Previous result
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_RESULT   , "previous result result",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultResult")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_EXIT_STATUS   , "previous result exist status",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultExitStatus")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_ENTRY_NR  , "previous result entry nr",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultEntryNr")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ERRORS   , "previous result nr errors",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrErrors")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_INPUT   , "previous result nr lines input",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrLinesInput")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_OUTPUT   , "previous result nr lines output",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrLinesOutput")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_READ   , "previous result nr lines read",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrLinesRead")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_UPDATED   , "previous result nr lines updated",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrLinesUpdated")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_WRITTEN   , "previous result nr lines written",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrLinesWritten")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_DELETED   , "previous result nr lines deleted",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrLinesDeleted")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED   , "previous result nr lines rejeted",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrLinesRejeted")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ROWS   , "previous result nr rows",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrLinesNrRows")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED   , "previous result is stopped",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultIsStopped")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES   , "previous result nr files",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrFiles")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED   , "previous result nr files retrieved",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrFilesRetrieved")),    
+            
+    };
     
 	private String fieldName[];
 	private int    fieldType[];
@@ -414,16 +447,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
             case TYPE_SYSTEM_INFO_NEXT_YEAR_START:
             case TYPE_SYSTEM_INFO_NEXT_YEAR_END:
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_DATE); 
-				break;
-				
-			case TYPE_SYSTEM_INFO_COPYNR:
-			case TYPE_SYSTEM_INFO_TRANS_BATCH_ID:
-            case TYPE_SYSTEM_INFO_JOB_BATCH_ID:
-            case TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION:
-				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_INTEGER);
-				v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
-				break;
-				
+				break;	
 			case TYPE_SYSTEM_INFO_TRANS_NAME :
 			case TYPE_SYSTEM_INFO_FILENAME   : 
 			case TYPE_SYSTEM_INFO_ARGUMENT_01: 
@@ -442,14 +466,34 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
             case TYPE_SYSTEM_INFO_KETTLE_VERSION:
 				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
 				break;
+			case TYPE_SYSTEM_INFO_COPYNR:
+			case TYPE_SYSTEM_INFO_TRANS_BATCH_ID:
+            case TYPE_SYSTEM_INFO_JOB_BATCH_ID:
+            case TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION:
             case TYPE_SYSTEM_INFO_CURRENT_PID:
 		    case TYPE_SYSTEM_INFO_JVM_TOTAL_MEMORY:
 		    case TYPE_SYSTEM_INFO_JVM_FREE_MEMORY:
 		    case TYPE_SYSTEM_INFO_JVM_MAX_MEMORY:
 		    case TYPE_SYSTEM_INFO_JVM_AVAILABLE_MEMORY:
 		    case TYPE_SYSTEM_INFO_AVAILABLE_PROCESSORS:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_EXIT_STATUS:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_ENTRY_NR:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ERRORS:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_DELETED:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_INPUT:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_OUTPUT:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_READ:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_UPDATED:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_WRITTEN:
 				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_INTEGER);
 				v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
+				break;
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_RESULT:
+		    case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED:
+				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_BOOLEAN);
 				break;
 			default: 
 				v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_NONE);

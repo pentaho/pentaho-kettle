@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -60,6 +61,7 @@ public class SystemData extends BaseStep implements StepInterface
 			Calendar cal;
 
 			int argnr=0;
+
 			switch(meta.getFieldType()[i])
 			{
 			case SystemDataMeta.TYPE_SYSTEM_INFO_SYSTEM_START:
@@ -557,6 +559,143 @@ public class SystemData extends BaseStep implements StepInterface
 				cal.set(Calendar.MILLISECOND, 999);
 				row[index] = cal.getTime();				
 				break; 
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_RESULT:
+				Result previousResult = getTransMeta().getPreviousResult();
+				boolean result=false;
+				if(previousResult!=null)
+				{
+					result=	previousResult.getResult();
+				}
+				row[index] =result;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_EXIT_STATUS:
+				previousResult = getTransMeta().getPreviousResult();
+				long value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getExitStatus();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_ENTRY_NR:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getEntryNr();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+
+				if(previousResult!=null)
+				{
+					value=	previousResult.getResultFiles().size();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getNrFilesRetrieved();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_DELETED:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getNrLinesDeleted();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_INPUT:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getNrLinesInput();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_OUTPUT:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getNrLinesOutput();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_READ:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getNrLinesRead();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getNrLinesRejected();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_UPDATED:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getNrLinesUpdated();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_WRITTEN:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getNrLinesWritten();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ROWS:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getRows().size();
+				}
+				row[index] =value;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED:
+				previousResult = getTransMeta().getPreviousResult();
+				boolean stop=false;
+				if(previousResult!=null)
+				{
+					stop=	previousResult.isStopped();
+				}
+				row[index] =stop;
+				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ERRORS:
+				previousResult = getTransMeta().getPreviousResult();
+				value=0;
+				if(previousResult!=null)
+				{
+					value=	previousResult.getNrErrors();
+				}
+				row[index] =value;
+				break;
+
 			default: break;
 			}
 		}
