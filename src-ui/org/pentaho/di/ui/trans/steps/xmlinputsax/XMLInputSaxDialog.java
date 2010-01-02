@@ -1103,7 +1103,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 			EnterNumberDialog numberDialog = new EnterNumberDialog(
 					shell,
-					500,
+					props.getDefaultPreviewSize(),
 					BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.EnterPreviewSize.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			int previewSize = numberDialog.open();
 			if (previewSize > 0)

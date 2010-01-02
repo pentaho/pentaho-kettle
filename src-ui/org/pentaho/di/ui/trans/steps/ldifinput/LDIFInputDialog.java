@@ -1423,7 +1423,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 	            
 			EnterNumberDialog numberDialog = new EnterNumberDialog(
 					shell,
-					500,
+					props.getDefaultPreviewSize(),
 					BaseMessages.getString(PKG, "LDIFInputDialog.NumberRows.DialogTitle"),
 					BaseMessages.getString(PKG, "LDIFInputDialog.NumberRows.DialogMessage"));
 			int previewSize = numberDialog.open();

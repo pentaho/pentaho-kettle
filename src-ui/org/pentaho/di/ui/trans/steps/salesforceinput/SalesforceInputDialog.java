@@ -1526,7 +1526,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	            
 			EnterNumberDialog numberDialog = new EnterNumberDialog(
 					shell,
-					500,
+					props.getDefaultPreviewSize(),
 					BaseMessages.getString(PKG, "SalesforceInputDialog.NumberRows.DialogTitle"),
 					BaseMessages.getString(PKG, "SalesforceInputDialog.NumberRows.DialogMessage"));
 			int previewSize = numberDialog.open();
