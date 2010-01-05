@@ -22,6 +22,7 @@ package org.pentaho.di.ui.trans.steps.mail;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -48,6 +49,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
@@ -59,10 +61,14 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.mail.MailMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+
 
 /**
  * Send mail step.
@@ -78,6 +84,11 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 	private static final String[] FILETYPES = new String[] {
            BaseMessages.getString(PKG, "MailDialog.Filetype.All") };
 
+	   private static final String[] IMAGES_FILE_TYPES = new String[] {
+		    BaseMessages.getString(PKG, "MailDialog.Filetype.Png"),
+		    BaseMessages.getString(PKG, "MailDialog.Filetype.Jpeg"),
+		    BaseMessages.getString(PKG, "MailDialog.Filetype.Gif"),
+		   	BaseMessages.getString(PKG, "MailDialog.Filetype.All") };
 	   
     private boolean  gotEncodings = false;
     
@@ -95,9 +106,9 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
     private FormData fdlDynamicWildcardField,fdDynamicWildcardField;
     
 	private CTabFolder   wTabFolder;
-	private Composite    wGeneralComp,wContentComp,wAttachedComp,wMessageComp;	
-	private CTabItem     wGeneralTab,wContentTab,wAttachedTab,wMessageTab;
-	private FormData	 fdGeneralComp,fdContentComp,fdAttachedComp,fdMessageComp;
+	private Composite    wGeneralComp,wContentComp,wAttachedComp,wMessageComp, wembeddedComp;	
+	private CTabItem     wGeneralTab,wContentTab,wAttachedTab,wMessageTab, wembeddedTab;
+	private FormData	 fdGeneralComp,fdContentComp,fdAttachedComp,fdMessageComp, fdembeddedComp;
 	private FormData     fdTabFolder;
 	
 	private Label wlisZipFileDynamic ;
@@ -284,6 +295,14 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
     
     private FormData fdZipSizeCondition;
 	
+	
+	private Label        wlImageFilename, wlContentID, wlFields;
+	private Button       wbImageFilename, wbaImageFilename, wbdImageFilename, wbeImageFilename;
+	private TextVar      wImageFilename, wContentID;
+	private FormData     fdlImageFilename, fdbImageFilename, fdImageFilename,fdlContentID, fdContentID,
+						 fdbaImageFilename, fdbdImageFilename, fdbeImageFilename, fdlFields, fdFields;
+	private TableView   wFields;
+    
 	private boolean 	getpreviousFields=false;
 	
 	private MailMeta input;
@@ -1803,6 +1822,237 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 		/////////////////////////////////////////////////////////////
  		
 		
+		//////////////////////////////////////
+		// START OF embedded images   TAB   ///
+		/////////////////////////////////////
+		
+		
+		
+		wembeddedTab=new CTabItem(wTabFolder, SWT.NONE);
+		wembeddedTab.setText(BaseMessages.getString(PKG, "Mail.Tab.embeddedImages.Label"));
+
+		FormLayout embeddedLayout = new FormLayout ();
+		embeddedLayout.marginWidth  = 3;
+		embeddedLayout.marginHeight = 3;
+		
+		wembeddedComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wembeddedComp);
+ 		wembeddedComp.setLayout(embeddedLayout);
+ 		
+
+ 		// ImageFilename line
+		wlImageFilename=new Label(wembeddedComp, SWT.RIGHT);
+		wlImageFilename.setText(BaseMessages.getString(PKG, "MailDialog.ImageFilename.Label"));
+		props.setLook(wlImageFilename);
+		fdlImageFilename=new FormData();
+		fdlImageFilename.left = new FormAttachment(0, 0);
+		fdlImageFilename.top  = new FormAttachment(wStepname, margin);
+		fdlImageFilename.right= new FormAttachment(middle, -margin);
+		wlImageFilename.setLayoutData(fdlImageFilename);
+		
+		
+
+		wbImageFilename=new Button(wembeddedComp, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbImageFilename);
+		wbImageFilename.setText(BaseMessages.getString(PKG, "MailDialog.BrowseFiles.Label"));
+		wbImageFilename.setToolTipText(BaseMessages.getString(PKG, "MailDialog.BrowseFiles.Tooltip"));
+		fdbImageFilename=new FormData();
+		fdbImageFilename.right= new FormAttachment(100, 0);
+		fdbImageFilename.top  = new FormAttachment(wStepname, margin);
+		fdbImageFilename.right= new FormAttachment(100, -margin);
+		wbImageFilename.setLayoutData(fdbImageFilename);
+
+		wbaImageFilename=new Button(wembeddedComp, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbaImageFilename);
+		wbaImageFilename.setText(BaseMessages.getString(PKG, "MailDialog.ImageFilenameAdd.Button"));
+		wbaImageFilename.setToolTipText(BaseMessages.getString(PKG, "MailDialog.ImageFilenameAdd.Tooltip"));
+		fdbaImageFilename=new FormData();
+		fdbaImageFilename.right= new FormAttachment(wbImageFilename, -margin);
+		fdbaImageFilename.top  = new FormAttachment(wStepname, margin);
+		wbaImageFilename.setLayoutData(fdbaImageFilename);
+
+		wImageFilename=new TextVar(transMeta, wembeddedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wImageFilename);
+		wImageFilename.addModifyListener(lsMod);
+		fdImageFilename=new FormData();
+		fdImageFilename.left = new FormAttachment(middle, 0);
+		fdImageFilename.top  = new FormAttachment(wStepname, margin);
+		fdImageFilename.right= new FormAttachment(wbImageFilename, -40);
+		wImageFilename.setLayoutData(fdImageFilename);
+
+		// Whenever something changes, set the tooltip to the expanded version:
+		wImageFilename.addModifyListener(new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
+				wImageFilename.setToolTipText(transMeta.environmentSubstitute( wImageFilename.getText() ) );
+			}
+		}
+		);
+
+		wbImageFilename.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					dialog.setFilterExtensions(new String[] {"*png;*PNG", "*jpeg;*jpg;*JPEG;*JPG", "*gif;*GIF", "*"});
+					if (wImageFilename.getText()!=null)
+					{
+						dialog.setFileName(transMeta.environmentSubstitute(wImageFilename.getText()) );
+					}
+					dialog.setFilterNames(IMAGES_FILE_TYPES);
+					if (dialog.open()!=null)
+					{
+						wImageFilename.setText(dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName());
+						Random randomgen = new Random();
+						wContentID.setText(Long.toString(Math.abs(randomgen.nextLong()), 32));
+					}
+				}
+			}
+		);
+		
+		// ContentID
+		wlContentID= new Label(wembeddedComp, SWT.RIGHT);
+		wlContentID.setText(BaseMessages.getString(PKG, "MailDialog.ContentID.Label"));
+		props.setLook(wlContentID);
+		fdlContentID= new FormData();
+		fdlContentID.left = new FormAttachment(0, 0);
+		fdlContentID.top = new FormAttachment(wImageFilename, margin);
+		fdlContentID.right = new FormAttachment(middle, -margin);
+		wlContentID.setLayoutData(fdlContentID);
+		wContentID= new TextVar(transMeta, wembeddedComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				                BaseMessages.getString(PKG, "MailDialog.ContentID.Tooltip"));
+		props.setLook(wContentID);
+		wContentID.addModifyListener(lsMod);
+		fdContentID= new FormData();
+		fdContentID.left = new FormAttachment(middle, 0);
+		fdContentID.top = new FormAttachment(wImageFilename, margin);
+		fdContentID.right= new FormAttachment(wbImageFilename, -40);
+		wContentID.setLayoutData(fdContentID);
+
+		// Buttons to the right of the screen...
+		wbdImageFilename=new Button(wembeddedComp, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbdImageFilename);
+		wbdImageFilename.setText(BaseMessages.getString(PKG, "MailDialog.ImageFilenameDelete.Button"));
+		wbdImageFilename.setToolTipText(BaseMessages.getString(PKG, "MailDialog.ImageFilenameDelete.Tooltip"));
+		fdbdImageFilename=new FormData();
+		fdbdImageFilename.right = new FormAttachment(100, 0);
+		fdbdImageFilename.top  = new FormAttachment (wContentID, 40);
+		wbdImageFilename.setLayoutData(fdbdImageFilename);
+
+		wbeImageFilename=new Button(wembeddedComp, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbeImageFilename);
+		wbeImageFilename.setText(BaseMessages.getString(PKG, "MailDialog.ImageFilenameEdit.Button"));
+		wbeImageFilename.setToolTipText(BaseMessages.getString(PKG, "MailDialog.ImageFilenameEdit.Tooltip"));
+		fdbeImageFilename=new FormData();
+		fdbeImageFilename.right = new FormAttachment(100, 0);
+		fdbeImageFilename.left = new FormAttachment(wbdImageFilename, 0, SWT.LEFT);
+		fdbeImageFilename.top  = new FormAttachment (wbdImageFilename, margin);
+		wbeImageFilename.setLayoutData(fdbeImageFilename);
+
+		wlFields = new Label(wembeddedComp, SWT.NONE);
+		wlFields.setText(BaseMessages.getString(PKG, "MailDialog.Fields.Label"));
+		props.setLook(wlFields);
+		fdlFields = new FormData();
+		fdlFields.left = new FormAttachment(0, 0);
+		fdlFields.right= new FormAttachment(middle, -margin);
+		fdlFields.top = new FormAttachment(wContentID,margin);
+		wlFields.setLayoutData(fdlFields);
+
+		int rows = input.getEmbeddedImages() == null
+		? 1
+			: (input.getEmbeddedImages().length == 0
+			? 0
+			: input.getEmbeddedImages().length);
+		final int FieldsRows = rows;
+
+		ColumnInfo[] colinf=new ColumnInfo[]
+			{
+				new ColumnInfo(BaseMessages.getString(PKG, "MailDialog.Fields.Image.Label"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+				new ColumnInfo(BaseMessages.getString(PKG, "MailDialog.Fields.ContentID.Label"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+			};
+
+		colinf[0].setUsingVariables(true);
+		colinf[0].setToolTip(BaseMessages.getString(PKG, "MailDialog.Fields.Image.Tooltip"));
+		colinf[1].setUsingVariables(true);
+		colinf[1].setToolTip(BaseMessages.getString(PKG, "MailDialog.Fields.ContentID.Tooltip"));
+
+		wFields = new TableView(transMeta, wembeddedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+			FieldsRows, lsMod, props);
+
+		fdFields = new FormData();
+		fdFields.left = new FormAttachment(0, 0);
+		fdFields.top = new FormAttachment(wlFields, margin);
+		fdFields.right = new FormAttachment(wbeImageFilename, -margin);
+		fdFields.bottom = new FormAttachment(100, -margin);
+		wFields.setLayoutData(fdFields);
+
+		// Add the file to the list of files...
+		SelectionAdapter selA = new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				wFields.add(new String[] { wImageFilename.getText(), wContentID.getText() } );
+				wImageFilename.setText("");
+				wContentID.setText("");
+				wFields.removeEmptyRows();
+				wFields.setRowNums();
+				wFields.optWidth(true);
+			}
+		};
+		wbaImageFilename.addSelectionListener(selA);
+		wImageFilename.addSelectionListener(selA);
+
+		// Delete files from the list of files...
+		wbdImageFilename.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				int idx[] = wFields.getSelectionIndices();
+				wFields.remove(idx);
+				wFields.removeEmptyRows();
+				wFields.setRowNums();
+			}
+		});
+
+		// Edit the selected file & remove from the list...
+		wbeImageFilename.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				int idx = wFields.getSelectionIndex();
+				if (idx>=0)
+				{
+					String string[] = wFields.getItem(idx);
+					wImageFilename.setText(string[0]);
+					wContentID.setText(string[1]);
+					wFields.remove(idx);
+				}
+				wFields.removeEmptyRows();
+				wFields.setRowNums();
+			}
+		});
+
+		
+
+ 		fdembeddedComp = new FormData();
+		fdembeddedComp.left  = new FormAttachment(0, 0);
+		fdembeddedComp.top   = new FormAttachment(0, 0);
+		fdembeddedComp.right = new FormAttachment(100, 0);
+		fdembeddedComp.bottom= new FormAttachment(100, 0);
+		wembeddedComp.setLayoutData(wembeddedComp);
+
+		wembeddedComp.layout();
+		wembeddedTab.setControl(wembeddedComp);
+
+
+		/////////////////////////////////////////////////////////////
+		/// END OF embedded images TAB
+		/////////////////////////////////////////////////////////////
+ 		
+		
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
 		fdTabFolder.top   = new FormAttachment(wStepname, margin);
@@ -2174,6 +2424,21 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 
 	        if (input.getReplyToAddresses() != null)
 	            wReplyToAddresses.setText(input.getReplyToAddresses());
+	        
+	        if (input.getEmbeddedImages() != null)
+			{
+				for (int i = 0; i < input.getEmbeddedImages().length; i++)
+				{
+					TableItem ti = wFields.table.getItem(i);
+					if (input.getEmbeddedImages()[i] != null)
+						ti.setText(1, input.getEmbeddedImages()[i]);
+						if (input.getContentIds()[i] != null)
+							ti.setText(2, input.getContentIds()[i]);
+				}
+				wFields.setRowNums();
+				wFields.optWidth(true);
+			}
+	        
 		wStepname.selectAll();
 	}
 	
@@ -2260,6 +2525,26 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
         // Secure Connection type
         input.setSecureConnectionType(wSecureConnectionType.getText());
         input.setReplyToAddresses(wReplyToAddresses.getText());
+        
+		int nritems = wFields.nrNonEmpty();
+		int nr = 0;
+		for (int i = 0; i < nritems; i++)
+		{
+			String arg = wFields.getNonEmpty(i).getText(1);
+			if (arg != null && arg.length() != 0)
+				nr++;
+		}
+		input.allocate(nr);
+
+		nr = 0;
+		for (int i = 0; i < nritems; i++)
+		{
+			String image = wFields.getNonEmpty(i).getText(1);
+			String id = wFields.getNonEmpty(i).getText(2);
+			input.setEmbeddedImage(i, image);
+			input.setContentIds(i, id);
+			nr++;
+		}
         
 		dispose();
 	}

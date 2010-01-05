@@ -20,7 +20,6 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -94,8 +93,6 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 
 	  private boolean includingFiles;
 
-	  private int fileType[];
-
 	  private boolean zipFiles;
 
 	  private String zipFilename;
@@ -131,6 +128,10 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	  /** The reply to addresses */
 	  private String replyToAddresses;
 	  
+	  public String embeddedimages[];
+
+	  public String contentids[];
+	  
 	public MailMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -147,9 +148,10 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 		Object retval = super.clone();
 		return retval;
 	}
-	 public void allocate(int nrFileTypes)
+	 public void allocate(int embeddedimages)
 	  {
-	    this.fileType = new int[nrFileTypes];
+	    this.embeddedimages = new String[embeddedimages];
+	    this.contentids = new String[embeddedimages];
 	  }
 	private void readData(Node stepnode)
 	{
@@ -186,18 +188,32 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
       setPriority(XMLHandler.getTagValue(stepnode, "priority"));
       setImportance(XMLHandler.getTagValue(stepnode, "importance"));
       setSecureConnectionType(XMLHandler.getTagValue(stepnode, "secureconnectiontype"));
-      Node ftsnode = XMLHandler.getSubNode(stepnode, "filetypes");
-      int nrTypes = XMLHandler.countNodes(ftsnode, "filetype");
-      allocate(nrTypes);
-      for (int i = 0; i < nrTypes; i++) {
-        Node ftnode = XMLHandler.getSubNodeByNr(ftsnode, "filetype", i);
-        fileType[i] = ResultFile.getType(XMLHandler.getNodeValue(ftnode));
-      }
       setZipFiles("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "zip_files")));
       setZipFilename(XMLHandler.getTagValue(stepnode, "zip_name"));
       setZipLimitSize(XMLHandler.getTagValue(stepnode, "zip_limit_size"));
-  }
+      
+      Node images = XMLHandler.getSubNode(stepnode, "embeddedimages"); //$NON-NLS-1$
+      // How many field embedded images ?
+      int nrImages = XMLHandler.countNodes(images, "embeddedimage"); //$NON-NLS-1$
+      
+      allocate(nrImages);
 
+      // Read them all...
+      for (int i = 0; i < nrImages; i++) {
+        Node fnode = XMLHandler.getSubNodeByNr(images, "embeddedimage", i); //$NON-NLS-1$
+
+        embeddedimages[i] = XMLHandler.getTagValue(fnode, "image_name"); //$NON-NLS-1$
+        contentids[i] = XMLHandler.getTagValue(fnode, "content_id"); //$NON-NLS-1$
+      }
+  }
+	 public void setEmbeddedImage(int i, String value)
+	 {
+		 embeddedimages[i]=value;
+	 }
+	 public void setContentIds(int i, String value)
+	 {
+		 contentids[i]=value;
+	 }
 	public void setDefault()
 	{
 	}
@@ -243,13 +259,18 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	    retval.append("    " + XMLHandler.addTagValue("priority", this.priority));
 	    retval.append("    " + XMLHandler.addTagValue("importance", this.importance));
 	    retval.append("    " + XMLHandler.addTagValue("secureconnectiontype", this.secureconnectiontype));
-
-	    retval.append("      <filetypes>");
-	    if (fileType != null)
-	      for (int i = 0; i < fileType.length; i++) {
-	        retval.append("        ").append(XMLHandler.addTagValue("filetype", ResultFile.getTypeCode(this.fileType[i])));
+	    
+	    retval.append("      <embeddedimages>").append(Const.CR); //$NON-NLS-1$
+	    if (embeddedimages != null) {
+	      for (int i = 0; i < embeddedimages.length; i++) {
+	        retval.append("        <embeddedimage>").append(Const.CR); //$NON-NLS-1$
+	        retval.append("          ").append(XMLHandler.addTagValue("image_name", embeddedimages[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	        retval.append("          ").append(XMLHandler.addTagValue("content_id", contentids[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	        retval.append("        </embeddedimage>").append(Const.CR); //$NON-NLS-1$
 	      }
-	    retval.append("      </filetypes>");
+	    }
+	    retval.append("      </embeddedimages>").append(Const.CR); //$NON-NLS-1$
+
 
 	    return retval.toString();
 	  }
@@ -337,7 +358,14 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	  {
 		  return this.includeSubFolders;
 	  }
-	  
+	  public String[] getEmbeddedImages()
+	  {
+		  return embeddedimages;
+	  }
+	  public String[] getContentIds()
+	  {
+		  return contentids;
+	  }
 	  public boolean isZipFilenameDynamic()
 	  {
 		  return this.zipFilenameDynamic;
@@ -440,23 +468,6 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	    return this.comment;
 	  }
 
-	  /**
-	   * @return the result file types to select for attachement </b>
-	   * @see ResultFile
-	   */
-	  public int[] getFileType()
-	  {
-	    return this.fileType;
-	  }
-
-	  /**
-	   * @param fileType the result file types to select for attachement
-	   * @see ResultFile
-	   */
-	  public void setFileType(int[] fileType)
-	  {
-	    this.fileType = fileType;
-	  }
 
 	  public boolean isIncludingFiles()
 	  {
@@ -779,18 +790,21 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 		     this.usePriority = rep.getStepAttributeBoolean(id_step, "use_Priority");
 		     this.secureconnectiontype = rep.getStepAttributeString(id_step, "secureconnectiontype");
 
-		      
-		      int nrTypes = rep.countNrStepAttributes(id_step, "file_type");
-		      allocate(nrTypes);
-
-		      for (int i = 0; i < nrTypes; i++) {
-		        String typeCode = rep.getStepAttributeString(id_step, i, "file_type");
-		        this.fileType[i] = ResultFile.getType(typeCode);
-		      }
-
 		      this.zipFiles = rep.getStepAttributeBoolean(id_step, "zip_files");
 		      this.zipFilename = rep.getStepAttributeString(id_step, "zip_name");
 		      this.ziplimitsize = rep.getStepAttributeString(id_step, "zip_limit_size");
+		      
+		      
+		      // How many arguments?
+		      int imagesnr = rep.countNrJobEntryAttributes(id_step, "embeddedimage"); //$NON-NLS-1$
+		      
+		      allocate(imagesnr);
+
+		      // Read them all...
+		      for (int a = 0; a < imagesnr; a++) {
+		    	  embeddedimages[a] = rep.getJobEntryAttributeString(id_step, a, "embeddedimage"); //$NON-NLS-1$
+		    	  contentids[a] = rep.getJobEntryAttributeString(id_step, a, "contentid"); //$NON-NLS-1$
+		      }
 		      
 		    } catch (KettleDatabaseException dbe)
 		    {
@@ -845,22 +859,19 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	      rep.saveStepAttribute(id_transformation, id_step, "use_HTML", useHTML);
 	      rep.saveStepAttribute(id_transformation, id_step, "use_Priority", usePriority);
 	      rep.saveStepAttribute(id_transformation, id_step, "secureconnectiontype", secureconnectiontype);
-	      
-	      
-
-	      if (fileType != null)
-	      {
-	        for (int i = 0; i < fileType.length; i++)
-	        {
-	          rep.saveStepAttribute(id_transformation, id_step, i, "file_type", ResultFile.getTypeCode(fileType[i]));
-	        }
-	      }
 
 	      rep.saveStepAttribute(id_transformation, id_step, "zip_files", zipFiles);
 	      rep.saveStepAttribute(id_transformation, id_step, "zip_name", zipFilename);
 	      rep.saveStepAttribute(id_transformation, id_step, "zip_limit_size", ziplimitsize);
 	      
-
+	      
+	      // save the arguments...
+	      if (embeddedimages != null) {
+	        for (int i = 0; i < embeddedimages.length; i++) {
+	          rep.saveJobEntryAttribute(id_transformation, id_step, i, "embeddedimage", embeddedimages[i]); //$NON-NLS-1$
+	          rep.saveJobEntryAttribute(id_transformation, id_step, i, "contentid", contentids[i]); //$NON-NLS-1$
+	        }
+	      }
 	    } catch (KettleDatabaseException dbe)
 	    {
 	      throw new KettleException("Unable to save step type 'mail' to the repository for id_step=" + id_step, dbe);

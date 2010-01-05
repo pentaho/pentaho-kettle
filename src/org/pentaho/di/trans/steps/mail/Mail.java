@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -51,6 +53,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+
 
 
 /**
@@ -303,6 +307,45 @@ public class Mail extends BaseStep implements StepInterface
 				data.realSourceFileFoldername=environmentSubstitute(meta.getSourceFileFoldername()) ; 
 				data.realSourceWildcard=environmentSubstitute(meta.getSourceWildcard()) ; 
 			}
+			
+			// check embedded images
+			if(meta.getEmbeddedImages()!=null && meta.getEmbeddedImages().length>0) {
+				FileObject image= null;
+				data.embeddedMimePart= new HashSet<MimeBodyPart>();
+				try {
+					for(int i=0; i<meta.getEmbeddedImages().length; i++) {
+						String imageFile= environmentSubstitute(meta.getEmbeddedImages()[i]);
+						String contentID= environmentSubstitute(meta.getContentIds()[i]);
+						image=KettleVFS.getFileObject(imageFile);
+
+						if(image.exists() && image.getType()== FileType.FILE ) {
+							// Create part for the image 
+				    	    MimeBodyPart imagePart = new MimeBodyPart();
+				    	    //Load the image
+				    	    URLDataSource fds = new URLDataSource(image.getURL());
+				    	    imagePart.setDataHandler(new DataHandler(fds));
+				    	    //Setting the header
+				    	    imagePart.setHeader("Content-ID","<"+ contentID + ">");
+				    	    // keep this part for further user
+				    	    data.embeddedMimePart.add(imagePart);
+				    	    log.logBasic(toString(), BaseMessages.getString(PKG, "Mail.Log.ImageAdded", imageFile));
+							
+						}else {
+							log.logError(toString(), BaseMessages.getString(PKG, "Mail.Log.WrongImage",imageFile));
+						}	
+					}
+				}catch(Exception e) {
+					log.logError(toString(), BaseMessages.getString(PKG, "Mail.Error.AddingImage", e.getMessage()));
+				}finally {
+					if(image!=null) {
+						try {
+							image.close();
+						}catch(Exception e){};
+					}
+				}
+			}
+			
+			
 		} // end if first
 		
 		boolean sendToErrorRow=false;
@@ -521,6 +564,17 @@ public class Mail extends BaseStep implements StepInterface
 	      // attached files
 	      if(meta.isDynamicFilename()) setAttachedFilesList(r, log);
 	      else setAttachedFilesList(null,log);
+	      
+
+	      // add embedded images
+	      addImagePart();
+	      
+	      if(data.nrEmbeddedImages>0 && data.nrattachedFiles==0) {
+		       //If we need to embedd images... 
+		       //We need to create a "multipart/related" message.
+		       //otherwise image will appear as attached file
+	    	  data.parts.setSubType("related");
+	      }
   
 	      msg.setContent(data.parts);
 	      
@@ -701,6 +755,17 @@ public class Mail extends BaseStep implements StepInterface
           if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Mail.Log.AttachedFile",fds.getName()));
           
 	  }
+	  private void addImagePart() throws Exception
+	  {
+		  data.nrEmbeddedImages=0;
+		  if(data.embeddedMimePart!=null && data.embeddedMimePart.size()>0) {
+			  for (Iterator<MimeBodyPart> i = data.embeddedMimePart.iterator() ; i.hasNext() ;){
+				  MimeBodyPart part=i.next();
+				  data.parts.addBodyPart(part); 
+			      data.nrEmbeddedImages++;
+				}
+		  }
+	  }
 	  private class TextFileSelector implements FileSelector 
 		{
 			LogWriter log = LogWriter.getInstance();
@@ -783,7 +848,15 @@ public class Mail extends BaseStep implements StepInterface
 		}
 		return false;
 	}
-	
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+	{
+		meta=(MailMeta)smi;
+		data=(MailData)sdi;
+
+		if(data.embeddedMimePart!=null) data.embeddedMimePart.clear();
+		data.parts=null;
+		super.dispose(meta, data);
+	}
 	  //
     //
     // Run is were the action happens!

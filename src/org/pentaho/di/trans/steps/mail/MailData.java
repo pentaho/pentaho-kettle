@@ -13,8 +13,10 @@
 
 package org.pentaho.di.trans.steps.mail;
 
+import java.util.HashSet;
 import java.util.Properties;
-import javax.mail.Multipart;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -57,7 +59,7 @@ public class MailData extends BaseStepData implements StepDataInterface
 
     Properties props;
 	
-	public Multipart parts;
+	public MimeMultipart parts;
 	
 	public RowMetaInterface previousRowMeta;
 	
@@ -66,6 +68,11 @@ public class MailData extends BaseStepData implements StepDataInterface
 	public String realSourceFileFoldername;
 	
 	public String realSourceWildcard;
+	
+	public int nrEmbeddedImages;
+	public int nrattachedFiles;
+	
+	public HashSet<MimeBodyPart> embeddedMimePart;
 	
 	/**
 	 * 
@@ -92,6 +99,9 @@ public class MailData extends BaseStepData implements StepDataInterface
 		indexOfDynamicZipFilename=-1;
 		props= new Properties();
 		indexOfReplyToAddresses=-1;
+		embeddedMimePart=null;
+		nrEmbeddedImages=0;
+		nrattachedFiles=0;
 		
 	}
 
