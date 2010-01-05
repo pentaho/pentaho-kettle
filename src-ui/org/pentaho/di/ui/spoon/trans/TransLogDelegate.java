@@ -20,6 +20,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.BufferChangedListener;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -145,7 +146,7 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
 
     try {
       XulLoader loader = new SwtXulLoader();
-      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages", LanguageChoice.getInstance().getDefaultLocale());
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_LOG_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");

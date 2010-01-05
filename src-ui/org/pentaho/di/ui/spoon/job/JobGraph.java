@@ -85,6 +85,7 @@ import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -815,7 +816,7 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
 
     try {
       XulLoader loader = new SwtXulLoader();
-      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages", LanguageChoice.getInstance().getDefaultLocale());
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_JOB_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");

@@ -1046,7 +1046,7 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
     try {
       XulLoader loader = new SwtXulLoader();
-      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages", LanguageChoice.getInstance().getDefaultLocale());
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");

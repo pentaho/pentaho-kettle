@@ -37,6 +37,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -233,7 +234,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
     try {
       XulLoader loader = new SwtXulLoader();
-      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages", LanguageChoice.getInstance().getDefaultLocale());
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_GRID_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");

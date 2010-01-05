@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepStatus;
@@ -188,7 +189,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
     try {
       XulLoader loader = new SwtXulLoader();
-      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages");
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages", LanguageChoice.getInstance().getDefaultLocale());
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_GRID_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
