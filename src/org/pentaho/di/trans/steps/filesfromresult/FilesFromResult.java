@@ -15,6 +15,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -57,10 +58,12 @@ public class FilesFromResult extends BaseStep implements StepInterface
 
 		ResultFile resultFile = (ResultFile) data.resultFilesList.get((int) getLinesRead());
 		RowMetaAndData r = resultFile.getRow();
-		
-		data.outputRowMeta = r.getRowMeta();
-		
-		smi.getFields(data.outputRowMeta, getStepname(), null, null, this);
+
+		if (first) {
+			first=false;
+			data.outputRowMeta = new RowMeta();
+			smi.getFields(data.outputRowMeta, getStepname(), null, null, this);
+		}
 		incrementLinesRead();
 
 		putRow(data.outputRowMeta, r.getData()); // copy row to possible alternate
