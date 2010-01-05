@@ -63,6 +63,8 @@ public class TransFileListener implements FileListener {
             spoon.addTransGraph(transMeta);
             spoon.sharedObjectsFileMap.put(transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects());
 
+
+            SpoonPerspectiveManager.getInstance().activatePerspective(MainSpoonPerspective.class);
             spoon.refreshTree();
             spoon.refreshHistory();
             return true;

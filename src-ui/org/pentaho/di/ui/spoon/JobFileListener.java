@@ -40,6 +40,7 @@ public class JobFileListener implements FileListener {
             
             spoon.refreshTree();
             spoon.refreshHistory();
+            SpoonPerspectiveManager.getInstance().activatePerspective(MainSpoonPerspective.class);
             return true;
             
         }
