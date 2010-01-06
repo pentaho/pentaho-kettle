@@ -2205,7 +2205,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// final Object grandParent = object.getGrandParent();
 
 		// Not clicked on a real object: returns a class
-		if (selection instanceof Class) {
+		if (selection instanceof Class<?>) {
 			if (selection.equals(TransMeta.class)) {
 				// New
 				spoonMenu = (Menu) menuMap.get("trans-class");
@@ -2291,7 +2291,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		final Object selection = object.getSelection();
 		final Object parent = object.getParent();
 
-		if (selection instanceof Class) {
+		if (selection instanceof Class<?>) {
 			if (selection.equals(TransMeta.class))
 				newTransFile();
 			if (selection.equals(JobMeta.class))

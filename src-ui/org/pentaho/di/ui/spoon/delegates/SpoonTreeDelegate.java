@@ -260,7 +260,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					object instanceof TransHopMeta || 
 					object instanceof JobEntryCopy ||
 					object instanceof JobPlugin ||
-					(object instanceof Class && object.equals(JobPlugin.class)) 
+					(object instanceof Class<?> && object.equals(JobPlugin.class)) 
 					)
 				{
 					event.doit = true;
@@ -317,7 +317,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					JobPlugin jobPlugin = (JobPlugin) object;
 					type = DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
 					data = jobPlugin.getDescription(); // Step type
-				} else if (object instanceof Class && object.equals(JobPlugin.class))
+				} else if (object instanceof Class<?> && object.equals(JobPlugin.class))
 				{
 					JobEntryCopy dummy = null;
 					if (jobMeta != null)
