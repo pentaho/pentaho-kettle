@@ -13,6 +13,7 @@
 
 package org.pentaho.di.ui.core.gui;
 import org.eclipse.jface.util.Geometry;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
@@ -125,6 +126,16 @@ public class WindowProperty
 
             shell.setBounds(resizedRect);
         }
+        
+        // Just to double check: what is the preferred size of this dialog?
+        // This computed is a minimum.  If the minimum is smaller than the 
+        // size of the current shell, we make it larger.
+        //
+		Point computedSize = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		Rectangle shellSize = shell.getBounds();
+		if (shellSize.width<computedSize.x) shellSize.width=computedSize.x;
+		if (shellSize.height<computedSize.y) shellSize.height=computedSize.y;
+		shell.setBounds(shellSize);
 	}
 
     /**
