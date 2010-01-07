@@ -286,7 +286,6 @@ public class ConnectionsController extends AbstractXulEventHandler {
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.DoesNotExists.Title")); //$NON-NLS-1$
           mb.open();
         } else {
-          boolean save = true;
           DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
           String dbName = dd.open();
           if (dbName != null && !dbName.equals(""))
@@ -298,14 +297,11 @@ public class ConnectionsController extends AbstractXulEventHandler {
                 mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.AlreadyExists.Message", dbName)); //$NON-NLS-1$
                 mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.AlreadyExists.Title")); //$NON-NLS-1$
                 mb.open();
-                save = false;
               } else {
                 repository.insertLogEntry("Updating database connection name from '" + originalDbName + "' to '" + databaseMeta.getName() + "'");
                 repository.renameDatabase(idDatabase, dbName);
               }
-            }
-            
-            if(save) {
+            } else {
               repository.insertLogEntry("Updating database connection '"+databaseMeta.getName()+"'");
               repository.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
             }
