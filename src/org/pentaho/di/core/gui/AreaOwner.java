@@ -10,9 +10,9 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
 */
-package org.pentaho.di.ui.spoon;
+package org.pentaho.di.core.gui;
 
-import org.eclipse.swt.graphics.Rectangle;
+import org.pentaho.di.core.gui.Rectangle;
 
 /**
  * When we draw something in Spoon (TransPainter) we keep a list of all the
@@ -27,11 +27,16 @@ public class AreaOwner {
 	public enum AreaType {
 		REPOSITORY_LOCK_IMAGE, NOTE, REMOTE_INPUT_STEP, REMOTE_OUTPUT_STEP, STEP_PARTITIONING, 
 		STEP_ICON, STEP_ERROR_ICON, STEP_INPUT_HOP_ICON, STEP_OUTPUT_HOP_ICON, STEP_INFO_HOP_ICON, STEP_ERROR_HOP_ICON, STEP_TARGET_HOP_ICON, 
-		HOP_COPY_ICON, HOP_ERROR_ICON, HOP_INFO_ICON, HOP_INFO_STEP_COPIES_ERROR, STEP_MINI_ICONS_BALLOON, 
+		HOP_COPY_ICON, HOP_ERROR_ICON, HOP_INFO_ICON, HOP_INFO_STEP_COPIES_ERROR, 
+		
+		MINI_ICONS_BALLOON, 
 		
 		STEP_TARGET_HOP_ICON_OPTION,
 		STEP_EDIT_ICON, STEP_MENU_ICON,
 		
+		
+		JOB_ENTRY_ICON, JOB_HOP_ICON, JOB_HOP_PARALLEL_ICON,
+		JOB_ENTRY_MINI_ICON_INPUT, JOB_ENTRY_MINI_ICON_OUTPUT, JOB_ENTRY_MINI_ICON_CONTEXT, JOB_ENTRY_MINI_ICON_EDIT, 
 	};
 	
 	private Rectangle area;

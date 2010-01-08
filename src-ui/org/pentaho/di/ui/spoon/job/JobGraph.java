@@ -14,6 +14,7 @@ package org.pentaho.di.ui.spoon.job;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -23,6 +24,8 @@ import java.util.TimerTask;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.window.DefaultToolTip;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -34,14 +37,13 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -49,13 +51,9 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.LineAttributes;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -70,7 +68,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
@@ -80,7 +77,8 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.GUIPositionInterface;
+import org.pentaho.di.core.gui.AreaOwner;
+import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
@@ -90,6 +88,7 @@ import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -101,8 +100,10 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -114,14 +115,18 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
+import org.pentaho.di.ui.spoon.JobPainter;
+import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.SwtScrollBar;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
-import org.pentaho.di.ui.spoon.TransPainter;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
+import org.pentaho.di.ui.spoon.trans.DelayListener;
+import org.pentaho.di.ui.spoon.trans.DelayTimer;
 import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
@@ -135,7 +140,7 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * Created on 17-may-2003
  *
  */
-public class JobGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface {
+public class JobGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener {
 	
   private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -171,13 +176,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
 
   protected Point lastclick;
 
-  protected JobEntryCopy selected_entries[];
+  protected List<JobEntryCopy> selectedEntries;
 
-  protected JobEntryCopy selected_icon;
+  protected JobEntryCopy selectedEntry;
 
-  protected Point prev_locations[];
+  protected Point previousLocations[];
 
-  protected NotePadMeta selected_note;
+  private List<NotePadMeta> selectedNotes;
+  protected NotePadMeta selectedNote;
 
   protected Point previous_note_location;
 
@@ -198,11 +204,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   // public boolean shift, control;
   protected boolean split_hop;
 
-  protected int last_button;
+  protected int lastButton;
 
   protected JobHopMeta last_hop_split;
 
-  protected Rectangle selrect;
+  protected org.pentaho.di.core.gui.Rectangle selectionRegion;
 
   protected static final double theta = Math.toRadians(10); // arrowhead sharpness
 
@@ -248,16 +254,33 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   private Label minMaxButton;
 
   private Combo zoomLabel;
-
-  private int gridSize;
-
-  private float translationX;
-
-  private float translationY;
-
-  private boolean shadow;
   
   private CheckBoxToolTip helpTip;
+
+  private List<AreaOwner> areaOwners;
+
+  private List<JobEntryCopy> mouseOverEntries;
+
+  /** A map that keeps track of which log line was written by which job entry */
+  private Map<JobEntryCopy, String> entryLogMap;
+  
+  private Map<JobEntryCopy, DelayTimer> delayTimers;
+
+  private JobEntryCopy	startHopEntry;
+  private Point     endHopLocation;
+
+private JobEntryCopy	endHopEntry;
+
+private JobEntryCopy	noInputEntry;
+
+private DefaultToolTip toolTip;
+
+private Point[]	previous_step_locations;
+
+private Point[]	previous_note_locations;
+
+private JobEntryCopy	currentEntry;
+
 
   public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     super(par, SWT.NONE);
@@ -265,8 +288,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
     this.log = spoon.getLog();
     this.spoon = spoon;
     this.jobMeta = jobMeta;
+    
     this.props = PropsUI.getInstance();
-
+    this.areaOwners = new ArrayList<AreaOwner>();
+    this.mouseOverEntries = new ArrayList<JobEntryCopy>();
+    this.delayTimers = new HashMap<JobEntryCopy, DelayTimer>();
+    
     jobLogDelegate = new JobLogDelegate(spoon, this);
     jobHistoryDelegate = new JobHistoryDelegate(spoon, this);
     jobGridDelegate = new JobGridDelegate(spoon, this);
@@ -313,6 +340,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
     		  BaseMessages.getString(PKG, "JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS), new Exception(t));
     }
     
+    toolTip = new DefaultToolTip(canvas, ToolTip.NO_RECREATE, true);
+    toolTip.setRespectMonitorBounds(true);
+    toolTip.setRespectDisplayBounds(true);
+    toolTip.setPopupDelay(350);
+    toolTip.setShift(new org.eclipse.swt.graphics.Point(ConstUI.TOOLTIP_OFFSET, ConstUI.TOOLTIP_OFFSET));
 
     helpTip = new CheckBoxToolTip(canvas);
     helpTip.addCheckBoxToolTipListener(new CheckBoxToolTipListener() {
@@ -325,12 +357,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
 
     newProps();
 
-    selrect = null;
+    selectionRegion = null;
     hop_candidate = null;
     last_hop_split = null;
 
-    selected_entries = null;
-    selected_note = null;
+    selectedEntries = null;
+    selectedNote = null;
 
     hori = canvas.getHorizontalBar();
     vert = canvas.getVerticalBar();
@@ -373,310 +405,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
       }
     });
 
-    selected_entries = null;
+    selectedEntries = null;
     lastclick = null;
 
-    canvas.addMouseListener(new MouseAdapter() {
-      public void mouseDoubleClick(MouseEvent e) {
-        clearSettings();
-
-        Point real = screen2real(e.x, e.y);
-
-        JobEntryCopy jobentry = jobMeta.getJobEntryCopy(real.x, real.y, iconsize);
-        if (jobentry != null) {
-          if (e.button == 1) {
-            editEntry(jobentry);
-          } else // open tab in Spoon 
-          {
-            launchStuff(jobentry);
-          }
-        } else {
-          // Check if point lies on one of the many hop-lines...
-          JobHopMeta online = findJobHop(real.x, real.y);
-          if (online != null) {
-            // editJobHop(online);
-          } else {
-            NotePadMeta ni = jobMeta.getNote(real.x, real.y);
-            if (ni != null) {
-              editNote(ni);
-            }
-          }
-
-        }
-      }
-
-      public void mouseDown(MouseEvent e) {
-        clearSettings();
-
-        last_button = e.button;
-        Point real = screen2real(e.x, e.y);
-        lastclick = new Point(real.x, real.y);
-
-        // Clear the tooltip!
-        if (spoon.getProperties().showToolTips())
-          setToolTipText(null);
-
-        // Set the pop-up menu
-        if (e.button == 3) {
-          setMenu(real.x, real.y);
-          return;
-        }
-
-        JobEntryCopy je = jobMeta.getJobEntryCopy(real.x, real.y, iconsize);
-        if (je != null) {
-          selected_entries = jobMeta.getSelectedEntries();
-          selected_icon = je;
-          // make sure this is correct!!!
-          // When an icon is moved that is not selected, it gets selected too late.
-          // It is not captured here, but in the mouseMoveListener...
-          prev_locations = jobMeta.getSelectedLocations();
-
-          Point p = je.getLocation();
-          iconoffset = new Point(real.x - p.x, real.y - p.y);
-        } else {
-          // Dit we hit a note?
-          NotePadMeta ni = jobMeta.getNote(real.x, real.y);
-          if (ni != null && last_button == 1) {
-            selected_note = ni;
-            Point loc = ni.getLocation();
-            previous_note_location = new Point(loc.x, loc.y);
-            noteoffset = new Point(real.x - loc.x, real.y - loc.y);
-            // System.out.println("We hit a note!!");
-          } else {
-            selrect = new Rectangle(real.x, real.y, 0, 0);
-          }
-        }
-        redraw();
-      }
-
-      public void mouseUp(MouseEvent e) {
-        boolean control = (e.stateMask & SWT.CONTROL) != 0;
-
-        if (iconoffset == null)
-          iconoffset = new Point(0, 0);
-        Point real = screen2real(e.x, e.y);
-        Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
-
-        // See if we need to add a hop...
-        if (hop_candidate != null) {
-          // hop doesn't already exist
-          if (jobMeta.findJobHop(hop_candidate.getFromEntry(), hop_candidate.getToEntry()) == null) {
-            if (!hop_candidate.getFromEntry().evaluates() && hop_candidate.getFromEntry().isUnconditional()) {
-              hop_candidate.setUnconditional();
-            } else {
-              hop_candidate.setConditional();
-              int nr = jobMeta.findNrNextJobEntries(hop_candidate.getFromEntry());
-
-              // If there is one green link: make this one red! (or vice-versa)
-              if (nr == 1) {
-                JobEntryCopy jge = jobMeta.findNextJobEntry(hop_candidate.getFromEntry(), 0);
-                JobHopMeta other = jobMeta.findJobHop(hop_candidate.getFromEntry(), jge);
-                if (other != null) {
-                  hop_candidate.setEvaluation(!other.getEvaluation());
-                }
-              }
-            }
-
-            jobMeta.addJobHop(hop_candidate);
-            spoon.addUndoNew(jobMeta, new JobHopMeta[] { hop_candidate }, new int[] { jobMeta
-                .indexOfJobHop(hop_candidate) });
-            spoon.refreshTree();
-          }
-          hop_candidate = null;
-          selected_entries = null;
-          last_button = 0;
-          redraw();
-        }
-
-        // Did we select a region on the screen?  
-        else if (selrect != null) {
-          selrect.width = real.x - selrect.x;
-          selrect.height = real.y - selrect.y;
-
-          jobMeta.unselectAll();
-          selectInRect(jobMeta, selrect);
-          selrect = null;
-          redraw();
-        }
-
-        // Clicked on an icon?
-        //
-        else if (selected_icon != null) {
-          if (e.button == 1) {
-            if (lastclick.x == real.x && lastclick.y == real.y) {
-              // Flip selection when control is pressed!
-              if (control) {
-                selected_icon.flipSelected();
-              } else {
-                // Otherwise, select only the icon clicked on!
-                jobMeta.unselectAll();
-                selected_icon.setSelected(true);
-              }
-            } else // We moved around some items: store undo info...
-            if (selected_entries != null && prev_locations != null) {
-              int indexes[] = jobMeta.getEntryIndexes(selected_entries);
-              spoon.addUndoPosition(jobMeta, selected_entries, indexes, prev_locations, jobMeta.getSelectedLocations());
-            }
-          }
-
-          // OK, we moved the step, did we move it across a hop?
-          // If so, ask to split the hop!
-          if (split_hop) {
-            JobHopMeta hi = findJobHop(icon.x + iconsize / 2, icon.y + iconsize / 2);
-            if (hi != null) {
-              int id = 0;
-              if (!spoon.props.getAutoSplit()) {
-                MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                	BaseMessages.getString(PKG, "JobGraph.Dialog.SplitHop.Title"), null, 
-                	BaseMessages.getString(PKG, "JobGraph.Dialog.SplitHop.Message")
-                    + Const.CR + hi.getFromEntry().getName() + " --> " + hi.getToEntry().getName(), MessageDialog.QUESTION,
-                    new String[] { BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") },
-                    0, BaseMessages.getString(PKG, "JobGraph.Dialog.SplitHop.Toggle"), spoon.props.getAutoSplit());
-                MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-                id = md.open();
-                spoon.props.setAutoSplit(md.getToggleState());
-              }
-
-              if ((id & 0xFF) == 0) {
-                JobHopMeta newhop1 = new JobHopMeta(hi.getFromEntry(), selected_icon);
-                jobMeta.addJobHop(newhop1);
-                JobHopMeta newhop2 = new JobHopMeta(selected_icon, hi.getToEntry());
-                jobMeta.addJobHop(newhop2);
-                if (!selected_icon.evaluates())
-                  newhop2.setUnconditional();
-
-                spoon.addUndoNew(jobMeta,
-                    new JobHopMeta[] { (JobHopMeta) newhop1.clone(), (JobHopMeta) newhop2.clone() }, new int[] {
-                        jobMeta.indexOfJobHop(newhop1), jobMeta.indexOfJobHop(newhop2) });
-                int idx = jobMeta.indexOfJobHop(hi);
-                spoon.addUndoDelete(jobMeta, new JobHopMeta[] { (JobHopMeta) hi.clone() }, new int[] { idx });
-                jobMeta.removeJobHop(idx);
-                spoon.refreshTree();
-
-              }
-            }
-            split_hop = false;
-          }
-
-          selected_entries = null;
-          redraw();
-        }
-
-        // Notes?
-        else if (selected_note != null) {
-          Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
-          if (last_button == 1) {
-            if (lastclick.x != real.x || lastclick.y != real.y) {
-              int indexes[] = new int[] { jobMeta.indexOfNote(selected_note) };
-              spoon.addUndoPosition(jobMeta, new NotePadMeta[] { selected_note }, indexes,
-                  new Point[] { previous_note_location }, new Point[] { note });
-            }
-          }
-          selected_note = null;
-        }
-      }
-    });
-
-    canvas.addMouseMoveListener(new MouseMoveListener() {
-      public void mouseMove(MouseEvent e) {
-        boolean shift = (e.stateMask & SWT.SHIFT) != 0;
-
-        // Remember the last position of the mouse for paste with keyboard
-        lastMove = new Point(e.x, e.y);
-
-        if (iconoffset == null)
-          iconoffset = new Point(0, 0);
-        Point real = screen2real(e.x, e.y);
-        Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
-
-        setToolTip(real.x, real.y, e.x, e.y);
-
-        // First see if the icon we clicked on was selected.
-        // If the icon was not selected, we should unselect all other icons,
-        // selected and move only the one icon
-        if (selected_icon != null && !selected_icon.isSelected()) {
-          jobMeta.unselectAll();
-          selected_icon.setSelected(true);
-          selected_entries = new JobEntryCopy[] { selected_icon };
-          prev_locations = new Point[] { selected_icon.getLocation() };
-        }
-
-        // Did we select a region...?
-        if (selrect != null) {
-          selrect.width = real.x - selrect.x;
-          selrect.height = real.y - selrect.y;
-          redraw();
-        } else
-
-        // Or just one entry on the screen?
-        if (selected_entries != null) {
-          if (last_button == 1 && !shift) {
-            /*
-             * One or more icons are selected and moved around...
-             * 
-             * new : new position of the ICON (not the mouse pointer)
-             * dx  : difference with previous position
-             */
-            int dx = icon.x - selected_icon.getLocation().x;
-            int dy = icon.y - selected_icon.getLocation().y;
-
-            JobHopMeta hi = findJobHop(icon.x + iconsize / 2, icon.y + iconsize / 2);
-            if (hi != null) {
-              //log.logBasic("MouseMove", "Split hop candidate B!");
-              if (!jobMeta.isEntryUsedInHops(selected_icon)) {
-                //log.logBasic("MouseMove", "Split hop candidate A!");
-                split_hop = true;
-                last_hop_split = hi;
-                hi.setSplit(true);
-              }
-            } else {
-              if (last_hop_split != null) {
-                last_hop_split.setSplit(false);
-                last_hop_split = null;
-                split_hop = false;
-              }
-            }
-
-            //
-            // One or more job entries are being moved around!
-            //
-            for (int i = 0; i < jobMeta.nrJobEntries(); i++) {
-              JobEntryCopy je = jobMeta.getJobEntry(i);
-              if (je.isSelected()) {
-                PropsUI.setLocation(je, je.getLocation().x + dx, je.getLocation().y + dy);
-              }
-            }
-
-            redraw();
-          } else
-          //	The middle button perhaps?
-          if (last_button == 2 || (last_button == 1 && shift)) {
-            JobEntryCopy si = jobMeta.getJobEntryCopy(real.x, real.y, iconsize);
-            if (si != null && !selected_icon.equals(si)) {
-              if (hop_candidate == null) {
-                hop_candidate = new JobHopMeta(selected_icon, si);
-                redraw();
-              }
-            } else {
-              if (hop_candidate != null) {
-                hop_candidate = null;
-                redraw();
-              }
-            }
-          }
-        } else
-        // are we moving a note around? 
-        if (selected_note != null) {
-          if (last_button == 1) {
-            Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
-            PropsUI.setLocation(selected_note, note.x, note.y);
-            redraw();
-            //spoon.refreshGraph();  removed in 2.4.1 (SB: defect #4862)
-          }
-        }
-      }
-    });
-
+    canvas.addMouseListener(this);
+    canvas.addMouseMoveListener(this);
+    canvas.addMouseTrackListener(this);
+    
     // Drag & Drop for steps
     Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
     DropTarget ddTarget = new DropTarget(canvas, DND.DROP_MOVE);
@@ -822,6 +557,680 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
 	});
 
   }
+  
+  protected void hideToolTips() {
+	    toolTip.hide();
+	    helpTip.hide();
+	  }
+
+  public void mouseDoubleClick(MouseEvent e) {
+      clearSettings();
+
+      Point real = screen2real(e.x, e.y);
+
+      // Hide the tooltip!
+      hideToolTips();
+      
+      JobEntryCopy jobentry = jobMeta.getJobEntryCopy(real.x, real.y, iconsize);
+      if (jobentry != null) {
+        if (e.button == 1) {
+          editEntry(jobentry);
+        } else // open tab in Spoon 
+        {
+          launchStuff(jobentry);
+        }
+      } else {
+        // Check if point lies on one of the many hop-lines...
+        JobHopMeta online = findJobHop(real.x, real.y);
+        if (online != null) {
+          // editJobHop(online);
+        } else {
+          NotePadMeta ni = jobMeta.getNote(real.x, real.y);
+          if (ni != null) {
+            editNote(ni);
+          }
+        }
+
+      }
+    }
+
+
+
+  
+  public void mouseDown(MouseEvent e) {
+
+		boolean control = (e.stateMask & SWT.CONTROL) != 0;
+		boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+
+		lastButton = e.button;
+		Point real = screen2real(e.x, e.y);
+		lastclick = new Point(real.x, real.y);
+
+		// Hide the tooltip!
+		hideToolTips();
+
+		// Set the pop-up menu
+		if (e.button == 3) {
+			setMenu(real.x, real.y);
+			return;
+		}
+
+		// A single left click on one of the area owners...
+		//
+		if (e.button == 1) {
+			AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+			if (areaOwner != null) {
+				switch (areaOwner.getAreaType()) {
+				case JOB_ENTRY_MINI_ICON_OUTPUT:
+					// Click on the output icon means: start of drag
+					// Action: We show the input icons on the other steps...
+					//
+					{
+						selectedEntry = null;
+						startHopEntry = (JobEntryCopy) areaOwner.getOwner();
+						// stopEntryMouseOverDelayTimer(startHopEntry);
+					}
+					break;
+
+				case JOB_ENTRY_MINI_ICON_INPUT:
+					// Click on the input icon means: start to a new hop
+					// In this case, we set the end hop step...
+					//
+					{
+						selectedEntry = null;
+						startHopEntry = null;
+						endHopEntry = (JobEntryCopy) areaOwner.getOwner();
+						// stopEntryMouseOverDelayTimer(endHopEntry);
+					}
+					break;
+
+
+				case JOB_ENTRY_MINI_ICON_EDIT:
+					{
+						clearSettings();
+						currentEntry = (JobEntryCopy) areaOwner.getOwner();
+						stopEntryMouseOverDelayTimer(currentEntry);
+						editEntry(currentEntry);
+					}
+					break;
+
+				case JOB_ENTRY_MINI_ICON_CONTEXT:
+					clearSettings();
+					JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+					setMenu(jobEntryCopy.getLocation().x, jobEntryCopy.getLocation().y);
+					break;
+					
+				case JOB_ENTRY_ICON:
+					jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+					currentEntry = jobEntryCopy;
+					
+					if (hop_candidate != null) {
+						addCandidateAsHop();
+					}
+					
+					// SHIFT CLICK is start of drag to create a new hop
+					//
+					else if (e.button == 2 || (e.button == 1 && shift)) {
+						startHopEntry = jobEntryCopy;
+					} else {
+						selectedEntries = jobMeta.getSelectedEntries();
+						selectedEntry = jobEntryCopy;
+						// 
+						// When an icon is moved that is not selected, it gets
+						// selected too late.
+						// It is not captured here, but in the mouseMoveListener...
+						//
+						previous_step_locations = jobMeta.getSelectedLocations();
+
+						Point p = jobEntryCopy.getLocation();
+						iconoffset = new Point(real.x - p.x, real.y - p.y);
+					}
+					redraw();
+					break;
+				
+				case NOTE:
+					ni = (NotePadMeta) areaOwner.getOwner();
+					selectedNotes = jobMeta.getSelectedNotes();
+					selectedNote = ni;
+					Point loc = ni.getLocation();
+
+					previous_note_locations = jobMeta.getSelectedNoteLocations();
+
+					noteoffset = new Point(real.x - loc.x, real.y - loc.y);
+
+					redraw();
+					break;
+
+				// If you click on an evaluating icon, change the evaluation...
+				//
+				case JOB_HOP_ICON:
+					JobHopMeta hop = (JobHopMeta) areaOwner.getOwner();
+					if (hop.getFromEntry().evaluates()) {
+						if (hop.isUnconditional()) {
+							hop.setUnconditional(false);
+							hop.setEvaluation(true);
+						} else {
+							if (hop.getEvaluation()) {
+								hop.setEvaluation(false);
+							} else {
+								hop.setUnconditional(true);
+							}
+						}
+						redraw();
+					}
+					break;
+				}
+			} else {
+				// No area-owner means: background:
+				//
+				startHopEntry = null;
+				if (!control) {
+					selectionRegion = new org.pentaho.di.core.gui.Rectangle(real.x, real.y, 0, 0);
+				}
+				redraw();
+			}
+		}
+	}
+
+	public void mouseUp(MouseEvent e) {
+    boolean control = (e.stateMask & SWT.CONTROL) != 0;
+
+    if (iconoffset == null)
+      iconoffset = new Point(0, 0);
+    Point real = screen2real(e.x, e.y);
+    Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
+
+    // Quick new hop option? (drag from one step to another)
+    //
+    if (hop_candidate != null) {
+    	addCandidateAsHop();
+    	redraw();
+    }
+    // Did we select a region on the screen? Mark steps in region as
+    // selected
+    //
+    else {
+      if (selectionRegion != null) {
+        selectionRegion.width = real.x - selectionRegion.x;
+        selectionRegion.height = real.y - selectionRegion.y;
+
+        jobMeta.unselectAll();
+        selectInRect(jobMeta, selectionRegion);
+        selectionRegion = null;
+        stopEntryMouseOverDelayTimers();
+        redraw();
+      }
+      // Clicked on an icon?
+      //
+      else {
+        if (selectedEntry != null && startHopEntry==null) {
+          if (e.button == 1) {
+            Point realclick = screen2real(e.x, e.y);
+            if (lastclick.x == realclick.x && lastclick.y == realclick.y) {
+              // Flip selection when control is pressed!
+              if (control) {
+                selectedEntry.flipSelected();
+              } else {
+                // Otherwise, select only the icon clicked on!
+                jobMeta.unselectAll();
+                selectedEntry.setSelected(true);
+              }
+            } else {
+              // Find out which Steps & Notes are selected
+              selectedEntries = jobMeta.getSelectedEntries();
+              selectedNotes = jobMeta.getSelectedNotes();
+
+              // We moved around some items: store undo info...
+              // 
+              boolean also = false;
+              if (selectedNotes != null && previous_note_locations != null) {
+                int indexes[] = jobMeta.getNoteIndexes(selectedNotes);
+                
+                addUndoPosition(selectedNotes.toArray(new NotePadMeta[selectedNotes.size()]), indexes, previous_note_locations, jobMeta
+                    .getSelectedNoteLocations(), also);
+                also = selectedEntries != null && selectedEntries.size() > 0;
+              }
+              if (selectedEntries != null && previous_step_locations != null) {
+                int indexes[] = jobMeta.getEntryIndexes(selectedEntries);
+                addUndoPosition(selectedEntries.toArray(new JobEntryCopy[selectedEntries.size()]), indexes, previous_step_locations, jobMeta.getSelectedLocations(), also);
+              }
+            }
+          }
+
+          // OK, we moved the step, did we move it across a hop?
+          // If so, ask to split the hop!
+          if (split_hop) {
+            JobHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selectedEntry);
+            if (hi != null) {
+              int id = 0;
+              if (!spoon.props.getAutoSplit()) {
+                MessageDialogWithToggle md = new MessageDialogWithToggle(
+                    shell,
+                    BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Title"), null, //$NON-NLS-1$
+                    BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
+                    BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, 0, BaseMessages.getString(PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+                id = md.open();
+                spoon.props.setAutoSplit(md.getToggleState());
+              }
+
+              if ((id & 0xFF) == 0) // Means: "Yes" button clicked!
+              {
+                // Only split A-->--B by putting C in between IF...
+                // C-->--A or B-->--C don't exists...
+                // A ==> hi.getFromEntry()
+                // B ==> hi.getToEntry();
+                // C ==> selected_step
+                //
+                if (jobMeta.findJobHop(selectedEntry, hi.getFromEntry()) == null && jobMeta.findJobHop(hi.getToEntry(), selectedEntry) == null) {
+              	  
+                  JobHopMeta newhop1 = new JobHopMeta(hi.getFromEntry(), selectedEntry);
+                  jobMeta.addJobHop(newhop1);
+                  spoon.addUndoNew(jobMeta, new JobHopMeta[] { newhop1 }, new int[] { jobMeta.indexOfJobHop(newhop1) }, true);
+                  JobHopMeta newhop2 = new JobHopMeta(selectedEntry, hi.getToEntry());
+                  jobMeta.addJobHop(newhop2);
+                  spoon.addUndoNew(jobMeta, new JobHopMeta[] { newhop2 }, new int[] { jobMeta.indexOfJobHop(newhop2) }, true);
+                  int idx = jobMeta.indexOfJobHop(hi);
+                  spoon.addUndoDelete(jobMeta, new JobHopMeta[] { hi }, new int[] { idx }, true);
+                  jobMeta.removeJobHop(idx);
+                  spoon.refreshTree();
+                  
+                } else {
+                  // Silently discard this hop-split attempt. 
+                }
+              }
+            }
+            split_hop = false;
+          }
+
+          selectedEntries = null;
+          selectedNotes = null;
+          selectedEntry = null;
+          selectedNote = null;
+          startHopEntry = null;
+          endHopLocation = null;
+          redraw();
+        }
+
+        // Notes?
+        else {
+          if (selectedNote != null) {
+            if (e.button == 1) {
+              if (lastclick.x == e.x && lastclick.y == e.y) {
+                // Flip selection when control is pressed!
+                if (control) {
+                  selectedNote.flipSelected();
+                } else {
+                  // Otherwise, select only the note clicked on!
+                  jobMeta.unselectAll();
+                  selectedNote.setSelected(true);
+                }
+              } else {
+                // Find out which Steps & Notes are selected
+                selectedEntries = jobMeta.getSelectedEntries();
+                selectedNotes = jobMeta.getSelectedNotes();
+
+                // We moved around some items: store undo info...
+                boolean also = false;
+                if (selectedNotes != null && previous_note_locations != null) {
+                  int indexes[] = jobMeta.getNoteIndexes(selectedNotes);
+                  addUndoPosition(selectedNotes.toArray(new NotePadMeta[selectedNotes.size()]), indexes, previous_note_locations, jobMeta.getSelectedNoteLocations(), also);
+                  also = selectedEntries != null && selectedEntries.size() > 0;
+                }
+                if (selectedEntries != null && previous_step_locations != null) {
+                  int indexes[] = jobMeta.getEntryIndexes(selectedEntries);
+                  addUndoPosition(selectedEntries.toArray(new JobEntryCopy[selectedEntries.size()]), indexes, previous_step_locations, jobMeta.getSelectedLocations(), also);
+                }
+              }
+            }
+
+            selectedNotes = null;
+            selectedEntries = null;
+            selectedEntry = null;
+            selectedNote = null;
+            startHopEntry = null;
+            endHopLocation = null;
+          } else {
+          	AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+          	if (areaOwner==null && selectionRegion==null) {
+	            	// Hit absolutely nothing: clear the settings
+	            	//
+	          	  	clearSettings();
+          	}
+          }
+        } 
+      }
+    }
+
+    lastButton = 0;
+  }
+
+	public void mouseMove(MouseEvent e) {
+      boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+      noInputEntry = null;
+
+      // disable the tooltip
+      //
+      toolTip.hide();
+
+      // Remember the last position of the mouse for paste with keyboard
+      //
+      lastMove = new Point(e.x, e.y);
+      Point real = screen2real(e.x, e.y);
+
+      if (iconoffset == null) {
+        iconoffset = new Point(0, 0);
+      }
+      Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
+
+      if (noteoffset == null) {
+        noteoffset = new Point(0, 0);
+      }
+      Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
+      
+      // Moved over an area?
+      //
+      AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+      if (areaOwner!=null) {
+      	switch (areaOwner.getAreaType()) {
+      	case JOB_ENTRY_ICON :
+	        	{
+	        		JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+	        		resetDelayTimer(jobEntryCopy);
+	        	}
+  			break;
+
+      	case MINI_ICONS_BALLOON : // Give the timer a bit more time 
+	        	{
+	        		JobEntryCopy jobEntryCopy = (JobEntryCopy)areaOwner.getOwner();
+	        		resetDelayTimer(jobEntryCopy);
+	        	}
+      		break;
+          default:
+          	break;
+      	}
+      }
+
+      // 
+      // First see if the icon we clicked on was selected.
+      // If the icon was not selected, we should un-select all other
+      // icons, selected and move only the one icon
+      //
+      if (selectedEntry != null && !selectedEntry.isSelected()) {
+        jobMeta.unselectAll();
+        selectedEntry.setSelected(true);
+        selectedEntries = new ArrayList<JobEntryCopy>();
+        selectedEntries.add(selectedEntry);
+        previous_step_locations = new Point[] { selectedEntry.getLocation() };
+        redraw();
+      } 
+      else if (selectedNote != null && !selectedNote.isSelected()) {
+        jobMeta.unselectAll();
+        selectedNote.setSelected(true);
+        selectedNotes = new ArrayList<NotePadMeta>();
+        selectedNotes.add(selectedNote);
+        previous_note_locations = new Point[] { selectedNote.getLocation() };
+        redraw();
+      }
+      
+      // Did we select a region...?
+      //
+      else if (selectionRegion != null && startHopEntry==null) {
+        selectionRegion.width = real.x - selectionRegion.x;
+        selectionRegion.height = real.y - selectionRegion.y;
+        redraw();
+      }
+      // Move around steps & notes
+      //
+      else if (selectedEntry != null && lastButton == 1 && !shift && startHopEntry==null) {
+          /*
+           * One or more icons are selected and moved around...
+           * 
+           * new : new position of the ICON (not the mouse pointer) dx : difference with previous
+           * position
+           */
+          int dx = icon.x - selectedEntry.getLocation().x;
+          int dy = icon.y - selectedEntry.getLocation().y;
+
+          // See if we have a hop-split candidate
+          //
+          JobHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selectedEntry);
+          if (hi != null) {
+            // OK, we want to split the hop in 2
+            // 
+            if (!hi.getFromEntry().equals(selectedEntry) && !hi.getToEntry().equals(selectedEntry)) {
+              split_hop = true;
+              last_hop_split = hi;
+              hi.split = true;
+            }
+          } else {
+            if (last_hop_split != null) {
+              last_hop_split.split = false;
+              last_hop_split = null;
+              split_hop = false;
+            }
+          }
+
+          selectedNotes = jobMeta.getSelectedNotes();
+          selectedEntries = jobMeta.getSelectedEntries();
+
+          // Adjust location of selected steps...
+          if (selectedEntries != null) {
+            for (int i = 0; i < selectedEntries.size(); i++) {
+              JobEntryCopy jobEntryCopy = selectedEntries.get(i);
+              PropsUI.setLocation(jobEntryCopy, jobEntryCopy.getLocation().x + dx, jobEntryCopy.getLocation().y + dy);
+              stopEntryMouseOverDelayTimer(jobEntryCopy);
+            }
+          }
+          // Adjust location of selected hops...
+          if (selectedNotes != null) {
+            for (int i = 0; i < selectedNotes.size(); i++) {
+              NotePadMeta ni = selectedNotes.get(i);
+              PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
+            }
+          }
+
+          redraw();
+      }
+  	
+      // Are we creating a new hop with the middle button or pressing SHIFT?
+      //
+      else if ((startHopEntry!=null && endHopEntry==null) || (endHopEntry!=null && startHopEntry==null)) {
+      	JobEntryCopy jobEntryCopy = jobMeta.getJobEntryCopy(real.x, real.y, iconsize);
+          endHopLocation = new Point(real.x, real.y);
+          if (jobEntryCopy != null && ((startHopEntry!=null && !startHopEntry.equals(jobEntryCopy)) || (endHopEntry!=null && !endHopEntry.equals(jobEntryCopy))) ) {
+          	if (hop_candidate == null) {
+          		// See if the step accepts input.  If not, we can't create a new hop...
+          		//
+          		if (startHopEntry!=null) {
+          			if (!jobEntryCopy.isStart()) {
+          				hop_candidate = new JobHopMeta(startHopEntry, jobEntryCopy);
+			            endHopLocation=null;
+          			} else {
+	            		noInputEntry=jobEntryCopy;
+	            		toolTip.setImage(null);
+	            		toolTip.setText("The start entry can only be used at the start of a Job");
+	            		toolTip.show(new org.eclipse.swt.graphics.Point(real.x, real.y));
+          			}
+          		} else if (endHopEntry!=null) {
+          				hop_candidate = new JobHopMeta(jobEntryCopy, endHopEntry);
+			            endHopLocation=null;
+          		}
+              }
+          } else {
+            if (hop_candidate != null) {
+            	hop_candidate = null;
+              redraw();
+            }
+        }
+          
+    	  redraw();
+      }
+      
+      // Move around notes & steps
+      //
+      if (selectedNote != null) {
+        if (lastButton == 1 && !shift) {
+          /*
+           * One or more notes are selected and moved around...
+           * 
+           * new : new position of the note (not the mouse pointer) dx : difference with previous
+           * position
+           */
+          int dx = note.x - selectedNote.getLocation().x;
+          int dy = note.y - selectedNote.getLocation().y;
+
+          selectedNotes = jobMeta.getSelectedNotes();
+          selectedEntries = jobMeta.getSelectedEntries();
+
+          // Adjust location of selected steps...
+          if (selectedEntries != null)
+            for (int i = 0; i < selectedEntries.size(); i++) {
+              JobEntryCopy jobEntryCopy = selectedEntries.get(i);
+              PropsUI.setLocation(jobEntryCopy, jobEntryCopy.getLocation().x + dx, jobEntryCopy.getLocation().y + dy);
+            }
+          // Adjust location of selected hops...
+          if (selectedNotes != null)
+            for (int i = 0; i < selectedNotes.size(); i++) {
+              NotePadMeta ni = selectedNotes.get(i);
+              PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
+            }
+
+          redraw();
+        }
+      }
+    }
+    
+
+
+  public void mouseHover(MouseEvent e) {
+	  
+	  boolean tip = true;
+	  
+	  // toolTip.hide();
+	  Point real = screen2real(e.x, e.y);
+	  
+      AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+      if (areaOwner!=null) {
+      	switch (areaOwner.getAreaType()) {
+      	case JOB_ENTRY_ICON:
+      		JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner(); 
+      		if (!mouseOverEntries.contains(jobEntryCopy)) {
+      			addEntryMouseOverDelayTimer(jobEntryCopy);
+      			redraw();
+      			tip=false;
+      		}
+  			break;
+      	}
+      }
+      
+      if (tip) {
+          // Show a tool tip upon mouse-over of an object on the canvas
+          //
+          if (!helpTip.isVisible()) {
+            setToolTip(real.x, real.y, e.x, e.y);
+          }
+      }
+  }
+  
+  public void mouseEnter(MouseEvent event) {	  
+  }
+  
+  public void mouseExit(MouseEvent event) {
+  };
+
+  
+	private void addCandidateAsHop() {
+		if (hop_candidate != null) {
+
+			if (!hop_candidate.getFromEntry().evaluates() && hop_candidate.getFromEntry().isUnconditional()) {
+				hop_candidate.setUnconditional();
+			} else {
+				hop_candidate.setConditional();
+				int nr = jobMeta.findNrNextJobEntries(hop_candidate.getFromEntry());
+
+				// If there is one green link: make this one red! (or
+				// vice-versa)
+				if (nr == 1) {
+					JobEntryCopy jge = jobMeta.findNextJobEntry(hop_candidate.getFromEntry(), 0);
+					JobHopMeta other = jobMeta.findJobHop(hop_candidate.getFromEntry(), jge);
+					if (other != null) {
+						hop_candidate.setEvaluation(!other.getEvaluation());
+					}
+				}
+			}
+
+            jobMeta.addJobHop(hop_candidate);
+            spoon.addUndoNew(jobMeta, new JobHopMeta[] { hop_candidate }, new int[] { jobMeta.indexOfJobHop(hop_candidate) });
+            spoon.refreshTree();
+
+            clearSettings();
+            redraw();
+		}
+	}
+
+  public AreaOwner getVisibleAreaOwner(int x, int y) {
+		for (int i=areaOwners.size()-1;i>=0;i--) {
+			AreaOwner areaOwner = areaOwners.get(i);
+			if (areaOwner.contains(x, y)) {
+				return areaOwner;
+			}
+		}
+		return null;
+  }
+  
+  private synchronized void addEntryMouseOverDelayTimer(final JobEntryCopy jobEntryCopy) {
+	  
+	  // Don't add the same mouse over delay timer twice...
+	  //
+	  if (mouseOverEntries.contains(jobEntryCopy)) return;
+	  
+	  mouseOverEntries.add(jobEntryCopy);
+	  
+	  DelayTimer delayTimer = new DelayTimer(2500, new DelayListener() {
+			public void expired() {
+				mouseOverEntries.remove(jobEntryCopy);
+				delayTimers.remove(jobEntryCopy);
+				asyncRedraw();
+			}
+		});
+	  
+	  new Thread(delayTimer).start();
+	  
+	  delayTimers.put(jobEntryCopy, delayTimer);
+  }
+  
+  private void stopEntryMouseOverDelayTimer(final JobEntryCopy jobEntryCopy) {
+	  DelayTimer delayTimer = delayTimers.get(jobEntryCopy);
+	  if (delayTimer!=null) {
+		  delayTimer.stop();
+	  }
+  }
+  
+  private void stopEntryMouseOverDelayTimers() {
+	for (DelayTimer timer : delayTimers.values()) {
+		timer.stop();
+	}
+  }
+
+  private void resetDelayTimer(JobEntryCopy jobEntryCopy) {
+	  DelayTimer delayTimer = delayTimers.get(jobEntryCopy);
+	  if (delayTimer!=null) {
+		  delayTimer.reset();
+	  }
+  }
+
+  
+  protected void asyncRedraw() {
+		spoon.getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				if (!JobGraph.this.isDisposed()) {
+					JobGraph.this.redraw();
+				}
+			}
+		});
+	}
+
 
   private void addToolBar() {
 
@@ -924,15 +1333,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
     //
     control.addKeyListener(new KeyAdapter() {
       public void keyPressed(KeyEvent e) {
-        // F2 --> rename Job entry
-        if (e.keyCode == SWT.F2) {
-          renameJobEntry();
-        }
 
         // Delete
         if (e.keyCode == SWT.DEL) {
-          JobEntryCopy copies[] = jobMeta.getSelectedEntries();
-          if (copies != null && copies.length > 0) {
+          List<JobEntryCopy> copies = jobMeta.getSelectedEntries();
+          if (copies != null && copies.size()> 0) {
             delSelected();
           }
         }
@@ -969,7 +1374,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
 
   }
 
-  public void selectInRect(JobMeta jobMeta, Rectangle rect) {
+  public void selectInRect(JobMeta jobMeta, org.pentaho.di.core.gui.Rectangle rect) {
     int i;
     for (i = 0; i < jobMeta.nrJobEntries(); i++) {
       JobEntryCopy je = jobMeta.getJobEntry(i);
@@ -991,67 +1396,6 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
 
   public boolean setFocus() {
     return canvas.setFocus();
-  }
-
-  public void renameJobEntry() {
-    JobEntryCopy[] selection = jobMeta.getSelectedEntries();
-    if (selection != null && selection.length == 1) {
-      final JobEntryCopy jobEntryMeta = selection[0];
-
-      // What is the location of the step?
-      final String name = jobEntryMeta.getName();
-      Point stepLocation = jobEntryMeta.getLocation();
-      Point realStepLocation = real2screen(stepLocation.x, stepLocation.y);
-
-      // The location of the step name?
-      GC gc = new GC(shell.getDisplay());
-      gc.setFont(GUIResource.getInstance().getFontGraph());
-      Point namePosition = TransPainter.getNamePosition(gc, name, realStepLocation, iconsize);
-      int width = gc.textExtent(name).x + 30;
-      gc.dispose();
-
-      // at this very point, create a new text widget...
-      final Text text = new Text(this, SWT.SINGLE | SWT.BORDER);
-      text.setText(name);
-      FormData fdText = new FormData();
-      fdText.left = new FormAttachment(0, namePosition.x);
-      fdText.right = new FormAttachment(0, namePosition.x + width);
-      fdText.top = new FormAttachment(0, namePosition.y);
-      text.setLayoutData(fdText);
-
-      // Add a listener!
-      // Catch the keys pressed when editing a Text-field...
-      KeyListener lsKeyText = new KeyAdapter() {
-        public void keyPressed(KeyEvent e) {
-          // "ENTER": close the text editor and copy the data over 
-          if (e.character == SWT.CR) {
-            String newName = text.getText();
-            text.dispose();
-            if (!name.equals(newName))
-              renameJobEntry(jobEntryMeta, newName);
-          }
-
-          if (e.keyCode == SWT.ESC) {
-            text.dispose();
-          }
-        }
-      };
-
-      text.addKeyListener(lsKeyText);
-      text.addFocusListener(new FocusAdapter() {
-        public void focusLost(FocusEvent e) {
-          String newName = text.getText();
-          text.dispose();
-          if (!name.equals(newName))
-            renameJobEntry(jobEntryMeta, newName);
-        }
-      });
-
-      this.layout(true, true);
-
-      text.setFocus();
-      text.setSelection(0, name.length());
-    }
   }
 
   /**
@@ -1085,15 +1429,16 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void delSelected() {
-    JobEntryCopy[] copies = jobMeta.getSelectedEntries();
-    int nrsels = copies.length;
+    List<JobEntryCopy> copies = jobMeta.getSelectedEntries();
+    int nrsels = copies.size();
     if (nrsels == 0)
       return;
 
     // Load the list of steps
+    //
     List<String> stepList = new ArrayList<String>();
-    for (int i = 0; i < copies.length; ++i) {
-      stepList.add(copies[i].toString());
+    for (int i = 0; i < copies.size(); ++i) {
+      stepList.add(copies.get(i).toString());
     }
 
     // Display the delete confirmation message box
@@ -1102,8 +1447,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
     int answer = mb.open();
     if (answer == SWT.YES) {
       // Perform the delete
-      for (int i = 0; i < copies.length; i++) {
-        spoon.deleteJobEntryCopies(jobMeta, copies[i]);
+      for (int i = 0; i < copies.size(); i++) {
+        spoon.deleteJobEntryCopies(jobMeta, copies.get(i));
       }
       spoon.refreshTree();
       spoon.refreshGraph();
@@ -1111,16 +1456,22 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void clearSettings() {
-    selected_icon = null;
-    selected_note = null;
-    selected_entries = null;
-    selrect = null;
+    selectedEntry = null;
+    selectedNote = null;
+    selectedEntries = null;
+    selectedNotes = null;
+    selectionRegion = null;
     hop_candidate = null;
     last_hop_split = null;
-    last_button = 0;
+    lastButton = 0;
+    startHopEntry = null;
+    endHopEntry = null;
     iconoffset = null;
-    for (int i = 0; i < jobMeta.nrJobHops(); i++)
+    for (int i = 0; i < jobMeta.nrJobHops(); i++) {
       jobMeta.getJobHop(i).setSplit(false);
+    }
+    
+    stopEntryMouseOverDelayTimers();
   }
 
   public Point screen2real(int x, int y) {
@@ -1158,22 +1509,48 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
     return screen2real(p.x, p.y);
   }
 
-  // See if location (x,y) is on a line between two steps: the hop!
-  // return the HopInfo if so, otherwise: null	
-  protected JobHopMeta findJobHop(int x, int y) {
+  /**
+   *  See if location (x,y) is on a line between two steps: the hop!
+   *  @param x
+   *  @param y
+   *  @return the transformation hop on the specified location, otherwise: null 
+   */
+  private JobHopMeta findJobHop(int x, int y) {
+    return findHop(x, y, null);
+  }
+
+  /**
+   *  See if location (x,y) is on a line between two steps: the hop!
+   *  @param x
+   *  @param y
+   *  @param exclude the step to exclude from the hops (from or to location). Specify null if no step is to be excluded.
+   *  @return the transformation hop on the specified location, otherwise: null 
+   */
+  private JobHopMeta findHop(int x, int y, JobEntryCopy exclude) {
     int i;
     JobHopMeta online = null;
     for (i = 0; i < jobMeta.nrJobHops(); i++) {
       JobHopMeta hi = jobMeta.getJobHop(i);
+      JobEntryCopy fs = hi.getFromEntry();
+      JobEntryCopy ts = hi.getToEntry();
 
-      int line[] = getLine(hi.getFromEntry(), hi.getToEntry());
+      if (fs == null || ts == null)
+        return null;
 
-      if (line != null && pointOnLine(x, y, line))
+      // If either the "from" or "to" step is excluded, skip this hop.
+      //
+      if (exclude != null && (exclude.equals(fs) || exclude.equals(ts)))
+        continue;
+
+      int line[] = getLine(fs, ts);
+
+      if (pointOnLine(x, y, line))
         online = hi;
     }
     return online;
-  }
-
+  } 
+  
+ 
   protected int[] getLine(JobEntryCopy fs, JobEntryCopy ts) {
     if (fs == null || ts == null)
       return null;
@@ -1221,12 +1598,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void newHopClick() {
-    selected_entries = null;
+    selectedEntries = null;
     newHop();
   }
 
   public void editEntryClick() {
-    selected_entries = null;
+    selectedEntries = null;
     editEntry(getJobEntry());
   }
 
@@ -1274,11 +1651,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void copyEntry() {
-    JobEntryCopy[] entries = jobMeta.getSelectedEntries();
-    for (int i = 0; i < entries.length; i++) {
-      if (!canDup(entries[i]))
-        entries[i] = null;
-
+    List<JobEntryCopy> entries = jobMeta.getSelectedEntries();
+    Iterator<JobEntryCopy> iterator = entries.iterator();
+    while (iterator.hasNext()) {
+    	JobEntryCopy entry = iterator.next();
+    	if (!canDup(entry)) {
+    		iterator.remove();
+    	}
     }
 
     spoon.delegates.jobs.copyJobEntries(jobMeta, entries);
@@ -1321,7 +1700,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
 
       XulPopupMenu menu = (XulPopupMenu) menuMap.get("job-graph-entry"); //$NON-NLS-1$
       if (menu != null) {
-        int sels = jobMeta.nrSelected();
+    	List<JobEntryCopy> selection = jobMeta.getSelectedEntries();
+        int sels = selection.size();
 
         XulMenuChoice item = menu.getMenuItemById("job-graph-entry-newhop"); //$NON-NLS-1$
         menu.addMenuListener("job-graph-entry-newhop", this, JobGraph.class, "newHopClick"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1413,39 +1793,34 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
           menu.addMenuListener("job-graph-hop-enabled", this, "disableHop"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("job-graph-hop-delete", this, "deleteHop"); //$NON-NLS-1$ //$NON-NLS-2$
 
+          // Set the checkboxes in the right places...
+          //
           if (hi.isUnconditional()) {
-            if (miPopEvalUncond != null)
-              miPopEvalUncond.setChecked(true);
-            if (miPopEvalTrue != null)
-              miPopEvalTrue.setChecked(false);
-            if (miPopEvalFalse != null)
-              miPopEvalFalse.setChecked(false);
+            if (miPopEvalUncond != null) miPopEvalUncond.setChecked(true);
+            if (miPopEvalTrue != null) miPopEvalTrue.setChecked(false);
+            if (miPopEvalFalse != null) miPopEvalFalse.setChecked(false);
           } else {
             if (hi.getEvaluation()) {
-              if (miPopEvalUncond != null)
-                miPopEvalUncond.setChecked(false);
-              if (miPopEvalTrue != null)
-                miPopEvalTrue.setChecked(true);
-              if (miPopEvalFalse != null)
-                miPopEvalFalse.setChecked(false);
+              if (miPopEvalUncond != null) miPopEvalUncond.setChecked(false);
+              if (miPopEvalTrue != null) miPopEvalTrue.setChecked(true);
+              if (miPopEvalFalse != null) miPopEvalFalse.setChecked(false);
             } else {
-              if (miPopEvalUncond != null)
-                miPopEvalUncond.setChecked(false);
-              if (miPopEvalTrue != null)
-                miPopEvalTrue.setChecked(false);
-              if (miPopEvalFalse != null)
-                miPopEvalFalse.setChecked(true);
+              if (miPopEvalUncond != null) miPopEvalUncond.setChecked(false);
+              if (miPopEvalTrue != null) miPopEvalTrue.setChecked(false);
+              if (miPopEvalFalse != null) miPopEvalFalse.setChecked(true);
             }
           }
-          if (!hi.getFromEntry().evaluates()) {
-            if (miPopEvalTrue != null)
-              miPopEvalTrue.setEnabled(false);
-            if (miPopEvalFalse != null)
-              miPopEvalFalse.setEnabled(false);
-          }
-          if (!hi.getFromEntry().isUnconditional()) {
-            if (miPopEvalUncond != null)
-              miPopEvalUncond.setEnabled(false);
+          // Enable all the right options...
+          //
+          if (hi.getFromEntry().evaluates()) {
+            if (miPopEvalTrue != null) miPopEvalTrue.setEnabled(true);
+            if (miPopEvalFalse != null) miPopEvalFalse.setEnabled(true);
+            if (miPopEvalUncond != null) miPopEvalUncond.setEnabled(true);
+          } else {
+              if (miPopEvalTrue != null) miPopEvalTrue.setEnabled(false);
+              if (miPopEvalFalse != null) miPopEvalFalse.setEnabled(false);
+              if (miPopEvalUncond != null) miPopEvalUncond.setEnabled(false);
+              if (miPopEvalUncond != null) miPopEvalUncond.setChecked(true);
           }
 
           if (miDisHop != null) {
@@ -1516,7 +1891,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void newNote() {
-    selrect = null;
+    selectionRegion = null;
     String title = BaseMessages.getString(PKG, "JobGraph.Dialog.EditNote.Title");
     
     NotePadDialog dd = new NotePadDialog(shell, title); //$NON-NLS-1$
@@ -1545,12 +1920,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void editNote() {
-    selrect = null;
+    selectionRegion = null;
     editNote(getCurrentNote());
   }
 
   public void deleteNote() {
-    selrect = null;
+    selectionRegion = null;
     int idx = jobMeta.indexOfNote(getCurrentNote());
     if (idx >= 0) {
       jobMeta.removeNote(idx);
@@ -1560,7 +1935,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void raiseNote() {
-    selrect = null;
+    selectionRegion = null;
     int idx = jobMeta.indexOfNote(getCurrentNote());
     if (idx >= 0) {
       jobMeta.raiseNote(idx);
@@ -1570,7 +1945,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void lowerNote() {
-    selrect = null;
+    selectionRegion = null;
     int idx = jobMeta.indexOfNote(getCurrentNote());
     if (idx >= 0) {
       jobMeta.lowerNote(idx);
@@ -1580,7 +1955,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void flipHop() {
-    selrect = null;
+    selectionRegion = null;
     JobEntryCopy dummy = currentHop.getFromEntry();
     currentHop.setFromEntry( currentHop.getToEntry() );
     currentHop.setToEntry( dummy );
@@ -1605,14 +1980,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void disableHop() {
-    selrect = null;
+    selectionRegion = null;
     currentHop.setEnabled(!currentHop.isEnabled());
     spoon.refreshGraph();
     spoon.refreshTree();
   }
 
   public void deleteHop() {
-    selrect = null;
+    selectionRegion = null;
     int idx = jobMeta.indexOfJobHop(currentHop);
     jobMeta.removeJobHop(idx);
     spoon.refreshTree();
@@ -1651,32 +2026,103 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
     canvas.setToolTipText("-"); // Some stupid bug in GTK+ causes a phantom tool tip to pop up, even if the tip is null
     canvas.setToolTipText(null);
 
-    String newTip = null;
+    Image tipImage = null;
 
-    final JobEntryCopy je = jobMeta.getJobEntryCopy(x, y, iconsize);
-    if (je != null && je.isDrawn()) // We hover above a Step!
-    {
-      // Set the tooltip!
-      String desc = je.getDescription();
-      if (desc != null) {
-        int le = desc.length() >= 200 ? 200 : desc.length();
-        newTip = desc.substring(0, le);
-      } else {
-        newTip = je.toString();
-      }
-    } else {
-      offset = getOffset();
-      JobHopMeta hi = findJobHop(x + offset.x, y + offset.x);
-      if (hi != null) {
-        newTip = hi.toString();
-      } else {
-        newTip = null;
-      }
-    }
+    JobHopMeta hi = findJobHop(x, y);
+    
+	// check the area owner list...
+	//
+	StringBuffer tip = new StringBuffer();
+	AreaOwner areaOwner = getVisibleAreaOwner(x, y);
+	if (areaOwner!=null) {
+		switch (areaOwner.getAreaType()) {
+		case JOB_HOP_ICON:
+			hi = (JobHopMeta) areaOwner.getOwner();
+			if (hi.isUnconditional()) {
+				tipImage = GUIResource.getInstance().getImageUnconditionalHop();
+				tip.append(BaseMessages.getString(PKG, "JobGraph.Hop.Tooltip.Unconditional", hi.getFromEntry().getName(), Const.CR));
+			} else {
+				if (hi.getEvaluation()) {
+					tip.append(BaseMessages.getString(PKG, "JobGraph.Hop.Tooltip.EvaluatingTrue", hi.getFromEntry().getName(), Const.CR));
+					tipImage = GUIResource.getInstance().getImageTrue();
+				} else {
+					tip.append(BaseMessages.getString(PKG, "JobGraph.Hop.Tooltip.EvaluatingFalse", hi.getFromEntry().getName(), Const.CR));
+					tipImage = GUIResource.getInstance().getImageFalse();
+				}
+			}
+			break;
 
-    if (newTip == null || !newTip.equalsIgnoreCase(getToolTipText())) {
-      canvas.setToolTipText(newTip);
-    }
+		case JOB_HOP_PARALLEL_ICON:
+			hi = (JobHopMeta) areaOwner.getOwner();
+			tip.append(BaseMessages.getString(PKG, "JobGraph.Hop.Tooltip.Parallel", hi.getFromEntry().getName(), Const.CR));
+			tipImage = GUIResource.getInstance().getImageParallelHop();
+			break;
+
+		case REPOSITORY_LOCK_IMAGE:
+			RepositoryLock lock = (RepositoryLock) areaOwner.getOwner();
+			tip.append(BaseMessages.getString(PKG, "JobGraph.Locked.Tooltip", Const.CR, lock.getLogin(), lock.getUsername(), lock.getMessage(), XMLHandler.date2string(lock.getLockDate())));
+			tipImage = GUIResource.getInstance().getImageLocked();
+			break;
+			
+		case JOB_ENTRY_MINI_ICON_INPUT:
+			tip.append(BaseMessages.getString(PKG, "JobGraph.EntryInputConnector.Tooltip"));
+			tipImage = GUIResource.getInstance().getImageHopInput();
+			resetDelayTimer((JobEntryCopy) areaOwner.getOwner());
+			break;
+			
+		case JOB_ENTRY_MINI_ICON_OUTPUT:
+			tip.append(BaseMessages.getString(PKG, "JobGraph.EntryOutputConnector.Tooltip"));
+			tipImage = GUIResource.getInstance().getImageHopOutput();
+			resetDelayTimer((JobEntryCopy) areaOwner.getOwner());
+			break;
+
+		case JOB_ENTRY_MINI_ICON_EDIT:
+			tip.append(BaseMessages.getString(PKG, "JobGraph.EditStep.Tooltip"));
+			tipImage = GUIResource.getInstance().getImageEdit();
+			resetDelayTimer((JobEntryCopy) areaOwner.getOwner());
+			break;
+
+		case JOB_ENTRY_MINI_ICON_CONTEXT:
+			tip.append(BaseMessages.getString(PKG, "JobGraph.ShowMenu.Tooltip"));
+			tipImage = GUIResource.getInstance().getImageEdit();
+			resetDelayTimer((JobEntryCopy) areaOwner.getOwner());
+			break;
+
+		}
+	}
+
+	if (hi!=null && tip.length()==0) {
+		// Set the tooltip for the hop:
+		tip.append(BaseMessages.getString(PKG, "JobGraph.Dialog.HopInfo")).append(Const.CR);
+		tip.append(BaseMessages.getString(PKG, "JobGraph.Dialog.HopInfo.SourceEntry")).append(" ").append(hi.getFromEntry().getName()).append(Const.CR);
+		tip.append(BaseMessages.getString(PKG, "JobGraph.Dialog.HopInfo.TargetEntry")).append(" ").append(hi.getToEntry().getName()).append(Const.CR);
+		tip.append(BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo.Status")).append(" ");
+		tip.append((hi.isEnabled() ? BaseMessages.getString(PKG, "JobGraph.Dialog.HopInfo.Enable") : BaseMessages.getString(PKG, "JobGraph.Dialog.HopInfo.Disable")));
+		if (hi.isUnconditional()) {
+			tipImage = GUIResource.getInstance().getImageUnconditionalHop();
+		} else {
+			if (hi.getEvaluation()) {
+				tipImage = GUIResource.getInstance().getImageTrue();
+			} else {
+				tipImage = GUIResource.getInstance().getImageFalse();
+			}
+		}
+	} 
+	
+	if (tip==null || tip.length()==0) {
+		toolTip.hide();
+	} else {
+		if (!tip.toString().equalsIgnoreCase(getToolTipText())) {
+			if (tipImage != null) {
+				toolTip.setImage(tipImage);
+			} else {
+				toolTip.setImage(GUIResource.getInstance().getImageSpoon());
+			}
+			toolTip.setText(tip.toString());
+			toolTip.hide();
+			toolTip.show(new org.eclipse.swt.graphics.Point(x, y));
+		}
+	}
   }
 
   public void launchStuff(JobEntryCopy jobentry) {
@@ -1817,315 +2263,49 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   public void paintControl(PaintEvent e) {
-    Point area = getArea();
-    if (area.x == 0 || area.y == 0)
-      return; // nothing to do!
+	    Point area = getArea();
+	    if (area.x == 0 || area.y == 0)
+	      return; // nothing to do!
 
-    Display disp = shell.getDisplay();
-    if (disp.isDisposed())
-      return; // Nothing to do!
+	    Display disp = shell.getDisplay();
 
-    Image img = new Image(disp, area.x, area.y);
-    GC gc = new GC(img);
-    drawJob(disp, gc, PropsUI.getInstance().isBrandingActive());
-    e.gc.drawImage(img, 0, 0);
-    gc.dispose();
-    img.dispose();
+	    Image img = getJobImage(disp, area.x, area.y, magnification);
+	    e.gc.drawImage(img, 0, 0);
+	    img.dispose();
 
-    // spoon.setShellText();
-  }
-
-  public void drawJob(Device device, GC gc, boolean branded) {
-    if (spoon.props.isAntiAliasingEnabled())
-      gc.setAntialias(SWT.ON);
-
-    shadowsize = spoon.props.getShadowSize();
-    gridSize = spoon.props.getCanvasGridSize();
-
-    Point area = getArea();
-    Point max = jobMeta.getMaximum();
-    Point thumb = getThumb(area, max);
-    offset = getOffset(thumb, area);
-
-    gc.setBackground(GUIResource.getInstance().getColorBackground());
-
-    hori.setThumb(thumb.x);
-    vert.setThumb(thumb.y);
-
-    if (branded) {
-      Image gradient = GUIResource.getInstance().getImageBanner();
-      gc.drawImage(gradient, 0, 0);
-
-      Image logo = GUIResource.getInstance().getImageKettleLogo();
-      org.eclipse.swt.graphics.Rectangle logoBounds = logo.getBounds();
-      gc.drawImage(logo, 20, area.y - logoBounds.height);
-    }
-
-    // If there is a shadow, we draw the transformation first with an alpha setting
-    //
-    if (shadowsize > 0) {
-      Transform transform = new Transform(device);
-      transform.scale(magnification, magnification);
-      transform.translate(translationX + shadowsize * magnification, translationY + shadowsize * magnification);
-      gc.setAlpha(20);
-      gc.setTransform(transform);
-
-      shadow = true;
-      drawJobElements(gc);
-    }
-
-    // Draw the transformation onto the image
-    Transform transform = new Transform(device);
-    transform.scale(magnification, magnification);
-    transform.translate(translationX, translationY);
-    gc.setAlpha(255);
-    gc.setTransform(transform);
-
-    shadow = false;
-    drawJobElements(gc);
 
   }
+  
+  
+  public Image getJobImage(Device device, int x, int y, float magnificationFactor) {
+	    GCInterface gc = new SWTGC(device, new Point(x, y), iconsize);
 
-  private void drawJobElements(GC gc) {
-    if (!shadow && gridSize > 1) {
-      drawGrid(gc);
-    }
+	    JobPainter jobPainter = new JobPainter( gc,
+	    		jobMeta, new Point(x, y), new SwtScrollBar(hori), new SwtScrollBar(vert), hop_candidate, drop_candidate,
+	    		selectionRegion, 
+	    		areaOwners, 
+	    		mouseOverEntries,
+				PropsUI.getInstance().getIconSize(),
+				PropsUI.getInstance().getLineWidth(),
+				PropsUI.getInstance().getCanvasGridSize(), 
+				PropsUI.getInstance().getShadowSize(), 
+				PropsUI.getInstance().isAntiAliasingEnabled(),
+				PropsUI.getInstance().getNoteFont().getName(),
+				PropsUI.getInstance().getNoteFont().getHeight()
+	    	);
 
-    // First draw the notes...
-    gc.setFont(GUIResource.getInstance().getFontNote());
-
-    for (int i = 0; i < jobMeta.nrNotes(); i++) {
-      NotePadMeta ni = jobMeta.getNote(i);
-      drawNote(gc, ni);
-    }
-
-    gc.setFont(GUIResource.getInstance().getFontGraph());
-
-    // ... and then the rest on top of it...
-    for (int i = 0; i < jobMeta.nrJobHops(); i++) {
-      JobHopMeta hi = jobMeta.getJobHop(i);
-      drawJobHop(gc, hi, false);
-    }
-
-    if (hop_candidate != null) {
-      drawJobHop(gc, hop_candidate, true);
-    }
-
-    for (int j = 0; j < jobMeta.nrJobEntries(); j++) {
-      JobEntryCopy je = jobMeta.getJobEntry(j);
-      drawJobEntryCopy(gc, je);
-    }
-
-    if (drop_candidate != null) {
-      gc.setLineStyle(SWT.LINE_SOLID);
-      gc.setForeground(GUIResource.getInstance().getColorBlack());
-      Point screen = real2screen(drop_candidate.x, drop_candidate.y);
-      gc.drawRectangle(screen.x, screen.y, iconsize, iconsize);
-    }
-
-    if (!shadow) {
-      drawRect(gc, selrect);
-    }
+	    jobPainter.setMagnification(magnificationFactor);
+	    jobPainter.setEntryLogMap(entryLogMap);
+	    jobPainter.setStartHopEntry(startHopEntry);
+	    jobPainter.setEndHopLocation(endHopLocation);
+	    jobPainter.setEndHopEntry(endHopEntry);
+	    jobPainter.setNoInputEntry(noInputEntry);
+	    
+	    jobPainter.drawJob();
+	    
+	    return (Image) gc.getImage();
   }
 
-  private void drawGrid(GC gc) {
-    int gridSize = spoon.props.getCanvasGridSize();
-    Rectangle bounds = gc.getDevice().getBounds();
-    for (int x = 0; x < bounds.width; x += gridSize) {
-      for (int y = 0; y < bounds.height; y += gridSize) {
-        gc.drawPoint(x + (offset.x % gridSize), y + (offset.y % gridSize));
-      }
-    }
-  }
-
-  protected void drawJobHop(GC gc, JobHopMeta hop, boolean candidate) {
-    if (hop == null || hop.getFromEntry() == null || hop.getToEntry() == null)
-      return;
-    if (!hop.getFromEntry().isDrawn() || !hop.getToEntry().isDrawn())
-      return;
-
-    drawLine(gc, hop, candidate);
-  }
-
-  public Image getIcon(JobEntryCopy je) {
-    Image im = null;
-    if (je == null)
-      return null;
-
-    if (je.isSpecial()) {
-        if (je.isStart())
-          im = GUIResource.getInstance().getImageStart();
-        if (je.isDummy())
-          im = GUIResource.getInstance().getImageDummy();
-    } else {
-        String configId = je.getEntry().getConfigId();
-        if (configId != null) {
-          im = (Image) GUIResource.getInstance().getImagesJobentries().get(configId);
-        }
-    }
-    return im;
-  }
-
-  protected void drawJobEntryCopy(GC gc, JobEntryCopy je) {
-    if (!je.isDrawn())
-      return;
-
-    Point pt = je.getLocation();
-
-    int x, y;
-    if (pt != null) {
-      x = pt.x;
-      y = pt.y;
-    } else {
-      x = 50;
-      y = 50;
-    }
-    String name = je.getName();
-    if (je.isSelected())
-      gc.setLineWidth(3);
-    else
-      gc.setLineWidth(1);
-
-    Image im = getIcon(je);
-    if (im != null) // Draw the icon!
-    {
-      Rectangle bounds = new Rectangle(im.getBounds().x, im.getBounds().y, im.getBounds().width, im.getBounds().height);
-      gc.drawImage(im, 0, 0, bounds.width, bounds.height, offset.x + x, offset.y + y, iconsize, iconsize);
-    }
-    gc.setBackground(GUIResource.getInstance().getColorWhite());
-    gc.drawRectangle(offset.x + x - 1, offset.y + y - 1, iconsize + 1, iconsize + 1);
-    //gc.setXORMode(true);
-    Point textsize = new Point(gc.textExtent("" + name).x, gc.textExtent("" + name).y);
-
-    gc.setBackground(GUIResource.getInstance().getColorBackground());
-    gc.setLineWidth(1);
-
-    int xpos = offset.x + x + (iconsize / 2) - (textsize.x / 2);
-    int ypos = offset.y + y + iconsize + 5;
-
-    gc.setForeground(GUIResource.getInstance().getColorBlack());
-    gc.drawText(name, xpos, ypos, true);
-
-  }
-
-  protected void drawNote(GC gc, NotePadMeta notePadMeta)
-    {
-
-        int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
-
-        if (notePadMeta.isSelected()) gc.setLineWidth(2); else gc.setLineWidth(1);
-        
-        org.eclipse.swt.graphics.Point ext;
-        if (Const.isEmpty(notePadMeta.getNote()))
-        {
-            ext = new org.eclipse.swt.graphics.Point(10,10); // Empty note
-        }
-        else
-        {
-            int swt=SWT.NORMAL;
-            if(notePadMeta.isFontBold()) swt=SWT.BOLD;
-            if(notePadMeta.isFontItalic()) swt=swt | SWT.ITALIC;
-
-            gc.setFont(new Font(PropsUI.getDisplay(),Const.NVL(notePadMeta.getFontName(),props.getNoteFont().getName()), 
-            		notePadMeta.getFontSize()==-1?props.getNoteFont().getHeight():notePadMeta.getFontSize(), swt));
-
-            ext = gc.textExtent(notePadMeta.getNote(), flags);
-        }
-        Point p = new Point(ext.x, ext.y);
-        Point loc = notePadMeta.getLocation();
-        Point note = real2screen(loc.x, loc.y);
-        int margin = Const.NOTE_MARGIN;
-        p.x += 2 * margin;
-        p.y += 2 * margin;
-        int width = notePadMeta.width;
-        int height = notePadMeta.height;
-        if (p.x > width)
-          width = p.x;
-        if (p.y > height)
-          height = p.y;
-
-        int noteshape[] = new int[] { note.x, note.y, // Top left
-                note.x + width + 2 * margin, note.y, // Top right
-                note.x + width + 2 * margin, note.y + height, // bottom right 1
-                note.x + width, note.y + height + 2 * margin, // bottom right 2
-                note.x + width, note.y + height, // bottom right 3
-                note.x + width + 2 * margin, note.y + height, // bottom right 1
-                note.x + width, note.y + height + 2 * margin, // bottom right 2
-                note.x, note.y + height + 2 * margin // bottom left
-        };
-    	// Draw shadow around note?
-		if(notePadMeta.isDrawShadow())
-		{
-			int s = spoon.props.getShadowSize();
-			int shadowa[] = new int[] { note.x+s, note.y+s, // Top left
-				note.x + width + 2 * margin+s, note.y+s, // Top right
-				note.x + width + 2 * margin+s, note.y + height+s, // bottom right 1
-				note.x + width+s, note.y + height + 2 * margin+s, // bottom right 2
-				note.x+s, note.y + height + 2 * margin+s // bottom left
-			};
-			gc.setBackground(GUIResource.getInstance().getColorLightGray());
-			gc.fillPolygon(shadowa);
-		}
-        
-        gc.setBackground(new Color(PropsUI.getDisplay(),new RGB(notePadMeta.getBackGroundColorRed(),notePadMeta.getBackGroundColorGreen(),notePadMeta.getBackGroundColorBlue())));
-        gc.setForeground(new Color(PropsUI.getDisplay(),new RGB(notePadMeta.getBorderColorRed(),notePadMeta.getBorderColorGreen(),notePadMeta.getBorderColorBlue())));
-
-        gc.fillPolygon(noteshape);
-        gc.drawPolygon(noteshape);
-      
-        if (!Const.isEmpty(notePadMeta.getNote()))
-        {
-            gc.setForeground(new Color(PropsUI.getDisplay(),new RGB(notePadMeta.getFontColorRed(),notePadMeta.getFontColorGreen(),notePadMeta.getFontColorBlue())));
-        	gc.drawText(notePadMeta.getNote(), note.x + margin, note.y + margin, flags);
-        }
-   
-        notePadMeta.width = width; // Save for the "mouse" later on...
-        notePadMeta.height = height;
-
-        if (notePadMeta.isSelected()) gc.setLineWidth(1); else gc.setLineWidth(2);
- }
-
-  protected void drawLine(GC gc, JobHopMeta hop, boolean is_candidate) {
-    int line[] = getLine(hop.getFromEntry(), hop.getToEntry());
-
-    gc.setLineWidth(linewidth);
-    Color col;
-
-    if (hop.getFromEntry().isLaunchingInParallel()) {
-      gc.setLineAttributes(new LineAttributes((float) linewidth, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM,
-          new float[] { 5, 3, }, 0, 10));
-    } else {
-      gc.setLineStyle(SWT.LINE_SOLID);
-    }
-
-    if (is_candidate) {
-      col = GUIResource.getInstance().getColorBlue();
-    } else if (hop.isEnabled()) {
-      if (hop.isUnconditional()) {
-        col = GUIResource.getInstance().getColorBlack();
-      } else {
-        if (hop.getEvaluation()) {
-          col = GUIResource.getInstance().getColorGreen();
-        } else {
-          col = GUIResource.getInstance().getColorRed();
-        }
-      }
-    } else {
-      col = GUIResource.getInstance().getColorGray();
-    }
-
-    gc.setForeground(col);
-
-    if (hop.isSplit())
-      gc.setLineWidth(linewidth + 2);
-    drawArrow(gc, line);
-    if (hop.isSplit())
-      gc.setLineWidth(linewidth);
-
-    gc.setForeground(GUIResource.getInstance().getColorBlack());
-    gc.setBackground(GUIResource.getInstance().getColorBackground());
-    gc.setLineStyle(SWT.LINE_SOLID);
-  }
 
   protected Point getArea() {
     org.eclipse.swt.graphics.Rectangle rect = canvas.getClientArea();
@@ -2135,8 +2315,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   private Point magnifyPoint(Point p) {
-    return new Point(Math.round(p.x * magnification), Math.round(p.y * magnification));
-  }
+	  return new Point(Math.round(p.x * magnification), Math.round(p.y * magnification));
+  } 
 
   private Point getThumb(Point area, Point transMax) {
     Point resizedMax = magnifyPoint(transMax);
@@ -2182,8 +2362,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   protected void newHop() {
-    JobEntryCopy fr = jobMeta.getSelected(0);
-    JobEntryCopy to = jobMeta.getSelected(1);
+	List<JobEntryCopy> selection = jobMeta.getSelectedEntries();
+    JobEntryCopy fr = selection.get(0);
+    JobEntryCopy to = selection.get(1);
     spoon.newJobHop(jobMeta, fr, to);
   }
 
@@ -2319,9 +2500,9 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   }
 
   protected SnapAllignDistribute createSnapAllignDistribute() {
-    List<GUIPositionInterface> elements = jobMeta.getSelectedDrawnJobEntryList();
-    int[] indices = jobMeta.getEntryIndexes(elements.toArray(new JobEntryCopy[elements.size()]));
-
+	  
+	List<JobEntryCopy> elements = jobMeta.getSelectedEntries();
+    int[] indices = jobMeta.getEntryIndexes(elements);
     return new SnapAllignDistribute(jobMeta, elements, indices, spoon, this);
   }
 
@@ -2938,4 +3119,18 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
 	public HasLogChannelInterface getLogChannelProvider() {
 		return job;
 	}
+	
+	
+	  // Change of step, connection, hop or note...
+	  public void addUndoPosition(Object obj[], int pos[], Point prev[], Point curr[]) {
+	    addUndoPosition(obj, pos, prev, curr, false);
+	  }
+
+	  // Change of step, connection, hop or note...
+	  public void addUndoPosition(Object obj[], int pos[], Point prev[], Point curr[], boolean nextAlso) {
+	    // It's better to store the indexes of the objects, not the objects itself!
+	    jobMeta.addUndo(obj, null, pos, prev, curr, TransMeta.TYPE_UNDO_POSITION, nextAlso);
+	    spoon.setUndoMenu(jobMeta);
+	  }
+
 }

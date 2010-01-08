@@ -37,7 +37,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 
 	private JobEntryCopy from_entry, to_entry;
 	private boolean enabled;
-	private boolean split;
+	public boolean split = false;
 	private boolean evaluation;
 	private boolean unconditional;
 	

@@ -57,7 +57,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.pentaho.di.i18n.BaseMessages;
 
 
-public class StyledTextComp extends Composite{
+public class StyledTextComp extends Composite {
 	private static Class<?> PKG = StyledTextComp.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	//Modification for Undo/Redo on Styled Text

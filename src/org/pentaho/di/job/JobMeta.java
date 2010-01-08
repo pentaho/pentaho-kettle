@@ -36,7 +36,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
@@ -1379,17 +1378,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return count;
 	}
 
-	public int generateJobEntryNameNr(String basename) {
-		int nr = 1;
-
-		JobEntryCopy e = findJobEntry(basename + " " + nr, 0, true); //$NON-NLS-1$
-		while (e != null) {
-			nr++;
-			e = findJobEntry(basename + " " + nr, 0, true); //$NON-NLS-1$
-		}
-		return nr;
-	}
-
 	public int findUnusedNr(String name) {
 		int nr = 1;
 		JobEntryCopy je = findJobEntry(name, nr, true);
@@ -1644,62 +1632,82 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public Point[] getSelectedLocations() {
-		int sels = nrSelected();
-		Point retval[] = new Point[sels];
-		for (int i = 0; i < sels; i++) {
-			JobEntryCopy si = getSelected(i);
+		List<JobEntryCopy> selectedEntries = getSelectedEntries();
+		Point retval[] = new Point[selectedEntries.size()];
+		for (int i = 0; i < retval.length; i++) {
+			JobEntryCopy si = selectedEntries.get(i);
 			Point p = si.getLocation();
 			retval[i] = new Point(p.x, p.y); // explicit copy of location
 		}
 		return retval;
 	}
+	
+    /**
+     * Get all the selected note locations
+     *
+     * @return The selected step and notes locations.
+     */
+    public Point[] getSelectedNoteLocations()
+    {
+        List<Point> points = new ArrayList<Point>();
 
-	public JobEntryCopy[] getSelectedEntries() {
-		int sels = nrSelected();
-		if (sels == 0)
-			return null;
+        for (NotePadMeta ni : getSelectedNotes())
+        {
+            Point p = ni.getLocation();
+            points.add(new Point(p.x, p.y)); // explicit copy of location
+        }
 
-		JobEntryCopy retval[] = new JobEntryCopy[sels];
-		for (int i = 0; i < sels; i++) {
-			JobEntryCopy je = getSelected(i);
-			retval[i] = je;
-		}
-		return retval;
-	}
+        return points.toArray(new Point[points.size()]);
+    }
 
-	public int nrSelected() {
-		int i, count;
-		count = 0;
-		for (i = 0; i < nrJobEntries(); i++) {
-			JobEntryCopy je = getJobEntry(i);
-			if (je.isSelected() && je.isDrawn())
-				count++;
-		}
-		return count;
-	}
-
-	public JobEntryCopy getSelected(int nr) {
-		int i, count;
-		count = 0;
-		for (i = 0; i < nrJobEntries(); i++) {
-			JobEntryCopy je = getJobEntry(i);
+	public List<JobEntryCopy> getSelectedEntries() {
+		List<JobEntryCopy> selection = new ArrayList<JobEntryCopy>();
+		for (JobEntryCopy je : jobcopies) {
 			if (je.isSelected()) {
-				if (nr == count)
-					return je;
-				count++;
+				selection.add(je);
 			}
 		}
-		return null;
+		return selection;
 	}
+	
+    /**
+     * @return A list of all the selected notes.
+     */
+    public List<NotePadMeta> getSelectedNotes()
+    {
+    	List<NotePadMeta> selection =new ArrayList<NotePadMeta>();
+        for (NotePadMeta note : notes) {
+            if (note.isSelected()) {
+            	selection.add(note);
+            }
+        }
+        return selection;
+    }
 
-	public int[] getEntryIndexes(JobEntryCopy entries[]) {
-		int retval[] = new int[entries.length];
+	public int[] getEntryIndexes(List<JobEntryCopy> entries) {
+		int retval[] = new int[entries.size()];
 
-		for (int i = 0; i < entries.length; i++)
-			retval[i] = indexOfJobEntry(entries[i]);
+		for (int i = 0; i < entries.size(); i++)
+			retval[i] = indexOfJobEntry(entries.get(i));
 
 		return retval;
 	}
+
+    /**
+     * Get an array of the locations of an array of notes
+     *
+     * @param notes An array of notes
+     * @return an array of the locations of an array of notes
+     */
+    public int[] getNoteIndexes(List<NotePadMeta> notes)
+    {
+        int retval[] = new int[notes.size()];
+
+        for (int i = 0; i < notes.size(); i++)
+            retval[i] = indexOfNote(notes.get(i));
+
+        return retval;
+    }
 
 	public JobEntryCopy findStart() {
 		for (int i = 0; i < nrJobEntries(); i++) {
@@ -1877,24 +1885,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		}
 
 		return varList;
-	}
-
-	/**
-	 * Get an array of all the selected job entries
-	 * 
-	 * @return A list containing all the selected & drawn job entries.
-	 */
-	public List<GUIPositionInterface> getSelectedDrawnJobEntryList() {
-		List<GUIPositionInterface> list = new ArrayList<GUIPositionInterface>();
-
-		for (int i = 0; i < nrJobEntries(); i++) {
-			JobEntryCopy jobEntryCopy = getJobEntry(i);
-			if (jobEntryCopy.isDrawn() && jobEntryCopy.isSelected()) {
-				list.add(jobEntryCopy);
-			}
-
-		}
-		return list;
 	}
 
 	public boolean haveConnectionsChanged() {
@@ -2675,5 +2665,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		logTables.add(channelLogTable);
 		return logTables;
 	}
+
 
 }

@@ -245,13 +245,13 @@ public void open() {
 			textString = textString.toLowerCase();
 		}
 		
-		if (1==1) {
+		// if (1==1) {
 			start = textString.indexOf(searchString, offset);
-		}else if (text.getSelectionRange().y > searchString.length()) {
+		/*}else if (text.getSelectionRange().y > searchString.length()) {
 			start = textString.lastIndexOf(searchString, offset - 1);
 		}else {
 			start = textString.lastIndexOf(searchString, offset - text.getSelectionRange().y - 1);
-		}
+		}*/
 		
 		if (start > -1) {
 			text.setSelection(start, start + searchString.length());

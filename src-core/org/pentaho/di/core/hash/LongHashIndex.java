@@ -200,19 +200,5 @@ public class LongHashIndex {
         {
             return key == cmpKey;
         }
-        
-        /**
-         * The row is the same if the value is the same
-         * The data types are the same so no error is made here.
-         */
-        public boolean equals(LongHashIndexEntry entry)
-        {
-            return entry.key == key;
-        } 
-
-        public boolean equalsValue(long cmpValue)
-        {
-            return value == cmpValue;
-        }
 	}
 }

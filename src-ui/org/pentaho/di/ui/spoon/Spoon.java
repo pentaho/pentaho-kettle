@@ -62,10 +62,7 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.TreeAdapter;
 import org.eclipse.swt.events.TreeEvent;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -2311,7 +2308,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// final Object grandParent = object.getGrandParent();
 
 		// Not clicked on a real object: returns a class
-		if (selection instanceof Class) {
+		if (selection instanceof Class<?>) {
 			if (selection.equals(TransMeta.class)) {
 				// New
 				spoonMenu = (Menu) menuMap.get("trans-class");
@@ -2396,7 +2393,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		final Object selection = object.getSelection();
 		final Object parent = object.getParent();
 
-		if (selection instanceof Class) {
+		if (selection instanceof Class<?>) {
 			if (selection.equals(TransMeta.class))
 				newTransFile();
 			if (selection.equals(JobMeta.class))
@@ -2652,8 +2649,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	public void copySelected(TransMeta transMeta, StepMeta stepMeta[], NotePadMeta notePadMeta[]) {
-		if (stepMeta == null || stepMeta.length == 0)
+	public void copySelected(TransMeta transMeta, List<StepMeta> steps, List<NotePadMeta> notes) {
+		if (steps == null || steps.size() == 0)
 			return;
 
 		String xml = XMLHandler.getXMLHeader();
@@ -2661,8 +2658,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			xml += XMLHandler.openTag(Spoon.XML_TAG_TRANSFORMATION_STEPS) + Const.CR;
 			xml += " <steps>" + Const.CR;
 
-			for (int i = 0; i < stepMeta.length; i++) {
-				xml += stepMeta[i].getXML();
+			for (int i = 0; i < steps.size(); i++) {
+				xml += steps.get(i).getXML();
 			}
 
 			xml += "    </steps>" + Const.CR;
@@ -2672,11 +2669,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			//
 
 			xml += "<order>" + Const.CR;
-			if (stepMeta != null)
-				for (int i = 0; i < stepMeta.length; i++) {
-					for (int j = 0; j < stepMeta.length; j++) {
+			if (steps != null)
+				for (int i = 0; i < steps.size(); i++) {
+					for (int j = 0; j < steps.size(); j++) {
 						if (i != j) {
-							TransHopMeta hop = transMeta.findTransHop(stepMeta[i], stepMeta[j], true);
+							TransHopMeta hop = transMeta.findTransHop(steps.get(i), steps.get(j), true);
 							if (hop != null) // Ok, we found one...
 							{
 								xml += hop.getXML() + Const.CR;
@@ -2687,9 +2684,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			xml += "  </order>" + Const.CR;
 
 			xml += "  <notepads>" + Const.CR;
-			if (notePadMeta != null)
-				for (int i = 0; i < notePadMeta.length; i++) {
-					xml += notePadMeta[i].getXML();
+			if (notes != null)
+				for (int i = 0; i < notes.size(); i++) {
+					xml += notes.get(i).getXML();
 				}
 			xml += "   </notepads>" + Const.CR;
 
@@ -5097,7 +5094,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// Create an image of the screen
 		Point max = transMeta.getMaximum();
 
-		Image img = transGraph.getTransformationImage(printer, max.x, max.y, false, 1.0f);
+		Image img = transGraph.getTransformationImage(printer, max.x, max.y, 1.0f);
 
 		ps.printImage(shell, img);
 
@@ -5116,23 +5113,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		// Create an image of the screen
 		Point max = jobMeta.getMaximum();
 
-		PaletteData pal = ps.getPaletteData();
-
-		ImageData imd = new ImageData(max.x, max.y, printer.getDepth(), pal);
-		Image img = new Image(printer, imd);
-
-		GC img_gc = new GC(img);
-
-		// Clear the background first, fill with background color...
-		img_gc.setForeground(GUIResource.getInstance().getColorBackground());
-		img_gc.fillRectangle(0, 0, max.x, max.y);
-
-		// Draw the transformation...
-		jobGraph.drawJob(printer, img_gc, false);
+		Image img = jobGraph.getJobImage(printer, max.x, max.y, 1.0f);
 
 		ps.printImage(shell, img);
 
-		img_gc.dispose();
 		img.dispose();
 		ps.dispose();
 	}
@@ -5578,7 +5562,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		Clipboard clipboard = GUIResource.getInstance().getNewClipboard();
 
 		Point area = transMeta.getMaximum();
-		Image image = transGraph.getTransformationImage(Display.getCurrent(), area.x, area.y, false, 1.0f);
+		Image image = transGraph.getTransformationImage(Display.getCurrent(), area.x, area.y, 1.0f);
 		clipboard.setContents(new Object[] { image.getImageData() }, new Transfer[] { ImageDataTransfer.getInstance() });
 	}
 
@@ -6250,7 +6234,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 *            The step to set the clustering schema for.
 	 */
 	public void editClustering(TransMeta transMeta, StepMeta stepMeta) {
-		editClustering(transMeta, new StepMeta[] { stepMeta, });
+		List<StepMeta> stepMetas = new ArrayList<StepMeta>();
+		stepMetas.add(stepMeta);
+		editClustering(transMeta, stepMetas);
 	}
 
 	/**
@@ -6259,8 +6245,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 * @param stepMeta
 	 *            The steps (at least one!) to set the clustering schema for.
 	 */
-	public void editClustering(TransMeta transMeta, StepMeta[] stepMetas) {
-		StepMeta stepMeta = stepMetas[0];
+	public void editClustering(TransMeta transMeta, List<StepMeta> stepMetas) {
+		StepMeta stepMeta = stepMetas.get(0);
 		int idx = -1;
 		if (stepMeta.getClusterSchema() != null) {
 			idx = transMeta.getClusterSchemas().indexOf(stepMeta.getClusterSchema());

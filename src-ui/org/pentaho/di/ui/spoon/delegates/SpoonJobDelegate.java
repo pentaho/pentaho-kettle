@@ -113,8 +113,16 @@ public class SpoonJobDelegate extends SpoonDelegate
 			{
 				// Determine name & number for this entry.
 				String basename = type_desc;
-				int nr = jobMeta.generateJobEntryNameNr(basename);
-				String entry_name = basename + " " + nr; //$NON-NLS-1$
+				
+				// See if the name is already used...
+				//
+				String entry_name = basename;
+				int nr=2;
+				JobEntryCopy check = jobMeta.findJobEntry(entry_name, 0, true);
+				while(check!=null) {
+					entry_name=basename+" "+nr++;
+					check = jobMeta.findJobEntry(entry_name, 0, true);
+				}
 
 				// Generate the appropriate class...
 				JobEntryInterface jei = jobLoader.getJobEntryClass(jobPlugin);
@@ -354,20 +362,17 @@ public class SpoonJobDelegate extends SpoonDelegate
 		
 	}
 
-	public void copyJobEntries(JobMeta jobMeta, JobEntryCopy jec[])
+	public void copyJobEntries(JobMeta jobMeta, List<JobEntryCopy> jec)
 	{
-		if (jec == null || jec.length == 0)
+		if (jec == null || jec.size() == 0)
 			return;
 
 		String xml = XMLHandler.getXMLHeader();
 		xml += XMLHandler.openTag(Spoon.XML_TAG_JOB_JOB_ENTRIES) + Const.CR; //$NON-NLS-1$
 
-		for (int i = 0; i < jec.length; i++)
+		for (int i = 0; i < jec.size(); i++)
 		{
-			if (jec[i]==null)
-				continue;
-			
-			xml += jec[i].getXML();
+			xml += jec.get(i).getXML();
 		}
 
 		xml += "    " + XMLHandler.closeTag(Spoon.XML_TAG_JOB_JOB_ENTRIES) + Const.CR; //$NON-NLS-1$

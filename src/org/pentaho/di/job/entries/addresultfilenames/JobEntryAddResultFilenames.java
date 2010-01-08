@@ -317,7 +317,6 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
 
 	private class TextFileSelector implements FileSelector 
 	{
-		LogWriter log = LogWriter.getInstance();
 		String file_wildcard=null,source_folder=null;
 		
 		public TextFileSelector(String sourcefolderin,String filewildcard) 

@@ -140,7 +140,9 @@ public class JobHistoryDelegate extends SpoonDelegate {
 						spoon.getDisplay().syncExec(new Runnable() {
 
 							public void run() {
-								displayHistoryData(logTables.get(index), index, rowList.get(index));
+								if (index>=0 && index<rowList.size() && index<logTables.size()) {
+									displayHistoryData(logTables.get(index), index, rowList.get(index));
+								}
 							}
 						});
 					}

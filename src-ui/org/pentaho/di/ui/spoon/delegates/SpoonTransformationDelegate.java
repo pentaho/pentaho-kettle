@@ -773,8 +773,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			
 			// Set the default number of rows to retrieve on all selected steps...
 			//
-			StepMeta[] selectedSteps = transMeta.getSelectedSteps();
-			if (selectedSteps!=null && selectedSteps.length>0) {
+			List<StepMeta> selectedSteps = transMeta.getSelectedSteps();
+			if (selectedSteps!=null && selectedSteps.size()>0) {
 				transDebugMeta.getStepDebugMetaMap().clear();
 				for (StepMeta stepMeta : transMeta.getSelectedSteps()) {
 					StepDebugMeta stepDebugMeta = new StepDebugMeta(stepMeta);
@@ -798,8 +798,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			
 			// Set the default number of preview rows on all selected steps...
 			//
-			StepMeta[] selectedSteps = transMeta.getSelectedSteps();
-			if (selectedSteps!=null && selectedSteps.length>0) {
+			List<StepMeta> selectedSteps = transMeta.getSelectedSteps();
+			if (selectedSteps!=null && selectedSteps.size()>0) {
 				transDebugMeta.getStepDebugMetaMap().clear();
 				for (StepMeta stepMeta : transMeta.getSelectedSteps()) {
 					StepDebugMeta stepDebugMeta = new StepDebugMeta(stepMeta);

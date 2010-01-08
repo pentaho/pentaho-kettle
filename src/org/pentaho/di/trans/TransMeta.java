@@ -49,7 +49,6 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
@@ -904,41 +903,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     /**
-     * Counts the number of steps that are actually used in the transformation.
-     *
-     * @return the number of used steps.
+     * @return a list with all the used steps
      */
-    public int nrUsedSteps()
-    {
-        int nr = 0;
-        for (int i = 0; i < nrSteps(); i++)
-        {
-            StepMeta stepMeta = getStep(i);
-            if (isStepUsedInTransHops(stepMeta)) nr++;
-        }
-        return nr;
+    public List<StepMeta> getUsedSteps() {
+    	List<StepMeta> list = new ArrayList<StepMeta>();
+    	
+    	for (StepMeta stepMeta : steps) {
+    		if (isStepUsedInTransHops(stepMeta)) {
+    			list.add(stepMeta);
+    		}
+    	}
+    	
+    	return list;
     }
-
-    /**
-     * Gets a used step on a certain location
-     *
-     * @param lu The location
-     * @return The used step.
-     */
-    public StepMeta getUsedStep(int lu)
-    {
-        int nr = 0;
-        for (int i = 0; i < nrSteps(); i++)
-        {
-            StepMeta stepMeta = getStep(i);
-            if (isStepUsedInTransHops(stepMeta))
-            {
-                if (lu == nr) return stepMeta;
-                nr++;
-            }
-        }
-        return null;
-    }
+    
 
     /* (non-Javadoc)
      * @see org.pentaho.di.trans.HasDatabaseInterface#findDatabase(java.lang.String)
@@ -3259,84 +3237,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     /**
-     * Count the number of selected steps in this transformation
-     *
-     * @return The number of selected steps.
-     */
-    public int nrSelectedSteps()
-    {
-        int i, count;
-        count = 0;
-        for (i = 0; i < nrSteps(); i++)
-        {
-            StepMeta stepMeta = getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn()) count++;
-        }
-        return count;
-    }
-
-    /**
-     * Get the selected step at a certain location
-     *
-     * @param nr The location
-     * @return The selected step
-     */
-    public StepMeta getSelectedStep(int nr)
-    {
-        int i, count;
-        count = 0;
-        for (i = 0; i < nrSteps(); i++)
-        {
-            StepMeta stepMeta = getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                if (nr == count) return stepMeta;
-                count++;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Count the number of selected notes in this transformation
-     *
-     * @return The number of selected notes.
-     */
-    public int nrSelectedNotes()
-    {
-        int i, count;
-        count = 0;
-        for (i = 0; i < nrNotes(); i++)
-        {
-            NotePadMeta ni = getNote(i);
-            if (ni.isSelected()) count++;
-        }
-        return count;
-    }
-
-    /**
-     * Get the selected note at a certain index
-     *
-     * @param nr The index
-     * @return The selected note
-     */
-    public NotePadMeta getSelectedNote(int nr)
-    {
-        int i, count;
-        count = 0;
-        for (i = 0; i < nrNotes(); i++)
-        {
-            NotePadMeta ni = getNote(i);
-            if (ni.isSelected())
-            {
-                if (nr == count) return ni;
-                count++;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Get an array of all the selected step and note locations
      *
      * @return The selected step and notes locations.
@@ -3345,9 +3245,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     {
         List<Point> points = new ArrayList<Point>();
 
-        for (int i = 0; i < nrSelectedSteps(); i++)
-        {
-            StepMeta stepMeta = getSelectedStep(i);
+        for (StepMeta stepMeta : getSelectedSteps()) {
             Point p = stepMeta.getLocation();
             points.add(new Point(p.x, p.y)); // explicit copy of location
         }
@@ -3364,9 +3262,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     {
         List<Point> points = new ArrayList<Point>();
 
-        for (int i = 0; i < nrSelectedNotes(); i++)
+        for (NotePadMeta ni : getSelectedNotes())
         {
-            NotePadMeta ni = getSelectedNote(i);
             Point p = ni.getLocation();
             points.add(new Point(p.x, p.y)); // explicit copy of location
         }
@@ -3375,61 +3272,35 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     /**
-     * Get an array of all the selected steps
-     *
-     * @return An array of all the selected steps.
+     * @return A list of all the selected steps.
      */
-    public StepMeta[] getSelectedSteps()
+    public List<StepMeta> getSelectedSteps()
     {
-        int sels = nrSelectedSteps();
-        if (sels == 0) return null;
-
-        StepMeta retval[] = new StepMeta[sels];
-        for (int i = 0; i < sels; i++)
+    	List<StepMeta> selection = new ArrayList<StepMeta>();
+        for (StepMeta stepMeta : steps)
         {
-            StepMeta stepMeta = getSelectedStep(i);
-            retval[i] = stepMeta;
+            if (stepMeta.isSelected()) {
+            	selection.add(stepMeta);
+            }
 
         }
-        return retval;
+        return selection;
     }
     
-    /**
-     * Get an array of all the selected steps
-     *
-     * @return A list containing all the selected & drawn steps.
-     */
-    public List<GUIPositionInterface> getSelectedDrawnStepsList()
-    {
-        List<GUIPositionInterface> list = new ArrayList<GUIPositionInterface>();
-        
-        for (int i = 0; i < nrSteps(); i++)
-        {
-            StepMeta stepMeta = getStep(i);
-            if (stepMeta.isDrawn() && stepMeta.isSelected()) list.add(stepMeta);
-
-        }
-        return list;
-    }
-
     /**
      * Get an array of all the selected notes
      *
      * @return An array of all the selected notes.
      */
-    public NotePadMeta[] getSelectedNotes()
+    public List<NotePadMeta> getSelectedNotes()
     {
-        int sels = nrSelectedNotes();
-        if (sels == 0) return null;
-
-        NotePadMeta retval[] = new NotePadMeta[sels];
-        for (int i = 0; i < sels; i++)
-        {
-            NotePadMeta si = getSelectedNote(i);
-            retval[i] = si;
-
+    	List<NotePadMeta> selection =new ArrayList<NotePadMeta>();
+        for (NotePadMeta note : notes) {
+            if (note.isSelected()) {
+            	selection.add(note);
+            }
         }
-        return retval;
+        return selection;
     }
 
     /**
@@ -3439,13 +3310,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public String[] getSelectedStepNames()
     {
-        int sels = nrSelectedSteps();
-        if (sels == 0) return null;
-
-        String retval[] = new String[sels];
-        for (int i = 0; i < sels; i++)
-        {
-            StepMeta stepMeta = getSelectedStep(i);
+    	List<StepMeta> selection = getSelectedSteps();
+        String retval[] = new String[selection.size()];
+        for (int i = 0; i < retval.length; i++) {
+            StepMeta stepMeta = selection.get(i);
             retval[i] = stepMeta.getName();
         }
         return retval;
@@ -3457,13 +3325,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param steps An array of steps
      * @return an array of the locations of an array of steps
      */
-    public int[] getStepIndexes(StepMeta steps[])
+    public int[] getStepIndexes(List<StepMeta> steps)
     {
-        int retval[] = new int[steps.length];
+        int retval[] = new int[steps.size()];
 
-        for (int i = 0; i < steps.length; i++)
+        for (int i = 0; i < steps.size(); i++)
         {
-            retval[i] = indexOfStep(steps[i]);
+            retval[i] = indexOfStep(steps.get(i));
         }
 
         return retval;
@@ -3475,12 +3343,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param notes An array of notes
      * @return an array of the locations of an array of notes
      */
-    public int[] getNoteIndexes(NotePadMeta notes[])
+    public int[] getNoteIndexes(List<NotePadMeta> notes)
     {
-        int retval[] = new int[notes.length];
+        int retval[] = new int[notes.size()];
 
-        for (int i = 0; i < notes.length; i++)
-            retval[i] = indexOfNote(notes[i]);
+        for (int i = 0; i < notes.size(); i++)
+            retval[i] = indexOfNote(notes.get(i));
 
         return retval;
     }
@@ -4079,7 +3947,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             Map<ValueMetaInterface,String> values = new Hashtable<ValueMetaInterface,String>();
             String stepnames[];
             StepMeta steps[];
-            if (!only_selected || nrSelectedSteps() == 0)
+            List<StepMeta> selectedSteps = getSelectedSteps();
+            if (!only_selected || selectedSteps.isEmpty())
             {
                 stepnames = getStepNames();
                 steps = getStepsArray();
@@ -4087,7 +3956,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             else
             {
                 stepnames = getSelectedStepNames();
-                steps = getSelectedSteps();
+                steps = selectedSteps.toArray(new StepMeta[selectedSteps.size()]);
             }
 
             boolean stop_checking = false;

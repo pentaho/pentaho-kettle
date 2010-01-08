@@ -16,6 +16,8 @@
  */
 
 package org.pentaho.di.ui.spoon.dialog;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
@@ -99,7 +101,8 @@ public class PreviewSelectDialog extends Dialog
 		fdlFields.top  = new FormAttachment(0, margin);
 		wlFields.setLayoutData(fdlFields);
 		
-		final int FieldsRows=trans.nrUsedSteps();
+		List<StepMeta> usedSteps = trans.getUsedSteps(); 
+		final int FieldsRows=usedSteps.size();
 		
 		ColumnInfo[] colinf = {
 		  new ColumnInfo( BaseMessages.getString(PKG, "PreviewSelectDialog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
@@ -161,19 +164,18 @@ public class PreviewSelectDialog extends Dialog
 	 */ 
 	public void getData()
 	{	
-		int i;
-		
 		String prSteps[] = props.getLastPreview();
 		int    prSizes[] = props.getLastPreviewSize();
 		String name;
+		List<StepMeta> selectedSteps = trans.getSelectedSteps();
+		List<StepMeta> usedSteps = trans.getUsedSteps();
 		
-		if (trans.nrSelectedSteps()==0)
-		{
-			for (i=0;i<trans.nrUsedSteps();i++)
-			{
-				StepMeta stepMeta = trans.getUsedStep(i);
+		if (selectedSteps.size()==0) {
+		
+			int line=0;
+			for (StepMeta stepMeta : usedSteps) {
 				
-				TableItem item = wFields.table.getItem(i);
+				TableItem item = wFields.table.getItem(line++);
 				name = stepMeta.getName();
 				item.setText(1, stepMeta.getName());
 				item.setText(2, "0");
@@ -192,11 +194,10 @@ public class PreviewSelectDialog extends Dialog
 		{		
 			// No previous selection: set the selected steps to the default preview size
             //
-			for (i=0;i<trans.nrUsedSteps();i++)
+			int line=0;
+			for (StepMeta stepMeta : usedSteps)
 			{
-				StepMeta stepMeta = trans.getUsedStep(i);
-				
-				TableItem item = wFields.table.getItem(i);
+				TableItem item = wFields.table.getItem(line++);
 				name = stepMeta.getName();
 				item.setText(1, stepMeta.getName());
 				item.setText(2, "");

@@ -12,29 +12,29 @@
 package org.pentaho.di.ui.spoon.dialog;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.widgets.ColorDialog;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Spinner;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
@@ -55,7 +55,7 @@ public class NotePadDialog extends Dialog {
 	
 	private static Class<?> PKG = NotePadDialog.class;  // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	private NotePadMeta n;
+	private NotePadMeta notePadMeta;
 
 	private Label wlDesc;
 	private StyledTextComp wDesc;
@@ -98,19 +98,19 @@ public class NotePadDialog extends Dialog {
 	private Button wbBackGroundColorChange;
 	private FormData fdBackGroundColorChange;
 
-	private Text wBackGroundColor;
+	private Label wBackGroundColor;
 	private FormData fdBackGroundColor;
 
 	private Button wbFontColorChange;
 	private FormData fdFontColorChange;
 
-	private Text wFontColor;
+	private Label wFontColor;
 	private FormData fdFontColor;
 
 	private Button wbBorderColorChange;
 	private FormData fdBorderColorChange;
 
-	private Text wBorderColor;
+	private Label wBorderColor;
 	private FormData fdBorderColor;
 
 	private Label wlFontColor;
@@ -126,8 +126,14 @@ public class NotePadDialog extends Dialog {
 
 	public static RGB COLOR_RGB_BLACK = guiresource.getColorBlack().getRGB();
 	public static RGB COLOR_RGB_YELLOW = guiresource.getColorYellow().getRGB();
-	public static RGB COLOR_RGB_GRAY = guiresource.getColorGraph().getRGB();
+	public static RGB COLOR_RGB_GRAY = guiresource.getColorGray().getRGB();
 
+	private Color fontColor;
+	private Color bgColor;
+	private Color borderColor;
+
+	private Font	font;
+	
 	/**
 	 * Dialog to allow someone to show or enter a text in variable width font
 	 * 
@@ -145,7 +151,7 @@ public class NotePadDialog extends Dialog {
 		props = PropsUI.getInstance();
 		this.title = title;
 		if (nMeta != null) {
-			n = nMeta;
+			notePadMeta = nMeta;
 		}
 	}
 
@@ -200,8 +206,8 @@ public class NotePadDialog extends Dialog {
 				| SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
 
 		wDesc.setText("");
-		props.setLook(wDesc, PropsUI.WIDGET_STYLE_FIXED);
-		props.setLook(wDesc);
+		// props.setLook(wDesc, PropsUI.WIDGET_STYLE_FIXED);
+		// props.setLook(wDesc);
 		fdDesc = new FormData();
 		fdDesc.left = new FormAttachment(0, 0);
 		fdDesc.top = new FormAttachment(wlDesc, margin);
@@ -364,14 +370,15 @@ public class NotePadDialog extends Dialog {
 				if (newColor == null) {
 					return;
 				}
-				wFontColor
-						.setBackground(new Color(shell.getDisplay(), newColor));
+				fontColor.dispose();
+				fontColor = new Color(shell.getDisplay(), newColor);
+				wFontColor.setBackground(fontColor);
 				refreshTextNote();
 			}
 		});
 
 		// Font color
-		wFontColor = new Text(wNoteFontComp, SWT.BORDER);
+		wFontColor = new Label(wNoteFontComp, SWT.NONE);
 		wFontColor.setToolTipText(BaseMessages.getString(PKG, "NotePadDialog.Font.Color.Tooltip"));
 		props.setLook(wFontColor);
 		wFontColor.setEnabled(false);
@@ -399,6 +406,7 @@ public class NotePadDialog extends Dialog {
 		fdBackGroundColorChange = new FormData();
 		fdBackGroundColorChange.top = new FormAttachment(wFontColor, 2 * margin);
 		fdBackGroundColorChange.right = new FormAttachment(100, -margin);
+		fdBackGroundColorChange.right = new FormAttachment(100, -margin);
 		wbBackGroundColorChange.setLayoutData(fdBackGroundColorChange);
 		wbBackGroundColorChange.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -409,14 +417,15 @@ public class NotePadDialog extends Dialog {
 				if (newColor == null) {
 					return;
 				}
-				wBackGroundColor
-						.setBackground(new Color(shell.getDisplay(), newColor));
+				bgColor.dispose();
+				bgColor = new Color(shell.getDisplay(), newColor);
+				wBackGroundColor.setBackground(bgColor);
 				refreshTextNote();
 			}
 		});
 
 		// Background color
-		wBackGroundColor = new Text(wNoteFontComp, SWT.BORDER);
+		wBackGroundColor = new Label(wNoteFontComp, SWT.BORDER);
 		wBackGroundColor.setToolTipText(BaseMessages.getString(PKG, "NotePadDialog.Font.BackGroundColor.Tooltip"));
 		props.setLook(wBackGroundColor);
 		wBackGroundColor.setEnabled(false);
@@ -457,13 +466,14 @@ public class NotePadDialog extends Dialog {
 				if (newColor == null) {
 					return;
 				}
-				wBorderColor.setBackground(new Color(shell.getDisplay(),
-						newColor));
+				borderColor.dispose();
+				borderColor = new Color(shell.getDisplay(), newColor);
+				wBorderColor.setBackground(borderColor);
 			}
 		});
 
 		// border color
-		wBorderColor = new Text(wNoteFontComp, SWT.BORDER | SWT.MULTI);
+		wBorderColor = new Label(wNoteFontComp, SWT.BORDER);
 		wBorderColor.setToolTipText(BaseMessages.getString(PKG, "NotePadDialog.Font.BorderColor.Tooltip"));
 		props.setLook(wBorderColor);
 		wBorderColor.setEnabled(false);
@@ -552,86 +562,111 @@ public class NotePadDialog extends Dialog {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		return n;
+		return notePadMeta;
 	}
 
 	public void dispose() {
 		props.setScreen(new WindowProperty(shell));
+		fontColor.dispose();
+		bgColor.dispose();
+		borderColor.dispose();
+		if (font!=null && !font.isDisposed()) {
+			// font.dispose();
+		}
 		shell.dispose();
 	}
 
 	public void getData() {
-		if (n != null) {
-			wDesc.setText(n.getNote());
-			wFontName.setText(n.getFontName()==null?props.getNoteFont().getName():n.getFontName());
-			wFontSize.setSelection(n.getFontSize()==-1?props.getNoteFont().getHeight():n.getFontSize());
-			wFontBold.setSelection(n.isFontBold());
-			wFontItalic.setSelection(n.isFontItalic());
-			wFontColor.setBackground(new Color(shell.getDisplay(), new RGB(n
-					.getFontColorRed(), n.getFontColorGreen(), n
-					.getFontColorBlue())));
-			wBackGroundColor.setBackground(new Color(shell.getDisplay(),
-					new RGB(n.getBackGroundColorRed(), n
-							.getBackGroundColorGreen(), n
-							.getBackGroundColorBlue())));
-			wBorderColor.setBackground(new Color(shell.getDisplay(), new RGB(n
-					.getBorderColorRed(), n.getBorderColorGreen(), n
-					.getBorderColorBlue())));
-			wDrawShadow.setSelection(n.isDrawShadow());
+		if (notePadMeta != null) {
+			wDesc.setText(notePadMeta.getNote());
+			wFontName.setText(notePadMeta.getFontName()==null?props.getNoteFont().getName():notePadMeta.getFontName());
+			wFontSize.setSelection(notePadMeta.getFontSize()==-1?props.getNoteFont().getHeight():notePadMeta.getFontSize());
+			wFontBold.setSelection(notePadMeta.isFontBold());
+			wFontItalic.setSelection(notePadMeta.isFontItalic());
+			fontColor = new Color(shell.getDisplay(), new RGB(notePadMeta
+					.getFontColorRed(), notePadMeta.getFontColorGreen(), notePadMeta
+					.getFontColorBlue()));
+			bgColor = new Color(shell.getDisplay(),
+					new RGB(notePadMeta.getBackGroundColorRed(), notePadMeta
+							.getBackGroundColorGreen(), notePadMeta
+							.getBackGroundColorBlue()));
+			borderColor = new Color(shell.getDisplay(), new RGB(notePadMeta
+					.getBorderColorRed(), notePadMeta.getBorderColorGreen(), notePadMeta
+					.getBorderColorBlue()));
+			wDrawShadow.setSelection(notePadMeta.isDrawShadow());
 		} else {
 			wFontName.setText(props.getNoteFont().getName());
 			wFontSize.setSelection(props.getNoteFont().getHeight());
 			wFontBold.setSelection(false);
 			wFontItalic.setSelection(false);
-			wFontColor.setBackground(new Color(shell.getDisplay(), new RGB(
+			fontColor = new Color(shell.getDisplay(), new RGB(
 					NotePadMeta.COLOR_RGB_BLACK_RED,
 					NotePadMeta.COLOR_RGB_BLACK_GREEN,
-					NotePadMeta.COLOR_RGB_BLACK_BLUE)));
-			wBackGroundColor.setBackground(new Color(shell.getDisplay(),
+					NotePadMeta.COLOR_RGB_BLACK_BLUE));
+			bgColor = new Color(shell.getDisplay(),
 					new RGB(NotePadMeta.COLOR_RGB_YELLOW_RED,
 							NotePadMeta.COLOR_RGB_YELLOW_GREEN,
-							NotePadMeta.COLOR_RGB_YELLOW_BLUE)));
-			wBorderColor.setBackground(new Color(shell.getDisplay(), new RGB(
+							NotePadMeta.COLOR_RGB_YELLOW_BLUE));
+			borderColor = new Color(shell.getDisplay(), new RGB(
 					NotePadMeta.COLOR_RGB_GRAY_RED,
 					NotePadMeta.COLOR_RGB_GRAY_GREEN,
-					NotePadMeta.COLOR_RGB_GRAY_BLUE)));
+					NotePadMeta.COLOR_RGB_GRAY_BLUE));
 			wDrawShadow.setSelection(true);
 		}
+
+		wFontColor.setBackground(fontColor);
+		wBackGroundColor.setBackground(bgColor);
+		wBorderColor.setBackground(borderColor);
+
+		wNoteFolder.setSelection(0);
+		wDesc.setFocus();
+		wDesc.setSelection(wDesc.getText().length());
+		
 		refreshTextNote();
 	}
 
 	private void cancel() {
-		n = null;
+		notePadMeta = null;
 		dispose();
 	}
 
 	private void ok() {
-		n = new NotePadMeta();
-		if (wDesc.getText() != null) n.setNote(wDesc.getText());
-		if (wFontName.getText() != null) n.setFontName(wFontName.getText());
-		n.setFontSize(wFontSize.getSelection());
-		n.setFontBold(wFontBold.getSelection());
-		n.setFontItalic(wFontItalic.getSelection());
+		notePadMeta = new NotePadMeta();
+		if (wDesc.getText() != null) notePadMeta.setNote(wDesc.getText());
+		if (wFontName.getText() != null) notePadMeta.setFontName(wFontName.getText());
+		notePadMeta.setFontSize(wFontSize.getSelection());
+		notePadMeta.setFontBold(wFontBold.getSelection());
+		notePadMeta.setFontItalic(wFontItalic.getSelection());
     	// font color
-        n.setFontColorRed(wFontColor.getBackground().getRed());
-        n.setFontColorGreen(wFontColor.getBackground().getGreen());
-        n.setFontColorBlue(wFontColor.getBackground().getBlue());
+        notePadMeta.setFontColorRed(wFontColor.getBackground().getRed());
+        notePadMeta.setFontColorGreen(wFontColor.getBackground().getGreen());
+        notePadMeta.setFontColorBlue(wFontColor.getBackground().getBlue());
         // background color
-        n.setBackGroundColorRed(wBackGroundColor.getBackground().getRed());
-        n.setBackGroundColorGreen(wBackGroundColor.getBackground().getGreen());
-        n.setBackGroundColorBlue(wBackGroundColor.getBackground().getBlue());
+        notePadMeta.setBackGroundColorRed(wBackGroundColor.getBackground().getRed());
+        notePadMeta.setBackGroundColorGreen(wBackGroundColor.getBackground().getGreen());
+        notePadMeta.setBackGroundColorBlue(wBackGroundColor.getBackground().getBlue());
         // border color
-        n.setBorderColorRed(wBorderColor.getBackground().getRed());
-        n.setBorderColorGreen(wBorderColor.getBackground().getGreen());
-        n.setBorderColorBlue(wBorderColor.getBackground().getBlue());
-		n.setDrawShadow(wDrawShadow.getSelection());
+        notePadMeta.setBorderColorRed(wBorderColor.getBackground().getRed());
+        notePadMeta.setBorderColorGreen(wBorderColor.getBackground().getGreen());
+        notePadMeta.setBorderColorBlue(wBorderColor.getBackground().getBlue());
+		notePadMeta.setDrawShadow(wDrawShadow.getSelection());
 		dispose();
 	}
+	
 	private void refreshTextNote()
 	{
 	    int swt=SWT.NORMAL;
 	    if(wFontBold.getSelection()) swt=SWT.BOLD;
 	    if(wFontItalic.getSelection()) swt=swt | SWT.ITALIC;
-		wDesc.setFont(new Font(shell.getDisplay(), wFontName.getText(), wFontSize.getSelection(), swt));
+	    
+	    font = new Font(shell.getDisplay(), wFontName.getText(), wFontSize.getSelection(), swt);
+		wDesc.setFont(font);
+		for (Control control : wDesc.getChildren()) {
+			control.setBackground(bgColor);
+		}
+
+		wFontColor.setBackground(fontColor);
+		wBackGroundColor.setBackground(bgColor);
+		wBorderColor.setBackground(borderColor);
 	}
 }

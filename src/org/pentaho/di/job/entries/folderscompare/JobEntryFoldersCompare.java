@@ -512,7 +512,6 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 	}
 	private class TextFileSelector implements FileSelector 
 	{
-		LogWriter log = LogWriter.getInstance();
 		String source_folder=null;
 		public TextFileSelector(String sourcefolderin) 
 		{

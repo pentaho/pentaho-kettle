@@ -106,10 +106,9 @@ public class TransDataLineage {
 		}
 		
 		fieldStepsMap = new HashMap<ValueMetaInterface, List<StepMeta>>();
-		
-		int nrUsedSteps = transMeta.nrUsedSteps();
-		for (int i=0;i<nrUsedSteps;i++) {
-			StepMeta stepMeta = transMeta.getUsedStep(i);
+
+		List<StepMeta> usedSteps = transMeta.getUsedSteps();
+		for (StepMeta stepMeta : usedSteps) {
 			calculateLineage(stepMeta);
 		}
 	}

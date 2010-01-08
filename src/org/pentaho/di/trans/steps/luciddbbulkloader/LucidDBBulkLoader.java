@@ -407,16 +407,17 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
 		    		case ValueMetaInterface.TYPE_DATE:
 		    			// REVIEW jvs 13-Dec-2008:  Is it OK to ignore
 		    			// FieldFormatOk like this?
-		    			if (false && valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
+		    			/*if (false && valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
 		    				data.fifoStream.write((byte[])valueData);
 		    			} else {
+		    			*/
 		    				Date date = valueMeta.getDate(valueData);
 		    				// Convert it to the ISO timestamp format
 		    				// "yyyy-MM-dd HH:mm:ss" // or date format
 		    				// "yyyy-MM-dd" as appropriate, since LucidDB
 		    				// follows SQL:2003 here
 		    				data.fifoStream.write(data.bulkFormatMeta[i].getString(date).getBytes());
-		    			}
+		    			// }
 		    			break;
 		    		case ValueMetaInterface.TYPE_BOOLEAN:
 		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {

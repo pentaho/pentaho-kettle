@@ -278,7 +278,10 @@ public class GUIResource
     private Image imageTrue;
     private Image imageFalse;
     private Image imageContextMenu;
-    
+
+    private Image imageUnconditionalHop;
+    private Image imageParallelHop;
+
 
     private Map<String,Image> imageMap;
 
@@ -469,6 +472,8 @@ public class GUIResource
 		    imageTrue.dispose();
 		    imageFalse.dispose();
 		    imageContextMenu.dispose();
+		    imageParallelHop.dispose();
+		    imageUnconditionalHop.dispose();
 
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -707,6 +712,9 @@ public class GUIResource
     imageTrue = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("True_image")); // , "ui/images/true.png;
     imageFalse = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("False_image")); // , "ui/images/false.png;
     imageContextMenu = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ContextMenu_image")); // , "ui/images/context_menu.png;
+
+    imageParallelHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ParallelHop_image")); // , "ui/images/parallel-hop.png
+    imageUnconditionalHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("UnconditionalHop_image")); // , "ui/images/unconditional-hop.png
 
     imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
@@ -1809,32 +1817,41 @@ public class GUIResource
 	  return image;
   }
   
-  /**
-   * @return The image map used to cache images loaded from certain location using getImage(String location);
-   */
-  public Map<String, Image> getImageMap() {
-	return imageMap;
-  }
+	/**
+	 * @return The image map used to cache images loaded from certain location
+	 *         using getImage(String location);
+	 */
+	public Map<String, Image> getImageMap() {
+		return imageMap;
+	}
 
-/**
- * @return the imageTrue
- */
-public Image getImageTrue() {
-	return imageTrue;
-}
+	/**
+	 * @return the imageTrue
+	 */
+	public Image getImageTrue() {
+		return imageTrue;
+	}
 
-/**
- * @return the imageFalse
- */
-public Image getImageFalse() {
-	return imageFalse;
-}
+	/**
+	 * @return the imageFalse
+	 */
+	public Image getImageFalse() {
+		return imageFalse;
+	}
 
-/**
- * @return the imageContextMenu
- */
-public Image getImageContextMenu() {
-	return imageContextMenu;
-}
-  
+	/**
+	 * @return the imageContextMenu
+	 */
+	public Image getImageContextMenu() {
+		return imageContextMenu;
+	}
+
+	public Image getImageParallelHop() {
+		return imageParallelHop;
+	}
+
+	public Image getImageUnconditionalHop() {
+		return imageUnconditionalHop;
+	}
+
 }

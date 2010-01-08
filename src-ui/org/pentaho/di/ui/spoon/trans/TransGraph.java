@@ -41,11 +41,8 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -57,9 +54,7 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -75,7 +70,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.CheckResultInterface;
@@ -86,7 +80,9 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.GUIPositionInterface;
+import org.pentaho.di.core.gui.AreaOwner;
+import org.pentaho.di.core.gui.BasePainter;
+import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
@@ -116,6 +112,7 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransListener;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
@@ -142,10 +139,10 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
-import org.pentaho.di.ui.spoon.AreaOwner;
+import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.SwtScrollBar;
 import org.pentaho.di.ui.spoon.TabItemInterface;
-import org.pentaho.di.ui.spoon.TransPainter;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
@@ -212,13 +209,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private Point previous_note_locations[];
 
-  private StepMeta selectedSteps[];
+  private List<StepMeta> selectedSteps;
 
   private StepMeta selectedStep;
   
   private List<StepMeta> mouseOverSteps;
 
-  private NotePadMeta selectedNotes[];
+  private List<NotePadMeta> selectedNotes;
 
   private NotePadMeta selectedNote;
 
@@ -238,11 +235,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private boolean split_hop;
 
-  private int last_button;
+  private int lastButton;
 
   private TransHopMeta last_hop_split;
 
-  private Rectangle selectionRegion;
+  private org.pentaho.di.core.gui.Rectangle selectionRegion;
 
   /**
    * A list of remarks on the current Transformation...
@@ -682,10 +679,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
       StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
       if (stepMeta != null) {
-        if (e.button == 1)
+        if (e.button == 1) {
           editStep(stepMeta);
-        else
+        }
+        else {
           editDescription(stepMeta);
+        }
       } else {
         // Check if point lies on one of the many hop-lines...
         TransHopMeta online = findHop(real.x, real.y);
@@ -721,7 +720,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		boolean control = (e.stateMask & SWT.CONTROL) != 0;
 		boolean shift = (e.stateMask & SWT.SHIFT) != 0;
 
-		last_button = e.button;
+		lastButton = e.button;
 		Point real = screen2real(e.x, e.y);
 		lastclick = new Point(real.x, real.y);
 
@@ -848,7 +847,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 				//
 				startHopStep = null;
 				if (!control) {
-					selectionRegion = new Rectangle(real.x, real.y, 0, 0);
+					selectionRegion = new org.pentaho.di.core.gui.Rectangle(real.x, real.y, 0, 0);
 				}
 				redraw();
 			}
@@ -908,13 +907,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 boolean also = false;
                 if (selectedNotes != null && previous_note_locations != null) {
                   int indexes[] = transMeta.getNoteIndexes(selectedNotes);
-                  addUndoPosition(selectedNotes, indexes, previous_note_locations, transMeta
+                  addUndoPosition(selectedNotes.toArray(new NotePadMeta[selectedNotes.size()]), indexes, previous_note_locations, transMeta
                       .getSelectedNoteLocations(), also);
-                  also = selectedSteps != null && selectedSteps.length > 0;
+                  also = selectedSteps != null && selectedSteps.size() > 0;
                 }
                 if (selectedSteps != null && previous_step_locations != null) {
                   int indexes[] = transMeta.getStepIndexes(selectedSteps);
-                  addUndoPosition(selectedSteps, indexes, previous_step_locations, transMeta.getSelectedStepLocations(), also);
+                  addUndoPosition(selectedSteps.toArray(new StepMeta[selectedSteps.size()]), indexes, previous_step_locations, transMeta.getSelectedStepLocations(), also);
                 }
               }
             }
@@ -996,12 +995,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                   boolean also = false;
                   if (selectedNotes != null && previous_note_locations != null) {
                     int indexes[] = transMeta.getNoteIndexes(selectedNotes);
-                    addUndoPosition(selectedNotes, indexes, previous_note_locations, transMeta.getSelectedNoteLocations(), also);
-                    also = selectedSteps != null && selectedSteps.length > 0;
+                    addUndoPosition(selectedNotes.toArray(new NotePadMeta[selectedNotes.size()]), indexes, previous_note_locations, transMeta.getSelectedNoteLocations(), also);
+                    also = selectedSteps != null && selectedSteps.size() > 0;
                   }
                   if (selectedSteps != null && previous_step_locations != null) {
                     int indexes[] = transMeta.getStepIndexes(selectedSteps);
-                    addUndoPosition(selectedSteps, indexes, previous_step_locations, transMeta.getSelectedStepLocations(), also);
+                    addUndoPosition(selectedSteps.toArray(new StepMeta[selectedSteps.size()]), indexes, previous_step_locations, transMeta.getSelectedStepLocations(), also);
                   }
                 }
               }
@@ -1024,9 +1023,246 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         }
       }
 
-      last_button = 0;
+      lastButton = 0;
     }
+
+	public void mouseMove(MouseEvent e) {
+        boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+        noInputStep = null;
+
+        // disable the tooltip
+        //
+        toolTip.hide();
+
+        // Remember the last position of the mouse for paste with keyboard
+        //
+        lastMove = new Point(e.x, e.y);
+        Point real = screen2real(e.x, e.y);
+
+        if (iconoffset == null) {
+          iconoffset = new Point(0, 0);
+        }
+        Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
+
+        if (noteoffset == null) {
+          noteoffset = new Point(0, 0);
+        }
+        Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
+        
+        // Moved over an area?
+        //
+        AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+        if (areaOwner!=null) {
+        	switch (areaOwner.getAreaType()) {
+        	case STEP_ICON :
+	        	{
+	        		StepMeta stepMeta = (StepMeta) areaOwner.getOwner();
+	        		resetDelayTimer(stepMeta);
+	        	}
+    			break;
+
+        	case MINI_ICONS_BALLOON : // Give the timer a bit more time 
+	        	{
+	        		StepMeta stepMeta = (StepMeta)areaOwner.getParent();
+	        		resetDelayTimer(stepMeta);
+	        	}
+        		break;
+            default:
+            	break;
+        	}
+        }
+
+        // 
+        // First see if the icon we clicked on was selected.
+        // If the icon was not selected, we should un-select all other
+        // icons, selected and move only the one icon
+        //
+        if (selectedStep != null && !selectedStep.isSelected()) {
+          transMeta.unselectAll();
+          selectedStep.setSelected(true);
+          selectedSteps = new ArrayList<StepMeta>();
+          selectedSteps.add(selectedStep);
+          previous_step_locations = new Point[] { selectedStep.getLocation() };
+          redraw();
+        } 
+        else if (selectedNote != null && !selectedNote.isSelected()) {
+          transMeta.unselectAll();
+          selectedNote.setSelected(true);
+          selectedNotes = new ArrayList<NotePadMeta>();
+          selectedNotes.add(selectedNote);
+          previous_note_locations = new Point[] { selectedNote.getLocation() };
+          redraw();
+        }
+        
+        // Did we select a region...?
+        //
+        else if (selectionRegion != null && startHopStep==null) {
+          selectionRegion.width = real.x - selectionRegion.x;
+          selectionRegion.height = real.y - selectionRegion.y;
+          redraw();
+        }
+        // Move around steps & notes
+        //
+        else if (selectedStep != null && lastButton == 1 && !shift && startHopStep==null) {
+            /*
+             * One or more icons are selected and moved around...
+             * 
+             * new : new position of the ICON (not the mouse pointer) dx : difference with previous
+             * position
+             */
+            int dx = icon.x - selectedStep.getLocation().x;
+            int dy = icon.y - selectedStep.getLocation().y;
+
+            // See if we have a hop-split candidate
+            //
+            TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selectedStep);
+            if (hi != null) {
+              // OK, we want to split the hop in 2
+              // 
+              if (!hi.getFromStep().equals(selectedStep) && !hi.getToStep().equals(selectedStep)) {
+                split_hop = true;
+                last_hop_split = hi;
+                hi.split = true;
+              }
+            } else {
+              if (last_hop_split != null) {
+                last_hop_split.split = false;
+                last_hop_split = null;
+                split_hop = false;
+              }
+            }
+
+            selectedNotes = transMeta.getSelectedNotes();
+            selectedSteps = transMeta.getSelectedSteps();
+
+            // Adjust location of selected steps...
+            if (selectedSteps != null) {
+              for (int i = 0; i < selectedSteps.size(); i++) {
+                StepMeta stepMeta = selectedSteps.get(i);
+                PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+                stopStepMouseOverDelayTimer(stepMeta);
+              }
+            }
+            // Adjust location of selected hops...
+            if (selectedNotes != null) {
+              for (int i = 0; i < selectedNotes.size(); i++) {
+                NotePadMeta ni = selectedNotes.get(i);
+                PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
+              }
+            }
+
+            redraw();
+        }
+    	
+        // Are we creating a new hop with the middle button or pressing SHIFT?
+        //
+        else if ((startHopStep!=null && endHopStep==null) || (endHopStep!=null && startHopStep==null)) {
+        	StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
+            endHopLocation = new Point(real.x, real.y);
+            if (stepMeta != null && ((startHopStep!=null && !startHopStep.equals(stepMeta)) || (endHopStep!=null && !endHopStep.equals(stepMeta))) ) {
+            	StepIOMetaInterface ioMeta = stepMeta.getStepMetaInterface().getStepIOMeta();
+            	if (candidate == null) {
+            		// See if the step accepts input.  If not, we can't create a new hop...
+            		//
+            		if (startHopStep!=null) {
+            			if (ioMeta.isInputAcceptor()) {
+			                candidate = new TransHopMeta(startHopStep, stepMeta);
+			                endHopLocation=null;
+            			} else {
+	            			noInputStep=stepMeta;
+	            			toolTip.setImage(null);
+	            			toolTip.setText("This step does not accept any input from other steps");
+	            			toolTip.show(new org.eclipse.swt.graphics.Point(real.x, real.y));
+            			}
+            		} else if (endHopStep!=null) {
+            			if (ioMeta.isOutputProducer()) {
+			                candidate = new TransHopMeta(stepMeta, endHopStep);
+			                endHopLocation=null;
+            			} else {
+	            			noInputStep=stepMeta;
+	            			toolTip.setImage(null);
+	            			toolTip.setText("This step doesn't pass any output to other steps. (except perhaps for targetted output)");
+	            			toolTip.show(new org.eclipse.swt.graphics.Point(real.x, real.y));
+            			}
+            		}
+                }
+            } else {
+              if (candidate != null) {
+                candidate = null;
+                redraw();
+              }
+          }
+            
+      	  redraw();
+        }
+        
+        // Move around notes & steps
+        //
+        if (selectedNote != null) {
+          if (lastButton == 1 && !shift) {
+            /*
+             * One or more notes are selected and moved around...
+             * 
+             * new : new position of the note (not the mouse pointer) dx : difference with previous
+             * position
+             */
+            int dx = note.x - selectedNote.getLocation().x;
+            int dy = note.y - selectedNote.getLocation().y;
+
+            selectedNotes = transMeta.getSelectedNotes();
+            selectedSteps = transMeta.getSelectedSteps();
+
+            // Adjust location of selected steps...
+            if (selectedSteps != null)
+              for (int i = 0; i < selectedSteps.size(); i++) {
+                StepMeta stepMeta = selectedSteps.get(i);
+                PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+              }
+            // Adjust location of selected hops...
+            if (selectedNotes != null)
+              for (int i = 0; i < selectedNotes.size(); i++) {
+                NotePadMeta ni = selectedNotes.get(i);
+                PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
+              }
+
+            redraw();
+          }
+        }
+      }
+    
+
+  public void mouseHover(MouseEvent e) {
+	  
+	  boolean tip = true;
+	  
+	  toolTip.hide();
+	  Point real = screen2real(e.x, e.y);
+	  
+      AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
+      if (areaOwner!=null) {
+      	switch (areaOwner.getAreaType()) {
+      	case STEP_ICON :
+      		StepMeta stepMeta = (StepMeta) areaOwner.getOwner(); 
+      		if (!mouseOverSteps.contains(stepMeta)) {
+      			addStepMouseOverDelayTimer(stepMeta);
+      			redraw();
+      			tip=false;
+      		}
+  			break;
+      	}
+      }
+      
+      if (tip) {
+          // Show a tool tip upon mouse-over of an object on the canvas
+          //
+          if (!helpTip.isVisible()) {
+            setToolTip(real.x, real.y, e.x, e.y);
+          }
+      }
+  }
   
+	
+	
     private void addCandidateAsHop(int mouseX, int mouseY) {
 
     	boolean forward = startHopStep!=null;
@@ -1087,7 +1323,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     		for (final StreamInterface stream : streams) {
     			MenuItem item = new MenuItem(menu, SWT.NONE);
     			item.setText(Const.NVL(stream.getDescription(), ""));
-    			item.setImage(getStreamIconImage(stream.getStreamIcon()));
+    			item.setImage( SWTGC.getNativeImage(BasePainter.getStreamIconImage(stream.getStreamIcon())) );
     			item.addSelectionListener(new SelectionAdapter() {
     				public void widgetSelected(SelectionEvent e) {
     					addHop(stream);
@@ -1171,258 +1407,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		candidate.getFromStep().setStepErrorMeta(errorMeta);
 	}
 
-	public static Image getStreamIconImage(StreamIcon streamIcon) {
-		switch(streamIcon) {
-		case TRUE   : return GUIResource.getInstance().getImageTrue();
-		case FALSE  : return GUIResource.getInstance().getImageFalse();
-		case ERROR  : return GUIResource.getInstance().getImageErrorHop();
-		case INFO   : return GUIResource.getInstance().getImageInfoHop();
-		case TARGET : return GUIResource.getInstance().getImageHopTarget();
-		case INPUT  : return GUIResource.getInstance().getImageHopInput();
-		case OUTPUT : return GUIResource.getInstance().getImageHopOutput();
-		default:      return GUIResource.getInstance().getImageArrow();
-		}
-    }
-
-	public void mouseMove(MouseEvent e) {
-        boolean shift = (e.stateMask & SWT.SHIFT) != 0;
-        noInputStep = null;
-
-        // disable the tooltip
-        //
-        toolTip.hide();
-
-        // Remember the last position of the mouse for paste with keyboard
-        //
-        lastMove = new Point(e.x, e.y);
-        Point real = screen2real(e.x, e.y);
-
-        if (iconoffset == null) {
-          iconoffset = new Point(0, 0);
-        }
-        Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
-
-        if (noteoffset == null) {
-          noteoffset = new Point(0, 0);
-        }
-        Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
-        
-        // Moved over an area?
-        //
-        AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
-        if (areaOwner!=null) {
-        	switch (areaOwner.getAreaType()) {
-        	case STEP_ICON :
-	        	{
-	        		StepMeta stepMeta = (StepMeta) areaOwner.getOwner();
-	        		resetDelayTimer(stepMeta);
-	        	}
-    			break;
-
-        	case STEP_MINI_ICONS_BALLOON : // Give the timer a bit more time 
-	        	{
-	        		StepMeta stepMeta = (StepMeta)areaOwner.getParent();
-	        		resetDelayTimer(stepMeta);
-	        	}
-        		break;
-            default:
-            	break;
-        	}
-        }
-
-        // 
-        // First see if the icon we clicked on was selected.
-        // If the icon was not selected, we should un-select all other
-        // icons, selected and move only the one icon
-        //
-        if (selectedStep != null && !selectedStep.isSelected()) {
-          transMeta.unselectAll();
-          selectedStep.setSelected(true);
-          selectedSteps = new StepMeta[] { selectedStep };
-          previous_step_locations = new Point[] { selectedStep.getLocation() };
-          redraw();
-        } 
-        else if (selectedNote != null && !selectedNote.isSelected()) {
-          transMeta.unselectAll();
-          selectedNote.setSelected(true);
-          selectedNotes = new NotePadMeta[] { selectedNote };
-          previous_note_locations = new Point[] { selectedNote.getLocation() };
-          redraw();
-        }
-        
-        // Did we select a region...?
-        //
-        else if (selectionRegion != null && startHopStep==null) {
-          selectionRegion.width = real.x - selectionRegion.x;
-          selectionRegion.height = real.y - selectionRegion.y;
-          redraw();
-        }
-        // Move around steps & notes
-        //
-        else if (selectedStep != null && last_button == 1 && !shift && startHopStep==null) {
-            /*
-             * One or more icons are selected and moved around...
-             * 
-             * new : new position of the ICON (not the mouse pointer) dx : difference with previous
-             * position
-             */
-            int dx = icon.x - selectedStep.getLocation().x;
-            int dy = icon.y - selectedStep.getLocation().y;
-
-            // See if we have a hop-split candidate
-            //
-            TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selectedStep);
-            if (hi != null) {
-              // OK, we want to split the hop in 2
-              // 
-              if (!hi.getFromStep().equals(selectedStep) && !hi.getToStep().equals(selectedStep)) {
-                split_hop = true;
-                last_hop_split = hi;
-                hi.split = true;
-              }
-            } else {
-              if (last_hop_split != null) {
-                last_hop_split.split = false;
-                last_hop_split = null;
-                split_hop = false;
-              }
-            }
-
-            selectedNotes = transMeta.getSelectedNotes();
-            selectedSteps = transMeta.getSelectedSteps();
-
-            // Adjust location of selected steps...
-            if (selectedSteps != null) {
-              for (int i = 0; i < selectedSteps.length; i++) {
-                StepMeta stepMeta = selectedSteps[i];
-                PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
-                stopStepMouseOverDelayTimer(stepMeta);
-              }
-            }
-            // Adjust location of selected hops...
-            if (selectedNotes != null) {
-              for (int i = 0; i < selectedNotes.length; i++) {
-                NotePadMeta ni = selectedNotes[i];
-                PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
-              }
-            }
-
-            redraw();
-        }
-    	
-        // Are we creating a new hop with the middle button or pressing SHIFT?
-        //
-        else if ((startHopStep!=null && endHopStep==null) || (endHopStep!=null && startHopStep==null)) {
-        	StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
-            endHopLocation = new Point(real.x, real.y);
-            if (stepMeta != null && ((startHopStep!=null && !startHopStep.equals(stepMeta)) || (endHopStep!=null && !endHopStep.equals(stepMeta))) ) {
-            	StepIOMetaInterface ioMeta = stepMeta.getStepMetaInterface().getStepIOMeta();
-            	if (candidate == null) {
-            		// See if the step accepts input.  If not, we can't create a new hop...
-            		//
-            		if (startHopStep!=null) {
-            			if (ioMeta.isInputAcceptor()) {
-			                candidate = new TransHopMeta(startHopStep, stepMeta);
-			                endHopLocation=null;
-            			} else {
-	            			noInputStep=stepMeta;
-	            			toolTip.setImage(null);
-	            			toolTip.setText("This step does not accept any input from other steps");
-	            			toolTip.show(new org.eclipse.swt.graphics.Point(real.x, real.y));
-            			}
-            		} else if (endHopStep!=null) {
-            			if (ioMeta.isOutputProducer()) {
-			                candidate = new TransHopMeta(stepMeta, endHopStep);
-			                endHopLocation=null;
-            			} else {
-	            			noInputStep=stepMeta;
-	            			toolTip.setImage(null);
-	            			toolTip.setText("This step doesn't pass any output to other steps. (except perhaps for targetted output)");
-	            			toolTip.show(new org.eclipse.swt.graphics.Point(real.x, real.y));
-            			}
-            		}
-                }
-            } else {
-              if (candidate != null) {
-                candidate = null;
-                redraw();
-              }
-          }
-            
-      	  redraw();
-        }
-        
-        // Move around notes & steps
-        //
-        if (selectedNote != null) {
-          if (last_button == 1 && !shift) {
-            /*
-             * One or more notes are selected and moved around...
-             * 
-             * new : new position of the note (not the mouse pointer) dx : difference with previous
-             * position
-             */
-            int dx = note.x - selectedNote.getLocation().x;
-            int dy = note.y - selectedNote.getLocation().y;
-
-            selectedNotes = transMeta.getSelectedNotes();
-            selectedSteps = transMeta.getSelectedSteps();
-
-            // Adjust location of selected steps...
-            if (selectedSteps != null)
-              for (int i = 0; i < selectedSteps.length; i++) {
-                StepMeta stepMeta = selectedSteps[i];
-                PropsUI.setLocation(stepMeta, stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
-              }
-            // Adjust location of selected hops...
-            if (selectedNotes != null)
-              for (int i = 0; i < selectedNotes.length; i++) {
-                NotePadMeta ni = selectedNotes[i];
-                PropsUI.setLocation(ni, ni.getLocation().x + dx, ni.getLocation().y + dy);
-              }
-
-            redraw();
-          }
-        }
-      }
-    
   private void resetDelayTimer(StepMeta stepMeta) {
-		DelayTimer delayTimer = delayTimers.get(stepMeta);
-		if (delayTimer!=null) {
-			delayTimer.reset();
-		}
+	  DelayTimer delayTimer = delayTimers.get(stepMeta);
+	  if (delayTimer!=null) {
+		  delayTimer.reset();
+	  }
   }
 
-  public void mouseHover(MouseEvent e) {
-	  
-	  boolean tip = true;
-	  
-	  toolTip.hide();
-	  Point real = screen2real(e.x, e.y);
-	  
-      AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
-      if (areaOwner!=null) {
-      	switch (areaOwner.getAreaType()) {
-      	case STEP_ICON :
-      		StepMeta stepMeta = (StepMeta) areaOwner.getOwner(); 
-      		if (!mouseOverSteps.contains(stepMeta)) {
-      			addStepMouseOverDelayTimer(stepMeta);
-      			redraw();
-      			tip=false;
-      		}
-  			break;
-      	}
-      }
-      
-      if (tip) {
-          // Show a tool tip upon mouse-over of an object on the canvas
-          //
-          if (!helpTip.isVisible()) {
-            setToolTip(real.x, real.y, e.x, e.y);
-          }
-      }
-  }
-  
   /*
   private void showStepTargetOptions(final StepMeta stepMeta, StepIOMetaInterface ioMeta, int x, int y) {
 	
@@ -1625,9 +1616,9 @@ private void addToolBar() {
      *
      * @param rect The selection area as a rectangle
      */
-  public void selectInRect(TransMeta transMeta, Rectangle rect) {
+  public void selectInRect(TransMeta transMeta, org.pentaho.di.core.gui.Rectangle rect) {
     if (rect.height < 0 || rect.width < 0) {
-      Rectangle rectified = new Rectangle(rect.x, rect.y, rect.width, rect.height);
+      org.pentaho.di.core.gui.Rectangle rectified = new org.pentaho.di.core.gui.Rectangle(rect.x, rect.y, rect.width, rect.height);
 
       // Only for people not dragging from left top to right bottom
       if (rectified.height < 0) {
@@ -1660,10 +1651,7 @@ private void addToolBar() {
   private void addKeyListener(Control control) {
     KeyAdapter keyAdapter = new KeyAdapter() {
       public void keyPressed(KeyEvent e) {
-        // F2 --> rename step
-        if (e.keyCode == SWT.F2) {
-          renameStep();
-        }
+
 
         if (e.keyCode == SWT.ESC) {
             clearSettings();
@@ -1671,8 +1659,8 @@ private void addToolBar() {
           }
 
         if (e.keyCode == SWT.DEL) {
-          StepMeta stepMeta[] = transMeta.getSelectedSteps();
-          if (stepMeta != null && stepMeta.length > 0) {
+          List<StepMeta> stepMeta = transMeta.getSelectedSteps();
+          if (stepMeta != null && stepMeta.size()> 0) {
             delSelected(null);
           }
         }
@@ -1746,66 +1734,7 @@ private void addToolBar() {
   public boolean setFocus() {
     return canvas.setFocus();
   }
-
-  public void renameStep() {
-    StepMeta[] selection = transMeta.getSelectedSteps();
-    if (selection != null && selection.length == 1) {
-      final StepMeta stepMeta = selection[0];
-
-      // What is the location of the step?
-      String name = stepMeta.getName();
-      Point stepLocation = stepMeta.getLocation();
-      Point realStepLocation = real2screen(stepLocation.x, stepLocation.y);
-
-      // The location of the step name?
-      GC gc = new GC(shell.getDisplay());
-      gc.setFont(GUIResource.getInstance().getFontGraph());
-      Point namePosition = TransPainter.getNamePosition(gc, name, realStepLocation, iconsize);
-      int width = gc.textExtent(name).x + 30;
-      gc.dispose();
-
-      // at this very point, create a new text widget...
-      final Text text = new Text(this, SWT.SINGLE | SWT.BORDER);
-      text.setText(name);
-      FormData fdText = new FormData();
-      fdText.left = new FormAttachment(0, namePosition.x);
-      fdText.right = new FormAttachment(0, namePosition.x + width);
-      fdText.top = new FormAttachment(0, namePosition.y);
-      text.setLayoutData(fdText);
-
-      // Add a listener!
-      // Catch the keys pressed when editing a Text-field...
-      KeyListener lsKeyText = new KeyAdapter() {
-        public void keyPressed(KeyEvent e) {
-          // "ENTER": close the text editor and copy the data over 
-          if (e.character == SWT.CR) {
-            String newName = text.getText();
-            text.dispose();
-            renameStep(stepMeta, newName);
-          }
-
-          if (e.keyCode == SWT.ESC) {
-            text.dispose();
-          }
-        }
-      };
-
-      text.addKeyListener(lsKeyText);
-      text.addFocusListener(new FocusAdapter() {
-        public void focusLost(FocusEvent e) {
-          String newName = text.getText();
-          text.dispose();
-          renameStep(stepMeta, newName);
-        }
-      });
-
-      this.layout(true, true);
-
-      text.setFocus();
-      text.setSelection(0, name.length());
-    }
-  }
-
+  
   public void renameStep(StepMeta stepMeta, String stepname) {
     String newname = stepname;
 
@@ -1837,7 +1766,7 @@ private void addToolBar() {
     selectionRegion = null;
     candidate = null;
     last_hop_split = null;
-    last_button = 0;
+    lastButton = 0;
     iconoffset = null;
     startHopStep = null;
     endHopStep = null;
@@ -1989,8 +1918,8 @@ private void addToolBar() {
   }
 
   public void clustering() {
-	StepMeta[] selected = transMeta.getSelectedSteps();
-	if (selected!=null && selected.length>0) {
+	List<StepMeta> selected = transMeta.getSelectedSteps();
+	if (selected!=null && selected.size()>0) {
 		spoon.editClustering(transMeta, transMeta.getSelectedSteps());
 	} else {
 		spoon.editClustering(transMeta, getCurrentStep());
@@ -2057,14 +1986,12 @@ private void addToolBar() {
 
   public void dupeStep() {
     try {
-      if (transMeta.nrSelectedSteps() <= 1) {
+      List<StepMeta> steps = transMeta.getSelectedSteps();
+      if (steps.size() <= 1) {
         spoon.dupeStep(transMeta, getCurrentStep());
       } else {
-        for (int i = 0; i < transMeta.nrSteps(); i++) {
-          StepMeta stepMeta = transMeta.getStep(i);
-          if (stepMeta.isSelected()) {
-            spoon.dupeStep(transMeta, stepMeta);
-          }
+        for (StepMeta stepMeta : steps) {
+        	spoon.dupeStep(transMeta, stepMeta);
         }
       }
     } catch (Exception ex) {
@@ -2250,7 +2177,8 @@ private void addToolBar() {
 
         XulPopupMenu menu = (XulPopupMenu) menuMap.get("trans-graph-entry"); //$NON-NLS-1$
         if (menu != null) {
-          int sels = transMeta.nrSelectedSteps();
+          List<StepMeta> selection = transMeta.getSelectedSteps();
+          int sels = selection.size();
 
           XulMenuChoice item = menu.getMenuItemById("trans-graph-entry-newhop"); //$NON-NLS-1$
           menu.addMenuListener("trans-graph-entry-newhop", this, TransGraph.class, "newHop"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -2605,7 +2533,8 @@ private void addToolBar() {
   }
 
   public void delSelected(StepMeta stMeta) {
-    if (transMeta.nrSelectedSteps() == 0) {
+	List<StepMeta> selection = transMeta.getSelectedSteps();
+    if (selection.size() == 0) {
       spoon.delStep(transMeta, stMeta);
       return;
     }
@@ -2720,19 +2649,29 @@ private void addToolBar() {
 
     Display disp = shell.getDisplay();
 
-    Image img = getTransformationImage(disp, area.x, area.y, true, magnification);
+    Image img = getTransformationImage(disp, area.x, area.y, magnification);
     e.gc.drawImage(img, 0, 0);
     img.dispose();
 
     // spoon.setShellText();
   }
 
-  public Image getTransformationImage(Device device, int x, int y, boolean branded, float magnificationFactor) {
-    TransPainter transPainter = new TransPainter(
-    		transMeta, new Point(x, y), hori, vert, candidate, drop_candidate,
+  public Image getTransformationImage(Device device, int x, int y, float magnificationFactor) {
+
+    GCInterface gc = new SWTGC(device, new Point(x, y), iconsize);
+
+    TransPainter transPainter = new TransPainter( gc,
+    		transMeta, new Point(x, y), new SwtScrollBar(hori), new SwtScrollBar(vert), candidate, drop_candidate,
     		selectionRegion, 
     		areaOwners, 
-    		mouseOverSteps
+    		mouseOverSteps,
+			PropsUI.getInstance().getIconSize(),
+			PropsUI.getInstance().getLineWidth(),
+			PropsUI.getInstance().getCanvasGridSize(), 
+			PropsUI.getInstance().getShadowSize(), 
+			PropsUI.getInstance().isAntiAliasingEnabled(),
+			PropsUI.getInstance().getNoteFont().getName(),
+			PropsUI.getInstance().getNoteFont().getHeight()
     	);
     
     transPainter.setMagnification(magnificationFactor);
@@ -2744,7 +2683,10 @@ private void addToolBar() {
     transPainter.setCandidateHopType(candidateHopType);
     transPainter.setStartErrorHopStep(startErrorHopStep);
     transPainter.setShowTargetStreamsStep(showTargetStreamsStep);
-    Image img = transPainter.getTransformationImage(device, PropsUI.getInstance().isBrandingActive());
+    
+    transPainter.buildTransformationImage();
+    
+    Image img = (Image)gc.getImage();
 
     return img;
   }
@@ -2851,9 +2793,12 @@ private void addToolBar() {
   }
 
   private void newHop() {
-    StepMeta fr = transMeta.getSelectedStep(0);
-    StepMeta to = transMeta.getSelectedStep(1);
-    spoon.newHop(transMeta, fr, to);
+	List<StepMeta> selection = transMeta.getSelectedSteps();
+	if (selection.size()==2) {
+	    StepMeta fr = selection.get(0);
+	    StepMeta to = selection.get(1);
+	    spoon.newHop(transMeta, fr, to);
+	}
   }
 
   private boolean pointOnLine(int x, int y, int line[]) {
@@ -2891,10 +2836,10 @@ private void addToolBar() {
   }
 
   private SnapAllignDistribute createSnapAllignDistribute() {
-    List<GUIPositionInterface> elements = transMeta.getSelectedDrawnStepsList();
-    int[] indices = transMeta.getStepIndexes(elements.toArray(new StepMeta[elements.size()]));
+    List<StepMeta> selection = transMeta.getSelectedSteps();
+    int[] indices = transMeta.getStepIndexes(selection);
 
-    return new SnapAllignDistribute(transMeta, elements, indices, spoon, this);
+    return new SnapAllignDistribute(transMeta, selection, indices, spoon, this);
   }
 
   public void snaptogrid() {

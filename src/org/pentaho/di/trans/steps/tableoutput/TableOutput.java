@@ -554,6 +554,11 @@ public class TableOutput extends BaseStep implements StepInterface
 	              	  meta.getDatabaseMeta().getDatabaseType() == DatabaseMeta.TYPE_DATABASE_GREENPLUM
 	              	);
                 
+                // Batch updates are not supported in case we are running with transactions in the transformation.
+                // It is also disabled when we return keys...
+                //
+                data.specialErrorHandling |= meta.isReturningGeneratedKeys() || getTransMeta().isUsingUniqueConnections();
+                
                 if (data.batchMode && data.specialErrorHandling )
                 {
                 	data.batchMode = false;
