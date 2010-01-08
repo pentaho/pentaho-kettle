@@ -507,7 +507,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 								// Truncate table?
 								String SQLBULKLOAD="";
-								if(truncate)	SQLBULKLOAD="TRUNCATE " + realTablename + ";";
+								if(truncate)	SQLBULKLOAD="TRUNCATE TABLE " + realTablename + ";";
 								
 								// Build BULK Command
 								SQLBULKLOAD=SQLBULKLOAD+"BULK INSERT " + realTablename + " FROM " + "'"+realFilename.replace('\\', '/')+"'" ;
