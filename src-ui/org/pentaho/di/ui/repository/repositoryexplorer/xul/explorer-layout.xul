@@ -173,10 +173,13 @@
 						<treechildren/>
 					</tree>
 					<!-- Version history tool pane -->
+<!--
 					<hbox height="20px">
 						<label id="connection-revision-label" value="Version History:"/>
 					</hbox>
+-->
 					<!-- Version history -->
+<!--
 					<tree id="connection-revision-table" flex="1" hidecolumnpicker="true"
 						enableColumnDrag="true" context="revisionContextMenu">
 						<treecols>
@@ -191,6 +194,7 @@
 						</treecols>
 						<treechildren />
 					</tree>
+-->
 				</vbox>
 				</hbox>
 			</tabpanel>
