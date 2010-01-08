@@ -205,10 +205,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return transDelegate.readTransSharedObjects(transMeta);
 	}
 		
-	public synchronized ObjectId renameTransformation(ObjectId id_transformation, RepositoryDirectory dir, String newname) throws KettleException {
+	public synchronized ObjectId renameTransformation(ObjectId id_transformation, RepositoryDirectory newDir, String newName) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.MODIFY_TRANSFORMATION);
 
-    	transDelegate.renameTransformation(id_transformation, newname);
+    	transDelegate.renameTransformation(id_transformation, newDir, newName);
 		return id_transformation; // The same in our case.
 	}
 

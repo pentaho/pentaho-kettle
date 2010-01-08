@@ -558,8 +558,10 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 }
                 
                 DatabaseMeta logDb = DatabaseMeta.findDatabase(transMeta.getDatabases(), new LongObjectId(r.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_LOG, -1L)));
-                logTable.setConnectionName( logDb.getName() ); //$NON-NLS-1$
-                // TODO: save/load name as a string, allow variables! 
+                if(logDb != null) {
+                  logTable.setConnectionName( logDb.getName() ); //$NON-NLS-1$
+                  // TODO: save/load name as a string, allow variables! 
+                }
                 
                 logTable.setTableName( r.getString(KettleDatabaseRepository.FIELD_TRANSFORMATION_TABLE_NAME_LOG, null) ); //$NON-NLS-1$
                 logTable.setBatchIdUsed( r.getBoolean(KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_BATCHID, false) ); //$NON-NLS-1$
@@ -1194,12 +1196,13 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 		repository.connectionDelegate.getDatabase().execStatement(sql, par.getRowMeta(), par.getData());
 	}
 
-	public synchronized void renameTransformation(ObjectId id_transformation, String newname) throws KettleException
+	public synchronized void renameTransformation(ObjectId id_transformation, RepositoryDirectory newdir, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION)+" SET "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = ?";
+		String sql = "UPDATE " + quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION) + " SET " + quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME) + " = ?, " + quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY) + " = ? " + "WHERE " + quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION) + " = ?";
 
 		RowMetaAndData table = new RowMetaAndData();
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME,  ValueMetaInterface.TYPE_STRING), newname);
+		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY,  ValueMetaInterface.TYPE_INTEGER), newdir.getObjectId());
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION,  ValueMetaInterface.TYPE_INTEGER), id_transformation);
 
 		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
