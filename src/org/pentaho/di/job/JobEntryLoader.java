@@ -569,4 +569,8 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 		}
 		return list;
 	}
+
+	public List<JobPlugin> getPluginList() {
+		return pluginList;
+	}
 }
