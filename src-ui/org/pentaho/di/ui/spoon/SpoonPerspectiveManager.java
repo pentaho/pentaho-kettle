@@ -12,6 +12,7 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.containers.XulDeck;
+import org.pentaho.ui.xul.impl.XulEventHandler;
 
 /**
  * Singleton Object controlling SpoonPerspectives.
@@ -75,6 +76,13 @@ public class SpoonPerspectiveManager {
     }
     unloadPerspective(activePerspective);
     activePerspective = sp;
+    
+    List<XulEventHandler> theXulEventHandlers = sp.getEventHandlers();
+    if(theXulEventHandlers != null) {
+	    for (XulEventHandler handler : theXulEventHandlers) {
+				domContainer.addEventHandler(handler);
+			}
+    }
 
     List<XulOverlay> overlays = sp.getOverlays();
     if(overlays != null){

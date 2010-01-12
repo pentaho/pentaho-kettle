@@ -24,6 +24,10 @@
         <menuitem id="file-close" acceltext="CTRL-F4" accesskey="ctrl-f4" label="${Spoon.Menu.File.Close}"
           command="spoon.closeFile()" />
         <menuseparator />
+        <menu id="file-export" label="Export">
+          <menupopup id="file-export-popup" disabled="true"/>
+        </menu>
+        <menuseparator />
         <menuitem id="file-print" label="${Spoon.Menu.File.Print}" command="spoon.printFile()" />
         <menuseparator />
         <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile()" />
