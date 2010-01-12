@@ -958,10 +958,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
     public String[] getInfoSteps()
     {
-        if (acceptingFilenames && acceptingStep!=null)
-        {
-            return new String[] { acceptingStep.getName() };
-        }
         return super.getInfoSteps();
     }
 

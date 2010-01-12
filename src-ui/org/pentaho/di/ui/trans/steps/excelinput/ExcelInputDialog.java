@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
@@ -132,7 +133,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     private FormData     fdlAccFilenames, fdAccFilenames;
     
     private Label        wlAccField;
-    private Text         wAccField;
+    private CCombo       wAccField;
     private FormData     fdlAccField, fdAccField;
 
     private Label        wlAccStep;
@@ -490,8 +491,19 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         fdlAccField.left = new FormAttachment(0, 0);
         fdlAccField.right= new FormAttachment(middle, -margin);
         wlAccField.setLayoutData(fdlAccField);
-        wAccField=new Text(gAccepting, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        
+        wAccField=new CCombo(gAccepting, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		RowMetaInterface previousFields;
+		try {
+			previousFields = transMeta.getPrevStepFields(stepMeta);
+		}
+		catch(KettleStepException e) {
+			new ErrorDialog(shell, Messages.getString("CsvInputDialog.ErrorDialog.UnableToGetInputFields.Title"), Messages.getString("CsvInputDialog.ErrorDialog.UnableToGetInputFields.Message"), e);
+			previousFields = new RowMeta();
+		}
+        wAccField.setItems(previousFields.getFieldNames());
         wAccField.setToolTipText(Messages.getString("ExcelInputDialog.AcceptField.Tooltip"));
+        
         props.setLook(wAccField);
         fdAccField=new FormData();
         fdAccField.top  = new FormAttachment(wAccStep, margin);
@@ -1135,10 +1147,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wbGetFields.setEnabled( wHeader.getSelection());
 
         boolean accept = wAccFilenames.getSelection();
-        wlAccField.setEnabled(accept);
-        wAccField.setEnabled(accept);
         wlAccStep.setEnabled(accept);
         wAccStep.setEnabled(accept);
+        wlAccField.setEnabled(accept);
+        wAccField.setEnabled(accept);
 
         wlFilename.setEnabled(!accept);
         wbbFilename.setEnabled(!accept); // Browse: add file or directory
@@ -1200,9 +1212,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		}
         
         wAccFilenames.setSelection(meta.isAcceptingFilenames());
-        if (meta.getAcceptingField()!=null) wAccField.setText(meta.getAcceptingField());
-        if (meta.getAcceptingStep()!=null) wAccStep.setText(meta.getAcceptingStep().getName());
-
+        
+        if (meta.getAcceptingField()!=null) wAccField.select(wAccField.indexOf(meta.getAcceptingField()));
+        if (meta.getAcceptingField()!=null) wAccStep.select(wAccStep.indexOf(meta.getAcceptingStepName()));
+        
 		wHeader.setSelection(meta.startsWithHeader());
 		wNoempty.setSelection(meta.ignoreEmptyRows());
 		wStoponempty.setSelection(meta.stopOnEmpty());
@@ -1315,7 +1328,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
         meta.setAcceptingFilenames( wAccFilenames.getSelection() );
         meta.setAcceptingField( wAccField.getText() );
-        meta.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
 
 		int nrfiles    = wFilenameList.nrNonEmpty();
 		int nrsheets   = wSheetnameList.nrNonEmpty();
@@ -1983,7 +1995,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
     	final boolean fieldsOk = wFields.nrNonEmpty() != 0; 
     	final boolean sheetsOk = wSheetnameList.nrNonEmpty() != 0; 
-    	final boolean filesOk = wFilenameList.nrNonEmpty() != 0;
+    	final boolean filesOk = wFilenameList.nrNonEmpty() != 0 || (wAccFilenames.getSelection() && !Const.isEmpty(wAccField.getText()));
     	String msgText = ""; // Will clear status if no actions.
 
     	// Assign the highest-priority action message.
