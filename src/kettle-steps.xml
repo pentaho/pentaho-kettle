@@ -1062,4 +1062,13 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceDelete</tooltip>
 		<image-uri>ui/images/SFD.png</image-uri>
 	</step>
+
+        <step id="FarragoStreamingLoader">
+                <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FarragoStreamingLoader</description>
+                <class-name>org.pentaho.di.trans.steps.farragostreamingloader.FarragoStreamingLoaderMeta</class-name>
+                <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
+                <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FarragoStreamingLoader</tooltip>
+                <image-uri>ui/images/OBL.png</image-uri>
+        </step>
+
 </steps>
