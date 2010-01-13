@@ -19,6 +19,10 @@ public class StringObjectId implements ObjectId, Comparable<StringObjectId> {
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		
+		if(obj == null){
+		  return false;
+		}
+		
 		StringObjectId objectId = (StringObjectId) obj;
 		
 		return id.equalsIgnoreCase(objectId.getId());
