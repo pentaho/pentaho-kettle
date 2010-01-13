@@ -941,6 +941,44 @@ public class KettleFileRepository implements Repository {
 			throw new KettleException("Unable to rename directory folder to ["+dir+"]");
 		}
 	}
+	
+	public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectory newParentDir, String newName) throws KettleException {
+	  if(newParentDir != null || newName != null) {
+  	  try {
+        // In case of a root object, the ID is the same as the relative filename...
+  	    RepositoryDirectory tree = loadRepositoryDirectoryTree();
+  	    RepositoryDirectory dir = tree.findDirectory(id);
+  	    
+  	    if(dir == null) {
+  	      throw new KettleException("Could not find folder [" + id + "]");
+  	    }
+  	    
+  	    // If newName is null, keep the current name
+  	    newName = (newName != null) ? newName : dir.getName();
+  
+        FileObject folder = KettleVFS.getFileObject(dir.getPath());
+        
+        String newFolderName = null;
+        
+        if(newParentDir != null) {
+          FileObject newParentFolder = KettleVFS.getFileObject(newParentDir.getPath());
+          
+          newFolderName = newParentFolder.toString() + "/" + newName;
+        } else {
+          newFolderName = folder.getParent().toString() + "/" + newName;
+        }
+        
+        FileObject newFolder = KettleVFS.getFileObject(newFolderName);
+        folder.moveTo(newFolder);
+        
+        return new StringObjectId(dir.getObjectId());
+      }
+      catch (Exception e) {
+        throw new KettleException("Unable to rename directory folder to ["+id+"]");
+      }
+	  }
+	  return(id);
+	}
 
 	public ObjectId renameTransformation(ObjectId id_transformation, RepositoryDirectory newDir, String newName) throws KettleException {
 		return renameObject(id_transformation, newDir, newName, EXT_TRANSFORMATION);

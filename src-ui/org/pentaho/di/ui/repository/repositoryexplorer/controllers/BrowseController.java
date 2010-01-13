@@ -19,6 +19,8 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 import java.util.Collection;
 import java.util.List;
 
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
@@ -33,6 +35,7 @@ import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
+import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
@@ -303,5 +306,32 @@ public class BrowseController extends AbstractXulEventHandler{
     prompt.open();
   }
 
+  public void onDrag(DropEvent event) {
+    event.setAccepted(true);
+  }
+  
+  public void onDrop(DropEvent event) {
+    if(event.getDropParent() != null) {
+      if(event.getDataTransfer().getData().size() == 1) {
+        Object o = event.getDataTransfer().getData().get(0);
+        if(o instanceof UIRepositoryDirectory && event.getDropParent() instanceof UIRepositoryDirectory) {
+          UIRepositoryDirectory d = (UIRepositoryDirectory)o;
+          
+          RepositoryDirectory sourceDirectory = d.getDirectory();
+          RepositoryDirectory targetDirectory = (RepositoryDirectory)((UIRepositoryDirectory)event.getDropParent()).getDirectory();
+          
+          try {
+            d.getRepository().renameRepositoryDirectory(sourceDirectory.getObjectId(), targetDirectory, null);
+            event.setAccepted(true);
+          } catch (KettleException e) {
+            event.setAccepted(false);
+            //TODO: Handle error
+          }
+        }
+      }
+    } else {
+      event.setAccepted(false);
+    }
+  }
 
 }

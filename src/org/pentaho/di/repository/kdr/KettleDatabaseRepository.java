@@ -449,6 +449,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return directoryDelegate.renameRepositoryDirectory(dir);
 	}
 	
+	 public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectory newParentDir, String newName) throws KettleException {
+	   securityProvider.validateAction(RepositoryOperation.RENAME_DIRECTORY);
+	   return directoryDelegate.renameRepositoryDirectory(id, newParentDir, newName);
+	 }
+	
 	/**
 	 * Create a new directory, possibly by creating several sub-directies of / at the same time.
 	 * 

@@ -139,17 +139,55 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 		repository.connectionDelegate.getDatabase().execStatement(sql);
 	}
 
-	public synchronized void renameDirectory(ObjectId id_directory, String name) throws KettleException
+	/**
+	 * Move / rename a directory in the repository
+	 * 
+	 * @param id_directory Id of the directory to be moved/renamed
+   * @param id_directory_parent Id of the new parent directory (null if the parent does not change)
+   * @param newName New name for this directory (null if the name does not change)
+   * @throws KettleException
+	 */
+	public synchronized void renameDirectory(ObjectId id_directory, ObjectId id_directory_parent, String newName) throws KettleException
 	{
-		RowMetaAndData r = new RowMetaAndData();
-		r.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), name);
-
-		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY)+" SET "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
-
-		log.logBasic("sql = [" + sql + "]");
-		log.logBasic("row = [" + r + "]");
-
-		repository.connectionDelegate.getDatabase().execStatement(sql, r.getRowMeta(), r.getData());
+	  if(id_directory.equals(id_directory_parent)) {
+	    // Make sure the directory cannot become its own parent
+	    throw new KettleException("Failed to copy directory into itself");
+	  } else {
+	    // Make sure the directory does not become a descendant of itself
+	    RepositoryDirectory rd = new RepositoryDirectory();
+	    loadRepositoryDirectory(rd, id_directory);
+	    if(rd.findDirectory(id_directory_parent) != null) {
+	      // The parent directory is a child of this directory. Do not proceed
+	      throw new KettleException("Directory cannot become a child to itself");
+	    }
+	  }
+	  
+	  if(id_directory_parent != null || newName != null) {
+  		RowMetaAndData r = new RowMetaAndData();
+  		
+  		String sql = "UPDATE " + quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY) + " SET ";
+  		boolean additionalParameter = false;
+  		
+  		if(newName != null) { 
+  		  sql += quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME)+" = ?";
+  		  r.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), newName);
+  		}
+  		if(id_directory_parent != null) {
+  		  // Add a parameter separator if the first parm was added
+  		  if(additionalParameter) {
+  		    sql += ", ";
+  		  }
+  		  sql += quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT) + " = ?"; 
+  		  r.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, ValueMetaInterface.TYPE_INTEGER), id_directory_parent);
+  		}
+  
+  		sql += " WHERE " + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
+  
+  		log.logBasic("sql = [" + sql + "]");
+  		log.logBasic("row = [" + r + "]");
+  
+  		repository.connectionDelegate.getDatabase().execStatement(sql, r.getRowMeta(), r.getData());
+	  }
 	}
 
 	public synchronized int getNrSubDirectories(ObjectId id_directory) throws KettleException
@@ -214,11 +252,12 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 		}
 	}
 
+	@Deprecated
 	public ObjectId renameRepositoryDirectory(RepositoryDirectory dir) throws KettleException
 	{
 		try
 		{
-			renameDirectory(dir.getObjectId(), dir.getName());
+			renameDirectory(dir.getObjectId(), null, dir.getName());
 			return dir.getObjectId(); // doesn't change in this specific case.
 		}
 		catch(Exception e)
@@ -226,6 +265,21 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 			throw new KettleException("Unable to rename the specified repository directory ["+dir+"]", e);
 		}
 	}
+
+	public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectory newParentDir, String newName) throws KettleException
+  {
+    try
+    {
+      renameDirectory(id, newParentDir.getObjectId(), newName);
+      return id; // doesn't change in this specific case.
+    }
+    catch(Exception e)
+    {
+      throw new KettleException("Unable to rename the specified repository directory ["+id+"]", e);
+    }
+  }
+	
+	
 	
 	
 	/**

@@ -279,6 +279,9 @@ public interface Repository {
 
 	public void deleteRepositoryDirectory(RepositoryDirectory dir) throws KettleException;
 
+  public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectory newParentDir, String newName) throws KettleException;
+
+  @Deprecated
 	public ObjectId renameRepositoryDirectory(RepositoryDirectory dir) throws KettleException;
 
 	/**

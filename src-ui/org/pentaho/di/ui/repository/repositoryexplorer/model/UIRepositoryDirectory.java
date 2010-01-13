@@ -107,8 +107,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     if (getDirectory().getName().equalsIgnoreCase(name)){
       return;
     }
-    getDirectory().setName(name);
-    rep.renameRepositoryDirectory(getDirectory());
+    rep.renameRepositoryDirectory(getDirectory().getObjectId(), null, name);
     uiParent.fireCollectionChanged();
   }
   
