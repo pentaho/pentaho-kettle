@@ -137,7 +137,7 @@ public class KettleVFS
 	        return fileObject;
     	}
     	catch(IOException e) {
-    		throw new KettleFileException("Unable to get VFS File object for filename '"+vfsFilename+"'", e);
+    		throw new KettleFileException("Unable to get VFS File object for filename '"+vfsFilename+"' : "+e.getMessage());
     	}
     }
     

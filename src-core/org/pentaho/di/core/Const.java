@@ -1554,13 +1554,35 @@ public class Const
      */
     public static final String getStackTracker(Throwable e)
     {
+    	return getCustomStackTrace(e);
+    }
+
+    public static final String getClassicStackTrace(Throwable e)
+    {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         e.printStackTrace(printWriter);
-        String string = stringWriter.getBuffer().toString();
+        String string = stringWriter.toString();
         try { stringWriter.close(); } catch(IOException ioe) {} // is this really required?
         return string;
     }
+    
+    public static String getCustomStackTrace(Throwable aThrowable) {
+        final StringBuilder result = new StringBuilder();
+        String errorMessage = aThrowable.toString();
+        result.append(errorMessage);
+        if (!errorMessage.contains(Const.CR)) {
+        	result.append(CR);
+        }
+
+        // add each element of the stack trace
+        //
+        for (StackTraceElement element : aThrowable.getStackTrace() ){
+          result.append( element );
+          result.append( CR );
+        }
+        return result.toString();
+      }
     
     /**
      * Check if the string supplied is empty.  A String is empty when it is null or when the length is 0
