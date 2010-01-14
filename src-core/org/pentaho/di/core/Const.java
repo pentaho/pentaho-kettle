@@ -164,7 +164,7 @@ public class Const
 	public static final String PLUGIN_REPOSITORIES_DIRECTORY_PRIVATE = getKettleDirectory() + FILE_SEPARATOR + "plugins" + FILE_SEPARATOR + "repositories";
 	
 	
-
+	
 	/**
 	 * Default minimum date range...
 	 */
@@ -501,6 +501,11 @@ public class Const
 	 */
 	public static final String KETTLE_JOB_LOG_DATABASE_NAME = "KETTLE_TRANS_LOG_DATABASE_NAME";
 
+	/**
+	 * System wide flag to drive the evaluation of null in ValueMeta.  If this setting is set to "Y", an empty string and null are different.
+	 * Otherwise they are not.
+	 */
+	public static final String KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL";
 
 	/**
 	 * A general initial version comment 
