@@ -168,19 +168,18 @@ public class BlackBoxTests {
 		//    File transFile
 		//    List<File> expectedFiles
 
-		System.out.println("Running: "+getPath(transFile));
-		LogWriter log;
-        log=LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR );
+		// System.out.println("Running: "+getPath(transFile));
+		LogWriter logWriter=LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR );
         Log4jBufferAppender bufferAppender = CentralLogStore.getAppender();
-        log.addAppender(bufferAppender);
+        logWriter.addAppender(bufferAppender);
         
-        LogChannelInterface logChannel = new LogChannel("BlackBoxTest ["+transFile.toString()+"]");
-
+        LogChannelInterface log = new LogChannel("BlackBoxTest ["+transFile.toString()+"]");
+        
         Result result = new Result();
         
 		if( !transFile.exists() ) 
 		{
-			logChannel.logError( "Transformation does not exist: "+ getPath( transFile ) );
+			log.logError( "Transformation does not exist: "+ getPath( transFile ) );
 			addFailure( "Transformation does not exist: "+ getPath( transFile ) );
 			fail( "Transformation does not exist: "+ getPath(transFile) );
 		}
@@ -190,7 +189,7 @@ public class BlackBoxTests {
 			fail( "No expected output files found: "+ getPath( transFile ) );
 		}
 
-		result = runTrans( transFile.getAbsolutePath(), logChannel );
+		result = runTrans( transFile.getAbsolutePath(), log );
 		
 		// verify all the expected output files...
 		//
@@ -206,31 +205,17 @@ public class BlackBoxTests {
         		actualFile = actualFile.replaceFirst(".expected.", ".actual."); // single file case
         		File actual = new File( actualFile );
         		if( !result.getResult() ) {
-        			fileCompare( expected, actual, logChannel );
+        			fileCompare( expected, actual, log );
         		}
         	}
         }
         
-		log.removeAppender(bufferAppender);
-		
         // We didn't get a result, so the only expected file should be a ".fail.txt" file
+		//
         if( !result.getResult() ) {
-			File expected = expectedFiles.get(0);
 			String logStr = CentralLogStore.getAppender().getBuffer(result.getLogChannelId(), true).toString();
 			
-        	if (expectedFiles.size()==1 && expectedFiles.get(0).toString().contains(".fail.txt")) {
-    			String actualFailFileName = transFile.getAbsolutePath().substring(0, transFile.getAbsolutePath().length()-4)+".fail.actual.txt";
-    			File logFile = new File( actualFailFileName );
-    			writeLog( logFile, logStr );
-    			try {
-    				// Compare the log files - they should be identical 
-    				fileCompare(expected, logFile, logChannel);   
-    			} catch (IOException e) {
-    				addFailure("Could not compare log files: " + getPath( logFile ) + "" + e.getMessage());
-    				fail( "Could not compare failure log files " + getPath( logFile ) + " and " + getPath( expected) + ":" + e.getMessage() );
-    			}
-        		
-        	} else {
+        	if (expectedFiles.size()==0) {
         		// We haven't got a ".fail.txt" file, so this is a real failure
         		fail("Error running " + getPath(transFile) + ":" + logStr);
         	}
