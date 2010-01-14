@@ -482,4 +482,8 @@ public interface Repository {
 	 * @throws KettleException in case something goes horribly wrong.
 	 */
 	public RepositoryVersionRegistry getVersionRegistry() throws KettleException;
+	
+	public void addEventListener(RepositoryEventListener listener);
+	
+	public void removeEventListener(RepositoryEventListener listener);
 }

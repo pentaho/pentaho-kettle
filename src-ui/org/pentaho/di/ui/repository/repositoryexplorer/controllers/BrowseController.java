@@ -19,14 +19,20 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 import java.util.Collection;
 import java.util.List;
 
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryEvent;
+import org.pentaho.di.repository.RepositoryEventListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIJob;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevision;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjects;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UITransformation;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
@@ -45,7 +51,7 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  * browse functionality.
  * 
  */
-public class BrowseController extends AbstractXulEventHandler{
+public class BrowseController extends AbstractXulEventHandler {
 
   private XulTree folderTree;
   private XulTree fileTable;
@@ -332,7 +338,13 @@ public class BrowseController extends AbstractXulEventHandler{
     return prompt;
   }
 
-  public void onDrag(DropEvent event) {
+  // Object being dragged from the hierarchical folder tree 
+  public void onDragFromGlobalTree(DropEvent event) {
+    event.setAccepted(true);
+  }
+  
+  // Object being dragged from the file listing table
+  public void onDragFromLocalTable(DropEvent event) {
     event.setAccepted(true);
   }
   
@@ -353,11 +365,32 @@ public class BrowseController extends AbstractXulEventHandler{
             event.setAccepted(false);
             //TODO: Handle error
           }
+        } else if (o instanceof UIJob && event.getDropParent() instanceof UIRepositoryDirectory) {
+          UIJob job = (UIJob)o;
+          
+          RepositoryDirectory targetDirectory = (RepositoryDirectory)((UIRepositoryDirectory)event.getDropParent()).getDirectory();
+          
+          try {
+            job.getRepository().renameJob(job.getObjectId(), targetDirectory, null);
+          } catch (KettleException e) {
+          }
+          event.setAccepted(false);
+        } else if (o instanceof UITransformation && event.getDropParent() instanceof UIRepositoryDirectory) {
+          UITransformation trans = (UITransformation) o;
+          
+          RepositoryDirectory targetDirectory = (RepositoryDirectory) ((UIRepositoryDirectory)event.getDropParent()).getDirectory();
+          
+          try {
+            trans.getRepository().renameTransformation(trans.getObjectId(), targetDirectory, null);
+          } catch (KettleException e) {
+          }
+          event.setAccepted(false);
+        }else {
+          event.setAccepted(false);
         }
       }
     } else {
       event.setAccepted(false);
     }
   }
-
 }

@@ -32,6 +32,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
+import org.pentaho.di.repository.RepositoryEventListener;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
@@ -1094,4 +1095,13 @@ public class KettleFileRepository implements Repository {
 		// NOT IMPLEMENTED
 		return null;
 	}
+	
+	public void addEventListener(RepositoryEventListener listener) {
+	  // NOT IMPLEMENTED
+  }
+  
+  public void removeEventListener(RepositoryEventListener listener) {
+    // NOT IMPLEMENTED
+  }
+	
 }

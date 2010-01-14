@@ -150,6 +150,14 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   public RepositoryDirectory getDirectory(){
     return (RepositoryDirectory)rd;
   }
+  
+  public void setDirectory(RepositoryDirectory dir) {
+    kidElementCache = null;
+    kidDirectoryCache = null;
+    this.rd = dir;
+    fireCollectionChanged();
+    
+  }
 
   @Override
   public String getImage() {
