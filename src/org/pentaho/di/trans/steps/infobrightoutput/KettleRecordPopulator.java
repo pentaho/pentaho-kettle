@@ -1,6 +1,6 @@
 package org.pentaho.di.trans.steps.infobrightoutput;
 
-import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -10,15 +10,19 @@ import com.infobright.etl.model.ValueConverterException;
 /**
  * @author geoffrey.falk@infobright.com
  */
-public class KettleRecordPopulator {
+class KettleRecordPopulator {
 
   private KettleValueConverter[] conv = null;
   
   public void populate(BrighthouseRecord record, Object[] row, RowMetaInterface rowMeta)
-      throws KettleValueException {
+      throws KettleException {
 
     // assume row metadata is same for all rows
     if (conv == null) {
+      if (record.size() != rowMeta.size()) {
+        throw new KettleException("Number of columns passed to Infobright "
+            + "doesn't match the table definition!");
+      }
       init(rowMeta);
     }
     
@@ -28,8 +32,8 @@ public class KettleRecordPopulator {
         record.setData(colidx, value, conv[colidx]);
       } catch (ValueConverterException e) {
         Throwable cause = e.getCause();
-        if (cause instanceof KettleValueException) {
-          throw (KettleValueException) cause;
+        if (cause instanceof KettleException) {
+          throw (KettleException) cause;
         } else if (cause instanceof RuntimeException) {
           throw (RuntimeException) cause;
         } else if (cause instanceof Error) {
