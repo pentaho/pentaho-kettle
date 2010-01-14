@@ -80,6 +80,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.BasePainter;
 import org.pentaho.di.core.gui.GCInterface;
@@ -116,7 +117,9 @@ import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
+import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RemoteStep;
+import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -655,7 +658,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     TimerTask timerTask = new TimerTask() {
 		
 			public void run() {
-				// setControlStates();
+				setControlStates();
 			}
 		};
 	timer.schedule(timerTask, 2000, 1000);
@@ -2191,6 +2194,9 @@ private void addToolBar() {
           item = menu.getMenuItemById("trans-graph-entry-align-snap"); //$NON-NLS-1$
           item.setText(BaseMessages.getString(PKG, "TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
 
+          item = menu.getMenuItemById("trans-graph-entry-sniff-output"); //$NON-NLS-1$
+          item.setEnabled(trans!=null && trans.isRunning());
+
           XulMenu aMenu = menu.getMenuById("trans-graph-entry-align"); //$NON-NLS-1$
 
           if (aMenu != null) {
@@ -2233,6 +2239,7 @@ private void addToolBar() {
           menu.addMenuListener("trans-graph-entry-detach", this, "detachStep"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-inputs", this, "fieldsBefore"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-outputs", this, "fieldsAfter"); //$NON-NLS-1$ //$NON-NLS-2$
+          menu.addMenuListener("trans-graph-entry-sniff-output", this, "sniffOutput"); //$NON-NLS-1$ //$NON-NLS-2$
           // menu.addMenuListener("trans-graph-entry-lineage", this, "fieldsLineage"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-verify", this, "checkSelectedSteps"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-mapping", this, "generateMappingToThisStep"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -3131,13 +3138,17 @@ private void addToolBar() {
   public void exploreDatabase() {
     spoon.exploreDatabase();
   }
+  
+  public boolean isExecutionResultsPaneVisible() {
+	  return extraViewComposite != null && !extraViewComposite.isDisposed();
+  }
 
   public void showExecutionResults() {
     
-    if (extraViewComposite == null || extraViewComposite.isDisposed()) {
-      addAllTabs();
+    if (isExecutionResultsPaneVisible()) {
+    	disposeExtraView();
     } else {
-      disposeExtraView();
+    	addAllTabs();
     }
   }
   
@@ -3865,8 +3876,27 @@ private void addToolBar() {
 		  TransMeta mappingMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), spoon.rep, transMeta);
 		  mappingMeta.clearChanged();
 		  spoon.addTransGraph(mappingMeta);
+		  TransGraph subTransGraph = spoon.getActiveTransGraph();
+		  attachActiveTrans(subTransGraph, this.currentStep);
 	  } catch(Exception e) {
 		  new ErrorDialog(shell, BaseMessages.getString(PKG, "TransGraph.Exception.UnableToLoadMapping.Title"), BaseMessages.getString(PKG, "TransGraph.Exception.UnableToLoadMapping.Message"), e);
+	  }
+  }
+
+  /**
+   * Finds the last active transformation in the running job to the opened transMeta
+   * 
+   * @param transGraph
+   * @param jobEntryCopy
+   */
+  private void attachActiveTrans(TransGraph transGraph, StepMeta stepMeta) {
+	  if (trans!=null && transGraph!=null) {
+		  Trans subTransformation = trans.getActiveSubtransformations().get(stepMeta.getName());
+		  transGraph.setTrans(subTransformation);
+		  if (!transGraph.isExecutionResultsPaneVisible()) {
+			  transGraph.showExecutionResults();
+		  }
+		  transGraph.setControlStates();
 	  }
   }
 
@@ -3932,5 +3962,57 @@ private void addToolBar() {
 
 	public HasLogChannelInterface getLogChannelProvider() {
 		return trans;
+	}
+
+	public synchronized void setTrans(Trans trans) {
+		this.trans = trans;
+		
+		pausing = trans.isPaused();
+		initialized = trans.isInitializing();
+		running = trans.isRunning();
+		halted = trans.isStopped();
+	}
+	
+	/**
+	 * See which rows are being produced by a certain step
+	 */
+	public void sniffOutput() {
+		StepMeta stepMeta = getCurrentStep();
+		final BaseStep runThread = trans.findRunThread(stepMeta.getName());
+		if (runThread!=null) {
+			
+			List<Object[]> rows = new ArrayList<Object[]>(); 
+			
+			final PreviewRowsDialog dialog = new PreviewRowsDialog(shell, trans, SWT.NONE, stepMeta.getName(), null, rows);
+			dialog.setDynamic(true);
+
+			final RowListener rowListener = new RowListener() {
+				
+				public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+					dialog.addDataRow(rowMeta, row);
+				}
+				
+				public void rowReadEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+				}
+				
+				public void errorRowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+				}
+			};
+
+			getDisplay().asyncExec(new Runnable() {
+				
+				public void run() {
+					dialog.open();
+					
+					// remove the listener when close is hit!
+					//
+					runThread.removeRowListener(rowListener);
+				}
+			});
+			
+			
+			runThread.addRowListener(rowListener);
+		}
+		
 	}
 }

@@ -175,6 +175,11 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		JobEntryCopy je = (JobEntryCopy) o;
 		return je.entry.getName().equalsIgnoreCase(entry.getName()) && je.getNr() == getNr();
 	}
+	
+	@Override
+	public int hashCode() {
+		return entry.getName().hashCode() ^ Integer.valueOf(getNr()).hashCode();
+	}
 
 	public ObjectId getObjectId()
 	{

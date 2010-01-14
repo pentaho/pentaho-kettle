@@ -98,6 +98,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			return true;
 		} else
 		{
+			/*
 			ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK
 					| SWT.ICON_INFORMATION, BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Title"), 
 					"'" + transMeta.toString() + "'" + Const.CR + 
@@ -105,7 +106,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 					BaseMessages.getString(PKG, "Spoon.Dialog.TransAlreadyLoaded.Message"));
 			dialog.setTimeOut(6);
 			dialog.open();
-			
+			*/
 			return false;
 		}
 	}
@@ -199,6 +200,16 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				spoon.delegates.tabs.addTab(tabEntry);				
 			}
 
+			int idx = spoon.tabfolder.indexOf(tabEntry.getTabItem());
+
+			// keep the focus on the graph
+			spoon.tabfolder.setSelected(idx);
+
+			spoon.setUndoMenu(transMeta);
+			spoon.enableMenus();
+		} else {
+			TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry(transMeta);
+			
 			int idx = spoon.tabfolder.indexOf(tabEntry.getTabItem());
 
 			// keep the focus on the graph

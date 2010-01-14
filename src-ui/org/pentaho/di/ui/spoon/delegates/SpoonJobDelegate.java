@@ -862,11 +862,13 @@ public class SpoonJobDelegate extends SpoonDelegate
 			return true;
 		} else
 		{
+			/*
 			ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
 					BaseMessages.getString(PKG, "Spoon.Dialog.JobAlreadyLoaded.Title"), "'" + jobMeta.toString() + "'" + Const.CR
 							+ Const.CR + BaseMessages.getString(PKG, "Spoon.Dialog.JobAlreadyLoaded.Message"));
 			dialog.setTimeOut(6);
 			dialog.open();
+			*/
 			return false;
 		}
 
@@ -956,6 +958,16 @@ public class SpoonJobDelegate extends SpoonDelegate
 				spoon.delegates.tabs.addTab(tabEntry);				
 			}
 
+			int idx = spoon.tabfolder.indexOf(tabEntry.getTabItem());
+
+			// keep the focus on the graph
+			spoon.tabfolder.setSelected(idx);
+
+			spoon.setUndoMenu(jobMeta);
+			spoon.enableMenus();
+		} else {
+			TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry(jobMeta);
+			
 			int idx = spoon.tabfolder.indexOf(tabEntry.getTabItem());
 
 			// keep the focus on the graph

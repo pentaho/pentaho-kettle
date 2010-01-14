@@ -349,6 +349,9 @@ public class CsvInput extends BaseStep implements StepInterface
 			
 			return true;
 		}
+		catch(KettleException e) {
+			throw e;
+		}
 		catch(Exception e) {
 			throw new KettleException(e);
 		}

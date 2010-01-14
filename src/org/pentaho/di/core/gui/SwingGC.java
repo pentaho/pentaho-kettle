@@ -69,6 +69,7 @@ public class SwingGC implements GCInterface {
 
 	private static Image	imageDummy;
 
+	private static Image	imageBusy;
 	
 	
 	protected Color        background;
@@ -123,6 +124,24 @@ public class SwingGC implements GCInterface {
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
 		
+		init();
+   	}
+
+	public SwingGC(Graphics2D gc, Rectangle2D rect, int iconsize, int xOffset, int yOffset) {
+		this.image = null;
+		this.gc = gc;
+		this.observer = null;
+		this.stepImages = loadStepImages();
+		this.entryImages = loadEntryImages();
+		this.iconsize = iconsize;
+		this.area = new Point((int)rect.getWidth(), (int)rect.getHeight());
+		this.xOffset = xOffset;
+		this.yOffset = yOffset;
+		
+		init();
+   	}
+
+	private void init() {
 		this.lineStyle = ELineStyle.SOLID;
 		this.lineWidth = 1;
 		this.alpha = 255;
@@ -156,6 +175,7 @@ public class SwingGC implements GCInterface {
     	imageUnconditionalHop = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("UnconditionalHop_image")).getImage();
     	imageStart = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("STR_image")).getImage();
     	imageDummy = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("DUM_image")).getImage();
+    	imageBusy = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("Busy_image")).getImage();
     	
     	fontGraph = new Font("FreeSans", Font.PLAIN, 10);
     	fontNote = new Font("FreeSans", Font.PLAIN, 10);
@@ -165,7 +185,7 @@ public class SwingGC implements GCInterface {
     	
     	gc.setColor(background);
     	gc.fillRect(0, 0, area.x, area.y);
-   	}
+	}
 	
 	private Map<String, Image> loadStepImages() {
 		Map<String, Image> map = new HashMap<String, Image>();
@@ -230,6 +250,7 @@ public class SwingGC implements GCInterface {
 		case COPY_ROWS: return imageCopyHop;
 		case PARALLEL: return imageParallelHop;
 		case UNCONDITIONAL: return imageUnconditionalHop;
+		case BUSY: return imageBusy;
 		}
 		return null;
 	}
@@ -518,5 +539,9 @@ public class SwingGC implements GCInterface {
 	    //
 	    ImageIO.write(bufferedImage, "PNG", new FileOutputStream("/tmp/trans.png"));
 	    
+	}
+	
+	public Point getArea() {
+		return area;
 	}
 }

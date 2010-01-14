@@ -1294,10 +1294,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     if (jer != null)
     {
       messageText.append(" : ");
-      if (jer.getJobEntry() != null && jer.getJobEntry().getName() != null)
+      if (jer.getJobEntryName()!=null)
       {
         messageText.append(" : ");
-        messageText.append(jer.getJobEntry().getName());
+        messageText.append(jer.getJobEntryName());
       }
       if (jer.getResult() != null)
       {

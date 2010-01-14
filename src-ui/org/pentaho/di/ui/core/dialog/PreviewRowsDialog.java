@@ -33,7 +33,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -91,6 +93,12 @@ public class PreviewRowsDialog extends Dialog
 
 	private LogChannelInterface	log;
 
+	private boolean	dynamic;
+
+	private boolean	waitingForRows;
+
+	protected int	lineNr;
+
     public PreviewRowsDialog(Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta, List<Object[]> rowBuffer)
     {
         this(parent, space, style, stepName, rowMeta, rowBuffer, null);
@@ -144,44 +152,7 @@ public class PreviewRowsDialog extends Dialog
         shell.setLayout(formLayout);
         shell.setText(title);
 
-        // int middle = props.getMiddlePct();
-        int margin = Const.MARGIN;
-
-        wlFields = new Label(shell, SWT.LEFT);
-        wlFields.setText(message);
-        props.setLook(wlFields);
-        fdlFields = new FormData();
-        fdlFields.left = new FormAttachment(0, 0);
-        fdlFields.right = new FormAttachment(100, 0);
-        fdlFields.top = new FormAttachment(0, margin);
-        wlFields.setLayoutData(fdlFields);
-
-        // Mmm, if we don't get any rows in the buffer: show a dialog box.
-        if (buffer == null || buffer.size() == 0)
-        {
-            ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_WARNING, BaseMessages.getString(PKG, "PreviewRowsDialog.NoRows.Text"), BaseMessages.getString(PKG, "PreviewRowsDialog.NoRows.Message"));
-            dialog.open();
-            shell.dispose();
-            return;
-        }
-
-        ColumnInfo[] colinf = new ColumnInfo[rowMeta.size()];
-        for (int i = 0; i < rowMeta.size(); i++)
-        {
-            ValueMetaInterface v = rowMeta.getValueMeta(i);
-            colinf[i] = new ColumnInfo(v.getName(), ColumnInfo.COLUMN_TYPE_TEXT, v.isNumeric());
-            colinf[i].setToolTip(v.toStringMeta());
-            colinf[i].setValueMeta(v);
-        }
-
-        wFields = new TableView(variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, null, props);
-
-        fdFields = new FormData();
-        fdFields.left = new FormAttachment(0, 0);
-        fdFields.top = new FormAttachment(wlFields, margin);
-        fdFields.right = new FormAttachment(100, 0);
-        fdFields.bottom = new FormAttachment(100, -50);
-        wFields.setLayoutData(fdFields);
+        addFields();
         
         List<Button> buttons = new ArrayList<Button>();
         
@@ -220,7 +191,7 @@ public class PreviewRowsDialog extends Dialog
 
         // Position the buttons...
         //
-        BaseStepDialog.positionBottomButtons(shell, buttons.toArray(new Button[buttons.size()]), margin, null);
+        BaseStepDialog.positionBottomButtons(shell, buttons.toArray(new Button[buttons.size()]), Const.MARGIN, null);
 
         // Detect X or ALT-F4 or something that kills this window...
         shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { close(); } } );
@@ -237,7 +208,63 @@ public class PreviewRowsDialog extends Dialog
         }
     }
 
-    public void dispose()
+    private void addFields() {
+        // int middle = props.getMiddlePct();
+        int margin = Const.MARGIN;
+
+        if (wlFields==null) {
+	        wlFields = new Label(shell, SWT.LEFT);
+	        wlFields.setText(message);
+	        props.setLook(wlFields);
+	        fdlFields = new FormData();
+	        fdlFields.left = new FormAttachment(0, 0);
+	        fdlFields.right = new FormAttachment(100, 0);
+	        fdlFields.top = new FormAttachment(0, margin);
+	        wlFields.setLayoutData(fdlFields);
+        } else {
+        	wFields.dispose();
+        }
+
+        if (dynamic && rowMeta==null) {
+        	rowMeta = new RowMeta();
+        	rowMeta.addValueMeta(new ValueMeta("<waiting for rows>", ValueMetaInterface.TYPE_STRING));
+        	waitingForRows = true;
+        }
+        if (!dynamic) {
+	        // Mmm, if we don't get any rows in the buffer: show a dialog box.
+	        if (buffer == null || buffer.size() == 0)
+	        {
+	            ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_WARNING, BaseMessages.getString(PKG, "PreviewRowsDialog.NoRows.Text"), BaseMessages.getString(PKG, "PreviewRowsDialog.NoRows.Message"));
+	            dialog.open();
+	            shell.dispose();
+	            return;
+	        }
+        }
+
+        ColumnInfo[] colinf = new ColumnInfo[rowMeta.size()];
+        for (int i = 0; i < rowMeta.size(); i++)
+        {
+            ValueMetaInterface v = rowMeta.getValueMeta(i);
+            colinf[i] = new ColumnInfo(v.getName(), ColumnInfo.COLUMN_TYPE_TEXT, v.isNumeric());
+            colinf[i].setToolTip(v.toStringMeta());
+            colinf[i].setValueMeta(v);
+        }
+
+        wFields = new TableView(variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, null, props);
+
+        fdFields = new FormData();
+        fdFields.left = new FormAttachment(0, 0);
+        fdFields.top = new FormAttachment(wlFields, margin);
+        fdFields.right = new FormAttachment(100, 0);
+        fdFields.bottom = new FormAttachment(100, -50);
+        wFields.setLayoutData(fdFields);
+
+        if (dynamic) {
+        	shell.layout(true, true);
+        }
+	}
+
+	public void dispose()
     {
         props.setScreen(new WindowProperty(shell));
         bounds = shell.getBounds();
@@ -256,69 +283,81 @@ public class PreviewRowsDialog extends Dialog
             public void run()
             {
             	int nrErrors = 0;
+            	lineNr = 0;
                 for (int i = 0; i < buffer.size(); i++)
                 {
                     TableItem item;
                     if (i==0) item = wFields.table.getItem(i);
                     else item = new TableItem(wFields.table, SWT.NONE);
-                    
-                    // Display the correct line item...
-                    //
-                    String strNr;
-                    try {
-						strNr = wFields.getNumberColumn().getValueMeta().getString(new Long(i+1));
-					} catch (Exception e) {
-						strNr = Integer.toString(i+1);
-					}
-					item.setText(0, strNr);
-                    
+                                        
                     Object[] row = (Object[]) buffer.get(i);
 
-                    for (int c = 0; c < rowMeta.size(); c++)
-                    {
-                        ValueMetaInterface v = rowMeta.getValueMeta(c);
-                        String show;
-                        try
-                        {
-                            show = v.getString(row[c]);
-                            if (v.isBinary() && show!=null && show.length()>MAX_BINARY_STRING_PREVIEW_SIZE)
-                            {
-                            	// We want to limit the size of the strings during preview to keep all SWT widgets happy.
-                            	//
-                            	show = show.substring(0, MAX_BINARY_STRING_PREVIEW_SIZE);
-                            }
-                        }
-                        catch (KettleValueException e)
-                        {
-                        	nrErrors++;
-                        	if (nrErrors<25)
-                        	{
-	                            log.logError(Const.getStackTracker(e));
-                        	}
-                            show=null;
-                        }
-                        catch (ArrayIndexOutOfBoundsException e)
-                        {
-                        	nrErrors++;
-                        	if (nrErrors<25)
-                        	{
-                        		log.logError(Const.getStackTracker(e));
-                        	}
-                            show=null;
-                        }
-
-                        if (show != null)
-                        {
-                            item.setText(c + 1, show);
-                        }
-                    }
+                    nrErrors+=getDataForRow(item, row);
                 }
                 if (!wFields.isDisposed()) wFields.optWidth(true, 200);
             }
         });
     }
 
-    private void close()
+    protected int getDataForRow(TableItem item, Object[] row) {
+    	int nrErrors = 0;
+    	
+        // Display the correct line item...
+        //
+        String strNr;
+        lineNr++;
+        try {
+			strNr = wFields.getNumberColumn().getValueMeta().getString(new Long(lineNr));
+		} catch (Exception e) {
+			strNr = Integer.toString(lineNr);
+		}
+		item.setText(0, strNr);
+
+		
+        for (int c = 0; c < rowMeta.size(); c++)
+        {
+            ValueMetaInterface v = rowMeta.getValueMeta(c);
+            String show;
+            try
+            {
+                show = v.getString(row[c]);
+                if (v.isBinary() && show!=null && show.length()>MAX_BINARY_STRING_PREVIEW_SIZE)
+                {
+                	// We want to limit the size of the strings during preview to keep all SWT widgets happy.
+                	//
+                	show = show.substring(0, MAX_BINARY_STRING_PREVIEW_SIZE);
+                }
+            }
+            catch (KettleValueException e)
+            {
+            	nrErrors++;
+            	if (nrErrors<25)
+            	{
+                    log.logError(Const.getStackTracker(e));
+            	}
+                show=null;
+            }
+            catch (ArrayIndexOutOfBoundsException e)
+            {
+            	nrErrors++;
+            	if (nrErrors<25)
+            	{
+            		log.logError(Const.getStackTracker(e));
+            	}
+                show=null;
+            }
+
+            if (show != null)
+            {
+                item.setText(c + 1, show);
+            }
+        }
+        
+        return nrErrors;
+
+	}
+
+	private void close()
     {
         stepname = null;
         dispose();
@@ -431,5 +470,40 @@ public class PreviewRowsDialog extends Dialog
 	 */
 	public void setProposingToStop(boolean proposingToStop) {
 		this.proposingToStop = proposingToStop;
+	}
+
+	public void setDynamic(boolean dynamic) {
+		this.dynamic = dynamic;
+	}
+	
+	public synchronized void addDataRow(final RowMetaInterface rowMeta, final Object[] rowData) {
+		
+		if (shell==null || shell.isDisposed()) return;
+				
+		Display.getDefault().syncExec(new Runnable() {
+			
+			public void run() {
+				
+				if (wFields.isDisposed()) return;
+
+				if (waitingForRows) {
+					PreviewRowsDialog.this.rowMeta = rowMeta;
+					addFields();
+				}
+
+				TableItem item = new TableItem(wFields.table, SWT.NONE);
+				getDataForRow(item, rowData);
+				if (waitingForRows) {
+					waitingForRows = false;
+					wFields.removeEmptyRows();
+					PreviewRowsDialog.this.rowMeta = rowMeta;
+					wFields.optWidth(true);
+				}
+				
+				if (wFields.table.getItemCount()>props.getDefaultPreviewSize()) {
+					wFields.table.remove(0);
+				}
+			}
+		});
 	}
 }

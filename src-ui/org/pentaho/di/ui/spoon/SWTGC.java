@@ -46,12 +46,15 @@ public class SWTGC implements GCInterface {
 	private List<Font> fonts;
 
 	private Image	image;
+
+	private Point	area;
 	
 	public SWTGC(Device device, Point area, int iconsize) {
 		this.image = new Image(device, area.x, area.y);
 		this.gc = new GC(image);
 		this.images = GUIResource.getInstance().getImagesSteps();
 		this.iconsize = iconsize;
+		this.area = area;
 		
 		this.colors = new ArrayList<Color>();
 		this.fonts = new ArrayList<Font>();
@@ -113,6 +116,7 @@ public class SWTGC implements GCInterface {
 		case COPY_ROWS: return GUIResource.getInstance().getImageCopyHop();
 		case PARALLEL: return GUIResource.getInstance().getImageParallelHop();
 		case UNCONDITIONAL: return GUIResource.getInstance().getImageUnconditionalHop();
+		case BUSY: return GUIResource.getInstance().getImageBusy();
 		}
 		return null;
 	}
@@ -326,5 +330,9 @@ public class SWTGC implements GCInterface {
 		
 		gc.setForeground(bg);
 		gc.setBackground(fg);
+	}
+	
+	public Point getArea() {
+		return area;
 	}
 }

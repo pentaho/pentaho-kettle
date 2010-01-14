@@ -139,6 +139,15 @@ public class TransPerfDelegate extends SpoonDelegate {
 		transPerfTab.setControl(perfComposite);
 		
 		transGraph.extraViewTabFolder.setSelection(transPerfTab);
+		
+		transGraph.extraViewTabFolder.addSelectionListener(new SelectionAdapter() {
+				
+				public void widgetSelected(SelectionEvent arg0) {
+					layoutPerfComposite();
+					updateGraph();
+				}
+			}
+		);
 	}
 
     
@@ -352,7 +361,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		transGraph.getDisplay().asyncExec(new Runnable() {
 		
 			public void run() {
-				if (!perfComposite.isDisposed() && !canvas.isDisposed() && !transPerfTab.isDisposed()) {
+				if (perfComposite!=null && !perfComposite.isDisposed() && canvas!=null && !canvas.isDisposed() && transPerfTab!=null && !transPerfTab.isDisposed()) {
 					if (transPerfTab.isShowing()) {
 						updateCanvas();
 					}

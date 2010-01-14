@@ -128,6 +128,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     private Trans parentTrans;
     
     /**
+     * The parent logging object interface (this could be a transformation or a job
+     */
+	private LoggingObjectInterface	parent;
+
+    /**
      * The name of the mapping step that executes this transformation in case this is a mapping 
      */
     private String mappingStepName;
@@ -222,6 +227,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 	private int	lastStepPerformanceSnapshotSeqNrAdded;
 
+	private Map<String, Trans> activeSubtransformations;
 	
 	public Trans() {
 		finished = new AtomicBoolean(false);
@@ -236,6 +242,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         
         stepPerformanceSnapshotSeqNr = new AtomicInteger(0);
         lastWrittenStepPerformanceSequenceNr = 0;
+        
+        activeSubtransformations = new HashMap<String, Trans>();
 	}
 
 	/**
@@ -244,18 +252,31 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	 */
 	public Trans(TransMeta transMeta)
 	{
+		this(transMeta, null);
+	}
+	
+	/**
+	 * Initialize a transformation from transformation meta-data defined in memory.
+	 * Also take into account the parent log channel interface (job or transformation) for logging lineage purposes.
+	 * 
+	 * @param transMeta the transformation meta-data to use.
+	 * @param parent the parent job that is executing this transformation
+	 */
+	public Trans(TransMeta transMeta, LoggingObjectInterface parent)
+	{
 		this();
-		this.transMeta=transMeta;
+		this.transMeta = transMeta;
+		this.parent = parent;
 		
 		this.log = new LogChannel(this);
-        
+		
 		if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
 		if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
 		initializeVariablesFrom(transMeta);
 		copyParametersFrom(transMeta);
 		transMeta.activateParameters();
 	}
-	
+		
 	public LogChannelInterface getLogChannel() {
 		return log;
 	}
@@ -3303,11 +3324,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	}
 
 	public LoggingObjectInterface getParent() {
-		if (parentTrans!=null) {
-			return parentTrans;
-		} else {
-			return parentJob;
-		}
+		return parent;
 	}
 
 	public RepositoryDirectory getRepositoryDirectory() {
@@ -3327,4 +3344,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		
 		return hierarchy;
 	}
+	
+	public Map<String, Trans> getActiveSubtransformations() {
+		return activeSubtransformations;
+	}
+
 }

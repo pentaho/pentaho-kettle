@@ -122,6 +122,7 @@
     <!--- 
     	<menuitem value="trans-graph-entry-lineage" label="%TransGraph.PopupMenu.ShowDataLineage"/> 
       -->
+    <menuitem value="trans-graph-entry-sniff-output" label="%TransGraph.PopupMenu.SniffOutput"/> 
 	<menuseparator/>
     <menu value="trans-graph-entry-align" label="%TransGraph.PopupMenu.AllignDistribute">
 		<menupopup>

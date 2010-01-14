@@ -14,6 +14,7 @@ package org.pentaho.di.job;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -34,7 +35,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
-import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.JobLogTable;
@@ -54,7 +54,9 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
+import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
@@ -95,7 +97,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     private Job parentJob;
     
 	/**
-	 * Keep a list of the job entries that were executed.
+	 * Keep a list of the job entries that were executed. org.pentaho.di.core.logging.CentralLogStore.getInstance()
 	 */
 	private JobTracker jobTracker;
 	
@@ -122,8 +124,15 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     private Result result;
     private AtomicBoolean initialized;
     
+    private boolean interactive;
+    
     private List<JobListener> jobListeners;
     
+    private List<JobEntryListener> jobEntryListeners;
+    
+	private Map<JobEntryCopy, JobEntryTrans> activeJobEntryTransformations;
+	private Map<JobEntryCopy, JobEntryJob>   activeJobEntryJobs;
+
     /**
      * Parameters of the job.
      */
@@ -131,25 +140,33 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     
     private AtomicBoolean finished;
 	private SocketRepository	socketRepository;
-    
+
     public Job(String name, String file, String args[])
     {
     	this();
-        init(name, file, args);
-    }
-    
-	public void init(String name, String file, String args[])
-	{
-        if (name!=null) setName(name+" ("+super.getName()+")");
-        
+    	
 		jobMeta = new JobMeta();
-		jobMeta.setName(name);
+        if (name!=null) setName(name+" ("+super.getName()+")");
+        jobMeta.setName(name);
 		jobMeta.setFilename(file);
 		jobMeta.setArguments(args);
+		
+		init();
+    }
+    
+	public void init()
+	{        
+    	jobListeners = new ArrayList<JobListener>();
+    	jobEntryListeners = new ArrayList<JobEntryListener>();
+    	
+		activeJobEntryTransformations = new HashMap<JobEntryCopy, JobEntryTrans>();
+		activeJobEntryJobs = new HashMap<JobEntryCopy, JobEntryJob>();
+		
 		active=new AtomicBoolean(false);
 		stopped=new AtomicBoolean(false);
         jobTracker = new JobTracker(jobMeta);
         initialized=new AtomicBoolean(false);
+        finished = new AtomicBoolean(false);
         errors = new AtomicInteger(0);
         batchId = -1;
         passedBatchId = -1;
@@ -159,49 +176,39 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		this.log=new LogChannel(this);
 	}
 
-	public Job(Repository rep, JobMeta ti)
+	public Job(Repository repository, JobMeta jobMeta)
 	{
-		this();
-        open(rep, ti);
-        if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
+		this(repository, jobMeta, null);
+	}
+	
+	public Job(Repository repository, JobMeta jobMeta, Job parentJob)
+	{
+        this.rep        = repository;
+        this.jobMeta    = jobMeta;
+        this.parentJob  = parentJob;
+        
+        init();
+        
+        jobTracker = new JobTracker(jobMeta);
+
+        this.log = new LogChannel(this);
 	}
 
     // Empty constructor, for Class.newInstance()
     public Job()
     {
-    	jobListeners = new ArrayList<JobListener>();
     	this.log = LogChannel.GENERAL;
+    	init();
     }
     
-    public void open(Repository rep, JobMeta ti)
-    {
-        this.rep        = rep;
-        this.jobMeta    = ti;
-        
-        if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
-        
-        active.set(false);
-        stopped.set(false);
-        jobTracker = new JobTracker(jobMeta);
-
-        this.log = new LogChannel(this);
+    @Override
+    public String toString() {
+    	if (jobMeta==null || Const.isEmpty(jobMeta.getName())) {
+    		return getName();
+    	} else {
+    		return jobMeta.getName();
+    	}
     }
-	
-	public void open(Repository rep, String fname, String jobname, String dirname, OverwritePrompter prompter) throws KettleException
-	{
-		this.rep = rep;
-		if (rep!=null)
-		{
-			jobMeta = rep.loadJob(jobname, rep.loadRepositoryDirectoryTree().findDirectory(dirname), null, null);  // reads last version
-		}
-		else
-		{
-			jobMeta = new JobMeta(fname, rep, prompter);
-		}
-        
-        if (jobMeta.getName()!=null) setName(jobMeta.getName()+" ("+super.getName()+")");
-	}
-    
     
     public static final Job createJobWithNewClassLoader() throws KettleException
     {
@@ -302,7 +309,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
 
         // Start the tracking...
-        JobEntryResult jerStart = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), BaseMessages.getString(PKG, "Job.Reason.Started"), null);
+        JobEntryResult jerStart = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), BaseMessages.getString(PKG, "Job.Reason.Started"), null, 0, null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
 
         active.set(true);
@@ -321,7 +328,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
         }
         // Save this result...
-        JobEntryResult jerEnd = new JobEntryResult(res, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null);
+        JobEntryResult jerEnd = new JobEntryResult(res, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
         log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobFinished"));
         
@@ -343,7 +350,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	public Result execute(int nr, Result result) throws KettleException
 	{
 		finished.set(false);
-        
+        active.set(true);
+        initialized.set(true);
+
         // Where do we start?
         JobEntryCopy startpoint;
 
@@ -359,8 +368,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint"));
         }
 
+
 		Result res =  execute(nr, result, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.StartOfJobentry"));
 		
+        active.set(false);
+        
 		return res;
 	}
 	
@@ -382,13 +394,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 * 
 	 * @param nr
 	 * @param prev_result
-	 * @param startpoint
+	 * @param jobEntryCopy
 	 * @param previous
 	 * @param reason
 	 * @return
 	 * @throws KettleException
 	 */
-	private Result execute(final int nr, Result prev_result, final JobEntryCopy startpoint, JobEntryCopy previous, String reason) throws KettleException
+	private Result execute(final int nr, Result prev_result, final JobEntryCopy jobEntryCopy, JobEntryCopy previous, String reason) throws KettleException
 	{
 		Result res = null;
        
@@ -399,13 +411,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			return res;
 		}
 		
-		if(log.isDetailed()) log.logDetailed("exec("+nr+", "+(prev_result!=null?prev_result.getNrErrors():0)+", "+(startpoint!=null?startpoint.toString():"null")+")");
+		if(log.isDetailed()) log.logDetailed("exec("+nr+", "+(prev_result!=null?prev_result.getNrErrors():0)+", "+(jobEntryCopy!=null?jobEntryCopy.toString():"null")+")");
 		
 		// What entry is next?
-		JobEntryInterface jei = startpoint.getEntry();
+		JobEntryInterface jobEntryInterface = jobEntryCopy.getEntry();
 
         // Track the fact that we are going to launch the next job entry...
-        JobEntryResult jerBefore = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), reason, startpoint);
+        JobEntryResult jerBefore = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), reason, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerBefore));
 
         Result prevResult = null;
@@ -419,20 +431,44 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         }
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(jei.getClass().getClassLoader());
+        Thread.currentThread().setContextClassLoader(jobEntryInterface.getClass().getClassLoader());
         // Execute this entry...
-        JobEntryInterface cloneJei = (JobEntryInterface)jei.clone();
+        JobEntryInterface cloneJei = (JobEntryInterface)jobEntryInterface.clone();
         ((VariableSpace)cloneJei).copyVariablesFrom(this);
         cloneJei.setRepository(rep);
         cloneJei.setParentJob(this);
+                
         cloneJei.getLogChannel().logDetailed("Starting job entry");
+        for (JobEntryListener jobEntryListener : jobEntryListeners) {
+        	jobEntryListener.beforeExecution(this, jobEntryCopy, cloneJei);
+        }
+        if (interactive) {
+			if (jobEntryCopy.isTransformation()) {
+				getActiveJobEntryTransformations().put(jobEntryCopy, (JobEntryTrans)cloneJei);
+			}
+			if (jobEntryCopy.isJob()) {
+				getActiveJobEntryJobs().put(jobEntryCopy, (JobEntryJob)cloneJei);
+			}
+        }
         final Result result = cloneJei.execute(prevResult, nr);
+        if (interactive) {
+			if (jobEntryCopy.isTransformation()) {
+				getActiveJobEntryTransformations().remove(jobEntryCopy);
+			}
+			if (jobEntryCopy.isJob()) {
+				getActiveJobEntryJobs().remove(jobEntryCopy);
+			}
+        }
+
+        for (JobEntryListener jobEntryListener : jobEntryListeners) {
+        	jobEntryListener.afterExecution(this, jobEntryCopy, cloneJei, result);
+        }
 
         Thread.currentThread().setContextClassLoader(cl);
 		addErrors((int)result.getNrErrors());
 		
         // Save this result as well...
-        JobEntryResult jerAfter = new JobEntryResult(result, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, startpoint);
+        JobEntryResult jerAfter = new JobEntryResult(result, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
 			
 		// Try all next job entries.
@@ -447,14 +483,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         
 		// Launch only those where the hop indicates true or false
         //
-		int nrNext = jobMeta.findNrNextJobEntries(startpoint);
+		int nrNext = jobMeta.findNrNextJobEntries(jobEntryCopy);
 		for (int i=0;i<nrNext && !isStopped();i++)
 		{
 			// The next entry is...
-			final JobEntryCopy nextEntry = jobMeta.findNextJobEntry(startpoint, i);
+			final JobEntryCopy nextEntry = jobMeta.findNextJobEntry(jobEntryCopy, i);
 			
 			// See if we need to execute this...
-			final JobHopMeta hi = jobMeta.findJobHop(startpoint, nextEntry);
+			final JobHopMeta hi = jobMeta.findJobHop(jobEntryCopy, nextEntry);
 
 			// The next comment...
 			final String nextComment;
@@ -478,7 +514,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			// If the link is unconditional, execute the next job entry (entries).
 			// If the start point was an evaluation and the link color is correct: green or red, execute the next job entry...
 			//
-			if (  hi.isUnconditional() || ( startpoint.evaluates() && ( ! ( hi.getEvaluation() ^ result.getResult() ) ) ) ) 
+			if (  hi.isUnconditional() || ( jobEntryCopy.evaluates() && ( ! ( hi.getEvaluation() ^ result.getResult() ) ) ) ) 
 			{				
 				// Start this next step!
 				if(log.isBasic()) log.logBasic(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.StartingEntry",nextEntry.getName()));
@@ -495,14 +531,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 				// 
             	// if (we launch in parallel, fire the execution off in a new thread...
             	//
-            	if (startpoint.isLaunchingInParallel())
+            	if (jobEntryCopy.isLaunchingInParallel())
             	{
             		threadEntries.add(nextEntry);
             		
             		Runnable runnable = new Runnable() {
             			public void run() {
             				try {
-            					Result threadResult = execute(nr+1, result, nextEntry, startpoint, nextComment);
+            					Result threadResult = execute(nr+1, result, nextEntry, jobEntryCopy, nextComment);
             					threadResults.add(threadResult);
             				}
             				catch(Throwable e)
@@ -527,7 +563,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                     {
 	            		// Same as before: blocks until it's done
 	            		//
-	            		res = execute(nr+1, result, nextEntry, startpoint, nextComment);
+	            		res = execute(nr+1, result, nextEntry, jobEntryCopy, nextComment);
                     }
                     catch(Throwable e)
                     {
@@ -541,7 +577,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		
 		// OK, if we run in parallel, we need to wait for all the job entries to finish...
 		//
-		if (startpoint.isLaunchingInParallel())
+		if (jobEntryCopy.isLaunchingInParallel())
 		{
 			for (int i=0;i<threads.size();i++)
 			{
@@ -1308,27 +1344,41 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	}
 
 	/**
-	 * @return the jobListeners
-	 */
-	public List<JobListener> getJobListeners() {
-		return jobListeners;
-	}
-
-	/**
-	 * @param jobListeners the jobListeners to set
-	 */
-	public void setJobListeners(List<JobListener> jobListeners) {
-		this.jobListeners = jobListeners;
-	}
-
-	/**
 	 * Add a job listener to the job
 	 * @param jobListener the job listener to add
 	 */
 	public void addJobListener(JobListener jobListener) {
 		jobListeners.add(jobListener);
 	}
+	
+	public void addJobEntryListener(JobEntryListener jobEntryListener) {
+		jobEntryListeners.add(jobEntryListener);
+	}
 
+	/**
+	 * Remove a job listener from the job
+	 * @param jobListener the job listener to remove
+	 */
+	public void removeJobListener(JobListener jobListener) {
+		jobListeners.remove(jobListener);
+	}
+	
+	/**
+	 * Remove a job entry listener from the job
+	 * @param jobListener the job entry listener to remove
+	 */
+	public void removeJobEntryListener(JobEntryListener jobEntryListener) {
+		jobEntryListeners.remove(jobEntryListener);
+	}
+	
+	public List<JobEntryListener> getJobEntryListeners() {
+		return jobEntryListeners;
+	}
+	
+	public List<JobListener> getJobListeners() {
+		return jobListeners;
+	}
+	
 	/**
 	 * @return the finished
 	 */
@@ -1468,5 +1518,33 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		}
 		
 		return hierarchy;
+	}
+
+	/**
+	 * @return the interactive
+	 */
+	public boolean isInteractive() {
+		return interactive;
+	}
+
+	/**
+	 * @param interactive the interactive to set
+	 */
+	public void setInteractive(boolean interactive) {
+		this.interactive = interactive;
+	}
+
+	/**
+	 * @return the activeJobEntryTransformations
+	 */
+	public Map<JobEntryCopy, JobEntryTrans> getActiveJobEntryTransformations() {
+		return activeJobEntryTransformations;
+	}
+
+	/**
+	 * @return the activeJobEntryJobs
+	 */
+	public Map<JobEntryCopy, JobEntryJob> getActiveJobEntryJobs() {
+		return activeJobEntryJobs;
 	}
 }

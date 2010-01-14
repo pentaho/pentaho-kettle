@@ -2865,11 +2865,11 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
 		            // Handle this different with as less overhead as possible to get an error message in the log.
 		            // Otherwise it crashes likely with another OOME in Me$$ages.getString() and does not log
 		            // nor call the setErrors() and stopAll() below.
-		        	baseStep.logError("UnexpectedError: " + t.toString()); //$NON-NLS-1$
+		        	baseStep.logError("UnexpectedError: ", t); //$NON-NLS-1$
 		        } else {
-		        	baseStep.logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : "); //$NON-NLS-1$ //$NON-NLS-2$
+		        	baseStep.logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : ", t); //$NON-NLS-1$ //$NON-NLS-2$
 		        }
-		        baseStep.logError(Const.getStackTracker(t));
+		        // baseStep.logError(Const.getStackTracker(t));
 		    }
 		    catch(OutOfMemoryError e)
 		    {

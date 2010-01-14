@@ -30,12 +30,14 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 public class JobEntryResult implements Cloneable
 {
 	private Result result;
-	private JobEntryCopy jobEntry;
+	private String jobEntryName;
+	private int jobEntryNr;
 
 	private String comment;
     private String reason;
     
     private Date   logDate;
+	private String	jobEntryFilename;
 
 	/**
 	 * Creates a new empty job entry result...
@@ -51,7 +53,7 @@ public class JobEntryResult implements Cloneable
      * @param comment an optional comment
      * @param jobEntry the job entry for which this is the result.
 	 */
-	public JobEntryResult(Result result, String comment, String reason, JobEntryCopy jobEntry)
+	public JobEntryResult(Result result, String comment, String reason, String jobEntryName, int jobEntryNr, String jobEntryFilename)
 	{
         this();
 		if (result!=null) 
@@ -64,9 +66,17 @@ public class JobEntryResult implements Cloneable
         }
         this.comment = comment;
         this.reason = reason;
-        this.jobEntry = jobEntry;
+        this.jobEntryName = jobEntryName;
+        this.jobEntryNr = jobEntryNr;
+        this.jobEntryFilename = jobEntryFilename;
 	}
 	
+	@Deprecated
+	public JobEntryResult(Result result, String comment, String reason, JobEntryCopy copy) {
+
+		this(result, comment, reason, copy!=null ? copy.getName() : null, copy!=null ? copy.getNr() : 0, copy==null ? null : ( copy.getEntry()!=null ? copy.getEntry().getFilename() : null) );
+	}
+
 	public Object clone()
 	{
 		try
@@ -99,23 +109,7 @@ public class JobEntryResult implements Cloneable
 	{
 		return result;
 	}
-	
-	/**
-	 * @param jobEntry The thisJobEntry to set.
-	 */
-	public void setJobEntry(JobEntryCopy jobEntry)
-	{
-		this.jobEntry = jobEntry;
-	}
-	
-	/**
-	 * @return Returns the thisJobEntry.
-	 */
-	public JobEntryCopy getJobEntry()
-	{
-		return jobEntry;
-	}
-	
+		
 	/**
 	 * @return Returns the comment.
 	 */
@@ -162,6 +156,50 @@ public class JobEntryResult implements Cloneable
     public void setLogDate(Date logDate)
     {
         this.logDate = logDate;
-    }	
+    }
+
+	/**
+	 * @return the jobEntryName
+	 */
+	public String getJobEntryName() {
+		return jobEntryName;
+	}
+
+	/**
+	 * @param jobEntryName the jobEntryName to set
+	 */
+	public void setJobEntryName(String jobEntryName) {
+		this.jobEntryName = jobEntryName;
+	}
+
+	/**
+	 * @return the jobEntryFilename
+	 */
+	public String getJobEntryFilename() {
+		return jobEntryFilename;
+	}
+
+	/**
+	 * @param jobEntryFilename the jobEntryFilename to set
+	 */
+	public void setJobEntryFilename(String jobEntryFilename) {
+		this.jobEntryFilename = jobEntryFilename;
+	}
+
+	/**
+	 * @return the jobEntryNr
+	 */
+	public int getJobEntryNr() {
+		return jobEntryNr;
+	}
+
+	/**
+	 * @param jobEntryNr the jobEntryNr to set
+	 */
+	public void setJobEntryNr(int jobEntryNr) {
+		this.jobEntryNr = jobEntryNr;
+	}
+    
+    
 }
 

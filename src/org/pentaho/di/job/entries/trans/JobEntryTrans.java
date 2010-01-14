@@ -121,6 +121,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     private String  remoteSlaveServerName;
 	private boolean	passingAllParameters=true;
 
+	private Trans	trans;
+
 	public JobEntryTrans(String name)
 	{
 		super(name, "");
@@ -900,7 +902,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 {
                 	// Create the transformation from meta-data
 	                //
-                    Trans trans = new Trans(transMeta);
+                    trans = new Trans(transMeta, parentJob);
 
                     // Pass the socket repository as early as possible...
                     //
@@ -1276,5 +1278,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	 */
 	public void setPassingAllParameters(boolean passingAllParameters) {
 		this.passingAllParameters = passingAllParameters;
+	}
+
+	public Trans getTrans() {
+		return trans;
 	}
 }

@@ -88,7 +88,7 @@ public class Log4jBufferAppender implements Appender
     					if (!include) {
     						LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(message.getLogChannelId());
 
-    						if (includeGeneral && LoggingObjectType.GENERAL.equals(loggingObject.getObjectType())) {
+    						if (loggingObject!=null && includeGeneral && LoggingObjectType.GENERAL.equals(loggingObject.getObjectType())) {
     							include = true;
     						}
 
@@ -287,7 +287,7 @@ public class Log4jBufferAppender implements Appender
     			if (payload instanceof LogMessage) {
     				LogMessage message = (LogMessage) payload;
     				LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(message.getLogChannelId());
-					if (LoggingObjectType.GENERAL.equals(loggingObject.getObjectType())) {
+					if (loggingObject!=null && LoggingObjectType.GENERAL.equals(loggingObject.getObjectType())) {
 						iterator.remove();
 					}
     			}

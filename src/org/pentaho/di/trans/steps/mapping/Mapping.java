@@ -146,7 +146,7 @@ public class Mapping extends BaseStep implements StepInterface
 	public void prepareMappingExecution() throws KettleException {
         // Create the transformation from meta-data...
 		//
-        data.mappingTrans = new Trans(data.mappingTransMeta);
+        data.mappingTrans = new Trans(data.mappingTransMeta, getTrans());
         
         // Leave a path up so that we can set variables in sub-transformations...
         //
@@ -321,6 +321,10 @@ public class Mapping extends BaseStep implements StepInterface
         	//
         	mappingOutputSource.setDistributed(isDistributed());        	
         }
+        
+        // Finally, add the mapping transformation to the active sub-transformations map in the parent transformation
+        //
+        getTrans().getActiveSubtransformations().put(getStepname(), data.mappingTrans);
 	}
 
 	public static void addInputRenames(List<MappingValueRename> renameList, List<MappingValueRename> addRenameList) {
@@ -384,6 +388,10 @@ public class Mapping extends BaseStep implements StepInterface
         {
             // Wait until the child transformation has finished.
             data.mappingTrans.waitUntilFinished();
+            
+            // Remove it from the list of active sub-transformations...
+            //
+            getTrans().getActiveSubtransformations().remove(getStepname());
             
             // See if there was an error in the sub-transformation, in that case, flag error etc.
             if (data.mappingTrans.getErrors()>0)

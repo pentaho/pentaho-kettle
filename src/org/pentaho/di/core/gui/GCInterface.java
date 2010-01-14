@@ -10,7 +10,7 @@ public interface GCInterface {
 	public enum EFont { NOTE, GRAPH, SMALL, }
 	public enum ELineStyle { SOLID, DASHDOT, DOT, PARALLEL, }
 	public enum EImage { LOCK, STEP_ERROR, EDIT, CONTEXT_MENU, TRUE, FALSE, ERROR, INFO, TARGET, INPUT, OUTPUT, ARROW, COPY_ROWS, 
-		UNCONDITIONAL, PARALLEL}
+		UNCONDITIONAL, PARALLEL, BUSY, }
 	
 	// TODO: Parallel and Unconditional!!!
 	
@@ -60,4 +60,5 @@ public interface GCInterface {
 	public Object getImage();
 	public Point getImageBounds(EImage eImage);
 	public void switchForegroundBackgroundColors();
+	public Point getArea();
 }

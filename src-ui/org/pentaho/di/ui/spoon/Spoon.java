@@ -139,11 +139,14 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryCategory;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
+import org.pentaho.di.job.entries.job.JobEntryJob;
+import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -384,6 +387,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 * We can use this to set a default filter path in the open and save dialogs
 	 */
 	public String							lastDirOpened;
+	
 
 	/**
 	 * This is the main procedure for Spoon.
@@ -496,7 +500,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		props = PropsUI.getInstance();
 
 		sharedObjectsFileMap = new Hashtable<String, SharedObjects>();
-
+		
 		shell = new Shell(display);
 		shell.setText(APPL_TITLE);
 		staticSpoon = this;
@@ -6893,5 +6897,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 
 	}
+
+	public Trans findActiveTrans(Job job, JobEntryCopy jobEntryCopy) {
+		JobEntryTrans jobEntryTrans = job.getActiveJobEntryTransformations().get(jobEntryCopy);
+		if (jobEntryTrans==null) return null;
+		return jobEntryTrans.getTrans();
+	}
+	
+	public Job findActiveJob(Job job, JobEntryCopy jobEntryCopy) {
+		JobEntryJob jobEntryJob = job.getActiveJobEntryJobs().get(jobEntryCopy);
+		if (jobEntryJob==null) return null;
+		return jobEntryJob.getJob();
+	}
+
+
 
 }

@@ -49,8 +49,10 @@ public class JobTracker
     
     public JobTracker(JobMeta jobMeta)
     {
-        this.jobName = jobMeta.getName();
-        this.jobFilename = jobMeta.getFilename();
+    	if (jobMeta!=null) {
+	        this.jobName = jobMeta.getName();
+	        this.jobFilename = jobMeta.getFilename();
+    	}
         
         jobTrackers = new ArrayList<JobTracker>();
     }
@@ -125,21 +127,18 @@ public class JobTracker
      */
     public JobTracker findJobTracker(JobEntryCopy jobEntryCopy)
     {
-        for (int i=0;i<jobTrackers.size();i++)
-        {
+        for (int i=0;i<jobTrackers.size();i++) {
             JobTracker tracker = getJobTracker(i);
             JobEntryResult result = tracker.getJobEntryResult();
-            if (result!=null)
-            {
-                JobEntryCopy jobEntry = result.getJobEntry();
-                if (jobEntry!=null)
-                {
-                    if (jobEntry.equals(jobEntryCopy)) return tracker; 
+            if (result!=null) {
+            	if (jobEntryCopy.getName()!=null && jobEntryCopy.getName().equals(result.getJobEntryName()) && jobEntryCopy.getNr() == result.getJobEntryNr()) {
+                    return tracker; 
                 }
             }
         }
         return null;
     }
+
     /**
      * @return Returns the parentJobTracker.
      */

@@ -505,7 +505,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     public LogChannelInterface getLogChannel() {
 		return log;
 	}
-
+    
 	public String getLogChannelId() {
 		return log.getLogChannelId();
 	}

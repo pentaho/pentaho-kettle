@@ -20,7 +20,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobEntryResult;
-import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -229,15 +228,11 @@ public class JobGridDelegate extends SpoonDelegate {
                     JobEntryResult result = jobTracker.getJobEntryResult();
                     if (result!=null)
                     {
-                        JobEntryCopy jec = result.getJobEntry();
-                        if (jec!=null)
+                        String jobEntryName = result.getJobEntryName();
+                        if (!Const.isEmpty(jobEntryName))
                         {
-                            treeItem.setText( 0, jec.getName() );
-                            
-                            if (jec.getEntry()!=null)
-                            {
-                                treeItem.setText( 4, Const.NVL( jec.getEntry().getRealFilename(), "") );
-                            }
+                            treeItem.setText( 0, jobEntryName );
+                            treeItem.setText( 4, Const.NVL( result.getJobEntryFilename(), "") );
                         }
                         else
                         {
@@ -285,6 +280,11 @@ public class JobGridDelegate extends SpoonDelegate {
 
 	public CTabItem getJobGridTab() {
 		return jobGridTab;
+	}
+
+	public void setJobTracker(JobTracker jobTracker) {
+		this.jobTracker = jobTracker;
+		
 	}
 
 	

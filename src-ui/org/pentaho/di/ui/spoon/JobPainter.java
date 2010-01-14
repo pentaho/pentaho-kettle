@@ -30,6 +30,7 @@ public class JobPainter extends BasePainter {
 	private Point	endHopLocation;
 	private JobEntryCopy	endHopEntry;
 	private JobEntryCopy	noInputEntry;
+	private List<JobEntryCopy>	activeJobEntries;
 
 	public JobPainter(GCInterface gc, JobMeta jobMeta, Point area, ScrollBarInterface hori, ScrollBarInterface vert, JobHopMeta candidate, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, List<JobEntryCopy> mouseOverEntries,
 			int iconsize, int linewidth, int gridsize, int shadowSize, boolean antiAliasing, 
@@ -173,6 +174,15 @@ public class JobPainter extends BasePainter {
 
 		gc.drawJobEntryIcon(x, y, jobEntryCopy);
 		gc.setBackground(EColor.BACKGROUND);
+		
+		if (activeJobEntries.contains(jobEntryCopy)) {
+			gc.setForeground(EColor.BLUE);
+			gc.drawImage(EImage.BUSY, offset.x + x + iconsize, offset.y + y - 5 );
+		} else {
+			gc.setForeground(EColor.BLACK);
+		}
+		
+		
 		gc.drawRectangle(offset.x + x - 1, offset.y + y - 1, iconsize + 1, iconsize + 1);
 		Point textsize = new Point(gc.textExtent("" + name).x, gc.textExtent("" + name).y);
 
@@ -490,6 +500,10 @@ public class JobPainter extends BasePainter {
 
 	public void setNoInputEntry(JobEntryCopy noInputEntry) {
 		this.noInputEntry = noInputEntry;
+	}
+
+	public void setActiveJobEntries(List<JobEntryCopy> activeJobEntries) {
+		this.activeJobEntries = activeJobEntries;
 	}
 
 }

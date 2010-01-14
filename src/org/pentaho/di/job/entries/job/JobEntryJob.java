@@ -103,6 +103,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     private String remoteSlaveServerName;
     public  boolean passingAllParameters=true;
 
+	private Job	job;
+
     public JobEntryJob(String name)
 	{
 		super(name, "");
@@ -701,11 +703,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	//
                 	
 	                // Create a new job
-	                Job job = new Job(rep, jobMeta);
+                	// 
+	                job = new Job(rep, jobMeta, parentJob);
 	
 	                job.shareVariablesWith(this);
 	                job.setInternalKettleVariables(this);
 	                job.copyParametersFrom(jobMeta);
+	                job.setInteractive(parentJob.isInteractive());
+	                if (job.isInteractive()) {
+	                	job.getJobEntryListeners().addAll(parentJob.getJobEntryListeners());
+	                }
 	                
 	                // Pass the socket repository all around.
 	                //
@@ -1202,6 +1209,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	 */
 	public void setPassingAllParameters(boolean passingAllParameters) {
 		this.passingAllParameters = passingAllParameters;
+	}
+
+	public Job getJob() {
+		return job;
 	}
 
 }

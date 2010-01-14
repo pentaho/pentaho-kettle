@@ -281,7 +281,7 @@ public class GUIResource
 
     private Image imageUnconditionalHop;
     private Image imageParallelHop;
-
+    private Image imageBusy;
 
     private Map<String,Image> imageMap;
 
@@ -474,6 +474,7 @@ public class GUIResource
 		    imageContextMenu.dispose();
 		    imageParallelHop.dispose();
 		    imageUnconditionalHop.dispose();
+		    imageBusy.dispose();
 
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -715,7 +716,8 @@ public class GUIResource
 
     imageParallelHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ParallelHop_image")); // , "ui/images/parallel-hop.png
     imageUnconditionalHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("UnconditionalHop_image")); // , "ui/images/unconditional-hop.png
-
+    imageBusy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Busy_image")); // , "ui/images/busy.png
+    
     imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
 		gc.drawImage(imageStart, 0, 0, 32, 32, 0, 0, 16, 16);
@@ -1852,6 +1854,10 @@ public class GUIResource
 
 	public Image getImageUnconditionalHop() {
 		return imageUnconditionalHop;
+	}
+
+	public Image getImageBusy() {
+		return imageBusy;
 	}
 
 }

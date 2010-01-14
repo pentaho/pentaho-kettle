@@ -74,6 +74,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
@@ -91,6 +92,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryListener;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobListener;
@@ -102,6 +104,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.ui.core.ConstUI;
@@ -127,6 +130,7 @@ import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.trans.DelayListener;
 import org.pentaho.di.ui.spoon.trans.DelayTimer;
+import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
@@ -269,20 +273,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface,
   private JobEntryCopy	startHopEntry;
   private Point     endHopLocation;
 
-private JobEntryCopy	endHopEntry;
+	private JobEntryCopy									endHopEntry;
+	private JobEntryCopy									noInputEntry;
+	private DefaultToolTip									toolTip;
+	private Point[]											previous_step_locations;
+	private Point[]											previous_note_locations;
+	private JobEntryCopy									currentEntry;
 
-private JobEntryCopy	noInputEntry;
-
-private DefaultToolTip toolTip;
-
-private Point[]	previous_step_locations;
-
-private Point[]	previous_note_locations;
-
-private JobEntryCopy	currentEntry;
-
-
-  public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
+public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     super(par, SWT.NONE);
     shell = par.getShell();
     this.log = spoon.getLog();
@@ -299,7 +297,7 @@ private JobEntryCopy	currentEntry;
     jobGridDelegate = new JobGridDelegate(spoon, this);
 
     refreshListeners = new ArrayList<RefreshListener>();
-
+    
     setLayout(new FormLayout());
 
     // Add a tool-bar at the top of the tab
@@ -1224,14 +1222,13 @@ private JobEntryCopy	currentEntry;
   protected void asyncRedraw() {
 		spoon.getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				if (!JobGraph.this.isDisposed()) {
-					JobGraph.this.redraw();
+				if (!isDisposed()) {
+					redraw();
 				}
 			}
 		});
 	}
-
-
+  
   private void addToolBar() {
 
     try {
@@ -1588,13 +1585,15 @@ private JobEntryCopy	currentEntry;
   }
 
   public void openTransformation() {
-    final JobEntryInterface entry = getJobEntry().getEntry();
-    openTransformation((JobEntryTrans) entry);
+	JobEntryCopy jobEntryCopy = getJobEntry();
+    final JobEntryInterface entry = jobEntryCopy.getEntry();
+    openTransformation((JobEntryTrans) entry, jobEntryCopy);
   }
 
   public void openJob() {
-    final JobEntryInterface entry = getJobEntry().getEntry();
-    openJob((JobEntryJob) entry);
+	JobEntryCopy jobEntryCopy = getJobEntry();
+    final JobEntryInterface entry = jobEntryCopy.getEntry();
+    openJob((JobEntryJob) entry, jobEntryCopy);
   }
 
   public void newHopClick() {
@@ -2125,23 +2124,23 @@ private JobEntryCopy	currentEntry;
 	}
   }
 
-  public void launchStuff(JobEntryCopy jobentry) {
-    if (jobentry.isJob()) {
-      final JobEntryJob entry = (JobEntryJob) jobentry.getEntry();
+  public void launchStuff(JobEntryCopy jobEntryCopy) {
+    if (jobEntryCopy.isJob()) {
+      final JobEntryJob entry = (JobEntryJob) jobEntryCopy.getEntry();
       if ((entry != null && entry.getFilename() != null && spoon.rep == null)
           || (entry != null && entry.getName() != null && spoon.rep != null)) {
-        openJob(entry);
+        openJob(entry, jobEntryCopy);
       }
-    } else if (jobentry.isTransformation()) {
-      final JobEntryTrans entry = (JobEntryTrans) jobentry.getEntry();
+    } else if (jobEntryCopy.isTransformation()) {
+      final JobEntryTrans entry = (JobEntryTrans) jobEntryCopy.getEntry();
       if ((entry != null && entry.getFilename() != null && spoon.rep == null)
           || (entry != null && entry.getName() != null && spoon.rep != null)) {
-        openTransformation(entry);
+        openTransformation(entry, jobEntryCopy);
       }
     }
   }
 
-  protected void openTransformation(JobEntryTrans entry) {
+  protected void openTransformation(JobEntryTrans entry, JobEntryCopy jobEntryCopy) {
     String exactFilename = jobMeta.environmentSubstitute(entry.getFilename());
     String exactTransname = jobMeta.environmentSubstitute(entry.getTransname());
 
@@ -2175,6 +2174,10 @@ private JobEntryCopy	currentEntry;
 
         spoon.addTransGraph(newTrans);
         newTrans.clearChanged();
+        
+        TransGraph transGraph = spoon.getActiveTransGraph();
+        attachActiveTrans(transGraph, newTrans, jobEntryCopy);
+        
         spoon.open();
       } catch (Throwable e) {
         new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title"),
@@ -2200,6 +2203,10 @@ private JobEntryCopy	currentEntry;
         spoon.setParametersAsVariablesInUI(launchTransMeta, launchTransMeta);
 
         spoon.addTransGraph(launchTransMeta);
+        
+        TransGraph transGraph = spoon.getActiveTransGraph();
+        attachActiveTrans(transGraph, launchTransMeta, jobEntryCopy);
+        
         spoon.open();
       } catch (Throwable e) {
         new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title"), 
@@ -2210,7 +2217,54 @@ private JobEntryCopy	currentEntry;
     spoon.applyVariables();
   }
 
-  public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta targetTransMeta) {
+  /**
+   * Finds the last active transformation in the running job to the opened transMeta
+   * 
+   * @param transGraph
+   * @param jobEntryCopy
+   */
+  private void attachActiveTrans(TransGraph transGraph, TransMeta newTrans, JobEntryCopy jobEntryCopy) {
+	  if (job!=null && transGraph!=null) {
+		  Trans trans = spoon.findActiveTrans(job, jobEntryCopy);
+		  transGraph.setTrans(trans);
+		  if (!transGraph.isExecutionResultsPaneVisible()) {
+			  transGraph.showExecutionResults();
+		  }
+		  transGraph.setControlStates();
+	  }
+  }
+  
+  /**
+   * Finds the last active job in the running job to the openened jobMeta
+   * 
+   * @param jobGraph
+   * @param newJob
+   */
+  private void attachActiveJob(JobGraph jobGraph, JobMeta newJobMeta, JobEntryCopy jobEntryCopy) {
+	  if (job!=null && jobGraph!=null) {
+		  Job subJob = spoon.findActiveJob(job, jobEntryCopy);
+		  jobGraph.setJob(subJob);
+		  jobGraph.jobGridDelegate.setJobTracker(subJob.getJobTracker());
+		  if (!jobGraph.isExecutionResultsPaneVisible()) {
+			  jobGraph.showExecutionResults();
+		  }
+		  jobGraph.setControlStates();
+	  }
+  }
+
+
+  private synchronized void setJob(Job job) {
+	  this.job = job;
+
+	  /*
+	  pausing = job.isPaused();
+		initialized = trans.isInitializing();
+		running = trans.isRunning();
+		halted = trans.isStopped();
+	*/
+  }
+
+public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta targetTransMeta) {
     // Also set some internal JOB variables...
     //
     String[] internalVariables = Const.INTERNAL_JOB_VARIABLES;
@@ -2220,7 +2274,7 @@ private JobEntryCopy	currentEntry;
     }
   }
 
-  public void openJob(JobEntryJob entry) {
+  public void openJob(JobEntryJob entry, JobEntryCopy jobEntryCopy) {
     String exactFilename = jobMeta.environmentSubstitute(entry.getFilename());
     String exactJobname = jobMeta.environmentSubstitute(entry.getJobName());
 
@@ -2231,6 +2285,10 @@ private JobEntryCopy	currentEntry;
         newJobMeta.clearChanged();
         spoon.setParametersAsVariablesInUI(newJobMeta, newJobMeta);
         spoon.delegates.jobs.addJobGraph(newJobMeta);
+        
+        JobGraph jobGraph = spoon.getActiveJobGraph();
+        attachActiveJob(jobGraph, newJobMeta, jobEntryCopy);
+
       } catch (Throwable e) {
         new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), 
         		BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message"), e);
@@ -2254,6 +2312,10 @@ private JobEntryCopy	currentEntry;
         newJobMeta.setFilename(exactFilename);
         newJobMeta.clearChanged();
         spoon.delegates.jobs.addJobGraph(newJobMeta);
+        
+        JobGraph jobGraph = spoon.getActiveJobGraph();
+        attachActiveJob(jobGraph, newJobMeta, jobEntryCopy);
+        
       } catch (Throwable e) {
         new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title"),
             BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message"), e);
@@ -2300,6 +2362,13 @@ private JobEntryCopy	currentEntry;
 	    jobPainter.setEndHopLocation(endHopLocation);
 	    jobPainter.setEndHopEntry(endHopEntry);
 	    jobPainter.setNoInputEntry(noInputEntry);
+	    
+	    List<JobEntryCopy> activeJobEntries = new ArrayList<JobEntryCopy>();
+	    if (job!=null) {
+	    	activeJobEntries.addAll( job.getActiveJobEntryJobs().keySet() );
+	    	activeJobEntries.addAll( job.getActiveJobEntryTransformations().keySet() );
+	    }
+	    jobPainter.setActiveJobEntries(activeJobEntries);
 	    
 	    jobPainter.drawJob();
 	    
@@ -2618,7 +2687,11 @@ private JobEntryCopy	currentEntry;
   }
 
   public String toString() {
-    return Spoon.APP_NAME;
+	if (jobMeta==null) {
+		return Spoon.APP_NAME;
+	} else {
+		return jobMeta.getName();
+	}
   }
 
   public EngineMetaInterface getMeta() {
@@ -2833,12 +2906,16 @@ private JobEntryCopy	currentEntry;
       minMaxButton.setToolTipText(BaseMessages.getString(PKG, "JobGraph.ExecutionResultsPanel.MinButton.Tooltip"));
     }
   }
+  
+  public boolean isExecutionResultsPaneVisible() {
+	  return extraViewComposite != null && !extraViewComposite.isDisposed();
+  }
 
   public void showExecutionResults() {
-    if (extraViewComposite == null || extraViewComposite.isDisposed()) {
-      addAllTabs();
-    } else {
+    if (isExecutionResultsPaneVisible()) {
       disposeExtraView();
+    } else {
+      addAllTabs();
     }
   }
 
@@ -2959,11 +3036,27 @@ private JobEntryCopy	currentEntry;
 			if (job!=null) {
 				CentralLogStore.discardLines(job.getLogChannelId(), true);
 			}
+			
+			JobMeta runJobMeta;
+			
+			if (spoon.rep!=null) {
+				runJobMeta = spoon.rep.loadJob(jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null);  // reads last version
+			} else {
+				runJobMeta = new JobMeta(jobMeta.getFilename(), null, null);
+			}
+		    
+			job = new Job(spoon.rep, runJobMeta);
         	  
-            job = new Job(jobMeta.getName(), jobMeta.getFilename(), null);
-            job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), spoon);
+            // job = new Job(jobMeta.getName(), jobMeta.getFilename(), null);
+            // job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), spoon);
             job.getJobMeta().setArguments(jobMeta.getArguments());
             job.shareVariablesWith(jobMeta);
+            job.setInteractive(true);
+            
+            // Add job entry listeners
+            //
+            job.addJobEntryListener(createRefreshJobEntryListener());
+                        
             
             // Set the named parameters
             Map<String, String> paramMap = executionConfiguration.getParams();
@@ -3023,7 +3116,20 @@ private JobEntryCopy	currentEntry;
     }
   }
 
-  /**
+  private JobEntryListener createRefreshJobEntryListener() {
+	  return new JobEntryListener() {
+			
+			public void beforeExecution(Job job, JobEntryCopy jobEntryCopy, JobEntryInterface jobEntryInterface) {
+				asyncRedraw();
+			}
+			
+			public void afterExecution(Job job, JobEntryCopy jobEntryCopy, JobEntryInterface jobEntryInterface, Result result) {
+				asyncRedraw();
+			}
+		};
+  }
+
+/**
    * This gets called at the very end, when everything is done.
    */
   protected void jobFinished() {
@@ -3033,7 +3139,6 @@ private JobEntryCopy	currentEntry;
       for (RefreshListener listener : refreshListeners)
         listener.refreshNeeded();
       log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.JobHasEnded")); //$NON-NLS-1$
-      System.out.println("Running = "+job.isActive());
     }
     setControlStates();
   }
