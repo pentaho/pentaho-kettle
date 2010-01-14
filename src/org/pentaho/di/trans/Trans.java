@@ -2634,7 +2634,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
                 try
                 {
-                    SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName());
+                    SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName(), 0);
                     if (transStatus.isRunning()) {
                     	if(log.isDetailed()) log.logDetailed("Slave transformation on '"+slaveServers[s]+"' is still running.");
                     	allFinished = false;
@@ -2656,7 +2656,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
                 try
                 {
-                    SlaveServerTransStatus transStatus = masterServer.getTransStatus(masterTransMeta.getName());
+                    SlaveServerTransStatus transStatus = masterServer.getTransStatus(masterTransMeta.getName(), 0);
                     if (transStatus.isRunning()) {
                     	if(log.isDetailed()) log.logDetailed("Master transformation is still running.");
                     	allFinished = false;
@@ -2808,7 +2808,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
             	// Get the detailed status of the slave transformation...
             	//
-            	SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName());
+            	SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName(), 0);
             	Result transResult = transStatus.getResult(slaves[s]);
             	
             	result.add(transResult);
@@ -2828,7 +2828,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
             	// Get the detailed status of the slave transformation...
             	//
-            	SlaveServerTransStatus transStatus = masterServer.getTransStatus(master.getName());
+            	SlaveServerTransStatus transStatus = masterServer.getTransStatus(master.getName(), 0);
             	Result transResult = transStatus.getResult(master);
             	
             	result.add(transResult);
@@ -3143,12 +3143,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
                 try
                 {
-                    SlaveServerTransStatus transStatus = remoteSlaveServer.getTransStatus(transName);
+                    SlaveServerTransStatus transStatus = remoteSlaveServer.getTransStatus(transName, 0);
                     if (transStatus.isRunning()) {
                     	if(log.isDetailed()) log.logDetailed(transName, "Remote transformation is still running.");
                     	allFinished = false;
-                    }
-                    else {
+                    } else {
                     	if(log.isDetailed()) log.logDetailed(transName, "Remote transformation has finished.");
                     }
                     Result result = transStatus.getResult();

@@ -709,15 +709,15 @@ public class SlaveServer
         return detections;
     }
 
-    public SlaveServerTransStatus getTransStatus(String transName) throws Exception
+    public SlaveServerTransStatus getTransStatus(String transName, int startLogLineNr) throws Exception
     {
-        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerTransStatus.fromXML(xml);
     }
     
-    public SlaveServerJobStatus getJobStatus(String jobName) throws Exception
+    public SlaveServerJobStatus getJobStatus(String jobName, int startLogLineNr) throws Exception
     {
-        String xml = execService(GetJobStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetJobStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerJobStatus.fromXML(xml);
     }
     

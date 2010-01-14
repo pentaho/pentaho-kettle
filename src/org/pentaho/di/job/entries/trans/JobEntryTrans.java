@@ -846,7 +846,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 	{
                 		try 
                 		{
-							transStatus = remoteSlaveServer.getTransStatus(transMeta.getName());
+							transStatus = remoteSlaveServer.getTransStatus(transMeta.getName(), 0);
 							if (!transStatus.isRunning())
 							{
 								// The transformation is finished, get the result...

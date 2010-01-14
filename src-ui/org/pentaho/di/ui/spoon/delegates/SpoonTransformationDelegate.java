@@ -43,7 +43,6 @@ import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabMapEntry;

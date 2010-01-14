@@ -39,6 +39,8 @@ public class SlaveServerTransStatus
     private String statusDescription;
     private String errorDescription;
     private String loggingString;
+    private int firstLoggingLineNr;
+    private int lastLoggingLineNr;
     private List<StepStatus>   stepStatusList;
     
     private Result result;
@@ -80,6 +82,8 @@ public class SlaveServerTransStatus
         xml.append("  </stepstatuslist>").append(Const.CR);
 
         xml.append(XMLHandler.addTagValue("logging_string", XMLHandler.buildCDATA(loggingString)));          
+        xml.append(XMLHandler.addTagValue("first_log_line_nr", firstLoggingLineNr));          
+        xml.append(XMLHandler.addTagValue("last_log_line_nr", lastLoggingLineNr));          
 
         if (result!=null)
         {
@@ -112,6 +116,9 @@ public class SlaveServerTransStatus
             StepStatus stepStatus = new StepStatus(stepStatusNode);
             stepStatusList.add(stepStatus);
         }
+        
+        firstLoggingLineNr = Const.toInt(XMLHandler.getTagValue(transStatusNode, "first_log_line_nr"), 0);
+        lastLoggingLineNr = Const.toInt(XMLHandler.getTagValue(transStatusNode, "last_log_line_nr"), 0);
         
         String loggingString64 = XMLHandler.getTagValue(transStatusNode, "logging_string");
         // This is a Base64 encoded GZIP compressed stream of data.
@@ -314,5 +321,33 @@ public class SlaveServerTransStatus
 	 */
 	public void setPaused(boolean paused) {
 		this.paused = paused;
+	}
+
+	/**
+	 * @return the lastLoggingLineNr
+	 */
+	public int getLastLoggingLineNr() {
+		return lastLoggingLineNr;
+	}
+
+	/**
+	 * @param lastLoggingLineNr the lastLoggingLineNr to set
+	 */
+	public void setLastLoggingLineNr(int lastLoggingLineNr) {
+		this.lastLoggingLineNr = lastLoggingLineNr;
+	}
+
+	/**
+	 * @return the firstLoggingLineNr
+	 */
+	public int getFirstLoggingLineNr() {
+		return firstLoggingLineNr;
+	}
+
+	/**
+	 * @param firstLoggingLineNr the firstLoggingLineNr to set
+	 */
+	public void setFirstLoggingLineNr(int firstLoggingLineNr) {
+		this.firstLoggingLineNr = firstLoggingLineNr;
 	}
 }

@@ -825,7 +825,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	{
                 		try 
                 		{
-							jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName());
+							jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName(), 0);
 							if (jobStatus.getResult()!=null)
 							{
 								// The job is finished, get the result...

@@ -85,7 +85,8 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
         if (trans!=null)
         {
             String status = trans.getStatus();
-            String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true, startLineNr).toString();
+            int lastLineNr = CentralLogStore.getLastBufferLineNr();
+            String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr).toString();
 
             if (useXML)
             {
@@ -94,6 +95,8 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
                 out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
                 
                 SlaveServerTransStatus transStatus = new SlaveServerTransStatus(transName, status);
+                transStatus.setFirstLoggingLineNr(startLineNr);
+                transStatus.setLastLoggingLineNr(lastLineNr);
     
                 for (int i = 0; i < trans.nrSteps(); i++)
                 {

@@ -34,7 +34,9 @@ public class SlaveServerJobStatus
     private String statusDescription;
     private String errorDescription;
     private String loggingString;
-    
+    private int firstLoggingLineNr;
+    private int lastLoggingLineNr;
+
     private Result result;
     
     public SlaveServerJobStatus()
@@ -62,7 +64,9 @@ public class SlaveServerJobStatus
         xml.append(XMLHandler.addTagValue("error_desc", errorDescription));          
         
         xml.append(XMLHandler.addTagValue("logging_string", XMLHandler.buildCDATA(loggingString)));
-        
+        xml.append(XMLHandler.addTagValue("first_log_line_nr", firstLoggingLineNr));          
+        xml.append(XMLHandler.addTagValue("last_log_line_nr", lastLoggingLineNr));          
+
         if (result!=null)
         {
         	try {
@@ -85,6 +89,9 @@ public class SlaveServerJobStatus
         statusDescription = XMLHandler.getTagValue(jobStatusNode, "status_desc");
         errorDescription = XMLHandler.getTagValue(jobStatusNode, "error_desc");
         
+        firstLoggingLineNr = Const.toInt(XMLHandler.getTagValue(jobStatusNode, "first_log_line_nr"), 0);
+        lastLoggingLineNr = Const.toInt(XMLHandler.getTagValue(jobStatusNode, "last_log_line_nr"), 0);
+
         String loggingString64 = XMLHandler.getTagValue(jobStatusNode, "logging_string");
         
         // This is a Base64 encoded GZIP compressed stream of data.
@@ -216,5 +223,33 @@ public class SlaveServerJobStatus
 	 */
 	public void setResult(Result result) {
 		this.result = result;
+	}
+
+	/**
+	 * @return the firstLoggingLineNr
+	 */
+	public int getFirstLoggingLineNr() {
+		return firstLoggingLineNr;
+	}
+
+	/**
+	 * @param firstLoggingLineNr the firstLoggingLineNr to set
+	 */
+	public void setFirstLoggingLineNr(int firstLoggingLineNr) {
+		this.firstLoggingLineNr = firstLoggingLineNr;
+	}
+
+	/**
+	 * @return the lastLoggingLineNr
+	 */
+	public int getLastLoggingLineNr() {
+		return lastLoggingLineNr;
+	}
+
+	/**
+	 * @param lastLoggingLineNr the lastLoggingLineNr to set
+	 */
+	public void setLastLoggingLineNr(int lastLoggingLineNr) {
+		this.lastLoggingLineNr = lastLoggingLineNr;
 	}
 }

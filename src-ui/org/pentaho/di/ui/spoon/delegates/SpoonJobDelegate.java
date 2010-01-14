@@ -60,7 +60,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.job.dialog.JobExecutionConfigurationDialog;
 import org.pentaho.di.ui.spoon.Spoon;

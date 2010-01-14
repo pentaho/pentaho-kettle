@@ -82,7 +82,8 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CarteServlet
         if (job!=null)
         {
             String status = job.getStatus();
-            String logText = CentralLogStore.getAppender().getBuffer(job.getLogChannel().getLogChannelId(), true, startLineNr).toString();
+            int lastLineNr = CentralLogStore.getLastBufferLineNr();
+            String logText = CentralLogStore.getAppender().getBuffer(job.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr).toString();
     
             if (useXML)
             {
@@ -91,7 +92,8 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CarteServlet
                 out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
                 
                 SlaveServerJobStatus jobStatus = new SlaveServerJobStatus(jobName, status);
-    
+                jobStatus.setFirstLoggingLineNr(startLineNr);
+                jobStatus.setLastLoggingLineNr(lastLineNr);
 
                 // The log can be quite large at times, we are going to put a base64 encoding around a compressed stream
                 // of bytes to handle this one.
