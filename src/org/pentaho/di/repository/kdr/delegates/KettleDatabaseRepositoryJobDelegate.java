@@ -819,15 +819,36 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 		repository.connectionDelegate.getDatabase().execStatement(sql, par.getRowMeta(), par.getData());
 	}
 
-	public synchronized void renameJob(ObjectId id_job, String newname) throws KettleException
+	public synchronized void renameJob(ObjectId id_job, RepositoryDirectory newParentDir, String newname) throws KettleException
 	{
-		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" SET "+quote(KettleDatabaseRepository.FIELD_JOB_NAME)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ID_JOB)+" = ?";
-
-		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER), id_job);
-
-		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
+	  if(newParentDir != null || newname != null) {
+	    RowMetaAndData table = new RowMetaAndData();
+	    
+  		String sql = "UPDATE " + quoteTable(KettleDatabaseRepository.TABLE_R_JOB) + " SET ";
+  		
+  		boolean additionalParameter = false;
+  		
+  		if(newname != null) {
+  		  additionalParameter = true;
+  		  sql += quote(KettleDatabaseRepository.FIELD_JOB_NAME) + " = ? ";
+  		  table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING), newname);
+  		}
+  		if(newParentDir != null) {
+  		  if(additionalParameter) {
+  		    sql += ", ";
+  		  }
+  		  sql += quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY) + " = ? ";
+  		  table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER), newParentDir.getObjectId());
+  		}
+  		
+  		sql += "WHERE " + quote(KettleDatabaseRepository.FIELD_JOB_ID_JOB) + " = ?";
+  		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER), id_job);
+  
+  		log.logBasic("sql = [" + sql + "]");
+      log.logBasic("row = [" + table + "]");
+  		
+  		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
+	  }
 	}
 	
 	public List<RepositoryLock> getJobLocks() throws KettleDatabaseException {

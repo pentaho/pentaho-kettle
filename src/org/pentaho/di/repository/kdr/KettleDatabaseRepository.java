@@ -251,7 +251,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	public synchronized ObjectId renameJob(ObjectId id_job, RepositoryDirectory dir, String newname) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.MODIFY_TRANSFORMATION);
 
-    	jobDelegate.renameJob(id_job, newname);
+    	jobDelegate.renameJob(id_job, dir, newname);
 		return id_job; // the same in this case
 	}
 

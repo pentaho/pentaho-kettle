@@ -1196,16 +1196,36 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 		repository.connectionDelegate.getDatabase().execStatement(sql, par.getRowMeta(), par.getData());
 	}
 
-	public synchronized void renameTransformation(ObjectId id_transformation, RepositoryDirectory newdir, String newname) throws KettleException
+	public synchronized void renameTransformation(ObjectId id_transformation, RepositoryDirectory newParentDir, String newname) throws KettleException
 	{
-		String sql = "UPDATE " + quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION) + " SET " + quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME) + " = ?, " + quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY) + " = ? " + "WHERE " + quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION) + " = ?";
-
-		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME,  ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY,  ValueMetaInterface.TYPE_INTEGER), newdir.getObjectId());
-		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION,  ValueMetaInterface.TYPE_INTEGER), id_transformation);
-
-		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
+	  if(newParentDir != null || newname != null) {
+      RowMetaAndData table = new RowMetaAndData();
+      String sql = "UPDATE " + quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION) + " SET ";
+      
+      boolean additionalParameter = false;
+      
+      if(newname != null) {
+        additionalParameter = true;
+        sql += quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME) + " = ? ";
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME,  ValueMetaInterface.TYPE_STRING), newname);
+      }
+      
+      if(newParentDir != null) {
+        if(additionalParameter) {
+          sql += ", ";
+        }
+        sql += quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY) + " = ? ";
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY,  ValueMetaInterface.TYPE_INTEGER), newParentDir.getObjectId());
+      }
+      
+      sql += "WHERE " + quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION) + " = ?";
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION,  ValueMetaInterface.TYPE_INTEGER), id_transformation);
+      
+      log.logBasic("sql = [" + sql + "]");
+      log.logBasic("row = [" + table + "]");
+      
+      repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
+	  }
 	}
 
 	public List<RepositoryLock> getTransformationLocks() throws KettleDatabaseException {

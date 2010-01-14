@@ -168,7 +168,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
   		String sql = "UPDATE " + quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY) + " SET ";
   		boolean additionalParameter = false;
   		
-  		if(newName != null) { 
+  		if(newName != null) {
+  		  additionalParameter = true;
   		  sql += quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME)+" = ?";
   		  r.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME, ValueMetaInterface.TYPE_STRING), newName);
   		}
