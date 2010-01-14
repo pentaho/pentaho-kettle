@@ -103,6 +103,15 @@ public interface Repository {
 
 	public SharedObjects readTransSharedObjects(TransMeta transMeta) throws KettleException;
 	
+	/**
+   * Move / rename a transformation
+   * 
+   * @param id The ObjectId of the transformation to move
+   * @param newParentDir The RepositoryDirectory that will be the new parent of the transformation (May be null if a move is not desired)
+   * @param newName The new name of the transformation (May be null if a rename is not desired)
+   * @return The ObjectId of the transformation that was moved 
+   * @throws KettleException
+   */
 	public ObjectId renameTransformation(ObjectId id_transformation, RepositoryDirectory newDirectory, String newName) throws KettleException;
 
 	/**
@@ -154,6 +163,15 @@ public interface Repository {
 	
     public SharedObjects readJobMetaSharedObjects(JobMeta jobMeta) throws KettleException;
 
+    /**
+     * Move / rename a job
+     * 
+     * @param id The ObjectId of the job to move
+     * @param newParentDir The RepositoryDirectory that will be the new parent of the job (May be null if a move is not desired)
+     * @param newName The new name of the job (May be null if a rename is not desired)
+     * @return The ObjectId of the job that was moved 
+     * @throws KettleException
+     */
     public ObjectId renameJob(ObjectId id_job, RepositoryDirectory newDirectory, String newName) throws KettleException;
 
 	public void deleteJob(ObjectId id_job) throws KettleException;
@@ -279,6 +297,15 @@ public interface Repository {
 
 	public void deleteRepositoryDirectory(RepositoryDirectory dir) throws KettleException;
 
+	/**
+	 * Move / rename a repository directory
+	 * 
+	 * @param id The ObjectId of the repository directory to move
+   * @param newParentDir The RepositoryDirectory that will be the new parent of the repository directory (May be null if a move is not desired)
+   * @param newName The new name of the repository directory (May be null if a rename is not desired)
+   * @return The ObjectId of the repository directory that was moved 
+   * @throws KettleException
+	 */
   public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectory newParentDir, String newName) throws KettleException;
 
   @Deprecated
