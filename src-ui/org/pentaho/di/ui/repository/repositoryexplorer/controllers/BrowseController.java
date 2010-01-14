@@ -19,7 +19,6 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 import java.util.Collection;
 import java.util.List;
 
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
@@ -252,16 +251,35 @@ public class BrowseController extends AbstractXulEventHandler{
     }
   }
   
+  private  String newName = null;
   public void createFolder() throws Exception{
-    Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
-    UIRepositoryDirectory selectedFolder = directory.iterator().next();
-    if (selectedFolder==null){
-      selectedFolder = repositoryDirectory;
-    }
-    UIRepositoryDirectory newDirectory = selectedFolder.createFolder("new");
-    repositoryDirectory.fireCollectionChanged();
-    System.out.println(newDirectory.getName() + ", " + newDirectory.getObjectId().getId());
+    
+    // First, ask for a name for the folder
+    XulPromptBox prompt = promptForName(null);
+    prompt.addDialogCallback(new XulDialogCallback<String>(){
+      public void onClose(XulComponent component, Status status, String value) {
+           newName = value;
+      }
+      
+      public void onError(XulComponent component, Throwable err) {
+        // TODO: Deal with errors
+        System.out.println(err.getMessage());
+      }      
+    });
+    
+    prompt.open();
 
+    if (newName != null){
+      Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
+      UIRepositoryDirectory selectedFolder = directory.iterator().next();
+      if (selectedFolder==null){
+        selectedFolder = repositoryDirectory;
+      }
+      UIRepositoryDirectory newDirectory = selectedFolder.createFolder(newName);
+      repositoryDirectory.fireCollectionChanged();
+      System.out.println(newDirectory.getName() + ", " + newDirectory.getObjectId().getId());
+    }
+    newName = null;
   }
 
   public void deleteFolder() throws Exception{
@@ -279,11 +297,7 @@ public class BrowseController extends AbstractXulEventHandler{
   }
   
   private void renameRepositoryObject(final UIRepositoryObject object) throws XulException{
-    XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox");
-    prompt.setTitle("Rename ".concat(object.getName()));
-    prompt.setButtons(new String[]{"Accept", "Cancel"});
-    prompt.setMessage("Enter new name for :".concat(object.getName()));
-    prompt.setValue(object.getName());
+    XulPromptBox prompt = promptForName(object);
     prompt.addDialogCallback(new XulDialogCallback<String>(){
       public void onClose(XulComponent component, Status status, String value) {
           
@@ -305,6 +319,18 @@ public class BrowseController extends AbstractXulEventHandler{
     
     prompt.open();
   }
+  
+  private XulPromptBox promptForName (final UIRepositoryObject object)throws XulException{
+    XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox");
+    String currentName = (object == null) ? "New Folder": object.getName();
+    
+    prompt.setTitle("Name ".concat(currentName));
+    prompt.setButtons(new String[]{"Accept", "Cancel"});
+    
+    prompt.setMessage("Enter name for ".concat(currentName));
+    prompt.setValue(currentName);
+    return prompt;
+  }
 
   public void onDrag(DropEvent event) {
     event.setAccepted(true);
@@ -323,7 +349,7 @@ public class BrowseController extends AbstractXulEventHandler{
           try {
             d.getRepository().renameRepositoryDirectory(sourceDirectory.getObjectId(), targetDirectory, null);
             event.setAccepted(true);
-          } catch (KettleException e) {
+          } catch (Exception e) {
             event.setAccepted(false);
             //TODO: Handle error
           }
