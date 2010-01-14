@@ -106,8 +106,8 @@ public interface Repository {
 	/**
    * Move / rename a transformation
    * 
-   * @param id The ObjectId of the transformation to move
-   * @param newParentDir The RepositoryDirectory that will be the new parent of the transformation (May be null if a move is not desired)
+   * @param id_transformation The ObjectId of the transformation to move
+   * @param newDirectory The RepositoryDirectory that will be the new parent of the transformation (May be null if a move is not desired)
    * @param newName The new name of the transformation (May be null if a rename is not desired)
    * @return The ObjectId of the transformation that was moved 
    * @throws KettleException
@@ -166,8 +166,8 @@ public interface Repository {
     /**
      * Move / rename a job
      * 
-     * @param id The ObjectId of the job to move
-     * @param newParentDir The RepositoryDirectory that will be the new parent of the job (May be null if a move is not desired)
+     * @param id_job The ObjectId of the job to move
+     * @param newDirectory The RepositoryDirectory that will be the new parent of the job (May be null if a move is not desired)
      * @param newName The new name of the job (May be null if a rename is not desired)
      * @return The ObjectId of the job that was moved 
      * @throws KettleException
