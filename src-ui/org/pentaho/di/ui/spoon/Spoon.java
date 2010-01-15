@@ -3008,7 +3008,6 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
       System.arraycopy(extensionNames.toArray(new String[extensionNames.size()]), 0, extNames, 1, extensionNames.size());
       
       dialog.setFilterExtensions(exts);
-      dialog.setFilterNames(extNames);
       
       setFilterPath(dialog);
       String fname = dialog.open();
@@ -3142,6 +3141,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
       boolean loaded = false;
       FileListener listener = null;
+      Node root = null;
       // match by extension first
       int idx = fname.lastIndexOf('.');
       if (idx != -1) {
@@ -3152,10 +3152,19 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
           }
         }
       }
-      // otherwise try by looking at the root node
-      Document document = XMLHandler.loadXMLFile(fname);
-      Node root = document.getDocumentElement();
-      if (listener == null) {
+      
+      // Attempt to find a root XML node name. Fails gracefully for non-XML file types.
+      try{
+        Document document = XMLHandler.loadXMLFile(fname);
+        root = document.getDocumentElement();
+      } catch(KettleXMLException e){
+        if (log.isDetailed()){
+          log.logDetailed(toString(), Messages.getString("Spoon.File.Xml.Parse.Error"));
+        }
+      }
+      
+      // otherwise try by looking at the root node if we were able to parse file as XML
+      if (listener == null && root != null) {
         for(FileListener li : fileListeners){
           if(li.acceptsXml(root.getNodeName())){
             listener = li;
@@ -3182,7 +3191,7 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
           // transformation(s) and job(s).
         }
       }
-    } catch (KettleException e) {
+    } catch (Exception e) { // catch any runtime exceptions
       new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorOpening.Title"), Messages.getString("Spoon.Dialog.ErrorOpening.Message") + fname, e);
     }
   }
