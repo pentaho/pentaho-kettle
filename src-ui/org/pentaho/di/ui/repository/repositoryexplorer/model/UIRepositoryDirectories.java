@@ -24,7 +24,7 @@ public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObjec
 
   @Override
   public void add(int index, UIRepositoryObject element) {
-    if(typeAccepted(element)) {
+    if(isAccepted(element)) {
       super.add(index, element);
     }
     return;
@@ -32,7 +32,7 @@ public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObjec
 
   @Override
   public boolean add(UIRepositoryObject child) {
-    if(typeAccepted(child)) {
+    if(isAccepted(child)) {
       return super.add(child);
     }
     return false;
@@ -41,7 +41,7 @@ public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObjec
   @Override
   public boolean addAll(Collection<? extends UIRepositoryObject> c) {
     for( Object o : c) {
-      if(!typeAccepted(o)) {
+      if(!isAccepted(o)) {
         return false;
       }
     }
@@ -54,7 +54,7 @@ public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObjec
     boolean acceptable = true;
     
     for( Object o : c) {
-      if(!typeAccepted(o)) {
+      if(!isAccepted(o)) {
         acceptable = false;
       }
     }
@@ -68,7 +68,7 @@ public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObjec
 
   @Override
   public UIRepositoryObject set(int index, UIRepositoryObject element) {
-    if(typeAccepted(element)) {
+    if(isAccepted(element)) {
       return super.set(index, element);
     }
     return null;
@@ -88,11 +88,19 @@ public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObjec
    * @param o Object to test
    * @return true if the type is acceptable to store in this List
    */
-  protected boolean typeAccepted(Object o) {
+  protected boolean isAccepted(Object o) {
+    boolean result = true;
     if(o instanceof UIRepositoryDirectory) {
-      return true;
+      // Check for duplication in name
+      for(UIRepositoryObject child : getChildren()) {
+        if(child.getName().equalsIgnoreCase(((UIRepositoryDirectory)o).getName())) {
+          result = false;
+        }
+      }
+    } else {
+      result = false;
     }
-     return false;
+     return result;
   }
   
 }
