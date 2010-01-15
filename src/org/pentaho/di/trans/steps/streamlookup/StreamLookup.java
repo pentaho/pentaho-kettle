@@ -402,7 +402,6 @@ public class StreamLookup extends BaseStep implements StepInterface
 	    {
 	        data.readLookupValues = false;
 	        
-			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "StreamLookup.Log.ReadingLookupValuesFromStep")+data.infoStream.getStepname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 			if (! readLookupValues()) // Read values in lookup table (look)
 			{
 				logError(BaseMessages.getString(PKG, "StreamLookup.Log.UnableToReadDataFromLookupStream")); //$NON-NLS-1$
