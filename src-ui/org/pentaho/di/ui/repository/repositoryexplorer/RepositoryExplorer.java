@@ -19,13 +19,9 @@ package org.pentaho.di.ui.repository.repositoryexplorer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryEvent;
-import org.pentaho.di.repository.RepositoryEventListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
@@ -46,7 +42,7 @@ import org.pentaho.ui.xul.swt.SwtXulRunner;
 /**
  *
  */
-public class RepositoryExplorer implements RepositoryEventListener {
+public class RepositoryExplorer {
 
   private static Log log = LogFactory.getLog(RepositoryExplorer.class);
   
@@ -110,8 +106,6 @@ public class RepositoryExplorer implements RepositoryEventListener {
         securityController.setRepositoryUserInterface(rep.getSecurityProvider());
       }
       
-      repository.addEventListener(this);
-      
       try {
         runner.initialize();
       } catch (XulException e) {
@@ -152,20 +146,6 @@ public class RepositoryExplorer implements RepositoryEventListener {
 
   public void setRepositoryDirectory(Directory repositoryDirectory) {
     this.repositoryDirectory = repositoryDirectory;
-  }
-  
-  public void onRepositoryEvent(RepositoryEvent event) {
-    // Update the UI when the repository changes
-    
-    try {
-      if(browseController != null) {
-        RepositoryDirectory localRoot = repository.loadRepositoryDirectoryTree().findDirectory(repositoryDirectory.getObjectId());
-        browseController.getRepositoryDirectory().setDirectory(localRoot);
-      }
-    } catch (KettleException e) {
-      // TODO: Better error handling
-      e.printStackTrace();
-    }
   }
   
 }

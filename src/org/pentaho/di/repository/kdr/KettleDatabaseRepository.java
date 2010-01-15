@@ -48,8 +48,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
-import org.pentaho.di.repository.RepositoryEvent;
-import org.pentaho.di.repository.RepositoryEventListener;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
@@ -107,8 +105,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	public KettleDatabaseRepositoryStepDelegate stepDelegate;
 	public KettleDatabaseRepositoryJobEntryDelegate jobEntryDelegate;
 	private KettleDatabaseRepositorySecurityProvider	securityProvider;
-	
-	private List<RepositoryEventListener> eventListeners = new ArrayList<RepositoryEventListener>();
 	
 	public KettleDatabaseRepository() {
 		super();
@@ -214,8 +210,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
     	transDelegate.renameTransformation(id_transformation, newDir, newName);
     	
-    	notifyEventListeners(RepositoryEvent.UPDATE);
-      
       return id_transformation; // The same in our case.
 	}
 
@@ -260,8 +254,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
     	jobDelegate.renameJob(id_job, dir, newname);
     	
-    	notifyEventListeners(RepositoryEvent.UPDATE);
-      
       return id_job; // Same in this case
 	}
 
@@ -463,8 +455,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	   ObjectId result = null;
 	   securityProvider.validateAction(RepositoryOperation.RENAME_DIRECTORY);
 	   result = directoryDelegate.renameRepositoryDirectory(id, newParentDir, newName);
-	   
-     notifyEventListeners(RepositoryEvent.UPDATE);
 	   
 	   return result;
 	 }
@@ -1727,29 +1717,4 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		// NOT IMPLEMENTED
 		return null;
 	}
-	
-	public void addEventListener(RepositoryEventListener listener) {
-	  synchronized(eventListeners) {
-      if(eventListeners != null) {
-        eventListeners.add(listener);
-      }
-	  }
-  }
-  
-  public void removeEventListener(RepositoryEventListener listener) {
-    synchronized(eventListeners) {
-      if(eventListeners != null) {
-        eventListeners.remove(listener);
-      }
-    }
-  }
-  
-  public void notifyEventListeners(RepositoryEvent event) {
-    synchronized(eventListeners) {
-      for(RepositoryEventListener listener : eventListeners) {
-        listener.onRepositoryEvent(event);
-      }
-    }
-  }
-
 }

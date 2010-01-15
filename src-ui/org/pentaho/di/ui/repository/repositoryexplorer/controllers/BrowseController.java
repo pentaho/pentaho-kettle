@@ -19,20 +19,13 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 import java.util.Collection;
 import java.util.List;
 
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryEvent;
-import org.pentaho.di.repository.RepositoryEventListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIJob;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevision;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjects;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UITransformation;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
@@ -349,48 +342,27 @@ public class BrowseController extends AbstractXulEventHandler {
   }
   
   public void onDrop(DropEvent event) {
-    if(event.getDropParent() != null) {
-      if(event.getDataTransfer().getData().size() == 1) {
-        Object o = event.getDataTransfer().getData().get(0);
-        if(o instanceof UIRepositoryDirectory && event.getDropParent() instanceof UIRepositoryDirectory) {
-          UIRepositoryDirectory d = (UIRepositoryDirectory)o;
-          
-          RepositoryDirectory sourceDirectory = d.getDirectory();
-          RepositoryDirectory targetDirectory = (RepositoryDirectory)((UIRepositoryDirectory)event.getDropParent()).getDirectory();
-          
-          try {
-            d.getRepository().renameRepositoryDirectory(sourceDirectory.getObjectId(), targetDirectory, null);
+    try {
+      if(event.getDropParent() != null) {
+        if(event.getDataTransfer().getData().size() == 1) {
+          Object o = event.getDataTransfer().getData().get(0);
+          if(o instanceof UIRepositoryObject && event.getDropParent() instanceof UIRepositoryDirectory) {
+            UIRepositoryObject obj = (UIRepositoryObject) o;
+            UIRepositoryDirectory targetDirectory = (UIRepositoryDirectory)event.getDropParent();
+            
+            obj.move(targetDirectory);
+
             event.setAccepted(true);
-          } catch (Exception e) {
+          }else {
             event.setAccepted(false);
-            //TODO: Handle error
           }
-        } else if (o instanceof UIJob && event.getDropParent() instanceof UIRepositoryDirectory) {
-          UIJob job = (UIJob)o;
-          
-          RepositoryDirectory targetDirectory = (RepositoryDirectory)((UIRepositoryDirectory)event.getDropParent()).getDirectory();
-          
-          try {
-            job.getRepository().renameJob(job.getObjectId(), targetDirectory, null);
-          } catch (KettleException e) {
-          }
-          event.setAccepted(false);
-        } else if (o instanceof UITransformation && event.getDropParent() instanceof UIRepositoryDirectory) {
-          UITransformation trans = (UITransformation) o;
-          
-          RepositoryDirectory targetDirectory = (RepositoryDirectory) ((UIRepositoryDirectory)event.getDropParent()).getDirectory();
-          
-          try {
-            trans.getRepository().renameTransformation(trans.getObjectId(), targetDirectory, null);
-          } catch (KettleException e) {
-          }
-          event.setAccepted(false);
-        }else {
-          event.setAccepted(false);
         }
+      } else {
+        event.setAccepted(false);
       }
-    } else {
-      event.setAccepted(false);
+    } catch (Exception e) {
+      // TODO: Better error handling
+      e.printStackTrace();
     }
   }
 }

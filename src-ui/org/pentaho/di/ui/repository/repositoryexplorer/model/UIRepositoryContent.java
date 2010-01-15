@@ -72,7 +72,7 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     Date date =  rc.getModifiedDate();
     String str = null;
     if (date != null){
-      SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy HH:mm:ss z");
+      SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy HH:mm:ss z"); //$NON-NLS-1$
       str = sdf.format(date);
     }
     return str;
@@ -113,12 +113,17 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
   @Override
   public String getImage() {
     //TODO: a generic image for unknown content?
-    return "";
+    return ""; //$NON-NLS-1$
   }
 
   @Override
   public void delete() throws Exception {
     
+  }
+
+  @Override
+  public void move(UIRepositoryDirectory newParentDir) throws Exception {
+    throw new UnsupportedOperationException();
   }
 
 

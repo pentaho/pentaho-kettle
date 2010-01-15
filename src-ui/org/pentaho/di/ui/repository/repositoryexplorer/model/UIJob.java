@@ -16,6 +16,7 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
 
@@ -46,5 +47,11 @@ public class UIJob extends UIRepositoryContent {
       uiParent.getRepositoryObjects().remove(this);
   }
   
+  public void move(UIRepositoryDirectory newParentDir) throws KettleException {
+    if(newParentDir != null) {
+      rep.renameJob(obj.getObjectId(), newParentDir.getDirectory(), null);
+      newParentDir.refresh();
+    }
+  }  
 
 }

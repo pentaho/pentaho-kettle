@@ -16,17 +16,83 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
+import java.util.Collection;
 
 
-public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryDirectory>{
 
+public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObject>{
+
+  @Override
+  public void add(int index, UIRepositoryObject element) {
+    if(typeAccepted(element)) {
+      super.add(index, element);
+    }
+    return;
+  }
+
+  @Override
+  public boolean add(UIRepositoryObject child) {
+    if(typeAccepted(child)) {
+      return super.add(child);
+    }
+    return false;
+    }
+
+  @Override
+  public boolean addAll(Collection<? extends UIRepositoryObject> c) {
+    for( Object o : c) {
+      if(!typeAccepted(o)) {
+        return false;
+      }
+    }
     
+    return super.addAll(c);
+  }
+
+  @Override
+  public boolean addAll(int index, Collection<? extends UIRepositoryObject> c) {
+    boolean acceptable = true;
+    
+    for( Object o : c) {
+      if(!typeAccepted(o)) {
+        acceptable = false;
+      }
+    }
+    
+    if(acceptable) {
+      return super.addAll(index, c);
+    }
+    
+    return false;
+  }
+
+  @Override
+  public UIRepositoryObject set(int index, UIRepositoryObject element) {
+    if(typeAccepted(element)) {
+      return super.set(index, element);
+    }
+    return null;
+  }
+
   public UIRepositoryDirectories(){
   }
   
   @Override
   protected void fireCollectionChanged() {
     this.changeSupport.firePropertyChange("children", null, this.getChildren());
+  }
+
+  /**
+   * Tests if the storage of this object's type is permissible
+   * 
+   * @param o Object to test
+   * @return true if the type is acceptable to store in this List
+   */
+  protected boolean typeAccepted(Object o) {
+    if(o instanceof UIRepositoryDirectory) {
+      return true;
+    }
+     return false;
   }
   
 }

@@ -16,8 +16,10 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.RepositoryDirectory;
 
 public class UITransformation extends UIRepositoryContent {
 
@@ -44,6 +46,13 @@ public class UITransformation extends UIRepositoryContent {
     rep.deleteTransformation(this.getObjectId());
     if(uiParent.getRepositoryObjects().contains(this))
       uiParent.getRepositoryObjects().remove(this);
+  }
+  
+  public void move(UIRepositoryDirectory newParentDir) throws KettleException {
+    if(newParentDir != null) {
+      rep.renameTransformation(obj.getObjectId(), newParentDir.getDirectory(), null);
+      newParentDir.refresh();
+    }
   }
 
 }

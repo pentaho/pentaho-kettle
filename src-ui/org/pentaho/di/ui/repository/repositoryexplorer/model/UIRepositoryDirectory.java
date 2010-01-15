@@ -19,6 +19,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
@@ -79,7 +80,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     
     kidElementCache = new UIRepositoryObjects();
 
-    for (UIRepositoryDirectory child : getChildren()) {
+    for (UIRepositoryObject child : getChildren()) {
       kidElementCache.add(child);
     }
     List<? extends RepositoryContent> transformations;
@@ -107,9 +108,9 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     if (getDirectory().getName().equalsIgnoreCase(name)){
       return;
     }
-    getDirectory().setName(name); 
+
     rep.renameRepositoryDirectory(getDirectory().getObjectId(), null, name);
-    uiParent.fireCollectionChanged();
+    refresh();
   }
   
   public String getDescription() {
@@ -151,13 +152,6 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     return (RepositoryDirectory)rd;
   }
   
-  public void setDirectory(RepositoryDirectory dir) {
-    kidElementCache = null;
-    kidDirectoryCache = null;
-    this.rd = dir;
-    fireCollectionChanged();
-    
-  }
 
   @Override
   public String getImage() {
@@ -194,5 +188,33 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
       kidDirectoryCache.fireCollectionChanged();
     if (kidElementCache != null)
       kidElementCache.fireCollectionChanged();
+  }
+
+  @Override
+  public void move(UIRepositoryDirectory newParentDir) throws Exception {
+    if(newParentDir != null) {
+      rep.renameRepositoryDirectory(obj.getObjectId(), newParentDir.getDirectory(), null);
+      newParentDir.refresh();
+    }
+  }
+  
+  /**
+   * Synchronize this folder with the back-end
+   * 
+   * 
+   */
+  public void refresh() {
+    try {
+        RepositoryDirectory localRoot = rep.loadRepositoryDirectoryTree().findDirectory(rd.getObjectId());
+        rd = localRoot;
+        //Rebuild caches
+        kidElementCache = null;
+        kidDirectoryCache = null;
+        getRepositoryObjects();
+        uiParent.fireCollectionChanged();
+    } catch (Exception e) {
+      // TODO: Better error handling
+      e.printStackTrace();
+    }
   }
 }
