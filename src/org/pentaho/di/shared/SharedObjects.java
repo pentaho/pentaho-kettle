@@ -181,7 +181,7 @@ public class SharedObjects
         {
             // First fallback is the environment/kettle variable ${KETTLE_SHARED_OBJECTS}
             // This points to the file
-            filename = Variables.getADefaultVariableSpace().getVariable("KETTLE_SHARED_OBJECTS");
+            filename = Variables.getADefaultVariableSpace().getVariable(Const.KETTLE_SHARED_OBJECTS);
             
             // Last line of defence...
             if (Const.isEmpty(filename))

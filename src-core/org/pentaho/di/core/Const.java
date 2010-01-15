@@ -502,6 +502,11 @@ public class Const
 	public static final String KETTLE_JOB_LOG_DATABASE_NAME = "KETTLE_TRANS_LOG_DATABASE_NAME";
 
 	/**
+	 * Name of the environment variable to set the location of the shared object file (xml) for transformations and jobs
+	 */
+	public static final String KETTLE_SHARED_OBJECTS = "KETTLE_SHARED_OBJECTS";
+
+	/**
 	 * System wide flag to drive the evaluation of null in ValueMeta.  If this setting is set to "Y", an empty string and null are different.
 	 * Otherwise they are not.
 	 */

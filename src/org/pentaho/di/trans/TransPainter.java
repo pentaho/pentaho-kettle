@@ -757,7 +757,7 @@ public class TransPainter extends BasePainter
 	        
 	        if (errorHop) {
 	        	Point bounds = gc.getImageBounds(EImage.COPY_ROWS);
-		        gc.drawImage(EImage.COPY_ROWS, mx, my);
+		        gc.drawImage(EImage.ERROR, mx, my);
 	        	if (!shadow) {
 	    			areaOwners.add(new AreaOwner(AreaType.HOP_ERROR_ICON, mx, my, bounds.x, bounds.y, fs, ts));
 	    		}

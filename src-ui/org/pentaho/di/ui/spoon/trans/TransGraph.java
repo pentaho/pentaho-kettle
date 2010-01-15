@@ -864,12 +864,17 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         iconoffset = new Point(0, 0);
       Point real = screen2real(e.x, e.y);
       Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
+      AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
 
       // Quick new hop option? (drag from one step to another)
       //
-      if (candidate != null) {
-    	addCandidateAsHop(e.x, e.y);
-    	redraw();
+      if (candidate != null && areaOwner!=null) {
+    	  switch(areaOwner.getAreaType()) {
+    	  case STEP_ICON : currentStep = (StepMeta) areaOwner.getOwner(); break; 
+    	  case STEP_INPUT_HOP_ICON : currentStep = (StepMeta) areaOwner.getParent(); break; 
+    	  }
+    	  addCandidateAsHop(e.x, e.y);
+    	  redraw();
       }
       // Did we select a region on the screen? Mark steps in region as
       // selected
@@ -1015,7 +1020,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
               startHopStep = null;
               endHopLocation = null;
             } else {
-            	AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
             	if (areaOwner==null && selectionRegion==null) {
 	            	// Hit absolutely nothing: clear the settings
 	            	//
@@ -1268,7 +1272,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	
     private void addCandidateAsHop(int mouseX, int mouseY) {
 
-    	boolean forward = startHopStep!=null;
+    	boolean forward = startHopStep!=null || true;
     	
     	StepMeta fromStep = candidate.getFromStep();
     	StepMeta toStep = candidate.getToStep();
