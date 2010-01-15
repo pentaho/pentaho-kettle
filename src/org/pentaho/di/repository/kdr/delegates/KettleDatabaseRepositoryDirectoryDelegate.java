@@ -159,6 +159,14 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 	    if(rd.findDirectory(id_directory_parent) != null) {
 	      // The parent directory is a child of this directory. Do not proceed
 	      throw new KettleException("Directory cannot become a child to itself");
+	    } else {
+	      // Check for duplication
+	      RepositoryDirectory newParent = new RepositoryDirectory();
+	      loadRepositoryDirectory(newParent, id_directory_parent);
+	      RepositoryDirectory child = newParent.findChild(newName == null ? rd.getName() : newName);
+	      if(child != null) {
+	        throw new KettleException("Destination directory already contains a diectory with requested name");
+	      }
 	    }
 	  }
 	  
