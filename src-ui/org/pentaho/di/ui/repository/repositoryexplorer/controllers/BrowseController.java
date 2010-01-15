@@ -363,6 +363,7 @@ public class BrowseController extends AbstractXulEventHandler {
     } catch (Exception e) {
       // TODO: Better error handling
       e.printStackTrace();
+      event.setAccepted(false);
     }
   }
 }
