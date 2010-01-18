@@ -58,6 +58,7 @@ public class AbstractModelNode<T> extends XulEventSourceAdapter implements
   
   public void setParent(AbstractModelNode parent){
     this.parent = parent;
+    this.parent.fireCollectionChanged();
   }
 
   @Bindable
@@ -162,7 +163,9 @@ public class AbstractModelNode<T> extends XulEventSourceAdapter implements
   }
 
   public boolean addAll(Collection<? extends T> c) {
-    return this.children.addAll(c);
+    boolean result = this.children.addAll(c);
+    fireCollectionChanged();
+    return result;
   }
 
   public boolean contains(Object o) {
@@ -221,7 +224,9 @@ public class AbstractModelNode<T> extends XulEventSourceAdapter implements
   }
 
   public boolean addAll(int index, Collection<? extends T> c) {
-    return children.addAll(index, c);
+    boolean result = children.addAll(index, c);
+    fireCollectionChanged();
+    return result;
   }
 
   public T get(int index) {
@@ -245,7 +250,9 @@ public class AbstractModelNode<T> extends XulEventSourceAdapter implements
   }
 
   public T set(int index, T element) {
-    return children.set(index, element);
+    T result = children.set(index, element);
+    fireCollectionChanged();
+    return result;
   }
 
   public List<T> subList(int fromIndex, int toIndex) {

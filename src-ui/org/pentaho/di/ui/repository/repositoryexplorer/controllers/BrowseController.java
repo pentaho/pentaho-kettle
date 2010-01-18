@@ -16,6 +16,7 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -352,8 +353,17 @@ public class BrowseController extends AbstractXulEventHandler {
             
             obj.move(targetDirectory);
 
+            // Make sure only Folders are copied to the Directory Tree
+            List<Object> dirList = new ArrayList<Object>();
+            for(Object repObj : event.getDataTransfer().getData()) {
+              if(repObj instanceof UIRepositoryDirectory) {
+                dirList.add(repObj);
+              }
+            }
+            event.getDataTransfer().setData(dirList);
+            
             event.setAccepted(true);
-          }else {
+          } else {
             event.setAccepted(false);
           }
         }

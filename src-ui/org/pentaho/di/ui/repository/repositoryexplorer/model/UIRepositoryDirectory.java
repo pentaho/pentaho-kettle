@@ -176,14 +176,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   public void fireCollectionChanged() {
     
     firePropertyChange("children", null, getChildren());
-    /*
-    try{
-      //getChildren().fireCollectionChanged();
-      //getRepositoryObjects().fireCollectionChanged();
-    }catch (Exception e){
-      
-    }
-    */
+
     if (kidDirectoryCache != null)
       kidDirectoryCache.fireCollectionChanged();
     if (kidElementCache != null)
@@ -198,6 +191,21 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     }
   }
   
+  protected UIRepositoryDirectory getParentDirectory() {
+    return uiParent;
+  }
+  
+  protected UIRepositoryDirectory getRootDirectory() {
+    UIRepositoryDirectory parent = uiParent, result = this;
+
+    while(parent != null) {
+      result = parent;
+      parent = parent.getParentDirectory();
+    }
+    
+    return result;
+  }
+  
   /**
    * Synchronize this folder with the back-end
    * 
@@ -205,13 +213,16 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
    */
   public void refresh() {
     try {
+      if(this == getRootDirectory()) {
         RepositoryDirectory localRoot = rep.loadRepositoryDirectoryTree().findDirectory(rd.getObjectId());
         rd = localRoot;
         //Rebuild caches
         kidElementCache = null;
         kidDirectoryCache = null;
-        getRepositoryObjects();
-        uiParent.fireCollectionChanged();
+        fireCollectionChanged();
+      } else {
+        getRootDirectory().refresh();
+      }
     } catch (Exception e) {
       // TODO: Better error handling
       e.printStackTrace();

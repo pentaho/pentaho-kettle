@@ -16,63 +16,7 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
-import java.util.Collection;
-
-
-
 public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObject>{
-
-  @Override
-  public void add(int index, UIRepositoryObject element) {
-    if(isAccepted(element)) {
-      super.add(index, element);
-    }
-    return;
-  }
-
-  @Override
-  public boolean add(UIRepositoryObject child) {
-    if(isAccepted(child)) {
-      return super.add(child);
-    }
-    return false;
-    }
-
-  @Override
-  public boolean addAll(Collection<? extends UIRepositoryObject> c) {
-    for( Object o : c) {
-      if(!isAccepted(o)) {
-        return false;
-      }
-    }
-    
-    return super.addAll(c);
-  }
-
-  @Override
-  public boolean addAll(int index, Collection<? extends UIRepositoryObject> c) {
-    boolean acceptable = true;
-    
-    for( Object o : c) {
-      if(!isAccepted(o)) {
-        acceptable = false;
-      }
-    }
-    
-    if(acceptable) {
-      return super.addAll(index, c);
-    }
-    
-    return false;
-  }
-
-  @Override
-  public UIRepositoryObject set(int index, UIRepositoryObject element) {
-    if(isAccepted(element)) {
-      return super.set(index, element);
-    }
-    return null;
-  }
 
   public UIRepositoryDirectories(){
   }
@@ -81,26 +25,4 @@ public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObjec
   protected void fireCollectionChanged() {
     this.changeSupport.firePropertyChange("children", null, this.getChildren());
   }
-
-  /**
-   * Tests if the storage of this object's type is permissible
-   * 
-   * @param o Object to test
-   * @return true if the type is acceptable to store in this List
-   */
-  protected boolean isAccepted(Object o) {
-    boolean result = true;
-    if(o instanceof UIRepositoryDirectory) {
-      // Check for duplication in name
-      for(UIRepositoryObject child : getChildren()) {
-        if(child.getName().equalsIgnoreCase(((UIRepositoryDirectory)o).getName())) {
-          result = false;
-        }
-      }
-    } else {
-      result = false;
-    }
-     return result;
-  }
-  
 }

@@ -67,7 +67,7 @@
 								<button id="folder-expand-all" image="images/CollapseAll.png"  onclick="browseController.collapseAllFolders()" />
 							</hbox>
 
-							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" pen:drageffect="move">
+							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" pen:drageffect="move" pen:preserveexpandedstate="true">
 								<treecols>
 									<treecol flex="1" label="" primary="true" pen:binding="name"
 										pen:childrenbinding="children" pen:imagebinding="image"/>
