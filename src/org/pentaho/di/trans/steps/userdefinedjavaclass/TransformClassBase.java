@@ -58,9 +58,11 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.www.SocketRepository;
-
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta.FieldInfo;
+import org.pentaho.di.www.SocketRepository;
 
 public abstract class TransformClassBase
 {
@@ -633,8 +635,22 @@ public abstract class TransformClassBase
         }
     }
     
-    public static StepIOMetaInterface getStepIOMeta() {
-    	return new StepIOMeta(true, true, true, false, true, true);
+    public static StepIOMetaInterface getStepIOMeta(UserDefinedJavaClassMeta meta) {
+    	StepIOMetaInterface ioMeta = new StepIOMeta(true, true, true, false, true, true);
+    	
+    	for (StepDefinition stepDefinition : meta.getInfoStepDefinitions()) {
+    		ioMeta.addStream(new Stream(StreamType.INFO, stepDefinition.stepMeta, stepDefinition.description, StreamIcon.INFO, null));
+    	}
+    	for (StepDefinition stepDefinition : meta.getTargetStepDefinitions()) {
+    		ioMeta.addStream(new Stream(StreamType.TARGET, stepDefinition.stepMeta, stepDefinition.description, StreamIcon.TARGET, null));
+    	}
+    	
+    	return ioMeta;
     }
 
+    /*
+    public RowSet findRowSet(String tag) {
+    	
+    }
+    */
 }
