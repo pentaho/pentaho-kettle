@@ -101,6 +101,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 */
 	private JobTracker jobTracker;
 	
+	/** A flat list of results in THIS job, in the order of execution of job entries */
+	private List<JobEntryResult> jobEntryResults;
+	
 	private Date      startDate, endDate, currentDate, logDate, depDate;
 	
 	private AtomicBoolean active;
@@ -165,6 +168,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		active=new AtomicBoolean(false);
 		stopped=new AtomicBoolean(false);
         jobTracker = new JobTracker(jobMeta);
+        jobEntryResults = new ArrayList<JobEntryResult>();
         initialized=new AtomicBoolean(false);
         finished = new AtomicBoolean(false);
         errors = new AtomicInteger(0);
@@ -254,7 +258,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             initialized = new AtomicBoolean(true);
     
             // Create a new variable name space as we want jobs to have their own set of variables.
-            // initialize from parentjob or null
+            // initialize from parentJob or null
             //
             variables.initializeVariablesFrom(parentJob);
             setInternalKettleVariables(variables);
@@ -470,6 +474,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         // Save this result as well...
         JobEntryResult jerAfter = new JobEntryResult(result, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
+        jobEntryResults.add(jerAfter);
 			
 		// Try all next job entries.
         //
@@ -1546,5 +1551,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 */
 	public Map<JobEntryCopy, JobEntryJob> getActiveJobEntryJobs() {
 		return activeJobEntryJobs;
+	}
+
+	/**
+	 * @return A flat list of results in THIS job, in the order of execution of job entries
+	 */
+	public List<JobEntryResult> getJobEntryResults() {
+		return jobEntryResults;
 	}
 }

@@ -1,5 +1,6 @@
 package org.pentaho.di.ui.spoon;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.pentaho.di.core.gui.GCInterface.EColor;
 import org.pentaho.di.core.gui.GCInterface.EFont;
 import org.pentaho.di.core.gui.GCInterface.EImage;
 import org.pentaho.di.core.gui.GCInterface.ELineStyle;
+import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -31,6 +33,7 @@ public class JobPainter extends BasePainter {
 	private JobEntryCopy	endHopEntry;
 	private JobEntryCopy	noInputEntry;
 	private List<JobEntryCopy>	activeJobEntries;
+	private List<JobEntryResult> jobEntryResults;
 
 	public JobPainter(GCInterface gc, JobMeta jobMeta, Point area, ScrollBarInterface hori, ScrollBarInterface vert, JobHopMeta candidate, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, List<JobEntryCopy> mouseOverEntries,
 			int iconsize, int linewidth, int gridsize, int shadowSize, boolean antiAliasing, 
@@ -504,6 +507,21 @@ public class JobPainter extends BasePainter {
 
 	public void setActiveJobEntries(List<JobEntryCopy> activeJobEntries) {
 		this.activeJobEntries = activeJobEntries;
+	}
+
+	/**
+	 * @return the jobEntryResults
+	 */
+	public List<JobEntryResult> getJobEntryResults() {
+		return jobEntryResults;
+	}
+
+	/**
+	 * @param jobEntryResults Sets AND sorts the job entry results by name and number
+	 */
+	public void setJobEntryResults(List<JobEntryResult> jobEntryResults) {
+		this.jobEntryResults = jobEntryResults;
+		Collections.sort(this.jobEntryResults);
 	}
 
 }

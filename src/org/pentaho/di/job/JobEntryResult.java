@@ -11,6 +11,7 @@
 
 package org.pentaho.di.job;
 
+import java.util.Comparator;
 import java.util.Date;
 
 import org.pentaho.di.core.Result;
@@ -27,7 +28,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
  * @author Matt
  * @since  16-mrt-2005
  */
-public class JobEntryResult implements Cloneable
+public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Comparable<JobEntryResult>
 {
 	private Result result;
 	private String jobEntryName;
@@ -198,6 +199,16 @@ public class JobEntryResult implements Cloneable
 	 */
 	public void setJobEntryNr(int jobEntryNr) {
 		this.jobEntryNr = jobEntryNr;
+	}
+
+	public int compare(JobEntryResult one, JobEntryResult two) {
+		int cmp = one.getJobEntryName().compareTo(two.getJobEntryName());
+		if (cmp!=0) return cmp;
+		return Integer.valueOf(one.getJobEntryNr()).compareTo(Integer.valueOf(two.getJobEntryNr()));
+	}
+
+	public int compareTo(JobEntryResult two) {
+		return compare(this, two);
 	}
     
     

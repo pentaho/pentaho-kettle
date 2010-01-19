@@ -1041,21 +1041,24 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceUpsert</tooltip>
 		<image-uri>ui/images/SFU.png</image-uri>
 	</step>
-		<step id="SalesforceInsert">
+	
+	<step id="SalesforceInsert">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceInsert</description>
 		<class-name>org.pentaho.di.trans.steps.salesforceinsert.SalesforceInsertMeta</class-name>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceInsert</tooltip>
 		<image-uri>ui/images/FFO.png</image-uri>
 	</step>
-		<step id="SalesforceUpdate">
+	
+	<step id="SalesforceUpdate">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceUpdate</description>
 		<class-name>org.pentaho.di.trans.steps.salesforceupdate.SalesforceUpdateMeta</class-name>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceUpdate</tooltip>
 		<image-uri>ui/images/SFUD.png</image-uri>
 	</step>
-		<step id="SalesforceDelete">
+	
+	<step id="SalesforceDelete">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceDelete</description>
 		<class-name>org.pentaho.di.trans.steps.salesforcedelete.SalesforceDeleteMeta</class-name>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
@@ -1063,12 +1066,20 @@
 		<image-uri>ui/images/SFD.png</image-uri>
 	</step>
 
-        <step id="FarragoStreamingLoader">
-                <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FarragoStreamingLoader</description>
-                <class-name>org.pentaho.di.trans.steps.farragostreamingloader.FarragoStreamingLoaderMeta</class-name>
-                <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
-                <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FarragoStreamingLoader</tooltip>
-                <image-uri>ui/images/OBL.png</image-uri>
-        </step>
+    <step id="FarragoStreamingLoader">
+    	<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FarragoStreamingLoader</description>
+        <class-name>org.pentaho.di.trans.steps.farragostreamingloader.FarragoStreamingLoaderMeta</class-name>
+        <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
+        <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FarragoStreamingLoader</tooltip>
+        <image-uri>ui/images/OBL.png</image-uri>
+    </step>
+
+	<step id="UserDefinedJavaClass">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.UserDefinedJavaClass</description>
+		<class-name>org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.UserDefinedJavaClass</tooltip>
+		<image-uri>ui/images/sScript.png</image-uri>
+	</step>
 
 </steps>
