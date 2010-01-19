@@ -57,10 +57,12 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -71,11 +73,14 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
 import org.w3c.dom.Node;
 
 public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static Class<?> PKG = UserDefinedJavaClassMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
     public enum ElementNames
     {
         class_type, class_name, class_source, definitions, definition,
@@ -86,6 +91,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     private List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
     public Class<TransformClassBase> cookedTransformClass;
     public final List<Exception> cookErrors = new ArrayList<Exception>(0);
+    
+    private boolean changed;
 
     public static class FieldInfo
     {
@@ -107,6 +114,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     public UserDefinedJavaClassMeta()
     {
         super();
+        changed=true;
     }
 
     private Class<?> cookClass(UserDefinedJavaClassDef def) throws CompileException, ParseException,
@@ -160,13 +168,13 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
                 }
             }
         }
+        changed=false;
     }
 
     public TransformClassBase newChildInstance(UserDefinedJavaClass parent, UserDefinedJavaClassMeta meta, UserDefinedJavaClassData data)
     {
-        if (meta.cookErrors.size() > 0)
-        {
-            return null;
+        if (!checkClassCookings(parent.getLogChannel())) {
+        	return null;
         }
 
         try
@@ -190,6 +198,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     public void replaceFields(List<FieldInfo> fields)
     {
         this.fields = fields;
+        changed=true;
     }
 
     public List<UserDefinedJavaClassDef> getDefinitions()
@@ -201,6 +210,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     {
         this.definitions.clear();
         this.definitions.addAll(definitions);
+        changed=true;
     }
 
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
@@ -252,16 +262,26 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
                 "//AddDefaultCode" + Const.CR + Const.CR));
     }
     
-    @Override
-    public StepIOMetaInterface getStepIOMeta() {
-        if (cookedTransformClass == null && cookErrors.size() == 0)
+    private boolean checkClassCookings(LogChannelInterface logChannel) {
+    	boolean ok = cookedTransformClass==null || cookErrors.size() > 0;
+        if (changed)
         {
             cookClasses();
-            if (cookErrors.size() > 0) {
-                cookErrors.get(0).printStackTrace();
-                return super.getStepIOMeta();
+            if (cookedTransformClass==null) {
+	            if (cookErrors.size() > 0) {
+	                logChannel.logDebug(BaseMessages.getString(PKG, "UserDefinedJavaClass.Exception.CookingError", cookErrors.get(0)));
+	            }
+                ok = false;
+            } else {
+            	ok = true;
             }
-        }
+        }	
+        return ok;
+    }
+    
+    @Override
+    public StepIOMetaInterface getStepIOMeta() {
+        if (!checkClassCookings()) return null;
 
         try
         {
