@@ -16,33 +16,37 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
+import java.util.Comparator;
 import java.util.Date;
 
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElement;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.ui.xul.swt.tags.treeutil.XulTableColumnLabelProvider;
 
 public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   
   // This object can be a Directory or a RepositoryContent
   protected RepositoryElement obj;
   protected Repository rep;
+  private RepositoryObjectComparator roc;
 
   public UIRepositoryObject() {
     super();
+    roc = new RepositoryObjectComparator();
   }
 
   public UIRepositoryObject(RepositoryElement obj) {
-    super();
+    this();
     this.obj = obj;
   }
   
   public UIRepositoryObject(RepositoryElement obj, Repository rep) {
-    super();
+    this(obj);
     this.rep = rep;
-    this.obj = obj;
   }
 
   public String getId() {
@@ -90,5 +94,41 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   public void setRepository(Repository rep) {
     this.rep = rep;
   }
+  
+  static class RepositoryObjectComparator implements Comparator{
+
+    public int compare(Object o1, Object o2) {
+      if (!(o1 instanceof UIRepositoryObject)){
+        return -1;
+      }
+      if (!(o2 instanceof UIRepositoryObject)){
+        return -1;
+      }
+      UIRepositoryObject ro1 = (UIRepositoryObject)o1;
+      UIRepositoryObject ro2 = (UIRepositoryObject)o2;
+      int cat1 = ro1.getCategory();
+      int cat2 = ro2.getCategory();
+      if (cat1 != cat2) {
+        return cat1 - cat2;
+      }
+      String t1 = ro1.getName();
+      String t2 = ro2.getName();
+      if (t1 == null) t1 = "";
+      if (t2 == null) t2 = "";
+      return t1.compareToIgnoreCase(t2);
+    }
+    
+  }
+
+  public RepositoryObjectComparator getComparator() {
+    return roc;
+  }
+
+  public void setComparator(RepositoryObjectComparator roc) {
+    this.roc = roc;
+  }
+  
+  public abstract int getCategory();
+
 
 }

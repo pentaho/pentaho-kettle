@@ -70,7 +70,7 @@
 							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" pen:drageffect="move" pen:preserveexpandedstate="true">
 								<treecols>
 									<treecol flex="1" label="" primary="true" pen:binding="name"
-										pen:childrenbinding="children" pen:imagebinding="image"/>
+										pen:childrenbinding="children" pen:imagebinding="image" sortActive="true" sortDirection="ASCENDING"/>
 								</treecols>
 								<treechildren>
 									<treeitem container="true" open="true">
@@ -86,10 +86,13 @@
 						<vbox flex="1">
 							
 								<tree id="file-table" flex="4" hidecolumnpicker="true"
-									enableColumnDrag="true" context="fileContextMenu" height="500" ondrag="browseController.onDragFromLocalTable()" pen:drageffect="move">
+									enableColumnDrag="true" context="fileContextMenu" 
+									height="500" ondrag="browseController.onDragFromLocalTable()" 
+									pen:drageffect="move" sortable="true">
 									<treecols>
 										<treecol id="name-col" flex="1" label="Name"
-											pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image"/>
+											pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
+											pen:comparatorbinding="comparator"/>
 										<treecol id="type-col" flex="1" label="Type"
 											pen:binding="type" />
 										<treecol id="date-mod-col" flex="1" label="Date Modified"

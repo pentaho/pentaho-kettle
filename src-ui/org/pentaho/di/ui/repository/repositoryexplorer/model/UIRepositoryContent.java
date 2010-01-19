@@ -126,5 +126,10 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public int getCategory() {
+    return 20;
+  }
+
 
 }
