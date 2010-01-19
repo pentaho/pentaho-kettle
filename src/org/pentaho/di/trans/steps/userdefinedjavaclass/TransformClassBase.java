@@ -53,6 +53,8 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -614,9 +616,12 @@ public abstract class TransformClassBase
     }
     
     @SuppressWarnings("unchecked")
-    public static void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, List fields)
+    public static void getFields(boolean clearResultFields, RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, List fields)
     throws KettleStepException
     {
+    	if (clearResultFields) {
+    		row.clear();
+    	}
         for (FieldInfo fi : (List<FieldInfo>)fields)
         {
             ValueMetaInterface v;
@@ -627,4 +632,9 @@ public abstract class TransformClassBase
             row.addValueMeta(v);
         }
     }
+    
+    public static StepIOMetaInterface getStepIOMeta() {
+    	return new StepIOMeta(true, true, true, false, true, true);
+    }
+
 }

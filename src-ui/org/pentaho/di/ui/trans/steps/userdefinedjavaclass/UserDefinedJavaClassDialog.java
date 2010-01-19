@@ -72,6 +72,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -80,6 +81,11 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassAddedFunctions;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta.FieldInfo;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
@@ -91,34 +97,25 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-import org.pentaho.di.trans.steps.userdefinedjavaclass.Messages;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassAddedFunctions;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta.FieldInfo;
-
 public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static Class<?> PKG = UserDefinedJavaClassMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     private ModifyListener lsMod;
     private SashForm       wSash;
-    private FormData       fdSash;
 
     private Composite      wTop, wBottom;
-    private FormData       fdTop, fdBottom;
 
     private Label          wlScript;
-    private FormData       fdlScript, fdScript;
 
     private Label          wSeparator;
-    private FormData       fdSeparator;
 
     private Label          wlFields;
     private TableView      wFields;
-    private FormData       fdlFields, fdFields;
 
     private Label          wlPosition;
-    private FormData       fdlPosition;
+    
+    private Button		   wClearResultFields;
 
     private Text           wlHelpLabel;
 
@@ -126,14 +123,11 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     private Listener       lsTest;
 
     private Label          wlScriptFunctions;
-    private FormData       fdlScriptFunctions;
 
     private Tree           wTree;
     private TreeItem       wTreeScriptsItem;
     private TreeItem       wTreeClassesitem;
-    private FormData       fdlTree;
     private Listener       lsTree;
-    private FormData       fdHelpLabel;
 
     private Image          imageActiveScript   = null;
     private Image          imageInactiveScript = null;
@@ -242,14 +236,14 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText(Messages.getString("UserDefinedJavaClassDialog.Shell.Title")); //$NON-NLS-1$
+        shell.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Shell.Title")); //$NON-NLS-1$
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Filename line
         wlStepname = new Label(shell, SWT.RIGHT);
-        wlStepname.setText(Messages.getString("UserDefinedJavaClassDialog.Stepname.Label")); //$NON-NLS-1$
+        wlStepname.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Stepname.Label")); //$NON-NLS-1$
         props.setLook(wlStepname);
         fdlStepname = new FormData();
         fdlStepname.left = new FormAttachment(0, 0);
@@ -280,9 +274,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
         // Script line
         wlScriptFunctions = new Label(wTop, SWT.NONE);
-        wlScriptFunctions.setText(Messages.getString("UserDefinedJavaClassDialog.ClassesAndSnippits.Label")); //$NON-NLS-1$
+        wlScriptFunctions.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ClassesAndSnippits.Label")); //$NON-NLS-1$
         props.setLook(wlScriptFunctions);
-        fdlScriptFunctions = new FormData();
+        FormData fdlScriptFunctions = new FormData();
         fdlScriptFunctions.left = new FormAttachment(0, 0);
         fdlScriptFunctions.top = new FormAttachment(0, 0);
         wlScriptFunctions.setLayoutData(fdlScriptFunctions);
@@ -290,7 +284,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         // Tree View Test
         wTree = new Tree(wTop, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         props.setLook(wTree);
-        fdlTree = new FormData();
+        FormData fdlTree = new FormData();
         fdlTree.left = new FormAttachment(0, 0);
         fdlTree.top = new FormAttachment(wlScriptFunctions, margin);
         fdlTree.right = new FormAttachment(20, 0);
@@ -299,9 +293,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
         // Script line
         wlScript = new Label(wTop, SWT.NONE);
-        wlScript.setText(Messages.getString("UserDefinedJavaClassDialog.Class.Label")); //$NON-NLS-1$
+        wlScript.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Class.Label")); //$NON-NLS-1$
         props.setLook(wlScript);
-        fdlScript = new FormData();
+        FormData fdlScript = new FormData();
         fdlScript.left = new FormAttachment(wTree, margin);
         fdlScript.top = new FormAttachment(0, 0);
         wlScript.setLayoutData(fdlScript);
@@ -310,7 +304,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         folder.setSimple(false);
         folder.setUnselectedImageVisible(true);
         folder.setUnselectedCloseVisible(true);
-        fdScript = new FormData();
+        FormData fdScript = new FormData();
         fdScript.left = new FormAttachment(wTree, margin);
         fdScript.top = new FormAttachment(wlScript, margin);
         fdScript.right = new FormAttachment(100, -5);
@@ -318,9 +312,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         folder.setLayoutData(fdScript);
 
         wlPosition = new Label(wTop, SWT.NONE);
-        wlPosition.setText(Messages.getString("UserDefinedJavaClassDialog.Position.Label")); //$NON-NLS-1$
+        wlPosition.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Position.Label")); //$NON-NLS-1$
         props.setLook(wlPosition);
-        fdlPosition = new FormData();
+        FormData fdlPosition = new FormData();
         fdlPosition.left = new FormAttachment(wTree, margin);
         fdlPosition.right = new FormAttachment(30, 0);
         fdlPosition.top = new FormAttachment(folder, margin);
@@ -330,7 +324,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         wlHelpLabel.setEditable(false);
         wlHelpLabel.setText("Hallo");
         props.setLook(wlHelpLabel);
-        fdHelpLabel = new FormData();
+        FormData fdHelpLabel = new FormData();
         fdHelpLabel.left = new FormAttachment(wlPosition, margin);
         fdHelpLabel.top = new FormAttachment(folder, margin);
         fdHelpLabel.right = new FormAttachment(100, -5);
@@ -338,7 +332,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         wlHelpLabel.setLayoutData(fdHelpLabel);
         wlHelpLabel.setVisible(false);
 
-        fdTop = new FormData();
+        FormData fdTop = new FormData();
         fdTop.left = new FormAttachment(0, 0);
         fdTop.top = new FormAttachment(0, 0);
         fdTop.right = new FormAttachment(100, 0);
@@ -354,46 +348,55 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         wBottom.setLayout(bottomLayout);
 
         wSeparator = new Label(wBottom, SWT.SEPARATOR | SWT.HORIZONTAL);
-        fdSeparator = new FormData();
+        FormData fdSeparator = new FormData();
         fdSeparator.left = new FormAttachment(0, 0);
         fdSeparator.right = new FormAttachment(100, 0);
         fdSeparator.top = new FormAttachment(0, -margin + 2);
         wSeparator.setLayoutData(fdSeparator);
 
         wlFields = new Label(wBottom, SWT.NONE);
-        wlFields.setText(Messages.getString("UserDefinedJavaClassDialog.Fields.Label")); //$NON-NLS-1$
+        wlFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Fields.Label")); //$NON-NLS-1$
         props.setLook(wlFields);
-        fdlFields = new FormData();
+        FormData fdlFields = new FormData();
         fdlFields.left = new FormAttachment(0, 0);
         fdlFields.top = new FormAttachment(wSeparator, 0);
         wlFields.setLayoutData(fdlFields);
+        
+        wClearResultFields = new Button(wBottom, SWT.CHECK);
+        wClearResultFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ClearResultFields.Label")); //$NON-NLS-1$
+        props.setLook(wClearResultFields);
+        FormData fdClearResultFields = new FormData();
+        fdClearResultFields.right = new FormAttachment(100, 0);
+        fdClearResultFields.top = new FormAttachment(wSeparator, 0);
+        wClearResultFields.setLayoutData(fdClearResultFields);
+        
 
         final int fieldsRows = input.getFieldInfo().size();
 
         ColumnInfo[] colinf = new ColumnInfo[] {
-                new ColumnInfo(Messages.getString("UserDefinedJavaClassDialog.ColumnInfo.Filename"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("UserDefinedJavaClassDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("UserDefinedJavaClassDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("UserDefinedJavaClassDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Filename"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
 
         wFields = new TableView(transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, fieldsRows, lsMod, props);
 
-        fdFields = new FormData();
+        FormData fdFields = new FormData();
         fdFields.left = new FormAttachment(0, 0);
         fdFields.top = new FormAttachment(wlFields, margin);
         fdFields.right = new FormAttachment(100, 0);
         fdFields.bottom = new FormAttachment(100, 0);
         wFields.setLayoutData(fdFields);
 
-        fdBottom = new FormData();
+        FormData fdBottom = new FormData();
         fdBottom.left = new FormAttachment(0, 0);
         fdBottom.top = new FormAttachment(0, 0);
         fdBottom.right = new FormAttachment(100, 0);
         fdBottom.bottom = new FormAttachment(100, 0);
         wBottom.setLayoutData(fdBottom);
 
-        fdSash = new FormData();
+        FormData fdSash = new FormData();
         fdSash.left = new FormAttachment(0, 0);
         fdSash.top = new FormAttachment(wStepname, 0);
         fdSash.right = new FormAttachment(100, 0);
@@ -403,11 +406,11 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         wSash.setWeights(new int[] { 75, 25 });
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
         wTest = new Button(shell, SWT.PUSH);
-        wTest.setText(Messages.getString("UserDefinedJavaClassDialog.TestClass.Button")); //$NON-NLS-1$
+        wTest.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TestClass.Button")); //$NON-NLS-1$
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
         setButtonPositions(new Button[] { wOK, wCancel, wTest }, margin, null);
 
@@ -453,7 +456,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         shell.addShellListener(new ShellAdapter() {
             public void shellClosed(ShellEvent e)
             {
-                cancel();
+                if (!cancel()){
+                	e.doit=false;
+                }
             }
         });
 
@@ -465,8 +470,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                 if (cItem != null && folder.getItemCount() > 1)
                 {
                     MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
-                    messageBox.setText(Messages.getString("UserDefinedJavaClassDialog.DeleteItem.Label"));
-                    messageBox.setMessage(Messages.getString("UserDefinedJavaClassDialog.ConfirmDeleteItem.Label", cItem.getText()));
+                    messageBox.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.DeleteItem.Label"));
+                    messageBox.setMessage(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ConfirmDeleteItem.Label", cItem.getText()));
                     switch (messageBox.open())
                     {
                         case SWT.YES:
@@ -486,7 +491,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         // Adding the Default Transform Scripts Item to the Tree
         wTreeScriptsItem = new TreeItem(wTree, SWT.NULL);
         wTreeScriptsItem.setImage(guiresource.getImageBol());
-        wTreeScriptsItem.setText(Messages.getString("UserDefinedJavaClassDialog.Classes.Label"));
+        wTreeScriptsItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Classes.Label"));
 
         // Set the shell size, based upon previous time...
         setSize();
@@ -498,21 +503,21 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         // Input Fields
         iteminput = new TreeItem(wTree, SWT.NULL);
         iteminput.setImage(imageInputFields);
-        iteminput.setText(Messages.getString("UserDefinedJavaClassDialog.InputFields.Label"));
+        iteminput.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.InputFields.Label"));
         // Output Fields
         itemoutput = new TreeItem(wTree, SWT.NULL);
         itemoutput.setImage(imageOutputFields);
-        itemoutput.setText(Messages.getString("UserDefinedJavaClassDialog.OutputFields.Label"));
+        itemoutput.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.OutputFields.Label"));
 
         // Display waiting message for input
         itemWaitFieldsIn = new TreeItem(iteminput, SWT.NULL);
-        itemWaitFieldsIn.setText(Messages.getString("UserDefinedJavaClassDialog.GettingFields.Label"));
+        itemWaitFieldsIn.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.GettingFields.Label"));
         itemWaitFieldsIn.setForeground(guiresource.getColorDirectory());
         iteminput.setExpanded(true);
 
         // Display waiting message for output
         itemWaitFieldsOut = new TreeItem(itemoutput, SWT.NULL);
-        itemWaitFieldsOut.setText(Messages.getString("UserDefinedJavaClassDialog.GettingFields.Label"));
+        itemWaitFieldsOut.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.GettingFields.Label"));
         itemWaitFieldsOut.setForeground(guiresource.getColorDirectory());
         itemoutput.setExpanded(true);
 
@@ -534,7 +539,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                     }
                     catch (KettleException e)
                     {
-                        log.logError(toString(), Messages.getString("System.Dialog.GetFieldsFailed.Message"));
+                        log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                     }
                 }
             }
@@ -622,7 +627,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         if ((strScript != null) && strScript.length() > 0)
             wScript.setText(strScript);
         else
-            wScript.setText(Messages.getString("UserDefinedJavaClassDialog.ScriptHere.Label") + Const.CR + Const.CR);
+            wScript.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ScriptHere.Label") + Const.CR + Const.CR);
         item.setImage(imageInactiveScript);
         props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
 
@@ -824,7 +829,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
             posnr--;
             colnr++;
         }
-        wlPosition.setText(Messages.getString("UserDefinedJavaClassDialog.Position.Label2") + linenr + ", " + colnr); //$NON-NLS-1$ //$NON-NLS-2$
+        wlPosition.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Position.Label2") + linenr + ", " + colnr); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -858,6 +863,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         }
         setActiveCtab(strActiveScript);
         refresh();
+        
+        wClearResultFields.setSelection(input.isClearingResultFields());
 
         wFields.setRowNums();
         wFields.optWidth(true);
@@ -876,11 +883,22 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         }
     }
 
-    private void cancel()
+    private boolean cancel()
     {
+    	if (input.hasChanged()) {
+    		MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.APPLICATION_MODAL);
+    		box.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.WarningDialogChanged.Title"));
+    		box.setMessage(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.WarningDialogChanged.Message", Const.CR));
+    		int answer = box.open();
+    		
+    		if (answer==SWT.NO) {
+    			return false;
+    		}	
+    	}
         stepname = null;
         input.setChanged(changed);
         dispose();
+        return true;
     }
 
     private void getInfo(UserDefinedJavaClassMeta meta)
@@ -906,6 +924,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
             }
             meta.replaceDefinitions(definitions);
         }
+        meta.setClearingResultFields(wClearResultFields.getSelection());
     }
 
     private void ok()
@@ -920,8 +939,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         if (getCTabItemByName(strActiveScript) == null)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_ERROR);
-            mb.setMessage(Messages.getString("UserDefinedJavaClassDialog.NoActiveScriptSet"));
-            mb.setText(Messages.getString("UserDefinedJavaClassDialog.ERROR.Label")); //$NON-NLS-1$
+            mb.setMessage(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.NoActiveScriptSet"));
+            mb.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ERROR.Label")); //$NON-NLS-1$
             switch (mb.open())
             {
                 case SWT.OK:
@@ -1077,8 +1096,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                     {
                         if (trans.getResult() != null && trans.getResult().getNrErrors() > 0)
                         {
-                            EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"), Messages
-                                    .getString("System.Dialog.PreviewError.Message"), loggingText, true);
+                            EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString("System.Dialog.PreviewError.Title"), 
+                            		BaseMessages.getString("System.Dialog.PreviewError.Message"), loggingText, true);
                             etd.setReadOnly();
                             etd.open();
                         }
@@ -1093,14 +1112,14 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
             }
             else
             {
-                throw new KettleException(Messages.getString("UserDefinedJavaClassDialog.Exception.CouldNotGetFields")); //$NON-NLS-1$
+                throw new KettleException(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Exception.CouldNotGetFields")); //$NON-NLS-1$
             }
         }
         catch (Exception e)
         {
             new ErrorDialog(
                     shell,
-                    Messages.getString("UserDefinedJavaClassDialog.TestFailed.DialogTitle"), Messages.getString("UserDefinedJavaClassDialog.TestFailed.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TestFailed.DialogTitle"), BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TestFailed.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
             return false;
         }
 
@@ -1116,7 +1135,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
         TreeItem item = new TreeItem(wTree, SWT.NULL);
         item.setImage(guiresource.getImageBol());
-        item.setText(Messages.getString("UserDefinedJavaClassDialog.TansformConstant.Label"));
+        item.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TansformConstant.Label"));
         TreeItem itemT = new TreeItem(item, SWT.NULL);
         itemT.setImage(imageArrowGreen);
         itemT.setText("SKIP_TRANSFORMATION");
@@ -1135,33 +1154,33 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
         item = new TreeItem(wTree, SWT.NULL);
         item.setImage(guiresource.getImageBol());
-        item.setText(Messages.getString("UserDefinedJavaClassDialog.TransformFunctions.Label"));
+        item.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TransformFunctions.Label"));
         String strData = "";
 
         // Adding the Grouping Items to the Tree
         TreeItem itemStringFunctionsGroup = new TreeItem(item, SWT.NULL);
         itemStringFunctionsGroup.setImage(imageUnderGreen);
-        itemStringFunctionsGroup.setText(Messages.getString("UserDefinedJavaClassDialog.StringFunctions.Label"));
+        itemStringFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.StringFunctions.Label"));
         itemStringFunctionsGroup.setData("Function");
         TreeItem itemNumericFunctionsGroup = new TreeItem(item, SWT.NULL);
         itemNumericFunctionsGroup.setImage(imageUnderGreen);
-        itemNumericFunctionsGroup.setText(Messages.getString("UserDefinedJavaClassDialog.NumericFunctions.Label"));
+        itemNumericFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.NumericFunctions.Label"));
         itemNumericFunctionsGroup.setData("Function");
         TreeItem itemDateFunctionsGroup = new TreeItem(item, SWT.NULL);
         itemDateFunctionsGroup.setImage(imageUnderGreen);
-        itemDateFunctionsGroup.setText(Messages.getString("UserDefinedJavaClassDialog.DateFunctions.Label"));
+        itemDateFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.DateFunctions.Label"));
         itemDateFunctionsGroup.setData("Function");
         TreeItem itemLogicFunctionsGroup = new TreeItem(item, SWT.NULL);
         itemLogicFunctionsGroup.setImage(imageUnderGreen);
-        itemLogicFunctionsGroup.setText(Messages.getString("UserDefinedJavaClassDialog.LogicFunctions.Label"));
+        itemLogicFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.LogicFunctions.Label"));
         itemLogicFunctionsGroup.setData("Function");
         TreeItem itemSpecialFunctionsGroup = new TreeItem(item, SWT.NULL);
         itemSpecialFunctionsGroup.setImage(imageUnderGreen);
-        itemSpecialFunctionsGroup.setText(Messages.getString("UserDefinedJavaClassDialog.SpecialFunctions.Label"));
+        itemSpecialFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.SpecialFunctions.Label"));
         itemSpecialFunctionsGroup.setData("Function");
         TreeItem itemFileFunctionsGroup = new TreeItem(item, SWT.NULL);
         itemFileFunctionsGroup.setImage(imageUnderGreen);
-        itemFileFunctionsGroup.setText(Messages.getString("UserDefinedJavaClassDialog.FileFunctions.Label"));
+        itemFileFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.FileFunctions.Label"));
         itemFileFunctionsGroup.setData("Function");
 
         // Loading the Default delivered JScript Functions
@@ -1294,7 +1313,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     {
         // styledTextPopupmenu = new Menu(, SWT.POP_UP);
         MenuItem addNewItem = new MenuItem(cMenu, SWT.PUSH);
-        addNewItem.setText(Messages.getString("UserDefinedJavaClassDialog.AddNewTab"));
+        addNewItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.AddNewTab"));
         addNewItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e)
             {
@@ -1303,7 +1322,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         });
 
         MenuItem copyItem = new MenuItem(cMenu, SWT.PUSH);
-        copyItem.setText(Messages.getString("UserDefinedJavaClassDialog.AddCopy"));
+        copyItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.AddCopy"));
         copyItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e)
             {
@@ -1315,7 +1334,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         new MenuItem(cMenu, SWT.SEPARATOR);
 
         MenuItem setActiveScriptItem = new MenuItem(cMenu, SWT.PUSH);
-        setActiveScriptItem.setText(Messages.getString("UserDefinedJavaClassDialog.SetTransformScript"));
+        setActiveScriptItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.SetTransformScript"));
         setActiveScriptItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e)
             {
@@ -1339,7 +1358,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
         new MenuItem(cMenu, SWT.SEPARATOR);
         MenuItem setRemoveScriptItem = new MenuItem(cMenu, SWT.PUSH);
-        setRemoveScriptItem.setText(Messages.getString("UserDefinedJavaClassDialogMod.RemoveScriptType"));
+        setRemoveScriptItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialogMod.RemoveScriptType"));
         setRemoveScriptItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e)
             {
@@ -1357,7 +1376,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     {
         // styledTextPopupmenu = new Menu(, SWT.POP_UP);
         MenuItem addDeleteItem = new MenuItem(tMenu, SWT.PUSH);
-        addDeleteItem.setText(Messages.getString("UserDefinedJavaClassDialog.Delete.Label"));
+        addDeleteItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Delete.Label"));
         addDeleteItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e)
             {
@@ -1367,8 +1386,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                 if (tItem != null)
                 {
                     MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES);
-                    messageBox.setText(Messages.getString("UserDefinedJavaClassDialog.DeleteItem.Label"));
-                    messageBox.setMessage(Messages.getString("UserDefinedJavaClassDialog.ConfirmDeleteItem.Label", tItem.getText()));
+                    messageBox.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.DeleteItem.Label"));
+                    messageBox.setMessage(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ConfirmDeleteItem.Label", tItem.getText()));
                     switch (messageBox.open())
                     {
                         case SWT.YES:
@@ -1382,7 +1401,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         });
 
         MenuItem renItem = new MenuItem(tMenu, SWT.PUSH);
-        renItem.setText(Messages.getString("UserDefinedJavaClassDialog.Rename.Label"));
+        renItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Rename.Label"));
         renItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e)
             {
@@ -1392,7 +1411,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
         new MenuItem(tMenu, SWT.SEPARATOR);
         MenuItem helpItem = new MenuItem(tMenu, SWT.PUSH);
-        helpItem.setText(Messages.getString("UserDefinedJavaClassDialog.Sample.Label"));
+        helpItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Sample.Label"));
         helpItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e)
             {

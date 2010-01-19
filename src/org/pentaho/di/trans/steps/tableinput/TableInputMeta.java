@@ -350,7 +350,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			Database db = new Database(loggingObject, databaseMeta);
 			db.shareVariablesWith(transMeta);
-            databases = new Database[] { db }; // keep track of it for cancelling purposes...
+            databases = new Database[] { db }; // keep track of it for canceling purposes...
 
 			try
 			{

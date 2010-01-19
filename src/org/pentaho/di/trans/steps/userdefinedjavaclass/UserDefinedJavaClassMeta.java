@@ -83,13 +83,16 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     public enum ElementNames
     {
         class_type, class_name, class_source, definitions, definition,
-        fields, field, field_name, field_type, field_length, field_precision
+        fields, field, field_name, field_type, field_length, field_precision,
+        clear_result_fields,
     }
 
     private List<FieldInfo>               fields      = new ArrayList<FieldInfo>();
     private List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
     public Class<TransformClassBase> cookedTransformClass;
     public final List<Exception> cookErrors = new ArrayList<Exception>(0);
+    
+    private boolean clearingResultFields;
     
     private boolean changed;
 
@@ -116,8 +119,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         changed=true;
     }
 
-    private Class<?> cookClass(UserDefinedJavaClassDef def) throws CompileException, ParseException,
-    ScanException, IOException, RuntimeException {
+    private Class<?> cookClass(UserDefinedJavaClassDef def) throws CompileException, ParseException, ScanException, IOException, RuntimeException {
+    	
         ClassBodyEvaluator cbe = new ClassBodyEvaluator();
         cbe.setClassName(def.getClassName());
 
@@ -133,7 +136,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         }
 
         cbe.setDefaultImports(new String[] {
-                "plugin.org.pentaho.di.trans.steps.userdefinedjavaclass.*",
+                "org.pentaho.di.trans.steps.userdefinedjavaclass.*",
                 "org.pentaho.di.trans.step.*",
                 "org.pentaho.di.core.row.*",
                 "org.pentaho.di.core.exception.*"
@@ -251,18 +254,18 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         }
         catch (Exception e)
         {
-            throw new KettleXMLException(Messages.getString("UserDefinedJavaClassMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+            throw new KettleXMLException(BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
         }
     }
 
     public void setDefault()
     {
-        definitions.add(new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, Messages.getString("UserDefinedJavaClass.Script1"),
+        definitions.add(new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, BaseMessages.getString(PKG, "UserDefinedJavaClass.Script1"),
                 "//AddDefaultCode" + Const.CR + Const.CR));
     }
     
     private boolean checkClassCookings(LogChannelInterface logChannel) {
-    	boolean ok = cookedTransformClass==null || cookErrors.size() > 0;
+    	boolean ok = cookedTransformClass!=null  && cookErrors.size() == 0;
         if (changed)
         {
             cookClasses();
@@ -280,7 +283,9 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     
     @Override
     public StepIOMetaInterface getStepIOMeta() {
-        if (!checkClassCookings(log)) return null;
+        if (!checkClassCookings(getLog())) {
+        	return super.getStepIOMeta();
+        }
 
         try
         {
@@ -308,61 +313,21 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         }
     }
 
-    /*
-    @Override
-    public String[] getInfoSteps()
-    {
-        if (cookedTransformClass == null && cookErrors.size() == 0)
-        {
-            cookClasses();
-            if (cookErrors.size() > 0) {
-                cookErrors.get(0).printStackTrace();
-                return null;
-            }
-        }
-
-        try
-        {
-            Method getInfoStepsMethod = cookedTransformClass.getMethod("getInfoSteps");
-            if (getInfoStepsMethod != null)
-            {
-                return (String[])getInfoStepsMethod.invoke(null);
-            }
-            else
-            {
-                return null;
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    */
-
     public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
             throws KettleStepException
     {
-        if (cookedTransformClass == null && cookErrors.size() == 0)
-        {
-            cookClasses();
-            if (cookErrors.size() > 0) {
-                throw new KettleStepException("Error initializing UserDefinedJavaClass to get fields: ", cookErrors.get(0));
-            }
-        }
-        
+    	if (!checkClassCookings(getLog())) {
+    		if (cookErrors.size()>0) {
+    			throw new KettleStepException("Error initializing UserDefinedJavaClass to get fields: ", cookErrors.get(0));
+    		} else {
+    			return;
+    		}
+    	}
+
         try
         {
-            Method getFieldsMethod = cookedTransformClass.getMethod("getFields", RowMetaInterface.class, String.class, RowMetaInterface[].class, StepMeta.class, VariableSpace.class, List.class);
-            if (getFieldsMethod != null)
-            {
-                getFieldsMethod.invoke(null, row, originStepname, info, nextStep, space, fields);
-            }
-            else
-            {
-                super.getFields(row, originStepname, info, nextStep, space);
-            }
+            Method getFieldsMethod = cookedTransformClass.getMethod("getFields", boolean.class, RowMetaInterface.class, String.class, RowMetaInterface[].class, StepMeta.class, VariableSpace.class, List.class);
+            getFieldsMethod.invoke(null, clearingResultFields, row, originStepname, info, nextStep, space, fields);
         }
         catch (Exception e)
         {
@@ -397,6 +362,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
             retval.append(String.format("\n        </%s>", ElementNames.field.name())); //$NON-NLS-1$
         }
         retval.append(String.format("\n    </%s>", ElementNames.fields.name()));
+        retval.append(XMLHandler.addTagValue(ElementNames.clear_result_fields.name(), clearingResultFields));
 
         return retval.toString();
     }
@@ -423,10 +389,12 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
                 (int) rep.getStepAttributeInteger(id_step, i, ElementNames.field_length.name()), //$NON-NLS-1$
                 (int) rep.getStepAttributeInteger(id_step, i, ElementNames.field_precision.name()))); //$NON-NLS-1$
             }
+            
+            clearingResultFields = rep.getStepAttributeBoolean(id_step, ElementNames.clear_result_fields.name());
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("UserDefinedJavaClassMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -451,10 +419,12 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
                 rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.field_length.name(), fi.length); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.field_precision.name(), fi.precision); //$NON-NLS-1$
             }
+
+            rep.saveStepAttribute(id_transformation, id_step, ElementNames.clear_result_fields.name(), clearingResultFields); //$NON-NLS-1$
         }
         catch (Exception e)
         {
-            throw new KettleException(Messages.getString("UserDefinedJavaClassMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
+            throw new KettleException(BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -466,12 +436,12 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("UserDefinedJavaClassMeta.CheckResult.ConnectedStepOK2"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.CheckResult.ConnectedStepOK2"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("UserDefinedJavaClassMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "UserDefinedJavaClassMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
     }
@@ -496,4 +466,18 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     {
         return true;
     }
+
+	/**
+	 * @return the clearingResultFields
+	 */
+	public boolean isClearingResultFields() {
+		return clearingResultFields;
+	}
+
+	/**
+	 * @param clearingResultFields the clearingResultFields to set
+	 */
+	public void setClearingResultFields(boolean clearingResultFields) {
+		this.clearingResultFields = clearingResultFields;
+	}
 }

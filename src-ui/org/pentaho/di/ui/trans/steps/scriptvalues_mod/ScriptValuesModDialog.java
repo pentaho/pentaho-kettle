@@ -521,7 +521,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		wStepname.addSelectionListener( lsDef );
 				
 		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { if (!cancel()) { e.doit=false; } } } );
 		
 		folder.addCTabFolder2Listener(new CTabFolder2Adapter() {
 			public void close(CTabFolderEvent event) {
@@ -913,11 +913,24 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			else if(cTabs[i].getImage().equals(imageActiveEndScript)) strActiveEndScript = cTabs[i].getText();
 		}
 	}
-	private void cancel(){
-		stepname=null;
-		input.setChanged(changed);
-		dispose();
-	}
+	
+    private boolean cancel()
+    {
+    	if (input.hasChanged()) {
+    		MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.APPLICATION_MODAL);
+    		box.setText(BaseMessages.getString(PKG, "ScriptValuesModDialog.WarningDialogChanged.Title"));
+    		box.setMessage(BaseMessages.getString(PKG, "ScriptValuesModDialog.WarningDialogChanged.Message", Const.CR));
+    		int answer = box.open();
+    		
+    		if (answer==SWT.NO) {
+    			return false;
+    		}	
+    	}
+        stepname = null;
+        input.setChanged(changed);
+        dispose();
+        return true;
+    }
 	
 	private void getInfo(ScriptValuesMetaMod meta) {
 		meta.setCompatible( wCompatible.getSelection() );
