@@ -35,7 +35,7 @@ import org.pentaho.ui.xul.util.DialogController;
  * to some of the main UI events such as closing and accepting the dialog.
  * 
  */
-public class MainController extends AbstractXulEventHandler implements DialogController {
+public class MainController extends AbstractXulEventHandler implements DialogController<Object> {
   
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -47,7 +47,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   // private XulButton acceptButton;
 
   private XulDialog dialog;
-  private List<DialogListener> listeners = new ArrayList<DialogListener>();
+  private List<DialogListener<Object>> listeners = new ArrayList<DialogListener<Object>>();
   
   private Repository repository = null;
   
@@ -108,13 +108,13 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
     }
   }
   
-  public void addDialogListener(DialogListener listener){
+  public void addDialogListener(DialogListener<Object> listener){
     if(listeners.contains(listener) == false){
       listeners.add(listener);
     }
   }
   
-  public void removeDialogListener(DialogListener listener){
+  public void removeDialogListener(DialogListener<Object> listener){
     if(listeners.contains(listener)){
       listeners.remove(listener);
     }

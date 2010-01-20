@@ -82,6 +82,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UsageParameter;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassAddedFunctions;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
@@ -176,7 +177,6 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 	private int	margin;
 
 	private CTabItem	infoTab;
-
 	private TableView	wInfoSteps;
 
 	private String[]	prevStepNames;
@@ -184,8 +184,10 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 	private String[]	nextStepNames;
 
 	private CTabItem	targetTab;
-
 	private TableView	wTargetSteps;
+
+	private CTabItem	parametersTab;
+	private TableView	wParameters;
 
     public UserDefinedJavaClassDialog(Shell parent, Object in, TransMeta transMeta, String sname)
     {
@@ -371,6 +373,10 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		// The Fields tab...
 		//
 		addFieldsTab();
+
+		// The parameters
+		//
+		addParametersTab();
 		
 		prevStepNames = transMeta.getPrevStepNames(stepMeta);
 		nextStepNames = transMeta.getNextStepNames(stepMeta);
@@ -737,6 +743,51 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         wBottom.setLayoutData(fdBottom);
 	}
 
+    private void addParametersTab() {
+		parametersTab = new CTabItem(wTabFolder, SWT.NONE);
+		parametersTab.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Tabs.Parameters.Title"));
+		parametersTab.setToolTipText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Tabs.Parameters.TooltipText"));
+		
+        Composite wBottom = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wBottom);
+        parametersTab.setControl(wBottom);
+        FormLayout bottomLayout = new FormLayout();
+        bottomLayout.marginWidth = Const.FORM_MARGIN;
+        bottomLayout.marginHeight = Const.FORM_MARGIN;
+        wBottom.setLayout(bottomLayout);
+
+        Label wlFields = new Label(wBottom, SWT.NONE);
+        wlFields.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Parameters.Label")); //$NON-NLS-1$
+        props.setLook(wlFields);
+        FormData fdlFields = new FormData();
+        fdlFields.left = new FormAttachment(0, 0);
+        fdlFields.top = new FormAttachment(0, 0);
+        wlFields.setLayoutData(fdlFields);
+                
+        final int nrRows = input.getUsageParameters().size();
+        ColumnInfo[] colinf = new ColumnInfo[] {
+                new ColumnInfo(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterTag"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterValue"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterDescription"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+        };
+
+        wParameters = new TableView(transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, nrRows, lsMod, props);
+
+        FormData fdFields = new FormData();
+        fdFields.left = new FormAttachment(0, 0);
+        fdFields.top = new FormAttachment(wlFields, margin);
+        fdFields.right = new FormAttachment(100, 0);
+        fdFields.bottom = new FormAttachment(100, 0);
+        wParameters.setLayoutData(fdFields);
+
+        FormData fdBottom = new FormData();
+        fdBottom.left = new FormAttachment(0, 0);
+        fdBottom.top = new FormAttachment(0, 0);
+        fdBottom.right = new FormAttachment(100, 0);
+        fdBottom.bottom = new FormAttachment(100, 0);
+        wBottom.setLayoutData(fdBottom);
+	}
+
 
 	private void setActiveCtab(String strName)
     {
@@ -1025,6 +1076,19 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         	item.setText(colNr++, stepDefinition.stepMeta!=null ? stepDefinition.stepMeta.getName() : "");
         	item.setText(colNr++, Const.NVL(stepDefinition.description, ""));
         }
+        wTargetSteps.setRowNums();
+        wTargetSteps.optWidth(true);
+
+        rowNr=0;
+        for (UsageParameter usageParameter : input.getUsageParameters()) {
+        	TableItem item = wParameters.table.getItem(rowNr++);
+        	int colNr=1;
+        	item.setText(colNr++, Const.NVL(usageParameter.tag, ""));
+        	item.setText(colNr++, Const.NVL(usageParameter.value, ""));
+        	item.setText(colNr++, Const.NVL(usageParameter.description, ""));
+        }
+        wParameters.setRowNums();
+        wParameters.optWidth(true);
 
         wStepname.selectAll();
     }
@@ -1106,6 +1170,18 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         	stepDefinition.stepMeta = transMeta.findStep(item.getText(colNr++));
         	stepDefinition.description = item.getText(colNr++);
         	meta.getTargetStepDefinitions().add(stepDefinition);
+        }
+
+        int nrParameters = wParameters.nrNonEmpty();
+        meta.getUsageParameters().clear();
+        for (int i=0;i<nrParameters;i++) {
+        	TableItem item = wParameters.getNonEmpty(i);
+        	UsageParameter usageParameter = new UsageParameter();
+        	int colNr=1;
+        	usageParameter.tag = item.getText(colNr++);
+        	usageParameter.value = item.getText(colNr++);
+        	usageParameter.description = item.getText(colNr++);
+        	meta.getUsageParameters().add(usageParameter);
         }
     }
 

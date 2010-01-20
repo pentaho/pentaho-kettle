@@ -91,7 +91,9 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         
         step_tag,
         step_name,
-        step_description,
+        step_description, 
+        
+        usage_parameters, usage_parameter, parameter_tag, parameter_value, parameter_description,
     }
     
 
@@ -107,6 +109,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     private List<StepDefinition> infoStepDefinitions;
     private List<StepDefinition> targetStepDefinitions;
 
+    private List<UsageParameter> usageParameters;
+    
     public static class FieldInfo
     {
         public final String name;
@@ -130,6 +134,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         changed=true;
         infoStepDefinitions=new ArrayList<StepDefinition>();
         targetStepDefinitions=new ArrayList<StepDefinition>();
+        usageParameters=new ArrayList<UsageParameter>();
     }
 
     private Class<?> cookClass(UserDefinedJavaClassDef def) throws CompileException, ParseException, ScanException, IOException, RuntimeException {
@@ -289,6 +294,18 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
             	stepDefinition.description = XMLHandler.getTagValue(targetNode, ElementNames.step_description.name());
             	targetStepDefinitions.add(stepDefinition);
             }
+
+            usageParameters.clear();
+            Node parametersNode = XMLHandler.getSubNode(stepnode, ElementNames.target_steps.name());
+            int nrParameters = XMLHandler.countNodes(parametersNode, ElementNames.target_step.name());
+            for (int i = 0; i < nrParameters; i++) {
+            	Node targetNode = XMLHandler.getSubNodeByNr(parametersNode, ElementNames.target_step.name(), i);
+            	UsageParameter usageParameter = new UsageParameter();
+            	usageParameter.tag = XMLHandler.getTagValue(targetNode, ElementNames.parameter_tag.name());
+            	usageParameter.value = XMLHandler.getTagValue(targetNode, ElementNames.parameter_value.name());
+            	usageParameter.description = XMLHandler.getTagValue(targetNode, ElementNames.parameter_description.name());
+            	usageParameters.add(usageParameter);
+            }
         }
         catch (Exception e)
         {
@@ -436,6 +453,16 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         }
     	retval.append(XMLHandler.closeTag(ElementNames.target_steps.name()));
 
+    	retval.append(XMLHandler.openTag(ElementNames.usage_parameters.name()));
+        for (UsageParameter usageParameter : usageParameters) {
+        	retval.append(XMLHandler.openTag(ElementNames.usage_parameter.name()));
+        	retval.append(XMLHandler.addTagValue(ElementNames.parameter_tag.name(), usageParameter.tag));
+        	retval.append(XMLHandler.addTagValue(ElementNames.parameter_value.name(), usageParameter.value));
+        	retval.append(XMLHandler.addTagValue(ElementNames.parameter_description.name(), usageParameter.description));
+        	retval.append(XMLHandler.closeTag(ElementNames.usage_parameter.name()));
+        }
+    	retval.append(XMLHandler.closeTag(ElementNames.usage_parameters.name()));
+
         return retval.toString();
     }
 
@@ -481,6 +508,14 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
             	targetStepDefinitions.add(stepDefinition);
             }
             
+            int nrParameters = rep.countNrStepAttributes(id_step, ElementNames.parameter_tag.name()); //$NON-NLS-1$
+            for (int i=0;i<nrParameters;i++) {
+            	UsageParameter usageParameter = new UsageParameter();
+            	usageParameter.tag = rep.getStepAttributeString(id_step, i, ElementNames.parameter_tag.name());
+            	usageParameter.value = rep.getStepAttributeString(id_step, i, ElementNames.parameter_value.name());
+            	usageParameter.description = rep.getStepAttributeString(id_step, i, ElementNames.parameter_description.name());
+            	usageParameters.add(usageParameter);
+            }
         }
         catch (Exception e)
         {
@@ -524,8 +559,13 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
             	rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.target_.name()+ElementNames.step_name.name(), stepDefinition.stepMeta!=null ? stepDefinition.stepMeta.getName() : null);
             	rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.target_.name()+ElementNames.step_description.name(), stepDefinition.description);
             }
-
-        
+            
+            for (int i=0;i<usageParameters.size();i++) {
+            	UsageParameter usageParameter = usageParameters.get(i);
+            	rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.parameter_tag.name(), usageParameter.tag);
+            	rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.parameter_value.name(), usageParameter.value);
+            	rep.saveStepAttribute(id_transformation, id_step, i, ElementNames.parameter_description.name(), usageParameter.description);
+            }
         }
         catch (Exception e)
         {
@@ -617,6 +657,20 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 	@Override
 	public boolean excludeFromRowLayoutVerification() {
 		return true;
+	}
+
+	/**
+	 * @return the usageParameters
+	 */
+	public List<UsageParameter> getUsageParameters() {
+		return usageParameters;
+	}
+
+	/**
+	 * @param usageParameters the usageParameters to set
+	 */
+	public void setUsageParameters(List<UsageParameter> usageParameters) {
+		this.usageParameters = usageParameters;
 	}
 }
 

@@ -38,12 +38,12 @@ public class AbstractModelNode<T> extends XulEventSourceAdapter implements
     List<T>, Iterable<T> {
 
   protected List<T> children = new ArrayList<T>();
-  protected AbstractModelNode parent;
+  protected AbstractModelNode<T> parent;
   
   public AbstractModelNode() {
   }
 
-  public AbstractModelNode(AbstractModelNode parent, List<T> children){
+  public AbstractModelNode(AbstractModelNode<T> parent, List<T> children){
     this(children);
     setParent(parent);
   }
@@ -52,11 +52,11 @@ public class AbstractModelNode<T> extends XulEventSourceAdapter implements
     Collections.copy(this.children, children);
   }
   
-  public AbstractModelNode getParent(){
+  public AbstractModelNode<T> getParent(){
     return parent;
   }
   
-  public void setParent(AbstractModelNode parent){
+  public void setParent(AbstractModelNode<T> parent){
     this.parent = parent;
     this.parent.fireCollectionChanged();
   }
@@ -209,10 +209,10 @@ public class AbstractModelNode<T> extends XulEventSourceAdapter implements
     return this.children.toArray();
   }
 
-  public <T> T[] toArray(T[] a) {
-    return this.children.toArray(a);
-  }
-
+  public <U> U[] toArray(U[] a) {
+	    return this.children.toArray(a);
+  };
+  
   public void add(int index, T element) {
     if (index > children.size()){
       add(element);
