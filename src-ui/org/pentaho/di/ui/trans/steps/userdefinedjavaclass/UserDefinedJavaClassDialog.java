@@ -811,7 +811,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         wScript.addModifyListener(lsMod);
 
         // Text Higlighting
-        lineStyler = new UserDefinedJavaClassHighlight(UserDefinedJavaClassAddedFunctions.jsFunctionList);
+        lineStyler = new UserDefinedJavaClassHighlight(UserDefinedJavaClassAddedFunctions.javaETLFunctionList);
         wScript.addLineStyleListener(lineStyler);
         item.setControl(wScript);
 
@@ -1257,6 +1257,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                 // Generate a new test transformation...
                 //
                 TransMeta transMeta = new TransMeta();
+                transMeta.setName(wStepname.getText()+" - PREVIEW"); // $NON-NLS-1$
                 transMeta.addStep(genStep);
                 transMeta.addStep(scriptStep);
                 transMeta.addTransHop(hop);
@@ -1285,9 +1286,17 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                         }
                     }
 
-                    PreviewRowsDialog prd = new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname
-                            .getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
-                    prd.open();
+                    RowMetaInterface previewRowsMeta = progressDialog.getPreviewRowsMeta(wStepname.getText());
+                    List<Object[]> previewRows = progressDialog.getPreviewRows(wStepname.getText());
+                    
+                    if (previewRowsMeta!=null && previewRows!=null && previewRows.size()>0) {
+	                    PreviewRowsDialog prd = new PreviewRowsDialog(shell, 
+	                    		transMeta, SWT.NONE, wStepname.getText(), 
+	                    		previewRowsMeta, 
+	                    		previewRows, 
+	                    		loggingText);
+	                    prd.open();
+                    }
                 }
 
                 return true;

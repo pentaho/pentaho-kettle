@@ -24,6 +24,7 @@ public class TransPreviewFactory
         StepLoader stepLoader = StepLoader.getInstance();
 
         TransMeta previewMeta = new TransMeta(parent);
+        previewMeta.setName(parent.toString());
         
         // At it to the first step.
         StepMeta one = new StepMeta(stepLoader.getStepPluginID(oneMeta), oneStepname, oneMeta);

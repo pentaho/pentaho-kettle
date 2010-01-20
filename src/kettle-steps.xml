@@ -1082,4 +1082,12 @@
 		<image-uri>ui/images/sScript.png</image-uri>
 	</step>
 
+	<step id="DataGrid">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DataGrid</description>
+		<class-name>org.pentaho.di.trans.steps.datagrid.DataGridMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.DataGrid</tooltip>
+		<image-uri>ui/images/GTN.png</image-uri>
+	</step>
+
 </steps>

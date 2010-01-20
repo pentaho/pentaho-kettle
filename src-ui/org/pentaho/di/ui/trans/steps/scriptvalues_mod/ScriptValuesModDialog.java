@@ -41,6 +41,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
@@ -1099,6 +1100,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			    // Generate a new test transformation...
 			    //
 			    TransMeta transMeta = new TransMeta();
+                transMeta.setName(wStepname.getText()+" - PREVIEW"); // $NON-NLS-1$
 			    transMeta.addStep(genStep);
 			    transMeta.addStep(scriptStep);
 			    transMeta.addTransHop(hop);
@@ -1130,8 +1132,17 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		                }
 		            }
 		            
-		            PreviewRowsDialog prd =new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
-		            prd.open();
+                    RowMetaInterface previewRowsMeta = progressDialog.getPreviewRowsMeta(wStepname.getText());
+                    List<Object[]> previewRows = progressDialog.getPreviewRows(wStepname.getText());
+                    
+                    if (previewRowsMeta!=null && previewRows!=null && previewRows.size()>0) {
+	                    PreviewRowsDialog prd = new PreviewRowsDialog(shell, 
+	                    		transMeta, SWT.NONE, wStepname.getText(), 
+	                    		previewRowsMeta, 
+	                    		previewRows, 
+	                    		loggingText);
+	                    prd.open();
+                    }
 			    }
 
 			    return true;

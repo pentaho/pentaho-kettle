@@ -73,7 +73,6 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
 import org.w3c.dom.Node;
 
@@ -153,6 +152,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
                 "org.pentaho.di.trans.steps.userdefinedjavaclass.*",
                 "org.pentaho.di.trans.step.*",
                 "org.pentaho.di.core.row.*",
+                "org.pentaho.di.core.*",
                 "org.pentaho.di.core.exception.*"
         });
         cbe.cook(new Scanner(null, sr));
@@ -359,7 +359,6 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 		for (StepDefinition stepDefinition : targetStepDefinitions) {
 			stepDefinition.stepMeta = StepMeta.findStep(steps, stepDefinition.stepName);
 		}
-		
 	}
 
     public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
@@ -613,6 +612,11 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 	 */
 	public void setTargetStepDefinitions(List<StepDefinition> targetStepDefinitions) {
 		this.targetStepDefinitions = targetStepDefinitions;
+	}
+	
+	@Override
+	public boolean excludeFromRowLayoutVerification() {
+		return true;
 	}
 }
 

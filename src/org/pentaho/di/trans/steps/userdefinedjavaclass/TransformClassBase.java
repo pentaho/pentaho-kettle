@@ -649,8 +649,12 @@ public abstract class TransformClassBase
     }
 
     /*
-    public RowSet findRowSet(String tag) {
+    public RowSet findInfoRowSet(InfoStepEnum tag) {
     	
     }
+    public RowSet findTargetRowSet(TargetStepEnum tag) {
+    	
+    }
+
     */
 }

@@ -59,6 +59,10 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
         if (object instanceof LogMessage)
         {
             LogMessage message = (LogMessage)object;
+            
+            if (message==null) {
+            	throw new RuntimeException("The message to log can't ever be null!!");
+            }
 
             String parts[] = message.getMessage().split(Const.CR);
             for (int i=0;i<parts.length;i++)
