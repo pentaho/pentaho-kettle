@@ -219,15 +219,18 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 					else 
 					{
 						if(log.isDetailed()) logDetailed("Found error from SalesForce and raising the exception"); 
-						for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
-							// get the next error
-							com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];
+						//for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
+						
+						// Only show the first error
+						//
+							com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[0];
 							throw new KettleException("Errors were found on item "
 									+ new Integer(j).toString()
 									+ " Error code is: "
 									+ err.getStatusCode().toString()
 									+ " Error message: " + err.getMessage());
-						} // for error messages
+							
+						// } // for error messages
 					}
 					
 					if (sendToErrorRow) {

@@ -54,7 +54,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.farragostreamingloader.FarragoStreamingLoaderMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
@@ -62,11 +61,9 @@ import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 /**
  * Description: Dialog class for the Farrago Streaming Loader step.
@@ -123,19 +120,19 @@ public class FarragoStreamingLoaderDialog
 
     private CTabItem wFieldsTab;
 
-    private CTabItem wCustomTab;
+    // private CTabItem wCustomTab;
 
     private Composite wKeysComp;
 
     private Composite wFieldsComp;
 
-    private Composite wCustomComp;
+    // private Composite wCustomComp;
 
     private FormData fdKeysComp;
 
     private FormData fdFieldsComp;
 
-    private FormData fdCustomComp;
+    // private FormData fdCustomComp;
 
     private Label wlKeysTb;
 
@@ -149,11 +146,11 @@ public class FarragoStreamingLoaderDialog
 
     private FormData fdlFieldsTb, fdFieldsTb;
 
-    private Label wlCustomTb;
+    // private Label wlCustomTb;
 
-    private StyledTextComp wCustomTb;
+    // private StyledTextComp wCustomTb;
 
-    private FormData fdlCustomTb, fdCustomTb;
+    // private FormData fdlCustomTb, fdCustomTb;
 
     private Button wGetFieldsForKeys;
 
@@ -1254,10 +1251,8 @@ public class FarragoStreamingLoaderDialog
         // Get the information for the dialog into the input structure.
         getInfo(input);
 
-        String name = stepname; // new name might not yet be linked to other steps!
-        StepMeta stepMeta = new StepMeta(BaseMessages.getString(
-            PKG,
-            "FarragoStreamingLoaderDialog.StepMeta.Title"), name, input);
+        // String name = stepname; // new name might not yet be linked to other steps!
+        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "FarragoStreamingLoaderDialog.StepMeta.Title"), name, input);
         RowMetaInterface prev;
         try {
             prev = transMeta.getPrevStepFields(stepname);
@@ -1327,10 +1322,8 @@ public class FarragoStreamingLoaderDialog
         FarragoStreamingLoaderMeta info = new FarragoStreamingLoaderMeta();
         getInfo(info);
 
-        String name = stepname; // new name might not yet be linked to other steps!
-        StepMeta stepMeta = new StepMeta(BaseMessages.getString(
-            PKG,
-            "FarragoStreamingLoaderDialog.StepMeta.Title"), name, info);
+        // String name = stepname; // new name might not yet be linked to other steps!
+        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "FarragoStreamingLoaderDialog.StepMeta.Title"), name, info);
         RowMetaInterface prev;
         try {
             prev = transMeta.getPrevStepFields(stepname);

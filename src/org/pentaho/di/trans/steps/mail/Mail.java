@@ -768,7 +768,6 @@ public class Mail extends BaseStep implements StepInterface
 	  }
 	  private class TextFileSelector implements FileSelector 
 		{
-			LogWriter log = LogWriter.getInstance();
 			String file_wildcard=null,source_folder=null;
 			
 			public TextFileSelector(String sourcefolderin,String filewildcard) 

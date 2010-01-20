@@ -24,7 +24,6 @@ import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.RepositoryUserInterface;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.repository.dialog.UserDialog;
-import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryUser;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryUsers;
 import org.pentaho.ui.xul.binding.Binding;
@@ -47,7 +46,7 @@ public class SecurityController extends AbstractXulEventHandler{
 
   private RepositoryUserInterface rui; 
   private UIRepositoryUsers users;
-  private RepositoryExplorerCallback callback;
+  // private RepositoryExplorerCallback callback;
   
   BindingFactory bf;
   Binding userBinding;
@@ -101,9 +100,11 @@ public class SecurityController extends AbstractXulEventHandler{
     return "securityController";
   }
   
+  /*
   public void setCallback(RepositoryExplorerCallback callback) {
     this.callback = callback;
   }
+  */
 
   public RepositoryUserInterface getRepositoryUserInterface() {
     return rui;

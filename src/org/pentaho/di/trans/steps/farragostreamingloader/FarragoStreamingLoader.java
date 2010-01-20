@@ -30,6 +30,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -127,20 +128,19 @@ public class FarragoStreamingLoader
 
                 // Create head format object.
                 // TODO: I think we need to re-sign data structure for header. 
-                List header = new ArrayList();
+                List<Object> header = new ArrayList<Object>();
                 header.add("1"); // version
-                List format = new ArrayList();
+                List<Integer> format = new ArrayList<Integer>();
                 for (int i = 0; i < data.format.length; i++) {
 
-                    format.add((Integer) data.format[i]);
+                    format.add( data.format[i] );
                 }
                 header.add(format);
 
                 data.objOut.writeObject(header);
-                
             }
 
-            List entity = new ArrayList();
+            List<Object> entity = new ArrayList<Object>();
 
             for (int i = 0; i < data.keynrs.length; i++) {
 
@@ -170,8 +170,7 @@ public class FarragoStreamingLoader
 
                         Date date = valueMeta.getDate(valueData);
 
-                        logRowlevel(date.getYear() + date.getMonth()
-                            + date.getDay() + ":" + valueMeta.getLength());
+                        if (log.isRowLevel()) logRowlevel(XMLHandler.date2string(date) + ":" + valueMeta.getLength());
                         entity.add(date);
                         break;
                     case ValueMetaInterface.TYPE_BOOLEAN:

@@ -58,11 +58,11 @@ public class RepositoryExplorer {
   
   private Directory repositoryDirectory; 
   
-  private Repository repository;
+  // private Repository repository;
 
   public RepositoryExplorer(Directory rd, Repository rep, RepositoryExplorerCallback callback, VariableSpace variableSpace) {
     repositoryDirectory = rd;
-    repository = rep;
+    /// repository = rep;
     try {
       container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul"); //$NON-NLS-1$
 

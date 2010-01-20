@@ -15,9 +15,7 @@
 package org.pentaho.di.trans.steps.farragostreamingloader;
 
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.util.List;
 
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.util.StreamLogger;

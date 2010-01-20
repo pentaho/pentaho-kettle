@@ -19,13 +19,11 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import java.util.Comparator;
 import java.util.Date;
 
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElement;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
-import org.pentaho.ui.xul.swt.tags.treeutil.XulTableColumnLabelProvider;
 
 public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   
@@ -95,24 +93,23 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
     this.rep = rep;
   }
   
-  static class RepositoryObjectComparator implements Comparator{
+  static class RepositoryObjectComparator implements Comparator<UIRepositoryObject> {
 
-    public int compare(Object o1, Object o2) {
+    public int compare(UIRepositoryObject o1, UIRepositoryObject o2) {
       if (!(o1 instanceof UIRepositoryObject)){
         return -1;
       }
       if (!(o2 instanceof UIRepositoryObject)){
         return -1;
       }
-      UIRepositoryObject ro1 = (UIRepositoryObject)o1;
-      UIRepositoryObject ro2 = (UIRepositoryObject)o2;
-      int cat1 = ro1.getCategory();
-      int cat2 = ro2.getCategory();
+
+      int cat1 = o1.getCategory();
+      int cat2 = o2.getCategory();
       if (cat1 != cat2) {
         return cat1 - cat2;
       }
-      String t1 = ro1.getName();
-      String t2 = ro2.getName();
+      String t1 = o1.getName();
+      String t2 = o2.getName();
       if (t1 == null) t1 = "";
       if (t2 == null) t2 = "";
       return t1.compareToIgnoreCase(t2);

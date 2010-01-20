@@ -19,7 +19,6 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
-import org.pentaho.di.repository.RepositoryDirectory;
 
 public class UITransformation extends UIRepositoryContent {
 

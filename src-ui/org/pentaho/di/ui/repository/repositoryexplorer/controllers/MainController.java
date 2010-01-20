@@ -23,7 +23,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -45,7 +44,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
 	
 	private int lastClicked = CANCELLED;
 
-  private XulButton acceptButton;
+  // private XulButton acceptButton;
 
   private XulDialog dialog;
   private List<DialogListener> listeners = new ArrayList<DialogListener>();
@@ -76,7 +75,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   private void createBindings(){
 
     dialog = (XulDialog) document.getElementById("repository-explorer-dialog");
-    acceptButton = (XulButton) document.getElementById("repository-explorer-dialog_accept");
+    // acceptButton = (XulButton) document.getElementById("repository-explorer-dialog_accept");
 
     try {
       // Fires the population of the repository tree of folders. 
