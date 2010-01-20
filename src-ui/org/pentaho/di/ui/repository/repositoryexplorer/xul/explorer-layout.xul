@@ -67,12 +67,10 @@
 								<button id="folder-expand-all" image="images/CollapseAll.png"  onclick="browseController.collapseAllFolders()" />
 							</hbox>
 
-							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" 
-							ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" 
-							pen:drageffect="move" pen:preserveexpandedstate="true">
+							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" pen:drageffect="move" pen:preserveexpandedstate="true" command="browseController.onDoubleClick()">
 								<treecols>
 									<treecol flex="1" label="" primary="true" pen:binding="name"
-										pen:childrenbinding="children" pen:imagebinding="image" sortActive="true" sortDirection="ASCENDING"/>
+										pen:childrenbinding="children" pen:imagebinding="image" expandedbinding="expanded"  sortActive="true" sortDirection="ASCENDING"/>
 								</treecols>
 								<treechildren>
 									<treeitem container="true" open="true">
@@ -88,13 +86,10 @@
 						<vbox flex="1">
 							
 								<tree id="file-table" flex="4" hidecolumnpicker="true"
-									enableColumnDrag="true" context="fileContextMenu" 
-									height="500" ondrag="browseController.onDragFromLocalTable()" 
-									pen:drageffect="move" sortable="true" treeLines="false">
+									enableColumnDrag="true" context="fileContextMenu" height="500" ondrag="browseController.onDragFromLocalTable()" pen:drageffect="move"  sortable="true" treeLines="false" command="browseController.onDoubleClick()">
 									<treecols>
 										<treecol id="name-col" flex="1" label="Name"
-											pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
-											pen:comparatorbinding="comparator"/>
+											pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" pen:comparatorbinding="comparator"/>
 										<treecol id="type-col" flex="1" label="Type"
 											pen:binding="type" />
 										<treecol id="date-mod-col" flex="1" label="Date Modified"

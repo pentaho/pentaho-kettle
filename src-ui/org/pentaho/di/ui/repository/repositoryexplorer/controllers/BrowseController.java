@@ -376,4 +376,17 @@ public class BrowseController extends AbstractXulEventHandler {
       event.setAccepted(false);
     }
   }
+  
+  public void onDoubleClick(Object[] selectedItems) {
+    if((selectedItems != null) && (selectedItems.length > 0)) {
+      for(Object o : selectedItems) {
+        if(o instanceof UIRepositoryDirectory) {
+          ((UIRepositoryDirectory)o).toggleExpanded();
+          List<Object> selectedFolder = new ArrayList<Object>();
+          selectedFolder.add(o);
+          folderTree.setSelectedItems(selectedFolder);
+        }
+      }
+    }
+  }
 }

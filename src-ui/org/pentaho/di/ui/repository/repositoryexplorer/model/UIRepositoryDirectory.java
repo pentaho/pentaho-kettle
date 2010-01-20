@@ -19,6 +19,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
@@ -32,7 +33,8 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   private UIRepositoryDirectory uiParent = null;
   private UIRepositoryDirectories kidDirectoryCache = null;
   private UIRepositoryObjects kidElementCache = null;
-
+  private boolean expanded = false;
+  
   public UIRepositoryDirectory() {
     super();
   }
@@ -158,7 +160,6 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   }
   
   public void delete()throws Exception{
-    
     rep.deleteRepositoryDirectory(getDirectory());
     uiParent.getChildren().remove(this);
     if(uiParent.getRepositoryObjects().contains(this))
@@ -227,13 +228,23 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
       // TODO: Better error handling
       e.printStackTrace();
     }
-  
   }
-
+  
   @Override
   public int getCategory() {
     return 10;
   }
   
+  public boolean isExpanded() {
+    return expanded;
+  }
   
+  public void setExpanded(boolean expand) {
+    this.expanded = expand;
+  }
+  
+  public void toggleExpanded() {
+    setExpanded(!isExpanded());
+    firePropertyChange("expanded", null, this.expanded); //$NON-NLS-1$
+  }
 }
