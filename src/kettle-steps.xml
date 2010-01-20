@@ -1087,7 +1087,7 @@
 		<class-name>org.pentaho.di.trans.steps.datagrid.DataGridMeta</class-name>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.DataGrid</tooltip>
-		<image-uri>ui/images/GTN.png</image-uri>
+		<image-uri>ui/images/GNR.png</image-uri>
 	</step>
 
 	<step id="Script">
