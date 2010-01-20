@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -792,7 +793,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     	if (transMeta.isCapturingStepPerformanceSnapShots()) 
     	{
     		stepPerformanceSnapshotSeqNr = new AtomicInteger(0);
-    		stepPerformanceSnapShots = new HashMap<String, List<StepPerformanceSnapShot>>();
+    		stepPerformanceSnapShots = new ConcurrentHashMap<String, List<StepPerformanceSnapShot>>();
     		
     		// Set a timer to collect the performance data from the running threads...
     		//
