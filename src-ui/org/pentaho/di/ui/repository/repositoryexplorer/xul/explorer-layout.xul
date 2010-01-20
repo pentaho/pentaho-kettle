@@ -67,7 +67,9 @@
 								<button id="folder-expand-all" image="images/CollapseAll.png"  onclick="browseController.collapseAllFolders()" />
 							</hbox>
 
-							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" pen:drageffect="move" pen:preserveexpandedstate="true">
+							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" 
+							ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" 
+							pen:drageffect="move" pen:preserveexpandedstate="true">
 								<treecols>
 									<treecol flex="1" label="" primary="true" pen:binding="name"
 										pen:childrenbinding="children" pen:imagebinding="image" sortActive="true" sortDirection="ASCENDING"/>
@@ -88,7 +90,7 @@
 								<tree id="file-table" flex="4" hidecolumnpicker="true"
 									enableColumnDrag="true" context="fileContextMenu" 
 									height="500" ondrag="browseController.onDragFromLocalTable()" 
-									pen:drageffect="move" sortable="true">
+									pen:drageffect="move" sortable="true" treeLines="false">
 									<treecols>
 										<treecol id="name-col" flex="1" label="Name"
 											pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
@@ -116,7 +118,7 @@
 							</hbox>
 
 							<tree id="revision-table" flex="1" hidecolumnpicker="true"
-								enableColumnDrag="true" context="revisionContextMenu">
+								enableColumnDrag="true" context="revisionContextMenu" treeLines="false">
 								<treecols>
 									<treecol id="revision-label-col" flex="1" label="Label"
 										pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
@@ -166,7 +168,7 @@
 						<button id="connections-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="connectionsController.removeConnection()" />
 					</hbox>
 					<!-- Connection list -->
-					<tree id="connections-table" flex="1" hidecolumnpicker="true">
+					<tree id="connections-table" flex="1" hidecolumnpicker="true" treeLines="false">
 						<treecols>
 							<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
 							<treecol id="type-col" flex="1" label="Type" pen:binding="type"/>
@@ -258,7 +260,7 @@
 						<button id="slaves-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="slavesController.removeSlave()" />
 					</hbox>
 					<!-- Slaves list -->
-					<tree id="slaves-table" flex="1" hidecolumnpicker="true">
+					<tree id="slaves-table" flex="1" hidecolumnpicker="true" treeLines="false">
 						<treecols>
 							<treecol id="name-col" flex="4" label="Name" pen:binding="name"/>
 							<treecol id="host-col" flex="4" label="Host" pen:binding="host"/>
@@ -302,7 +304,7 @@
 						<button id="partitions-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="partitionsController.removePartition()" />
 					</hbox>
 					<!-- Partition list -->
-					<tree id="partitions-table" flex="1" hidecolumnpicker="true">
+					<tree id="partitions-table" flex="1" hidecolumnpicker="true" treeLines="false">
 						<treecols>
 							<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
 						</treecols>
@@ -343,7 +345,7 @@
 						<button id="clusters-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="clustersController.removeCluster()" />
 					</hbox>
 					<!-- Cluster list -->
-					<tree id="clusters-table" flex="1" hidecolumnpicker="true">
+					<tree id="clusters-table" flex="1" hidecolumnpicker="true" treeLines="false">
 						<treecols>
 							<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
 							<treecol id="servers-col" flex="4" label="Server(s)" pen:binding="serverList"/>

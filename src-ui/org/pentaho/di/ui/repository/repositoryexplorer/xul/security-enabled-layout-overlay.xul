@@ -11,7 +11,7 @@
 				<button  id="user-remove"  image="images/Remove.png" onclick="securityController.removeUser()"/>
 			</hbox>
 
-			<tree id="user-table" flex="1" hidecolumnpicker="true"
+			<tree id="user-table" flex="1" hidecolumnpicker="true"  treeLines="false"
 				enableColumnDrag="true">
 				<treecols>
 					<treecol id="user-name-col" flex="1" label="Name" pen:binding="login" pen:childrenbinding="children"/>
