@@ -17,11 +17,11 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.vfs.FileName;
@@ -735,7 +735,7 @@ public class Trans implements VariableSpace, NamedParams
 
     	if (transMeta.isCapturingStepPerformanceSnapShots()) 
     	{
-    		stepPerformanceSnapShots = new HashMap<String, List<StepPerformanceSnapShot>>();
+    		stepPerformanceSnapShots = new ConcurrentHashMap<String, List<StepPerformanceSnapShot>>();
     		
     		// Set a timer to collect the performance data from the running threads...
     		//
