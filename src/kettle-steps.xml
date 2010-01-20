@@ -1090,4 +1090,12 @@
 		<image-uri>ui/images/GTN.png</image-uri>
 	</step>
 
+	<step id="Script">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Script</description>
+		<class-name>org.pentaho.di.trans.steps.script.ScriptMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Script</tooltip>
+		<image-uri>ui/images/SCR_mod.png</image-uri>
+	</step>
+
 </steps>
