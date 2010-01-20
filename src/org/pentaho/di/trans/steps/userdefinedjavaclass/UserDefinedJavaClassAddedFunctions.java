@@ -35,7 +35,38 @@ public class UserDefinedJavaClassAddedFunctions {
 	public static final int SPECIAL_FUNCTION = 4;	
 	public static final int FILE_FUNCTION = 5;
 		
-	public static  String[] jsFunctionList = {
-        
+	// built from TransformClassBase.java with the following Vim commands:
+	// :v/ *public/d
+	// :%s/.\+\(\<[^(]\+\)(.*/\1/g
+	// :%s/.*/"&",/
+	public static  String[] javaETLFunctionList = {
+		"addResultFile", "addRowListener", "addStepListener", 
+		"checkFeedback", "cleanup", 
+		"decrementLinesRead", "decrementLinesWritten", "dispose", 
+		"findInputRowSet", "findInputRowSet", "findOutputRowSet", "findOutputRowSet", 
+		"getClusterSize", "getCopy", "getErrorRowMeta", "getErrors", "getFields", 
+		"getInfoSteps", "getInputRowMeta", "getInputRowSets", "getLinesInput", 
+		"getLinesOutput", "getLinesRead", "getLinesRejected", "getLinesSkipped", 
+		"getLinesUpdated", "getLinesWritten", "getOutputRowSets", "getPartitionID", 
+		"getPartitionTargets", "getProcessed", "getRepartitioning", "getResultFiles", 
+		"getRow", "getRowFrom", "getRowListeners", "getRuntime", "getSlaveNr", 
+		"getSocketRepository", "getStatus", "getStatusDescription", "getStepDataInterface", 
+		"getStepID", "getStepListeners", "getStepMeta", "getStepMetaInterface", 
+		"getStepname", "getTrans", "getTransMeta", "getTypeId", "getUniqueStepCountAcrossSlaves", 
+		"getUniqueStepNrAcrossSlaves", "getVariable", "getVariable", 
+		"incrementLinesInput", "incrementLinesOutput", "incrementLinesRead", 
+		"incrementLinesRejected", "incrementLinesSkipped", "incrementLinesUpdated", 
+		"incrementLinesWritten", "init", "initBeforeStart", "isDistributed", "isInitialising", 
+		"isPartitioned", "isSafeModeEnabled", "isStopped", "isUsingThreadPriorityManagment", 
+		"logBasic", "logDebug", "logDetailed", "logError", "logError", "logMinimal", "logRowlevel", "logSummary", 
+		"markStart", "markStop", 
+		"openRemoteInputStepSocketsOnce", "openRemoteOutputStepSocketsOnce", "outputIsDone", 
+		"processRow", "putError", "putRow", "putRowTo", 
+		"removeRowListener", "rowsetInputSize", "rowsetOutputSize", 
+		"safeModeChecking", "setErrors", "setInputRowMeta", "setInputRowSets", 
+		"setLinesInput", "setLinesOutput", "setLinesRead", "setLinesRejected", 
+		"setLinesSkipped", "setLinesUpdated", "setLinesWritten", "setOutputDone", 
+		"setOutputRowSets", "setStepListeners", "setVariable", "stopAll", "stopRunning", 
+		"toString", 
         };
 }

@@ -247,25 +247,26 @@ class UserDefinedJavaClassHighlight implements LineStyleListener {
 		protected boolean fEofSeen= false;
 
 		private String[] kfKeywords ={
-			"num2str"
+			"String", "Long", "Date", "Boolean", "Double", "BigDecimal", "Byte",
 		};
 		
 		private String[] fgKeywords= { 
-				"array",
-				"break",
-				"case","catch", "const","continue",
-				"Date", "default", "delete", "do",
-				"else","eval","escape",
-				"false", "finally", "float", "for", "function", 
-				"if","in","instanceof", "isFinite","isNaN",
-				"new", "Number", "null",
-				"String", "switch",
-				"this","then","throw", "to", "true","try","typeof",
-				"parseInt","parseFloat",
+				"abstract", "assert",
+				"boolean", "break", "byte",
+				"case", "catch", "char", "class", "const", "continue",
+				"default", "do", "double",
+				"else", "enum", "extends",
+				"final", "finally", "float", "for",
+				"goto",
+				"if", "implements", "import", "instanceof", "int", "interface",
+				"long",
+				"native", "new",
+				"package", "private", "protected", "public",
 				"return",
-				"unescape",
-				"var","void",
-				"with", "while"
+				"short", "static", "strictfp", "super", "switch", "synchronized",
+				"this", "throw", "throws", "transient", "try",
+				"void", "volatile",
+				"while",
 		};
 
 		public JavaScanner() {
