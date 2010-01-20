@@ -676,7 +676,7 @@ public abstract class TransformClassBase
     
     public String getParameter(String tag) {
     	if (tag==null) return null;
-    	return data.parameterMap.get(tag);
+    	return parent.environmentSubstitute(data.parameterMap.get(tag));
     }
 
     public RowSet findInfoRowSet(String tag) throws KettleException {
@@ -698,7 +698,7 @@ public abstract class TransformClassBase
     	if (Const.isEmpty(stepname)) {
     		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindTargetStepNameForTag", tag));
     	}
-    	RowSet rowSet = findInputRowSet(stepname);
+    	RowSet rowSet = findOutputRowSet(stepname);
     	if (rowSet==null) {
     		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindTargetRowSetForStep", stepname));
     	}

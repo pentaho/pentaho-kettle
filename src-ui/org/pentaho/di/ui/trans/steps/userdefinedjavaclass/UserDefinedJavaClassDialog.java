@@ -770,6 +770,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                 new ColumnInfo(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterValue"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
                 new ColumnInfo(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.ParameterDescription"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
+        colinf[1].setUsingVariables(true);
 
         wParameters = new TableView(transMeta, wBottom, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, nrRows, lsMod, props);
 
