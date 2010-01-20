@@ -36,6 +36,8 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
+import java.util.Map;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -45,6 +47,9 @@ public class UserDefinedJavaClassData extends BaseStepData implements StepDataIn
 {
     public RowMetaInterface inputRowMeta;
     public RowMetaInterface outputRowMeta;
+	public Map<String, String>	parameterMap;
+	public Map<String, String>	infoMap;
+	public Map<String, String>	targetMap;
 	
 	public UserDefinedJavaClassData()
 	{

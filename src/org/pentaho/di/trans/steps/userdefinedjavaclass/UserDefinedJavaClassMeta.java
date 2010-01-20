@@ -296,14 +296,14 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
             }
 
             usageParameters.clear();
-            Node parametersNode = XMLHandler.getSubNode(stepnode, ElementNames.target_steps.name());
-            int nrParameters = XMLHandler.countNodes(parametersNode, ElementNames.target_step.name());
+            Node parametersNode = XMLHandler.getSubNode(stepnode, ElementNames.usage_parameters.name());
+            int nrParameters = XMLHandler.countNodes(parametersNode, ElementNames.usage_parameter.name());
             for (int i = 0; i < nrParameters; i++) {
-            	Node targetNode = XMLHandler.getSubNodeByNr(parametersNode, ElementNames.target_step.name(), i);
+            	Node parameterNode = XMLHandler.getSubNodeByNr(parametersNode, ElementNames.usage_parameter.name(), i);
             	UsageParameter usageParameter = new UsageParameter();
-            	usageParameter.tag = XMLHandler.getTagValue(targetNode, ElementNames.parameter_tag.name());
-            	usageParameter.value = XMLHandler.getTagValue(targetNode, ElementNames.parameter_value.name());
-            	usageParameter.description = XMLHandler.getTagValue(targetNode, ElementNames.parameter_description.name());
+            	usageParameter.tag = XMLHandler.getTagValue(parameterNode, ElementNames.parameter_tag.name());
+            	usageParameter.value = XMLHandler.getTagValue(parameterNode, ElementNames.parameter_value.name());
+            	usageParameter.description = XMLHandler.getTagValue(parameterNode, ElementNames.parameter_description.name());
             	usageParameters.add(usageParameter);
             }
         }

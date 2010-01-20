@@ -37,9 +37,11 @@ the terms of any one of the MPL, the GPL or the LGPL.
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -49,6 +51,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowListener;
@@ -66,7 +69,9 @@ import org.pentaho.di.www.SocketRepository;
 
 public abstract class TransformClassBase
 {
-    protected boolean first = true;
+	private static Class<?> PKG = UserDefinedJavaClassMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	protected boolean first = true;
     protected UserDefinedJavaClass parent;
     protected UserDefinedJavaClassMeta meta;
     protected UserDefinedJavaClassData data;
@@ -81,6 +86,27 @@ public abstract class TransformClassBase
         {
             data.inputRowMeta = getTransMeta().getPrevStepFields(getStepMeta()).clone();
             data.outputRowMeta = getTransMeta().getThisStepFields(getStepMeta(), null, data.inputRowMeta.clone());
+            
+            data.parameterMap = new HashMap<String, String>();
+            for (UsageParameter par : meta.getUsageParameters()) {
+            	if (par.tag!=null && par.value!=null) {
+            		data.parameterMap.put(par.tag, par.value);
+            	}
+            }
+            
+            data.infoMap = new HashMap<String, String>();
+            for (StepDefinition stepDefinition : meta.getInfoStepDefinitions()) {
+            	if (stepDefinition.tag!=null && stepDefinition.stepMeta!=null && stepDefinition.stepMeta.getName()!=null) {
+            		data.infoMap.put(stepDefinition.tag, stepDefinition.stepMeta.getName());
+            	}
+            }
+
+            data.targetMap = new HashMap<String, String>();
+            for (StepDefinition stepDefinition : meta.getTargetStepDefinitions()) {
+            	if (stepDefinition.tag!=null && stepDefinition.stepMeta!=null && stepDefinition.stepMeta.getName()!=null) {
+            		data.targetMap.put(stepDefinition.tag, stepDefinition.stepMeta.getName());
+            	}
+            }
         }
         catch (KettleStepException e)
         {
@@ -647,14 +673,35 @@ public abstract class TransformClassBase
     	
     	return ioMeta;
     }
-
-    /*
-    public RowSet findInfoRowSet(InfoStepEnum tag) {
-    	
-    }
-    public RowSet findTargetRowSet(TargetStepEnum tag) {
-    	
+    
+    public String getParameter(String tag) {
+    	if (tag==null) return null;
+    	return data.parameterMap.get(tag);
     }
 
-    */
+    public RowSet findInfoRowSet(String tag) throws KettleException {
+    	if (tag==null) return null;
+    	String stepname = data.infoMap.get(tag);
+    	if (Const.isEmpty(stepname)) {
+    		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindInfoStepNameForTag", tag));
+    	}
+    	RowSet rowSet = findInputRowSet(stepname);
+    	if (rowSet==null) {
+    		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindInfoRowSetForStep", stepname));
+    	}
+    	return rowSet;
+    }
+    
+    public RowSet findTargetRowSet(String tag) throws KettleException {
+    	if (tag==null) return null;
+    	String stepname = data.targetMap.get(tag);
+    	if (Const.isEmpty(stepname)) {
+    		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindTargetStepNameForTag", tag));
+    	}
+    	RowSet rowSet = findInputRowSet(stepname);
+    	if (rowSet==null) {
+    		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindTargetRowSetForStep", stepname));
+    	}
+    	return rowSet;
+    }
 }
