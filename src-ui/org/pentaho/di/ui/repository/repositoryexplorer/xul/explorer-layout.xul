@@ -56,9 +56,9 @@
 			-->
 
 			<tabpanel id="browse-tab">
-					<hbox id="all-box" flex="1">
 						
-						<vbox>
+						<splitter flex="1" orient="horizontal">  
+						<vbox flex="1"> 
 							<hbox>
 								<label id="folder-label" value="Folders:" />
 								<label id="spacer-label" flex="1" />
@@ -67,10 +67,13 @@
 								<button id="folder-expand-all" image="images/CollapseAll.png"  onclick="browseController.collapseAllFolders()" />
 							</hbox>
 
-							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" pen:drageffect="move" pen:preserveexpandedstate="true" command="browseController.onDoubleClick()">
+							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" 
+							ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" 
+							pen:drageffect="move" pen:preserveexpandedstate="true" command="browseController.onDoubleClick()">
 								<treecols>
 									<treecol flex="1" label="" primary="true" pen:binding="name"
-										pen:childrenbinding="children" pen:imagebinding="image" expandedbinding="expanded"  sortActive="true" sortDirection="ASCENDING"/>
+										pen:childrenbinding="children" pen:imagebinding="image" expandedbinding="expanded" 
+										sortActive="true" sortDirection="ASCENDING"/>
 								</treecols>
 								<treechildren>
 									<treeitem container="true" open="true">
@@ -82,14 +85,16 @@
 								</treechildren>
 							</tree>
 						</vbox>
-
-						<vbox flex="1">
+						<vbox flex="4">
 							
 								<tree id="file-table" flex="4" hidecolumnpicker="true"
-									enableColumnDrag="true" context="fileContextMenu" height="500" ondrag="browseController.onDragFromLocalTable()" pen:drageffect="move"  sortable="true" treeLines="false" command="browseController.onDoubleClick()">
+									enableColumnDrag="true" context="fileContextMenu" 
+									height="500" ondrag="browseController.onDragFromLocalTable()" 
+									pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
 									<treecols>
 										<treecol id="name-col" flex="1" label="Name"
-											pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" pen:comparatorbinding="comparator"/>
+											pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
+											pen:comparatorbinding="comparator"/>
 										<treecol id="type-col" flex="1" label="Type"
 											pen:binding="type" />
 										<treecol id="date-mod-col" flex="1" label="Date Modified"
@@ -128,8 +133,7 @@
 							</tree>
 
 				 		</vbox>  
-					</hbox>
-
+						</splitter>  
 			</tabpanel>
 			<!--
 				###############################################################################
@@ -163,9 +167,9 @@
 						<button id="connections-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="connectionsController.removeConnection()" />
 					</hbox>
 					<!-- Connection list -->
-					<tree id="connections-table" flex="1" hidecolumnpicker="true" treeLines="false">
+					<tree id="connections-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
 						<treecols>
-							<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
+							<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
 							<treecol id="type-col" flex="1" label="Type" pen:binding="type"/>
 							<treecol id="date-mod-col" flex="1" label="Date Modified" pen:binding="dateModified"/>
 							<treecol id="size-col" flex="1" label="Size"/>
@@ -255,9 +259,9 @@
 						<button id="slaves-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="slavesController.removeSlave()" />
 					</hbox>
 					<!-- Slaves list -->
-					<tree id="slaves-table" flex="1" hidecolumnpicker="true" treeLines="false">
+					<tree id="slaves-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
 						<treecols>
-							<treecol id="name-col" flex="4" label="Name" pen:binding="name"/>
+							<treecol id="name-col" flex="4" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
 							<treecol id="host-col" flex="4" label="Host" pen:binding="host"/>
 							<treecol id="port-col" flex="2" label="Port" pen:binding="port"/>
 							<treecol id="master-col" flex="1" label="Master" pen:binding="master"/>
@@ -299,9 +303,9 @@
 						<button id="partitions-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="partitionsController.removePartition()" />
 					</hbox>
 					<!-- Partition list -->
-					<tree id="partitions-table" flex="1" hidecolumnpicker="true" treeLines="false">
+					<tree id="partitions-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
 						<treecols>
-							<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
+							<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
 						</treecols>
 						<treechildren/>
 					</tree>
@@ -340,9 +344,9 @@
 						<button id="clusters-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="clustersController.removeCluster()" />
 					</hbox>
 					<!-- Cluster list -->
-					<tree id="clusters-table" flex="1" hidecolumnpicker="true" treeLines="false">
+					<tree id="clusters-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
 						<treecols>
-							<treecol id="name-col" flex="1" label="Name" pen:binding="name"/>
+							<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
 							<treecol id="servers-col" flex="4" label="Server(s)" pen:binding="serverList"/>
 						</treecols>
 						<treechildren/>
