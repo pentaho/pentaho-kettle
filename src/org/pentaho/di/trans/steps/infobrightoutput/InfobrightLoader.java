@@ -186,7 +186,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
     try {
       populator.populate(data.record, row, rowMeta);
       data.record.writeTo(data.loader.getOutputStream());
-      logRowlevel("loading: ..."); // does it make sense to have this for binary format?
+      //logRowlevel("loading: ..."); // does it make sense to have this for binary format?
     } catch (IOException ex) {
       throw new KettleException(ex);
     }
