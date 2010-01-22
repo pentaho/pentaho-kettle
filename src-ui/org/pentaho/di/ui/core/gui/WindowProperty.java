@@ -105,12 +105,23 @@ public class WindowProperty
         Rectangle resizedRect = Geometry.copy(shRect);
         constrainRectangleToContainer(resizedRect, entireClientArea);
         
-        /* If the persisted size/location doesn't perfectly fit
-         * into the entire client area, the persisted settings
-         * likely were not meant for this configuration of monitors.
-         * Relocate the shell into either the parent monitor or if
-         * there is no parent, the primary monitor then center it.
-         */
+        
+        // Just to double check: what is the preferred size of this dialog?
+        // This computed is a minimum.  If the minimum is smaller than the 
+        // size of the current shell, we make it larger.
+        //
+		Point computedSize = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		Rectangle shellSize = shell.getBounds();
+		if (shellSize.width<computedSize.x) shellSize.width=computedSize.x;
+		if (shellSize.height<computedSize.y) shellSize.height=computedSize.y;
+		shell.setBounds(shellSize);
+		
+		// If the persisted size/location doesn't perfectly fit
+		// into the entire client area, the persisted settings
+		// likely were not meant for this configuration of monitors.
+		// Relocate the shell into either the parent monitor or if
+		// there is no parent, the primary monitor then center it.
+		//
         if (!resizedRect.equals(shRect) || isClippedByUnalignedMonitors(resizedRect, shell.getDisplay()))
         {
             Monitor monitor = shell.getDisplay().getPrimaryMonitor();
@@ -126,16 +137,6 @@ public class WindowProperty
 
             shell.setBounds(resizedRect);
         }
-        
-        // Just to double check: what is the preferred size of this dialog?
-        // This computed is a minimum.  If the minimum is smaller than the 
-        // size of the current shell, we make it larger.
-        //
-		Point computedSize = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		Rectangle shellSize = shell.getBounds();
-		if (shellSize.width<computedSize.x) shellSize.width=computedSize.x;
-		if (shellSize.height<computedSize.y) shellSize.height=computedSize.y;
-		shell.setBounds(shellSize);
 	}
 
     /**
