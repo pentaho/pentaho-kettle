@@ -23,6 +23,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -172,6 +173,9 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	private FormData fdTest;
     private Listener lsTest;
   
+    private boolean  gotModule = false;
+    
+    private boolean  getModulesListError = false;     /* True if error getting modules list */
     
 	public SalesforceInputDialog(Shell parent, Object in, TransMeta transMeta,
 			String sname) {
@@ -371,7 +375,31 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         fdModule.top  = new FormAttachment(wspecifyQuery, margin);
         fdModule.right= new FormAttachment(100, -margin);
         wModule.setLayoutData(fdModule);
-        wModule.setItems(SalesforceConnectionUtils.modulesList);
+        wModule.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            	getModulesListError = false;
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                // check if the URL and login credentials passed and not just had error 
+            	if (Const.isEmpty(wURL.getText()) || 
+               		Const.isEmpty(wUserName.getText()) ||
+            		Const.isEmpty(wPassword.getText()) ||
+            		(getModulesListError )) return; 
+
+
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getModulesList();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
+
        
 	    // condition
         wlCondition = new Label(wSettingsGroup, SWT.RIGHT);
@@ -393,6 +421,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         fdCondition.right = new FormAttachment(100, -margin);
         fdCondition.bottom = new FormAttachment(100, -margin);
         wCondition.setLayoutData(fdCondition);
+        
 
 
 	    // Query
@@ -1564,6 +1593,43 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 					e);
 		}
 	}
+	  private void getModulesList()
+	  {
+		  if (!gotModule){
+			  SalesforceConnection connection=null;
+
+			  try{
+				  SalesforceInputMeta meta = new SalesforceInputMeta();
+				  getInfo(meta);
+				  String url = transMeta.environmentSubstitute(meta.getTargetURL());
+				  
+				  String selectedField=transMeta.environmentSubstitute(meta.getModule());
+				  wModule.removeAll();
+
+				  // Define a new Salesforce connection
+				  connection=new SalesforceConnection(log, url, transMeta.environmentSubstitute(meta.getUserName()),transMeta.environmentSubstitute(meta.getPassword())); 
+				  // connect to Salesforce
+				  connection.connect();
+				  // return 
+				  wModule.setItems(connection.getModules());				  
+				  
+				  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
+				  
+			      gotModule = true;
+	        	  getModulesListError = false;
+				  
+			  }catch(Exception e)
+			  {
+					new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorRetrieveModules.DialogTitle"),
+							BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
+					getModulesListError = true;
+			  } finally{
+				  if(connection!=null) {
+						try {connection.close();}catch(Exception e){};
+					}
+		 	 }
+		  }
+	  }
 	public String toString() {
 		return this.getClass().getName();
 	}

@@ -30,6 +30,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -111,6 +112,10 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
 	
 
 	private boolean gotPrevious=false;
+	
+    private boolean  gotModule = false;
+    
+    private boolean  getModulesListError = false;     /* True if error getting modules list */
     
     
 	public SalesforceDeleteDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
@@ -311,7 +316,30 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
         fdModule.top  = new FormAttachment(wBatchSize, margin);
         fdModule.right= new FormAttachment(100, -margin);
         wModule.setLayoutData(fdModule);
-        wModule.setItems(SalesforceConnectionUtils.modulesList);
+        wModule.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            	getModulesListError = false;
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                // check if the URL and login credentials passed and not just had error 
+            	if (Const.isEmpty(wURL.getText()) || 
+               		Const.isEmpty(wUserName.getText()) ||
+            		Const.isEmpty(wPassword.getText()) ||
+            		(getModulesListError )) return; 
+
+
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getModulesList();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
         
     	// Salesforce Id Field
 		wlDeleteField=new Label(wSettingsGroup, SWT.RIGHT);
@@ -587,6 +615,43 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
         
         return true;
 	}
+	private void getModulesList()
+	  {
+		  if (!gotModule){
+			  SalesforceConnection connection=null;
+
+			  try{
+				  SalesforceDeleteMeta meta = new SalesforceDeleteMeta();
+				  getInfo(meta);
+				  String url = transMeta.environmentSubstitute(meta.getTargetURL());
+				  
+				  String selectedField=transMeta.environmentSubstitute(meta.getTargetURL());
+				  wModule.removeAll();
+
+				  // Define a new Salesforce connection
+				  connection=new SalesforceConnection(log, url, transMeta.environmentSubstitute(meta.getUserName()),transMeta.environmentSubstitute(meta.getPassword())); 
+				  // connect to Salesforce
+				  connection.connect();
+				  // return 
+				  wModule.setItems(connection.getModules());				  
+				  
+				  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
+				  
+			      gotModule = true;
+	        	  getModulesListError = false;
+				  
+			  }catch(Exception e)
+			  {
+					new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceDeleteDialog.ErrorRetrieveModules.DialogTitle"),
+							BaseMessages.getString(PKG, "SalesforceDeleteDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
+					getModulesListError = true;
+			  } finally{
+				  if(connection!=null) {
+						try {connection.close();}catch(Exception e){};
+					}
+		 	 }
+		  }
+	  }
 	public String toString() {
 		return this.getClass().getName();
 	}

@@ -26,12 +26,14 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -136,6 +138,10 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 	 * List of ColumnInfo that should have the field names of the selected database table
 	 */
 	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
+	
+    private boolean  gotModule = false;
+    
+    private boolean  getModulesListError = false;     /* True if error getting modules list */
     
 	public SalesforceUpdateDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
 		super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -346,7 +352,30 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
         fdModule.top  = new FormAttachment(wBatchSize, margin);
         fdModule.right= new FormAttachment(100, -margin);
         wModule.setLayoutData(fdModule);
-        wModule.setItems(SalesforceConnectionUtils.modulesList);
+        wModule.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            	getModulesListError = false;
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                // check if the URL and login credentials passed and not just had error 
+            	if (Const.isEmpty(wURL.getText()) || 
+               		Const.isEmpty(wUserName.getText()) ||
+            		Const.isEmpty(wPassword.getText()) ||
+            		(getModulesListError )) return; 
+
+
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getModulesList();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
       
 		fdSettingsGroup = new FormData();
 		fdSettingsGroup.left = new FormAttachment(0, margin);
@@ -717,13 +746,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 		  String url = transMeta.environmentSubstitute(meta.getTargetURL());
 		  try {
 			  String selectedModule=transMeta.environmentSubstitute(meta.getModule());
-			  String[] fieldsName = null;
-			  if(!meta.isMetaRetrievedFromSalesforce()) {
-				  // We need here to retrieve meta from Salesforce
-				  fieldsName=SalesforceConnectionUtils.getFields(selectedModule);
-				  if(fieldsName!=null) return fieldsName;
-			  }
-			 
+
 			  // Define a new Salesforce connection
 			  connection=new SalesforceConnection(log, url, transMeta.environmentSubstitute(meta.getUserName()),transMeta.environmentSubstitute(meta.getPassword())); 
 			  // connect to Salesforce
@@ -862,7 +885,43 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
         // return fields
         ciReturn[1].setComboValues(fieldNames);
     }
+	 private void getModulesList()
+	  {
+		  if (!gotModule){
+			  SalesforceConnection connection=null;
 
+			  try{
+				  SalesforceUpdateMeta meta = new SalesforceUpdateMeta();
+				  getInfo(meta);
+				  String url = transMeta.environmentSubstitute(meta.getTargetURL());
+				  
+				  String selectedField=transMeta.environmentSubstitute(meta.getTargetURL());
+				  wModule.removeAll();
+
+				  // Define a new Salesforce connection
+				  connection=new SalesforceConnection(log, url, transMeta.environmentSubstitute(meta.getUserName()),transMeta.environmentSubstitute(meta.getPassword())); 
+				  // connect to Salesforce
+				  connection.connect();
+				  // return 
+				  wModule.setItems(connection.getModules());				  
+				  
+				  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
+				  
+			      gotModule = true;
+	        	  getModulesListError = false;
+				  
+			  }catch(Exception e)
+			  {
+					new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceUpdateDialog.ErrorRetrieveModules.DialogTitle"),
+							BaseMessages.getString(PKG, "SalesforceUpdateDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
+					getModulesListError = true;
+			  } finally{
+				  if(connection!=null) {
+						try {connection.close();}catch(Exception e){};
+					}
+		 	 }
+		  }
+	  }
 	
 	public void setModuleFieldCombo() {
 		Display display = shell.getDisplay();

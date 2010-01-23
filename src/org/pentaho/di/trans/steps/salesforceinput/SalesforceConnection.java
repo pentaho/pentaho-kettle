@@ -28,6 +28,7 @@ import org.pentaho.di.i18n.BaseMessages;
 
 import com.sforce.soap.partner.DeleteResult;
 import com.sforce.soap.partner.DeletedRecord;
+import com.sforce.soap.partner.DescribeGlobalResult;
 import com.sforce.soap.partner.DescribeSObjectResult;
 import com.sforce.soap.partner.Field;
 import com.sforce.soap.partner.GetDeletedResult;
@@ -360,6 +361,20 @@ public class SalesforceConnection {
 			 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.QueringMore"),e);
 		 }
 	}
+	public String[] getModules() throws KettleException
+	{
+	  DescribeGlobalResult dgr=null;
+	  try  {
+		  // Get object
+		  dgr = getBinding().describeGlobal();
+		  // let's get all objects
+	      return dgr.getTypes();
+	   } catch(Exception e){
+		   throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.GettingModules"),e);
+	   }finally  {
+		   if(dgr!=null) dgr=null;
+	   }
+	}  
   public Field[] getModuleFields(String module) throws KettleException
   {
 	  DescribeSObjectResult describeSObjectResult=null;
