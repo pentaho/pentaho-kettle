@@ -2990,9 +2990,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             if (objname != null) {
               RepositoryObjectType objectType = element.getRepositoryElementType();
               RepositoryDirectory repdir = element.getRepositoryDirectory();
-              String versionLabel = revision==null?"null":revision;
-
-              loadObjectFromRepository(objname, objectType, repdir, versionLabel);
+              loadObjectFromRepository(objname, objectType, repdir, revision);
             }
             return false; // do not close explorer
           }
