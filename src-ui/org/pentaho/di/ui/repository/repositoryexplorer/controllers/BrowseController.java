@@ -349,8 +349,8 @@ public class BrowseController extends AbstractXulEventHandler {
       if(event.getDropParent() != null) {
         if(event.getDataTransfer().getData().size() == 1) {
           Object o = event.getDataTransfer().getData().get(0);
-          if(o instanceof UIRepositoryContent && event.getDropParent() instanceof UIRepositoryDirectory) {
-            UIRepositoryContent obj = (UIRepositoryContent) o;
+          if(o instanceof UIRepositoryObject && event.getDropParent() instanceof UIRepositoryDirectory) {
+            UIRepositoryObject obj = (UIRepositoryObject) o;
             UIRepositoryDirectory targetDirectory = (UIRepositoryDirectory)event.getDropParent();
             
             obj.move(targetDirectory);
