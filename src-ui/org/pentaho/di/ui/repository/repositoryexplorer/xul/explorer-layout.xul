@@ -89,7 +89,7 @@
 							
 								<tree id="file-table" flex="4" hidecolumnpicker="true"
 									enableColumnDrag="true" context="fileContextMenu" 
-									height="500" ondrag="browseController.onDragFromLocalTable()" 
+									height="500" ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()" 
 									pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
 									<treecols>
 										<treecol id="name-col" flex="1" label="Name"

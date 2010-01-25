@@ -21,12 +21,14 @@ import java.util.Collection;
 import java.util.List;
 
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIJob;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevision;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjects;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UITransformation;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
@@ -347,8 +349,8 @@ public class BrowseController extends AbstractXulEventHandler {
       if(event.getDropParent() != null) {
         if(event.getDataTransfer().getData().size() == 1) {
           Object o = event.getDataTransfer().getData().get(0);
-          if(o instanceof UIRepositoryObject && event.getDropParent() instanceof UIRepositoryDirectory) {
-            UIRepositoryObject obj = (UIRepositoryObject) o;
+          if(o instanceof UIRepositoryContent && event.getDropParent() instanceof UIRepositoryDirectory) {
+            UIRepositoryContent obj = (UIRepositoryContent) o;
             UIRepositoryDirectory targetDirectory = (UIRepositoryDirectory)event.getDropParent();
             
             obj.move(targetDirectory);
@@ -385,6 +387,9 @@ public class BrowseController extends AbstractXulEventHandler {
           List<Object> selectedFolder = new ArrayList<Object>();
           selectedFolder.add(o);
           folderTree.setSelectedItems(selectedFolder);
+        } else if((o instanceof UIJob) || (o instanceof UITransformation)) {
+          openContent();
+          return;
         }
       }
     }
