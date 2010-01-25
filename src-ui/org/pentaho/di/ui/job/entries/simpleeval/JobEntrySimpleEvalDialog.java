@@ -368,6 +368,13 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 	  	wSuccessCondition = new CCombo(wSuccessOn, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenEqual.Label"));
 	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenDifferent.Label"));
+	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenContains.Label"));
+	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenNotContains.Label"));
+	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenStartWith.Label"));
+	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenNotStartWith.Label"));
+	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenEndWith.Label"));
+	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenNotEndWith.Label"));
+	  	wSuccessCondition.add(Messages.getString("JobSimpleEval.SuccessWhenRegExp.Label"));
 	  	wSuccessCondition.select(0); // +1: starts at -1
 	  	
 		props.setLook(wSuccessCondition);

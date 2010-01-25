@@ -19,6 +19,7 @@ import org.w3c.dom.Node;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -65,14 +66,37 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 	public static final String[] successConditionDesc = new String[] { 
 		Messages.getString("JobSimpleEval.SuccessWhenEqual.Label"), 
 		Messages.getString("JobSimpleEval.SuccessWhenDifferent.Label"),
-	
+		Messages.getString("JobSimpleEval.SuccessWhenContains.Label"),
+		Messages.getString("JobSimpleEval.SuccessWhenNotContains.Label"),
+		Messages.getString("JobSimpleEval.SuccessWhenStartWith.Label"),
+		Messages.getString("JobSimpleEval.SuccessWhenNotStartWith.Label"),
+		Messages.getString("JobSimpleEval.SuccessWhenEndWith.Label"),
+		Messages.getString("JobSimpleEval.SuccessWhenNotEndWith.Label"),
+		Messages.getString("JobSimpleEval.SuccessWhenRegExp.Label")
+
+		
 	};
 	public static final String[] successConditionCode = new String[] { 
 		"equal", 
-		"different"
+		"different",
+		"contains",
+		"notcontains",
+		"startswith",
+		"notstatwith",
+		"endswith",
+		"notendwith",
+		"regexp"
 	};
 	public static final int SUCCESS_CONDITION_EQUAL=0;
 	public static final int SUCCESS_CONDITION_DIFFERENT=1;
+	public static final int SUCCESS_CONDITION_CONTAINS=2;
+	public static final int SUCCESS_CONDITION_NOT_CONTAINS=3;
+	public static final int SUCCESS_CONDITION_START_WITH=4;
+	public static final int SUCCESS_CONDITION_NOT_START_WITH=5;
+	public static final int SUCCESS_CONDITION_END_WITH=6;
+	public static final int SUCCESS_CONDITION_NOT_END_WITH=7;
+	public static final int SUCCESS_CONDITION_REGEX=8;
+
 	public int successcondition;
 
 
@@ -89,7 +113,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 	};
 	public static final int FIELD_TYPE_STRING=0;
 	public static final int FIELD_TYPE_NUMBER=1;
-	public static final int FIELD_TYPE_DATE_TIME=2;
+	public static final int FIELD_TYPE_DATE_TIME=7;
 	
 	public int fieldtype;
 
@@ -111,7 +135,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		"smallequal",
 		"greater",
 		"greaterequal",
-		"between"
+		"between",
 	};
 	public static final int SUCCESS_NUMBER_CONDITION_EQUAL=0;
 	public static final int SUCCESS_NUMBER_CONDITIONDIFFERENT=1;
@@ -120,7 +144,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 	public static final int SUCCESS_NUMBER_CONDITION_GREATER=4;
 	public static final int SUCCESS_NUMBER_CONDITION_GREATEREQUAL=5;
 	public static final int SUCCESS_NUMBER_CONDITION_BETWEEN=6;
-
+	
 	public int successnumbercondition;
 	
 	
@@ -394,13 +418,41 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 			case FIELD_TYPE_STRING: 
 				switch (successcondition)
 				{
-					case 0: // equal
+					case SUCCESS_CONDITION_EQUAL: // equal
 						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 						success=(sourcevalue.equals(realCompareValue));
 					break;
-					case 1: // different
+					case SUCCESS_CONDITION_DIFFERENT: // different
 						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 						success=(!sourcevalue.equals(realCompareValue));
+					break;
+					case SUCCESS_CONDITION_CONTAINS: // contains
+						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						success=(sourcevalue.contains(realCompareValue));
+					break;
+					case SUCCESS_CONDITION_NOT_CONTAINS: // not contains
+						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						success=(!sourcevalue.contains(realCompareValue));
+					break;
+					case SUCCESS_CONDITION_START_WITH: // starts with
+						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						success=(sourcevalue.startsWith(realCompareValue));
+					break;
+					case SUCCESS_CONDITION_NOT_START_WITH: // not start with
+						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						success=(!sourcevalue.startsWith(realCompareValue));
+					break;
+					case SUCCESS_CONDITION_END_WITH: // ends with
+						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						success=(sourcevalue.endsWith(realCompareValue));
+					break;
+					case SUCCESS_CONDITION_NOT_END_WITH: // not ends with
+						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						success=(!sourcevalue.endsWith(realCompareValue));
+					break;
+					case SUCCESS_CONDITION_REGEX: // regexp
+						if(log.isDebug()) log.logDebug(toString(), Messages.getString("JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						success=(Pattern.compile(realCompareValue).matcher(sourcevalue).matches());
 					break;
 					default:
 					break;
