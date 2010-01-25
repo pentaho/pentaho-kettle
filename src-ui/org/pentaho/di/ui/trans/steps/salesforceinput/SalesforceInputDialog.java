@@ -390,12 +390,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             		Const.isEmpty(wPassword.getText()) ||
             		(getModulesListError )) return; 
 
-
-                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
-                shell.setCursor(busy);
                 getModulesList();
-                shell.setCursor(null);
-                busy.dispose();
             }
         }
     );
@@ -1597,33 +1592,34 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	  {
 		  if (!gotModule){
 			  SalesforceConnection connection=null;
+			  String selectedField=transMeta.environmentSubstitute(wModule.getText());
+			  wModule.removeAll();
 
 			  try{
 				  SalesforceInputMeta meta = new SalesforceInputMeta();
 				  getInfo(meta);
 				  String url = transMeta.environmentSubstitute(meta.getTargetURL());
 				  
-				  String selectedField=transMeta.environmentSubstitute(meta.getModule());
-				  wModule.removeAll();
-
 				  // Define a new Salesforce connection
 				  connection=new SalesforceConnection(log, url, transMeta.environmentSubstitute(meta.getUserName()),transMeta.environmentSubstitute(meta.getPassword())); 
 				  // connect to Salesforce
 				  connection.connect();
-				  // return 
-				  wModule.setItems(connection.getModules());				  
 				  
-				  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
+				  // retrieve modules list
+				  String[] modules = connection.getModules();
+				  if(modules!=null && modules.length>0) {
+					  // populate Combo
+					  wModule.setItems(connection.getModules());	
+				  }
 				  
 			      gotModule = true;
 	        	  getModulesListError = false;
-				  
-			  }catch(Exception e)
-			  {
+			  }catch(Exception e) {
 					new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorRetrieveModules.DialogTitle"),
 							BaseMessages.getString(PKG, "SalesforceInputDialog.ErrorRetrieveData.ErrorRetrieveModules"),e);
 					getModulesListError = true;
 			  } finally{
+				  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
 				  if(connection!=null) {
 						try {connection.close();}catch(Exception e){};
 					}
