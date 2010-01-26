@@ -56,7 +56,8 @@ case `uname -s` in
 	Darwin)
 		LIBPATH=$BASEDIR/libswt/osx/
 		JAVA_BIN=$BASEDIR/libswt/osx/java_swt
-                STARTUP="-cp launcher.jar org.pentaho.commons.launcher.Launcher"
+                STARTUP=" -cp launcher.jar org.pentaho.commons.launcher.Launcher"
+        OPT="-XstartOnFirstThread=true "
 		chmod +x $JAVA_BIN
 		;;
 
@@ -151,7 +152,7 @@ fi
 # ** Change 256m to higher values in case you run out of memory.  **
 # ******************************************************************
 
-OPT="-Xmx256m -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
+OPT="$OPT -Xmx256m -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
 
 # ***************
 # ** Run...    **
