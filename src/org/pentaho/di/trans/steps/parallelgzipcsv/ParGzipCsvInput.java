@@ -134,6 +134,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 				if (opened) {
 					return true; // try again on the next loop in the next file...
 				} else {
+					incrementLinesUpdated();
 					setOutputDone(); // last file, end here
 					return false;
 				}
@@ -249,12 +250,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 			
 			// Close the previous file...
 			//
-			if (data.gzis!=null) {
-				data.gzis.close();
-			}
-			if (data.fis!=null) {
-				data.fis.close();
-			}
+			closeFile();
 			
 			if (data.filenr>=data.filenames.length) {
 				return false;
@@ -730,6 +726,7 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 				data.gzis.close();
 			}
 			if (data.fis!=null) {
+				incrementLinesUpdated();
 				data.fis.close();
 			}
 		} catch (IOException e) {
