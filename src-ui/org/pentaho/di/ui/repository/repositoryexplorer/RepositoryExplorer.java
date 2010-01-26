@@ -77,10 +77,7 @@ public class RepositoryExplorer {
       container.addEventHandler(mainController);
 
       boolean versionsEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions();
-      if (versionsEnabled){
-        loadVersionOverlay();
-      }
-
+      loadVersionOverlay(versionsEnabled);
       browseController.setBindingFactory(bf);
       container.addEventHandler(browseController);
       browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
@@ -145,9 +142,11 @@ public class RepositoryExplorer {
     }
   }
 
-  private void loadVersionOverlay(){
+  private void loadVersionOverlay(boolean versionEnabled){
     try {
-      String overlay = "org/pentaho/di/ui/repository/repositoryexplorer/xul/version-layout-overlay.xul"; //$NON-NLS-1$
+      String overlay = versionEnabled ? 
+          "org/pentaho/di/ui/repository/repositoryexplorer/xul/version-layout-overlay.xul" : //$NON-NLS-1$
+            "org/pentaho/di/ui/repository/repositoryexplorer/xul/version-disabled-layout-overlay.xul"; //$NON-NLS-1$
       container.loadOverlay(overlay);
     } catch (XulException e) {
       log.error("Error loading Xul overlay: version-layout-overlay.xul");

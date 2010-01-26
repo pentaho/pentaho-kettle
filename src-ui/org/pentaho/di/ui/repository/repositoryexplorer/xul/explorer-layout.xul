@@ -109,6 +109,7 @@
 									</treecols>
 									<treechildren />
 								</tree>
+								<vbox flex="1" id="revision-box" />
 						  </splitter>
 				 		</vbox>  
 						</splitter>  
