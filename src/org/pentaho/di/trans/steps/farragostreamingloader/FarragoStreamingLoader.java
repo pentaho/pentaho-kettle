@@ -304,8 +304,7 @@ public class FarragoStreamingLoader extends BaseStep implements StepInterface {
 
 			return true;
 		} catch (Exception e) {
-			logError(BaseMessages.getString(PKG,
-					"FarragoStreamingLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+			logError(BaseMessages.getString(PKG,"FarragoStreamingLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone(); // signal end to receiver(s)
