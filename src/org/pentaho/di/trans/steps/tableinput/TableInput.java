@@ -202,7 +202,9 @@ public class TableInput extends BaseStep implements StepInterface
     
     private void closePreviousQuery() throws KettleDatabaseException
     {
-        data.db.closeQuery(data.rs);
+        if(data.db!=null) {
+        	data.db.closeQuery(data.rs);
+        }
     }
 
     private boolean doQuery(RowMetaInterface parametersMeta, Object[] parameters) throws KettleDatabaseException
