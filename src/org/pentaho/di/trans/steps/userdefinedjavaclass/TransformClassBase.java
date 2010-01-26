@@ -36,11 +36,11 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
@@ -61,6 +61,7 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
@@ -250,7 +251,7 @@ public abstract class TransformClassBase
         return parent.getPartitionIDImpl();
     }
 
-    public Map<String, RowSet> getPartitionTargets()
+    public Map<String, BlockingRowSet> getPartitionTargets()
     {
         return parent.getPartitionTargetsImpl();
     }
@@ -300,7 +301,7 @@ public abstract class TransformClassBase
         return parent.getSocketRepositoryImpl();
     }
 
-    public int getStatus()
+    public StepExecutionStatus getStatus()
     {
         return parent.getStatusImpl();
     }
@@ -563,7 +564,7 @@ public abstract class TransformClassBase
         parent.setInputRowMetaImpl(rowMeta);
     }
 
-    public void setInputRowSets(ArrayList<RowSet> inputRowSets)
+    public void setInputRowSets(List<RowSet> inputRowSets)
     {
         parent.setInputRowSetsImpl(inputRowSets);
     }
@@ -608,7 +609,7 @@ public abstract class TransformClassBase
         parent.setOutputDoneImpl();
     }
 
-    public void setOutputRowSets(ArrayList<RowSet> outputRowSets)
+    public void setOutputRowSets(List<RowSet> outputRowSets)
     {
         parent.setOutputRowSetsImpl(outputRowSets);
     }

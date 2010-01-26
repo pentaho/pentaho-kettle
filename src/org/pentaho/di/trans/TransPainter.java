@@ -420,11 +420,16 @@ public class TransPainter extends BasePainter
             gc.setForeground(EColor.BLACK);
             gc.drawText(message, screen.x + 3 + iconsize, screen.y - 8);
         }
+        
         if (stepMeta.getCopies() > 1  && !partitioned)
         {
             gc.setBackground(EColor.BACKGROUND);
             gc.setForeground(EColor.BLACK);
-            gc.drawText("x" + stepMeta.getCopies(), screen.x - 5, screen.y - 5);
+            String copies = "x" + stepMeta.getCopies();
+            Point textExtent = gc.textExtent(copies);
+            //gc.fillRectangle(screen.x - 11, screen.y - 11, textExtent.x+2, textExtent.y+2);
+            // gc.drawRectangle(screen.x - 11, screen.y - 11, textExtent.x+2, textExtent.y+2);
+            gc.drawText(copies, screen.x - textExtent.x/2, screen.y - textExtent.y + 3, false);
         }
         
         // If there was an error during the run, the map "stepLogMap" is not empty and not null.  

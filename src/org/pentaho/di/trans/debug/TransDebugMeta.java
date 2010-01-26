@@ -20,8 +20,8 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RowAdapter;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
 /**
@@ -85,7 +85,7 @@ public class TransDebugMeta {
 			
 			// What is the transformation thread to attach a listener to?
 			//
-			for (BaseStep baseStep : trans.findBaseSteps(stepMeta.getName())) {
+			for (StepInterface baseStep : trans.findBaseSteps(stepMeta.getName())) {
 				baseStep.addRowListener(new RowAdapter() 
 					{
 						public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {

@@ -283,7 +283,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		fdStepname.top = new FormAttachment(0, margin);
 		fdStepname.right = new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
-
+	
 		// Show a group with 2 main options: a transformation in the repository
 		// or on file
 		//

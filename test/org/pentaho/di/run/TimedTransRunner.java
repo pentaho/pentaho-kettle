@@ -12,8 +12,8 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RowListener;
+import org.pentaho.di.trans.step.StepInterface;
 
 public class TimedTransRunner
 {
@@ -105,10 +105,10 @@ public class TimedTransRunner
         
         if (!Const.isEmpty(rowListenerStep))
         {
-            BaseStep baseStep = trans.findRunThread(rowListenerStep);
-            if (baseStep!=null)
+            StepInterface step = trans.findRunThread(rowListenerStep);
+            if (step!=null)
             {
-                baseStep.addRowListener(rowListener);
+                step.addRowListener(rowListener);
             }
         }
         

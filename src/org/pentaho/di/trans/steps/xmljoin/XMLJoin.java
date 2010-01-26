@@ -27,8 +27,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -251,19 +250,19 @@ public class XMLJoin extends BaseStep implements StepInterface
                getSerializer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes"); //$NON-NLS-1$
            }
            
-    	   this.setSafeModeEnabled(false);
-    	   // See if a main step is supplied: in that case move the corresponding rowset to position 0
-			for (int i=0;i<inputRowSets.size();i++)
+    	    // See if a main step is supplied: in that case move the corresponding rowset to position 0
+            // 
+			for (int i=0;i<getInputRowSets().size();i++)
 			{
-			    RowSet rs = (RowSet) inputRowSets.get(i);
+			    BlockingRowSet rs = (BlockingRowSet) getInputRowSets().get(i);
 			    if (rs.getOriginStepName().equalsIgnoreCase(meta.getTargetXMLstep()))
 			    {
 			        // swap this one and position 0...
                    // That means, the main stream is always stream 0 --> easy!
                    //
-			        RowSet zero = (RowSet)inputRowSets.get(0);
-			        inputRowSets.set(0, rs);
-			        inputRowSets.set(i, zero);
+			        BlockingRowSet zero = (BlockingRowSet)getInputRowSets().get(0);
+			        getInputRowSets().set(0, rs);
+			        getInputRowSets().set(i, zero);
 			    }
 			}
         } catch (Exception e) {
@@ -281,33 +280,6 @@ public class XMLJoin extends BaseStep implements StepInterface
         super.dispose(smi, sdi);
         
     }    
-    
-	//
-	// Run is were the action happens!
-	public void run()
-	{		
-    	//BaseStep.runStepThread(this, meta, data);
-		try
-        {
-            logBasic("Starting to run..."); //$NON-NLS-1$
-            while (processRow(meta, data) && !isStopped());
-            
-        }
-        catch(Exception e)
-        {
-            logError("Unexpected error : "); //$NON-NLS-1$
-            logError(Const.getStackTracker(e));
-            setErrors(1);
-            stopAll();
-        }
-        finally
-        {
-            dispose(meta, data);
-            logSummary();
-            markStop();
-        }
-	}   
-	
 
     private void setSerializer(Transformer serializer) {
         this.serializer = serializer;

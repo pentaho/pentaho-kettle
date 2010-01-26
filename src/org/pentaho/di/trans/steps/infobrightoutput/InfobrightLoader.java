@@ -59,6 +59,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
     // no more input to be expected...
     if (row == null) {
       setOutputDone();
+      closePipe();
       return false;
     }
     if (first) {
@@ -86,6 +87,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
       setErrors(1);
       stopAll();
       setOutputDone();  // signal end to receiver(s)
+      closePipe();
       return false;
     }
     return true;
@@ -114,29 +116,13 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
     }
     return res;
   }
-
-  /**
-   * Called by Kettle to start component once initialized.  All data processing is done inside
-   * this loop. 
-   */
-  public void run() {
-    try {
-      logBasic(BaseMessages.getString(PKG, "InfobrightLoader.Log.StartingToRun"));
-      while (processRow(meta, data) && !isStopped())
-        {}
-      closePipe();
-    } catch (Exception e) {
-      logError(BaseMessages.getString(PKG, "InfobrightLoader.Log.UnexpectedError") + " : " + e.toString());
-      logError(Const.getStackTracker(e));
-      setErrors(1);
-      stopAll();
-    } finally {
-      safeClosePipe();
-      dispose(meta, data);
-      logSummary();
-      markStop();
-    }
+  
+  @Override
+  public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+	  	safeClosePipe();
+		super.dispose(smi, sdi);
   }
+
 
   /** {@inheritDoc}
    * @see org.pentaho.di.trans.step.BaseStep#stopRunning(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)

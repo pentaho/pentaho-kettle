@@ -501,16 +501,5 @@ public class Update extends BaseStep implements StepInterface
 
 		super.dispose(smi, sdi);
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
+
 }

@@ -261,11 +261,5 @@ public class DBProc extends BaseStep implements StepInterface
 	{
 		return this.getClass().getName();
 	}
-	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
+
 }

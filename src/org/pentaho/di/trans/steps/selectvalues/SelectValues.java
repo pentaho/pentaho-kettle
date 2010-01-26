@@ -418,10 +418,4 @@ public class SelectValues extends BaseStep implements StepInterface
 		}
 	}
 			
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
 }

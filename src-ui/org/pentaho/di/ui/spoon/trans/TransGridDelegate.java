@@ -21,9 +21,9 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepStatus;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.XulHelper;
@@ -298,11 +298,11 @@ public class TransGridDelegate extends SpoonDelegate {
 			int nr = 0;
 			for (int i = 0; i < transGraph.trans.nrSteps(); i++)
 			{
-				BaseStep baseStep = transGraph.trans.getRunThread(i);
+				StepInterface baseStep = transGraph.trans.getRunThread(i);
 				//when "Hide active" steps is enabled show only alive steps
 				//otherwise only those that have not STATUS_EMPTY
-				if ( (hideInactiveSteps && baseStep.isAlive() ) || 
-				 		( !hideInactiveSteps && baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY) ) 
+				if ( (hideInactiveSteps && baseStep.isRunning() ) || 
+				 		( !hideInactiveSteps && baseStep.getStatus()!=StepExecutionStatus.STATUS_EMPTY) ) 
 				{
                     StepStatus stepStatus = new StepStatus(baseStep);
                     TableItem ti;

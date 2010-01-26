@@ -51,7 +51,7 @@ public class RowSetTest extends TestCase
 	 */
 	public void testBasicCreation()
 	{
-	    RowSet set = new RowSet(10);
+	    RowSet set = new BlockingRowSet(10);
 	    
 	    assertTrue(!set.isDone());
 	    // TODO assertTrue(set.isEmpty());
@@ -64,7 +64,7 @@ public class RowSetTest extends TestCase
 	 */
 	public void testFuntionality1()
 	{
-		RowSet set = new RowSet(3);
+		RowSet set = new BlockingRowSet(3);
 
 		RowMetaInterface rm = createRowMetaInterface();
 		
@@ -181,7 +181,7 @@ public class RowSetTest extends TestCase
 	 */
 	public void testNames()
 	{
-		RowSet set = new RowSet(3);
+		RowSet set = new BlockingRowSet(3);
 
         set.setThreadNameFromToCopy("from", 2, "to", 3);
         

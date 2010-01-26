@@ -32,15 +32,9 @@ public class Injector extends BaseStep implements StepInterface
 {
 	private static Class<?> PKG = InjectorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private InjectorMeta meta;
-	private InjectorData data;
-	
 	public Injector(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-		
-		meta=(InjectorMeta)getStepMeta().getStepMetaInterface();
-		data=(InjectorData)stepDataInterface;
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -59,25 +53,5 @@ public class Injector extends BaseStep implements StepInterface
 		if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "Injector.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
 			
 		return true;
-	}
-	
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(InjectorMeta)smi;
-		data=(InjectorData)sdi;
-		
-		if (super.init(smi, sdi))
-		{
-		    // Add init code here.
-		    return true;
-		}
-		return false;
-	}
-	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
+	}	
 }

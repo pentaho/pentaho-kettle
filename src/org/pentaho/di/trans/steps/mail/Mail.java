@@ -856,14 +856,5 @@ public class Mail extends BaseStep implements StepInterface
 		data.parts=null;
 		super.dispose(meta, data);
 	}
-	  //
-    //
-    // Run is were the action happens!
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
-    
+
 }

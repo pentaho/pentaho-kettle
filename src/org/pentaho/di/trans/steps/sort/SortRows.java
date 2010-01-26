@@ -558,11 +558,5 @@ public class SortRows extends BaseStep implements StepInterface
 		}
 		if (log.isDetailed()) logDetailed("QuickSort algorithm has finished.");
 	}
-	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}	
+
 }

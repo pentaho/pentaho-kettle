@@ -29,10 +29,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
@@ -72,17 +74,18 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
-import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.RunThread;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepInitThread;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 import org.pentaho.di.www.AddExportServlet;
@@ -455,7 +458,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 {
     				for (int c=0;c<nrCopies;c++)
     				{
-    					RowSet rowSet=new RowSet(transMeta.getSizeRowset());
+    					RowSet rowSet;
+    					if (transMeta.getTransformationType()==TransformationType.Normal) {
+    						rowSet = new BlockingRowSet(transMeta.getSizeRowset());
+    					} else {
+    						rowSet = new SingleRowRowSet();
+    					}
     					switch(dispatchType)
     					{
     					case TYPE_DISP_1_1: rowSet.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), 0); break;
@@ -477,7 +485,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     {
                         for (int t=0;t<nextCopies;t++)
                         {
-                            RowSet rowSet=new RowSet(transMeta.getSizeRowset());
+                            BlockingRowSet rowSet=new BlockingRowSet(transMeta.getSizeRowset());
                             rowSet.setThreadNameFromToCopy(thisStep.getName(), s, nextStep.getName(), t);
                             rowsets.add(rowSet);
                             if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.TransformationAllocatedNewRowset",rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
@@ -529,8 +537,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					// Copy the variables of the transformation to the step...
 					// don't share. Each copy of the step has its own variables.
 					// 
-					((BaseStep)step).initializeVariablesFrom(this);
-					((BaseStep)step).setUsingThreadPriorityManagment(transMeta.isUsingThreadPriorityManagment());
+					step.initializeVariablesFrom(this);
+					step.setUsingThreadPriorityManagment(transMeta.isUsingThreadPriorityManagment());
 					
                     // If the step is partitioned, set the partitioning ID and some other things as well...
                     if (stepMeta.isPartitioned())
@@ -541,9 +549,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                         	step.setPartitionID(partitionIDs.get(c)); // Pass the partition ID to the step
                         }
                     }
-
-					// Possibly, enable safe mode in the steps...
-					((BaseStep)step).setSafeModeEnabled(safeModeEnabled);
 
 					// Save the step too
 					combi.step = step;
@@ -567,20 +572,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             StepMetaDataCombi combi = steps.get(s);
             if (combi.stepMeta.isDoingErrorHandling())
             {
-                StepErrorMeta stepErrorMeta = combi.stepMeta.getStepErrorMeta();
-                BaseStep baseStep = (BaseStep)combi.step;
-                boolean stop=false;
-                for (int rowsetNr=0;rowsetNr<baseStep.outputRowSets.size() && !stop;rowsetNr++)
-                {
-                    RowSet outputRowSet = baseStep.outputRowSets.get(rowsetNr);
-                    if (outputRowSet.getDestinationStepName().equalsIgnoreCase(stepErrorMeta.getTargetStep().getName()))
-                    {
-                        // This is the rowset to move!
-                        baseStep.errorRowSet = outputRowSet;
-                        baseStep.outputRowSets.remove(rowsetNr);
-                        stop=true;
-                    }
-                }
+            	combi.step.identifyErrorOutput();
+            	
             }
         }
 
@@ -595,7 +588,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             StepMetaDataCombi sid = steps.get(i);
 
             StepMeta stepMeta = sid.stepMeta;
-            BaseStep baseStep = (BaseStep)sid.step;
+            StepInterface baseStep = sid.step;
 
             baseStep.setPartitioned(stepMeta.isPartitioned());
             
@@ -680,12 +673,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             if (!initThreads[i].isOk()) 
             {
                 log.logError(BaseMessages.getString(PKG, "Trans.Log.StepFailedToInit", combi.stepname+"."+combi.copy));
-                combi.data.setStatus(StepDataInterface.STATUS_STOPPED);
+                combi.data.setStatus(StepExecutionStatus.STATUS_STOPPED);
                 ok=false;
             }
             else
             {
-                combi.data.setStatus(StepDataInterface.STATUS_IDLE);
+                combi.data.setStatus(StepExecutionStatus.STATUS_IDLE);
                 if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.StepInitialized", combi.stepname+"."+combi.copy));
             }
         }
@@ -704,11 +697,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 
                 if (initThreads[i].isOk()) 
                 {
-                    combi.data.setStatus(StepDataInterface.STATUS_HALTED);
+                    combi.data.setStatus(StepExecutionStatus.STATUS_HALTED);
                 }
                 else
                 {
-                    combi.data.setStatus(StepDataInterface.STATUS_STOPPED);
+                    combi.data.setStatus(StepExecutionStatus.STATUS_STOPPED);
                 }
             }
             
@@ -830,11 +823,81 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		
         running=true;
         
-        // Now start all the threads...
-    	//
-        for (int i=0;i<steps.size();i++)
-        {
-            steps.get(i).step.start();
+        switch(transMeta.getTransformationType()) {
+        case Normal:
+        	
+	        // Now start all the threads...
+	    	//
+	        for (int i=0;i<steps.size();i++)
+	        {
+	        	StepMetaDataCombi combi = steps.get(i);
+	        	RunThread runThread = new RunThread(combi);
+	        	Thread thread = new Thread(runThread);
+	        	thread.setName(getName()+" - "+combi.stepname);
+	        	thread.start();
+	        }
+	        break;
+	    
+        case SerialSingleThreaded:
+        	new Thread(new Runnable() {
+				public void run() {
+					try {
+						// Always disable thread priority management, it will always slow us down...
+						//
+						for (StepMetaDataCombi combi : steps) {
+							combi.step.setUsingThreadPriorityManagment(false);
+						}
+						
+						//
+			        	// This is a single thread version...
+			        	//
+						
+						// Sort the steps from start to finish...
+						//
+						/*
+						Collections.sort(steps, new Comparator<StepMetaDataCombi>() {
+							public int compare(StepMetaDataCombi c1, StepMetaDataCombi c2) {
+								
+								boolean c1BeforeC2 = transMeta.findPrevious(c2.stepMeta, c1.stepMeta);
+								if (c1BeforeC2) {
+									return -1;
+								} else {
+									return 1;
+								}
+							}
+						});
+						*/
+						
+			        	boolean[] stepDone = new boolean[steps.size()];
+			        	int nrDone = 0;
+			        	while (nrDone<steps.size() && !isStopped()) {
+			        		for (int i=0;i<steps.size() && !isStopped();i++) {
+			        			StepMetaDataCombi combi = steps.get(i);
+			        			if (!stepDone[i]) {
+			        				if (combi.step.canProcessOneRow()) {
+				        				boolean cont = combi.step.processRow(combi.meta, combi.data);
+				        				if (!cont) {
+				        					stepDone[i] = true;
+				        					nrDone++;
+				        				}
+			        				}
+			        			}
+			        		}
+			        	}
+					} catch(Exception e) {
+						errors.addAndGet(1);
+						log.logError("Error executing single threaded", e);
+					} finally {
+						for (int i=0;i<steps.size();i++) {
+		        			StepMetaDataCombi combi = steps.get(i);
+							combi.step.dispose(combi.meta, combi.data);
+							combi.step.markStop();
+						}
+					}
+				}
+			}).start();
+        	break;
+        	
         }
         
         if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -863,7 +926,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	        {
 	            StepMeta stepMeta = steps.get(i).stepMeta;
 	            StepInterface step = steps.get(i).step;
-	            BaseStep baseStep = (BaseStep)step;
 	            
 	            StepPerformanceSnapShot snapShot = new StepPerformanceSnapShot(
 	            		seqNr,
@@ -892,7 +954,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            }
 	            // Make the difference...
 	            //
-	            snapShot.diff(previous, baseStep.rowsetInputSize(), baseStep.rowsetOutputSize());
+	            snapShot.diff(previous, step.rowsetInputSize(), step.rowsetOutputSize());
 	            snapShotList.add(snapShot);
 	        }
 	        
@@ -967,14 +1029,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			
-            BaseStep thr=(BaseStep)sid.step;
-            StepDataInterface data = sid.data;
+			StepDataInterface data = sid.data;
             
-			if ((thr!=null && !thr.isAlive()) ||  // Should normally not be needed anymore, status is kept in data.
-                    data.getStatus()==StepDataInterface.STATUS_FINISHED || // Finished processing 
-                    data.getStatus()==StepDataInterface.STATUS_HALTED ||   // Not launching because of init error
-                    data.getStatus()==StepDataInterface.STATUS_STOPPED     // Stopped because of an error
+			if ((sid.step!=null && !sid.step.isRunning()) ||  // Should normally not be needed anymore, status is kept in data.
+                    data.getStatus()==StepExecutionStatus.STATUS_FINISHED || // Finished processing 
+                    data.getStatus()==StepExecutionStatus.STATUS_HALTED ||   // Not launching because of init error
+                    data.getStatus()==StepExecutionStatus.STATUS_STOPPED     // Stopped because of an error
                     )
             {
                 nrEnded++;
@@ -999,15 +1059,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			BaseStep thr = (BaseStep)sid.step;
-
-			if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
+			
+			if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "Trans.Log.LookingAtStep")+sid.step.getStepname()); //$NON-NLS-1$
 			
 			// If thr is a mapping, this is cause for an endless loop
 			//
-			while (thr.isAlive())
+			while (sid.step.isRunning())
 			{
-				thr.stopAll();
+				sid.step.stopAll();
 				try
 				{
 					Thread.sleep(20);
@@ -1019,7 +1078,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				}
 			}
 			
-			if (!thr.isAlive()) nrStepsFinished++;
+			if (!sid.step.isRunning()) nrStepsFinished++;
 		}
 		
 		if (nrStepsFinished==steps.size()) finished.set(true);
@@ -1036,11 +1095,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			BaseStep thr = (BaseStep)sid.step;
-
-			if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
+			StepInterface step = sid.step;
 			
-			thr.stopAll();
+			if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "Trans.Log.LookingAtStep")+step.getStepname()); //$NON-NLS-1$
+			
+			step.stopAll();
 			try
 			{
 				Thread.sleep(20);
@@ -1055,38 +1114,34 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 	public void printStats(int seconds)
 	{
-		int i;
-		BaseStep thr;
-		long proc;
-
 		log.logBasic(" "); //$NON-NLS-1$
 		if (steps==null) return;
 
-		for (i=0;i<steps.size();i++)
+		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			thr=(BaseStep)sid.step;
-			proc=thr.getProcessed();
+			StepInterface step = sid.step;
+			long proc = step.getProcessed();
 			if (seconds!=0)
 			{
-				if (thr.getErrors()==0)
+				if (step.getErrors()==0)
 				{
-					log.logBasic(BaseMessages.getString(PKG, "Trans.Log.ProcessSuccessfullyInfo",thr.getStepname(),"."+thr.getCopy(),String.valueOf(proc),String.valueOf((proc/seconds)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					log.logBasic(BaseMessages.getString(PKG, "Trans.Log.ProcessSuccessfullyInfo",step.getStepname(),"."+step.getCopy(),String.valueOf(proc),String.valueOf((proc/seconds)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 				}
 				else
 				{
-					log.logError(BaseMessages.getString(PKG, "Trans.Log.ProcessErrorInfo",thr.getStepname(),"."+thr.getCopy(),String.valueOf(thr.getErrors()),String.valueOf(proc),String.valueOf(proc/seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+					log.logError(BaseMessages.getString(PKG, "Trans.Log.ProcessErrorInfo",step.getStepname(),"."+step.getCopy(),String.valueOf(step.getErrors()),String.valueOf(proc),String.valueOf(proc/seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				}
 			}
 			else
 			{
-				if (thr.getErrors()==0)
+				if (step.getErrors()==0)
 				{
-					log.logBasic(BaseMessages.getString(PKG, "Trans.Log.ProcessSuccessfullyInfo",thr.getStepname(),"."+thr.getCopy(),String.valueOf(proc),seconds!=0 ? String.valueOf((proc/seconds)) : "-")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					log.logBasic(BaseMessages.getString(PKG, "Trans.Log.ProcessSuccessfullyInfo",step.getStepname(),"."+step.getCopy(),String.valueOf(proc),seconds!=0 ? String.valueOf((proc/seconds)) : "-")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 				}
 				else
 				{
-					log.logError(BaseMessages.getString(PKG, "Trans.Log.ProcessErrorInfo2",thr.getStepname(),"."+thr.getCopy(),String.valueOf(thr.getErrors()),String.valueOf(proc),String.valueOf(seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+					log.logError(BaseMessages.getString(PKG, "Trans.Log.ProcessErrorInfo2",step.getStepname(),"."+step.getCopy(),String.valueOf(step.getErrors()),String.valueOf(proc),String.valueOf(seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				}
 			}
 		}
@@ -1094,18 +1149,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 	public long getLastProcessed()
 	{
-		BaseStep thr;
-
-		if (steps==null) return 0L;
-
-		int i=steps.size()-1;
-
-		if (i<=0) return 0L;
-
-		StepMetaDataCombi sid = steps.get(i);
-		thr=(BaseStep)sid.step;
-
-		return thr.getProcessed();
+		if (steps==null || steps.size()==0) return 0L;
+		StepMetaDataCombi sid = steps.get(steps.size()-1);
+		return sid.step.getProcessed();
 	}
 
 	//
@@ -1169,12 +1215,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		
 		//log.logDetailed("DIS: Checking wether of not ["+sname+"]."+cnr+" has started!");
 		//log.logDetailed("DIS: hasStepStarted() looking in "+threads.size()+" threads");
+		
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			BaseStep rt=(BaseStep)sid.step;
+			StepInterface rt = sid.step;
 			rt.setStopped(true);
-			rt.setPaused(false);
+			rt.resumeRunning();
 
 			// Cancel queries etc. by force...
 			StepInterface si = (StepInterface)rt;
@@ -1188,7 +1235,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 log.logError(Const.getStackTracker(e));
             }
             
-            sid.data.setStatus(StepDataInterface.STATUS_STOPPED);
+            sid.data.setStatus(StepExecutionStatus.STATUS_STOPPED);
 		}
 		
 		//if it is stopped it is not paused
@@ -1210,31 +1257,28 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			if ( sid.step.isAlive() ) nr++;
+			if ( sid.step.isRunning() ) nr++;
 		}
 		return nr;
 	}
 
-	public BaseStep getRunThread(int i)
+	public StepInterface getRunThread(int i)
 	{
 		if (steps==null) return null;
-		StepMetaDataCombi sid = steps.get(i);
-		return (BaseStep)sid.step;
+		return steps.get(i).step;
 	}
 
-	public BaseStep getRunThread(String name, int copy)
+	public StepInterface getRunThread(String name, int copy)
 	{
 		if (steps==null) return null;
 
-		int i;
-
-		for( i=0;i<steps.size();i++)
+		for(int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			BaseStep rt = (BaseStep)sid.step;
-			if (rt.getStepname().equalsIgnoreCase(name) && rt.getCopy()==copy)
+			StepInterface step = sid.step;
+			if (step.getStepname().equalsIgnoreCase(name) && step.getCopy()==copy)
 			{
-				return rt;
+				return step;
 			}
 		}
 
@@ -1682,17 +1726,17 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			BaseStep rt = (BaseStep)sid.step;
+			StepInterface step = sid.step;
 
 			result.setNrErrors(result.getNrErrors()+sid.step.getErrors());
-			result.getResultFiles().putAll(rt.getResultFiles());
+			result.getResultFiles().putAll(step.getResultFiles());
 			
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_READ))) result.setNrLinesRead(result.getNrLinesRead()+ rt.getLinesRead());
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_INPUT))) result.setNrLinesInput(result.getNrLinesInput() + rt.getLinesInput());
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_WRITTEN))) result.setNrLinesWritten(result.getNrLinesWritten()+rt.getLinesWritten());
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_OUTPUT))) result.setNrLinesOutput(result.getNrLinesOutput()+rt.getLinesOutput());
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_UPDATED))) result.setNrLinesUpdated(result.getNrLinesUpdated()+rt.getLinesUpdated());
-			if (rt.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_REJECTED))) result.setNrLinesRejected(result.getNrLinesRejected()+rt.getLinesRejected());
+			if (step.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_READ))) result.setNrLinesRead(result.getNrLinesRead()+ step.getLinesRead());
+			if (step.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_INPUT))) result.setNrLinesInput(result.getNrLinesInput() + step.getLinesInput());
+			if (step.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_WRITTEN))) result.setNrLinesWritten(result.getNrLinesWritten()+step.getLinesWritten());
+			if (step.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_OUTPUT))) result.setNrLinesOutput(result.getNrLinesOutput()+step.getLinesOutput());
+			if (step.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_UPDATED))) result.setNrLinesUpdated(result.getNrLinesUpdated()+step.getLinesUpdated());
+			if (step.getStepname().equals(transLogTable.getSubjectString(TransLogTable.ID.LINES_REJECTED))) result.setNrLinesRejected(result.getNrLinesRejected()+step.getLinesRejected());
 		}
 
 		result.setRows( transMeta.getResultRows() );
@@ -1885,31 +1929,31 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
 	}
 
-	public BaseStep findRunThread(String stepname)
+	public StepInterface findRunThread(String stepname)
 	{
 		if (steps==null) return null;
 
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			BaseStep rt = (BaseStep)sid.step;
-			if (rt.getStepname().equalsIgnoreCase(stepname)) return rt;
+			StepInterface step = sid.step;
+			if (step.getStepname().equalsIgnoreCase(stepname)) return step;
 		}
 		return null;
 	}
 	
-	public List<BaseStep> findBaseSteps(String stepname)
+	public List<StepInterface> findBaseSteps(String stepname)
 	{
-		List<BaseStep> baseSteps = new ArrayList<BaseStep>();
+		List<StepInterface> baseSteps = new ArrayList<StepInterface>();
 		
 		if (steps==null) return baseSteps;
 
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			BaseStep rt = (BaseStep)sid.step;
-			if (rt.getStepname().equalsIgnoreCase(stepname)) {
-				baseSteps.add(rt);
+			StepInterface stepInterface = sid.step;
+			if (stepInterface.getStepname().equalsIgnoreCase(stepname)) {
+				baseSteps.add(stepInterface);
 			}
 		}
 		return baseSteps;
@@ -1922,7 +1966,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         for (int i=0;i<steps.size();i++)
         {
             StepMetaDataCombi sid = steps.get(i);
-            BaseStep rt = (BaseStep)sid.step;
+            StepInterface rt = sid.step;
             if (rt.getStepname().equalsIgnoreCase(name)) return sid.data;
         }
         return null;
@@ -2146,7 +2190,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
 
         // We are going to add an extra RowSet to this stepInterface.
-        RowSet rowSet = new RowSet(transMeta.getSizeRowset());
+        BlockingRowSet rowSet = new BlockingRowSet(transMeta.getSizeRowset());
 
         // Add this rowset to the list of active rowsets for the selected step
         stepInterface.getInputRowSets().add(rowSet);
@@ -2200,7 +2244,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         for (int i=0;i<steps.size();i++)
         {
             StepMetaDataCombi sid = steps.get(i);
-            if (sid.data.getStatus()==StepDataInterface.STATUS_HALTED) return true;
+            if (sid.data.getStatus()==StepExecutionStatus.STATUS_HALTED) return true;
         }
         return false;
     }

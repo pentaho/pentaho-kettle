@@ -34,7 +34,6 @@ public class DetectEmptyStream extends BaseStep implements StepInterface
 {
 	private static Class<?> PKG = DetectEmptyStreamMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private DetectEmptyStreamMeta meta;
 	private DetectEmptyStreamData data;
 	
 	public DetectEmptyStream(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
@@ -56,7 +55,6 @@ public class DetectEmptyStream extends BaseStep implements StepInterface
     
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		meta=(DetectEmptyStreamMeta)smi;
 		data=(DetectEmptyStreamData)sdi;
 
 		Object[] r = getRow();    // get row, set busy!
@@ -89,7 +87,6 @@ public class DetectEmptyStream extends BaseStep implements StepInterface
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		meta=(DetectEmptyStreamMeta)smi;
 		data=(DetectEmptyStreamData)sdi;
 		
 		if (super.init(smi, sdi))
@@ -100,10 +97,4 @@ public class DetectEmptyStream extends BaseStep implements StepInterface
 		return false;
 	}
 	
-    //
-    // Run is were the action happens!
-    public void run()
-    {
-    	BaseStep.runStepThread(this, meta, data);
-    }
 }

@@ -53,7 +53,6 @@ public class RandomValue extends BaseStep implements StepInterface {
 	public RandomValue(StepMeta stepMeta, StepDataInterface stepDataInterface,
 			int copyNr, TransMeta transMeta, Trans trans) {
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-		setName(stepMeta.getName());
 	}
 
 	private Object[] getRandomValue(RowMetaInterface inputRowMeta,
@@ -249,9 +248,4 @@ public class RandomValue extends BaseStep implements StepInterface {
 		super.dispose(smi, sdi);
 	}
 
-	//
-	// Run is were the action happens!
-	public void run() {
-		BaseStep.runStepThread(this, meta, data);
-	}
 }

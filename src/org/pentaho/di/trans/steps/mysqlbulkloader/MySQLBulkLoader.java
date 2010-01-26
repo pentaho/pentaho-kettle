@@ -437,14 +437,6 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	    super.dispose(smi, sdi);
 	}
 	
-	//
-	// Run is were the action happens!
-	//
-	public void run()
-	{
-		BaseStep.runStepThread(this, meta, data);
-	}
-
     static class SqlRunner extends Thread
     {
         private MySQLBulkLoaderData data;

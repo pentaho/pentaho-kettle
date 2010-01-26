@@ -22,7 +22,7 @@ import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoryPluginMeta;
-import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepInterface;
 
 /**
  * Registers classes annotated with @RepositoryPlugin as Kettle/PDI repository plugins, without the need for XML configurations.
@@ -33,7 +33,7 @@ import org.pentaho.di.trans.step.BaseStep;
  */
 public class AnnotatedRepositoriesConfigManager<T extends RepositoryPluginMeta> extends BasicConfigManager<T> 
 {
-	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	@Inject
 	String packages;
@@ -63,7 +63,7 @@ public class AnnotatedRepositoriesConfigManager<T extends RepositoryPluginMeta> 
 			// The package name to get the descriptions or tool tip from...
 			//
 			String packageName = repositoryPlugin.i18nPackageName();
-			if (Const.isEmpty(packageName)) packageName = BaseStep.class.getPackage().getName();
+			if (Const.isEmpty(packageName)) packageName = StepInterface.class.getPackage().getName();
 			
 			// The metadata and dialog class name
 			//

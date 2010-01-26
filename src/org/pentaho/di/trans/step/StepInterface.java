@@ -12,30 +12,56 @@
 package org.pentaho.di.trans.step;
 
 import java.util.List;
+import java.util.Map;
 
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 
-/*
- * Created on 12-aug-2004
+/**
+ * The interface that any transformation step or plugin needs to implement.
+ * 
+ * Created on 12-AUG-2004
  *
  * @author Matt
  *
  */
 
-public interface StepInterface
+public interface StepInterface extends VariableSpace, HasLogChannelInterface
 {
 	/**
 	 * @return the transformation that is executing this step
 	 */ 
 	public Trans getTrans();
+
+	/**
+	 * Perform the equivalent of processing one row.  Typically this means reading a row from input (getRow()) and passing a row to output (putRow)).
+	 * 
+	 * @param smi The steps metadata to work with
+	 * @param sdi The steps temporary working data to work with (database connections, result sets, caches, temporary variables, etc.)
+	 * @return false if no more rows can be processed or an error occurred.
+	 * @throws KettleException
+	 */
+	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException;
+    
+	/**
+	 * This method checks if the step is capable of processing at least one row.<p>
+	 * For example, if a step has no input records but needs at least one to function, it will return false.
+	 * 
+	 * @return true if the step can process a row.
+	 * 
+	 */
+	public boolean canProcessOneRow();
 	
 	/**
-	 * Initialise and do work where other steps need to wait for...
+	 * Initialize and do work where other steps need to wait for...
 	 * @param stepMetaInterface The metadata to work with
 	 * @param stepDataInterface The data to initialize
 	 */
@@ -61,11 +87,6 @@ public interface StepInterface
 	 */
 	public void markStop();
 
-	/**
-	 * Starts the thread...
-	 *
-	 */
-	public void     start();
 	
 	/**
 	 * Stop running operations...
@@ -74,18 +95,33 @@ public interface StepInterface
 	 *
 	 */
 	public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException;
-    
+
 	/**
-	 * Is the thread still alive?
-	 * @return true if the thread is still alive...
+	 * @return true if the step is running after having been initialized
 	 */
-	public boolean isAlive();
+	public boolean isRunning();
+
+	/**
+	 * Flag the step as running or not
+	 * @param running the running flag to set
+	 */
+	public void setRunning(boolean running);
 
 	/**
 	 * @return True if the step is marked as stopped. Execution should stop immediate.
 	 */
 	public boolean isStopped();
 	
+	/**
+	 * @param stopped true if the step needs to be stopped
+	 */
+	public void setStopped(boolean stopped);
+
+	/**
+	 * @return True if the step is paused
+	 */
+	public boolean isPaused();
+
 	/**
 	 * Flags all rowsets as stopped/completed/finished. 
 	 */
@@ -100,11 +136,6 @@ public interface StepInterface
 	 * Resume a running step
 	 */
 	public void resumeRunning();
-
-	/**
-	 *  Run is where the action happens in a step...
-	 */
-	public void run();
 	
 	/**
 	 * Get the name of the step.
@@ -169,15 +200,6 @@ public interface StepInterface
      */
     public long getLinesRejected();
 
-	/**
-	 * Process one row.
-	 * @param smi The metadata to work with
-	 * @param sdi The temporary working data to work with (database connections, resultsets, caches, temporary variables, etc.)
-	 * @return false if no more rows can be processed or an error occurred.
-	 * @throws KettleException
-	 */
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException;
-    
     /**
      * Put a row on the destination rowsets.
      * @param row The row to send to the destinations steps
@@ -270,5 +292,60 @@ public interface StepInterface
 	 * @return the logging channel for this step
 	 */
 	public LogChannelInterface getLogChannel();
-		   
+
+	/**
+	 * @param usingThreadPriorityManagment set to true to actively manage priorities of step threads
+	 */
+	public void setUsingThreadPriorityManagment(boolean usingThreadPriorityManagment);
+
+	/**
+	 * @return true if we are actively managing priorities of step threads
+	 */
+	public boolean isUsingThreadPriorityManagment();
+
+	/**
+	 * @return The total amount of rows in the input buffers
+	 */
+	public int rowsetInputSize();
+
+	/**
+	 * @return The total amount of rows in the output buffers
+	 */
+	public int rowsetOutputSize();
+
+	/**
+	 * @return The number of "processed" lines of a step.  Well, a representable metric for that anyway.
+	 */
+    public long getProcessed();
+
+    /**
+     * @return The result files for this step
+     */
+    public Map<String,ResultFile> getResultFiles();
+    
+    /**
+     * @return the description as in {@link StepDataInterface}
+     */
+    public StepExecutionStatus getStatus();
+
+    /**
+     * @return The number of ms that this step has been running
+     */
+    public long getRuntime();
+
+    /**
+     * To be used to flag an error output channel of a step prior to execution for performance reasons.
+     */
+	public void identifyErrorOutput();
+
+	/**
+	 * @param partitioned true if this step is partitioned
+	 */
+	public void setPartitioned(boolean partitioned);
+
+	/**
+	 * @param partitioningMethodNone The repartitioning method
+	 */
+	public void setRepartitioning(int partitioningMethod);
+
 }

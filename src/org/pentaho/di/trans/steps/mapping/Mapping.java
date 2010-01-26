@@ -23,6 +23,7 @@ import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -65,15 +66,15 @@ public class Mapping extends BaseStep implements StepInterface
 			
 			// Before we start, let's see if there are loose ends to tie up...
 			//
-			if (!inputRowSets.isEmpty()) {
+			if (!getInputRowSets().isEmpty()) {
 				MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
-				for (RowSet rowSet : new ArrayList<RowSet>(inputRowSets)) {
+				for (RowSet rowSet : new ArrayList<RowSet>(getInputRowSets())) {
 					// Pass this rowset down to a mapping input step in the sub-transformation...
 					//
 					if (mappingInputs.length==1) {
 						// Simple case: only one input mapping.  Move the RowSet over
 						//
-						inputRowSets.remove(rowSet);
+						getInputRowSets().remove(rowSet);
 						mappingInputs[0].getInputRowSets().add(rowSet);
 					} else {
 						// Difficult to see what's going on here.
@@ -91,21 +92,23 @@ public class Mapping extends BaseStep implements StepInterface
 	        // The transformation still runs in the background and might have some more work to do.
 	        // Since everything is running in the MappingThreads we don't have to do anything else here but wait...
 	        //
-	        data.mappingTrans.waitUntilFinished();
-	        
-	        // Set some statistics from the mapping...
-	        // This will show up in Spoon, etc.
-	        //
-	    	Result result = data.mappingTrans.getResult();
-	    	setErrors(result.getNrErrors());
-	    	setLinesRead( result.getNrLinesRead() );
-	    	setLinesWritten( result.getNrLinesWritten() );
-	    	setLinesInput( result.getNrLinesInput() );
-	    	setLinesOutput( result.getNrLinesOutput() );
-	    	setLinesUpdated( result.getNrLinesUpdated() );
-	    	setLinesRejected( result.getNrLinesRejected() );
-	    	
-	    	return false;
+	        if (getTransMeta().getTransformationType()==TransformationType.Normal) {
+		        data.mappingTrans.waitUntilFinished();
+		        
+		        // Set some statistics from the mapping...
+		        // This will show up in Spoon, etc.
+		        //
+		    	Result result = data.mappingTrans.getResult();
+		    	setErrors(result.getNrErrors());
+		    	setLinesRead( result.getNrLinesRead() );
+		    	setLinesWritten( result.getNrLinesWritten() );
+		    	setLinesInput( result.getNrLinesInput() );
+		    	setLinesOutput( result.getNrLinesOutput() );
+		    	setLinesUpdated( result.getNrLinesUpdated() );
+		    	setLinesRejected( result.getNrLinesRejected() );
+	        }
+		    return false;
+		    	
 		}
 		catch(Throwable t)
 		{
@@ -147,6 +150,10 @@ public class Mapping extends BaseStep implements StepInterface
         // Create the transformation from meta-data...
 		//
         data.mappingTrans = new Trans(data.mappingTransMeta, getTrans());
+        
+        if (data.mappingTransMeta.getTransformationType()==TransformationType.SerialSingleThreaded) {
+        	data.mappingTrans.getTransMeta().setUsingThreadPriorityManagment(false);
+        }
         
         // Leave a path up so that we can set variables in sub-transformations...
         //
@@ -421,13 +428,6 @@ public class Mapping extends BaseStep implements StepInterface
         super.stopAll();
     }
 	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
-
 	private void lookupStatusStepNumbers()
 	{
 	    if (data.mappingTrans != null)

@@ -36,10 +36,10 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -55,6 +55,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.www.SocketRepository;
 
 public class UserDefinedJavaClass extends BaseStep implements StepInterface
@@ -451,7 +452,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
         return super.getPartitionID();
     }
 
-    public Map<String, RowSet> getPartitionTargets()
+    public Map<String, BlockingRowSet> getPartitionTargets()
     {
         if (child == null) {
             return getPartitionTargetsImpl();
@@ -460,7 +461,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
         }
     }
 
-    public Map<String, RowSet> getPartitionTargetsImpl()
+    public Map<String, BlockingRowSet> getPartitionTargetsImpl()
     {
         return super.getPartitionTargets();
     }
@@ -595,7 +596,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
         return super.getSocketRepository();
     }
 
-    public int getStatus()
+    public StepExecutionStatus getStatus()
     {
         if (child == null) {
             return getStatusImpl();
@@ -618,7 +619,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
         return super.getStatusDescription();
     }
 
-    public int getStatusImpl()
+    public StepExecutionStatus getStatusImpl()
     {
         return super.getStatus();
     }
@@ -987,7 +988,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
 
     public boolean isSafeModeEnabledImpl()
     {
-        return super.isSafeModeEnabled();
+        return getTrans().isSafeModeEnabled();
     }
 
     public boolean isStopped()
@@ -1337,7 +1338,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
         super.setInputRowMeta(rowMeta);
     }
 
-    public void setInputRowSets(ArrayList<RowSet> inputRowSets)
+    public void setInputRowSets(List<RowSet> inputRowSets)
     {
         if (child == null) {
             setInputRowSetsImpl(inputRowSets);
@@ -1346,7 +1347,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
         }
     }
 
-    public void setInputRowSetsImpl(ArrayList<RowSet> inputRowSets)
+    public void setInputRowSetsImpl(List<RowSet> inputRowSets)
     {
         super.setInputRowSets(inputRowSets);
     }
@@ -1464,7 +1465,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
         super.setOutputDone();
     }
 
-    public void setOutputRowSets(ArrayList<RowSet> outputRowSets)
+    public void setOutputRowSets(List<RowSet> outputRowSets)
     {
         if (child == null) {
             setOutputRowSetsImpl(outputRowSets);
@@ -1473,7 +1474,7 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
         }
     }
 
-    public void setOutputRowSetsImpl(ArrayList<RowSet> outputRowSets)
+    public void setOutputRowSetsImpl(List<RowSet> outputRowSets)
     {
         super.setOutputRowSets(outputRowSets);
     }
@@ -1547,9 +1548,5 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
     {
         return super.toString();
     }
-    
-    public void run()
-    {
-        BaseStep.runStepThread(this, meta, data);
-    }
+
 }

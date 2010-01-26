@@ -270,8 +270,4 @@ public class RegexEval extends BaseStep implements StepInterface
 		return false;
 	}
 
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
 }

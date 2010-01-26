@@ -79,9 +79,9 @@ public class SortedMerge extends BaseStep implements StepInterface
         	// effect change in less areas. If the reverse loop causes a problem, please
         	// re-open http://jira.pentaho.com/browse/PDI-1212.
         	
-        	for (int i=inputRowSets.size()-1; i >= 0 && !isStopped(); i--) {
+        	for (int i=getInputRowSets().size()-1; i >= 0 && !isStopped(); i--) {
         		
-        		RowSet rowSet = inputRowSets.get(i);
+        		RowSet rowSet = getInputRowSets().get(i);
                 Object[] row = getRowFrom(rowSet);
                 if (row!=null) {
                 	// Add this row to the sortedBuffer...
@@ -167,7 +167,7 @@ public class SortedMerge extends BaseStep implements StepInterface
         
         // optionally perform safe mode checking to prevent problems.
         // 
-        if (isSafeModeEnabled())
+        if (getTrans().isSafeModeEnabled())
         {
         	// for checking we need to get data and meta
         	//
@@ -212,10 +212,4 @@ public class SortedMerge extends BaseStep implements StepInterface
 		return false;
 	}
 	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
 }

@@ -21,4 +21,9 @@ public class StepMetaDataCombi
     public StepInterface     step;
     public StepMetaInterface meta;
     public StepDataInterface data;
+    
+    @Override
+    public String toString() {
+    	return step.toString();
+    }
 };

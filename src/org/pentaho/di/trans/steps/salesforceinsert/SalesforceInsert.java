@@ -317,10 +317,5 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 		}catch(Exception e){};
 		super.dispose(smi, sdi);
 	}
-	//
-	// Run is were the action happens!	
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
+
 }

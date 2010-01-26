@@ -13,7 +13,7 @@ package org.pentaho.di.trans.steps.mappinginput;
 
 import java.util.List;
 
-import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -158,7 +158,7 @@ public class MappingInput extends BaseStep implements StepInterface
 		        // OK, before we leave, make sure there is a rowset that covers the path to this target step.
 		        // We need to create a new RowSet and add it to the Input RowSets of the target step
 	        	//
-		        RowSet rowSet = new RowSet(getTransMeta().getSizeRowset());
+		        BlockingRowSet rowSet = new BlockingRowSet(getTransMeta().getSizeRowset());
 		        
 		        // This is always a single copy, both for source and target...
 		        //
@@ -175,10 +175,4 @@ public class MappingInput extends BaseStep implements StepInterface
 		data.sourceSteps = sourceSteps;
 	}
 	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}	
 }

@@ -20,18 +20,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -212,24 +213,17 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 				input.setChanged();
 			}
 		};
-		ModifyListener lsConnectionMod = new ModifyListener() 
-		{
-			public void modifyText(ModifyEvent e) 
-			{
+		
+		FocusListener lsConnectionFocus = new FocusAdapter() {
+			
+			public void focusLost(FocusEvent event) {
 				input.setChanged();
 				setTableFieldCombo();
 			}
 		};
+
 		ModifyListener lsTableMod = new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
-				input.setChanged();
-				setTableFieldCombo();
-			}
-		};
-		SelectionListener lsSelection = new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e) 
-			{
 				input.setChanged();
 				setTableFieldCombo();
 			}
@@ -304,8 +298,9 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		// Connection line
 		wConnection = addConnectionLine(shell, wUpdate, middle, margin);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
-		wConnection.addModifyListener(lsConnectionMod);
-		wConnection.addSelectionListener(lsSelection);
+		// wConnection.addModifyListener(lsConnectionMod);
+		// wConnection.addSelectionListener(lsSelection);
+		wConnection.addFocusListener(lsConnectionFocus);
 		wConnection.addModifyListener(new ModifyListener()
     		{
     			public void modifyText(ModifyEvent e)
@@ -1499,47 +1494,57 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "DimensionLookupDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DimensionLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
+
+	private AtomicBoolean busyWithFields = new AtomicBoolean(true);
 	
 	// Set table "dimension field" and "technical key" drop downs  
 	private void setTableFieldCombo(){
+		
 		Runnable fieldLoader = new Runnable() {
 			public void run() {
-				//clear
-				for (int i = 0; i < tableFieldColumns.size(); i++) {
-					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
-					colInfo.setComboValues(new String[] {});
-				}
-				// Ensure other table field dropdowns are refreshed fields when they next get focus
-				gotTableFields = false;
-				if (!Const.isEmpty(wTable.getText())) {
-					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
-					if (ci != null) {
-						Database db = new Database(loggingObject, ci);
-						try {
-							db.connect();
-
-							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
-											.getText()), transMeta.environmentSubstitute(wTable.getText()));
-							RowMetaInterface r = db.getTableFields(schemaTable);
-							if (null != r) {
-								String[] fieldNames = r.getFieldNames();
-								if (null != fieldNames) {
-									for (int i = 0; i < tableFieldColumns.size(); i++) {
-										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
-										colInfo.setComboValues(fieldNames);
+				
+				if (busyWithFields.get()) return;
+				busyWithFields.set(true);
+				try {
+					//clear
+					for (int i = 0; i < tableFieldColumns.size(); i++) {
+						ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+						colInfo.setComboValues(new String[] {});
+					}
+					// Ensure other table field dropdowns are refreshed fields when they next get focus
+					gotTableFields = false;
+					if (!Const.isEmpty(wTable.getText())) {
+						DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+						if (ci != null) {
+							Database db = new Database(loggingObject, ci);
+							try {
+								db.connect();
+	
+								String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
+												.getText()), transMeta.environmentSubstitute(wTable.getText()));
+								RowMetaInterface r = db.getTableFields(schemaTable);
+								if (null != r) {
+									String[] fieldNames = r.getFieldNames();
+									if (null != fieldNames) {
+										for (int i = 0; i < tableFieldColumns.size(); i++) {
+											ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
+											colInfo.setComboValues(fieldNames);
+										}
+										wTk.setItems(fieldNames);
 									}
-									wTk.setItems(fieldNames);
 								}
+							} catch (Exception e) {
+								for (int i = 0; i < tableFieldColumns.size(); i++) {
+									ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
+									colInfo.setComboValues(new String[] {});
+								}
+								// ignore any errors here. drop downs will not be
+								// filled, but no problem for the user
 							}
-						} catch (Exception e) {
-							for (int i = 0; i < tableFieldColumns.size(); i++) {
-								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
-								colInfo.setComboValues(new String[] {});
-							}
-							// ignore any errors here. drop downs will not be
-							// filled, but no problem for the user
 						}
 					}
+				} finally {
+					busyWithFields.set(false);
 				}
 			}
 		};

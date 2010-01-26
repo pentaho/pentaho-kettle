@@ -112,13 +112,6 @@ public class NumberRange extends BaseStep implements StepInterface
 			return true;
 	 	}
 	 
-		//
-		// Run is were the action happens!
-		public void run()
-		{
-	    	BaseStep.runStepThread(this, meta, data);
-		}
-	 
 	 	public NumberRange(StepMeta s, StepDataInterface stepDataInterface,
 						int c, TransMeta t, Trans dis) 
 	 	{

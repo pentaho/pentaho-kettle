@@ -507,10 +507,4 @@ public class PropertyInput extends BaseStep implements StepInterface
 		super.dispose(smi, sdi);
 	}
 	
-    //
-    // Run is were the action happens!
-    public void run()
-    {
-    	BaseStep.runStepThread(this, meta, data);
-    }	
 }

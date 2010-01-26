@@ -23,7 +23,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.StepPluginMeta;
-import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepInterface;
 
 /**
  * Registers classes annotated with @Step as Kettle/PDI steps, without the need for XML configurations.
@@ -36,7 +36,7 @@ import org.pentaho.di.trans.step.BaseStep;
  */
 public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends BasicConfigManager<T> 
 {
-	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	@Inject
 	String packages;
@@ -70,7 +70,7 @@ public class AnnotatedStepsConfigManager<T extends StepPluginMeta> extends Basic
 			// The package name to get the descriptions or tool tip from...
 			//
 			String packageName = step.i18nPackageName();
-			if (Const.isEmpty(packageName)) packageName = BaseStep.class.getPackage().getName();
+			if (Const.isEmpty(packageName)) packageName = StepInterface.class.getPackage().getName();
 			
 			// An alternative package to get the description or tool tip from...
 			//

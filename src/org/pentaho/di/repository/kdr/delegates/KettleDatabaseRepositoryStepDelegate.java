@@ -21,7 +21,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
-import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
@@ -102,14 +101,14 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 				StepPlugin sp = steploader.findStepPluginWithID(stepMeta.getStepID());
                 if (sp!=null)
                 {
-                	stepMeta.setStepMetaInterface( BaseStep.getStepInfo(sp, steploader) );
+                	stepMeta.setStepMetaInterface( steploader.getStepClass(sp) );
                 }
                 else
                 {
                     throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass",stepMeta.getStepID()+Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
 
-				stepMeta.setStepMetaInterface( BaseStep.getStepInfo(sp, steploader) );
+				stepMeta.setStepMetaInterface( steploader.getStepClass(sp) );
 				if (stepMeta.getStepMetaInterface()!=null)
 				{
 					// Read the step info from the repository!

@@ -17,9 +17,9 @@ import java.util.List;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
@@ -27,7 +27,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * 
  * @author Sven Boden
  */
-public interface ScriptInterface extends VariableSpace
+public interface ScriptInterface extends StepInterface
 {
 	boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException;
 

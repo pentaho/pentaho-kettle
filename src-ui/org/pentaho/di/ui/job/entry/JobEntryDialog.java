@@ -32,12 +32,12 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 
 public class JobEntryDialog extends Dialog {
-	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Job entry dialog", LoggingObjectType.JOBENTRYDIALOG, null);
 

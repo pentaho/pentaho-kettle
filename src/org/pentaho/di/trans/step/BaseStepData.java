@@ -12,6 +12,8 @@
 
 package org.pentaho.di.trans.step;
 
+import org.pentaho.di.i18n.BaseMessages;
+
 /**
  * This class is the base class for the StepDataInterface and 
  * contains the methods to set and retrieve the status of the step data.
@@ -21,21 +23,51 @@ package org.pentaho.di.trans.step;
  */
 public class BaseStepData
 {
-	private int status;
+	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+	public enum StepExecutionStatus {
+		
+		STATUS_EMPTY(BaseMessages.getString(PKG, "BaseStep.status.Empty")), 
+		STATUS_INIT(BaseMessages.getString(PKG, "BaseStep.status.Init")), 
+		STATUS_RUNNING(BaseMessages.getString(PKG, "BaseStep.status.Running")), 
+		STATUS_IDLE(BaseMessages.getString(PKG, "BaseStep.status.Idle")), 
+		STATUS_FINISHED(BaseMessages.getString(PKG, "BaseStep.status.Finished")), 
+		STATUS_STOPPED(BaseMessages.getString(PKG, "BaseStep.status.Stopped")), 
+		STATUS_DISPOSED(BaseMessages.getString(PKG, "BaseStep.status.Disposed")), 
+		STATUS_HALTED(BaseMessages.getString(PKG, "BaseStep.status.Halted")), 
+		STATUS_PAUSED(BaseMessages.getString(PKG, "BaseStep.status.Paused")), 
+		STATUS_HALTING(BaseMessages.getString(PKG, "BaseStep.status.Halting"));
+		
+		private String	description;
+		private StepExecutionStatus(String description) {
+			this.description = description;
+		}
+		
+		public String getDescription() {
+			return description;
+		}
+
+		@Override
+		public String toString() {
+			return description;
+		}
+	}
+
+	private StepExecutionStatus status;
 
 	/**
 	 * 
 	 */
 	public BaseStepData()
 	{
-		status = StepDataInterface.STATUS_EMPTY;
+		status = StepExecutionStatus.STATUS_EMPTY;
 	}
 	
 	/**
 	 * Set the status of the step data.
 	 * @param status the new status.
 	 */
-	public void setStatus(int status)
+	public void setStatus(StepExecutionStatus status)
 	{
 		this.status = status;
 	}
@@ -44,17 +76,17 @@ public class BaseStepData
 	 * Get the status of this step data.
 	 * @return the status of the step data
 	 */
-	public int getStatus()
+	public StepExecutionStatus getStatus()
 	{
 		return status;
 	}
 
-	public boolean isEmpty()         { return status == StepDataInterface.STATUS_EMPTY;    }
-	public boolean isInitialising()  { return status == StepDataInterface.STATUS_INIT;     }
-	public boolean isRunning()       { return status == StepDataInterface.STATUS_RUNNING;  }
-	public boolean isIdle()          { return status == StepDataInterface.STATUS_IDLE;     }
-	public boolean isFinished()      { return status == StepDataInterface.STATUS_FINISHED; }
-    public boolean isStopped()       { return status == StepDataInterface.STATUS_STOPPED;  }
-	public boolean isDisposed()      { return status == StepDataInterface.STATUS_DISPOSED; }
+	public boolean isEmpty()         { return status == StepExecutionStatus.STATUS_EMPTY;    }
+	public boolean isInitialising()  { return status == StepExecutionStatus.STATUS_INIT;     }
+	public boolean isRunning()       { return status == StepExecutionStatus.STATUS_RUNNING;  }
+	public boolean isIdle()          { return status == StepExecutionStatus.STATUS_IDLE;     }
+	public boolean isFinished()      { return status == StepExecutionStatus.STATUS_FINISHED; }
+    public boolean isStopped()       { return status == StepExecutionStatus.STATUS_STOPPED;  }
+	public boolean isDisposed()      { return status == StepExecutionStatus.STATUS_DISPOSED; }
 
 }

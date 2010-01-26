@@ -832,5 +832,4 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
-
 }

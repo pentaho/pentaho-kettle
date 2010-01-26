@@ -32,6 +32,7 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -607,6 +608,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 transMeta.getPerformanceLogTable().setTableName( getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_STEP_PERFORMANCE_LOG_TABLE) );
                 transMeta.getTransLogTable().setLogSizeLimit( getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_LOG_SIZE_LIMIT) );
                 transMeta.getTransLogTable().setLogInterval( getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_LOG_INTERVAL) );
+                transMeta.setTransformationType( TransformationType.getTransformationTypeByCode( getTransAttributeString(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_TRANSFORMATION_TYPE)) );
 
                 loadRepParameters(transMeta);
            }
@@ -1107,6 +1109,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 
         repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_LOG_SIZE_LIMIT, 0, transMeta.getTransLogTable().getLogSizeLimit());
         repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_LOG_INTERVAL, 0, transMeta.getTransLogTable().getLogInterval());
+        repository.connectionDelegate.insertTransAttribute(transMeta.getObjectId(), 0, KettleDatabaseRepository.TRANS_ATTRIBUTE_TRANSFORMATION_TYPE, 0, transMeta.getTransformationType().getCode());
 
 		// Save the logging connection link...
 		if (logTable.getDatabaseMeta()!=null) repository.insertStepDatabase(transMeta.getObjectId(), null, logTable.getDatabaseMeta().getObjectId());

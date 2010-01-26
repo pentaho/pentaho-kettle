@@ -16,6 +16,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 
 public class StepInitThread implements Runnable
 {
@@ -43,14 +44,14 @@ public class StepInitThread implements Runnable
     
     public void run()
     {
-        // Set the internal variables also on the init thread!
+        // Set the internal variables also on the initialization thread!
         // ((BaseStep)combi.step).setInternalVariables();
         
         try
         {
             if (combi.step.init(combi.meta, combi.data))
             {
-                combi.data.setStatus(StepDataInterface.STATUS_IDLE);
+                combi.data.setStatus(StepExecutionStatus.STATUS_IDLE);
                 ok = true;
             }
             else

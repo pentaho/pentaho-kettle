@@ -44,7 +44,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 5-April-2003
  */
-public class Script extends BaseStep implements StepInterface, ScriptInterface {
+public class Script extends BaseStep implements StepInterface {
 	private static Class<?>			PKG						= ScriptMeta.class;		// for i18n purposes, needed by Translator2!! 
 
 	private ScriptMeta				meta;
@@ -152,7 +152,7 @@ public class Script extends BaseStep implements StepInterface, ScriptInterface {
 				}
 			}
 
-			data.cx = ScriptMeta.createNewScriptEngine(getName());
+			data.cx = ScriptMeta.createNewScriptEngine(getStepname());
 			data.scope = data.cx.getBindings(ScriptContext.ENGINE_SCOPE);
 
 			bFirstRun = true;
@@ -167,7 +167,7 @@ public class Script extends BaseStep implements StepInterface, ScriptInterface {
 
 			// Adding the Name of the Transformation to the Context
 			//
-			data.scope.put("_TransformationName_", this.getName());
+			data.scope.put("_TransformationName_", this.getStepname());
 
 			try {
 				// add these now (they will be re-added later) to make
@@ -663,17 +663,11 @@ public class Script extends BaseStep implements StepInterface, ScriptInterface {
 		} catch (Exception er) {
 			// Eat this error, it's typically :
 			// "Calling Context.exit without previous Context.enter"
-			// logError(BaseMessages.getString(PKG,
-			// "System.Log.UnexpectedError"), er);
+			// logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError"), er);
 		}
 		;
 
 		super.dispose(smi, sdi);
 	}
 
-	//
-	// Run is were the action happens!
-	public void run() {
-		BaseStep.runStepThread(this, meta, data);
-	}
 }

@@ -37,7 +37,7 @@ public class StepStatus
     private boolean stopped;
     private boolean paused;
     
-    public StepStatus(BaseStep baseStep)
+    public StepStatus(StepInterface baseStep)
     {
         // Proc: nr of lines processed: input + output!
         long in_proc = Math.max(baseStep.getLinesInput(), baseStep.getLinesRead());
@@ -62,10 +62,10 @@ public class StepStatus
         this.linesUpdated = baseStep.getLinesUpdated(); 
         this.linesRejected = baseStep.getLinesRejected();
         this.errors = baseStep.getErrors();
-        this.statusDescription = baseStep.getStatusDescription();
+        this.statusDescription = baseStep.getStatus().getDescription();
         this.seconds = Math.floor((lapsed * 10) + 0.5) / 10;
         this.speed = lapsed == 0 ? "-" : "   " + (in_speed > out_speed ? in_speed : out_speed); //$NON-NLS-1$ //$NON-NLS-2$
-        this.priority = baseStep.isAlive() ? "   " + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        this.priority = baseStep.isRunning() ? "   " + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         this.stopped = baseStep.isStopped();
         this.paused = baseStep.isPaused();
     }

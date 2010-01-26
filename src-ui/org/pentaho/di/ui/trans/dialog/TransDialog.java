@@ -66,6 +66,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupMeta;
@@ -194,6 +195,8 @@ public class TransDialog extends Dialog
 
 	private Text wEnableStepPerfInterval;
 
+	private Button	wSerialSingleThreaded;
+	
 	private Tabs currentTab = null;
 
 	protected boolean	changed;
@@ -1751,7 +1754,25 @@ public class TransDialog extends Dialog
         fdManageThreads.right= new FormAttachment(100, 0);
         wManageThreads.setLayoutData(fdManageThreads);
 
-        
+		// Single threaded option ...
+		Label wlSerialSingleThreaded = new Label(wMiscComp, SWT.RIGHT);
+		wlSerialSingleThreaded.setText(BaseMessages.getString(PKG, "TransDialog.SerialSingleThreaded.Label")); //$NON-NLS-1$
+		wlSerialSingleThreaded.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SerialSingleThreaded.Tooltip", Const.CR)); //$NON-NLS-1$
+		props.setLook(wlSerialSingleThreaded);
+		FormData fdlSerialSingleThreaded = new FormData();
+		fdlSerialSingleThreaded.left = new FormAttachment(0, 0);
+		fdlSerialSingleThreaded.right = new FormAttachment(middle, -margin);
+		fdlSerialSingleThreaded.top = new FormAttachment(wManageThreads, margin);
+		wlSerialSingleThreaded.setLayoutData(fdlSerialSingleThreaded);
+		wSerialSingleThreaded = new Button(wMiscComp, SWT.CHECK);
+		wSerialSingleThreaded.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SerialSingleThreaded.Tooltip", Const.CR)); //$NON-NLS-1$
+		props.setLook(wSerialSingleThreaded);
+		FormData fdSerialSingleThreaded = new FormData();
+		fdSerialSingleThreaded.left = new FormAttachment(middle, 0);
+		fdSerialSingleThreaded.top = new FormAttachment(wManageThreads, margin);
+		fdSerialSingleThreaded.right = new FormAttachment(100, 0);
+		wSerialSingleThreaded.setLayoutData(fdSerialSingleThreaded);
+
 
         FormData fdMiscComp = new FormData();
         fdMiscComp.left  = new FormAttachment(0, 0);
@@ -1923,7 +1944,8 @@ public class TransDialog extends Dialog
         wFeedbackSize.setText(Integer.toString(transMeta.getFeedbackSize()));
         wSharedObjectsFile.setText(Const.NVL(transMeta.getSharedObjectsFile(), ""));
         wManageThreads.setSelection(transMeta.isUsingThreadPriorityManagment());
-        
+		wSerialSingleThreaded.setSelection(transMeta.getTransformationType()==TransformationType.SerialSingleThreaded);
+
 		wFields.setRowNums();
 		wFields.optWidth(true);
 		
@@ -2048,6 +2070,7 @@ public class TransDialog extends Dialog
 		transMeta.setFeedbackSize(Const.toInt(wFeedbackSize.getText(), Const.ROWS_UPDATE));
 		transMeta.setSharedObjectsFile(wSharedObjectsFile.getText());
 		transMeta.setUsingThreadPriorityManagment(wManageThreads.getSelection());
+		transMeta.setTransformationType(wSerialSingleThreaded.getSelection() ? TransformationType.SerialSingleThreaded : TransformationType.Normal);
 
 		if (directoryChangeAllowed && transMeta.getObjectId()!=null) {
 			if (newDirectory != null) {

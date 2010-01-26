@@ -478,14 +478,16 @@ public class SpoonDBDelegate extends SpoonDelegate
 			databaseMeta.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
 			hasDatabasesInterface.addDatabase(databaseMeta);
 			spoon.addUndoNew((UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta) databaseMeta.clone() }, new int[] { hasDatabasesInterface.indexOfDatabase(databaseMeta) });
-			try {
-				if (!spoon.rep.getSecurityProvider().isReadOnly()) {
-					spoon.rep.save(databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null);
-				} else {
-					throw new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser"));
+			if (spoon.rep!=null) {
+				try {
+					if (!spoon.rep.getSecurityProvider().isReadOnly()) {
+						spoon.rep.save(databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null);
+					} else {
+						throw new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser"));
+					}
+				} catch (KettleException e) {
+					new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName()), e);
 				}
-			} catch (KettleException e) {
-				new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName()), e);
 			}
 			spoon.refreshTree();
 		}			

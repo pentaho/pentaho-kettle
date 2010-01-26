@@ -336,66 +336,57 @@ public class BaseStepMeta implements Cloneable
     	return log;
     }
     
-    public boolean isBasic() { return log.isBasic(); }
-    public boolean isDetailed() { return log.isDetailed(); }
-    public boolean isDebug() { return log.isDebug(); }
-    public boolean isRowLevel() { return log.isRowLevel(); }
-    public void logMinimal(String message) { log.logMinimal(message); }
-    public void logMinimal(String message, Object...arguments) { log.logMinimal(message, arguments); }
-    public void logBasic(String message) { log.logBasic(message); }
-    public void logBasic(String message, Object...arguments) { log.logBasic(message, arguments); }
-    public void logDetailed(String message) { log.logDetailed(message); }
-    public void logDetailed(String message, Object...arguments) { log.logDetailed(message, arguments); }
-    public void logDebug(String message) { log.logDebug(message); }
-    public void logDebug(String message, Object...arguments) { log.logDebug(message, arguments); }
-    public void logRowlevel(String message) { log.logRowlevel(message); }
-    public void logRowlevel(String message, Object...arguments) { log.logRowlevel(message, arguments); }
-    public void logError(String message) { log.logError(message); } 
-    public void logError(String message, Throwable e) { log.logError(message, e); }
-    public void logError(String message, Object...arguments) { log.logError(message, arguments); }
+    public boolean isBasic() { return getLog().isBasic(); }
+    public boolean isDetailed() { return getLog().isDetailed(); }
+    public boolean isDebug() { return getLog().isDebug(); }
+    public boolean isRowLevel() { return getLog().isRowLevel(); }
+    public void logMinimal(String message) { getLog().logMinimal(message); }
+    public void logMinimal(String message, Object...arguments) { getLog().logMinimal(message, arguments); }
+    public void logBasic(String message) { getLog().logBasic(message); }
+    public void logBasic(String message, Object...arguments) { getLog().logBasic(message, arguments); }
+    public void logDetailed(String message) { getLog().logDetailed(message); }
+    public void logDetailed(String message, Object...arguments) { getLog().logDetailed(message, arguments); }
+    public void logDebug(String message) { getLog().logDebug(message); }
+    public void logDebug(String message, Object...arguments) { getLog().logDebug(message, arguments); }
+    public void logRowlevel(String message) { getLog().logRowlevel(message); }
+    public void logRowlevel(String message, Object...arguments) { getLog().logRowlevel(message, arguments); }
+    public void logError(String message) { getLog().logError(message); } 
+    public void logError(String message, Throwable e) { getLog().logError(message, e); }
+    public void logError(String message, Object...arguments) { getLog().logError(message, arguments); }
 
 	public String getFilename() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getLogChannelId() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getObjectCopy() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public ObjectId getObjectId() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public ObjectRevision getObjectRevision() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public LoggingObjectType getObjectType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public LoggingObjectInterface getParent() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public RepositoryDirectory getRepositoryDirectory() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

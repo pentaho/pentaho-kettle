@@ -165,10 +165,4 @@ public class SetValueConstant extends BaseStep implements StepInterface
 		return false;
 	}
 	
-	//
-	// Run is were the action happens!	
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
 }

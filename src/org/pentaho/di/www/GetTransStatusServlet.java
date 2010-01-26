@@ -30,9 +30,9 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepStatus;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 
 
 
@@ -100,8 +100,8 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
     
                 for (int i = 0; i < trans.nrSteps(); i++)
                 {
-                    BaseStep baseStep = trans.getRunThread(i);
-                    if ( (baseStep.isAlive()) || baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY)
+                    StepInterface baseStep = trans.getRunThread(i);
+                    if ( (baseStep.isRunning()) || baseStep.getStatus()!=StepExecutionStatus.STATUS_EMPTY)
                     {
                         StepStatus stepStatus = new StepStatus(baseStep);
                         transStatus.getStepStatusList().add(stepStatus);
@@ -187,10 +187,10 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
         
                     for (int i = 0; i < trans.nrSteps(); i++)
                     {
-                        BaseStep baseStep = trans.getRunThread(i);
-                        if ( (baseStep.isAlive()) || baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY)
+                        StepInterface step = trans.getRunThread(i);
+                        if ( (step.isRunning()) || step.getStatus()!=StepExecutionStatus.STATUS_EMPTY)
                         {
-                            StepStatus stepStatus = new StepStatus(baseStep);
+                            StepStatus stepStatus = new StepStatus(step);
                             out.print(stepStatus.getHTMLTableRow());
                         }
                     }

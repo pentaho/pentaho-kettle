@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -28,6 +29,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 	/**
 	 * Dummy class used for test().
 	 */
@@ -246,5 +248,69 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 		
 		public LogChannelInterface getLogChannel() {
 			return null;
+		}
+		public boolean isRunning() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		public boolean isUsingThreadPriorityManagment() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		public void setUsingThreadPriorityManagment(boolean usingThreadPriorityManagment) {
+			// TODO Auto-generated method stub
+			
+		}
+		public void setRunning(boolean running) {
+			// TODO Auto-generated method stub
+			
+		}
+		public void setStopped(boolean stopped) {
+			// TODO Auto-generated method stub
+			
+		}
+		public int rowsetInputSize() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		public int rowsetOutputSize() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		public long getProcessed() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		public Map<String, ResultFile> getResultFiles() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		public long getRuntime() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		public StepExecutionStatus getStatus() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		public boolean isPaused() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		public void identifyErrorOutput() {
+			// TODO Auto-generated method stub
+			
+		}
+		public void setPartitioned(boolean partitioned) {
+			// TODO Auto-generated method stub
+			
+		}
+		public void setRepartitioning(int partitioningMethod) {
+			// TODO Auto-generated method stub
+			
+		}
+		public boolean canProcessOneRow() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	}

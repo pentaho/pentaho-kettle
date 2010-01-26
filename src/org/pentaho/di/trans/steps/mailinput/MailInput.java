@@ -485,6 +485,7 @@ public class MailInput extends BaseStep implements StepInterface
 		}
 		return false;
 	}
+	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 	    meta = (MailInputMeta)smi;
@@ -500,10 +501,5 @@ public class MailInput extends BaseStep implements StepInterface
 	    
 	    super.dispose(smi, sdi);
 	}
-    //
-    // Run is were the action happens!
-    public void run()
-    {
-    	BaseStep.runStepThread(this, meta, data);
-    }
+
 }

@@ -243,6 +243,40 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     private LogChannelInterface log;
     
+    public enum TransformationType {
+    	Normal("Normal", BaseMessages.getString(PKG, "TransMeta.TransformationType.Normal")),
+    	SerialSingleThreaded("SerialSingleThreaded", BaseMessages.getString(PKG, "TransMeta.TransformationType.SerialSingleThreaded")),
+    	;
+    	
+    	private String	code;
+    	private String	description;
+
+		private TransformationType(String code, String description) {
+			this.code = code;
+			this.description = description; 
+		}
+		
+		public String getCode() {
+			return code;
+		}
+		
+		public String getDescription() {
+			return description;
+		}
+
+		public static TransformationType getTransformationTypeByCode(String transTypeCode) {
+			for (TransformationType type : values()) {
+				if (type.code.equalsIgnoreCase(transTypeCode)) {
+					return type;
+				}
+			}
+			return Normal;
+		}
+    }
+    
+    private TransformationType transformationType;
+    
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -425,7 +459,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public void clear()
     {
-        setObjectId(null);
+    	setObjectId(null);
         databases = new ArrayList<DatabaseMeta>();
         steps = new ArrayList<StepMeta>();
         hops = new ArrayList<TransHopMeta>();
@@ -501,6 +535,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         
         stepsFieldsCache = new HashMap<String, RowMetaInterface>();
         loopCache = new HashMap<String, Boolean>();
+        transformationType = TransformationType.Normal;
         
         log = new LogChannel(STRING_TRANSMETA);
     }
@@ -2002,6 +2037,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		retval.append("    ").append(XMLHandler.addTagValue("description", description)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("extended_description", extended_description)); 
 		retval.append("    ").append(XMLHandler.addTagValue("trans_version", trans_version));
+        retval.append("    ").append(XMLHandler.addTagValue("trans_type", transformationType.getCode())); //$NON-NLS-1$
 
 		if ( trans_status >= 0 )
 		{
@@ -2517,6 +2553,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 			//
 			trans_status = Const.toInt(XMLHandler.getTagValue(infonode, "trans_status"),-1); 
 			
+			String transTypeCode = XMLHandler.getTagValue(infonode, "trans_type");
+			transformationType = TransformationType.getTransformationTypeByCode(transTypeCode);
+
             // Optionally load the repository directory...
 			//
 			if (rep!=null) {
@@ -3571,10 +3610,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public boolean findPrevious(StepMeta startStep, StepMeta stepToFind)
     {
         // Normal steps
-        int nrPrevious = findNrPrevSteps(startStep, false);
-        for (int i = 0; i < nrPrevious; i++)
+    	List<StepMeta> previousSteps = findPreviousSteps(startStep, false);
+    	for (int i = 0; i < previousSteps.size(); i++)
         {
-            StepMeta stepMeta = findPrevStep(startStep, i, false);
+            StepMeta stepMeta = previousSteps.get(i);
             if (stepMeta.equals(stepToFind)) return true;
 
             boolean found = findPrevious(stepMeta, stepToFind); // Look further back in the tree.
@@ -3582,10 +3621,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
 
         // Info steps
-        nrPrevious = findNrPrevSteps(startStep, true);
-        for (int i = 0; i < nrPrevious; i++)
+        List<StepMeta> infoSteps = findPreviousSteps(startStep, true);
+        for (int i = 0; i < infoSteps.size(); i++)
         {
-            StepMeta stepMeta = findPrevStep(startStep, i, true);
+            StepMeta stepMeta = infoSteps.get(i);
             if (stepMeta.equals(stepToFind)) return true;
 
             boolean found = findPrevious(stepMeta, stepToFind); // Look further back in the tree.
@@ -3596,7 +3635,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     /**
-     * Put the steps in alfabetical order.
+     * Put the steps in alphabetical order.
      */
     public void sortSteps()
     {
@@ -5103,8 +5142,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                        referenceRow = row;
                    }
                    else
-                   {
                        if ( ! stepMeta.getStepMetaInterface().excludeFromRowLayoutVerification())
+                       {
                        {
                     	   BaseStep.safeModeChecking(referenceRow, row);
                        }                       
@@ -5727,6 +5766,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		logTables.add(performanceLogTable);
 		logTables.add(channelLogTable);
 		return logTables;
+	}
+
+	/**
+	 * @return the transformationType
+	 */
+	public TransformationType getTransformationType() {
+		return transformationType;
+	}
+
+	/**
+	 * @param transformationType the transformationType to set
+	 */
+	public void setTransformationType(TransformationType transformationType) {
+		this.transformationType = transformationType;
 	}
 	
 }

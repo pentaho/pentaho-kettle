@@ -325,13 +325,5 @@ public class PropertyOutput extends BaseStep implements StepInterface
 		setOutputDone();
 		super.dispose(smi, sdi);
 	}
-	
 
-	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
 }

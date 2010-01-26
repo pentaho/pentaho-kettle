@@ -362,11 +362,5 @@ public class AddXML extends BaseStep implements StepInterface
     private Transformer getSerializer() {
         return serializer;
     }
-    
-	//
-	// Run is were the action happens!
-	public void run()
-	{		
-    	BaseStep.runStepThread(this, meta, data);
-	}    
+      
 }

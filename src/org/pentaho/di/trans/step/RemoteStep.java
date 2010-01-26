@@ -26,7 +26,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -249,11 +249,11 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	 * @return the RowSet created that will accept the rows for the remote step
 	 * @throws IOException
 	 */
-	public synchronized RowSet openWriterSocket() throws IOException {
+	public synchronized BlockingRowSet openWriterSocket() throws IOException {
 
 		// Create an output row set: to be added to BaseStep.outputRowSets
 		//
-		final RowSet rowSet = new RowSet(baseStep.getTransMeta().getSizeRowset());
+		final BlockingRowSet rowSet = new BlockingRowSet(baseStep.getTransMeta().getSizeRowset());
 		
 		// Set the details for the source and target step as well as the target slave server.
 		// This will help us determine the pre-calculated partition nr later in the game. (putRow())
@@ -368,10 +368,10 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		return rowData;
 	}
 	
-	public synchronized RowSet openReaderSocket(final BaseStep baseStep) throws IOException, KettleException {
+	public synchronized BlockingRowSet openReaderSocket(final BaseStep baseStep) throws IOException, KettleException {
 		this.baseStep = baseStep;
 		
-		final RowSet rowSet = new RowSet(baseStep.getTransMeta().getSizeRowset());
+		final BlockingRowSet rowSet = new BlockingRowSet(baseStep.getTransMeta().getSizeRowset());
 		
 		// Make sure we handle the case with multiple step copies running on a slave...
 		//

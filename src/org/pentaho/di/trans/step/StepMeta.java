@@ -228,7 +228,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 			StepPlugin sp = steploader.findStepPluginWithID(stepid);
             if (sp!=null)
             {
-                setStepMetaInterface( BaseStep.getStepInfo(sp, steploader) );
+                setStepMetaInterface( steploader.getStepClass(sp) );
                 stepid=sp.getID()[0]; // revert to the default in case we loaded an alternate version
             }
             else

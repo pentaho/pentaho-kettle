@@ -30,9 +30,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 public class DummyTrans extends BaseStep implements StepInterface
 {
 	private static Class<?> PKG = DummyTransMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
-	private DummyTransMeta meta;
-	private DummyTransData data;
 	
 	public DummyTrans(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -41,9 +38,6 @@ public class DummyTrans extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		meta=(DummyTransMeta)smi;
-		data=(DummyTransData)sdi;
-
 		Object[] r=getRow();    // get row, set busy!
 		if (r==null)  // no more input to be expected...
 		{
@@ -59,26 +53,5 @@ public class DummyTrans extends BaseStep implements StepInterface
         }
 			
 		return true;
-	}
-
-
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(DummyTransMeta)smi;
-		data=(DummyTransData)sdi;
-		
-		if (super.init(smi, sdi))
-		{
-		    // Add init code here.
-		    return true;
-		}
-		return false;
-	}
-	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
 	}
 }

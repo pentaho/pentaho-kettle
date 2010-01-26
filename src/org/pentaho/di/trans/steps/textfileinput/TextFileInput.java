@@ -1460,10 +1460,4 @@ public class TextFileInput extends BaseStep implements StepInterface
 		System.gc();
 	}
 
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
-	}
 }

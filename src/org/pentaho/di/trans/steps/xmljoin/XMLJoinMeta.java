@@ -424,10 +424,12 @@ public class XMLJoinMeta extends BaseStepMeta  implements StepMetaInterface
     }
 
 
-    public void setEncoding(String encoding)
-    {
+  public void setEncoding(String encoding)
+  {
         this.encoding = encoding;
-    }
+  }
+    
+  
 }
 
    

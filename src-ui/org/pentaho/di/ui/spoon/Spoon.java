@@ -184,7 +184,6 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
-import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -4819,7 +4818,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		try {
 			stepPlugin = steploader.findStepPluginWithDescription(description, locale);
 			if (stepPlugin != null) {
-				StepMetaInterface info = BaseStep.getStepInfo(stepPlugin, steploader);
+				StepMetaInterface info = steploader.getStepClass(stepPlugin);
 
 				info.setDefault();
 

@@ -117,11 +117,11 @@ import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
-import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
@@ -3982,7 +3982,7 @@ private void addToolBar() {
 	 */
 	public void sniffOutput() {
 		StepMeta stepMeta = getCurrentStep();
-		final BaseStep runThread = trans.findRunThread(stepMeta.getName());
+		final StepInterface runThread = trans.findRunThread(stepMeta.getName());
 		if (runThread!=null) {
 			
 			List<Object[]> rows = new ArrayList<Object[]>(); 

@@ -34,7 +34,6 @@ public class Abort extends BaseStep implements StepInterface {
 	private static Class<?> PKG = Abort.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private AbortMeta meta;
-    private AbortData data;
     private int nrInputRows;
     private int nrThresholdRows;
     
@@ -46,7 +45,6 @@ public class Abort extends BaseStep implements StepInterface {
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(AbortMeta)smi;
-		data=(AbortData)sdi;
 		
 		if (super.init(smi, sdi))
 		{
@@ -66,7 +64,6 @@ public class Abort extends BaseStep implements StepInterface {
     
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
 		meta=(AbortMeta)smi;
-		data=(AbortData)sdi;
 		
         Object[] r=getRow();  // Get row from input rowset & set row busy!
         if (r==null)          // no more input to be expected...
@@ -115,12 +112,5 @@ public class Abort extends BaseStep implements StepInterface {
         }
         
         return true;
-    }
-
-    //
-    // Run is were the action happens!
-    public void run()
-    {
-    	BaseStep.runStepThread(this, meta, data);
     }
 }

@@ -35,8 +35,6 @@ public class FilesFromResult extends BaseStep implements StepInterface
 {
 	private static Class<?> PKG = FilesFromResult.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private FilesFromResultMeta meta;
-
 	private FilesFromResultData data;
 
 	public FilesFromResult(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
@@ -44,7 +42,6 @@ public class FilesFromResult extends BaseStep implements StepInterface
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 
-		meta = (FilesFromResultMeta) getStepMeta().getStepMetaInterface();
 		data = (FilesFromResultData) stepDataInterface;
 	}
 
@@ -77,7 +74,6 @@ public class FilesFromResult extends BaseStep implements StepInterface
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		meta = (FilesFromResultMeta) smi;
 		data = (FilesFromResultData) sdi;
 
 		if (super.init(smi, sdi))
@@ -96,12 +92,5 @@ public class FilesFromResult extends BaseStep implements StepInterface
 			return true;
 		}
 		return false;
-	}
-
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-    	BaseStep.runStepThread(this, meta, data);
 	}
 }

@@ -62,7 +62,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 5-April-2003
  */
-public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptValuesModInterface {
+public class ScriptValuesMod extends BaseStep implements StepInterface {
   private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private ScriptValuesMetaMod meta;
@@ -187,7 +187,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
       }
 
       // Adding the Name of the Transformation to the Context
-      data.scope.put("_TransformationName_", data.scope, this.getName());
+      data.scope.put("_TransformationName_", data.scope, getTransMeta().getName());
 
       try {
         // add these now (they will be re-added later) to make compilation succeed
@@ -727,10 +727,5 @@ public class ScriptValuesMod extends BaseStep implements StepInterface, ScriptVa
 
     super.dispose(smi, sdi);
   }
-
-  //
-  // Run is were the action happens!
-  public void run() {
-    BaseStep.runStepThread(this, meta, data);
-  }
+  
 }

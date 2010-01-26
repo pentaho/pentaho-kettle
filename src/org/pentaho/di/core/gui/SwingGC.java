@@ -141,7 +141,7 @@ public class SwingGC implements GCInterface {
 		init();
    	}
 
-	private void init() {
+	private void init(){
 		this.lineStyle = ELineStyle.SOLID;
 		this.lineWidth = 1;
 		this.alpha = 255;

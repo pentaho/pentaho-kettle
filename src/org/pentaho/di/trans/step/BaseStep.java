@@ -32,11 +32,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -55,55 +55,21 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.steps.mapping.Mapping;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 import org.pentaho.di.www.SocketRepository;
 
-public class BaseStep extends Thread implements VariableSpace, StepInterface, LoggingObjectInterface
+public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInterface
 {
 	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private VariableSpace variables = new Variables();
-
-    /**
-     *@deprecated Please use StepCategory.STANDARD_CATEGORIES to get the natural order
-     */
-    public static final String category_order[] =
-    {
-        StepCategory.INPUT.getName(),
-        StepCategory.OUTPUT.getName(),
-        StepCategory.LOOKUP.getName(),
-        StepCategory.TRANSFORM.getName(),
-        StepCategory.JOINS.getName(),
-        StepCategory.SCRIPTING.getName(),
-        StepCategory.DATA_WAREHOUSE.getName(),
-        StepCategory.MAPPING.getName(),
-        StepCategory.JOB.getName(),
-        StepCategory.INLINE.getName(),
-        StepCategory.EXPERIMENTAL.getName(),
-        StepCategory.DEPRECATED.getName(),
-        StepCategory.BULK.getName(),
-    };
-
-    public static final String[] statusDesc = { 
-    		BaseMessages.getString(PKG, "BaseStep.status.Empty"),
-            BaseMessages.getString(PKG, "BaseStep.status.Init"), 
-            BaseMessages.getString(PKG, "BaseStep.status.Running"), 
-            BaseMessages.getString(PKG, "BaseStep.status.Idle"),
-            BaseMessages.getString(PKG, "BaseStep.status.Finished"), 
-            BaseMessages.getString(PKG, "BaseStep.status.Stopped"),
-            BaseMessages.getString(PKG, "BaseStep.status.Disposed"), 
-            BaseMessages.getString(PKG, "BaseStep.status.Halted"), 
-            BaseMessages.getString(PKG, "BaseStep.status.Paused"), 
-            BaseMessages.getString(PKG, "BaseStep.status.Halting"), 
-    	};
-
+	
     private TransMeta                    transMeta;
 
     private StepMeta                     stepMeta;
@@ -162,30 +128,28 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
 
     private int                          currentInputRowSetNr, currentOutputRowSetNr;
 
-    public List<BaseStep>                thr;
-
     /** The rowsets on the input, size() == nr of source steps */
-    public ArrayList<RowSet> inputRowSets;
+    private List<RowSet> inputRowSets;
 
     /** the rowsets on the output, size() == nr of target steps */
-    public ArrayList<RowSet> outputRowSets;
+    private List<RowSet> outputRowSets;
     
     /** The remote input steps. */
-    public List<RemoteStep> remoteInputSteps;
+    private List<RemoteStep> remoteInputSteps;
 
     /** The remote output steps. */
-    public List<RemoteStep> remoteOutputSteps;
+    private List<RemoteStep> remoteOutputSteps;
 
     /** the rowset for the error rows */
-    public RowSet errorRowSet;
+    private RowSet errorRowSet;
 
-    public AtomicBoolean                 stopped;
+    private AtomicBoolean                 running;
 
-    public AtomicBoolean                 paused;
+    private AtomicBoolean                 stopped;
 
-    public boolean                       waiting;
+    private AtomicBoolean                 paused;
 
-    public boolean                       init;
+    private boolean                       init;
 
     /** the copy number of this thread */
     private int                          stepcopy;
@@ -212,12 +176,6 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
     private Map<String,ResultFile>                          resultFiles;
 
     /**
-     * Set this to true if you want to have extra checking enabled on the rows that are entering this step. All too
-     * often people send in bugs when it is really the mixing of different types of rows that is causing the problem.
-     */
-    private boolean                      safeModeEnabled;
-
-    /**
      * This contains the first row received and will be the reference row. We used it to perform extra checking: see if
      * we don't get rows with "mixed" contents.
      */
@@ -241,7 +199,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
     /**
      * The partitionID to rowset mapping
      */
-    private Map<String,RowSet>                         partitionTargets;
+    private Map<String,BlockingRowSet>                         partitionTargets;
     private RowMetaInterface inputRowMeta;
 
     /**
@@ -322,14 +280,9 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         this.socketRepository = trans.getSocketRepository();
         
         // Set the name of the thread
-        if (stepMeta.getName() != null)
+        if (stepMeta.getName() == null)
         {
-            setName(toString() + " (" + super.getName() + ")");
-        }
-        else
-        {
-            throw new RuntimeException("A step in transformation [" + transMeta.toString()
-                    + "] doesn't have a name.  A step should always have a name to identify it by.");
+            throw new RuntimeException("A step in transformation [" + transMeta.toString() + "] doesn't have a name.  A step should always have a name to identify it by.");
         }
 
         log = new LogChannel(this);
@@ -337,6 +290,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         first = true;
         clusteredPartitioningFirst=true;
         
+        running = new AtomicBoolean(false);;
         stopped = new AtomicBoolean(false);;
         paused = new AtomicBoolean(false);;
         init = false;
@@ -381,7 +335,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         resultFiles = new Hashtable<String,ResultFile>();
 
         repartitioning = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
-        partitionTargets = new Hashtable<String,RowSet>();
+        partitionTargets = new Hashtable<String,BlockingRowSet>();
 
         serverSockets = new ArrayList<ServerSocket>();
         
@@ -403,13 +357,13 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         
         dispatch();
         
-        upperBufferBoundary = (int)(transMeta.getSizeRowset() * 0.98);
-        lowerBufferBoundary = (int)(transMeta.getSizeRowset() * 0.02);
+        upperBufferBoundary = (int)(transMeta.getSizeRowset() * 0.99);
+        lowerBufferBoundary = (int)(transMeta.getSizeRowset() * 0.01);
     }
 
     public boolean init(StepMetaInterface smi, StepDataInterface sdi)
     {
-        sdi.setStatus(StepDataInterface.STATUS_INIT);
+        sdi.setStatus(StepExecutionStatus.STATUS_INIT);
 
         String slaveNr = transMeta.getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
         String clusterSize = transMeta.getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
@@ -586,7 +540,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
 
     public void dispose(StepMetaInterface smi, StepDataInterface sdi)
     {
-        sdi.setStatus(StepDataInterface.STATUS_DISPOSED);
+        sdi.setStatus(StepExecutionStatus.STATUS_DISPOSED);
     }
 
     public void cleanup()
@@ -896,7 +850,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
 
     public String getStatusDescription()
     {
-        return statusDesc[getStatus()];
+        return getStatus().getDescription();
     }
 
     /**
@@ -1311,7 +1265,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
 
     public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes) throws KettleStepException
     {
-    	if (safeModeEnabled) {
+    	if (trans.isSafeModeEnabled()) {
     		if(rowMeta.size()>row.length) {
     			throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.MetadataDoesntMatchDataRowSize", Integer.toString(rowMeta.size()), Integer.toString(row!=null?row.length:0)));
     		}
@@ -1542,7 +1496,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         {
             // OK, before we return the row, let's see if we need to check on mixing row compositions...
             // 
-            if (safeModeEnabled)
+            if (trans.isSafeModeEnabled())
             {
                 safeModeChecking(inputRowSet.getRowMeta(), inputRowMeta); // Extra checking 
                 if (row.length<inputRowMeta.size()) {
@@ -1579,7 +1533,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         		// 
         		for (RemoteStep remoteStep : remoteInputSteps) {
         			try {
-						RowSet rowSet = remoteStep.openReaderSocket(this);
+						BlockingRowSet rowSet = remoteStep.openReaderSocket(this);
 						inputRowSets.add(rowSet);
 					} catch (Exception e) {
 						throw new KettleStepException("Error opening reader socket to remote step '"+remoteStep+"'", e);
@@ -1618,7 +1572,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
 						if (remoteStep.getTargetSlaveServerName()==null) {
 		    				throw new KettleStepException("The target slave server name is not defined for remote output step: "+remoteStep);
 						}
-						RowSet rowSet = remoteStep.openWriterSocket();
+						BlockingRowSet rowSet = remoteStep.openWriterSocket();
 						if (log.isDetailed()) logDetailed("Opened a writer socket to remote step: "+remoteStep);
 						outputRowSets.add(rowSet);
 					} catch (IOException e) {
@@ -1658,6 +1612,26 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
             safeModeChecking(inputReferenceRow, row);
         }
     }
+	
+	public void identifyErrorOutput() {
+		if (stepMeta.isDoingErrorHandling()) {
+            StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+            boolean stop=false;
+            for (int rowsetNr=0;rowsetNr<outputRowSets.size() && !stop;rowsetNr++)
+            {
+                RowSet outputRowSet = outputRowSets.get(rowsetNr);
+                if (outputRowSet.getDestinationStepName().equalsIgnoreCase(stepErrorMeta.getTargetStep().getName()))
+                {
+                    // This is the rowset to move!
+                	//
+                    errorRowSet = outputRowSet;
+                    outputRowSets.remove(rowsetNr);
+                    stop=true;
+                }
+            }
+		}
+	}
+	
 
     public static void safeModeChecking(RowMetaInterface referenceRowMeta, RowMetaInterface rowMeta) throws KettleRowException
     {
@@ -1803,7 +1777,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         
         	// In this case we can cast the step thread to a Mapping...
         	//
-        	List<BaseStep> baseSteps = trans.findBaseSteps(from);
+        	List<StepInterface> baseSteps = trans.findBaseSteps(from);
         	if (baseSteps.size()==1) {
 	        	Mapping mapping = (Mapping) baseSteps.get(0);
 	        	
@@ -1871,7 +1845,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         
         	// In this case we can cast the step thread to a Mapping...
         	//
-        	List<BaseStep> baseSteps = trans.findBaseSteps(to);
+        	List<StepInterface> baseSteps = trans.findBaseSteps(to);
         	if (baseSteps.size()==1) {
 	        	Mapping mapping = (Mapping) baseSteps.get(0);
 	        	
@@ -2179,7 +2153,12 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
     {
         return stopped.get();
     }
-
+    
+    public boolean isRunning()
+    {
+        return running.get();
+    }
+    
     public boolean isPaused()
     {
         return paused.get();
@@ -2189,8 +2168,8 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
 		this.stopped.set(stopped);
 	}
 
-	public void setStopped(AtomicBoolean stopped) {
-		this.stopped = stopped;
+	public void setRunning(boolean running) {
+		this.running.set(running);
 	}
 	
 	public void pauseRunning() {
@@ -2239,6 +2218,10 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         for (StepListener stepListener : stepListeners) {
         	stepListener.stepFinished(trans, stepMeta, this);
         }
+        
+        // We're finally completely done with this step.
+        //
+        setRunning(false);
     }
 
     public long getRuntime()
@@ -2357,11 +2340,6 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
     	return string.toString();
     }
 
-    public Thread getThread()
-    {
-        return this;
-    }
-
     public int rowsetOutputSize()
     {
         int size = 0;
@@ -2384,18 +2362,6 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         }
 
         return size;
-    }
-
-    /**
-     * Create a new empty StepMeta class from the steploader
-     *
-     * @param stepplugin The step/plugin to use
-     * @param steploader The StepLoader to load from
-     * @return The requested class.
-     */
-    public static final StepMetaInterface getStepInfo(StepPlugin stepplugin, StepLoader steploader) throws KettleStepLoaderException
-    {
-        return steploader.getStepClass(stepplugin);
     }
 
     /**
@@ -2453,7 +2419,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
     /**
      * @param inputRowSets The inputRowSets to set.
      */
-    public void setInputRowSets(ArrayList<RowSet> inputRowSets)
+    public void setInputRowSets(List<RowSet> inputRowSets)
     {
         this.inputRowSets = inputRowSets;
     }
@@ -2469,7 +2435,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
     /**
      * @param outputRowSets The outputRowSets to set.
      */
-    public void setOutputRowSets(ArrayList<RowSet> outputRowSets)
+    public void setOutputRowSets(List<RowSet> outputRowSets)
     {
         this.outputRowSets = outputRowSets;
     }
@@ -2515,68 +2481,55 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
         return resultFiles;
     }
 
-    /**
-     * @return Returns true is this step is running in safe mode, with extra checking enabled...
-     */
-    public boolean isSafeModeEnabled()
-    {
-        return safeModeEnabled;
-    }
-
-    /**
-     * @param safeModeEnabled set to true is this step has to be running in safe mode, with extra checking enabled...
-     */
-    public void setSafeModeEnabled(boolean safeModeEnabled)
-    {
-        this.safeModeEnabled = safeModeEnabled;
-    }
-
-    public int getStatus()
+    public StepExecutionStatus getStatus()
     {
     	// Is this thread alive or not?
     	//
-    	if (isAlive()) {
+    	if (isRunning()) {
     		if (isStopped()) {
-    			return StepDataInterface.STATUS_HALTING;
+    			return StepExecutionStatus.STATUS_HALTING;
     		} else {
     			if (isPaused()) {
-    				return StepDataInterface.STATUS_PAUSED;
+    				return StepExecutionStatus.STATUS_PAUSED;
     			} else {
-    				return StepDataInterface.STATUS_RUNNING;
+    				return StepExecutionStatus.STATUS_RUNNING;
     			}
     		}
     	} 
     	else
     	{
-    		// Thread not running... What are we doing?
+    		// Step is not running... What are we doing?
     		//
 			// An init thread is running...
     		//
     		if (trans.isInitializing()) {
         		if (isInitialising()) {
-        			return StepDataInterface.STATUS_INIT;
+        			return StepExecutionStatus.STATUS_INIT;
         		} else {
         			// Done initializing, but other threads are still busy.
         			// So this step is idle
         			//
-        			return StepDataInterface.STATUS_IDLE;
+        			return StepExecutionStatus.STATUS_IDLE;
         		}
     		}
     		else {
     			// It's not running, it's not initializing, so what is it doing?
     			//
         		if (isStopped()) {
-        	    	return StepDataInterface.STATUS_STOPPED;
+        	    	return StepExecutionStatus.STATUS_STOPPED;
         		} else {
         			// To be sure (race conditions and all), get the rest in StepDataInterface object:
         			// 
         			StepDataInterface sdi = trans.getStepDataInterface(stepname, stepcopy);
         			if (sdi != null)
         			{
-        				if (sdi.getStatus() == StepDataInterface.STATUS_DISPOSED && !isAlive()) return StepDataInterface.STATUS_FINISHED;
-        				return sdi.getStatus();
+        				if (sdi.getStatus() == StepExecutionStatus.STATUS_DISPOSED) {
+        					return StepExecutionStatus.STATUS_FINISHED;
+        				} else {
+        					return sdi.getStatus();
+        				}
         			}
-        			return StepDataInterface.STATUS_EMPTY;
+        			return StepExecutionStatus.STATUS_EMPTY;
         		}
     		}
     	}
@@ -2601,7 +2554,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
     /**
      * @return the partitionTargets
      */
-    public Map<String,RowSet> getPartitionTargets()
+    public Map<String,BlockingRowSet> getPartitionTargets()
     {
         return partitionTargets;
     }
@@ -2609,7 +2562,7 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
     /**
      * @param partitionTargets the partitionTargets to set
      */
-    public void setPartitionTargets(Map<String,RowSet> partitionTargets)
+    public void setPartitionTargets(Map<String,BlockingRowSet> partitionTargets)
     {
         this.partitionTargets = partitionTargets;
     }
@@ -2921,6 +2874,20 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface, Lo
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
 		return false;
+	}
+	
+	public boolean canProcessOneRow() {
+		switch(inputRowSets.size()) {
+		case 0: return false;
+		case 1: return inputRowSets.get(0).size()>0;
+		default: 
+			for (RowSet rowSet : inputRowSets) {
+				if (rowSet.size()>0) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 	
 	public void addStepListener(StepListener stepListener) {
