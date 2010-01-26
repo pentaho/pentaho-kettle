@@ -1,7 +1,10 @@
 package org.pentaho.di.repository;
 
+import java.util.List;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ProfileMeta.Permission;
+
 
 public interface RepositoryUserInterface {
 
@@ -26,10 +29,16 @@ public interface RepositoryUserInterface {
 	public void setUserInfo(UserInfo userinfo);
 	
 	public UserInfo getUserInfo();
+	
+	public List<UserInfo> getUsers() throws KettleException;
+	
+	public void setUsers(List<UserInfo> roles) throws KettleException;
 
 	public ObjectId getUserID(String login) throws KettleException;
 
 	public void delUser(ObjectId id_user) throws KettleException;
+	
+	public void delUser(String name) throws KettleException;
 
 	public ObjectId[] getUserIDs() throws KettleException;
 
@@ -43,5 +52,19 @@ public interface RepositoryUserInterface {
 
     public void renameUser(ObjectId id_user, String newname) throws KettleException;
 
+    public void createRole(RoleInfo role) throws KettleException;
 
+    public RoleInfo getRole(String name) throws KettleException;
+   
+	public List<RoleInfo> getRoles() throws KettleException;
+	
+	public void setRoles(List<RoleInfo> roles) throws KettleException;
+	
+	public void updateUser(UserInfo role) throws KettleException;
+
+	public void updateRole(RoleInfo role) throws KettleException;
+
+	public void deleteRole(RoleInfo role) throws KettleException;
+	
+	public void deleteRole(String name) throws KettleException;
 }

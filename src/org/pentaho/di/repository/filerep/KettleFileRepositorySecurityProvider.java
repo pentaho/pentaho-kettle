@@ -1,5 +1,7 @@
 package org.pentaho.di.repository.filerep;
 
+import java.util.List;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.repository.ObjectId;
@@ -8,6 +10,7 @@ import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ProfileMeta.Permission;
 
@@ -136,4 +139,40 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
 	public void renameUser(ObjectId id_user, String newname) throws KettleException { }
 	public void saveProfile(ProfileMeta profileMeta) throws KettleException {}
 	public void saveUserInfo(UserInfo userInfo) throws KettleException {}
+
+	public void createRole(RoleInfo role) throws KettleException {}
+	public void deleteRole(RoleInfo role) throws KettleException {}
+	public RoleInfo getRole(String name) throws KettleException {return null;}
+	public List<RoleInfo> getRoles() throws KettleException {return null;}
+	public void updateRole(RoleInfo role) throws KettleException {}
+
+	public List<UserInfo> getUsers() throws KettleException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setRoles(List<RoleInfo> roles) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setUsers(List<UserInfo> roles) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void delUser(String name) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void deleteRole(String name) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateUser(UserInfo role) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
 }

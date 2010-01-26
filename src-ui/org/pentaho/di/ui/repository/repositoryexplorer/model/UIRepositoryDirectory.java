@@ -26,6 +26,7 @@ import org.pentaho.di.repository.RepositoryContent;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 
 public class UIRepositoryDirectory extends UIRepositoryObject {
 
@@ -34,6 +35,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   private UIRepositoryDirectories kidDirectoryCache = null;
   private UIRepositoryObjects kidElementCache = null;
   private boolean expanded = false;
+  private UIRepositoryObjectAcls acls;
   
   public UIRepositoryDirectory() {
     super();
@@ -246,5 +248,22 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   public void toggleExpanded() {
     setExpanded(!isExpanded());
     firePropertyChange("expanded", null, this.expanded); //$NON-NLS-1$
+  }
+  
+  public void readAcls(UIRepositoryObjectAcls acls) throws AccessDeniedException{
+    try {
+      acls.setObjectAcl(getRepository().getAcl(getObjectId()));
+    } catch(KettleException ke) {
+      throw new AccessDeniedException(ke);
+    }
+  }
+
+  public void setAcls(UIRepositoryObjectAcls security) throws AccessDeniedException{
+    this.acls = security;
+    try {
+      getRepository().setAcl(getObjectId(), acls.getObjectAcl());
+    } catch (KettleException e) {
+      throw new AccessDeniedException(e);
+    }
   }
 }

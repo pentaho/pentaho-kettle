@@ -1,5 +1,7 @@
 package org.pentaho.di.repository.kdr;
 
+import java.util.List;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.repository.BaseRepositorySecurityProvider;
@@ -9,6 +11,7 @@ import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
@@ -252,5 +255,57 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
 
 	public synchronized void renameProfile(ObjectId id_profile, String newname) throws KettleException {
 		profileDelegate.renameProfile(id_profile, newname);
+	}
+
+	public void createRole(RoleInfo role) throws KettleException {
+		// NOT IMPLEMENTED
+	}
+
+	public void deleteRole(RoleInfo role) throws KettleException {
+    // NOT IMPLEMENTED
+	}
+
+	public RoleInfo getRole(String name) throws KettleException {
+    // NOT IMPLEMENTED
+	  return null;
+	}
+
+	public List<RoleInfo> getRoles() throws KettleException {
+    // NOT IMPLEMENTED
+	  return null;
+	}
+
+	public void updateRole(RoleInfo role) throws KettleException {
+    // NOT IMPLEMENTED
+	}
+
+	public List<UserInfo> getUsers() throws KettleException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setRoles(List<RoleInfo> roles) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setUsers(List<UserInfo> users) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void delUser(String name) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void deleteRole(String name) throws KettleException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateUser(UserInfo role) throws KettleException {
+		// TODO Auto-generated method stub
+		
 	}
 }

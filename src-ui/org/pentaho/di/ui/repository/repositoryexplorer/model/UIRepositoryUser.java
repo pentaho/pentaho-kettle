@@ -16,45 +16,68 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
+import java.util.Set;
+
+import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 
-public class UIRepositoryUser extends XulEventSourceAdapter{
+public class UIRepositoryUser extends XulEventSourceAdapter {
 
   private UserInfo rui;
-  
+
   public UIRepositoryUser() {
   }
-  
+
   public UIRepositoryUser(UserInfo rui) {
     this.rui = rui;
   }
 
-  public void setLogin(String name){
+  public void setName(String name) {
     rui.setLogin(name);
   }
-  
-  public String getLogin(){
+
+  public String getName() {
     return rui.getLogin();
   }
 
-  public String getDescription(){
+  public String getDescription() {
     return rui.getDescription();
   }
-  
-  public void setDescription(String desc){
-    rui.setLogin(desc);
+
+  public void setDescription(String desc) {
+    rui.setDescription(desc);
   }
-  
-  public void setPassword(String pass){
+
+  public void setPassword(String pass) {
     rui.setPassword(pass);
   }
-  
-  public String getPassword(){
+
+  public String getPassword() {
     return rui.getPassword();
   }
-  
-  public UserInfo getUserInfo(){
+
+  public UserInfo getUserInfo() {
     return rui;
+  }
+
+  public boolean addRole(RoleInfo role) {
+    return rui.addRole(role);
+  }
+
+  public boolean removeRole(RoleInfo role) {
+    return rui.removeRole(role);
+  }
+
+  public void clearRoles() {
+    rui.clearRoles();
+  }
+
+  public void setRoles(Set<RoleInfo> roles) {
+    rui.setRoles(roles);
+  }
+
+  public Set<RoleInfo> getRoles() {
+    return rui.getRoles();
   }
 }

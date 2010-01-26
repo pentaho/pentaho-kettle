@@ -36,4 +36,10 @@ public interface RepositoryCapabilities {
 	 * @return true if the repository has a version registry
 	 */
 	public boolean hasVersionRegistry();
+	
+	/**
+	 * @return true if the repository supports ACLs
+	 */
+	public boolean supportsAcls();
+	
 }

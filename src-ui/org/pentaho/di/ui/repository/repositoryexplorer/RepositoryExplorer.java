@@ -27,6 +27,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersContr
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.PartitionsController;
+import org.pentaho.di.ui.repository.repositoryexplorer.controllers.PermissionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SlavesController;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
@@ -53,7 +54,8 @@ public class RepositoryExplorer {
   private SlavesController slavesController = new SlavesController();
   private PartitionsController partitionsController = new PartitionsController();
   private ClustersController clustersController = new ClustersController();
-
+  private PermissionsController permissionsController = new PermissionsController();
+  
   private XulDomContainer container;
   
   private Directory repositoryDirectory; 
@@ -83,6 +85,10 @@ public class RepositoryExplorer {
       browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
       browseController.setCallback(callback);
       
+      permissionsController.setBindingFactory(bf);
+      container.addEventHandler(permissionsController);
+      permissionsController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
+      
       connectionsController.setRepository(rep);
       connectionsController.setBindingFactory(bf);
       container.addEventHandler(connectionsController);
@@ -102,12 +108,23 @@ public class RepositoryExplorer {
 
       boolean securityEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().managesUsers();
       loadSecurityOverlay(securityEnabled);
+
+      boolean aclEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsAcls();
+      loadAclOverlay(aclEnabled);
+
       container.addEventHandler(securityController);
       if (securityEnabled){
         securityController.setBindingFactory(bf);
         securityController.setRepositoryUserInterface(rep.getSecurityProvider());
       }
       
+      boolean aclsEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsAcls();
+      container.addEventHandler(permissionsController);
+      if (aclsEnabled && securityEnabled){
+    	  permissionsController.setBindingFactory(bf);
+    	  permissionsController.setRepositoryUserInterface(rep.getSecurityProvider());
+      }
+
       try {
         runner.initialize();
       } catch (XulException e) {
@@ -141,6 +158,18 @@ public class RepositoryExplorer {
       e.printStackTrace();
     }
   }
+
+  private void loadAclOverlay(boolean aclEnabled){
+	    try {
+	      String overlay = aclEnabled ? 
+	          "org/pentaho/di/ui/repository/repositoryexplorer/xul/acl-enabled-layout-overlay.xul" : //$NON-NLS-1$
+	            "org/pentaho/di/ui/repository/repositoryexplorer/xul/acl-disabled-layout-overlay.xul"; //$NON-NLS-1$
+	      container.loadOverlay(overlay);
+	    } catch (XulException e) {
+	      log.error("Error loading Xul overlay: acl-layout-overlay.xul");
+	      e.printStackTrace();
+	    }
+	  }
 
   private void loadVersionOverlay(boolean versionEnabled){
     try {

@@ -42,6 +42,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.LongObjectId;
+import org.pentaho.di.repository.ObjectAcl;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -1717,4 +1718,24 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		// NOT IMPLEMENTED
 		return null;
 	}
+
+  public ObjectAcl getAcl(RepositoryElementLocationInterface element) throws KettleException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public void setAcl(ObjectId id, ObjectAcl aclObject) throws KettleException {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public List<ObjectRevision> getRevisions(ObjectId id) throws KettleException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public ObjectAcl getAcl(ObjectId id) throws KettleException {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

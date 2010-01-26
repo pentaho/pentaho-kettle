@@ -9,19 +9,37 @@
 			<!-- <button id="revision-remove" image="images/Remove.png"  />  -->
 		</hbox>
 
-		<tree id="revision-table" flex="1" hidecolumnpicker="true"
-			enableColumnDrag="true" context="revisionContextMenu" treeLines="false">
-			<treecols>
-				<treecol id="revision-label-col" flex="1" label="Label"
-					pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
-				<treecol id="revision-date-mod-col" flex="1" label="Date Created"
-					pen:binding="formatCreationDate" context="revisionContextMenu" />
-				<treecol id="revision-comment-col" flex="1" label="Comment"
-					pen:binding="comment" />
-				<treecol id="revision-user-col" flex="1" label="User"
-					pen:binding="login" />
-			</treecols>
-			<treechildren />
-		</tree>
+							<tabbox id="file-properties-tabs" flex="1">
+								<tabs>
+									<tab label="History" />
+									<tab label="Permission" />
+								</tabs>
+								<tabpanels flex="1">
+									<tabpanel id="history-tab">
+										<tree id="revision-table" flex="1" hidecolumnpicker="true"
+											enableColumnDrag="true" context="revisionContextMenu" treeLines="false">
+											<treecols>
+												<treecol id="revision-label-col" flex="1" label="Label"
+													pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
+												<treecol id="revision-date-mod-col" flex="1" label="Date Created"
+													pen:binding="formatCreationDate" context="revisionContextMenu" />
+												<treecol id="revision-comment-col" flex="1" label="Comment"
+													pen:binding="comment" />
+												<treecol id="revision-user-col" flex="1" label="User"
+													pen:binding="login" />
+											</treecols>
+											<treechildren />
+										</tree>
+								    </tabpanel>	
+									<tabpanel id="acl-tab">
+										<deck id="acl-deck">
+											<vbox id="no-acl-box" flex="1">
+												<label value="Permission information is not available"/> 
+											</vbox>
+											<vbox id="acl-box" flex="1"/>
+										</deck>
+									</tabpanel>
+								</tabpanels>
+							</tabbox>
   </vbox>
 </overlay>					

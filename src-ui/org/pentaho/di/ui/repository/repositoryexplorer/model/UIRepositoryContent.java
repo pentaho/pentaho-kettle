@@ -20,18 +20,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 
 public class UIRepositoryContent extends UIRepositoryObject implements RepositoryElementLocationInterface{
 
   private RepositoryContent rc;
   private UIRepositoryObjectRevisions revisions;
   protected UIRepositoryDirectory uiParent;
+  private UIRepositoryObjectAcls acls;
   
   public UIRepositoryContent() {
     super();
@@ -85,7 +88,7 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     
     revisions = new UIRepositoryObjectRevisions();
     
-    List <ObjectRevision> or = getRepository().getRevisions(this);
+    List <ObjectRevision> or = getRepository().getRevisions(getObjectId());
 
     for (ObjectRevision rev : or) {
       revisions.add(new UIRepositoryObjectRevision(rev));
@@ -126,10 +129,25 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     throw new UnsupportedOperationException();
   }
 
+  public void readAcls(UIRepositoryObjectAcls acls) throws AccessDeniedException{
+    try {
+      acls.setObjectAcl(getRepository().getAcl(getObjectId()));
+    } catch(KettleException ke) {
+      throw new AccessDeniedException(ke);
+    }
+  }
+
+  public void setAcls(UIRepositoryObjectAcls security) throws AccessDeniedException{
+    this.acls = security;
+    try {
+      getRepository().setAcl(getObjectId(), acls.getObjectAcl());
+    } catch (KettleException e) {
+      throw new AccessDeniedException(e);
+    }
+  }
+
   @Override
   public int getCategory() {
     return 20;
   }
-
-
 }

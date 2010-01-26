@@ -25,6 +25,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.ObjectAcl;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.ProfileMeta;
@@ -1094,5 +1095,20 @@ public class KettleFileRepository implements Repository {
 		// NOT IMPLEMENTED
 		return null;
 	}
+
+  public void setAcl(ObjectId id,ObjectAcl aclObject) throws KettleException {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public List<ObjectRevision> getRevisions(ObjectId id) throws KettleException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public ObjectAcl getAcl(ObjectId id) throws KettleException {
+    // TODO Auto-generated method stub
+    return null;
+  }
 	
 }

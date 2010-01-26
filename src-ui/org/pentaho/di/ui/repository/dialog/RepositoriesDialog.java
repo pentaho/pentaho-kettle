@@ -15,6 +15,7 @@ import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -53,6 +54,7 @@ import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryPluginMeta;
+import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.ui.core.PropsUI;
@@ -617,11 +619,10 @@ public class RepositoriesDialog
                 	// OK, now try the username and password
                 	//
                 	rep = RepositoryLoader.getInstance().createRepositoryObject(repinfo.getId());
+            		userinfo = new UserInfo(wUsername.getText());
+            		userinfo.setPassword(wPassword.getText());
                 	
                 	if (!repinfo.getRepositoryCapabilities().managesUsers()) {
-                		userinfo = new UserInfo(wUsername.getText());
-                		userinfo.setPassword(wPassword.getText());
-                		
                 		// TODO find out where do to get appropriate permissions from
                 		//
                 		ProfileMeta adminProfile = new ProfileMeta("Administrator", "Administrator");
@@ -702,8 +703,7 @@ public class RepositoriesDialog
             mb.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.IncorrectUserPassword.Title"));
             mb.open();
         }
-        else
-        {
+        else if(userinfo.getProfile() != null) {
             boolean ok = true;
             // Check the permissions of the user
             String mess = "";
@@ -749,6 +749,21 @@ public class RepositoriesDialog
             {
                 dispose();
             }
+        } else {
+        	Set<RoleInfo> roleSet = userinfo.getRoles();
+        	RoleInfo[] roleArray = new RoleInfo[roleSet.size()];
+        	roleSet.toArray(roleArray);
+        	for(int i=0;i< roleArray.length;i++) {
+        		if(roleArray[i].getName().equalsIgnoreCase("Admin") || roleArray[i].getName().equalsIgnoreCase("Admin")) {
+            		// TODO find out where do to get appropriate permissions from
+            		//
+            		ProfileMeta adminProfile = new ProfileMeta("Administrator", "Administrator");
+            		adminProfile.addPermission(Permission.ADMIN);
+            		userinfo.setProfile(adminProfile);
+            		break;
+        		}
+        	}
+        	dispose();
         }
     }
 

@@ -1,350 +1,547 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<dialog id="repository-explorer-dialog" 
-	title="Dev Repository"
-	appicon="ui/images/spoon.ico"
-	height="600" 
-	width="800" 
-	orient="vertical" 
-	buttons="accept"
-	buttonalign="end" 
-	buttonlabelaccept="Close" 
-	ondialogaccept="mainController.closeDialog()"
-	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-	xmlns:pen="http://www.pentaho.org/2008/xul" 
-	onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init()">
+<window id="repository-explorer-window" title="Dev Repository Window" orient="vertical"
+  height="600" width="800"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:pen="http://www.pentaho.org/2008/xul" 
+  onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init(), permissionsController.init()">
 
-	<menupopup id="folderContextMenu">
-		<menuitem label="New Folder" command="browseController.createFolder()"/>
-		<menuitem label="Open" />
-		<menuitem label="Rename" command="browseController.renameFolder()"/>
-		<menuitem label="Delete" command="browseController.deleteFolder()"/>
-	</menupopup>
-
-	<menupopup id="revisionContextMenu">
-		<menuitem label="Open" command="browseController.openRevision()"/>
-		<!-- <menuitem label="Delete" /> -->
-	</menupopup>
-
-	<menupopup id="fileContextMenu">
-		<menuitem label="Open" command="browseController.openContent()"/>
-		<menuitem label="Rename" command="browseController.renameContent()"/>
-		<menuitem label="Delete" command="browseController.deleteContent()"/>
-	</menupopup>
-
-	<tabbox id="repositoryExplorerTabs" flex="1">
-
-		<tabs>
-			<tab label="Browse" />
-			<tab label="Connections" />
-			<tab label="Security" />
-			<tab label="Slaves" />
-			<tab label="Partitions" />
-			<tab label="Clusters" />
-		</tabs>
-
-		<tabpanels flex="1">
-
-			<!--
-				###############################################################################
-			-->
-			<!--
-				BROWSE TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-
-			<tabpanel id="browse-tab">
-						
-						<splitter flex="1" orient="HORIZONTAL">  
-						<vbox flex="1"> 
-							<hbox>
-								<label id="folder-label" value="Folders:" />
-								<label id="spacer-label" flex="1" />
-								<button id="folder-expand-all" image="images/ExpandAll.png" onclick="browseController.expandAllFolders()"
-									context="folderContextMenu" />
-								<button id="folder-expand-all" image="images/CollapseAll.png"  onclick="browseController.collapseAllFolders()" />
-							</hbox>
-
-							<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" 
-							ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" 
-							pen:drageffect="move" pen:preserveexpandedstate="true" command="browseController.onDoubleClick()">
-								<treecols>
-									<treecol flex="1" label="" primary="true" pen:binding="name"
-										pen:childrenbinding="children" pen:imagebinding="image" expandedbinding="expanded" 
-										sortActive="true" sortDirection="ASCENDING"/>
-								</treecols>
-								<treechildren>
-									<treeitem container="true" open="true">
-										<treerow>
-											<treecell label="" />
-										</treerow>
-										<treechildren></treechildren>
-									</treeitem>
-								</treechildren>
-							</tree>
-						</vbox>
-						<vbox flex="4">
-							<splitter flex="1" orient="VERTICAL">  
-								<tree id="file-table" flex="4" hidecolumnpicker="true"
-									enableColumnDrag="true" context="fileContextMenu" 
-									ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()" 
-									pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
-									<treecols>
-										<treecol id="name-col" flex="1" label="Name"
-											pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
-											pen:comparatorbinding="comparator"/>
-										<treecol id="type-col" flex="1" label="Type"
-											pen:binding="type" />
-										<treecol id="date-mod-col" flex="1" label="Date Modified"
-											pen:binding="formatModifiedDate" />
-										<treecol id="size-col" flex="1" label="Size" />
-<!-- 
-										<treecol id="desc-col" flex="1" label="Description"
-											pen:binding="description" />
-										<treecol id="lock-msg-col" flex="1" label="Lock Message"
-											pen:binding="lockMessage" />
--->											
-									</treecols>
-									<treechildren />
-								</tree>
-								<vbox flex="1" id="revision-box" />
-						  </splitter>
-				 		</vbox>  
-						</splitter>  
-			</tabpanel>
-			<!--
-				###############################################################################
-			-->
-			<!--
-				END - BROWSE TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-
-			<!--
-				###############################################################################
-			-->
-			<!--
-				START - CONNECTIONS TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-			
-			<tabpanel id="connections">
-				<hbox flex="1">
-				<vbox flex="1">
-					<!-- Connection list tool pane -->
-					<hbox height="20px">
-						<label value="Available:"/>
-						<label id="spacer-label" flex="1" />
-						<button id="connections-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="connectionsController.editConnection()"/>
-						<button id="connections-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="connectionsController.createConnection()"/>
-						<button id="connections-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="connectionsController.removeConnection()" />
-					</hbox>
-					<!-- Connection list -->
-					<tree id="connections-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
-						<treecols>
-							<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
-							<treecol id="type-col" flex="1" label="Type" pen:binding="type"/>
-							<treecol id="date-mod-col" flex="1" label="Date Modified" pen:binding="dateModified"/>
-							<treecol id="size-col" flex="1" label="Size"/>
-						</treecols>
-						<treechildren/>
-					</tree>
-					<!-- Version history tool pane -->
-<!--
-					<hbox height="20px">
-						<label id="connection-revision-label" value="Version History:"/>
-					</hbox>
--->
-					<!-- Version history -->
-<!--
-					<tree id="connection-revision-table" flex="1" hidecolumnpicker="true"
-						enableColumnDrag="true" context="revisionContextMenu">
-						<treecols>
-							<treecol id="revision-label-col" flex="1" label="Label"
-								pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
-							<treecol id="revision-date-mod-col" flex="1" label="Date Created"
-								pen:binding="formatCreationDate" context="revisionContextMenu" />
-							<treecol id="revision-comment-col" flex="1" label="Comment"
-								pen:binding="comment" />
-							<treecol id="revision-user-col" flex="1" label="User"
-								pen:binding="login" />
-						</treecols>
-						<treechildren />
-					</tree>
--->
-				</vbox>
-				</hbox>
-			</tabpanel>
-			
-			
-			<!--
-				###############################################################################
-			-->
-			<!--
-				END - CONNECTIONS TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-
-			<!--
-				###############################################################################
-			-->
-			<!--
-				START - SECURITY TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-
-			<tabpanel id="security" >
-				<hbox id="security-box" flex="1" ></hbox>
-			</tabpanel>
-			<!--
-				###############################################################################
-			-->
-			<!--
-				END - SECURITY TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-			
-			<!--
-				###############################################################################
-			-->
-			<!--
-				START - SLAVES TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-
-			<tabpanel id="slaves">
-				<hbox flex="1">
-				<vbox flex="1">
-					<!-- Slaves list tool pane -->
-					<hbox>
-						<label value="Available:"/>
-						<label id="spacer-label" flex="1" />
-						<button id="slaves-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="slavesController.editSlave()"/>
-						<button id="slaves-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="slavesController.createSlave()"/>
-						<button id="slaves-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="slavesController.removeSlave()" />
-					</hbox>
-					<!-- Slaves list -->
-					<tree id="slaves-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
-						<treecols>
-							<treecol id="name-col" flex="4" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
-							<treecol id="host-col" flex="4" label="Host" pen:binding="host"/>
-							<treecol id="port-col" flex="2" label="Port" pen:binding="port"/>
-							<treecol id="master-col" flex="1" label="Master" pen:binding="master"/>
-						</treecols>
-						<treechildren/>
-					</tree>
-				</vbox>
-				</hbox>
-			</tabpanel>
-			
-			<!--
-				###############################################################################
-			-->
-			<!--
-				END - SLAVES TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-
-			<!--
-				###############################################################################
-			-->
-			<!--
-				START - PARTITIONS TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-			<tabpanel id="partitions">
-				<hbox flex="1">
-				<vbox flex="1">
-					<!-- Partition list tool pane -->
-					<hbox>
-						<label value="Available:"/>
-						<label id="spacer-label" flex="1" />
-						<button id="partitions-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="partitionsController.editPartition()"/>
-						<button id="partitions-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="partitionsController.createPartition()"/>
-						<button id="partitions-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="partitionsController.removePartition()" />
-					</hbox>
-					<!-- Partition list -->
-					<tree id="partitions-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
-						<treecols>
-							<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
-						</treecols>
-						<treechildren/>
-					</tree>
-				</vbox>
-				</hbox>
-			</tabpanel>
-			<!--
-				###############################################################################
-			-->
-			<!--
-				END - PARTITIONS TAB
-			-->
-			<!--
-				###############################################################################
-			-->
+	<dialog id="repository-explorer-dialog" 
+		title="Dev Repository"
+	    height="600" width="800"
+		appicon="ui/images/spoon.ico"
+		buttons="accept"
+		buttonalign="end" 
+		buttonlabelaccept="Close" 
+		ondialogaccept="mainController.closeDialog()">
+	
+		<menupopup id="folderContextMenu">
+			<menuitem label="New Folder" command="browseController.createFolder()"/>
+			<menuitem label="Open" />
+			<menuitem label="Rename" command="browseController.renameFolder()"/>
+			<menuitem label="Delete" command="browseController.deleteFolder()"/>
+		</menupopup>
+	
+		<menupopup id="revisionContextMenu">
+			<menuitem label="Open" command="browseController.openRevision()"/>
+			<!-- <menuitem label="Delete" /> -->
+		</menupopup>
+	
+		<menupopup id="fileContextMenu">
+			<menuitem label="Open" command="browseController.openContent()"/>
+			<menuitem label="Rename" command="browseController.renameContent()"/>
+			<menuitem label="Delete" command="browseController.deleteContent()"/>
+		</menupopup>
+	
+		<tabbox id="repositoryExplorerTabs" flex="1">
+	
+			<tabs>
+				<tab label="Browse" />
+				<tab label="Connections" />
+				<tab label="Security" />
+				<tab label="Slaves" />
+				<tab label="Partitions" />
+				<tab label="Clusters" />
+			</tabs>
+	
+			<tabpanels flex="1">
+	
+				<!--
+					###############################################################################
+				-->
+				<!--
+					BROWSE TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+	
+				<tabpanel id="browse-tab">
+							<splitter flex="1" orient="HORIZONTAL">  
+								<vbox flex="1"> 
+									<hbox>
+										<label id="folder-label" value="Folders:" />
+										<label id="spacer-label" flex="1" />
+										<button id="folder-expand-all" image="images/ExpandAll.png" onclick="browseController.expandAllFolders()"
+											context="folderContextMenu" />
+										<button id="folder-expand-all" image="images/CollapseAll.png"  onclick="browseController.collapseAllFolders()" />
+									</hbox>
+		
+									<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" 
+									ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" 
+									pen:drageffect="move" pen:preserveexpandedstate="true" command="browseController.onDoubleClick()">
+										<treecols>
+											<treecol flex="1" label="" primary="true" pen:binding="name"
+												pen:childrenbinding="children" pen:imagebinding="image" expandedbinding="expanded" 
+												sortActive="true" sortDirection="ASCENDING"/>
+										</treecols>
+										<treechildren>
+											<treeitem container="true" open="true">
+												<treerow>
+													<treecell label="" />
+												</treerow>
+												<treechildren></treechildren>
+											</treeitem>
+										</treechildren>
+									</tree>
+								</vbox>
+								<vbox flex="4">
+									<splitter flex="1" orient="VERTICAL">  
+										<tree id="file-table" flex="4" hidecolumnpicker="true"
+											enableColumnDrag="true" context="fileContextMenu" 
+											ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()" 
+											pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
+											<treecols>
+												<treecol id="name-col" flex="1" label="Name"
+													pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
+													pen:comparatorbinding="comparator"/>
+												<treecol id="type-col" flex="1" label="Type"
+													pen:binding="type" />
+												<treecol id="date-mod-col" flex="1" label="Date Modified"
+													pen:binding="formatModifiedDate" />
+												<treecol id="size-col" flex="1" label="Size" />
+		<!-- 
+												<treecol id="desc-col" flex="1" label="Description"
+													pen:binding="description" />
+												<treecol id="lock-msg-col" flex="1" label="Lock Message"
+													pen:binding="lockMessage" />
+		-->											
+		
+											</treecols>
+											<treechildren />
+										</tree>
+										<vbox flex="1" id="revision-box" />
+								  </splitter>
+						 		</vbox>  
+                            </splitter>  
+				</tabpanel>
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - BROWSE TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+	
+				<!--
+					###############################################################################
+				-->
+				<!--
+					START - CONNECTIONS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
 				
-
-			<!--
-				###############################################################################
-			-->
-			<!--
-				START - CLUSTERS TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-			<tabpanel id="clusters">
-				<hbox flex="1">
-				<vbox flex="1">
-					<!-- Cluster list tool pane -->
-					<hbox>
-						<label value="Available:"/>
-						<label id="spacer-label" flex="1" />
-						<button id="clusters-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="clustersController.editCluster()"/>
-						<button id="clusters-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="clustersController.createCluster()"/>
-						<button id="clusters-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="clustersController.removeCluster()" />
+				<tabpanel id="connections">
+					<hbox flex="1">
+					<vbox flex="1">
+						<!-- Connection list tool pane -->
+						<hbox height="20px">
+							<label value="Available:"/>
+							<label id="spacer-label" flex="1" />
+							<button id="connections-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="connectionsController.editConnection()"/>
+							<button id="connections-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="connectionsController.createConnection()"/>
+							<button id="connections-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="connectionsController.removeConnection()" />
+						</hbox>
+						<!-- Connection list -->
+						<tree id="connections-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+							<treecols>
+								<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+								<treecol id="type-col" flex="1" label="Type" pen:binding="type"/>
+								<treecol id="date-mod-col" flex="1" label="Date Modified" pen:binding="dateModified"/>
+								<treecol id="size-col" flex="1" label="Size"/>
+							</treecols>
+							<treechildren/>
+						</tree>
+						<!-- Version history tool pane -->
+	<!--
+						<hbox height="20px">
+							<label id="connection-revision-label" value="Version History:"/>
+						</hbox>
+	-->
+						<!-- Version history -->
+	<!--
+						<tree id="connection-revision-table" flex="1" hidecolumnpicker="true"
+							enableColumnDrag="true" context="revisionContextMenu">
+							<treecols>
+								<treecol id="revision-label-col" flex="1" label="Label"
+									pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
+								<treecol id="revision-date-mod-col" flex="1" label="Date Created"
+									pen:binding="formatCreationDate" context="revisionContextMenu" />
+								<treecol id="revision-comment-col" flex="1" label="Comment"
+									pen:binding="comment" />
+								<treecol id="revision-user-col" flex="1" label="User"
+									pen:binding="login" />
+							</treecols>
+							<treechildren />
+						</tree>
+	-->
+					</vbox>
 					</hbox>
-					<!-- Cluster list -->
-					<tree id="clusters-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
-						<treecols>
-							<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
-							<treecol id="servers-col" flex="4" label="Server(s)" pen:binding="serverList"/>
-						</treecols>
-						<treechildren/>
-					</tree>
-				</vbox>
-				</hbox>
-			</tabpanel>
-			<!--
-				###############################################################################
-			-->
-			<!--
-				END - CLUSTERS TAB
-			-->
-			<!--
-				###############################################################################
-			-->
-
-		</tabpanels>
-
-	</tabbox>
-
-</dialog>
+				</tabpanel>
+				
+				
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - CONNECTIONS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+	
+				<!--
+					###############################################################################
+				-->
+				<!--
+					START - SECURITY TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+	
+				<tabpanel id="security" >
+					<hbox id="security-box" flex="1" ></hbox>
+				</tabpanel>
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - SECURITY TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+				
+				<!--
+					###############################################################################
+				-->
+				<!--
+					START - SLAVES TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+	
+				<tabpanel id="slaves">
+					<hbox flex="1">
+					<vbox flex="1">
+						<!-- Slaves list tool pane -->
+						<hbox>
+							<label value="Available:"/>
+							<label id="spacer-label" flex="1" />
+							<button id="slaves-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="slavesController.editSlave()"/>
+							<button id="slaves-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="slavesController.createSlave()"/>
+							<button id="slaves-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="slavesController.removeSlave()" />
+						</hbox>
+						<!-- Slaves list -->
+						<tree id="slaves-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+							<treecols>
+								<treecol id="name-col" flex="4" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+								<treecol id="host-col" flex="4" label="Host" pen:binding="host"/>
+								<treecol id="port-col" flex="2" label="Port" pen:binding="port"/>
+								<treecol id="master-col" flex="1" label="Master" pen:binding="master"/>
+							</treecols>
+							<treechildren/>
+						</tree>
+					</vbox>
+					</hbox>
+				</tabpanel>
+				
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - SLAVES TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+	
+				<!--
+					###############################################################################
+				-->
+				<!--
+					START - PARTITIONS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+				<tabpanel id="partitions">
+					<hbox flex="1">
+					<vbox flex="1">
+						<!-- Partition list tool pane -->
+						<hbox>
+							<label value="Available:"/>
+							<label id="spacer-label" flex="1" />
+							<button id="partitions-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="partitionsController.editPartition()"/>
+							<button id="partitions-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="partitionsController.createPartition()"/>
+							<button id="partitions-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="partitionsController.removePartition()" />
+						</hbox>
+						<!-- Partition list -->
+						<tree id="partitions-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+							<treecols>
+								<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+							</treecols>
+							<treechildren/>
+						</tree>
+					</vbox>
+					</hbox>
+				</tabpanel>
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - PARTITIONS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+					
+	
+				<!--
+					###############################################################################
+				-->
+				<!--
+					START - CLUSTERS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+				<tabpanel id="clusters">
+					<hbox flex="1">
+					<vbox flex="1">
+						<!-- Cluster list tool pane -->
+						<hbox>
+							<label value="Available:"/>
+							<label id="spacer-label" flex="1" />
+							<button id="clusters-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="clustersController.editCluster()"/>
+							<button id="clusters-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="clustersController.createCluster()"/>
+							<button id="clusters-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="clustersController.removeCluster()" />
+						</hbox>
+						<!-- Cluster list -->
+						<tree id="clusters-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+							<treecols>
+								<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+								<treecol id="servers-col" flex="4" label="Server(s)" pen:binding="serverList"/>
+							</treecols>
+							<treechildren/>
+						</tree>
+					</vbox>
+					</hbox>
+				</tabpanel>
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - CLUSTERS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+	
+			</tabpanels>
+	
+		</tabbox>
+	
+	</dialog>
+	<!--  ###############################################################################   -->
+    <!--     MANAGE ACLS DIALOG: Dialog to manage acls                                      -->
+    <!--  ###############################################################################   -->    
+	
+	<dialog id="manage-acls-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel"
+	    		ondialogaccept="permissionsController.updateAcls()"
+	    		ondialogcancel="permissionsController.closeManageAclsDialog()" 
+	    		buttons="accept, cancel" buttonalign="right" title="Select User or Role" 
+	    		height="500" width="400">
+	    	<vbox flex="1">
+		    	<groupbox id="user-section" flex="1">
+		    		<caption label="User" />
+		    		<hbox flex="1">
+			    		<vbox flex="2">
+							<label value="Available:"/>
+							<listbox id="available-user-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>					
+			    		</vbox>
+					    <vbox>
+					    	<label id="spacer-label" flex="1" />
+							<button id="assign-user" image="images/accum_add.png"  pen:disabledimage="images/accum_add_disable.png" onclick="permissionsController.assignUsers()" disabled="true"/>
+							<button id="unassign-user" image="images/accum_remove.png"  pen:disabledimage="images/accum_remove_disable.png" onclick="permissionsController.unassignUsers()" disabled="true"/>
+							<label id="spacer-label" flex="1" />					    
+						</vbox>
+			    		<vbox flex="2">
+							<label value="Selected:"/>
+							<listbox id="selected-user-list" pen:binding="recipientName" disabled="false" flex="1" seltype="multi"/>					
+			    		</vbox>	    		
+		    		</hbox>
+		    	</groupbox>
+		    	<groupbox id="role-section" flex="1">
+		    		<caption label="Role" />
+		    		<hbox flex="1">
+			    		<vbox flex="2">
+							<label value="Available:"/>
+							<listbox id="available-role-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>					
+			    		</vbox>
+					    <vbox>
+					    	<label id="spacer-label" flex="1" />
+							<button id="assign-role" image="images/accum_add.png"  pen:disabledimage="images/accum_add_disable.png" onclick="permissionsController.assignRoles()" disabled="true"/>
+							<button id="unassign-role" image="images/accum_remove.png" pen:disabledimage="images/accum_remove_disable.png" onclick="permissionsController.unassignRoles()" disabled="true"/>
+							<label id="spacer-label" flex="1" />					    
+						</vbox>
+			    		<vbox flex="2">
+							<label value="Selected:"/>
+							<listbox id="selected-role-list" pen:binding="recipientName" disabled="false" flex="1" seltype="multi"/>					
+			    		</vbox>	    		
+		    		</hbox>
+		    	</groupbox>	    	
+	    	</vbox>
+	</dialog>
+  <!--  ###############################################################################   -->
+  <!--     ADD USER DIALOG: Dialog to add/edit/manage user                                -->
+  <!--  ###############################################################################   -->    
+    <dialog id="add-user-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel"
+    		ondialogaccept="securityController.saveUser()"
+    		ondialogcancel="securityController.cancelAddUserDialog()" 
+    		buttons="accept, cancel" buttonalign="right" title="Add User" 
+    		height="400" width="350">
+       <vbox>
+			<label value="User Name:" />
+			<hbox>
+				<textbox id="user-name" flex="3" multiline="false"/>
+				<label id="spacer-label" flex="1" />
+			</hbox>
+			<label value="Password:"/>
+			<hbox>
+				<textbox id="user-password" flex="3" type="password" multiline="false"/>
+				<label id="spacer-label" flex="1" />
+			</hbox>
+			<label value="Description:"/>
+			<hbox>
+				<textbox id="user-description" flex="3" multiline="false"/>
+				<label id="spacer-label" flex="1" />
+			</hbox>
+      </vbox>
+      <groupbox id="role-to-user-group" flex="1">
+      	<caption label="Member"/>
+	       <hbox flex="1">
+		       <vbox flex="1">
+		       	   <label value="Available"/>
+		    	   <listbox id="available-roles-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
+		       </vbox>
+		       <vbox>
+   		       		<label id="spacer-label" flex="1" />
+					<button id="assign-role-to-user" image="images/accum_add.png"  pen:disabledimage="images/accum_add_disable.png" onclick="securityController.assignRolesToUser()"  disabled="true"/>					    
+					<button id="unassign-role-from-user" image="images/accum_remove.png"  pen:disabledimage="images/accum_remove_disable.png" onclick="securityController.unassignRolesFromUser()" disabled="true"/>
+		       		<label id="spacer-label" flex="1" />
+		       </vbox>
+	   	       <vbox flex="1">
+			       <label value="Assigned"/>
+			       <listbox id="selected-roles-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
+		       </vbox>
+	       </hbox>      	
+      </groupbox>
+  </dialog>
+  <!--  ###############################################################################   -->
+  <!--     ADD ROLE DIALOG: Dialog to add/edit/manage role                                -->
+  <!--  ###############################################################################   -->    
+  
+  <dialog id="add-role-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel"
+    		ondialogaccept="securityController.saveRole()"
+    		ondialogcancel="securityController.cancelAddRoleDialog()" 
+    		buttons="accept, cancel" buttonalign="right" title="Add Role" 
+    		height="400" width="350">
+       <vbox>
+			<label value="Role Name:" />
+			<hbox>
+				<textbox id="role-name"  flex="3" multiline="false"/>
+				<label id="spacer-label" flex="1" />
+			</hbox>
+			
+			<label value="Description:"/>
+			<hbox>
+				<textbox id="role-description"  flex="3" multiline="false"/>
+				<label id="spacer-label" flex="1" />
+			</hbox>
+      </vbox>
+      <groupbox id="role-to-user-group" flex="1">
+      	  <caption label="Member"/>
+	      <hbox flex="1">
+		       <vbox flex="1">
+		       	   <label value="Available"/>
+		    	   <listbox id="available-users-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
+		       </vbox>
+		       <vbox>
+		       		<label id="spacer-label" flex="1" />
+					<button id="assign-user-to-role" image="images/accum_add.png" pen:disabledimage="images/accum_add_disable.png" onclick="securityController.assignUsersToRole()"  disabled="true"/>					    
+					<button id="unassign-user-from-role" image="images/accum_remove.png" pen:disabledimage="images/accum_remove_disable.png" onclick="securityController.unassignUsersFromRole()" disabled="true"/>
+					<label id="spacer-label" flex="1" />
+		       </vbox>
+	   	       <vbox flex="1">
+			       <label value="Assigned"/>
+			       <listbox id="selected-users-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
+		       </vbox>
+	       </hbox>
+       </groupbox>
+  </dialog>
+  <!--  ###############################################################################   -->
+  <!--     REMOVE USER CONFIRMATION DIALOG: Dialog to display the confirmation            -->
+  <!--     message to the user before deleting the user from the list                     -->
+  <!--  ###############################################################################   -->    
+  <dialog id="remove-user-confirmation-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel" buttons="accept, cancel" ondialogcancel="securityController.closeRemoveUserConfirmationDialog()"
+	  ondialogaccept="securityController.removeUser()" buttonalign="right" title="Delete User Confirmation" 
+  		xmlns:pen="http://www.pentaho.org/2008/xul" height="120" width="220">
+       <vbox>
+        <label value="Are you sure you want to delete this user"/>
+      </vbox>
+  </dialog>
+  <!--  ###############################################################################   -->
+  <!--     REMOVE ROLE CONFIRMATION DIALOG: Dialog to display the confirmation            -->
+  <!--     message to the role before deleting the role from the list                     -->
+  <!--  ###############################################################################   -->    
+  <dialog id="remove-role-confirmation-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel" buttons="accept, cancel" ondialogcancel="securityController.closeRemoveRoleConfirmationDialog()"
+	  ondialogaccept="securityController.removeRole()" buttonalign="right" title="Delete Role Confirmation" 
+  		xmlns:pen="http://www.pentaho.org/2008/xul" height="120" width="220">
+       <vbox>
+        <label value="Are you sure you want to delete this role"/>
+      </vbox>
+  </dialog>
+  <!--  ###############################################################################   -->
+  <!--     REMOVE ACL CONFIRMATION DIALOG: Dialog to display the confirmation            -->
+  <!--     message to the acl before deleting the acl from the list                     -->
+  <!--  ###############################################################################   -->    
+  <dialog id="remove-acl-confirmation-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel" buttons="accept, cancel" ondialogcancel="permissionsController.closeRemoveAclConfirmationDialog()"
+	  ondialogaccept="permissionsController.removeAcl()" buttonalign="right" title="Delete Acl Confirmation" 
+  		xmlns:pen="http://www.pentaho.org/2008/xul" height="120" width="220">
+       <vbox>
+        <label value="Are you sure you want to delete this acl"/>
+      </vbox>
+  </dialog>
+    <!--  ###############################################################################   -->
+  <!--     APPLY ACL CONFIRMATION DIALOG: Dialog to display the confirmation              -->
+  <!--     message to the user. User needs to select either of the two options or click   -->
+  <!--         cancel   												                  -->
+  <!--  ###############################################################################   -->    
+  <dialog id="apply-acl-confirmation-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel" buttons="accept, cancel" ondialogcancel="permissionsController.closeApplyAclConfirmationDialog()"
+	  ondialogaccept="permissionsController.applyAcl()" buttonalign="right" title="Security" 
+  		xmlns:pen="http://www.pentaho.org/2008/xul" height="180" width="320">
+       <vbox>
+        <label value="You have chosen to make permission changes on this folder."/>
+        <label value="Do you want to apply these changes to this folder only or apply to all subfolders and files as well ?"/>
+        <radio id="apply-only-radio-button" label="Apply changes to this folder only" command="permissionsController.setApplyOnly()" />		    
+       	<radio id="apply-recursive-radio-button" label="Apply changes to this folder, subfolders and files" command="permissionsController.setApplyRecursive()" />
+      </vbox>
+  </dialog>  
+  <!--  ###############################################################################   -->
+  <!--     MESSAGE BOX FOR ERROR OR SUCCESS: Dialog to display the error or success       -->
+  <!--    mesages 																		  -->
+  <!--  ###############################################################################   -->    
+  <dialog id="message-dialog" buttonlabelaccept="Ok" buttons="accept" ondialogaccept="permissionsController.closeMessageDialog()" buttonalign="right" title="Security" 
+  		xmlns:pen="http://www.pentaho.org/2008/xul" height="180" width="320">
+       <vbox>
+        <label id="message-to-display" value=""/>
+      </vbox>
+  </dialog>    
+</window>  
