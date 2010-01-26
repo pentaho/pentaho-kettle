@@ -76,6 +76,11 @@ public class RepositoryExplorer {
       mainController.setBindingFactory(bf);
       container.addEventHandler(mainController);
 
+      boolean versionsEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions();
+      if (versionsEnabled){
+        loadVersionOverlay();
+      }
+
       browseController.setBindingFactory(bf);
       container.addEventHandler(browseController);
       browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
@@ -136,6 +141,16 @@ public class RepositoryExplorer {
       container.loadOverlay(overlay);
     } catch (XulException e) {
       log.error("Error loading Xul overlay: security-layout-overlay.xul");
+      e.printStackTrace();
+    }
+  }
+
+  private void loadVersionOverlay(){
+    try {
+      String overlay = "org/pentaho/di/ui/repository/repositoryexplorer/xul/version-layout-overlay.xul"; //$NON-NLS-1$
+      container.loadOverlay(overlay);
+    } catch (XulException e) {
+      log.error("Error loading Xul overlay: version-layout-overlay.xul");
       e.printStackTrace();
     }
   }

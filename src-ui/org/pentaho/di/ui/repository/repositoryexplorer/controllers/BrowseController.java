@@ -69,7 +69,6 @@ public class BrowseController extends AbstractXulEventHandler {
   private void createBindings(){
     folderTree = (XulTree) document.getElementById("folder-tree");
     fileTable = (XulTree) document.getElementById("file-table");
-    revisionTable = (XulTree) document.getElementById("revision-table");
 
     // Bind the repository folder structure to the folder tree.
     //bf.setBindingType(Binding.Type.ONE_WAY);
@@ -105,11 +104,23 @@ public class BrowseController extends AbstractXulEventHandler {
           }
         });
 
-    // will need this binding to control a double-click in the file table on a child folder
-    /*
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(fileTable, "selectedItem", folderTree, "selectedItem");
-    */
+
+    try {
+      // Fires the population of the repository tree of folders. 
+      directoryBinding.fireSourceChanged();
+    } catch (Exception e) {
+      System.out.println(e.getMessage()); e.printStackTrace();
+    }
+    
+    if (repositoryDirectory.isRevisionsSupported()){
+      createRevisionBindings();
+    }
+    
+    
+  }
+
+  private void createRevisionBindings(){
+    revisionTable = (XulTree) document.getElementById("revision-table");
 
     bf.setBindingType(Binding.Type.ONE_WAY);
     Binding revisionTreeBinding = bf.createBinding(repositoryDirectory,"revisionsSupported", "revision-table", "!disabled");
@@ -132,32 +143,32 @@ public class BrowseController extends AbstractXulEventHandler {
     //bf.createBinding(revisionTable,"selectedRows", "revision-remove", "!disabled", forButtons);
     
     Binding revisionBinding = null;
-    if (repositoryDirectory.isRevisionsSupported()){
-      bf.setBindingType(Binding.Type.ONE_WAY);
-      revisionBinding = bf.createBinding(fileTable,"selectedItems", revisionTable, "elements",
-        new BindingConvertor<List<UIRepositoryObject>, UIRepositoryObjectRevisions>() {
-          @Override
-          public UIRepositoryObjectRevisions sourceToTarget(List<UIRepositoryObject> ro) {
-            UIRepositoryObjectRevisions revisions = new UIRepositoryObjectRevisions();
+
+    bf.setBindingType(Binding.Type.ONE_WAY);
+    revisionBinding = bf.createBinding(fileTable,"selectedItems", revisionTable, "elements",
+      new BindingConvertor<List<UIRepositoryObject>, UIRepositoryObjectRevisions>() {
+        @Override
+        public UIRepositoryObjectRevisions sourceToTarget(List<UIRepositoryObject> ro) {
+          UIRepositoryObjectRevisions revisions = new UIRepositoryObjectRevisions();
+          
+          if(ro==null){
+            return null;
+          }
+          if (ro.size()<=0){
+            return null;
+          }
+          if (ro.get(0) instanceof UIRepositoryDirectory){
+            return null;
+          }
+          try {
+            UIRepositoryContent rc = (UIRepositoryContent)ro.get(0);
+            revisions = rc.getRevisions();
+            bf.setBindingType(Binding.Type.ONE_WAY);
+            bf.createBinding(revisions,"children", revisionTable, "elements");
             
-            if(ro==null){
-              return null;
-            }
-            if (ro.size()<=0){
-              return null;
-            }
-            if (ro.get(0) instanceof UIRepositoryDirectory){
-              return null;
-            }
-            try {
-              UIRepositoryContent rc = (UIRepositoryContent)ro.get(0);
-              revisions = rc.getRevisions();
-              bf.setBindingType(Binding.Type.ONE_WAY);
-              bf.createBinding(revisions,"children", revisionTable, "elements");
-              
-            } catch (Exception e) {
-              // how do we handle exceptions in a binding? dialog here? 
-              // TODO: handle exception
+          } catch (Exception e) {
+            // how do we handle exceptions in a binding? dialog here? 
+            // TODO: handle exception
             }
             return revisions;
           }
@@ -165,21 +176,18 @@ public class BrowseController extends AbstractXulEventHandler {
           public List<UIRepositoryObject> targetToSource(UIRepositoryObjectRevisions elements) {
             return null;
           }
-        });
-    }
-
+        }
+    );
+ 
     try {
-      // Fires the population of the repository tree of folders. 
-      directoryBinding.fireSourceChanged();
       revisionTreeBinding.fireSourceChanged();
       revisionLabelBinding.fireSourceChanged();
       buttonBinding.fireSourceChanged();
-      if (revisionBinding != null){
         revisionBinding.fireSourceChanged();
-      }
     } catch (Exception e) {
       System.out.println(e.getMessage()); e.printStackTrace();
     }
+    
   }
 
   public void setBindingFactory(BindingFactory bf) {
