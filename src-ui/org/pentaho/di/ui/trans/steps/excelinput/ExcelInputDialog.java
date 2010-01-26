@@ -500,7 +500,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			previousFields = transMeta.getPrevStepFields(stepMeta);
 		}
 		catch(KettleStepException e) {
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "CsvInputDialog.ErrorDialog.UnableToGetInputFields.Title"), BaseMessages.getString(PKG, "CsvInputDialog.ErrorDialog.UnableToGetInputFields.Message"), e);
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "ExcelInputDialog.ErrorDialog.UnableToGetInputFields.Title"), BaseMessages.getString(PKG, "ExcelInputDialog.ErrorDialog.UnableToGetInputFields.Message"), e);
 			previousFields = new RowMeta();
 		}
         wAccField.setItems(previousFields.getFieldNames());

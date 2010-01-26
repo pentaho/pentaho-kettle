@@ -273,7 +273,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
             
             DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
             
-            // Try to find the conection for the group
+            // Try to find the connection for the group
             Database lookup = map.getDatabase(group, partitionId, this);
             if (lookup==null) // We already opened this connection for the partition & database in this group
             {
