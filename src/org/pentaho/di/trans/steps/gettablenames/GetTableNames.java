@@ -392,7 +392,9 @@ public class GetTableNames extends BaseStep implements StepInterface
         	data.realObjectTypeFieldName=environmentSubstitute(meta.getObjectTypeFieldName());
         	data.realIsSystemObjectFieldName=environmentSubstitute(meta.isSystemObjectFieldName());
         	data.realSQLCreationFieldName=environmentSubstitute(meta.getSQLCreationFieldName());
-        	if(!meta.isIncludeSchema() && !meta.isIncludeTable() && !meta.isIncludeView() && !meta.isIncludeProcedure() && !meta.isIncludeSynonym())
+        	if(!meta.isIncludeCatalog() && !meta.isIncludeSchema() 
+        			&& !meta.isIncludeTable() && !meta.isIncludeView() 
+        			&& !meta.isIncludeProcedure() && !meta.isIncludeSynonym())
         	{
         		log.logError(toString(), BaseMessages.getString(PKG, "GetTableNames.Error.includeAtLeastOneType"));
         		return false;
