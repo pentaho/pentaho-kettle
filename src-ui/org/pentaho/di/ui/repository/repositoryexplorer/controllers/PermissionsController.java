@@ -57,7 +57,7 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
  * browse functionality.
  * 
  */
-public class PermissionsController extends AbstractXulEventHandler {
+public class PermissionsController extends AbstractXulEventHandler{
 
   private static final int NO_ACL = 0;
 
@@ -81,7 +81,6 @@ public class PermissionsController extends AbstractXulEventHandler {
 
   private UIRepositoryDirectory repositoryDirectory;
 
-
   private XulCheckbox createCheckbox;
 
   private XulCheckbox updateCheckbox;
@@ -89,50 +88,27 @@ public class PermissionsController extends AbstractXulEventHandler {
   private XulCheckbox readCheckbox;
 
   private XulCheckbox deleteCheckbox;
-
   private XulCheckbox inheritParentPermissionCheckbox;
-
   private XulButton addAclButton;
-
   private XulButton removeAclButton;
-
   private XulCheckbox modifyCheckbox;
-
   private XulDialog manageAclsDialog;
-
   private XulDialog removeAclConfirmationDialog;
-
   private XulDialog applyAclConfirmationDialog;
-
-
   private XulButton assignUserButton;
-
   private XulButton unassignUserButton;
-
   private XulButton assignRoleButton;
-
   private XulButton unassignRoleButton;
-
   private XulRadio applyOnlyRadioButton;
-
   private XulRadio applyRecursiveRadioButton;
-
   private Binding securityBinding;
-
   private XulDialog messageDialog;
-
   private XulLabel messageLabel;
-
   private XulLabel fileFolderLabel;
-
   BindingFactory bf;
-
   UIRepositoryObjectAclModel aclModel = null;
-
   List<UIRepositoryObject> repoObject = new ArrayList<UIRepositoryObject>();
-
   private RepositoryUserInterface rui;
-
   ObjectAcl acl;
 
   public PermissionsController() {
@@ -160,6 +136,7 @@ public class PermissionsController extends AbstractXulEventHandler {
     updateCheckbox = (XulCheckbox) document.getElementById("update-checkbox");
     readCheckbox = (XulCheckbox) document.getElementById("read-checkbox");
     deleteCheckbox = (XulCheckbox) document.getElementById("delete-checkbox");
+
     inheritParentPermissionCheckbox = (XulCheckbox) document.getElementById("inherit-from-parent-permission-checkbox");
     modifyCheckbox = (XulCheckbox) document.getElementById("modify-checkbox");
     manageAclsDialog = (XulDialog) document.getElementById("manage-acls-dialog");
@@ -209,7 +186,7 @@ public class PermissionsController extends AbstractXulEventHandler {
         if (roles != null) {
           List<UIRepositoryObjectAcl> retVal = new ArrayList<UIRepositoryObjectAcl>();
           for (int i = 0; i < roles.length; i++) {
-            retVal.add((UIRepositoryObjectAcl)roles[i]);
+            retVal.add((UIRepositoryObjectAcl) roles[i]);
           }
           return retVal;
         }
@@ -217,8 +194,6 @@ public class PermissionsController extends AbstractXulEventHandler {
       }
 
     };
-
-    
 
     BindingConvertor<int[], List<UIRepositoryUser>> indexToAvalableUserConverter = new BindingConvertor<int[], List<UIRepositoryUser>>() {
 
@@ -367,6 +342,8 @@ public class PermissionsController extends AbstractXulEventHandler {
               return null;
             }
             setSelectedRepositoryObject(ro);
+            aclModel.getSelectedAcls().setRemoveEnabled(false);
+            uncheckAllPermissionBox();
             if (ro.get(0) instanceof UIRepositoryDirectory) {
               UIRepositoryDirectory rd = (UIRepositoryDirectory) ro.get(0);
               try {
@@ -411,6 +388,8 @@ public class PermissionsController extends AbstractXulEventHandler {
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     // Binding Add Remove button to the inherit check box. If the checkbox is checked that disable add remove
     bf.createBinding(aclModel.getSelectedAcls(), "entriesInheriting", inheritParentPermissionCheckbox, "checked");
+    bf.createBinding(userRoleList, "selectedItems", aclModel.getSelectedAcls(), "selectedAclList",arrayToListConverter);
+
     bf.setBindingType(Binding.Type.ONE_WAY);
     // Only enable add Acl button if the entries checkbox is unchecked
     bf.createBinding(aclModel.getSelectedAcls(), "entriesInheriting", addAclButton, "disabled");
@@ -425,7 +404,6 @@ public class PermissionsController extends AbstractXulEventHandler {
     bf.setBindingType(Binding.Type.ONE_WAY);
     // Binding when the user select from the list
     bf.createBinding(userRoleList, "selectedItem", this, "recipientChanged");
-    bf.createBinding(userRoleList, "selectedItems", aclModel.getSelectedAcls(), "selectedAclList", arrayToListConverter);
 
     bf.createBinding(folderTree, "selectedItems", this, "switchAclDeck");
 
@@ -530,16 +508,17 @@ public class PermissionsController extends AbstractXulEventHandler {
 
   private void applyOnObjectOnly(List<UIRepositoryObject> roList, boolean hideDialog) {
     try {
-      if(roList.get(0) instanceof UIRepositoryDirectory) {
+      if (roList.get(0) instanceof UIRepositoryDirectory) {
         UIRepositoryDirectory rd = (UIRepositoryDirectory) roList.get(0);
         rd.setAcls(aclModel.getSelectedAcls());
       } else {
         UIRepositoryContent rc = (UIRepositoryContent) roList.get(0);
-        rc.setAcls(aclModel.getSelectedAcls());        
+        rc.setAcls(aclModel.getSelectedAcls());
       }
       if (hideDialog) {
         applyAclConfirmationDialog.hide();
       }
+      aclModel.getSelectedAcls().setModelDirty(false);
       messageLabel.setValue("Permission were applied successfully");
       messageDialog.show();
     } catch (AccessDeniedException ade) {
@@ -701,6 +680,10 @@ public class PermissionsController extends AbstractXulEventHandler {
 
   public void closeRemoveAclConfirmationDialog() {
     removeAclConfirmationDialog.hide();
+  }
+
+  public void onContextChange() {
+    // TODO Sh
   }
 
 }
