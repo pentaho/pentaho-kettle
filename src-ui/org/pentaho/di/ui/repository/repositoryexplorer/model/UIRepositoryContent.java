@@ -34,7 +34,6 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
   private RepositoryContent rc;
   private UIRepositoryObjectRevisions revisions;
   protected UIRepositoryDirectory uiParent;
-  private UIRepositoryObjectAcls acls;
   
   public UIRepositoryContent() {
     super();
@@ -138,9 +137,8 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
   }
 
   public void setAcls(UIRepositoryObjectAcls security) throws AccessDeniedException{
-    this.acls = security;
     try {
-      getRepository().setAcl(getObjectId(), acls.getObjectAcl());
+      getRepository().setAcl(getObjectId(), security.getObjectAcl());
     } catch (KettleException e) {
       throw new AccessDeniedException(e);
     }

@@ -20,7 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListenerCollection;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener.TYPE;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIJob;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
@@ -40,7 +43,6 @@ import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
-
 /**
  *
  * This is the XulEventHandler for the browse panel of the repository explorer. It sets up the bindings for  
@@ -50,87 +52,105 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
 public class BrowseController extends AbstractXulEventHandler {
 
   private XulTree folderTree;
+
   private XulTree fileTable;
+
   private XulTree revisionTable;
 
-  private UIRepositoryDirectory repositoryDirectory; 
+  private UIRepositoryDirectory repositoryDirectory;
+
   private RepositoryExplorerCallback callback;
-  
+
+  private ContextChangeListenerCollection contextChangeListeners;
+
   BindingFactory bf;
+
   Binding directoryBinding;
-  
+
+  List<UIRepositoryDirectory> selectedFolderItems;
+
+  List<UIRepositoryObject> selectedFileItems;
+
+  List<UIRepositoryDirectory> repositoryDirectories;
+
+  List<UIRepositoryObject> repositoryObjects;
+
   public BrowseController() {
   }
-  
+
   public void init() {
     createBindings();
   }
-  
-  private void createBindings(){
+
+  private void createBindings() {
     folderTree = (XulTree) document.getElementById("folder-tree");
     fileTable = (XulTree) document.getElementById("file-table");
 
     // Bind the repository folder structure to the folder tree.
     //bf.setBindingType(Binding.Type.ONE_WAY);
     directoryBinding = bf.createBinding(repositoryDirectory, "children", folderTree, "elements");
-    
+
     // Bind the selected index from the folder tree to the list of repository objects in the file table. 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(folderTree, "selectedItems", fileTable, "elements", 
+
+    bf.createBinding(folderTree, "selectedItems", this, "selectedFolderItems");
+    bf.createBinding(this, "repositoryDirectories", fileTable, "elements",
         new BindingConvertor<List<UIRepositoryDirectory>, UIRepositoryObjects>() {
           @Override
           public UIRepositoryObjects sourceToTarget(List<UIRepositoryDirectory> rd) {
             UIRepositoryObjects listOfObjects = new UIRepositoryObjects();
-            
-            if(rd==null){
+
+            if (rd == null) {
               return null;
             }
-            if (rd.size()<=0){
+            if (rd.size() <= 0) {
               return null;
             }
             try {
               listOfObjects = rd.get(0).getRepositoryObjects();
               bf.setBindingType(Binding.Type.ONE_WAY);
-              bf.createBinding(listOfObjects,"children", fileTable, "elements");
+              bf.createBinding(listOfObjects, "children", fileTable, "elements");
             } catch (Exception e) {
               // how do we handle exceptions in a binding? dialog here? 
               // TODO: handle exception
             }
             return listOfObjects;
           }
+
           @Override
           public List<UIRepositoryDirectory> targetToSource(UIRepositoryObjects elements) {
             return null;
           }
         });
 
-
     try {
       // Fires the population of the repository tree of folders. 
       directoryBinding.fireSourceChanged();
     } catch (Exception e) {
-      System.out.println(e.getMessage()); e.printStackTrace();
+      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
-    
-    if (repositoryDirectory.isRevisionsSupported()){
+
+    if (repositoryDirectory.isRevisionsSupported()) {
       createRevisionBindings();
     }
-    
-    
+
   }
 
-  private void createRevisionBindings(){
+  private void createRevisionBindings() {
     revisionTable = (XulTree) document.getElementById("revision-table");
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    Binding revisionTreeBinding = bf.createBinding(repositoryDirectory,"revisionsSupported", "revision-table", "!disabled");
-    Binding revisionLabelBinding = bf.createBinding(repositoryDirectory,"revisionsSupported", "revision-label", "!disabled");
+    Binding revisionTreeBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-table",
+        "!disabled");
+    Binding revisionLabelBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-label",
+        "!disabled");
 
     BindingConvertor<int[], Boolean> forButtons = new BindingConvertor<int[], Boolean>() {
 
       @Override
       public Boolean sourceToTarget(int[] value) {
-        return value != null && !(value.length<=0);
+        return value != null && !(value.length <= 0);
       }
 
       @Override
@@ -138,66 +158,68 @@ public class BrowseController extends AbstractXulEventHandler {
         return null;
       }
     };
-    
-    Binding buttonBinding = bf.createBinding(revisionTable,"selectedRows", "revision-open", "!disabled", forButtons);
+
+    Binding buttonBinding = bf.createBinding(revisionTable, "selectedRows", "revision-open", "!disabled", forButtons);
     //bf.createBinding(revisionTable,"selectedRows", "revision-remove", "!disabled", forButtons);
-    
+
     Binding revisionBinding = null;
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    revisionBinding = bf.createBinding(fileTable,"selectedItems", revisionTable, "elements",
-      new BindingConvertor<List<UIRepositoryObject>, UIRepositoryObjectRevisions>() {
-        @Override
-        public UIRepositoryObjectRevisions sourceToTarget(List<UIRepositoryObject> ro) {
-          UIRepositoryObjectRevisions revisions = new UIRepositoryObjectRevisions();
-          
-          if(ro==null){
-            return null;
-          }
-          if (ro.size()<=0){
-            return null;
-          }
-          if (ro.get(0) instanceof UIRepositoryDirectory){
-            return null;
-          }
-          try {
-            UIRepositoryContent rc = (UIRepositoryContent)ro.get(0);
-            revisions = rc.getRevisions();
-            bf.setBindingType(Binding.Type.ONE_WAY);
-            bf.createBinding(revisions,"children", revisionTable, "elements");
-            
-          } catch (Exception e) {
-            // how do we handle exceptions in a binding? dialog here? 
-            // TODO: handle exception
+    bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems");
+    revisionBinding = bf.createBinding(this, "repositoryObjects", revisionTable, "elements",
+        new BindingConvertor<List<UIRepositoryObject>, UIRepositoryObjectRevisions>() {
+          @Override
+          public UIRepositoryObjectRevisions sourceToTarget(List<UIRepositoryObject> ro) {
+            UIRepositoryObjectRevisions revisions = new UIRepositoryObjectRevisions();
+
+            if (ro == null) {
+              return null;
+            }
+            if (ro.size() <= 0) {
+              return null;
+            }
+            if (ro.get(0) instanceof UIRepositoryDirectory) {
+              return null;
+            }
+            try {
+              UIRepositoryContent rc = (UIRepositoryContent) ro.get(0);
+              revisions = rc.getRevisions();
+              bf.setBindingType(Binding.Type.ONE_WAY);
+              bf.createBinding(revisions, "children", revisionTable, "elements");
+
+            } catch (Exception e) {
+              // how do we handle exceptions in a binding? dialog here? 
+              // TODO: handle exception
             }
             return revisions;
           }
+
           @Override
           public List<UIRepositoryObject> targetToSource(UIRepositoryObjectRevisions elements) {
             return null;
           }
-        }
-    );
- 
+        });
+
     try {
       revisionTreeBinding.fireSourceChanged();
       revisionLabelBinding.fireSourceChanged();
       buttonBinding.fireSourceChanged();
-        revisionBinding.fireSourceChanged();
+      revisionBinding.fireSourceChanged();
     } catch (Exception e) {
-      System.out.println(e.getMessage()); e.printStackTrace();
+      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
-    
+
   }
 
   public void setBindingFactory(BindingFactory bf) {
     this.bf = bf;
   }
-  
+
   public String getName() {
     return "browseController";
   }
-  
+
   public UIRepositoryDirectory getRepositoryDirectory() {
     return repositoryDirectory;
   }
@@ -205,84 +227,85 @@ public class BrowseController extends AbstractXulEventHandler {
   public void setRepositoryDirectory(UIRepositoryDirectory repositoryDirectory) {
     this.repositoryDirectory = repositoryDirectory;
   }
-  
+
   public void setCallback(RepositoryExplorerCallback callback) {
     this.callback = callback;
   }
 
-  public void expandAllFolders(){
+  public void expandAllFolders() {
     folderTree.expandAll();
   }
-  
-  public void collapseAllFolders(){
+
+  public void collapseAllFolders() {
     folderTree.collapseAll();
   }
 
-  public void openContent(){
+  public void openContent() {
     Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
     UIRepositoryContent contentToOpen = content.iterator().next();
     if (callback != null) {
-      if (callback.open(contentToOpen, null)){
+      if (callback.open(contentToOpen, null)) {
         //TODO: fire request to close dialog
       }
     }
   }
-  
-  public void renameContent() throws Exception{
+
+  public void renameContent() throws Exception {
     Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
     UIRepositoryObject contentToRename = content.iterator().next();
     renameRepositoryObject(contentToRename);
-    if (contentToRename instanceof UIRepositoryDirectory){
+    if (contentToRename instanceof UIRepositoryDirectory) {
       repositoryDirectory.fireCollectionChanged();
     }
   }
 
-  public void deleteContent() throws Exception{
+  public void deleteContent() throws Exception {
     Collection<UIRepositoryObject> content = fileTable.getSelectedItems();
     UIRepositoryObject toDelete = content.iterator().next();
     toDelete.delete();
-    if (toDelete instanceof UIRepositoryDirectory){
+    if (toDelete instanceof UIRepositoryDirectory) {
       repositoryDirectory.fireCollectionChanged();
     }
   }
 
-  public void openRevision(){
+  public void openRevision() {
     Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
     UIRepositoryContent contentToOpen = content.iterator().next();
 
     Collection<UIRepositoryObjectRevision> revision = revisionTable.getSelectedItems();
-    
+
     // TODO: Is it a requirement to allow opening multiple revisions? 
     UIRepositoryObjectRevision revisionToOpen = revision.iterator().next();
     if (callback != null) {
-      if (callback.open(contentToOpen, revisionToOpen.getName())){
+      if (callback.open(contentToOpen, revisionToOpen.getName())) {
         //TODO: fire request to close dialog
       }
     }
   }
-  
-  private  String newName = null;
-  public void createFolder() throws Exception{
-    
+
+  private String newName = null;
+
+  public void createFolder() throws Exception {
+
     // First, ask for a name for the folder
     XulPromptBox prompt = promptForName(null);
-    prompt.addDialogCallback(new XulDialogCallback<String>(){
+    prompt.addDialogCallback(new XulDialogCallback<String>() {
       public void onClose(XulComponent component, Status status, String value) {
-           newName = value;
+        newName = value;
       }
-      
+
       public void onError(XulComponent component, Throwable err) {
         // TODO: Deal with errors
         System.out.println(err.getMessage());
-      }      
+      }
     });
-    
+
     prompt.open();
 
-    if (newName != null){
+    if (newName != null) {
       Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
       UIRepositoryDirectory selectedFolder = directory.iterator().next();
-      if (selectedFolder==null){
+      if (selectedFolder == null) {
         selectedFolder = repositoryDirectory;
       }
       UIRepositoryDirectory newDirectory = selectedFolder.createFolder(newName);
@@ -292,51 +315,51 @@ public class BrowseController extends AbstractXulEventHandler {
     newName = null;
   }
 
-  public void deleteFolder() throws Exception{
+  public void deleteFolder() throws Exception {
     Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
     UIRepositoryDirectory toDelete = directory.iterator().next();
     toDelete.delete();
     repositoryDirectory.fireCollectionChanged();
   }
-  
-  public void renameFolder() throws Exception{
+
+  public void renameFolder() throws Exception {
     Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
     final UIRepositoryDirectory toRename = directory.iterator().next();
     renameRepositoryObject(toRename);
     repositoryDirectory.fireCollectionChanged();
   }
-  
-  private void renameRepositoryObject(final UIRepositoryObject object) throws XulException{
+
+  private void renameRepositoryObject(final UIRepositoryObject object) throws XulException {
     XulPromptBox prompt = promptForName(object);
-    prompt.addDialogCallback(new XulDialogCallback<String>(){
+    prompt.addDialogCallback(new XulDialogCallback<String>() {
       public void onClose(XulComponent component, Status status, String value) {
-          
-          try {
-            object.setName(value);
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-          System.out.println("Component: " + component.getName());
-          System.out.println("Status: " + status.name());
-          System.out.println("Value: " + value);
+
+        try {
+          object.setName(value);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        System.out.println("Component: " + component.getName());
+        System.out.println("Status: " + status.name());
+        System.out.println("Value: " + value);
       }
-      
+
       public void onError(XulComponent component, Throwable err) {
         // TODO: Deal with errors
         System.out.println(err.getMessage());
-      }      
+      }
     });
-    
+
     prompt.open();
   }
-  
-  private XulPromptBox promptForName (final UIRepositoryObject object)throws XulException{
+
+  private XulPromptBox promptForName(final UIRepositoryObject object) throws XulException {
     XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox");
-    String currentName = (object == null) ? "New Folder": object.getName();
-    
+    String currentName = (object == null) ? "New Folder" : object.getName();
+
     prompt.setTitle("Name ".concat(currentName));
-    prompt.setButtons(new String[]{"Accept", "Cancel"});
-    
+    prompt.setButtons(new String[] { "Accept", "Cancel" });
+
     prompt.setMessage("Enter name for ".concat(currentName));
     prompt.setValue(currentName);
     return prompt;
@@ -346,32 +369,32 @@ public class BrowseController extends AbstractXulEventHandler {
   public void onDragFromGlobalTree(DropEvent event) {
     event.setAccepted(true);
   }
-  
+
   // Object being dragged from the file listing table
   public void onDragFromLocalTable(DropEvent event) {
     event.setAccepted(true);
   }
-  
+
   public void onDrop(DropEvent event) {
     try {
-      if(event.getDropParent() != null) {
-        if(event.getDataTransfer().getData().size() == 1) {
+      if (event.getDropParent() != null) {
+        if (event.getDataTransfer().getData().size() == 1) {
           Object o = event.getDataTransfer().getData().get(0);
-          if(o instanceof UIRepositoryObject && event.getDropParent() instanceof UIRepositoryDirectory) {
+          if (o instanceof UIRepositoryObject && event.getDropParent() instanceof UIRepositoryDirectory) {
             UIRepositoryObject obj = (UIRepositoryObject) o;
-            UIRepositoryDirectory targetDirectory = (UIRepositoryDirectory)event.getDropParent();
-            
+            UIRepositoryDirectory targetDirectory = (UIRepositoryDirectory) event.getDropParent();
+
             obj.move(targetDirectory);
 
             // Make sure only Folders are copied to the Directory Tree
             List<Object> dirList = new ArrayList<Object>();
-            for(Object repObj : event.getDataTransfer().getData()) {
-              if(repObj instanceof UIRepositoryDirectory) {
+            for (Object repObj : event.getDataTransfer().getData()) {
+              if (repObj instanceof UIRepositoryDirectory) {
                 dirList.add(repObj);
               }
             }
             event.getDataTransfer().setData(dirList);
-            
+
             event.setAccepted(true);
           } else {
             event.setAccepted(false);
@@ -386,20 +409,125 @@ public class BrowseController extends AbstractXulEventHandler {
       event.setAccepted(false);
     }
   }
-  
+
   public void onDoubleClick(Object[] selectedItems) {
-    if((selectedItems != null) && (selectedItems.length > 0)) {
-      for(Object o : selectedItems) {
-        if(o instanceof UIRepositoryDirectory) {
-          ((UIRepositoryDirectory)o).toggleExpanded();
+    if ((selectedItems != null) && (selectedItems.length > 0)) {
+      for (Object o : selectedItems) {
+        if (o instanceof UIRepositoryDirectory) {
+          ((UIRepositoryDirectory) o).toggleExpanded();
           List<Object> selectedFolder = new ArrayList<Object>();
           selectedFolder.add(o);
           folderTree.setSelectedItems(selectedFolder);
-        } else if((o instanceof UIJob) || (o instanceof UITransformation)) {
+        } else if ((o instanceof UIJob) || (o instanceof UITransformation)) {
           openContent();
           return;
         }
       }
     }
+  }
+
+  public List<UIRepositoryDirectory> getSelectedFolderItems() {
+    return selectedFolderItems;
+  }
+
+  public void setSelectedFolderItems(List<UIRepositoryDirectory> selectedFolderItems) {
+    if (!compareFolderList(selectedFolderItems, this.selectedFolderItems)) {
+      TYPE returnType = fireContextChange();
+      if (returnType != TYPE.CANCEL) {
+        this.selectedFolderItems = selectedFolderItems;
+        setRepositoryDirectories(selectedFolderItems);
+      } else if (returnType == TYPE.CANCEL) {
+        folderTree.setSelectedItems(this.selectedFolderItems);
+      }
+    }
+  }
+
+  public List<UIRepositoryObject> getSelectedFileItems() {
+    return selectedFileItems;
+  }
+
+  public void setSelectedFileItems(List<UIRepositoryObject> selectedFileItems) {
+    if (!compareFileList(selectedFileItems, this.selectedFileItems)) {
+      TYPE returnType = fireContextChange();
+      if (returnType != TYPE.CANCEL) {
+        this.selectedFileItems = selectedFileItems;
+        setRepositoryObjects(selectedFileItems);
+      } else if (returnType == TYPE.CANCEL) {
+        fileTable.setSelectedItems(this.selectedFileItems);
+      }
+    }
+  }
+
+  public void setRepositoryObjects(List<UIRepositoryObject> selectedFileItems) {
+    this.repositoryObjects = selectedFileItems;
+    firePropertyChange("repositoryObjects", null, selectedFileItems);
+  }
+
+  public List<UIRepositoryObject> getRepositoryObjects() {
+    return repositoryObjects;
+  }
+
+  public List<UIRepositoryDirectory> getRepositoryDirectories() {
+    return repositoryDirectories;
+  }
+
+  public void setRepositoryDirectories(List<UIRepositoryDirectory> selectedFolderItems) {
+    this.repositoryDirectories = selectedFolderItems;
+    firePropertyChange("repositoryDirectories", null, selectedFolderItems);
+  }
+
+  public void addContextChangeListener(ContextChangeListener listener) {
+    if (contextChangeListeners == null) {
+      contextChangeListeners = new ContextChangeListenerCollection();
+    }
+    contextChangeListeners.add(listener);
+  }
+
+  public void removeContextChangeListener(ContextChangeListener listener) {
+    if (contextChangeListeners != null) {
+      contextChangeListeners.remove(listener);
+    }
+  }
+
+  /**
+   * Fire all current {@link ContextChangeListener}.
+   */
+  TYPE fireContextChange() {
+    if (contextChangeListeners != null) {
+      return contextChangeListeners.fireContextChange();
+    }
+    return TYPE.NO_OP;
+  }
+
+  boolean compareFolderList(List<UIRepositoryDirectory> rd1, List<UIRepositoryDirectory> rd2) {
+    if (rd1 != null && rd2 != null) {
+      if (rd1.size() != rd2.size()) {
+        return false;
+      }
+      for (int i = 0; i < rd1.size(); i++) {
+        if (!rd1.get(i).getName().equals(rd2.get(i).getName())) {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
+    return true;
+  }
+
+  boolean compareFileList(List<UIRepositoryObject> ro1, List<UIRepositoryObject> ro2) {
+    if (ro1 != null && ro2 != null) {
+      if (ro1.size() != ro2.size()) {
+        return false;
+      }
+      for (int i = 0; i < ro1.size(); i++) {
+        if (!ro1.get(i).getName().equals(ro2.get(i).getName())) {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
+    return true;
   }
 }

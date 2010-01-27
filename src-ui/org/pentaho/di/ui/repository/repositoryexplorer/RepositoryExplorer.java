@@ -86,6 +86,7 @@ public class RepositoryExplorer {
       browseController.setCallback(callback);
       
       permissionsController.setBindingFactory(bf);
+      permissionsController.setBrowseController(browseController);
       container.addEventHandler(permissionsController);
       permissionsController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
       

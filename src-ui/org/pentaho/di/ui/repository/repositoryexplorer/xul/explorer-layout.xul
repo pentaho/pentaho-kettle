@@ -519,7 +519,7 @@
         <label value="Are you sure you want to delete this acl"/>
       </vbox>
   </dialog>
-    <!--  ###############################################################################   -->
+  <!--  ###############################################################################   -->
   <!--     APPLY ACL CONFIRMATION DIALOG: Dialog to display the confirmation              -->
   <!--     message to the user. User needs to select either of the two options or click   -->
   <!--         cancel   												                  -->

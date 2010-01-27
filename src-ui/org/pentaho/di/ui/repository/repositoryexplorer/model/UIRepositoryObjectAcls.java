@@ -12,8 +12,6 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
 
   protected ObjectAcl obj;
 
-  private List<ObjectAce> aces;
-
   private List<UIRepositoryObjectAcl> selectedAclList = new ArrayList<UIRepositoryObjectAcl>();
 
   private boolean removeEnabled;
@@ -26,14 +24,6 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
 
   // ~ Methods
   // =========================================================================================================
-
-  public List<ObjectAce> getAces() {
-    return aces;
-  }
-
-  public void setAces(List<ObjectAce> aces) {
-    this.aces = aces;
-  }
 
   public void setObjectAcl(ObjectAcl obj) {
     this.obj = obj;
@@ -57,13 +47,16 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
   }
 
   public void setAcls(List<UIRepositoryObjectAcl> acls) {
+    List<UIRepositoryObjectAcl> prevousVal = new ArrayList<UIRepositoryObjectAcl>();
+    prevousVal.addAll(getAcls());
+
     this.obj.getAces().clear();
     if (acls != null) {
       for (UIRepositoryObjectAcl acl : acls) {
         obj.getAces().add(acl.getAce());
       }
     }
-    this.firePropertyChange("acls", null, getAcls());
+    this.firePropertyChange("acls", prevousVal, getAcls());
   }
 
   public void addAcl(UIRepositoryObjectAcl aclToAdd) {
@@ -160,6 +153,7 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
       obj.setEntriesInheriting(entriesInheriting);
       this.firePropertyChange("entriesInheriting", previousVal, entriesInheriting); //$NON-NLS-1$
       setRemoveEnabled((!entriesInheriting && getSelectedAclList() != null && getSelectedAclList().size() > 0));
+      setModelDirty(true);
     }
   }
 
@@ -204,5 +198,12 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
 
   public boolean isModelDirty() {
     return modelDirty;
+  }
+  
+  public void clear() {
+    setRemoveEnabled(false);
+    setModelDirty(false);
+    setEntriesInheriting(false);
+    setAcls(null);
   }
 }

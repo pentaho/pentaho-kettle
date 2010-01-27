@@ -1,8 +1,8 @@
 /*
  * This/./// m    ml;./;
  * ;/
- * 
- *  
+ *
+ *
  * This program is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
  * Foundation.
@@ -30,6 +30,7 @@ import org.pentaho.di.repository.ObjectAcl;
 import org.pentaho.di.repository.ObjectPermission;
 import org.pentaho.di.repository.RepositoryUserInterface;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
@@ -38,11 +39,14 @@ import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectA
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectAcls;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryRole;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryUser;
+import org.pentaho.ui.xul.XulComponent;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulCheckbox;
+import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.containers.XulDeck;
@@ -50,14 +54,15 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.util.XulDialogCallback;
 
 /**
  *
- * This is the XulEventHandler for the browse panel of the repository explorer. It sets up the bindings for  
+ * This is the XulEventHandler for the browse panel of the repository explorer. It sets up the bindings for
  * browse functionality.
- * 
+ *
  */
-public class PermissionsController extends AbstractXulEventHandler{
+public class PermissionsController extends AbstractXulEventHandler implements ContextChangeListener {
 
   private static final int NO_ACL = 0;
 
@@ -88,28 +93,51 @@ public class PermissionsController extends AbstractXulEventHandler{
   private XulCheckbox readCheckbox;
 
   private XulCheckbox deleteCheckbox;
+
   private XulCheckbox inheritParentPermissionCheckbox;
+
   private XulButton addAclButton;
+
   private XulButton removeAclButton;
+
   private XulCheckbox modifyCheckbox;
+
   private XulDialog manageAclsDialog;
+
   private XulDialog removeAclConfirmationDialog;
+
   private XulDialog applyAclConfirmationDialog;
+
   private XulButton assignUserButton;
+
   private XulButton unassignUserButton;
+
   private XulButton assignRoleButton;
+
   private XulButton unassignRoleButton;
+
   private XulRadio applyOnlyRadioButton;
+
   private XulRadio applyRecursiveRadioButton;
+
   private Binding securityBinding;
+
   private XulDialog messageDialog;
+
   private XulLabel messageLabel;
+
   private XulLabel fileFolderLabel;
+
   BindingFactory bf;
+
   UIRepositoryObjectAclModel aclModel = null;
+
   List<UIRepositoryObject> repoObject = new ArrayList<UIRepositoryObject>();
+
   private RepositoryUserInterface rui;
+  private BrowseController browseController;
   ObjectAcl acl;
+  TYPE returnType;
 
   public PermissionsController() {
   }
@@ -117,6 +145,7 @@ public class PermissionsController extends AbstractXulEventHandler{
   public void init() {
     try {
       aclModel = new UIRepositoryObjectAclModel();
+      browseController.addContextChangeListener(this);
     } catch (Exception e) {
 
     }
@@ -124,12 +153,10 @@ public class PermissionsController extends AbstractXulEventHandler{
   }
 
   private void createBindings() {
-    folderTree = (XulTree) document.getElementById("folder-tree");
     fileFolderLabel = (XulLabel) document.getElementById("file-folder-name");
     messageDialog = (XulDialog) document.getElementById("message-dialog");
     messageLabel = (XulLabel) document.getElementById("message-to-display");
     aclDeck = (XulDeck) document.getElementById("acl-deck");
-    fileTable = (XulTree) document.getElementById("file-table");
     // Permission Tab Binding
     userRoleList = (XulListbox) document.getElementById("user-role-list");
     createCheckbox = (XulCheckbox) document.getElementById("create-checkbox");
@@ -194,7 +221,6 @@ public class PermissionsController extends AbstractXulEventHandler{
       }
 
     };
-
     BindingConvertor<int[], List<UIRepositoryUser>> indexToAvalableUserConverter = new BindingConvertor<int[], List<UIRepositoryUser>>() {
 
       @Override
@@ -295,7 +321,6 @@ public class PermissionsController extends AbstractXulEventHandler{
         indexToAvalableRoleConverter);
     bf.createBinding(selectedRoleList, "selectedIndices", aclModel, "selectedAssignedRoles",
         indexToSelctedRoleConverter);
-
     BindingConvertor<Integer, Boolean> accumulatorButtonConverter = new BindingConvertor<Integer, Boolean>() {
 
       @Override
@@ -331,7 +356,8 @@ public class PermissionsController extends AbstractXulEventHandler{
     bf.createBinding(aclModel, "roleAssignmentPossible", assignRoleButton, "!disabled");
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    securityBinding = bf.createBinding(fileTable, "selectedItems", userRoleList, "elements",
+
+    securityBinding = bf.createBinding(getBrowseController(), "repositoryObjects", userRoleList, "elements",
         new BindingConvertor<List<UIRepositoryObject>, List<UIRepositoryObjectAcl>>() {
           @Override
           public List<UIRepositoryObjectAcl> sourceToTarget(List<UIRepositoryObject> ro) {
@@ -356,7 +382,7 @@ public class PermissionsController extends AbstractXulEventHandler{
                 // TODO We need to figure out whether to throw a dialog box or disable
                 // the tab
               } catch (Exception e) {
-                // how do we handle exceptions in a binding? dialog here? 
+                // how do we handle exceptions in a binding? dialog here?
                 // TODO: handle exception
               }
 
@@ -372,7 +398,7 @@ public class PermissionsController extends AbstractXulEventHandler{
                 // TODO We need to figure out whether to throw a dialog box or disable
                 // the tab
               } catch (Exception e) {
-                // how do we handle exceptions in a binding? dialog here? 
+                // how do we handle exceptions in a binding? dialog here?
                 // TODO: handle exception
               }
             }
@@ -388,7 +414,9 @@ public class PermissionsController extends AbstractXulEventHandler{
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     // Binding Add Remove button to the inherit check box. If the checkbox is checked that disable add remove
     bf.createBinding(aclModel.getSelectedAcls(), "entriesInheriting", inheritParentPermissionCheckbox, "checked");
-    bf.createBinding(userRoleList, "selectedItems", aclModel.getSelectedAcls(), "selectedAclList",arrayToListConverter);
+    bf
+        .createBinding(userRoleList, "selectedItems", aclModel.getSelectedAcls(), "selectedAclList",
+            arrayToListConverter);
 
     bf.setBindingType(Binding.Type.ONE_WAY);
     // Only enable add Acl button if the entries checkbox is unchecked
@@ -405,7 +433,7 @@ public class PermissionsController extends AbstractXulEventHandler{
     // Binding when the user select from the list
     bf.createBinding(userRoleList, "selectedItem", this, "recipientChanged");
 
-    bf.createBinding(folderTree, "selectedItems", this, "switchAclDeck");
+    bf.createBinding(getBrowseController(), "repositoryDirectories", this, "switchAclDeck");
 
     aclDeck.setSelectedIndex(NO_ACL);
     try {
@@ -425,6 +453,12 @@ public class PermissionsController extends AbstractXulEventHandler{
     }
   }
 
+  public void setBrowseController(BrowseController controller) {
+   this.browseController = controller; 
+  }
+  public BrowseController getBrowseController() {
+    return this.browseController;
+  }
   public List<UIRepositoryObject> getSelectedRepositoryObject() {
     return repoObject;
   }
@@ -682,8 +716,41 @@ public class PermissionsController extends AbstractXulEventHandler{
     removeAclConfirmationDialog.hide();
   }
 
-  public void onContextChange() {
-    // TODO Sh
+  @SuppressWarnings("unchecked")
+  public TYPE onContextChange() {
+    if(aclModel.getSelectedAcls().isModelDirty()) {
+      XulConfirmBox confirmBox = null;
+      
+      try {
+        confirmBox = (XulConfirmBox) document.createElement("confirmbox");
+      } catch (XulException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      confirmBox.setTitle("Context Change Warning");
+      confirmBox.setMessage("You are about to change the context. All changes will be lost. Do you want to continue?");
+      confirmBox.setAcceptLabel("Yes");
+      confirmBox.setCancelLabel("No");
+      confirmBox.addDialogCallback(new XulDialogCallback(){
+  
+        public void onClose(XulComponent sender, Status returnCode, Object retVal) {
+           if(returnCode == Status.ACCEPT){
+             returnType = TYPE.OK;
+             aclModel.getSelectedAcls().setModelDirty(false);
+           } else {
+             returnType = TYPE.CANCEL;
+           }
+        }
+  
+        public void onError(XulComponent sender, Throwable t) {
+          returnType = TYPE.NO_OP;
+        }
+        
+      });
+      confirmBox.open();
+    } else {
+      returnType = TYPE.NO_OP;
+    }
+    return returnType;
   }
-
 }
