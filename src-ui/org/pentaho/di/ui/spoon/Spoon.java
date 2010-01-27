@@ -5669,8 +5669,6 @@ public class Spoon extends XulEventSourceAdapter implements XulEventHandler, Add
 
   public void start(Splash splash, CommandLineOption[] options) {
 
-    java.awt.Toolkit.getDefaultToolkit();
-    
     boolean stop = !selectRep(splash, options);
     if (stop) {
       splash.dispose();
