@@ -159,7 +159,7 @@
 		<class-name>org.pentaho.di.trans.steps.javafilter.JavaFilterMeta</class-name>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JavaFilter</tooltip>
-		<image-uri>ui/images/FLT.png</image-uri>
+		<image-uri>ui/images/JLT.png</image-uri>
 	</step>
 
 	<step id="TextFileOutput">
@@ -1097,5 +1097,4 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Script</tooltip>
 		<image-uri>ui/images/SCR_mod.png</image-uri>
 	</step>
-
 </steps>
