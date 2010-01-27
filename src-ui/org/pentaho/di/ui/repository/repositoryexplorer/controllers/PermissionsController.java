@@ -700,11 +700,10 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   }
 
   public void updateInheritFromParentPermission() {
+    aclModel.getSelectedAcls().clear();
     aclModel.getSelectedAcls().setEntriesInheriting(inheritParentPermissionCheckbox.isChecked());
     if (inheritParentPermissionCheckbox.isChecked()) {
-      // TODO We need to read the acl information from the repository and clear what we have currently
       uncheckAllPermissionBox();
-      aclModel.getSelectedAcls().setAcls(null);
     }
   }
 
@@ -736,6 +735,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
         public void onClose(XulComponent sender, Status returnCode, Object retVal) {
            if(returnCode == Status.ACCEPT){
              returnType = TYPE.OK;
+             aclModel.getSelectedAcls().clear();
              aclModel.getSelectedAcls().setModelDirty(false);
            } else {
              returnType = TYPE.CANCEL;
