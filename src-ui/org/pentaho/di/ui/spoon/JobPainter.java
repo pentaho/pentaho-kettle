@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.BasePainter;
 import org.pentaho.di.core.gui.GCInterface;
@@ -180,11 +181,27 @@ public class JobPainter extends BasePainter {
 		
 		if (activeJobEntries.contains(jobEntryCopy)) {
 			gc.setForeground(EColor.BLUE);
-			gc.drawImage(EImage.BUSY, offset.x + x + iconsize, offset.y + y - 5 );
+			int iconX = offset.x + x + iconsize - 7;
+			int iconY = offset.y + y - 7;
+			gc.drawImage(EImage.BUSY, iconX, iconY);
+			areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_BUSY, iconX, iconY, iconsize, iconsize, subject, jobEntryCopy));
 		} else {
 			gc.setForeground(EColor.BLACK);
 		}
 		
+		JobEntryResult jobEntryResult = findJobEntryResult(jobEntryCopy);
+		if (jobEntryResult!=null) {
+			Result result = jobEntryResult.getResult();
+			int iconX = offset.x + x + iconsize - 7;
+			int iconY = offset.y + y - 7;
+			if (result.getResult()) {
+				gc.drawImage(EImage.TRUE, iconX, iconY);
+				areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_SUCCESS, iconX, iconY, iconsize, iconsize, jobEntryCopy, jobEntryResult));
+			} else {
+				gc.drawImage(EImage.FALSE, offset.x + x + iconsize, offset.y + y - 5 );
+				areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_FAILURE, iconX, iconY, iconsize, iconsize, jobEntryCopy, jobEntryResult));
+			}
+		}
 		
 		gc.drawRectangle(offset.x + x - 1, offset.y + y - 1, iconsize + 1, iconsize + 1);
 		Point textsize = new Point(gc.textExtent("" + name).x, gc.textExtent("" + name).y);
@@ -288,6 +305,19 @@ public class JobPainter extends BasePainter {
         	}        	
         }        
 
+	}
+
+	private JobEntryResult findJobEntryResult(JobEntryCopy jobEntryCopy) {
+		if (jobEntryResults==null) return null;
+		for (JobEntryResult jobEntryResult : jobEntryResults) {
+			if (jobEntryResult.getJobEntryName().equals(jobEntryCopy.getName()) && 
+				jobEntryResult.getJobEntryNr() == jobEntryCopy.getNr()
+			   )  {
+				return jobEntryResult;
+			}
+		}
+		
+		return null;
 	}
 
 	protected void drawJobHop(JobHopMeta hop, boolean candidate) {

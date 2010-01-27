@@ -497,12 +497,17 @@ public class PreviewRowsDialog extends Dialog
 					waitingForRows = false;
 					wFields.removeEmptyRows();
 					PreviewRowsDialog.this.rowMeta = rowMeta;
-					wFields.optWidth(true);
+					if (wFields.table.getItemCount()<10) {
+						wFields.optWidth(true);
+					}
 				}
 				
 				if (wFields.table.getItemCount()>props.getDefaultPreviewSize()) {
 					wFields.table.remove(0);
 				}
+
+				// wFields.table.setSelection(new TableItem[] { item, });
+				wFields.table.setTopIndex(wFields.table.getItemCount()-1);
 			}
 		});
 	}

@@ -122,7 +122,13 @@
     <!--- 
     	<menuitem value="trans-graph-entry-lineage" label="%TransGraph.PopupMenu.ShowDataLineage"/> 
       -->
-    <menuitem value="trans-graph-entry-sniff-output" label="%TransGraph.PopupMenu.SniffOutput"/> 
+    <menu value="trans-graph-entry-sniff" label="%TransGraph.PopupMenu.Sniff"> 
+		<menupopup>
+	    <menuitem value="trans-graph-entry-sniff-input" label="%TransGraph.PopupMenu.SniffInput"/> 
+	    <menuitem value="trans-graph-entry-sniff-output" label="%TransGraph.PopupMenu.SniffOutput"/> 
+	    <menuitem value="trans-graph-entry-sniff-error" label="%TransGraph.PopupMenu.SniffError"/> 
+		</menupopup>
+	</menu>
 	<menuseparator/>
     <menu value="trans-graph-entry-align" label="%TransGraph.PopupMenu.AllignDistribute">
 		<menupopup>

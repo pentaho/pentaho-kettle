@@ -137,7 +137,7 @@ public class CentralLogStore {
 		// Remove all the rows for these ids
 		//
 		Log4jBufferAppender bufferAppender = getInstance().appender;
-		int beforeSize = bufferAppender.size();
+		// int beforeSize = bufferAppender.size();
 		for (String id : ids) {
 			// Remove it from the central log buffer
 			//
@@ -154,9 +154,9 @@ public class CentralLogStore {
 			bufferAppender.removeGeneralMessages();
 		}
 		
-		int afterSize = bufferAppender.size();
-		System.out.println("Bufferlines discarded for parent log channel id ["+parentLogChannelId+"], before="+beforeSize+", after="+afterSize);
-		System.out.println("Left over lines:");
-		System.out.println(bufferAppender.getBuffer().toString());
+		// int afterSize = bufferAppender.size();
+		// System.out.println("Bufferlines discarded for parent log channel id ["+parentLogChannelId+"], before="+beforeSize+", after="+afterSize);
+		// System.out.println("Left over lines:");
+		// System.out.println(bufferAppender.getBuffer().toString());
 	}
 }

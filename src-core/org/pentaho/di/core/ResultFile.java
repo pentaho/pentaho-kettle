@@ -73,6 +73,14 @@ public class ResultFile implements Cloneable
 		this.timestamp = new Date();
 	}
 	
+	@Override
+	public String toString() {
+		return file.toString()+" - "+getTypeDesc()+" - "+XMLHandler.date2string(timestamp)+
+			(origin==null ? "" : " - "+origin)+
+			(originParent==null ? "" : " - "+originParent);
+		
+	}
+	
 	protected ResultFile clone() throws CloneNotSupportedException
 	{
 		return (ResultFile) super.clone();

@@ -1635,6 +1635,16 @@ public class Const
     }
     
     /**
+     * Check if the list supplied is empty.  An array is empty when it is null or when the length is 0
+     * @param list the list to check
+     * @return true if the supplied list is empty
+     */
+    public static final boolean isEmpty(List<?> list)
+    {
+     return list==null || list.size()==0;
+    }
+    
+    /**
      * @return a new ClassLoader
      */
     public static final ClassLoader createNewClassLoader() throws KettleException

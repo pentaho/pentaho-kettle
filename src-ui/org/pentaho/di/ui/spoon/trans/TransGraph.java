@@ -81,6 +81,7 @@ import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.BasePainter;
 import org.pentaho.di.core.gui.GCInterface;
@@ -2198,8 +2199,13 @@ private void addToolBar() {
           item = menu.getMenuItemById("trans-graph-entry-align-snap"); //$NON-NLS-1$
           item.setText(BaseMessages.getString(PKG, "TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
 
+          menu.getMenuById("trans-graph-entry-sniff").setEnabled(trans!=null && trans.isRunning()); //$NON-NLS-1$
+          item = menu.getMenuItemById("trans-graph-entry-sniff-input"); //$NON-NLS-1$
+          item.setEnabled(trans!=null && trans.isRunning());
           item = menu.getMenuItemById("trans-graph-entry-sniff-output"); //$NON-NLS-1$
           item.setEnabled(trans!=null && trans.isRunning());
+          item = menu.getMenuItemById("trans-graph-entry-sniff-error"); //$NON-NLS-1$
+          item.setEnabled(stepMeta.supportsErrorHandling() && stepMeta.getStepErrorMeta()!=null && stepMeta.getStepErrorMeta().getTargetStep()!=null && trans!=null && trans.isRunning());
 
           XulMenu aMenu = menu.getMenuById("trans-graph-entry-align"); //$NON-NLS-1$
 
@@ -2243,7 +2249,9 @@ private void addToolBar() {
           menu.addMenuListener("trans-graph-entry-detach", this, "detachStep"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-inputs", this, "fieldsBefore"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-outputs", this, "fieldsAfter"); //$NON-NLS-1$ //$NON-NLS-2$
+          menu.addMenuListener("trans-graph-entry-sniff-input", this, "sniffInput"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-sniff-output", this, "sniffOutput"); //$NON-NLS-1$ //$NON-NLS-2$
+          menu.addMenuListener("trans-graph-entry-sniff-error", this, "sniffError"); //$NON-NLS-1$ //$NON-NLS-2$
           // menu.addMenuListener("trans-graph-entry-lineage", this, "fieldsLineage"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-verify", this, "checkSelectedSteps"); //$NON-NLS-1$ //$NON-NLS-2$
           menu.addMenuListener("trans-graph-entry-mapping", this, "generateMappingToThisStep"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -3977,10 +3985,19 @@ private void addToolBar() {
 		halted = trans.isStopped();
 	}
 	
-	/**
-	 * See which rows are being produced by a certain step
-	 */
+	public void sniffInput() {
+		sniff(true, false, false);
+	}
+
 	public void sniffOutput() {
+		sniff(false, true, false);
+	}
+	
+	public void sniffError() {
+		sniff(false, false, true);
+	}
+
+	public void sniff(final boolean input, final boolean output, final boolean error) {
 		StepMeta stepMeta = getCurrentStep();
 		final StepInterface runThread = trans.findRunThread(stepMeta.getName());
 		if (runThread!=null) {
@@ -3991,15 +4008,35 @@ private void addToolBar() {
 			dialog.setDynamic(true);
 
 			final RowListener rowListener = new RowListener() {
-				
-				public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
-					dialog.addDataRow(rowMeta, row);
-				}
-				
+
 				public void rowReadEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+					if (input) {
+						try {
+							dialog.addDataRow(rowMeta, rowMeta.cloneRow(row));
+						} catch (KettleValueException e) {
+							throw new KettleStepException(e);
+						}
+					}
+				}
+
+				public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+					if (output) {
+						try {
+							dialog.addDataRow(rowMeta, rowMeta.cloneRow(row));
+						} catch (KettleValueException e) {
+							throw new KettleStepException(e);
+						}
+					}
 				}
 				
 				public void errorRowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+					if (error) {
+						try {
+							dialog.addDataRow(rowMeta, rowMeta.cloneRow(row));
+						} catch (KettleValueException e) {
+							throw new KettleStepException(e);
+						}
+					}
 				}
 			};
 
@@ -4017,6 +4054,5 @@ private void addToolBar() {
 			
 			runThread.addRowListener(rowListener);
 		}
-		
 	}
 }

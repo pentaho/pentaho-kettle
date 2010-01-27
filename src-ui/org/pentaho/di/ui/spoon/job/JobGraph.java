@@ -75,6 +75,8 @@ import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
@@ -93,6 +95,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryListener;
+import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobListener;
@@ -2087,6 +2090,48 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 			resetDelayTimer((JobEntryCopy) areaOwner.getOwner());
 			break;
 
+		case JOB_ENTRY_RESULT_FAILURE:
+		case JOB_ENTRY_RESULT_SUCCESS:
+			JobEntryResult jobEntryResult = (JobEntryResult) areaOwner.getOwner();
+			JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getParent();
+			Result result = jobEntryResult.getResult();
+			tip.append("Job entry '").append(jobEntryCopy.getName());
+			if (result.getResult()) {
+				tipImage = GUIResource.getInstance().getImageTrue();
+				tip.append("finished successfully.");
+			} else {
+				tipImage = GUIResource.getInstance().getImageFalse();
+				tip.append("failed.");
+			}
+			tip.append(Const.CR).append("------------------------").append(Const.CR).append(Const.CR);
+			tip.append("Result         : ").append(result.getResult()).append(Const.CR);
+			tip.append("Errors         : ").append(result.getNrErrors()).append(Const.CR);
+			
+			if (result.getNrLinesRead()>0) tip.append("Lines read     : ").append(result.getNrLinesRead()).append(Const.CR);
+			if (result.getNrLinesWritten()>0) tip.append("Lines written  : ").append(result.getNrLinesWritten()).append(Const.CR);
+			if (result.getNrLinesInput()>0) tip.append("Lines input    : ").append(result.getNrLinesInput()).append(Const.CR);
+			if (result.getNrLinesOutput()>0) tip.append("Lines output   : ").append(result.getNrLinesOutput()).append(Const.CR);
+			if (result.getNrLinesUpdated()>0) tip.append("Lines updated  : ").append(result.getNrLinesUpdated()).append(Const.CR);
+			if (result.getNrLinesDeleted()>0) tip.append("Lines deleted  : ").append(result.getNrLinesDeleted()).append(Const.CR);
+			if (result.getNrLinesRejected()>0) tip.append("Lines rejected : ").append(result.getNrLinesRejected()).append(Const.CR);
+			if (result.getResultFiles()!=null && !result.getResultFiles().isEmpty()) {
+				tip.append(Const.CR).append("Result files:").append(Const.CR);
+				for (ResultFile file : result.getResultFiles().values()) {
+					tip.append("  - ").append(file.toString()).append(Const.CR);
+				}
+			}
+			if (result.getRows()!=null && !result.getRows().isEmpty()) {
+				tip.append(Const.CR).append("Result rows: ");
+				if (result.getRows().size()>5) {
+					tip.append(" (10 rows of ").append(result.getRows().size()).append(" shown");
+				}
+				tip.append(Const.CR);
+				for (int i=0;i<result.getRows().size() && i<5;i++) {
+					RowMetaAndData row = result.getRows().get(i);
+					tip.append("  - ").append(row.toString()).append(Const.CR);
+				}
+			}
+			break;
 		}
 	}
 
@@ -2243,12 +2288,14 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   private void attachActiveJob(JobGraph jobGraph, JobMeta newJobMeta, JobEntryCopy jobEntryCopy) {
 	  if (job!=null && jobGraph!=null) {
 		  Job subJob = spoon.findActiveJob(job, jobEntryCopy);
-		  jobGraph.setJob(subJob);
-		  jobGraph.jobGridDelegate.setJobTracker(subJob.getJobTracker());
-		  if (!jobGraph.isExecutionResultsPaneVisible()) {
-			  jobGraph.showExecutionResults();
+		  if (subJob!=null) {
+			  jobGraph.setJob(subJob);
+			  jobGraph.jobGridDelegate.setJobTracker(subJob.getJobTracker());
+			  if (!jobGraph.isExecutionResultsPaneVisible()) {
+				  jobGraph.showExecutionResults();
+			  }
+			  jobGraph.setControlStates();
 		  }
-		  jobGraph.setControlStates();
 	  }
   }
 
@@ -2362,6 +2409,11 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 	    jobPainter.setEndHopLocation(endHopLocation);
 	    jobPainter.setEndHopEntry(endHopEntry);
 	    jobPainter.setNoInputEntry(noInputEntry);
+	    if (job!=null) {
+	    	jobPainter.setJobEntryResults(job.getJobEntryResults());
+	    } else {
+	    	jobPainter.setJobEntryResults(new ArrayList<JobEntryResult>());
+	    }
 	    
 	    List<JobEntryCopy> activeJobEntries = new ArrayList<JobEntryCopy>();
 	    if (job!=null) {

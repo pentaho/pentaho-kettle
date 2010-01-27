@@ -136,8 +136,6 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	{
 		try
 		{
-			
-					
 			loglevel=loglevel+1;
 			
 			if (loglevel==LogWriter.LOG_LEVEL_ERROR)
@@ -178,14 +176,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 				log.logRowlevel(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
 			}
 
-
-
 			return true;
-			
-			
-
-			
-					
 		}
 		catch(Exception e)
 		{
