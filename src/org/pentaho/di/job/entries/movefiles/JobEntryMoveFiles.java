@@ -352,7 +352,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		Result result = previousResult;
 	    List<RowMetaAndData> rows = result.getRows();
 	    RowMetaAndData resultRow = null; 
-	    result.setEntryNr(1);
+	    result.setNrErrors(1);
 	    result.setResult(false);
 		
 	    NrErrors=0;
@@ -361,12 +361,14 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		successConditionBrokenExit=false;
 		limitFiles=Const.toInt(environmentSubstitute(getNrErrorsLessThan()),10);
 		
-		if(simulate){
-			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobMoveFiles.Log.SimulationOn"));
+		if(log.isDetailed()) {
+			if(simulate){
+				 logDetailed(BaseMessages.getString(PKG, "JobMoveFiles.Log.SimulationOn"));
+			}
+			if(include_subfolders){
+				logDetailed(BaseMessages.getString(PKG, "JobMoveFiles.Log.IncludeSubFoldersOn"));
+			}	
 		}
-		if(include_subfolders){
-			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobMoveFiles.Log.IncludeSubFoldersOn"));
-		}	
 		
 		String MoveToFolder=environmentSubstitute(destinationFolder);
 		// Get source and destination files, also wildcard
@@ -456,7 +458,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 						logError(BaseMessages.getString(PKG, "JobMoveFiles.Error.SuccessConditionbroken",""+NrErrors));
 						successConditionBrokenExit=true;
 					}
-					result.setEntryNr(NrErrors);
+					result.setNrErrors(NrErrors);
 					displayResults(log);
 					return result;
 				}
