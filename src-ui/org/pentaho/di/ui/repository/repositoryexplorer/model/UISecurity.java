@@ -185,7 +185,7 @@ public class UISecurity  extends XulEventSourceAdapter{
       UIRepositoryUser user = (UIRepositoryUser) o;
       removeUserFromSelectedRole(user.getName());
     }
-    this.firePropertyChange("selectedUser", null, selectedUser); //$NON-NLS-1$
+    this.firePropertyChange("selectedRole", null, selectedRole); //$NON-NLS-1$
   } 
 
 	private void removeUserFromSelectedRole(String userName) {
