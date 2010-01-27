@@ -2879,14 +2879,19 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 	public boolean canProcessOneRow() {
 		switch(inputRowSets.size()) {
 		case 0: return false;
-		case 1: return inputRowSets.get(0).size()>0;
+		case 1:
+			RowSet set = inputRowSets.get(0);
+			if (set.isDone()) return false;
+			return set.size()>0;
 		default: 
+			boolean allDone=true;
 			for (RowSet rowSet : inputRowSets) {
+				if (!rowSet.isDone()) allDone=false;
 				if (rowSet.size()>0) {
 					return true;
 				}
 			}
-			return false;
+			return !allDone;
 		}
 	}
 	

@@ -15,6 +15,8 @@ package org.pentaho.di.trans;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -854,7 +856,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 						
 						// Sort the steps from start to finish...
 						//
-						/*
 						Collections.sort(steps, new Comparator<StepMetaDataCombi>() {
 							public int compare(StepMetaDataCombi c1, StepMetaDataCombi c2) {
 								
@@ -866,7 +867,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 								}
 							}
 						});
-						*/
 						
 			        	boolean[] stepDone = new boolean[steps.size()];
 			        	int nrDone = 0;
@@ -874,13 +874,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			        		for (int i=0;i<steps.size() && !isStopped();i++) {
 			        			StepMetaDataCombi combi = steps.get(i);
 			        			if (!stepDone[i]) {
-			        				if (combi.step.canProcessOneRow()) {
+			        				// if (combi.step.canProcessOneRow() || !combi.step.isRunning()) {
 				        				boolean cont = combi.step.processRow(combi.meta, combi.data);
 				        				if (!cont) {
 				        					stepDone[i] = true;
 				        					nrDone++;
 				        				}
-			        				}
+			        				// }
 			        			}
 			        		}
 			        	}

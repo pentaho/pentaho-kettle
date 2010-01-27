@@ -33,7 +33,7 @@ import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 	/**
 	 * Dummy class used for test().
 	 */
-	public class ScriptValuesModDummy implements StepInterface, ScriptValuesModInterface
+	public class ScriptValuesModDummy implements StepInterface
 	{
 		private RowMetaInterface inputRowMeta;
 		private RowMetaInterface outputRowMeta;
