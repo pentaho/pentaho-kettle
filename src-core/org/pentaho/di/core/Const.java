@@ -53,7 +53,7 @@ public class Const
 	/**
 	 *  Version number
 	 */
-	public static final String VERSION = "3.2.4"; //$NON-NLS-1$
+	public static final String VERSION = "3.2.5"; //$NON-NLS-1$
 
 	/**
 	 * Sleep time waiting when buffer is empty
