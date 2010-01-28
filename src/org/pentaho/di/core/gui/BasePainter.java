@@ -176,7 +176,7 @@ public class BasePainter {
         // Add to the list of areas...
         //
         if (!shadow) {
-        	areaOwners.add(new AreaOwner(AreaType.NOTE, note.x, note.y, width, height, subject, notePadMeta));
+        	areaOwners.add(new AreaOwner(AreaType.NOTE, note.x, note.y, width, height, offset, subject, notePadMeta));
         }
     }
 	

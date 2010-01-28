@@ -158,7 +158,9 @@ public class TransPainter extends BasePainter
 	        	} else {
 	        		gc.setForeground(EColor.BLUE);
 	        	}
-	        	drawArrow(fr.x+iconsize/2, fr.y+iconsize/2, to.x, to.y, theta, calcArrowLength(), 1.2, startHopStep, endHopStep==null ? endHopLocation : endHopStep);
+	        	Point start = real2screen(fr.x+iconsize/2, fr.y+iconsize/2, offset);
+	        	Point end = real2screen(to.x, to.y, offset);
+	        	drawArrow(start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, startHopStep, endHopStep==null ? endHopLocation : endHopStep);
 	        }  else if (endHopStep!=null && endHopLocation!=null) {
 	        	Point fr = endHopLocation;
 	        	Point to = endHopStep.getLocation();
@@ -167,7 +169,9 @@ public class TransPainter extends BasePainter
 	        	} else {
 	        		gc.setForeground(EColor.BLUE);
 	        	}
-	        	drawArrow(fr.x, fr.y, to.x+iconsize/2, to.y+iconsize/2, theta, calcArrowLength(), 1.2, startHopStep==null ? endHopLocation : startHopStep, endHopStep);
+	        	Point start = real2screen(fr.x, fr.y, offset);
+	        	Point end = real2screen(to.x+iconsize/2, to.y+iconsize/2, offset);
+	        	drawArrow(start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, startHopStep==null ? endHopLocation : startHopStep, endHopStep);
 	        }
 
         }
@@ -206,7 +210,7 @@ public class TransPainter extends BasePainter
         	//
         	Point lockBounds = gc.getImageBounds(EImage.LOCK);
         	gc.drawImage(EImage.LOCK, area.x - lockBounds.y, 0);
-        	areaOwners.add(new AreaOwner(AreaType.REPOSITORY_LOCK_IMAGE, area.x - lockBounds.x, 0, lockBounds.y, lockBounds.y, transMeta, lock));
+        	areaOwners.add(new AreaOwner(AreaType.REPOSITORY_LOCK_IMAGE, area.x - lockBounds.x, 0, lockBounds.y, lockBounds.y, offset, transMeta, lock));
         }
     }
 
@@ -216,44 +220,40 @@ public class TransPainter extends BasePainter
     }
 	
 
-    private void drawHop(TransHopMeta hi, boolean is_candidate)
+    private void drawHop(TransHopMeta hi, boolean isCandidate)
     {
         StepMeta fs = hi.getFromStep();
         StepMeta ts = hi.getToStep();
 
         if (fs != null && ts != null)
         {
-            drawLine(fs, ts, hi, is_candidate);
+            drawLine(fs, ts, hi, isCandidate);
         }
     }
 
     private void drawStep(StepMeta stepMeta)
     {
         if (stepMeta == null) return;
-        int alpha = gc.getAlpha();
+        // int alpha = gc.getAlpha();
         
         StepIOMetaInterface ioMeta = stepMeta.getStepMetaInterface().getStepIOMeta();
 
+        /*
         boolean fade =  startHopStep!=null && (!ioMeta.isInputAcceptor() || startHopStep.equals(stepMeta));
         fade=fade || mouseOverSteps.contains(stepMeta);
         if (fade) {
         	gc.setAlpha(150);
         }
+        */
 
         Point pt = stepMeta.getLocation();
-
-        int x, y;
-        if (pt != null)
-        {
-            x = pt.x;
-            y = pt.y;
-        } else
-        {
-            x = 50;
-            y = 50;
+        if (pt==null) {
+        	pt = new Point(50,50);
         }
 
-        Point screen = real2screen(x, y, offset);
+        Point screen = real2screen(pt.x, pt.y, offset);
+        int x = screen.x;
+        int y = screen.y;
         
         boolean stepError = false;
         if (stepLogMap!=null && !stepLogMap.isEmpty()) {
@@ -280,18 +280,18 @@ public class TransPainter extends BasePainter
         	// Draw it an icon above the step icon.
         	// Draw it an icon and a half to the left
         	//
-        	Point point = new Point(screen.x-iconsize-iconsize/2, screen.y-iconsize);
+        	Point point = new Point(x-iconsize-iconsize/2, y-iconsize);
         	gc.drawRectangle(point.x, point.y, textExtent.x, textExtent.y);
         	gc.drawText(nrInput, point.x+1, point.y+1);
         	
         	// Now we draw an arrow from the cube to the step...
         	// 
-        	gc.drawLine(point.x+textExtent.x, point.y+textExtent.y/2, screen.x-iconsize/2, point.y+textExtent.y/2);
-         	drawArrow(screen.x-iconsize/2, point.y+textExtent.y/2, screen.x+iconsize/3, screen.y, Math.toRadians(15), 15, 1.8, null, null );
+        	gc.drawLine(point.x+textExtent.x, point.y+textExtent.y/2, x-iconsize/2, point.y+textExtent.y/2);
+         	drawArrow(x-iconsize/2, point.y+textExtent.y/2, x+iconsize/3, y, Math.toRadians(15), 15, 1.8, null, null );
          	
             // Add to the list of areas...
             if (!shadow) {
-            	areaOwners.add(new AreaOwner(AreaType.REMOTE_INPUT_STEP, point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_INPUT_STEPS));
+            	areaOwners.add(new AreaOwner(AreaType.REMOTE_INPUT_STEP, point.x, point.y, textExtent.x, textExtent.y, offset, stepMeta, STRING_REMOTE_INPUT_STEPS));
             }
         }
 
@@ -310,19 +310,19 @@ public class TransPainter extends BasePainter
         	// Draw it an icon above the step icon.
         	// Draw it an icon and a half to the right
         	//
-        	Point point = new Point(screen.x+2*iconsize+iconsize/2-textExtent.x, screen.y-iconsize);
+        	Point point = new Point(x+2*iconsize+iconsize/2-textExtent.x, y-iconsize);
         	gc.drawRectangle(point.x, point.y, textExtent.x, textExtent.y);
         	gc.drawText(nrOutput, point.x+1, point.y+1);
         	
         	// Now we draw an arrow from the cube to the step...
         	// This time, we start at the left side...
         	// 
-        	gc.drawLine(point.x, point.y+textExtent.y/2, screen.x+iconsize+iconsize/2, point.y+textExtent.y/2);
-         	drawArrow(screen.x+2*iconsize/3, screen.y, screen.x+iconsize+iconsize/2, point.y+textExtent.y/2, Math.toRadians(15), 15, 1.8, null, null );
+        	gc.drawLine(point.x, point.y+textExtent.y/2, x+iconsize+iconsize/2, point.y+textExtent.y/2);
+         	drawArrow(x+2*iconsize/3, y, x+iconsize+iconsize/2, point.y+textExtent.y/2, Math.toRadians(15), 15, 1.8, null, null );
 
          	// Add to the list of areas...
             if (!shadow) {
-            	areaOwners.add(new AreaOwner(AreaType.REMOTE_OUTPUT_STEP, point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_OUTPUT_STEPS));
+            	areaOwners.add(new AreaOwner(AreaType.REMOTE_OUTPUT_STEP, point.x, point.y, textExtent.x, textExtent.y, offset, stepMeta, STRING_REMOTE_OUTPUT_STEPS));
             }
         }
         
@@ -355,14 +355,14 @@ public class TransPainter extends BasePainter
 	        	// Draw it a 2 icons above the step icon.
 	        	// Draw it an icon and a half to the left
 	        	//
-	        	Point point = new Point(screen.x-iconsize-iconsize/2, screen.y-iconsize-iconsize);
+	        	Point point = new Point(x-iconsize-iconsize/2, y-iconsize-iconsize);
 	        	gc.drawRectangle(point.x, point.y, textExtent.x, textExtent.y);
 	        	gc.drawText(nrInput, point.x+1, point.y+1);
 	        	
 	        	// Now we draw an arrow from the cube to the step...
 	        	// 
-	        	gc.drawLine(point.x+textExtent.x, point.y+textExtent.y/2, screen.x-iconsize/2, point.y+textExtent.y/2);
-	         	gc.drawLine(screen.x-iconsize/2, point.y+textExtent.y/2, screen.x+iconsize/3, screen.y);
+	        	gc.drawLine(point.x+textExtent.x, point.y+textExtent.y/2, x-iconsize/2, point.y+textExtent.y/2);
+	         	gc.drawLine(x-iconsize/2, point.y+textExtent.y/2, x+iconsize/3, y);
 	         	
 	         	// Also draw the name of the partition schema below the box
 	         	//
@@ -372,7 +372,7 @@ public class TransPainter extends BasePainter
 	            // Add to the list of areas...
 	         	//
 	            if (!shadow) {
-	            	areaOwners.add(new AreaOwner(AreaType.STEP_PARTITIONING, point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_PARTITIONING_CURRENT_STEP));
+	            	areaOwners.add(new AreaOwner(AreaType.STEP_PARTITIONING, point.x, point.y, textExtent.x, textExtent.y, offset, stepMeta, STRING_PARTITIONING_CURRENT_STEP));
 	            }
             }
         }
@@ -386,7 +386,7 @@ public class TransPainter extends BasePainter
         
         // Add to the list of areas...
         if (!shadow) {
-        	areaOwners.add(new AreaOwner(AreaType.STEP_ICON, screen.x, screen.y, iconsize, iconsize, transMeta, stepMeta));
+        	areaOwners.add(new AreaOwner(AreaType.STEP_ICON, x, y, iconsize, iconsize, offset, transMeta, stepMeta));
         }
         
         gc.drawStepIcon(x, y, stepMeta);
@@ -396,7 +396,7 @@ public class TransPainter extends BasePainter
         } else {
         	gc.setForeground(EColor.BLACK);
         }
-        gc.drawRectangle(screen.x - 1, screen.y - 1, iconsize + 1, iconsize + 1);
+        gc.drawRectangle(x - 1, y - 1, iconsize + 1, iconsize + 1);
 
         Point namePosition = getNamePosition(name, screen, iconsize );
         
@@ -418,7 +418,7 @@ public class TransPainter extends BasePainter
             
             gc.setBackground(EColor.BACKGROUND);
             gc.setForeground(EColor.BLACK);
-            gc.drawText(message, screen.x + 3 + iconsize, screen.y - 8);
+            gc.drawText(message, x + 3 + iconsize, y - 8);
         }
         
         if (stepMeta.getCopies() > 1  && !partitioned)
@@ -427,9 +427,9 @@ public class TransPainter extends BasePainter
             gc.setForeground(EColor.BLACK);
             String copies = "x" + stepMeta.getCopies();
             Point textExtent = gc.textExtent(copies);
-            //gc.fillRectangle(screen.x - 11, screen.y - 11, textExtent.x+2, textExtent.y+2);
-            // gc.drawRectangle(screen.x - 11, screen.y - 11, textExtent.x+2, textExtent.y+2);
-            gc.drawText(copies, screen.x - textExtent.x/2, screen.y - textExtent.y + 3, false);
+            //gc.fillRectangle(x - 11, y - 11, textExtent.x+2, textExtent.y+2);
+            // gc.drawRectangle(x - 11, y - 11, textExtent.x+2, textExtent.y+2);
+            gc.drawText(copies, x - textExtent.x/2, y - textExtent.y + 3, false);
         }
         
         // If there was an error during the run, the map "stepLogMap" is not empty and not null.  
@@ -438,20 +438,20 @@ public class TransPainter extends BasePainter
         	String log = stepLogMap.get(stepMeta);
     		// Show an error lines icon in the lower right corner of the step...
     		//
-    		int xError = screen.x + iconsize - 5;
-    		int yError = screen.y + iconsize - 5;
+    		int xError = x + iconsize - 5;
+    		int yError = y + iconsize - 5;
     		Point ib = gc.getImageBounds(EImage.STEP_ERROR);
     		gc.drawImage(EImage.STEP_ERROR, xError, yError);
     		if (!shadow) {
-    			areaOwners.add(new AreaOwner(AreaType.STEP_ERROR_ICON, pt.x + iconsize-5, pt.y + iconsize-5, ib.x, ib.y, log, STRING_STEP_ERROR_LOG));
+    			areaOwners.add(new AreaOwner(AreaType.STEP_ERROR_ICON, pt.x + iconsize-5, pt.y + iconsize-5, ib.x, ib.y, offset, log, STRING_STEP_ERROR_LOG));
     		}
         }
         
         // Restore the previous alpha value
         //
-        if (fade) {
-        	gc.setAlpha(alpha);
-        }
+        // if (fade) {
+        // 	gc.setAlpha(alpha);
+        // }
 
         // Optionally drawn the mouse-over information
         //
@@ -477,8 +477,8 @@ public class TransPainter extends BasePainter
         	totalHeight+=nameExtent.y;
         	if (nameExtent.x>totalWidth) totalWidth=nameExtent.x;
 
-        	int areaX = screen.x+iconsize/2-totalWidth/2+MINI_ICON_SKEW;
-        	int areaY = screen.y+iconsize+MINI_ICON_DISTANCE;
+        	int areaX = x+iconsize/2-totalWidth/2+MINI_ICON_SKEW;
+        	int areaY = y+iconsize+MINI_ICON_DISTANCE;
 
         	gc.setForeground(EColor.DARKGRAY);
         	gc.setBackground(EColor.LIGHTGRAY);
@@ -494,7 +494,7 @@ public class TransPainter extends BasePainter
         	gc.setBackground(EColor.LIGHTGRAY);
 
         	gc.setFont(EFont.GRAPH);
-        	areaOwners.add(new AreaOwner(AreaType.MINI_ICONS_BALLOON, areaX, areaY, totalWidth, totalHeight, stepMeta, ioMeta));
+        	areaOwners.add(new AreaOwner(AreaType.MINI_ICONS_BALLOON, areaX, areaY, totalWidth, totalHeight, offset, stepMeta, ioMeta));
 
         	
         	gc.fillPolygon(new int[] { areaX+totalWidth/2-MINI_ICON_TRIANGLE_BASE/2+1, areaY+2, areaX+totalWidth/2+MINI_ICON_TRIANGLE_BASE/2, areaY+2, areaX+totalWidth/2-MINI_ICON_SKEW, areaY-MINI_ICON_DISTANCE-5, });
@@ -514,19 +514,19 @@ public class TransPainter extends BasePainter
         		switch(i) {
         		case 0: // INPUT
         			enabled=ioMeta.isInputAcceptor() || ioMeta.isInputDynamic();
-                	areaOwners.add(new AreaOwner(AreaType.STEP_INPUT_HOP_ICON, xIcon, yIcon, bounds.x, bounds.y, stepMeta, ioMeta));
+                	areaOwners.add(new AreaOwner(AreaType.STEP_INPUT_HOP_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, ioMeta));
         			break;
         		case 1: // EDIT
         			enabled=true;
-                	areaOwners.add(new AreaOwner(AreaType.STEP_EDIT_ICON, xIcon, yIcon, bounds.x, bounds.y, stepMeta, ioMeta));
+                	areaOwners.add(new AreaOwner(AreaType.STEP_EDIT_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, ioMeta));
         			break;
         		case 2: // STEP_MENU
         			enabled=true;
-        			areaOwners.add(new AreaOwner(AreaType.STEP_MENU_ICON, xIcon, yIcon, bounds.x, bounds.y, stepMeta, ioMeta));
+        			areaOwners.add(new AreaOwner(AreaType.STEP_MENU_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, ioMeta));
                 	break;
         		case 3: // OUTPUT
         			enabled=ioMeta.isOutputProducer() || ioMeta.isOutputDynamic();
-                	areaOwners.add(new AreaOwner(AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, bounds.x, bounds.y, stepMeta, ioMeta));
+                	areaOwners.add(new AreaOwner(AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, ioMeta));
         			break;
         		}
         		if (enabled) {
@@ -566,7 +566,7 @@ public class TransPainter extends BasePainter
         				gc.drawLine(areaX+MINI_ICON_MARGIN/2, targetY+extent.y+3, areaX+targetsWidth-MINI_ICON_MARGIN/2, targetY+extent.y+2);
         			}
         			
-                	areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON_OPTION, areaX, targetY, targetsWidth, extent.y+MINI_ICON_MARGIN, stepMeta, targetStreams.get(i)));
+                	areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON_OPTION, areaX, targetY, targetsWidth, extent.y+MINI_ICON_MARGIN, offset, stepMeta, targetStreams.get(i)));
 
         			targetY+=extent.y+MINI_ICON_MARGIN;
         		}
@@ -746,7 +746,7 @@ public class TransPainter extends BasePainter
 		        	Point bounds = gc.getImageBounds(hopsIcon);
 		        	gc.drawImage(hopsIcon, mx, my);
 		        	if (!shadow) {
-		    			areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON, mx, my, bounds.x, bounds.y, fs, targetStream));
+		    			areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON, mx, my, bounds.x, bounds.y, offset, fs, targetStream));
 		    		}
 	        	}
 	        } else  if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop) {
@@ -755,7 +755,7 @@ public class TransPainter extends BasePainter
 	        	gc.drawImage(EImage.COPY_ROWS, mx, my);
 	        	
 	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(AreaType.HOP_COPY_ICON, mx, my, bounds.x, bounds.y, fs, STRING_HOP_TYPE_COPY));
+	    			areaOwners.add(new AreaOwner(AreaType.HOP_COPY_ICON, mx, my, bounds.x, bounds.y, offset, fs, STRING_HOP_TYPE_COPY));
 	    		}
 		        mx+=16;
 	        } 
@@ -764,7 +764,7 @@ public class TransPainter extends BasePainter
 	        	Point bounds = gc.getImageBounds(EImage.COPY_ROWS);
 		        gc.drawImage(EImage.ERROR, mx, my);
 	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(AreaType.HOP_ERROR_ICON, mx, my, bounds.x, bounds.y, fs, ts));
+	    			areaOwners.add(new AreaOwner(AreaType.HOP_ERROR_ICON, mx, my, bounds.x, bounds.y, offset, fs, ts));
 	    		}
 		        mx+=16;
             }
@@ -776,7 +776,7 @@ public class TransPainter extends BasePainter
 	        	Point bounds = gc.getImageBounds(EImage.INFO);
         		gc.drawImage(EImage.INFO, mx, my);
 	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_ICON, mx, my, bounds.x, bounds.y, fs, ts));
+	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_ICON, mx, my, bounds.x, bounds.y, offset, fs, ts));
 	    		}
 		        mx+=16;
 	        }
@@ -797,7 +797,7 @@ public class TransPainter extends BasePainter
 	        				//
 	        	        	gc.drawImage(EImage.ERROR, mx, my);
 	        	        	if (!shadow) {
-	        	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_STEP_COPIES_ERROR, mx, my, MINI_ICON_SIZE, MINI_ICON_SIZE, fs, ts));
+	        	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_STEP_COPIES_ERROR, mx, my, MINI_ICON_SIZE, MINI_ICON_SIZE, offset, fs, ts));
 	        	    		}
 	        		        mx+=16;
 	        				

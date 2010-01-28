@@ -43,6 +43,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -168,7 +169,7 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * @since 17-mei-2003
  * 
  */
-public class TransGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener {
+public class TransGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener, MouseWheelListener, KeyListener {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private LogChannelInterface log;
@@ -327,7 +328,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
   private StepMeta showTargetStreamsStep;
 
- 
   public void setCurrentNote(NotePadMeta ni) {
     this.ni = ni;
   }
@@ -460,22 +460,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
           TransGraph.this.paintControl(e);
       }
     });
-
-    canvas.addMouseWheelListener(new MouseWheelListener() {
-
-      public void mouseScrolled(MouseEvent e) {
-    	boolean control = (e.stateMask & SWT.CONTROL) != 0;
-    	if (control) {
-	        if (e.count == 3) {
-	          // scroll up
-	          zoomIn();
-	        } else if (e.count == -3) {
-	          // scroll down 
-	          zoomOut();
-	        }
-    	}
-      }
-    });
     
     selectedSteps = null;
     lastclick = null;
@@ -487,6 +471,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     canvas.addMouseListener(this);
     canvas.addMouseMoveListener(this);
     canvas.addMouseTrackListener(this);
+    canvas.addMouseWheelListener(this);
 
     // Drag & Drop for steps
     Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
@@ -644,13 +629,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     });
 
     // Keyboard shortcuts...
-    addKeyListener(canvas);
-    addKeyListener(this);
-    // addKeyListener(filenameLabel);
-
+    // 
+    canvas.addKeyListener(this);
+    this.addKeyListener(this);
     canvas.addKeyListener(spoon.defKeys);
-    // filenameLabel.addKeyListener(spoon.defKeys);
-
+    
     setBackground(GUIResource.getInstance().getColorBackground());
     
     // Add a timer to set correct the state of the run/stop buttons every 2 seconds...
@@ -1269,7 +1252,18 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       }
   }
   
-	
+	public void mouseScrolled(MouseEvent e) {
+		/*
+			if (e.count == 3) {
+				// scroll up
+				zoomIn();
+			} else if (e.count == -3) {
+				// scroll down
+				zoomOut();
+			}
+		}
+		*/
+	}
 	
     private void addCandidateAsHop(int mouseX, int mouseY) {
 
@@ -1656,80 +1650,86 @@ private void addToolBar() {
     }
   }
 
-  private void addKeyListener(Control control) {
-    KeyAdapter keyAdapter = new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
+  public void keyPressed(KeyEvent e) {
 
-
-        if (e.keyCode == SWT.ESC) {
-            clearSettings();
-            redraw();
-          }
-
-        if (e.keyCode == SWT.DEL) {
-          List<StepMeta> stepMeta = transMeta.getSelectedSteps();
-          if (stepMeta != null && stepMeta.size()> 0) {
-            delSelected(null);
-          }
+      if (e.keyCode == SWT.ESC) {
+          clearSettings();
+          redraw();
         }
 
-        // CTRL-UP : allignTop();
-        if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.CONTROL) != 0) {
-          alligntop();
-        }
-        // CTRL-DOWN : allignBottom();
-        if (e.keyCode == SWT.ARROW_DOWN && (e.stateMask & SWT.CONTROL) != 0) {
-          allignbottom();
-        }
-        // CTRL-LEFT : allignleft();
-        if (e.keyCode == SWT.ARROW_LEFT && (e.stateMask & SWT.CONTROL) != 0) {
-          allignleft();
-        }
-        // CTRL-RIGHT : allignRight();
-        if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.CONTROL) != 0) {
-          allignright();
-        }
-        // ALT-RIGHT : distributeHorizontal();
-        if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.ALT) != 0) {
-          distributehorizontal();
-        }
-        // ALT-UP : distributeVertical();
-        if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.ALT) != 0) {
-          distributevertical();
-        }
-        // ALT-HOME : snap to grid
-        if (e.keyCode == SWT.HOME && (e.stateMask & SWT.ALT) != 0) {
-        snaptogrid(ConstUI.GRID_SIZE);
-        }
-        
-        if (e.character == 'E' && (e.stateMask & SWT.CTRL) != 0) {
-        	checkErrorVisuals();
-        }
-
-        // SPACE : over a step: show output fields...
-        if (e.character == ' ' && lastMove != null) {
-          
-          // TODO: debugging code, remove later on!
-          //
-          dumpLoggingRegistry();
-          
-          Point real = screen2real(lastMove.x, lastMove.y);
-
-          // Hide the tooltip!
-          hideToolTips();
-
-          // Set the pop-up menu
-          StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
-          if (stepMeta != null) {
-            // OK, we found a step, show the output fields...
-            inputOutputFields(stepMeta, false);
-          }
+      if (e.keyCode == SWT.DEL) {
+        List<StepMeta> stepMeta = transMeta.getSelectedSteps();
+        if (stepMeta != null && stepMeta.size()> 0) {
+          delSelected(null);
         }
       }
-    };
-    control.addKeyListener(keyAdapter);
-  }
 
+      // CTRL-UP : allignTop();
+      if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.CONTROL) != 0) {
+        alligntop();
+      }
+      // CTRL-DOWN : allignBottom();
+      if (e.keyCode == SWT.ARROW_DOWN && (e.stateMask & SWT.CONTROL) != 0) {
+        allignbottom();
+      }
+      // CTRL-LEFT : allignleft();
+      if (e.keyCode == SWT.ARROW_LEFT && (e.stateMask & SWT.CONTROL) != 0) {
+        allignleft();
+      }
+      // CTRL-RIGHT : allignRight();
+      if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.CONTROL) != 0) {
+        allignright();
+      }
+      // ALT-RIGHT : distributeHorizontal();
+      if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.ALT) != 0) {
+        distributehorizontal();
+      }
+      // ALT-UP : distributeVertical();
+      if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.ALT) != 0) {
+        distributevertical();
+      }
+      // ALT-HOME : snap to grid
+      if (e.keyCode == SWT.HOME && (e.stateMask & SWT.ALT) != 0) {
+      snaptogrid(ConstUI.GRID_SIZE);
+      }
+      
+      if (e.character == 'E' && (e.stateMask & SWT.CTRL) != 0) {
+      	checkErrorVisuals();
+      }
+
+      // SPACE : over a step: show output fields...
+      if (e.character == ' ' && lastMove != null) {
+        
+        // TODO: debugging code, remove later on!
+        //
+        dumpLoggingRegistry();
+        
+        Point real = screen2real(lastMove.x, lastMove.y);
+
+        // Hide the tooltip!
+        hideToolTips();
+
+        // Set the pop-up menu
+        StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
+        if (stepMeta != null) {
+          // OK, we found a step, show the output fields...
+          inputOutputFields(stepMeta, false);
+        }
+      }
+      
+		// CTRL-W or CTRL-F4 : close tab
+		if ((e.character=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
+		    (e.keyCode==SWT.F4 && (e.stateMask & SWT.CONTROL) != 0 )
+			)
+		{
+			dispose();
+		}
+
+    }
+
+  public void keyReleased(KeyEvent e) {
+  }
+  
   public void redraw() {
     canvas.redraw();
     setZoomLabel();

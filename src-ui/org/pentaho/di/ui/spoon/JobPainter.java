@@ -115,7 +115,9 @@ public class JobPainter extends BasePainter {
 				} else {
 					gc.setForeground(EColor.BLUE);
 				}
-				drawArrow(fr.x + iconsize / 2, fr.y + iconsize / 2, to.x, to.y, theta, calcArrowLength(), 1.2, null, startHopEntry, endHopEntry == null ? endHopLocation : endHopEntry);
+	        	Point start = real2screen(fr.x+iconsize/2, fr.y+iconsize/2, offset);
+	        	Point end = real2screen(to.x, to.y, offset);
+				drawArrow(start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopEntry, endHopEntry == null ? endHopLocation : endHopEntry);
 			} else if (endHopEntry != null && endHopLocation != null) {
 				Point fr = endHopLocation;
 				Point to = endHopEntry.getLocation();
@@ -124,7 +126,9 @@ public class JobPainter extends BasePainter {
 				} else {
 					gc.setForeground(EColor.BLUE);
 				}
-				drawArrow(fr.x, fr.y, to.x + iconsize / 2, to.y + iconsize / 2, theta, calcArrowLength(), 1.2, null, startHopEntry == null ? endHopLocation : startHopEntry, endHopEntry);
+	        	Point start = real2screen(fr.x, fr.y, offset);
+	        	Point end = real2screen(to.x+iconsize/2, to.y+iconsize/2, offset);
+				drawArrow(start.x, start.y, end.x, end.y + iconsize / 2, theta, calcArrowLength(), 1.2, null, startHopEntry == null ? endHopLocation : startHopEntry, endHopEntry);
 			}
 		}		
 
@@ -139,8 +143,8 @@ public class JobPainter extends BasePainter {
         	gc.setLineWidth(2);	
         	gc.setForeground(EColor.RED);
         	Point n = noInputEntry.getLocation();
-        	gc.drawLine(n.x-5, n.y-5, n.x+iconsize+10, n.y+iconsize+10);
-        	gc.drawLine(n.x-5, n.y+iconsize+5, n.x+iconsize+5, n.y-5);
+        	gc.drawLine(offset.x + n.x-5, offset.y + n.y-5, offset.x + n.x+iconsize+5, offset.y + n.y+iconsize+5);
+        	gc.drawLine(offset.x + n.x-5, offset.y + n.y+iconsize+5, offset.x + n.x+iconsize+5, offset.y + n.y-5);
         }
 
 
@@ -161,15 +165,14 @@ public class JobPainter extends BasePainter {
 			return;
 
 		Point pt = jobEntryCopy.getLocation();
-
-		int x, y;
-		if (pt != null) {
-			x = pt.x;
-			y = pt.y;
-		} else {
-			x = 50;
-			y = 50;
+		if (pt==null) {
+			pt = new Point(50,50);
 		}
+		
+		Point screen = real2screen(pt.x, pt.y, offset);
+		int x=screen.x;
+		int y=screen.y;
+		
 		String name = jobEntryCopy.getName();
 		if (jobEntryCopy.isSelected())
 			gc.setLineWidth(3);
@@ -181,10 +184,10 @@ public class JobPainter extends BasePainter {
 		
 		if (activeJobEntries.contains(jobEntryCopy)) {
 			gc.setForeground(EColor.BLUE);
-			int iconX = offset.x + x + iconsize - 7;
-			int iconY = offset.y + y - 7;
+			int iconX = x + iconsize - 7;
+			int iconY = y - 7;
 			gc.drawImage(EImage.BUSY, iconX, iconY);
-			areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_BUSY, iconX, iconY, iconsize, iconsize, subject, jobEntryCopy));
+			areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_BUSY, iconX, iconY, iconsize, iconsize,  offset, subject, jobEntryCopy));
 		} else {
 			gc.setForeground(EColor.BLACK);
 		}
@@ -192,29 +195,29 @@ public class JobPainter extends BasePainter {
 		JobEntryResult jobEntryResult = findJobEntryResult(jobEntryCopy);
 		if (jobEntryResult!=null) {
 			Result result = jobEntryResult.getResult();
-			int iconX = offset.x + x + iconsize - 7;
-			int iconY = offset.y + y - 7;
+			int iconX = x + iconsize - 7;
+			int iconY = y - 7;
 			if (result.getResult()) {
 				gc.drawImage(EImage.TRUE, iconX, iconY);
-				areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_SUCCESS, iconX, iconY, iconsize, iconsize, jobEntryCopy, jobEntryResult));
+				areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_SUCCESS, iconX, iconY, iconsize, iconsize, offset, jobEntryCopy, jobEntryResult));
 			} else {
-				gc.drawImage(EImage.FALSE, offset.x + x + iconsize, offset.y + y - 5 );
-				areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_FAILURE, iconX, iconY, iconsize, iconsize, jobEntryCopy, jobEntryResult));
+				gc.drawImage(EImage.FALSE, x + iconsize, y - 5 );
+				areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_FAILURE, iconX, iconY, iconsize, iconsize,  offset, jobEntryCopy, jobEntryResult));
 			}
 		}
 		
-		gc.drawRectangle(offset.x + x - 1, offset.y + y - 1, iconsize + 1, iconsize + 1);
+		gc.drawRectangle(x - 1, y - 1, iconsize + 1, iconsize + 1);
 		Point textsize = new Point(gc.textExtent("" + name).x, gc.textExtent("" + name).y);
 
 		if (!shadow) {
-			areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_ICON, x, y, iconsize, iconsize, subject, jobEntryCopy));
+			areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_ICON, x, y, iconsize, iconsize, offset, subject, jobEntryCopy));
 		}
 		
 		gc.setBackground(EColor.BACKGROUND);
 		gc.setLineWidth(1);
 
-		int xpos = offset.x + x + (iconsize / 2) - (textsize.x / 2);
-		int ypos = offset.y + y + iconsize + 5;
+		int xpos = x + (iconsize / 2) - (textsize.x / 2);
+		int ypos = y + iconsize + 5;
 
 		gc.setForeground(EColor.BLACK);
 		gc.drawText(name, xpos, ypos, true);
@@ -263,7 +266,7 @@ public class JobPainter extends BasePainter {
         	gc.setBackground(EColor.LIGHTGRAY);
 
         	gc.setFont(EFont.GRAPH);
-        	areaOwners.add(new AreaOwner(AreaType.MINI_ICONS_BALLOON, areaX, areaY, totalWidth, totalHeight, jobMeta, jobEntryCopy));
+        	areaOwners.add(new AreaOwner(AreaType.MINI_ICONS_BALLOON, areaX, areaY, totalWidth, totalHeight, offset, jobMeta, jobEntryCopy));
         	
         	gc.fillPolygon(new int[] { areaX+totalWidth/2-MINI_ICON_TRIANGLE_BASE/2+1, areaY+2, areaX+totalWidth/2+MINI_ICON_TRIANGLE_BASE/2, areaY+2, areaX+totalWidth/2-MINI_ICON_SKEW, areaY-MINI_ICON_DISTANCE-5, });
         	gc.drawPolyline(new int[] { areaX+totalWidth/2-MINI_ICON_TRIANGLE_BASE/2+1, areaY, areaX+totalWidth/2-MINI_ICON_SKEW, areaY-MINI_ICON_DISTANCE-5, areaX+totalWidth/2+MINI_ICON_TRIANGLE_BASE/2, areaY, areaX+totalWidth/2-MINI_ICON_SKEW, areaY-MINI_ICON_DISTANCE-5, });
@@ -280,19 +283,19 @@ public class JobPainter extends BasePainter {
         		switch(i) {
         		case 0: // INPUT
         			enabled=!jobEntryCopy.isStart();
-                	areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_MINI_ICON_INPUT, xIcon, yIcon, bounds.x, bounds.y, jobMeta, jobEntryCopy));
+                	areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_MINI_ICON_INPUT, xIcon, yIcon, bounds.x, bounds.y, offset, jobMeta, jobEntryCopy));
         			break;
         		case 1: // EDIT
         			enabled=true;
-                	areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_MINI_ICON_EDIT, xIcon, yIcon, bounds.x, bounds.y, jobMeta, jobEntryCopy));
+                	areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_MINI_ICON_EDIT, xIcon, yIcon, bounds.x, bounds.y, offset, jobMeta, jobEntryCopy));
         			break;
         		case 2: // Job entry context menu
         			enabled=true;
-        			areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_MINI_ICON_CONTEXT, xIcon, yIcon, bounds.x, bounds.y, jobMeta, jobEntryCopy));
+        			areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_MINI_ICON_CONTEXT, xIcon, yIcon, bounds.x, bounds.y, offset, jobMeta, jobEntryCopy));
                 	break;
         		case 3: // OUTPUT
         			enabled=true;
-                	areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_MINI_ICON_OUTPUT, xIcon, yIcon, bounds.x, bounds.y, jobMeta, jobEntryCopy));
+                	areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_MINI_ICON_OUTPUT, xIcon, yIcon, bounds.x, bounds.y, offset, jobMeta, jobEntryCopy));
         			break;
         		}
         		if (enabled) {
@@ -469,7 +472,7 @@ public class JobPainter extends BasePainter {
 			Point bounds = gc.getImageBounds(hopsIcon);
 			gc.drawImage(hopsIcon, mx, my);
 			if (!shadow) {
-				areaOwners.add(new AreaOwner(AreaType.JOB_HOP_ICON, mx, my, bounds.x, bounds.y, subject, jobHop));
+				areaOwners.add(new AreaOwner(AreaType.JOB_HOP_ICON, mx, my, bounds.x, bounds.y, offset, subject, jobHop));
 			}
 			
 			if (jobHop.getFromEntry().isLaunchingInParallel()) {
@@ -483,7 +486,7 @@ public class JobPainter extends BasePainter {
 				hopsIcon = EImage.PARALLEL;
 				gc.drawImage(hopsIcon, mx, my);
 				if (!shadow) {
-					areaOwners.add(new AreaOwner(AreaType.JOB_HOP_PARALLEL_ICON, mx, my, bounds.x, bounds.y, subject, jobHop));
+					areaOwners.add(new AreaOwner(AreaType.JOB_HOP_PARALLEL_ICON, mx, my, bounds.x, bounds.y, offset, subject, jobHop));
 				}
 			}	
 		}

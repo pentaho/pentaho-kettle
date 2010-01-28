@@ -39,6 +39,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -147,7 +148,7 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * Created on 17-may-2003
  *
  */
-public class JobGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener {
+public class JobGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener, MouseWheelListener, KeyListener {
 	
   private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -392,19 +393,6 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       }
     });
 
-    canvas.addMouseWheelListener(new MouseWheelListener() {
-
-      public void mouseScrolled(MouseEvent e) {
-        if (e.count == 3) {
-          // scroll up
-          zoomIn();
-        } else if (e.count == -3) {
-          // scroll down 
-          zoomOut();
-        }
-
-      }
-    });
 
     selectedEntries = null;
     lastclick = null;
@@ -412,6 +400,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     canvas.addMouseListener(this);
     canvas.addMouseMoveListener(this);
     canvas.addMouseTrackListener(this);
+    canvas.addMouseWheelListener(this);
     
     // Drag & Drop for steps
     Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
@@ -529,8 +518,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       }
     });
 
-    addKeyListener(canvas);
-    // addKeyListener(filenameLabel);
+    canvas.addKeyListener(this);
 
     // filenameLabel.addKeyListener(spoon.defKeys);
     canvas.addKeyListener(spoon.defKeys);
@@ -559,6 +547,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 
   }
   
+
   protected void hideToolTips() {
 	    toolTip.hide();
 	    helpTip.hide();
@@ -826,9 +815,15 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
                 if (jobMeta.findJobHop(selectedEntry, hi.getFromEntry()) == null && jobMeta.findJobHop(hi.getToEntry(), selectedEntry) == null) {
               	  
                   JobHopMeta newhop1 = new JobHopMeta(hi.getFromEntry(), selectedEntry);
+                  if (hi.getFromEntry().getEntry().isUnconditional()) {
+                	  newhop1.setUnconditional();
+                  }
                   jobMeta.addJobHop(newhop1);
                   spoon.addUndoNew(jobMeta, new JobHopMeta[] { newhop1 }, new int[] { jobMeta.indexOfJobHop(newhop1) }, true);
                   JobHopMeta newhop2 = new JobHopMeta(selectedEntry, hi.getToEntry());
+                  if (selectedEntry.getEntry().isUnconditional()) {
+                	  newhop2.setUnconditional();
+                  }
                   jobMeta.addJobHop(newhop2);
                   spoon.addUndoNew(jobMeta, new JobHopMeta[] { newhop2 }, new int[] { jobMeta.indexOfJobHop(newhop2) }, true);
                   int idx = jobMeta.indexOfJobHop(hi);
@@ -1140,6 +1135,17 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   public void mouseExit(MouseEvent event) {
   };
 
+	public void mouseScrolled(MouseEvent e) {
+		/*
+			if (e.count == 3) {
+				// scroll up
+				zoomIn();
+			} else if (e.count == -3) {
+				// scroll down
+				zoomOut();
+			}
+		*/
+	}
   
 	private void addCandidateAsHop() {
 		if (hop_candidate != null) {
@@ -1328,51 +1334,56 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     }
   }
 
-  private void addKeyListener(Control control) {
-    // Keyboard shortcuts...
-    //
-    control.addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
+ 	public void keyPressed(KeyEvent e) {
+		
+		// Delete
+		if (e.keyCode == SWT.DEL) {
+			List<JobEntryCopy> copies = jobMeta.getSelectedEntries();
+			if (copies != null && copies.size() > 0) {
+				delSelected();
+			}
+		}
+		// CTRL-UP : allignTop();
+		if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.CONTROL) != 0) {
+			alligntop();
+		}
+		// CTRL-DOWN : allignBottom();
+		if (e.keyCode == SWT.ARROW_DOWN && (e.stateMask & SWT.CONTROL) != 0) {
+			allignbottom();
+		}
+		// CTRL-LEFT : allignleft();
+		if (e.keyCode == SWT.ARROW_LEFT && (e.stateMask & SWT.CONTROL) != 0) {
+			allignleft();
+		}
+		// CTRL-RIGHT : allignRight();
+		if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.CONTROL) != 0) {
+			allignright();
+		}
+		// ALT-RIGHT : distributeHorizontal();
+		if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.ALT) != 0) {
+			distributehorizontal();
+		}
+		// ALT-UP : distributeVertical();
+		if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.ALT) != 0) {
+			distributevertical();
+		}
+		// ALT-HOME : snap to grid
+		if (e.keyCode == SWT.HOME && (e.stateMask & SWT.ALT) != 0) {
+			snaptogrid(ConstUI.GRID_SIZE);
+		}
+		// CTRL-W or CTRL-F4 : close tab
+		if ((e.character=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
+		    (e.keyCode==SWT.F4 && (e.stateMask & SWT.CONTROL) != 0 )
+			)
+		{
+			dispose();
+		}
 
-        // Delete
-        if (e.keyCode == SWT.DEL) {
-          List<JobEntryCopy> copies = jobMeta.getSelectedEntries();
-          if (copies != null && copies.size()> 0) {
-            delSelected();
-          }
-        }
-        // CTRL-UP : allignTop();
-        if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.CONTROL) != 0) {
-          alligntop();
-        }
-        // CTRL-DOWN : allignBottom();
-        if (e.keyCode == SWT.ARROW_DOWN && (e.stateMask & SWT.CONTROL) != 0) {
-          allignbottom();
-        }
-        // CTRL-LEFT : allignleft();
-        if (e.keyCode == SWT.ARROW_LEFT && (e.stateMask & SWT.CONTROL) != 0) {
-          allignleft();
-        }
-        // CTRL-RIGHT : allignRight();
-        if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.CONTROL) != 0) {
-          allignright();
-        }
-        // ALT-RIGHT : distributeHorizontal();
-        if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.ALT) != 0) {
-          distributehorizontal();
-        }
-        // ALT-UP : distributeVertical();
-        if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.ALT) != 0) {
-          distributevertical();
-        }
-        // ALT-HOME : snap to grid
-        if (e.keyCode == SWT.HOME && (e.stateMask & SWT.ALT) != 0) {
-          snaptogrid(ConstUI.GRID_SIZE);
-        }
-      }
-    });
+	}  
 
-  }
+ 	 public void keyReleased(KeyEvent e) {
+ 	 }
+   
 
   public void selectInRect(JobMeta jobMeta, org.pentaho.di.core.gui.Rectangle rect) {
     int i;
@@ -2095,7 +2106,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 			JobEntryResult jobEntryResult = (JobEntryResult) areaOwner.getOwner();
 			JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getParent();
 			Result result = jobEntryResult.getResult();
-			tip.append("Job entry '").append(jobEntryCopy.getName());
+			tip.append("'").append(jobEntryCopy.getName()).append("' ");
 			if (result.getResult()) {
 				tipImage = GUIResource.getInstance().getImageTrue();
 				tip.append("finished successfully.");
@@ -2116,17 +2127,22 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 			if (result.getNrLinesRejected()>0) tip.append("Lines rejected : ").append(result.getNrLinesRejected()).append(Const.CR);
 			if (result.getResultFiles()!=null && !result.getResultFiles().isEmpty()) {
 				tip.append(Const.CR).append("Result files:").append(Const.CR);
-				for (ResultFile file : result.getResultFiles().values()) {
+				if (result.getResultFiles().size()>10) {
+					tip.append(" (10 files of ").append(result.getResultFiles().size()).append(" shown");
+				}
+				List<ResultFile> files = new ArrayList<ResultFile>(result.getResultFiles().values());
+				for (int i=0;i<files.size();i++) {
+					ResultFile file = files.get(i);
 					tip.append("  - ").append(file.toString()).append(Const.CR);
 				}
 			}
 			if (result.getRows()!=null && !result.getRows().isEmpty()) {
 				tip.append(Const.CR).append("Result rows: ");
-				if (result.getRows().size()>5) {
+				if (result.getRows().size()>10) {
 					tip.append(" (10 rows of ").append(result.getRows().size()).append(" shown");
 				}
 				tip.append(Const.CR);
-				for (int i=0;i<result.getRows().size() && i<5;i++) {
+				for (int i=0;i<result.getRows().size() && i<10;i++) {
 					RowMetaAndData row = result.getRows().get(i);
 					tip.append("  - ").append(row.toString()).append(Const.CR);
 				}

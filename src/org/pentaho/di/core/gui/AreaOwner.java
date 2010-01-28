@@ -54,10 +54,10 @@ public class AreaOwner {
 	 * @param heigth
 	 * @param owner
 	 */
-	public AreaOwner(AreaType areaType, int x, int y, int width, int heigth, Object parent, Object owner) {
+	public AreaOwner(AreaType areaType, int x, int y, int width, int heigth, Point offset, Object parent, Object owner) {
 		super();
 		this.areaType = areaType;
-		this.area = new Rectangle(x, y, width, heigth);
+		this.area = new Rectangle(x-offset.x, y-offset.y, width, heigth);
 		this.parent = parent;
 		this.owner = owner;
 	}
