@@ -15,6 +15,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -108,6 +109,13 @@ public class SocketReader extends BaseStep implements StepInterface
                 {
                     logError("Error initialising step: "+lastException.toString());
                     logError(Const.getStackTracker(lastException));
+					if (data.socket!=null) {
+						data.socket.shutdownInput();
+						data.socket.shutdownOutput();
+						data.socket.close();
+						logError("Closed connection to data socket to "+environmentSubstitute(meta.getHostname())+" port "+environmentSubstitute(meta.getPort()));
+					}
+
                     throw lastException;
                 }
                 else
@@ -134,6 +142,16 @@ public class SocketReader extends BaseStep implements StepInterface
         }
         catch (Exception e)
         {
+			if (data.socket!=null) {
+				try {
+					data.socket.shutdownInput();
+					data.socket.shutdownOutput();
+					data.socket.close();
+					logError("Closed connection to data socket to "+environmentSubstitute(meta.getHostname())+" port "+environmentSubstitute(meta.getPort()));
+				} catch (IOException e1) {
+					logError("Failed to close connection to data socket to "+environmentSubstitute(meta.getHostname())+" port "+environmentSubstitute(meta.getPort()));
+				}
+			}
             throw new KettleException(e);
         }
         
@@ -158,10 +176,14 @@ public class SocketReader extends BaseStep implements StepInterface
         // If we are here, it means all work is done
         // It's a lot of work to keep it all in sync for now we don't need to do that.
         // 
-        try { data.inputStream.close(); } catch(Exception e) {}
-        try { data.outputStream.close(); } catch(Exception e) {}
-        try { data.socket.close(); } catch(Exception e) {}
-        
+    	try { data.inputStream.close(); } catch(Exception e) {}
+    	try { data.outputStream.close(); } catch(Exception e) {}
+    	try {
+    		data.socket.shutdownInput();
+    		data.socket.shutdownOutput();
+    		data.socket.close();
+    	} catch(Exception e) {}
+
         super.dispose(smi, sdi);
     }
 	

@@ -51,11 +51,11 @@ public class SocketRepository {
 	        	long startTime = System.currentTimeMillis();
 	        	
 	        	IOException ioException = null;
-	    		log.logDetailed("Carte socket repository", "Starting a retry loop to bind the server socket on port "+port+".  We retry for 5 minutes until the socket clears in your operating system.");
+	    		log.logMinimal("Carte socket repository", "Starting a retry loop to bind the server socket on port "+port+".  We retry for 5 minutes until the socket clears in your operating system.");
 	        	while (!serverSocket.isBound() && totalWait<300000) {
 		        	try {
 			        	totalWait=System.currentTimeMillis()-startTime;
-		        		log.logDetailed("Carte socket repository", "Retry binding the server socket on port "+port+" after a "+(totalWait/1000)+" seconds wait...");
+		        		log.logMinimal("Carte socket repository", "Retry binding the server socket on port "+port+" after a "+(totalWait/1000)+" seconds wait...");
 			        	Thread.sleep(10000); // wait 10 seconds, try again...
 			        	serverSocket.bind(new InetSocketAddress(port), 100);
 		        	} catch(IOException ioe) {
@@ -119,13 +119,26 @@ public class SocketRepository {
 	 * Closes all sockets on application end...
 	 * @throws IOException in case there is an error
 	 */
-	public synchronized void closeAll() throws IOException {
+	public synchronized void closeAll() {
 		for (Iterator<SocketRepositoryEntry> iterator = socketMap.values().iterator(); iterator.hasNext();) {
 			SocketRepositoryEntry entry = iterator.next();
 			ServerSocket serverSocket = entry.getServerSocket();
-			serverSocket.close();
+			try {
+				if (serverSocket != null)
+					serverSocket.close();
+			} catch (IOException e) {
+				log.logError("Carte socket repository", "Failed to close socket during shutdown", e);
+			}
 		}
 	}
 	
-	
+	protected void finalize() throws Throwable
+	{
+		try {
+			closeAll();
+		} catch (Exception e) {
+		} finally {
+			super.finalize();
+		}
+	}
 }

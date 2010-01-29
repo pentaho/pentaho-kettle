@@ -39,4 +39,21 @@ public class SocketWriterData extends BaseStepData implements StepDataInterface
 		super();
 	}
 
+	@Override
+	protected void finalize() throws Throwable {
+		try {
+			if (clientSocket!=null) {
+				clientSocket.shutdownInput();
+				clientSocket.shutdownOutput();
+				clientSocket.close();
+			}
+			if (serverSocket!=null) {
+				serverSocket.close();
+			}
+		} catch (java.io.IOException e) {
+		} finally {
+			super.finalize();
+		}
+	}
+
 }
