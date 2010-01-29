@@ -43,6 +43,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
+import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -443,8 +444,17 @@ public class Job extends Thread implements VariableSpace, NamedParams
         // Execute this entry...
         JobEntryInterface cloneJei = (JobEntryInterface)jei.clone();
         ((VariableSpace)cloneJei).copyVariablesFrom(this);
+        final long start = System.currentTimeMillis();
         final Result result = cloneJei.execute(prevResult, nr, rep, this);
+        final long end = System.currentTimeMillis();
 
+        if (cloneJei instanceof JobEntryTrans)
+        {
+        	String throughput = result.getReadWriteThroughput((int)((end-start) / 1000));
+        	if (throughput != null) {
+        		log.logMinimal(cloneJei.getName(), throughput);
+        	}
+        }
         Thread.currentThread().setContextClassLoader(cl);
 		addErrors((int)result.getNrErrors());
 		
