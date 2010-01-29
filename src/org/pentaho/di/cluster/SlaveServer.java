@@ -444,6 +444,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
+        } catch (Exception e) {
+        	log.logError(toString(), String.format("Exception sending message to service %s", service), e);
+        	throw e;
         }
         finally
         {
@@ -625,8 +628,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             
             try
             {
-                if(log.isBasic())
-                	log.logBasic(toString(), Messages.getString("SlaveServer.DEBUG_ConnectingTo", urlToUse)); //$NON-NLS-1$
+                if(log.isDetailed())
+                	log.logDetailed(toString(), Messages.getString("SlaveServer.DEBUG_ConnectingTo", urlToUse)); //$NON-NLS-1$
 
                 if (proxyHostname!=null) 
                 {
@@ -665,8 +668,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
                     result.append(line).append(Const.CR);
                     bytesRead+=line.length();
                 }
-                if(log.isBasic())
-                	log.logBasic(toString(), Messages.getString("SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
+                if(log.isDetailed())
+                	log.logDetailed(toString(), Messages.getString("SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
                 if(log.isDebug())
                 	log.logDebug(toString(), "response from the webserver: {0}", result);
             }
