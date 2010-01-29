@@ -13,8 +13,6 @@
 package org.pentaho.di.trans.steps.randomvalue;
 
 import java.util.List;
-import java.util.Random;
-
 import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
@@ -51,18 +49,17 @@ public class RandomValue extends BaseStep implements StepInterface {
 			row[i] = inputRowData[i]; // no data is changed, clone is not
 									  // needed here.
 		}
-		Random randomgen = new Random();
 
 		for (int i = 0, index = inputRowMeta.size(); i < meta.getFieldName().length; i++, index++) {
 			switch (meta.getFieldType()[i]) {
 			case RandomValueMeta.TYPE_RANDOM_NUMBER:
-				row[index] = randomgen.nextDouble();
+				row[index] = data.randomgen.nextDouble();
 				break;
 			case RandomValueMeta.TYPE_RANDOM_INTEGER:
-				row[index] = new Long(randomgen.nextInt(2147483647)); // 2147483647 is the max value for integer (32 bits)
+				row[index] = new Long(data.randomgen.nextInt()); // nextInt() already returns all 2^32 numbers.
 				break;
 			case RandomValueMeta.TYPE_RANDOM_STRING:
-				row[index] = Long.toString(Math.abs(randomgen.nextLong()), 32);
+				row[index] = Long.toString(Math.abs(data.randomgen.nextLong()), 32);
 				break;
 			case RandomValueMeta.TYPE_RANDOM_UUID:
 				row[index] = UUIDUtil.getUUIDAsString();

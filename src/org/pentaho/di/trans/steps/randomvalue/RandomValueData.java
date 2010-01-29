@@ -12,6 +12,8 @@
 
 package org.pentaho.di.trans.steps.randomvalue;
 
+import java.util.Random;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.UUID4Util;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -28,7 +30,9 @@ public class RandomValueData extends BaseStepData implements StepDataInterface {
 	
 	public UUID4Util u4;
 
-	/**
+    public final Random randomgen = new Random();
+
+    /**
 	 * 
 	 */
 	public RandomValueData() {
