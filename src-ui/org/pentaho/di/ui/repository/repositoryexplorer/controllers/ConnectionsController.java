@@ -22,14 +22,12 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnection;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnections;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -43,9 +41,7 @@ public class ConnectionsController extends AbstractXulEventHandler {
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
   
   private XulTree connectionsTable = null;
-  
-  private XulTree revisionTable = null;
-  
+    
   private BindingFactory bf = null;
   
   private Repository repository = null;;
@@ -57,12 +53,6 @@ public class ConnectionsController extends AbstractXulEventHandler {
   private Binding bindButtonEdit = null;
   
   private Binding bindButtonRemove = null;
-  
-  private boolean isRevSupported = false;
-  
-  private Binding bindRevisionTableDisable = null;
-  
-  private Binding bindRevisionLabelDisable = null;
   
   private Shell shell = null;
   
@@ -91,8 +81,7 @@ public class ConnectionsController extends AbstractXulEventHandler {
   
   private void createBindings(){
     connectionsTable = (XulTree) document.getElementById("connections-table"); //$NON-NLS-1$
-    revisionTable = (XulTree) document.getElementById("connection-revision-table"); //$NON-NLS-1$
-    
+
     // Bind the connection table to a list of connections
     bf.setBindingType(Binding.Type.ONE_WAY);
 
@@ -102,10 +91,7 @@ public class ConnectionsController extends AbstractXulEventHandler {
       (bindButtonNew = bf.createBinding(this, "repReadOnly", "connections-new", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       (bindButtonEdit = bf.createBinding(this, "repReadOnly", "connections-edit", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       (bindButtonRemove = bf.createBinding(this, "repReadOnly", "connections-remove", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-      
-      (bindRevisionTableDisable = bf.createBinding(this, "revSupported", "connection-revision-table", "!disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-      (bindRevisionLabelDisable = bf.createBinding(this, "revSupported", "connection-revision-label", "!disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-      
+
       if (repository != null){
         bf.createBinding(connectionsTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<List<UIDatabaseConnection>, Boolean>() {
@@ -123,35 +109,6 @@ public class ConnectionsController extends AbstractXulEventHandler {
               return null;
             }
         });
-        
-        bf.createBinding(connectionsTable, "selectedItems", revisionTable, "elements", //$NON-NLS-1$ //$NON-NLS-2$
-          new BindingConvertor<List<UIDatabaseConnection>, UIRepositoryObjectRevisions>() {
-            @Override
-            public UIRepositoryObjectRevisions sourceToTarget(List<UIDatabaseConnection> dbConnList) {
-              UIRepositoryObjectRevisions revisions = new UIRepositoryObjectRevisions();
-              if(repository.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions()) {
-                if(dbConnList==null){
-                  return null;
-                }
-                if (dbConnList.size()<=0){
-                  return null;
-                }
-                try {
-                  UIDatabaseConnection dbConn = (UIDatabaseConnection)dbConnList.get(0);
-                  revisions = dbConn.getRevisions();
-                  bf.createBinding(revisions,"children", revisionTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
-                } catch (Exception e) {
-                  // how do we handle exceptions in a binding? dialog here? 
-                  // TODO: handle exception
-                }
-              }
-              return revisions;
-            }
-            @Override
-            public List<UIDatabaseConnection> targetToSource(UIRepositoryObjectRevisions elements) {
-              return null;
-            }
-          });
       }
     } catch (Exception ex) {
       System.err.println(ex.getMessage());
@@ -168,7 +125,6 @@ public class ConnectionsController extends AbstractXulEventHandler {
       this.repository = repository;
       
       setRepReadOnly(this.repository.getRepositoryMeta().getRepositoryCapabilities().isReadOnly());
-      setRevSupported(this.repository.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions());
     }
   }
 
@@ -196,39 +152,15 @@ public class ConnectionsController extends AbstractXulEventHandler {
     return isRepReadOnly;
   }
 
-  public void setRevSupported(boolean isRevSupported) {
-    try {
-      if(this.isRevSupported != isRevSupported) {
-        this.isRevSupported = isRevSupported;
-        
-        if(initComplete) {
-          bindRevisionTableDisable.fireSourceChanged();
-          bindRevisionLabelDisable.fireSourceChanged();
-        }
-      }
-    } catch (Exception e) {
-      System.err.println(e.getMessage());
-    }
-  }
-
-  public boolean isRevSupported() {
-    return isRevSupported;
-  }
-
-  private void refreshConnectionList() {
+   private void refreshConnectionList() {
     try {
       dbConns.clear();
       ObjectId[] dbIdList = repository.getDatabaseIDs(false);
       for(ObjectId dbId : dbIdList) {
         DatabaseMeta dbMeta = repository.loadDatabaseMeta(dbId, null);
-        // Fetch revision history if applicable
-        List<ObjectRevision> revHist = null;
-        if(isRevSupported) {
-          revHist = repository.getRevisions(dbMeta);
-        }
-        
+                
         // Add the database connection to the list
-        dbConns.add(new UIDatabaseConnection(dbMeta, revHist));
+        dbConns.add(new UIDatabaseConnection(dbMeta));
       }
     } catch (KettleException e) {
         System.err.println(e.getMessage());
@@ -288,7 +220,7 @@ public class ConnectionsController extends AbstractXulEventHandler {
         } else {
           DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
           String dbName = dd.open();
-          if (dbName != null && !dbName.equals(""))
+          if (dbName != null && !dbName.equals("")) //$NON-NLS-1$
           {
             if(!dbName.equals(originalDbName)) {
               // Make sure the new name does not already exist
