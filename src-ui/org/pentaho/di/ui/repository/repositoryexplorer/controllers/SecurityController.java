@@ -34,10 +34,15 @@ import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurityRole;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurityUser;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
+import org.pentaho.ui.xul.XulComponent;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.components.XulConfirmBox;
+import org.pentaho.ui.xul.components.XulMessageBox;
+import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDeck;
@@ -45,6 +50,7 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.util.XulDialogCallback;
 
 /**
  *
@@ -69,10 +75,6 @@ public class SecurityController extends AbstractXulEventHandler{
   private XulDialog userDialog;
 
   private XulDialog roleDialog;
-
-  private XulDialog removeUserConfirmationDialog;
-
-  private XulDialog removeRoleConfirmationDialog;
 
   private XulDeck userRoleDeck;
 
@@ -117,8 +119,7 @@ public class SecurityController extends AbstractXulEventHandler{
   private XulButton assignRoleToUserButton;
 
   private XulButton unassignRoleFromUserButton;
-  // private RepositoryExplorerCallback callback;
-  
+
   private XulButton assignUserToRoleButton;
 
   private XulButton unassignUserFromRoleButton;
@@ -140,7 +141,9 @@ public class SecurityController extends AbstractXulEventHandler{
   private UISecurityUser securityUser;
 
   private UISecurityRole securityRole;
-
+  XulConfirmBox confirmBox = null;
+  XulMessageBox messageBox = null;
+  
   public SecurityController() {
   }
 
@@ -149,6 +152,12 @@ public class SecurityController extends AbstractXulEventHandler{
     security = new UISecurity(rui);
     securityRole = new UISecurityRole();
     securityUser = new UISecurityUser();
+    try {
+    confirmBox = (XulConfirmBox) document.createElement("confirmbox");
+    messageBox = (XulMessageBox) document.createElement("promptbox");
+    } catch (XulException xe) {
+      
+    }
     if (bf != null) {
       createBindings();
     }
@@ -156,9 +165,6 @@ public class SecurityController extends AbstractXulEventHandler{
 
   private void createBindings() {
     //User Role Binding
-
-    removeUserConfirmationDialog = (XulDialog) document.getElementById("remove-user-confirmation-dialog");
-    removeRoleConfirmationDialog = (XulDialog) document.getElementById("remove-role-confirmation-dialog");
 
     roleRadioButton = (XulRadio) document.getElementById("role-radio-button");
     userRadioButton = (XulRadio) document.getElementById("user-radio-button");
@@ -197,6 +203,7 @@ public class SecurityController extends AbstractXulEventHandler{
     bf.createBinding(securityUser, "assignedRoles", assignedRoles, "elements");
     bf.createBinding(securityUser, "availableRoles", availableRoles, "elements");
 
+    // Binding to convert role array to a role list object and vice versa
     BindingConvertor<List<UIRepositoryRole>, Object[]> arrayToListRoleConverter = new BindingConvertor<List<UIRepositoryRole>, Object[]>() {
 
       @Override
@@ -226,6 +233,7 @@ public class SecurityController extends AbstractXulEventHandler{
       
     };
 
+    // Binding to convert user array to a user list object and vice versa
     BindingConvertor<List<UIRepositoryUser>, Object[]> arrayToListUserConverter = new BindingConvertor<List<UIRepositoryUser>, Object[]>() {
 
       @Override
@@ -255,6 +263,7 @@ public class SecurityController extends AbstractXulEventHandler{
       
     };
 
+ 
     bf.createBinding(securityUser, "availableSelectedRoles", availableRoles, "selectedItems", arrayToListRoleConverter);
     bf.createBinding(securityUser, "assignedSelectedRoles", assignedRoles, "selectedItems", arrayToListRoleConverter);
     
@@ -280,14 +289,10 @@ public class SecurityController extends AbstractXulEventHandler{
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(assignedRoles,  "selectedIndex", securityUser, "roleUnassignmentPossible", accumulatorButtonConverter);
     bf.createBinding(availableRoles, "selectedIndex", securityUser, "roleAssignmentPossible", accumulatorButtonConverter);
-    
     bf.createBinding(securityUser, "roleUnassignmentPossible", unassignRoleFromUserButton, "!disabled");
     bf.createBinding(securityUser, "roleAssignmentPossible", assignRoleToUserButton, "!disabled");
 
-    bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    
     // Add Role Binding
-
     rolename = (XulTextbox) document.getElementById("role-name");
     roleDescription = (XulTextbox) document.getElementById("role-description");
     availableUsers = (XulListbox) document.getElementById("available-users-list");
@@ -299,18 +304,14 @@ public class SecurityController extends AbstractXulEventHandler{
     bf.createBinding(securityRole, "name", rolename, "value");
     bf.createBinding(securityRole, "description", roleDescription, "value");
     bf.createBinding(securityRole, "assignedUsers", assignedUsers, "elements");
-    bf.createBinding(securityRole, "availableUsers", availableUsers, "elements");
-    
+    bf.createBinding(securityRole, "availableUsers", availableUsers, "elements");    
     bf.createBinding(securityRole, "availableSelectedUsers", availableUsers, "selectedItems", arrayToListUserConverter);
     bf.createBinding(securityRole, "assignedSelectedUsers", assignedUsers, "selectedItems", arrayToListUserConverter);
-
     bf.createBinding(security, "selectedRoleIndex", roleListBox, "selectedIndex");
 
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    
+    bf.setBindingType(Binding.Type.ONE_WAY);    
     bf.createBinding(assignedUsers,  "selectedIndex", securityRole, "userUnassignmentPossible", accumulatorButtonConverter);
-    bf.createBinding(availableUsers, "selectedIndex", securityRole, "userAssignmentPossible", accumulatorButtonConverter);
-    
+    bf.createBinding(availableUsers, "selectedIndex", securityRole, "userAssignmentPossible", accumulatorButtonConverter);    
     bf.createBinding(securityRole, "userUnassignmentPossible", unassignUserFromRoleButton, "!disabled");
     bf.createBinding(securityRole, "userAssignmentPossible", assignUserToRoleButton, "!disabled");
 
@@ -341,19 +342,14 @@ public class SecurityController extends AbstractXulEventHandler{
       bf.setBindingType(Binding.Type.ONE_WAY);
       bf.createBinding(userListBox, "selectedItem", security, "selectedUser");
       bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");
-
       bf.createBinding(roleListBox, "selectedIndex", addUserToRoleButton, "disabled", buttonConverter);
       bf.createBinding(roleListBox, "selectedIndex", removeUserFromRoleButton, "disabled", buttonConverter);
       bf.createBinding(userListBox, "selectedIndex", addRoleToUserButton, "disabled", buttonConverter);
       bf.createBinding(userListBox, "selectedIndex", removeRoleFromUserButton, "disabled", buttonConverter);
-
       bf.createBinding(security, "roleList", roleListBox, "elements").fireSourceChanged();
       bf.createBinding(security, "userList", userListBox, "elements").fireSourceChanged();
-
       bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");
       bf.createBinding(userListBox, "selectedItem", security, "selectedUser");
-      
-     
       roleDetailBinding = bf.createBinding(security, "selectedRole", roleDetailTable, "elements",
           new BindingConvertor<UIRepositoryRole, List<UIRepositoryUser>>() {
 
@@ -476,12 +472,6 @@ public class SecurityController extends AbstractXulEventHandler{
     return "securityController";
   }
 
-  /*
-  public void setCallback(RepositoryExplorerCallback callback) {
-    this.callback = callback;
-  }
-  */
-
   public RepositoryUserInterface getRepositoryUserInterface() {
     return rui;
   }
@@ -524,7 +514,11 @@ public class SecurityController extends AbstractXulEventHandler{
     roleDialog.hide();
   }
 
-
+  /**
+   * addRole method is called when user has click ok on a add role dialog. The method add the 
+   * role
+   * @throws Exception
+   */
   private void addUser() throws Exception {
     if (rui != null) {
       UserInfo userInfo = new UserInfo();
@@ -539,9 +533,10 @@ public class SecurityController extends AbstractXulEventHandler{
         rui.saveUserInfo(userInfo);
         security.addUser(new UIRepositoryUser(userInfo));
       } catch (KettleException ke) {
-        ke.printStackTrace();
-        // TODO Open the message dialog and display the error to the user
-        // Make the decision to either close the dialog or leave the dialog open for the user for correct the error
+        messageBox.setTitle("Error");
+        messageBox.setAcceptLabel("Ok");
+        messageBox.setMessage("Unable to add a user :" + ke.getLocalizedMessage());
+        messageBox.open();
       }
     }
     userDialog.hide();
@@ -557,6 +552,12 @@ public class SecurityController extends AbstractXulEventHandler{
     }
   }
 
+  /**
+   * updateUser method is called when user has click ok on a edit user dialog. The method updates the 
+   * user
+   * @throws Exception
+   */
+
   private void updateUser() throws Exception {
     if (rui != null) {
       UserInfo userInfo = new UserInfo();
@@ -566,13 +567,14 @@ public class SecurityController extends AbstractXulEventHandler{
       userInfo.setPassword(securityUser.getPassword());
       userInfo.setRoles(convertToDomainRoleModel(securityUser.getAssignedRoles()));
       try {
-        rui.updateUser(userInfo); // TODO Change the call to update user
+        rui.updateUser(userInfo);
         security.updateUser(new UIRepositoryUser(userInfo));
         userDetailTable.update();
       } catch (KettleException ke) {
-        ke.printStackTrace();
-        // TODO Open the message dialog and display the error to the user
-        // Make the decision to either close the dialog or leave the dialog open for the user for correct the error
+        messageBox.setTitle("Error");
+        messageBox.setAcceptLabel("Ok");
+        messageBox.setMessage("Unable to update selected user: " + ke.getLocalizedMessage());
+        messageBox.open();
       }
     }
     userDialog.hide();
@@ -597,22 +599,6 @@ public class SecurityController extends AbstractXulEventHandler{
     roleDialog.show();
   }
 
-  public void showRemoveUserConfirmationDialog() {
-    removeUserConfirmationDialog.show();
-  }
-
-  public void showRemoveRoleConfirmationDialog() {
-    removeRoleConfirmationDialog.show();
-  }
-
-  public void closeRemoveUserConfirmationDialog() {
-    removeUserConfirmationDialog.hide();
-  }
-
-  public void closeRemoveRoleConfirmationDialog() {
-    removeRoleConfirmationDialog.hide();
-  }
-
   public void showAddRoleToUserDialog() throws Exception {
     if (rui != null && rui.getRoles() != null) {
       securityUser.clear();
@@ -633,6 +619,12 @@ public class SecurityController extends AbstractXulEventHandler{
     rui.updateRole(security.getSelectedRole().getRoleInfo());
   }
 
+  /**
+   * addRole method is called when user has click ok on a add role dialog. The method add the 
+   * role
+   * @throws Exception
+   */
+
   private void addRole() throws Exception {
     if (rui != null) {
       RoleInfo roleInfo = new RoleInfo();
@@ -645,13 +637,20 @@ public class SecurityController extends AbstractXulEventHandler{
         rui.createRole(roleInfo);
         security.addRole(new UIRepositoryRole(roleInfo));
       } catch (KettleException ke) {
-        ke.printStackTrace();
-        // TODO Open the message dialog and display the error to the user
-        // Make the decision to either close the dialog or leave the dialog open for the user for correct the error
+        messageBox.setTitle("Error");
+        messageBox.setAcceptLabel("Ok");
+        messageBox.setMessage("Unable to add a role: " + ke.getLocalizedMessage());
+        messageBox.open();
       }
     }
     roleDialog.hide();
   }
+
+  /**
+   * updateRole method is called when user has click ok on a edit role dialog. The method updates the 
+   * role
+   * @throws Exception
+   */
 
   private void updateRole() throws Exception {
     if (rui != null) {
@@ -663,32 +662,60 @@ public class SecurityController extends AbstractXulEventHandler{
         rui.updateRole(roleInfo);
         security.updateRole(new UIRepositoryRole(roleInfo));
         roleDetailTable.update();
+        roleDialog.hide();
       } catch (KettleException ke) {
-        ke.printStackTrace();
-        // TODO Open the message dialog and display the error to the user
-        // Make the decision to either close the dialog or leave the dialog open for the user for correct the error
+        messageBox.setTitle("Error");
+        messageBox.setAcceptLabel("Ok");
+        messageBox.setMessage("Unable to update selected role: " + ke.getLocalizedMessage());
+        messageBox.open();
       }
-
     }
-    roleDialog.hide();
   }
 
-  public void removeRole() throws Exception {
-    if (rui != null) {
-      if (security != null && security.getSelectedRole() != null) {
-        try {
-          rui.deleteRole(security.getSelectedRole().getName());
-          security.removeRole(security.getSelectedRole().getName());
-          removeRoleConfirmationDialog.hide();
-        } catch (KettleException ke) {
-          ke.printStackTrace();
-          // TODO Open the message dialog and display the error to the user
-          // Make the decision to either close the dialog or leave the dialog open for the user for correct the error
-        }
+  /**
+   * removeRole method is called when user has click on a remove button in a role deck. It first
+   * displays a confirmation message to the user and once the user selects ok, it remove the role
+   * @throws Exception
+   */
 
+  public void removeRole() throws Exception {
+    confirmBox.setTitle("Security");
+    confirmBox.setMessage("You are about to remove selected role(s). Do you want to continue?");
+    confirmBox.setAcceptLabel("Ok");
+    confirmBox.setCancelLabel("Cancel");
+    confirmBox.addDialogCallback(new XulDialogCallback(){
+
+      public void onClose(XulComponent sender, Status returnCode, Object retVal) {
+         if(returnCode == Status.ACCEPT){
+           if (rui != null) {
+             if (security != null && security.getSelectedRole() != null) {
+               try {
+                 rui.deleteRole(security.getSelectedRole().getName());
+                 security.removeRole(security.getSelectedRole().getName());
+               } catch (KettleException ke) {
+                 messageBox.setTitle("Error");
+                 messageBox.setAcceptLabel("Ok");
+                 messageBox.setMessage("Unable to remove selected role(s) " + ke.getLocalizedMessage());
+                 messageBox.open();
+               }
+             } else {
+               messageBox.setTitle("Error");
+               messageBox.setAcceptLabel("Ok");
+               messageBox.setMessage("No role(s) are selected to remove");
+               messageBox.open();
+             }
+           }
+         } 
       }
-      // TODO Throw exception of display error to the user that there was not selected role to be removed
-    }
+
+      public void onError(XulComponent sender, Throwable t) {
+        messageBox.setTitle("Error");
+        messageBox.setAcceptLabel("Ok");
+        messageBox.setMessage("Unable to remove selected role(s)" + t.getLocalizedMessage());
+        messageBox.open();
+      }      
+    });
+    confirmBox.open();
   }
 
   public void showEditRoleDialog() throws Exception {
@@ -701,25 +728,84 @@ public class SecurityController extends AbstractXulEventHandler{
     }
   }
 
+  /**
+   * removeUser method is called when user has click on a remove button in a user deck. It first
+   * displays a confirmation message to the user and once the user selects ok, it remove the user
+   * @throws Exception
+   */
   public void removeUser() throws Exception {
-    if (rui != null) {
-      try {
-        rui.delUser(security.getSelectedUser().getName());
-        security.removeUser(security.getSelectedUser().getName());
-        removeUserConfirmationDialog.hide();
-      } catch (KettleException ke) {
-        ke.printStackTrace();
-        // TODO Open the message dialog and display the error to the user
-        // Make the decision to either close the dialog or leave the dialog open for the user for correct the error
+    confirmBox.setTitle("Security");
+    confirmBox.setMessage("You are about to remove selected user(s). Do you want to continue?");
+    confirmBox.setAcceptLabel("Ok");
+    confirmBox.setCancelLabel("Cancel");
+    confirmBox.addDialogCallback(new XulDialogCallback(){
+
+      public void onClose(XulComponent sender, Status returnCode, Object retVal) {
+         if(returnCode == Status.ACCEPT){
+           if (rui != null) {
+             if (security != null && security.getSelectedUser() != null) {
+               try {
+                 rui.delUser(security.getSelectedUser().getName());
+                 security.removeUser(security.getSelectedUser().getName());
+               } catch (KettleException ke) {
+                 messageBox.setTitle("Error");
+                 messageBox.setAcceptLabel("Ok");
+                 messageBox.setMessage("Unable to remove selected user(s) " + ke.getLocalizedMessage());
+                 messageBox.open();
+               }
+             } else {
+               messageBox.setTitle("Error");
+               messageBox.setAcceptLabel("Ok");
+               messageBox.setMessage("No user(s) are selected to remove");
+               messageBox.open();
+             }
+           }
+         } 
       }
-    }
+      public void onError(XulComponent sender, Throwable t) {
+        messageBox.setTitle("Error");
+        messageBox.setAcceptLabel("Ok");
+        messageBox.setMessage("Unable to remove selected user(s)" + t.getLocalizedMessage());
+        messageBox.open();
+      }      
+    });
+    confirmBox.open();
   }
+
   public void changeToRoleDeck() {
     security.setSelectedDeck(ObjectRecipient.Type.ROLE);
   }
 
   public void changeToUserDeck() {
     security.setSelectedDeck(ObjectRecipient.Type.USER);
+  }
+
+
+  /**
+   * saveUser method is called when the user click on the ok button of a Add or Edit User dialog
+   * Depending on the mode it calls add of update user method
+   * @throws Exception
+   */
+
+  public void saveUser() throws Exception {
+    if(securityUser.getMode().equals(Mode.ADD)) {
+      addUser();
+    } else {
+      updateUser();
+    }
+  }
+
+  /**
+   * saveRole method is called when the user click on the ok button of a Add or Edit Role dialog
+   * Depending on the mode it calls add of update role method
+   * @throws Exception
+   */
+  public void saveRole() throws Exception{
+    if(securityRole.getMode().equals(Mode.ADD)) {
+      addRole();
+    } else {
+      updateRole();
+    } 
   }
 
   private List<UIRepositoryRole> convertToUIRoleModel(List<RoleInfo> roles) {
@@ -752,21 +838,5 @@ public class SecurityController extends AbstractXulEventHandler{
       roleSet.add(rr.getRoleInfo());
     }
     return roleSet;
-  }
-
-  public void saveUser() throws Exception {
-    if(securityUser.getMode().equals(Mode.ADD)) {
-      addUser();
-    } else {
-      updateUser();
-    }
-  }
-
-  public void saveRole() throws Exception{
-    if(securityRole.getMode().equals(Mode.ADD)) {
-      addRole();
-    } else {
-      updateRole();
-    } 
   }
 }

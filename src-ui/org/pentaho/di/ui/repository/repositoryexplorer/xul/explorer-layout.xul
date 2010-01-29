@@ -487,39 +487,6 @@
        </groupbox>
   </dialog>
   <!--  ###############################################################################   -->
-  <!--     REMOVE USER CONFIRMATION DIALOG: Dialog to display the confirmation            -->
-  <!--     message to the user before deleting the user from the list                     -->
-  <!--  ###############################################################################   -->    
-  <dialog id="remove-user-confirmation-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel" buttons="accept, cancel" ondialogcancel="securityController.closeRemoveUserConfirmationDialog()"
-	  ondialogaccept="securityController.removeUser()" buttonalign="right" title="Delete User Confirmation" 
-  		xmlns:pen="http://www.pentaho.org/2008/xul" height="120" width="220">
-       <vbox>
-        <label value="Are you sure you want to delete this user"/>
-      </vbox>
-  </dialog>
-  <!--  ###############################################################################   -->
-  <!--     REMOVE ROLE CONFIRMATION DIALOG: Dialog to display the confirmation            -->
-  <!--     message to the role before deleting the role from the list                     -->
-  <!--  ###############################################################################   -->    
-  <dialog id="remove-role-confirmation-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel" buttons="accept, cancel" ondialogcancel="securityController.closeRemoveRoleConfirmationDialog()"
-	  ondialogaccept="securityController.removeRole()" buttonalign="right" title="Delete Role Confirmation" 
-  		xmlns:pen="http://www.pentaho.org/2008/xul" height="120" width="220">
-       <vbox>
-        <label value="Are you sure you want to delete this role"/>
-      </vbox>
-  </dialog>
-  <!--  ###############################################################################   -->
-  <!--     REMOVE ACL CONFIRMATION DIALOG: Dialog to display the confirmation            -->
-  <!--     message to the acl before deleting the acl from the list                     -->
-  <!--  ###############################################################################   -->    
-  <dialog id="remove-acl-confirmation-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel" buttons="accept, cancel" ondialogcancel="permissionsController.closeRemoveAclConfirmationDialog()"
-	  ondialogaccept="permissionsController.removeAcl()" buttonalign="right" title="Delete Acl Confirmation" 
-  		xmlns:pen="http://www.pentaho.org/2008/xul" height="120" width="220">
-       <vbox>
-        <label value="Are you sure you want to delete this acl"/>
-      </vbox>
-  </dialog>
-  <!--  ###############################################################################   -->
   <!--     APPLY ACL CONFIRMATION DIALOG: Dialog to display the confirmation              -->
   <!--     message to the user. User needs to select either of the two options or click   -->
   <!--         cancel   												                  -->
@@ -534,14 +501,4 @@
        	<radio id="apply-recursive-radio-button" label="Apply changes to this folder, subfolders and files" command="permissionsController.setApplyRecursive()" />
       </vbox>
   </dialog>  
-  <!--  ###############################################################################   -->
-  <!--     MESSAGE BOX FOR ERROR OR SUCCESS: Dialog to display the error or success       -->
-  <!--    mesages 																		  -->
-  <!--  ###############################################################################   -->    
-  <dialog id="message-dialog" buttonlabelaccept="Ok" buttons="accept" ondialogaccept="permissionsController.closeMessageDialog()" buttonalign="right" title="Security" 
-  		xmlns:pen="http://www.pentaho.org/2008/xul" height="180" width="320">
-       <vbox>
-        <label id="message-to-display" value=""/>
-      </vbox>
-  </dialog>    
 </window>  

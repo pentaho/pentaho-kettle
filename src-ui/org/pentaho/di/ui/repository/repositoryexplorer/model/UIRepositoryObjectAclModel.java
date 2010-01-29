@@ -29,14 +29,14 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
   private boolean roleAssignmentPossible;
   private boolean roleUnassignmentPossible;
 
-  public UIRepositoryObjectAclModel() {
+  public UIRepositoryObjectAclModel(UIRepositoryObjectAcls acls) {
     availableUserList = new ArrayList<UIRepositoryUser>();
     availableRoleList = new ArrayList<UIRepositoryRole>();
     masterAvailableUserList = new ArrayList<UIRepositoryUser>();
     masterAvailableRoleList = new ArrayList<UIRepositoryRole>();
     aclsToAdd = new ArrayList<UIRepositoryObjectAcl>(); 
     aclsToRemove = new ArrayList<UIRepositoryObjectAcl>();
-    selectedAcls = new UIRepositoryObjectAcls(); 
+    selectedAcls = acls; 
   }
 
   public List<UIRepositoryObjectAcl> getAclsToAdd() {
@@ -418,12 +418,7 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
       }
     }
     this.firePropertyChange("availableUserList", null, availableUserList); //$NON-NLS-1$
-    if(userAssignmentPossible && availableUserList.size() > 0) {
-      this.firePropertyChange("userAssignmentPossible", null, true); //$NON-NLS-1$
-    } else {
-      this.firePropertyChange("userAssignmentPossible", null, false); //$NON-NLS-1$
-    }
-    
+    fireAssignPropertyChangeEvent(userAssignmentPossible,availableUserList, Type.USER);
   }
 
   private void removeFromAvailableRoles(String name) {
@@ -434,12 +429,7 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
       }
     }
     this.firePropertyChange("availableRoleList", null, availableRoleList); //$NON-NLS-1$
-    if(roleAssignmentPossible && availableRoleList.size() > 0) {
-      this.firePropertyChange("roleAssignmentPossible", null, true); //$NON-NLS-1$
-    } else {
-      this.firePropertyChange("roleAssignmentPossible", null, false); //$NON-NLS-1$
-    }
-
+    fireAssignPropertyChangeEvent(roleAssignmentPossible,availableRoleList, Type.ROLE);
   }
 
   private void addToAvailableUsers(String name) {
@@ -450,11 +440,7 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
       }
     }   
     this.firePropertyChange("availableUserList", null, availableUserList); //$NON-NLS-1$
-    if(userUnassignmentPossible && getSelectedUserList().size() > 0) {
-      this.firePropertyChange("userUnassignmentPossible", null, true); //$NON-NLS-1$
-    } else {
-      this.firePropertyChange("userUnassignmentPossible", null, false); //$NON-NLS-1$
-    }
+    fireUnassignPropertyChangeEvent(userUnassignmentPossible,getSelectedUserList(), Type.USER);
   }
 
   private void addToAvailableRoles(String name) {
@@ -465,11 +451,7 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
       }
     }   
     this.firePropertyChange("availableRoleList", null, availableRoleList); //$NON-NLS-1$
-    if(roleUnassignmentPossible && getSelectedRoleList().size() > 0) {
-      this.firePropertyChange("roleUnassignmentPossible", null, true); //$NON-NLS-1$
-    } else {
-      this.firePropertyChange("roleUnassignmentPossible", null, false); //$NON-NLS-1$
-    }
+    fireUnassignPropertyChangeEvent(roleUnassignmentPossible,getSelectedRoleList(), Type.ROLE);
   }
 
   public boolean findByRecipientName(String recipientName) {
@@ -499,14 +481,8 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
   }
   
   public void updateSelectedAcls() {
-    // Add the acls to be added to the selected acls
-    for(UIRepositoryObjectAcl acl:aclsToAdd) {
-      selectedAcls.addAcl(acl);
-    }
-    // Add the acls to be removed to the selected acls    
-    for(UIRepositoryObjectAcl acl:aclsToRemove) {
-      selectedAcls.removeAcl(acl.getRecipientName());
-    }
+    selectedAcls.addAcls(aclsToAdd);
+    selectedAcls.removeAcls(aclsToRemove);
   }
   
   private UIRepositoryRole getRole(String recipientName) {
@@ -554,5 +530,39 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
       }
     }
     return -1; 
+  }
+  @SuppressWarnings("unchecked") 
+  private void fireUnassignPropertyChangeEvent(boolean isPossible, List list, Type type) {
+    if(type == Type.USER) {
+      if(isPossible && list.size() > 0) {
+        this.firePropertyChange("userUnassignmentPossible", null, true); //$NON-NLS-1$
+      } else {
+        this.firePropertyChange("userUnassignmentPossible", null, false); //$NON-NLS-1$
+      }
+    } else {
+      if(isPossible && list.size() > 0) {
+        this.firePropertyChange("roleUnassignmentPossible", null, true); //$NON-NLS-1$
+      } else {
+        this.firePropertyChange("roleUnassignmentPossible", null, false); //$NON-NLS-1$
+      }
+    }
+  }
+  
+  @SuppressWarnings("unchecked")
+  private void fireAssignPropertyChangeEvent(boolean isPossible, List list, Type type) {
+    if(type == Type.USER) {
+      if(isPossible && list.size() > 0) {
+        this.firePropertyChange("userAssignmentPossible", null, true); //$NON-NLS-1$
+      } else {
+        this.firePropertyChange("userAssignmentPossible", null, false); //$NON-NLS-1$
+      }
+    } else {
+      if(isPossible && list.size() > 0) {
+        this.firePropertyChange("roleAssignmentPossible", null, true); //$NON-NLS-1$
+      } else {
+        this.firePropertyChange("roleAssignmentPossible", null, false); //$NON-NLS-1$
+      }
+
+    }
   }
 }

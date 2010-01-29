@@ -59,23 +59,38 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     this.firePropertyChange("acls", prevousVal, getAcls());
   }
 
+  public void addAcls(List<UIRepositoryObjectAcl> aclsToAdd) {
+    for (UIRepositoryObjectAcl acl : aclsToAdd) {
+      addAcl(acl);
+    }
+    this.firePropertyChange("acls", null, getAcls());
+    // Setting the selected index to the first item in the list
+    if(obj.getAces().size() > 0) {
+      List<UIRepositoryObjectAcl> aclList = new ArrayList<UIRepositoryObjectAcl>();
+      aclList.add(new UIRepositoryObjectAcl(getAceAtIndex(0)));
+      setSelectedAclList(aclList);
+    }
+    setRemoveEnabled((!obj.isEntriesInheriting() && !isEmpty()));
+    setModelDirty(true);
+  }
   public void addAcl(UIRepositoryObjectAcl aclToAdd) {
     this.obj.getAces().add(aclToAdd.getAce());
-    setRemoveEnabled((!obj.isEntriesInheriting() && getSelectedAclList() != null && getSelectedAclList().size() > 0));
-    this.firePropertyChange("acls", null, getAcls());
-    // Setting the selected index
-    List<UIRepositoryObjectAcl> aclList = new ArrayList<UIRepositoryObjectAcl>();
-    aclList.add(aclToAdd);
-    setSelectedAclList(aclList);
-    setModelDirty(true);
   }
 
   public void removeAcls(List<UIRepositoryObjectAcl> aclsToRemove) {
     for (UIRepositoryObjectAcl acl : aclsToRemove) {
       removeAcl(acl.getRecipientName());
     }
+
     this.firePropertyChange("acls", null, getAcls());
-    setRemoveEnabled((!obj.isEntriesInheriting() && getSelectedAclList() != null && getSelectedAclList().size() > 0));
+    if(obj.getAces().size() > 0) {
+      List<UIRepositoryObjectAcl> aclList = new ArrayList<UIRepositoryObjectAcl>();
+      aclList.add(new UIRepositoryObjectAcl(getAceAtIndex(0)));
+      setSelectedAclList(aclList);
+    } else {
+      setSelectedAclList(null);
+    }
+    setRemoveEnabled((!obj.isEntriesInheriting() && !isEmpty()));
     setModelDirty(true);
   }
 
@@ -88,18 +103,12 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
         break;
       }
     }
-    int index = getIndex(aceToRemove);
     obj.getAces().remove(aceToRemove);
-    // Set the selected index if there is something left in the list
-    ObjectAce ace = getAceAtIndex(index -1);
-    if(ace != null) {
-      // Setting the selected index
-      List<UIRepositoryObjectAcl> aclList = new ArrayList<UIRepositoryObjectAcl>();
-      aclList.add(new UIRepositoryObjectAcl(ace));
-      setSelectedAclList(aclList);
-    }
   }
 
+  public void removeSelectedAcls() {
+    removeAcls(getSelectedAclList());
+  }
   public void updateAcl(UIRepositoryObjectAcl aclToUpdate) {
     List<ObjectAce> aces = obj.getAces();
     for (ObjectAce ace : aces) {
@@ -137,10 +146,9 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     selectedAclList.clear();
     if(list != null) {
       selectedAclList.addAll(list);
-      this.firePropertyChange("selectedAclList", previousVal, list); //$NON-NLS-1$
+      this.firePropertyChange("selectedAclList", null, list); //$NON-NLS-1$
     }
-    
-    setRemoveEnabled((!isEntriesInheriting() && getSelectedAclList() != null && getSelectedAclList().size() > 0));
+    setRemoveEnabled((!isEntriesInheriting() && !isEmpty()));
   }
 
   public boolean isEntriesInheriting() {
@@ -155,7 +163,7 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
       boolean previousVal = isEntriesInheriting();
       obj.setEntriesInheriting(entriesInheriting);
       this.firePropertyChange("entriesInheriting", previousVal, entriesInheriting); //$NON-NLS-1$
-      setRemoveEnabled((!entriesInheriting && getSelectedAclList() != null && getSelectedAclList().size() > 0));
+      setRemoveEnabled((!entriesInheriting && !isEmpty()));
       setModelDirty(true);
     }
   }
@@ -177,7 +185,7 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     return removeEnabled;
   }
 
-  private int getIndex(ObjectAce ace) {
+  public int getAceIndex(ObjectAce ace) {
     List<ObjectAce> aceList = obj.getAces();
     for (int i = 0; i < aceList.size(); i++) {
       if (ace.equals(aceList.get(i))) {
@@ -187,7 +195,7 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     return -1;
   }
 
-  private ObjectAce getAceAtIndex(int index) {
+  public ObjectAce getAceAtIndex(int index) {
     if (index >= 0) {
       return obj.getAces().get(index);
     } else {
@@ -208,5 +216,9 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     setModelDirty(false);
     setAcls(null);
     setSelectedAclList(null);
+  }
+  
+  private boolean isEmpty() {
+    return getSelectedAclList() == null || getSelectedAclList().size() <= 0;
   }
 }
