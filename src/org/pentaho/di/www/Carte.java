@@ -13,6 +13,7 @@
 package org.pentaho.di.www;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
@@ -49,7 +50,7 @@ public class Carte
 		
         TransformationMap transformationMap = new TransformationMap();
         JobMap jobMap = new JobMap();
-        List<SlaveServerDetection> detections = new ArrayList<SlaveServerDetection>();
+        List<SlaveServerDetection> detections = Collections.synchronizedList(new ArrayList<SlaveServerDetection>());
         SocketRepository socketRepository = new SocketRepository();
         
         Trans trans = generateTestTransformation();
