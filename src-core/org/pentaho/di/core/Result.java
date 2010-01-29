@@ -14,9 +14,9 @@ package org.pentaho.di.core;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
@@ -70,7 +70,7 @@ public class Result implements Cloneable
 		
 		exitStatus=0;
 		rows=new ArrayList<RowMetaAndData>();
-		resultFiles = new Hashtable<String, ResultFile>();
+		resultFiles = new ConcurrentHashMap<String, ResultFile>();
 		
 		stopped=false;
 		entryNr=0;
@@ -101,7 +101,7 @@ public class Result implements Cloneable
 
 			if (resultFiles!=null)
 			{
-				Map<String, ResultFile> clonedFiles = new Hashtable<String, ResultFile>();
+				Map<String, ResultFile> clonedFiles = new ConcurrentHashMap<String, ResultFile>();
                 Collection<ResultFile> files = resultFiles.values();
                 for (ResultFile file : files)
                 {
@@ -118,6 +118,24 @@ public class Result implements Cloneable
 		}
 	}
 	
+	public String getReadWriteThroughput(int seconds)
+	{
+		String throughput = null;
+		if (seconds != 0)
+		{
+			String readClause = null, writtenClause = null;
+			if (getNrLinesRead() > 0) {
+				readClause = String.format("lines read: %d ( %d lines/s)", getNrLinesRead(), (getNrLinesRead()/seconds));
+			}
+			if (getNrLinesWritten() > 0) {
+				writtenClause = String.format("%slines written: %d ( %d lines/s)", (getNrLinesRead() > 0 ? "; " : ""), getNrLinesWritten(), (getNrLinesWritten()/seconds));
+			}
+			if (readClause != null || writtenClause != null) {
+				throughput = String.format("Transformation %s%s", (getNrLinesRead() > 0 ? readClause : ""), (getNrLinesWritten() > 0 ? writtenClause : ""));
+			}
+		}
+		return throughput;
+	}
 	public String toString()
 	{
 		return "nr="+entryNr+", errors="+nrErrors+", exit_status="+exitStatus+(stopped?" (Stopped)":""+", result="+result); 
