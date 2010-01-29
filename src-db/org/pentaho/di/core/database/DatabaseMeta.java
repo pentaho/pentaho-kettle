@@ -1631,6 +1631,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         if (fieldname.indexOf(']')>=0) return true; 
         if (fieldname.indexOf('%')>=0) return true; 
         if (fieldname.indexOf('@')>=0) return true; 
+        if (fieldname.indexOf('?')>=0) return true; 
         return false;
     }
     
