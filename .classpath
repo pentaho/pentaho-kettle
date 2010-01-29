@@ -83,7 +83,6 @@
 	<classpathentry kind="lib" path="libext/trilead-ssh2-build213.jar"/>
 	<classpathentry kind="lib" path="libext/web/activation.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.38.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/vertica_2.5_jdk_5.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/georss-rome-0.9.8.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/jdom.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/rome-0.9.jar"/>
@@ -114,5 +113,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-2.5.4.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/kettle-vfs-20091118.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/vertica_3.0_jdk_5.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
