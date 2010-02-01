@@ -12,6 +12,8 @@
 */
 package org.pentaho.di.ui.spoon;
 
+import java.util.Locale;
+
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -63,6 +65,8 @@ public class TransFileListener implements FileListener {
             spoon.addTransGraph(transMeta);
             spoon.sharedObjectsFileMap.put(transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects());
 
+
+            SpoonPerspectiveManager.getInstance().activatePerspective(MainSpoonPerspective.class);
             spoon.refreshTree();
             spoon.refreshHistory();
             return true;
@@ -90,5 +94,34 @@ public class TransFileListener implements FileListener {
     public void syncMetaName(EngineMetaInterface meta,String name) {
     	((TransMeta)meta).setName(name);
     }
+
+    public boolean accepts(String fileName) {
+      if(fileName == null || fileName.indexOf('.') == -1){
+        return false;
+      }
+      String extension = fileName.substring(fileName.lastIndexOf('.')+1);
+      return extension.equals("ktr");
+    }
+    
+    public boolean acceptsXml(String nodeName){
+      if(nodeName.equals("transformation")){
+        return true;
+      }
+      return false;
+    }
+
+    public String[] getFileTypeDisplayNames(Locale locale) {
+      return new String[]{"Transformations", "XML"};
+    }
+
+    public String getRootNodeName() {
+      return "transformation";
+    }
+
+    public String[] getSupportedExtensions() {
+      return new String[]{"ktr", "xml"};
+    }
+    
+    
 
 }

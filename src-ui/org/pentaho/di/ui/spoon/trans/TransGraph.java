@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Timer;
@@ -154,12 +155,16 @@ import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
+import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulLoader;
+import org.pentaho.ui.xul.components.XulToolbarbutton;
+import org.pentaho.ui.xul.containers.XulToolbar;
+import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.menu.MenuChoice;
-import org.pentaho.xul.toolbar.XulToolbar;
-import org.pentaho.xul.toolbar.XulToolbarButton;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc.
@@ -169,7 +174,7 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
  * @since 17-mei-2003
  * 
  */
-public class TransGraph extends Composite implements Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener, MouseWheelListener, KeyListener {
+public class TransGraph extends Composite implements XulEventHandler, Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener, MouseWheelListener, KeyListener {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private LogChannelInterface log;
@@ -384,7 +389,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     mainComposite.setLayout(new FillLayout());
     FormData fdMainComposite = new FormData();
     fdMainComposite.left = new FormAttachment(0, 0);
-    fdMainComposite.top = new FormAttachment((Control) toolbar.getNativeObject(), 0);
+    fdMainComposite.top = new FormAttachment((Control) toolbar.getManagedObject(), 0);
     fdMainComposite.right = new FormAttachment(100, 0);
     fdMainComposite.bottom = new FormAttachment(100, 0);
     mainComposite.setLayoutData(fdMainComposite);
@@ -628,11 +633,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
       }
     });
 
-    // Keyboard shortcuts...
-    // 
-    canvas.addKeyListener(this);
-    this.addKeyListener(this);
-    canvas.addKeyListener(spoon.defKeys);
     
     setBackground(GUIResource.getInstance().getColorBackground());
     
@@ -1500,18 +1500,23 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 		});
 	}
 
-private void addToolBar() {
+  private void addToolBar() {
 
     try {
-      toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_TOOLBAR, TransGraph.this, TransGraph.this, new XulMessages());
-      ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
-      toolBar.pack();
+      XulLoader loader = new SwtXulLoader();
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages", LanguageChoice.getInstance().getDefaultLocale());
+      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_TOOLBAR, bundle);
+      xulDomContainer.addEventHandler(this);
+      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
+
+      ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
+      swtToolbar.pack();
       
       // Hack alert : more XUL limitations...
       //
-      ToolItem sep = new ToolItem(toolBar, SWT.SEPARATOR);
+      ToolItem sep = new ToolItem(swtToolbar, SWT.SEPARATOR);
 
-      zoomLabel = new Combo(toolBar, SWT.DROP_DOWN);
+      zoomLabel = new Combo(swtToolbar, SWT.DROP_DOWN);
       zoomLabel.setItems(TransPainter.magnificationDescriptions);
       zoomLabel.addSelectionListener(new SelectionAdapter() {
         public void widgetSelected(SelectionEvent arg0) {
@@ -1532,18 +1537,11 @@ private void addToolBar() {
 
       sep.setWidth(80);
       sep.setControl(zoomLabel);
-      toolBar.pack();
-
-      // Add a few default key listeners
-      //
-      toolBar.addKeyListener(spoon.defKeys);
-
-      addToolBarListeners();
-      toolBar.layout(true, true);
+      swtToolbar.pack();
     } catch (Throwable t) {
-      log.logError(Const.getStackTracker(t));
+      log.logError(toString(), Const.getStackTracker(t));
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
-    		  BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR), new Exception(t));
+          BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR), new Exception(t));
     }
   }
 
@@ -1571,28 +1569,6 @@ private void addToolBar() {
       mb.open();
     }
     redraw();
-  }
-
-  public void addToolBarListeners() {
-    try {
-      // first get the XML document
-      URL url = XulHelper.getAndValidate(XUL_FILE_TRANS_TOOLBAR_PROPERTIES);
-      Properties props = new Properties();
-      props.load(url.openStream());
-      String ids[] = toolbar.getMenuItemIds();
-      for (int i = 0; i < ids.length; i++) {
-        String methodName = (String) props.get(ids[i]);
-        if (methodName != null) {
-          toolbar.addMenuListener(ids[i], this, methodName);
-
-        }
-      }
-
-    } catch (Throwable t) {
-      t.printStackTrace();
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
-    		  BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_TOOLBAR_PROPERTIES), new Exception(t));
-    }
   }
 
   protected void hideToolTips() {
@@ -3087,10 +3063,6 @@ private void addToolBar() {
     return ti != null;
   }
 
-  public void newFileDropDown() {
-    spoon.newFileDropDown(toolbar);
-  }
-
   public void openFile() {
     spoon.openFile();
   }
@@ -3191,6 +3163,7 @@ private void addToolBar() {
       disposeExtraView();
     }
   }
+  
 
   private void disposeExtraView() {
 
@@ -3199,10 +3172,10 @@ private void addToolBar() {
     sashForm.layout();
     sashForm.setWeights(new int[] { 100, });
 
-    XulToolbarButton button = toolbar.getButtonById("trans-show-results");
-    button.setImage(GUIResource.getInstance().getImageShowResults());
-    button.setHint(BaseMessages.getString(PKG, "Spoon.Tooltip.ShowExecutionResults"));
-
+    XulToolbarbutton button = (XulToolbarbutton) toolbar.getElementById("trans-show-results");
+    button.setTooltiptext(BaseMessages.getString(PKG, "Spoon.Tooltip.ShowExecutionResults"));
+    ToolItem toolItem = (ToolItem) button.getManagedObject();
+    toolItem.setImage(GUIResource.getInstance().getImageShowResults());
   }
 
   private void minMaxExtraView() {
@@ -3459,10 +3432,10 @@ private void addToolBar() {
 
   public void addAllTabs() {
 
-	CTabItem tabItemSelection = null;
-	if (extraViewTabFolder!=null && !extraViewTabFolder.isDisposed()) {
-		tabItemSelection = extraViewTabFolder.getSelection();
-	}
+    CTabItem tabItemSelection = null;
+    if (extraViewTabFolder!=null && !extraViewTabFolder.isDisposed()) {
+      tabItemSelection = extraViewTabFolder.getSelection();
+    }
 
     transHistoryDelegate.addTransHistory();
     transLogDelegate.addTransLog();
@@ -3470,15 +3443,15 @@ private void addToolBar() {
     transPerfDelegate.addTransPerf();
     
     if (tabItemSelection!=null) {
-    	extraViewTabFolder.setSelection(tabItemSelection);
+      extraViewTabFolder.setSelection(tabItemSelection);
     } else {
-    	extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab());
+      extraViewTabFolder.setSelection(transGridDelegate.getTransGridTab());
     }
     
-    XulToolbarButton button = toolbar.getButtonById("trans-show-results");
-    button.setImage(GUIResource.getInstance().getImageHideResults());
-    button.setHint(BaseMessages.getString(PKG, "Spoon.Tooltip.HideExecutionResults"));
-
+    XulToolbarbutton button = (XulToolbarbutton) toolbar.getElementById("trans-show-results");
+    button.setTooltiptext("Spoon.Tooltip.HideExecutionResults");
+    ToolItem toolItem = (ToolItem) button.getManagedObject();
+    toolItem.setImage(GUIResource.getInstance().getImageHideResults());
   }
 
   public synchronized void debug(TransExecutionConfiguration executionConfiguration, TransDebugMeta transDebugMeta) {
@@ -3649,64 +3622,55 @@ private void addToolBar() {
   }
 
   public synchronized void setControlStates() {
-	if (this.isDisposed()) return;
-	if (getDisplay().isDisposed()) return;
-	
-    getDisplay().asyncExec(new Runnable() {
+    if (getDisplay().isDisposed()) return;
+    
+      getDisplay().asyncExec(new Runnable() {
 
-      public void run() {
-        // Start/Run button...
-        //
-        XulToolbarButton runButton = toolbar.getButtonById("trans-run");
-        if (runButton != null) {
-          runButton.setEnable(!running);
+        public void run() {
+          // Start/Run button...
+          //
+          XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("trans-run");
+          if (runButton != null) {
+            runButton.setDisabled(running);
+          }
+
+          // Pause button...
+          //
+          XulToolbarbutton pauseButton = (XulToolbarbutton) toolbar.getElementById("trans-pause");
+          if (pauseButton != null) {
+            pauseButton.setDisabled(!running);
+            pauseButton.setLabel(pausing ? RESUME_TEXT : PAUSE_TEXT);
+            pauseButton.setTooltiptext(pausing ? BaseMessages.getString(PKG, "Spoon.Tooltip.ResumeTranformation") : BaseMessages
+                .getString(PKG, "Spoon.Tooltip.PauseTranformation"));
+          }
+
+          // Stop button...
+          //
+          XulToolbarbutton stopButton = (XulToolbarbutton) toolbar.getElementById("trans-stop");
+          if (stopButton != null) {
+            stopButton.setDisabled(!running);
+          }
+
+          // Debug button...
+          //
+          XulToolbarbutton debugButton = (XulToolbarbutton) toolbar.getElementById("trans-debug");
+          if (debugButton != null) {
+            debugButton.setDisabled(running);
+          }
+
+          // Preview button...
+          //
+          XulToolbarbutton previewButton = (XulToolbarbutton) toolbar.getElementById("trans-preview");
+          if (previewButton != null) {
+            previewButton.setDisabled(running);
+          }
+
+          // TODO: enable/disable Transformation menu entries too
         }
 
-        // Pause button...
-        //
-        XulToolbarButton pauseButton = toolbar.getButtonById("trans-pause");
-        if (pauseButton != null) {
-          pauseButton.setEnable(running);
-          pauseButton.setText(pausing ? RESUME_TEXT : PAUSE_TEXT);
-          pauseButton.setHint(pausing ? BaseMessages.getString(PKG, "Spoon.Tooltip.ResumeTranformation") : 
-        	  BaseMessages.getString(PKG, "Spoon.Tooltip.PauseTranformation"));
-        }
+      });
 
-        // Stop button...
-        //
-        XulToolbarButton stopButton = toolbar.getButtonById("trans-stop");
-        if (stopButton != null) {
-          stopButton.setEnable(running);
-        }
-
-        // Debug button...
-        //
-        XulToolbarButton debugButton = toolbar.getButtonById("trans-debug");
-        if (debugButton != null) {
-          debugButton.setEnable(!running);
-        }
-
-        // Preview button...
-        //
-        XulToolbarButton previewButton = toolbar.getButtonById("trans-preview");
-        if (previewButton != null) {
-          previewButton.setEnable(!running);
-        }
-
-        // version browser button...
-        //
-        XulToolbarButton versionsButton = toolbar.getButtonById("browse-versions");
-        if (versionsButton != null) {
-          boolean hasRepository = spoon.rep!=null;
-          boolean enabled = hasRepository && spoon.rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions(); 
-          versionsButton.setEnable(enabled);
-        }
-
-      }
-
-    });
-
-  }
+    }
 
   private synchronized void prepareTrans(final Thread parentThread, final String[] args) {
     Runnable runnable = new Runnable() {
@@ -4054,5 +4018,37 @@ private void addToolBar() {
 			
 			runThread.addRowListener(rowListener);
 		}
-	}
+	}  
+	
+	/* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
+   */
+  public String getName() {
+    return "transgraph";
+  }
+  
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
+   */
+  public XulDomContainer getXulDomContainer() {
+    return null;
+  }
+  
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
+   */
+  public void setName(String arg0) {
+    
+  }
+  
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
+   */
+  public void setXulDomContainer(XulDomContainer arg0) {
+    
+  }
+	
+  public boolean canHandleSave() {
+    return true;
+  }
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
+<window id="preview-rows" title="Preview Rows"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="previewRows.init()"
+    xmlns:pen="http://www.pentaho.org/2008/xul" >
+     
+    <dialog width="400" height="200" id="previewRowsDialog" title="Examine preview data" appicon="ui/images/cnc.png"
+     buttons="accept"
+     ondialogaccept="previewRows.accept()">
+		<vbox flex="1">
+			<label id="rowCountLabel" value=""  pen:binding="rowCount"/>
+			<tree flex="1" editable="false" id="table_data">
+				<treecols>
+					<treecol label="#" flex="1" editable="false"/>  
+					<treecol label="col_a" flex="1" editable="false"/>
+					<treecol label="col_b" flex="1" editable="false"/>
+				</treecols>
+				<treechildren>
+					<treeitem>
+						<treerow>
+							<treecell label="1"/>
+							<treecell label="a"/>
+							<treecell label="b"/>
+						</treerow>
+					</treeitem>
+					<treeitem>
+						<treerow>
+							<treecell label="2"/>
+							<treecell label="c"/>
+							<treecell label="d"/>
+						</treerow>
+					</treeitem>
+					<treeitem>
+						<treerow>
+							<treecell label="3"/>
+							<treecell label="e"/>
+							<treecell label="f"/>
+						</treerow>
+					</treeitem>
+				</treechildren>
+			</tree>
+		</vbox>
+	</dialog>
+</window>

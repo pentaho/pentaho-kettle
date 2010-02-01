@@ -12,15 +12,27 @@
 */
 package org.pentaho.di.ui.spoon;
 
+import java.io.File;
+import java.util.Locale;
+
 import org.pentaho.di.core.EngineMetaInterface;
 import org.w3c.dom.Node;
 
 public interface FileListener {
 
-    public boolean open(Node transNode, String fname, boolean importfile);
+  public boolean open(Node transNode, String fname, boolean importfile);
 
-    public boolean save(EngineMetaInterface meta, String fname,boolean isExport);
-    
-    public void syncMetaName(EngineMetaInterface meta,String name);
-
+  public boolean save(EngineMetaInterface meta, String fname,boolean isExport);
+  
+  public void syncMetaName(EngineMetaInterface meta,String name);
+  
+  public boolean accepts(String fileName);
+  
+  public boolean acceptsXml(String nodeName);
+  
+  public String[] getSupportedExtensions();
+  
+  public String[] getFileTypeDisplayNames(Locale locale);
+  
+  public String getRootNodeName();
 }

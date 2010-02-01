@@ -839,5 +839,9 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public boolean canHandleSave(){
+	  return false;
+	}
 
 }

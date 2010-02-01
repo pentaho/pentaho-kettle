@@ -387,8 +387,7 @@ public class JobHistoryDelegate extends SpoonDelegate {
 				// Add a few default key listeners
 				//
 				ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
-				toolBar.addKeyListener(spoon.defKeys);
-				
+
 				addToolBarListeners();
 		        toolBar.layout(true, true);
 			} catch (Throwable t ) {

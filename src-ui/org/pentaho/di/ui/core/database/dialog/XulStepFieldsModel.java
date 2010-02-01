@@ -16,25 +16,44 @@
  * 
  * Author: Ezequiel Cuellar
  */
-
 package org.pentaho.di.ui.core.database.dialog;
 
-import java.util.List;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.ui.xul.util.AbstractModelList;
 
-import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.database.DatabaseMeta;
+public class XulStepFieldsModel extends XulEventSourceAdapter {
 
-/**
- * This class has been adapted to use the XUL version of the DatabaseExplorerDialog instead.
- * The old DatabaseExplorerDialog has been renamed to DatabaseExplorerDialogLegacy
- */
-public class DatabaseExplorerDialog extends XulDatabaseExplorerDialog {
+	private String stepName;
+	private FieldsCollection stepFields;
 
-	public DatabaseExplorerDialog(Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases) {
-		super(parent, conn, databases, false);
+	public XulStepFieldsModel() {
+		this.stepFields = new FieldsCollection();
 	}
 
-	public DatabaseExplorerDialog(Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean aLook) {
-		super(parent, conn, databases, aLook);
+	public FieldsCollection getStepFields() {
+		return this.stepFields;
+	}
+
+	public void setStepFields(FieldsCollection aStepFields) {
+		this.stepFields = aStepFields;
+	}
+
+	public String toString() {
+		return "Step Fields Node";
+	}
+
+	public void setStepName(String aStepName) {
+		this.stepName = aStepName;
+	}
+
+	public String getStepName() {
+		return this.stepName;
+	}
+
+	public void addStepField(StepFieldNode aStepField) {
+		this.stepFields.add(aStepField);
+	}
+
+	public static class FieldsCollection extends AbstractModelList<StepFieldNode> {
 	}
 }

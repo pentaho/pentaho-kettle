@@ -969,6 +969,9 @@ public class SpoonJobDelegate extends SpoonDelegate
 			
 			int idx = spoon.tabfolder.indexOf(tabEntry.getTabItem());
 
+      // keep the focus on the graph
+      spoon.tabfolder.setSelected(idx);
+
 			// keep the focus on the graph
 			spoon.tabfolder.setSelected(idx);
 

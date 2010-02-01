@@ -1,35 +1,48 @@
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
-	 <toolbox>
-		<toolbar id="nav-toolbar" mode="icons">
-			<toolbarbutton value="file-new" label="%Spoon.Menu.File.New" image="ui/images/new.png" tooltiptext="%Spoon.Tooltip.NewFile"/>
-			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="ui/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
-			<toolbarseparator />
-			<toolbarbutton value="file-save" label="%Spoon.Menu.File.Save" image="ui/images/save.png" tooltiptext="%Spoon.Tooltip.SaveCurrentTranformation" />
-			<toolbarbutton value="file-save-as" label="%Spoon.Menu.File.SaveAs" image="ui/images/saveas.png" tooltiptext="%Spoon.Tooltip.SaveDifferentNameTranformation" />
-			<toolbarseparator />
-			<toolbarbutton value="trans-run" label="%Spoon.Menu.Transformation.Run" image="ui/images/run.png" tooltiptext="%Spoon.Tooltip.RunTranformation"/>
-			<toolbarbutton value="trans-pause" label="%Spoon.Menu.Transformation.Pause" image="ui/images/pause.png" tooltiptext="%Spoon.Tooltip.PauseTranformation"/>
-			<toolbarbutton value="trans-stop" label="%Spoon.Menu.Transformation.Stop" image="ui/images/stop.png" tooltiptext="%Spoon.Tooltip.StopTranformation"/>
-			<toolbarbutton value="trans-preview"  label="%Spoon.Menu.Transformation.Preview" image="ui/images/preview.png" tooltiptext="%Spoon.Tooltip.PreviewTranformation"/>
-			<toolbarbutton value="trans-debug"  label="%Spoon.Menu.Transformation.Debug" image="ui/images/debug.png" tooltiptext="%Spoon.Tooltip.DebugTranformation"/>
-			<toolbarbutton value="trans-replay"  label="%Spoon.Menu.Transformation.Replay" image="ui/images/replay.png" tooltiptext="%Spoon.Tooltip.ReplayTranformation"/>
-			<toolbarseparator />
-			<toolbarbutton value="trans-verify" label="%Spoon.Menu.Transformation.Verify" image="ui/images/check.png" tooltiptext="%Spoon.Tooltip.VerifyTranformation"/>
-			<toolbarbutton value="trans-impact"  label="%Spoon.Menu.Transformation.Impact" image="ui/images/impact.png" tooltiptext="%Spoon.Tooltip.AnalyzeTranformation"/>
-			<toolbarbutton value="trans-get-sql" label="%Spoon.Menu.Transformation.GetSQL" image="ui/images/SQLbutton.png" tooltiptext="%Spoon.Tooltip.GenerateSQLForTranformation"/>
-			<toolbarbutton value="explore-database" label="%Spoon.Menu.ExploreConnection" image="ui/images/exploredb.png" tooltiptext="%Spoon.Tooltip.ExploreConnection"/>
-			<toolbarseparator />
-			<toolbarbutton value="browse-versions" label="%Spoon.Menu.BrowseVersions" image="ui/images/version-history.png" tooltiptext="%Spoon.Tooltip.BrowseVersions"/>
-			<toolbarseparator />
-			<toolbarbutton value="trans-show-results" label="%Spoon.Menu.ShowExecutionResults" image="ui/images/show-results.png" tooltiptext="%Spoon.Tooltip.ShowExecutionResults"/>
-			<toolbarseparator />
-		<!-- 
-			<toolbarbutton value="trans-zoom" label="%Spoon.Menu.ZoomTransformation" image="ui/images/zoom.png" tooltiptext="%Spoon.Tooltip.ZoomTransformation"/>
-			<toolbarbutton value="trans-show-grid" label="%Spoon.Menu.ShowTransGrid" image="ui/images/show-grid.png" tooltiptext="%Spoon.Tooltip.ShowGridView"/>
-			<toolbarbutton value="trans-show-log" label="%Spoon.Menu.ShowTransLog" image="ui/images/show-log.png" tooltiptext="%Spoon.Tooltip.ShowLogView"/>
-			<toolbarbutton value="trans-show-history" label="%Spoon.Menu.ShowTransHistory" image="ui/images/show-history.png" tooltiptext="%Spoon.Tooltip.ShowHistoryView"/>
-			<toolbarbutton value="trans-show-perf" label="%Spoon.Menu.ShowTransPerf" image="ui/images/show-perf.png" tooltiptext="%Spoon.Tooltip.ShowPerfView"/>
-		 -->
-		</toolbar>
-	</toolbox>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
+  <toolbar id="nav-toolbar" mode="icons" >
+    <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}" onclick="transgraph.newFileDropDown()" />
+    <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
+      tooltiptext="${Spoon.Tooltip.OpenTranformation}" onclick="transgraph.openFile()" />
+    <toolbarseparator />
+    <toolbarbutton id="file-save" label="${Spoon.Menu.File.Save}" image="images/save.png"
+      tooltiptext="${Spoon.Tooltip.SaveCurrentTranformation}" onclick="transgraph.saveFile()" />
+    <toolbarbutton id="file-save-as" label="${Spoon.Menu.File.SaveAs}" image="images/saveas.png"
+      tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="transgraph.saveFileAs()" />
+    <toolbarseparator />
+    <toolbarbutton id="trans-run" label="${Spoon.Menu.Transformation.Run}" image="images/run.png"
+      tooltiptext="${Spoon.Tooltip.RunTranformation}" onclick="transgraph.runTransformation()" />
+    <toolbarbutton id="trans-pause" label="${Spoon.Menu.Transformation.Pause}" image="images/pause.png"
+      tooltiptext="${Spoon.Tooltip.PauseTranformation}" onclick="transgraph.pauseTransformation()" />
+    <toolbarbutton id="trans-stop" label="${Spoon.Menu.Transformation.Stop}" image="images/stop.png"
+      tooltiptext="${Spoon.Tooltip.StopTranformation}" onclick="transgraph.stopTransformation()" />
+    <toolbarbutton id="trans-preview" label="${Spoon.Menu.Transformation.Preview}" image="images/preview.png"
+      tooltiptext="${Spoon.Tooltip.PreviewTranformation}" onclick="transgraph.previewFile()" />
+    <toolbarbutton id="trans-debug" label="${Spoon.Menu.Transformation.Debug}" image="images/debug.png"
+      tooltiptext="${Spoon.Tooltip.DebugTranformation}" onclick="transgraph.debugFile()" />
+    <toolbarbutton id="trans-replay" label="${Spoon.Menu.Transformation.Replay}" image="images/replay.png"
+      tooltiptext="${Spoon.Tooltip.ReplayTranformation}" onclick="transgraph.transReplay()" />
+    <toolbarseparator />
+    <toolbarbutton id="trans-verify" label="${Spoon.Menu.Transformation.Verify}" image="images/check.png"
+      tooltiptext="${Spoon.Tooltip.VerifyTranformation}" onclick="transgraph.checkTrans()" />
+    <toolbarbutton id="trans-impact" label="${Spoon.Menu.Transformation.Impact}" image="images/impact.png"
+      tooltiptext="${Spoon.Tooltip.AnalyzeTranformation}" onclick="transgraph.analyseImpact()" />
+    <toolbarbutton id="trans-get-sql" label="${Spoon.Menu.Transformation.GetSQL}" image="images/SQLbutton.png"
+      tooltiptext="${Spoon.Tooltip.GenerateSQLForTranformation}" onclick="transgraph.getSQL()" />
+    <toolbarbutton id="explore-database" label="${Spoon.Menu.ExploreConnection}" image="images/exploredb.png"
+      tooltiptext="${Spoon.Tooltip.ExploreConnection}" onclick="transgraph.exploreDatabase()" />
+    <toolbarseparator />
+    <toolbarbutton id="trans-show-results" label="${Spoon.Menu.ShowExecutionResults}" image="images/show-results.png"
+      tooltiptext="${Spoon.Tooltip.ShowExecutionResults}" onclick="transgraph.showExecutionResults()"/>
+    <toolbarseparator />
+    <!--
+      <toolbarbutton id="trans-zoom" label="${Spoon.Menu.ZoomTransformation}" image="images/zoom.png"
+      tooltiptext="${Spoon.Tooltip.ZoomTransformation}"/> <toolbarbutton id="trans-show-grid"
+      label="${Spoon.Menu.ShowTransGrid}" image="images/show-grid.png" tooltiptext="${Spoon.Tooltip.ShowGridView}"/>
+      <toolbarbutton id="trans-show-log" label="${Spoon.Menu.ShowTransLog}" image="images/show-log.png"
+      tooltiptext="${Spoon.Tooltip.ShowLogView}"/> <toolbarbutton id="trans-show-history"
+      label="${Spoon.Menu.ShowTransHistory}" image="images/show-history.png"
+      tooltiptext="${Spoon.Tooltip.ShowHistoryView}"/> <toolbarbutton id="trans-show-perf"
+      label="${Spoon.Menu.ShowTransPerf}" image="images/show-perf.png" tooltiptext="${Spoon.Tooltip.ShowPerfView}"/>
+    -->
+  </toolbar>
 </window>

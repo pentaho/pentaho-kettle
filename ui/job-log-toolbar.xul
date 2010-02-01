@@ -1,14 +1,13 @@
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
-	 
-	 <toolbox>
-		<toolbar id="nav-toolbar" mode="icons">
-			<toolbarbutton value="show-error-lines" label="%JobLog.Button.ShowErrorLines" image="ui/images/show-error-lines.png" tooltiptext="%JobLog.Button.ShowErrorLines"/>
-			<toolbarbutton value="clear-log" label="%JobLog.Button.ClearLog" image="ui/images/clear-log.png" tooltiptext="%JobLog.Button.ClearLog"/>
-			<toolbarseparator />
-			<toolbarbutton value="log-settings" label="%JobLog.Button.LogSettings" image="ui/images/log-settings.png" tooltiptext="%JobLog.Button.LogSettings"/>
-			<toolbarseparator />
-			<toolbarbutton value="log-pause" label="%JobLog.Button.Pause" image="ui/images/pause-log.png" tooltiptext="%JobLog.Button.Pause"/>
-		</toolbar>
-	</toolbox>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
+
+  <toolbar id="nav-toolbar" mode="icons">
+    <toolbarbutton id="show-error-lines" label="${JobLog.Button.ShowErrorLines}" image="images/show-error-lines.png"
+      tooltiptext="${JobLog.Button.ShowErrorLines}" onclick="joblog.showErrors()" />
+    <toolbarbutton id="clear-log" label="${JobLog.Button.ClearLog}" image="images/clear-log.png"
+      tooltiptext="${JobLog.Button.ClearLog}" onclick="joblog.clearLog()" />
+    <toolbarseparator />
+    <toolbarbutton id="log-settings" label="${JobLog.Button.LogSettings}" image="images/log-settings.png"
+      tooltiptext="${JobLog.Button.LogSettings}" onclick="joblog.showLogSettings()" />
+  </toolbar>
 
 </window>
