@@ -116,5 +116,8 @@
 	<classpathentry kind="lib" path="libext/salesforce/salesforce16.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/vertica_3.5_jdk_5.jar"/>
 	<classpathentry kind="lib" path="libext/script-api.jar"/>
+	<classpathentry kind="lib" path="libext/spring/spring-beans-2.5.6.jar"/>
+	<classpathentry kind="lib" path="libext/spring/spring-context-2.5.6.jar"/>
+	<classpathentry kind="lib" path="libext/spring/spring-context-support-2.5.6.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
