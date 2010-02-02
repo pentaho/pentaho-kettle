@@ -10,7 +10,7 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
-*/
+ */
 
 package org.pentaho.di.trans.steps.farragostreamingloader;
 
@@ -89,7 +89,9 @@ public class FarragoStreamingLoaderMeta
     /** Field name in the stream in tabitem Fields */
     private String fieldStreamForFields[];
 
-    /** flag to indicate Insert or Update operation for LucidDB in tabitem Fields */
+    /**
+     * flag to indicate Insert or Update operation for LucidDB in tabitem Fields
+     */
     private boolean insOrUptFlag[];
 
     /** It holds custom sql statements in CUSTOM Tab */
@@ -713,7 +715,7 @@ public class FarragoStreamingLoaderMeta
     {
 
         String dataType = "";
-        
+
         int length = field.getLength();
         // TODO: add more data type mapping java <==> SQL
         switch (field.getType()) {
@@ -734,7 +736,8 @@ public class FarragoStreamingLoaderMeta
         return dataType;
 
     }
-    //TODO: Not know the purpose of this method yet so far.
+
+    // TODO: Not know the purpose of this method yet so far.
     public void analyseImpact(
         List<DatabaseImpact> impact,
         TransMeta transMeta,

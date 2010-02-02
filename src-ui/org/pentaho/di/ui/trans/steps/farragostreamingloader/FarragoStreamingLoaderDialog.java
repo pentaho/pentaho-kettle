@@ -10,7 +10,7 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
-*/
+ */
 
 package org.pentaho.di.ui.trans.steps.farragostreamingloader;
 
@@ -68,15 +68,15 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 /**
  * Description: Dialog class for the Farrago Streaming Loader step.
  * 
- * @author Ray Zhang 
- * @since  Jan-05-2010
+ * @author Ray Zhang
+ * @since Jan-05-2010
  * 
  */
 public class FarragoStreamingLoaderDialog
     extends BaseStepDialog
     implements StepDialogInterface
 {
-    private static Class<?> PKG = FarragoStreamingLoaderMeta.class; 
+    private static Class<?> PKG = FarragoStreamingLoaderMeta.class;
 
     private CCombo wConnection;
 
@@ -354,8 +354,7 @@ public class FarragoStreamingLoaderDialog
         fdOperation.right = new FormAttachment(100, 0);
         wOperation.setLayoutData(fdOperation);
 
-        final String[] operations = new String[] 
-        {
+        final String[] operations = new String[] {
             BaseMessages.getString(
                 PKG,
                 "FarragoStreamingLoaderDialog.Operation.CCombo.Item1"),
@@ -365,13 +364,14 @@ public class FarragoStreamingLoaderDialog
             BaseMessages.getString(
                 PKG,
                 "FarragoStreamingLoaderDialog.Operation.CCombo.Item3")
-//            BaseMessages.getString(
-//                PKG,
-//                "FarragoStreamingLoaderDialog.Operation.CCombo.Item4")  // disable operation CUSTOM
+        // BaseMessages.getString(
+        // PKG,
+        // "FarragoStreamingLoaderDialog.Operation.CCombo.Item4") // disable
+        // operation CUSTOM
         };
 
         wOperation.setItems(operations);
-        
+
         wOperation.addSelectionListener(new SelectionListener()
         {
 
@@ -396,14 +396,14 @@ public class FarragoStreamingLoaderDialog
                     wFieldsTb.table.removeAll();
                     wFieldsTb.table.setItemCount(1);
                     wFieldsTb.setRowNums();
-//                    wCustomTb.setText("");
+                    // wCustomTb.setText("");
 
                     wTabFolder.setSelection(wKeysTab);
                     wKeysTab.getControl().setEnabled(true);
                     wFieldsTab.getControl().setEnabled(true);
-//                    wCustomTab.getControl().setEnabled(false);
+                    // wCustomTab.getControl().setEnabled(false);
                     wFieldsTb.table.getColumn(3).setWidth(80);
-                // INSERT
+                    // INSERT
                 } else if (operations[1].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
 
@@ -413,14 +413,14 @@ public class FarragoStreamingLoaderDialog
                     wFieldsTb.table.removeAll();
                     wFieldsTb.table.setItemCount(1);
                     wFieldsTb.setRowNums();
-//                    wCustomTb.setText("");
+                    // wCustomTb.setText("");
 
                     wTabFolder.setSelection(wFieldsTab);
                     wKeysTab.getControl().setEnabled(false);
                     wFieldsTab.getControl().setEnabled(true);
-//                    wCustomTab.getControl().setEnabled(false);
+                    // wCustomTab.getControl().setEnabled(false);
                     wFieldsTb.table.getColumn(3).setWidth(0);
-                // UPDATE
+                    // UPDATE
                 } else if (operations[2].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
 
@@ -430,15 +430,15 @@ public class FarragoStreamingLoaderDialog
                     wFieldsTb.table.removeAll();
                     wFieldsTb.table.setItemCount(1);
                     wFieldsTb.setRowNums();
-//                    wCustomTb.setText("");
+                    // wCustomTb.setText("");
 
                     wTabFolder.setSelection(wKeysTab);
                     wKeysTab.getControl().setEnabled(true);
                     wFieldsTab.getControl().setEnabled(true);
-//                    wCustomTab.getControl().setEnabled(false);
+                    // wCustomTab.getControl().setEnabled(false);
                     // grey out update field in Field TabelView
                     wFieldsTb.table.getColumn(3).setWidth(80);
-                // CUSTOM
+                    // CUSTOM
                 } else if (operations[3].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
 
@@ -448,12 +448,12 @@ public class FarragoStreamingLoaderDialog
                     wFieldsTb.table.removeAll();
                     wFieldsTb.table.setItemCount(1);
                     wFieldsTb.setRowNums();
-//                    wCustomTb.setText("");
+                    // wCustomTb.setText("");
 
                     wTabFolder.setSelection(wKeysTab);
                     wKeysTab.getControl().setEnabled(true);
                     wFieldsTab.getControl().setEnabled(true);
-//                    wCustomTab.getControl().setEnabled(true);
+                    // wCustomTab.getControl().setEnabled(true);
                     wFieldsTb.table.getColumn(3).setWidth(80);
                 }
 
@@ -463,7 +463,7 @@ public class FarragoStreamingLoaderDialog
 
         );
 
-        //TabFolder
+        // TabFolder
         wTabFolder = new CTabFolder(shell, SWT.BORDER);
         props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
         wTabFolder.setSimple(false);
@@ -483,7 +483,7 @@ public class FarragoStreamingLoaderDialog
         FormLayout fieldsLayout = new FormLayout();
         fieldsLayout.marginWidth = Const.FORM_MARGIN;
         fieldsLayout.marginHeight = Const.FORM_MARGIN;
-        
+
         // TabItem: Keys
         wKeysComp = new Composite(wTabFolder, SWT.NONE);
         wKeysComp.setLayout(fieldsLayout);
@@ -530,8 +530,7 @@ public class FarragoStreamingLoaderDialog
         fdKeysComp.right = new FormAttachment(100, 0);
         fdKeysComp.bottom = new FormAttachment(100, 0);
         wKeysComp.setLayoutData(fdKeysComp);
-        
-       
+
         wGetFieldsForKeys = new Button(wKeysComp, SWT.PUSH);
         wGetFieldsForKeys.setText(BaseMessages.getString(
             PKG,
@@ -577,7 +576,7 @@ public class FarragoStreamingLoaderDialog
         wKeysComp.layout();
         wKeysTab.setControl(wKeysComp);
 
-        //TabItem: Fields
+        // TabItem: Fields
         wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
         wFieldsTab.setText(BaseMessages.getString(
             PKG,
@@ -685,52 +684,52 @@ public class FarragoStreamingLoaderDialog
         wFieldsComp.layout();
         wFieldsTab.setControl(wFieldsComp);
 
-        //TabItem: Custom disable Custom tab
-//        wCustomTab = new CTabItem(wTabFolder, SWT.NONE);
-//        wCustomTab.setText(BaseMessages.getString(
-//            PKG,
-//            "FarragoStreamingLoaderDialog.CustomTab.TabTitle"));
-//
-//        wCustomComp = new Composite(wTabFolder, SWT.NONE);
-//        wCustomComp.setLayout(fieldsLayout);
-//        props.setLook(wCustomComp);
-//
-//        wlCustomTb = new Label(wCustomComp, SWT.LEFT);
-//        wlCustomTb.setText(BaseMessages.getString(
-//            PKG,
-//            "FarragoStreamingLoaderDialog.CustomTab.Label"));
-//
-//        fdlCustomTb = new FormData();
-//        fdlCustomTb.left = new FormAttachment(0, 0);
-//        fdlCustomTb.top = new FormAttachment(0, 0);
-//        fdlCustomTb.right = new FormAttachment(100, 0);
-//        wlCustomTb.setLayoutData(fdlCustomTb);
-//
-//        wCustomTb = new StyledTextComp(wCustomComp, SWT.MULTI | SWT.LEFT
-//            | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
-//        props.setLook(wCustomTb, Props.WIDGET_STYLE_FIXED);
-//        wCustomTb.addModifyListener(lsMod);
-//
-//        fdCustomTb = new FormData();
-//        fdCustomTb.left = new FormAttachment(0, 0);
-//        fdCustomTb.top = new FormAttachment(wlCustomTb, margin);
-//        fdCustomTb.right = new FormAttachment(100, -margin);
-//        fdCustomTb.bottom = new FormAttachment(100, -margin);
-//        wCustomTb.setLayoutData(fdCustomTb);
-//
-//        // Text Higlighting
-//        SQLValuesHighlight lineStyler = new SQLValuesHighlight();
-//        wCustomTb.addLineStyleListener(lineStyler);
-//
-//        fdCustomComp = new FormData();
-//        fdCustomComp.left = new FormAttachment(0, 0);
-//        fdCustomComp.top = new FormAttachment(0, 0);
-//        fdCustomComp.right = new FormAttachment(100, 0);
-//        fdCustomComp.bottom = new FormAttachment(100, 0);
-//        wCustomComp.setLayoutData(fdCustomComp);
-//
-//        wCustomComp.layout();
-//        wCustomTab.setControl(wCustomComp);
+        // TabItem: Custom disable Custom tab
+        // wCustomTab = new CTabItem(wTabFolder, SWT.NONE);
+        // wCustomTab.setText(BaseMessages.getString(
+        // PKG,
+        // "FarragoStreamingLoaderDialog.CustomTab.TabTitle"));
+        //
+        // wCustomComp = new Composite(wTabFolder, SWT.NONE);
+        // wCustomComp.setLayout(fieldsLayout);
+        // props.setLook(wCustomComp);
+        //
+        // wlCustomTb = new Label(wCustomComp, SWT.LEFT);
+        // wlCustomTb.setText(BaseMessages.getString(
+        // PKG,
+        // "FarragoStreamingLoaderDialog.CustomTab.Label"));
+        //
+        // fdlCustomTb = new FormData();
+        // fdlCustomTb.left = new FormAttachment(0, 0);
+        // fdlCustomTb.top = new FormAttachment(0, 0);
+        // fdlCustomTb.right = new FormAttachment(100, 0);
+        // wlCustomTb.setLayoutData(fdlCustomTb);
+        //
+        // wCustomTb = new StyledTextComp(wCustomComp, SWT.MULTI | SWT.LEFT
+        // | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+        // props.setLook(wCustomTb, Props.WIDGET_STYLE_FIXED);
+        // wCustomTb.addModifyListener(lsMod);
+        //
+        // fdCustomTb = new FormData();
+        // fdCustomTb.left = new FormAttachment(0, 0);
+        // fdCustomTb.top = new FormAttachment(wlCustomTb, margin);
+        // fdCustomTb.right = new FormAttachment(100, -margin);
+        // fdCustomTb.bottom = new FormAttachment(100, -margin);
+        // wCustomTb.setLayoutData(fdCustomTb);
+        //
+        // // Text Higlighting
+        // SQLValuesHighlight lineStyler = new SQLValuesHighlight();
+        // wCustomTb.addLineStyleListener(lineStyler);
+        //
+        // fdCustomComp = new FormData();
+        // fdCustomComp.left = new FormAttachment(0, 0);
+        // fdCustomComp.top = new FormAttachment(0, 0);
+        // fdCustomComp.right = new FormAttachment(100, 0);
+        // fdCustomComp.bottom = new FormAttachment(100, 0);
+        // wCustomComp.setLayoutData(fdCustomComp);
+        //
+        // wCustomComp.layout();
+        // wCustomTab.setControl(wCustomComp);
 
         // THE BUTTONS
         wOK = new Button(shell, SWT.PUSH);
@@ -838,22 +837,24 @@ public class FarragoStreamingLoaderDialog
             wHost.setText("" + input.getHost());
         if (input.getPort() != null)
             wPort.setText("" + input.getPort());
-        if (input.getOperation() != null){
-            
+        if (input.getOperation() != null) {
+
             wOperation.select(wOperation.indexOf(input.getOperation()));
-            if(BaseMessages.getString(
+            if (BaseMessages.getString(
                 PKG,
-            "FarragoStreamingLoaderDialog.Operation.CCombo.Item2").equals(input.getOperation())){
-                
+                "FarragoStreamingLoaderDialog.Operation.CCombo.Item2").equals(
+                input.getOperation()))
+            {
+
                 wTabFolder.setSelection(1);
-            }else{
-                
+            } else {
+
                 wTabFolder.setSelection(0);
             }
         }
-            
-//        if (input.getCustom_sql() != null)
-//            wCustomTb.setText(input.getCustom_sql());
+
+        // if (input.getCustom_sql() != null)
+        // wCustomTb.setText(input.getCustom_sql());
 
         if (input.getFieldTableForKeys() != null) {
 
@@ -902,7 +903,7 @@ public class FarragoStreamingLoaderDialog
 
             wKeysTab.getControl().setEnabled(input.getTabIsEnable()[0]);
             wFieldsTab.getControl().setEnabled(input.getTabIsEnable()[1]);
-//            wCustomTab.getControl().setEnabled(input.getTabIsEnable()[2]);
+            // wCustomTab.getControl().setEnabled(input.getTabIsEnable()[2]);
 
         }
 
@@ -1076,10 +1077,10 @@ public class FarragoStreamingLoaderDialog
             }
             myTb.setRowNums();
             myTb.optWidth(true);
-            
-            //Hidden Update Field when select INSERT.
+
+            // Hidden Update Field when select INSERT.
             int width = myTb.table.getColumn(3).getWidth();
-            
+
             if (flag) {
 
                 myTb.table.getColumn(3).setWidth(0);
@@ -1090,7 +1091,7 @@ public class FarragoStreamingLoaderDialog
             }
 
         }
-  
+
     }
 
     private void cancel()
@@ -1128,14 +1129,16 @@ public class FarragoStreamingLoaderDialog
 
         inf.getTabIsEnable()[0] = wKeysTab.getControl().getEnabled();
         inf.getTabIsEnable()[1] = wFieldsTab.getControl().getEnabled();
-//        inf.getTabIsEnable()[2] = wCustomTab.getControl().getEnabled();
+        // inf.getTabIsEnable()[2] = wCustomTab.getControl().getEnabled();
 
-//        inf.setCustom_sql(wCustomTb.getText());
+        // inf.setCustom_sql(wCustomTb.getText());
         stepname = wStepname.getText(); // return value
     }
-    
+
     /**
-     * Description: When click button called get Field, return all fields in table
+     * Description: When click button called get Field, return all fields in
+     * table
+     * 
      * @param tabName
      */
     private void getFields(String tabName)
@@ -1143,7 +1146,8 @@ public class FarragoStreamingLoaderDialog
 
         TableView myTb;
 
-        boolean flag = false; // disable update field when select insert operation.
+        boolean flag = false; // disable update field when select insert
+                              // operation.
 
         if (tabName.equals(BaseMessages.getString(
             PKG,
@@ -1161,7 +1165,9 @@ public class FarragoStreamingLoaderDialog
 
             if (BaseMessages.getString(
                 PKG,
-            "FarragoStreamingLoaderDialog.Operation.CCombo.Item2").equalsIgnoreCase(wOperation.getItem(wOperation.getSelectionIndex())))
+                "FarragoStreamingLoaderDialog.Operation.CCombo.Item2")
+                .equalsIgnoreCase(
+                    wOperation.getItem(wOperation.getSelectionIndex())))
             {
 
                 flag = true;
@@ -1180,7 +1186,7 @@ public class FarragoStreamingLoaderDialog
             streamMeta = transMeta.getPrevStepFields(stepMeta);
 
             String[] fieldNamesOfStream = streamMeta.getFieldNames();
-            
+
             input.setSchemaName(wSchema.getText());
             input.setTableName(wTable.getText());
             input.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()));
@@ -1251,8 +1257,10 @@ public class FarragoStreamingLoaderDialog
         // Get the information for the dialog into the input structure.
         getInfo(input);
 
-        // String name = stepname; // new name might not yet be linked to other steps!
-        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "FarragoStreamingLoaderDialog.StepMeta.Title"), name, input);
+        // String name = stepname; // new name might not yet be linked to other
+        // steps!
+        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG,
+        // "FarragoStreamingLoaderDialog.StepMeta.Title"), name, input);
         RowMetaInterface prev;
         try {
             prev = transMeta.getPrevStepFields(stepname);
@@ -1322,8 +1330,10 @@ public class FarragoStreamingLoaderDialog
         FarragoStreamingLoaderMeta info = new FarragoStreamingLoaderMeta();
         getInfo(info);
 
-        // String name = stepname; // new name might not yet be linked to other steps!
-        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "FarragoStreamingLoaderDialog.StepMeta.Title"), name, info);
+        // String name = stepname; // new name might not yet be linked to other
+        // steps!
+        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG,
+        // "FarragoStreamingLoaderDialog.StepMeta.Title"), name, info);
         RowMetaInterface prev;
         try {
             prev = transMeta.getPrevStepFields(stepname);
