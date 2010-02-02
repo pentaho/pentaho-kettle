@@ -17,7 +17,7 @@ public interface SpoonPlugin {
   
   /**
    * Map of XulOverlays that will be applied on Spoon startup. These overlays can modify the look 
-   * of the main UI as well as any Xul-based dialog registered in Spoon.
+   * of the main UI as well as any Xul-based ares in Spoon.
    * 
    * @return Map of XulOverlays
    */
@@ -32,14 +32,14 @@ public interface SpoonPlugin {
   public Map<String, XulEventHandler>  getEventHandlers();
   
   /**
-   * Returns an optional SpoonLifecycleListener to be notified of Spoon startup and shutdown.
+   * Provides an optional SpoonLifecycleListener to be notified of Spoon startup and shutdown.
    * 
    * @return optional SpoonLifecycleListener
    */
   public SpoonLifecycleListener getLifecycleListener();
   
   /**
-   * Returns an optional SpoonPerspective.
+   * Provides an optional SpoonPerspective.
    * 
    * @return optional SpoonPerspective
    */

@@ -226,7 +226,7 @@ import org.pentaho.di.ui.repository.dialog.UserDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryObjectReference;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
-import org.pentaho.di.ui.spoon.SpoonLifecycleListener.LifeCycleEvent;
+import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
@@ -683,7 +683,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           // TODO Auto-generated catch block
           e1.printStackTrace();
         }
-        SpoonPluginManager.getInstance().notifyLifecycleListeners(LifeCycleEvent.SHUTDOWN);
+        SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.SHUTDOWN);
       }
     });
 
@@ -718,7 +718,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     
     ((Composite) deck.getManagedObject()).layout(true, true);
 
-    SpoonPluginManager.getInstance().notifyLifecycleListeners(LifeCycleEvent.STARTUP);
+    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.STARTUP);
 
 
     // Add a browser widget
