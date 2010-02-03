@@ -11,7 +11,6 @@
 
 package org.pentaho.di.ui.spoon;
 
-import java.awt.PopupMenu;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.DataOutputStream;
@@ -44,6 +43,10 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Listener;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
@@ -52,7 +55,6 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -252,7 +254,6 @@ import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulMenuseparator;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
-import org.pentaho.ui.xul.containers.XulMenu;
 import org.pentaho.ui.xul.containers.XulMenubar;
 import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
@@ -339,7 +340,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 * This contains a map with all the unnamed transformation (just a filename)
 	 */
 
-	private ToolItem						view, design, expandAll, collapseAll;
+	private ToolItem						expandAll, collapseAll;
+	
+	private CTabItem view, design;
 
 	private Label							selectionLabel;
 	private Text							selectionFilter;
@@ -794,50 +797,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
     
   }
-
-	private void initFileMenu() {
-		fileMenus = new org.eclipse.swt.widgets.Menu(shell, SWT.NONE);
-
-		// Add the new file toolbar items dropdowns
-		//
-		MenuItem miNewTrans = new MenuItem(fileMenus, SWT.CASCADE);
-		miNewTrans.setText(BaseMessages.getString(PKG, "Spoon.Menu.File.NewTrans")); //$NON-NLS-1$
-		miNewTrans.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent arg0) {
-				newTransFile();
-			}
-		});
-		miNewTrans.setImage(GUIResource.getInstance().getImageTransGraph());
-
-		MenuItem miNewJob = new MenuItem(fileMenus, SWT.CASCADE);
-		miNewJob.setText(BaseMessages.getString(PKG, "Spoon.Menu.File.NewJob")); //$NON-NLS-1$
-		miNewJob.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent arg0) {
-				newJobFile();
-			}
-		});
-		miNewJob.setImage(GUIResource.getInstance().getImageJobGraph());
-
-		new MenuItem(fileMenus, SWT.SEPARATOR);
-
-		MenuItem miNewDB = new MenuItem(fileMenus, SWT.CASCADE);
-		miNewDB.setText(BaseMessages.getString(PKG, "Spoon.Menu.File.NewDB")); //$NON-NLS-1$
-		miNewDB.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent arg0) {
-				newConnection();
-			}
-		});
-		miNewDB.setImage(GUIResource.getInstance().getImageConnection());
-
-		MenuItem miNewSlave = new MenuItem(fileMenus, SWT.CASCADE);
-		miNewSlave.setText(BaseMessages.getString(PKG, "Spoon.Menu.File.NewSlave")); //$NON-NLS-1$
-		miNewSlave.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent arg0) {
-				newSlaveServer();
-			}
-		});
-		miNewSlave.setImage(GUIResource.getInstance().getImageSlave());
-	}
 
 	public Shell getShell() {
 		return shell;
@@ -1413,22 +1372,28 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		sep0.setLayoutData(fdSep0);
 		Control lastControl = sep0;
 
-		ToolBar tb = new ToolBar(mainComposite, SWT.HORIZONTAL | SWT.FLAT);
-		tb.setBackground(GUIResource.getInstance().getColorCreamPentaho());
-		view = new ToolItem(tb, SWT.CHECK);
-		view.setImage(GUIResource.getInstance().getImageViewPanel());
+    CTabFolder tabFolder = new CTabFolder(mainComposite, SWT.BORDER);
+    tabFolder.setSimple(false); // Set simple what!!?? Well it sets the style of the tab folder to simple or stylish (curvy borders)
+    tabFolder.setBackground(GUIResource.getInstance().getColorCreamPentaho());
+		
+		view = new CTabItem(tabFolder, SWT.NONE);
+		//view.setImage(GUIResource.getInstance().getImageViewPanel());
+		view.setControl(new Composite(tabFolder, SWT.NONE));
 		view.setText(STRING_SPOON_MAIN_TREE);
-		design = new ToolItem(tb, SWT.CHECK);
-		design.setImage(GUIResource.getInstance().getImageDesignPanel());
-		design.setText(STRING_SPOON_CORE_OBJECTS_TREE);
-		design.setEnabled(false);
+		design = new CTabItem(tabFolder, SWT.NONE);
+		//design.setImage(GUIResource.getInstance().getImageDesignPanel());		
+    design.setText(STRING_SPOON_CORE_OBJECTS_TREE);
+    design.setControl(new Composite(tabFolder, SWT.NONE));
+		//tabFolder.setEnabled(false);
 
 		FormData fdTreeButton = new FormData();
 		fdTreeButton.left = new FormAttachment(0, 0);
 		fdTreeButton.top = new FormAttachment(sep0, 0);
 		fdTreeButton.right = new FormAttachment(100, 0);
-		tb.setLayoutData(fdTreeButton);
-		lastControl = tb;
+		fdTreeButton.height = 0;
+		
+		tabFolder.setLayoutData(fdTreeButton);
+		lastControl = tabFolder;
 
 		Label sep3 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep3.setBackground(GUIResource.getInstance().getColorWhite());
@@ -1508,18 +1473,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			}
 		});
 
-		view.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				setViewMode();
-			}
+		tabFolder.addSelectionListener(new SelectionAdapter(){
+      @Override
+      public void widgetSelected(SelectionEvent arg0) {
+        if(arg0.item == view){
+          setViewMode();
+        } else {
+          setDesignMode();
+        }
+      }
 		});
-
-		design.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				setDesignMode();
-			}
-		});
-
+		
 		Label sep4 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep4.setBackground(GUIResource.getInstance().getColorWhite());
 		FormData fdSep4 = new FormData();
@@ -1573,9 +1537,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void disposeVariableComposite(boolean tree, boolean shared, boolean core, boolean history) {
 
 		viewSelected = tree;
-		view.setSelection(viewSelected);
+		view.getParent().setSelection(viewSelected ? view : design);
 		designSelected = core;
-		design.setSelection(designSelected);
 
 		// historySelected = history;
 		// sharedSelected = shared;
@@ -2505,10 +2468,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 			if (comps[i] instanceof Sash) {
 				int limit = 10;
-				for (ToolItem item : view.getParent().getItems()) {
-					limit += item.getWidth();
-				}
-
+				
 				final int SASH_LIMIT = Const.isOSX() ? 150 : limit;
 				final Sash sash = (Sash) comps[i];
 
@@ -5004,7 +4964,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
     }
 
-    design.setEnabled(enableTransMenu || enableJobMenu);
+    //design.setEnabled(enableTransMenu || enableJobMenu);
 
     org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
     // Only enable certain menu-items if we need to.
@@ -6923,7 +6883,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return jobEntryJob.getJob();
 	}
 
-	
+
+  public Object getSelectionObject() {
+    return selectionObject;
+  }
+
 	/* ========================= XulEventSource Methods ========================== */
 
 	protected PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
