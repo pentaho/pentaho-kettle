@@ -3,7 +3,7 @@
 	<vbox id="acl-box" flex="1">
 		<vbox>
 			<hbox>
-				<label value="User Role Permissions for " flex="1"/>
+				<label value="${PermissionsTab.UserRolePermission}" flex="1"/>
 				<label id="file-folder-name" value="" flex="1"/>
 				<label id="spacer-label" flex="4"/>
 			</hbox>
@@ -11,7 +11,7 @@
 		<hbox flex="1">
 			<vbox flex="2">
 				<hbox>
-					<label value="User/Role"/>
+					<label value="${PermissionsTab.UserRoleLabel}"/>
 					<label id="spacer-label" flex="1" />
 					<button id="add-acl-button" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="permissionsController.showManageAclsDialog()" disabled="true"/>
 					<button id="remove-acl-button" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="permissionsController.removeAcl()" disabled="true"/>					    
@@ -19,25 +19,25 @@
 				<listbox id="user-role-list" pen:binding="recipientName" disabled="false" flex="1"  seltype="multi"/>
 			</vbox>
 			<groupbox id="permissions-groupbox" flex="4">
-					<caption label="Privileges"/>
+					<caption label="${PermissionsTab.Priveleges}"/>
 					<hbox id="permissions-hbox" flex="1">
 					    <vbox id="permission-column-1" flex="1">
-							<checkbox id="create-checkbox" command="permissionsController.updatePermission()" flex="1" label="Create" disabled="true"/>
-							<checkbox id="read-checkbox" command="permissionsController.updatePermission()" flex="1" label="Read" disabled="true"/>														
-							<checkbox id="update-checkbox" command="permissionsController.updatePermission()" flex="1" label="Update" disabled="true"/>
+							<checkbox id="create-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.Create}" disabled="true"/>
+							<checkbox id="read-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.Read}" disabled="true"/>														
+							<checkbox id="update-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.Update}" disabled="true"/>
 						</vbox>																																								
 						<vbox id="permission-column-2" flex="1"> 
-							<checkbox id="delete-checkbox" command="permissionsController.updatePermission()" flex="1" label="Delete" disabled="true"/>
-							<checkbox id="modify-checkbox" command="permissionsController.updatePermission()" flex="1" label="Modify Permission" disabled="true"/>
+							<checkbox id="delete-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.Delete}" disabled="true"/>
+							<checkbox id="modify-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.ModifyPermission}" disabled="true"/>
 							<label id="spacer-label" flex="1" />													
 						</vbox>
 					</hbox>
 			</groupbox>												
 		</hbox>
 		<hbox>
-			<checkbox id="inherit-from-parent-permission-checkbox" command="permissionsController.updateInheritFromParentPermission()" flex="1" label="Inherit security settings from parent"/>
+			<checkbox id="inherit-from-parent-permission-checkbox" command="permissionsController.updateInheritFromParentPermission()" flex="1" label="${PermissionsTab.InheritFromParent}"/>
 			<label id="spacer-label" flex="1" />
-			<button id="apply-acl" label="Apply" onclick="permissionsController.apply()"/>												
+			<button id="apply-acl" label="${Dialog.Apply}" onclick="permissionsController.apply()"/>												
 		</hbox>
 	</vbox>
 </overlay>

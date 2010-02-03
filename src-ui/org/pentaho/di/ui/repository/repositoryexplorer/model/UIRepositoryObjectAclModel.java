@@ -7,33 +7,31 @@ import org.pentaho.di.repository.ObjectAce;
 import org.pentaho.di.repository.ObjectRecipient;
 import org.pentaho.di.repository.RepositoryObjectAce;
 import org.pentaho.di.repository.RepositoryObjectRecipient;
-import org.pentaho.di.repository.RoleInfo;
-import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ObjectRecipient.Type;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 
 public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
-  private List<UIRepositoryUser> masterAvailableUserList;
-  private List<UIRepositoryRole> masterAvailableRoleList;
+  private List<String> masterAvailableUserList;
+  private List<String> masterAvailableRoleList;
   private UIRepositoryObjectAcls selectedAcls;
-  private List<UIRepositoryRole> selectedAvailableRoles = new ArrayList<UIRepositoryRole>();
-  private List<UIRepositoryUser> selectedAvailableUsers = new ArrayList<UIRepositoryUser>();
+  private List<String> selectedAvailableRoles = new ArrayList<String>();
+  private List<String> selectedAvailableUsers = new ArrayList<String>();
   private List<UIRepositoryObjectAcl> selectedAssignedRoles = new ArrayList<UIRepositoryObjectAcl>();
   private List<UIRepositoryObjectAcl> selectedAssignedUsers= new ArrayList<UIRepositoryObjectAcl>();
   private List<UIRepositoryObjectAcl> aclsToAdd;
   private List<UIRepositoryObjectAcl> aclsToRemove;
-  private List<UIRepositoryUser> availableUserList;
-  private List<UIRepositoryRole> availableRoleList;
+  private List<String> availableUserList;
+  private List<String> availableRoleList;
   private boolean userAssignmentPossible;
   private boolean userUnassignmentPossible;
   private boolean roleAssignmentPossible;
   private boolean roleUnassignmentPossible;
 
   public UIRepositoryObjectAclModel(UIRepositoryObjectAcls acls) {
-    availableUserList = new ArrayList<UIRepositoryUser>();
-    availableRoleList = new ArrayList<UIRepositoryRole>();
-    masterAvailableUserList = new ArrayList<UIRepositoryUser>();
-    masterAvailableRoleList = new ArrayList<UIRepositoryRole>();
+    availableUserList = new ArrayList<String>();
+    availableRoleList = new ArrayList<String>();
+    masterAvailableUserList = new ArrayList<String>();
+    masterAvailableRoleList = new ArrayList<String>();
     aclsToAdd = new ArrayList<UIRepositoryObjectAcl>(); 
     aclsToRemove = new ArrayList<UIRepositoryObjectAcl>();
     selectedAcls = acls; 
@@ -47,45 +45,45 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
     this.aclsToRemove = aclsToRemove;
   }
 
-  public List<UIRepositoryRole> getSelectedAvailableRoles() {
+  public List<String> getSelectedAvailableRoles() {
     return selectedAvailableRoles;
   }
   public void setSelectedAvailableRoles(List<Object> selectedAvailableRoles) {
-    List<UIRepositoryRole> previousVal = new ArrayList<UIRepositoryRole>();
+    List<String> previousVal = new ArrayList<String>();
     previousVal.addAll(this.selectedAvailableRoles);
     this.selectedAvailableRoles.clear();
     for(Object role:selectedAvailableRoles) {
       if(role instanceof UIRepositoryRole) {
-        this.selectedAvailableRoles.add((UIRepositoryRole) role);
+        this.selectedAvailableRoles.add((String) role);
       } else {
         UIRepositoryObjectAcl acl = (UIRepositoryObjectAcl) role;
-        this.selectedAvailableRoles.add(getRole(acl.getRecipientName()));
+        this.selectedAvailableRoles.add(acl.getRecipientName());
       }
     }
     this.firePropertyChange("selectedAvailableRoles", previousVal, this.selectedAvailableRoles); //$NON-NLS-1$
   }
-  public void setSelectedAvailableRole(UIRepositoryRole selectedAvailableRole) {
+  public void setSelectedAvailableRole(String selectedAvailableRole) {
     this.selectedAvailableRoles.add(selectedAvailableRole);
   }
 
-  public List<UIRepositoryUser> getSelectedAvailableUsers() {
+  public List<String> getSelectedAvailableUsers() {
     return selectedAvailableUsers;
   }
   public void setSelectedAvailableUsers(List<Object> selectedAvailableUsers) {
-    List<UIRepositoryUser> previousVal = new ArrayList<UIRepositoryUser>();
+    List<String> previousVal = new ArrayList<String>();
     previousVal.addAll(this.selectedAvailableUsers);
     this.selectedAvailableUsers.clear();
     for(Object user:selectedAvailableUsers) {
       if(user instanceof UIRepositoryUser) {
-        this.selectedAvailableUsers.add((UIRepositoryUser) user);
+        this.selectedAvailableUsers.add((String) user);
       } else {
         UIRepositoryObjectAcl acl = (UIRepositoryObjectAcl) user;
-        this.selectedAvailableUsers.add(getUser(acl.getRecipientName()));
+        this.selectedAvailableUsers.add(acl.getRecipientName());
       }
     }
     this.firePropertyChange("selectedAvailableUsers", previousVal, this.selectedAvailableUsers); //$NON-NLS-1$
   }
-  public void setSelectedAvailableUser(UIRepositoryUser selectedAvailableUser) {
+  public void setSelectedAvailableUser(String selectedAvailableUser) {
     this.selectedAvailableUsers.add(selectedAvailableUser);
   }
   
@@ -98,7 +96,7 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
     this.selectedAssignedRoles.clear();
     for(Object role:selectedAssignedRoles) {
       if(role instanceof UIRepositoryRole) {
-        this.selectedAssignedRoles.add(createAclFromRole((UIRepositoryRole) role));  
+        this.selectedAssignedRoles.add(createAclFromRole((String)role));  
       } else {
         this.selectedAssignedRoles.add( (UIRepositoryObjectAcl) role);
       }      
@@ -113,8 +111,8 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
     previousVal.addAll(this.selectedAssignedUsers);
     this.selectedAssignedUsers.clear();
     for(Object user:selectedAssignedUsers) {
-      if(user instanceof UIRepositoryUser) {
-        this.selectedAssignedUsers.add(createAclFromUser((UIRepositoryUser) user));
+      if(user instanceof String) {
+        this.selectedAssignedUsers.add(createAclFromUser((String)user));
       } else {
         this.selectedAssignedUsers.add( (UIRepositoryObjectAcl) user);
       }
@@ -125,7 +123,7 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
     this.selectedAssignedUsers.add(selectedAssignedUser);
   }
 
-  public List<UIRepositoryUser> getAvailableUserList() {
+  public List<String> getAvailableUserList() {
     return availableUserList;
   }
 
@@ -181,42 +179,33 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
     }
   }
 
-  public void setUserList(List<UserInfo> userList,List<RoleInfo> roleList) {
-    List<UIRepositoryUser> users = new ArrayList<UIRepositoryUser>();
-    List<UIRepositoryRole> roles = new ArrayList<UIRepositoryRole>();
-    if(userList != null && userList.size() > 0) {
-      for(UserInfo userInfo:userList) {
-        users.add(new UIRepositoryUser(userInfo));
+  public void setUserList(List<String> userList,List<String> roleList) {
+      if(userList != null && userList.size() > 0) {
+        setAvailableUserList(userList);
+        setSelectedAvailableUser(userList.get(0));
+        masterAvailableUserList.addAll(availableUserList);
       }
-      setAvailableUserList(users);
-      setSelectedAvailableUser( new UIRepositoryUser(userList.get(0)));
-      masterAvailableUserList.addAll(availableUserList);
-
-    }
-    if(roleList != null && roleList.size() > 0) {   
-      for(RoleInfo roleInfo:roleList) {
-        roles.add(new UIRepositoryRole(roleInfo));
+      if(roleList != null && roleList.size() > 0) {
+        setAvailableRoleList(roleList);
+        setSelectedAvailableRole(roleList.get(0));
+        masterAvailableRoleList.addAll(availableRoleList);
       }
-      setAvailableRoleList(roles);
-      setSelectedAvailableRole(new UIRepositoryRole(roleList.get(0)));
-      masterAvailableRoleList.addAll(availableRoleList);
-    }
-    setSelectedAcls(selectedAcls);
+      setSelectedAcls(selectedAcls);
   }
-  public void setAvailableUserList(List<UIRepositoryUser> userList) {
-    List<UIRepositoryUser> previousVal = new ArrayList<UIRepositoryUser>();
+  public void setAvailableUserList(List<String> userList) {
+    List<String> previousVal = new ArrayList<String>();
     previousVal.addAll(this.availableUserList);
     this.availableUserList.clear();
     this.availableUserList.addAll(userList);
     this.firePropertyChange("availableUserList", previousVal, availableUserList); //$NON-NLS-1$
   }
 
-  public List<UIRepositoryRole> getAvailableRoleList() {
+  public List<String> getAvailableRoleList() {
     return availableRoleList;
   }
 
-  public void setAvailableRoleList(List<UIRepositoryRole> roleList) {
-    List<UIRepositoryRole> previousVal = new ArrayList<UIRepositoryRole>();
+  public void setAvailableRoleList(List<String> roleList) {
+    List<String> previousVal = new ArrayList<String>();
     previousVal.addAll(this.availableRoleList);
     this.availableRoleList.clear();
     this.availableRoleList.addAll(roleList);
@@ -224,16 +213,16 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
   }
   public void assignRoles(List<Object> rolesToAssign) {
     for(Object role:rolesToAssign) {
-      UIRepositoryRole roleToAssign = (UIRepositoryRole) role;
+      String roleToAssign = (String) role;
       assignRole(roleToAssign);
     }
     this.firePropertyChange("selectedRoleList", null, getSelectedRoleList()); //$NON-NLS-1$
     setSelectedAssignedRoles(rolesToAssign);
     setSelectedAvailableRoles(new ArrayList<Object>());
   }
-  public void assignRole(UIRepositoryRole roleToAssign) {
+  public void assignRole(String roleToAssign) {
     aclsToAdd.add(createAclFromRole(roleToAssign));
-    removeFromAvailableRoles(roleToAssign.getName());
+    removeFromAvailableRoles(roleToAssign);
   }
 
   public UIRepositoryObjectAcl getAcl(String aclName) {
@@ -288,7 +277,7 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
     previousVal.addAll(getSelectedUserList());
 
     for(Object user:usersToAssign) {
-      UIRepositoryUser userToAssign = (UIRepositoryUser) user;
+      String userToAssign = (String) user;
       assignUser(userToAssign);
     }
     this.firePropertyChange("selectedUserList", null, getSelectedUserList()); //$NON-NLS-1$
@@ -296,11 +285,11 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
     setSelectedAvailableUsers(new ArrayList<Object>());
   }
 
-  public void assignUser(UIRepositoryUser userToAssign) {
+  public void assignUser(String userToAssign) {
     ObjectAce ace = new RepositoryObjectAce(
-        new RepositoryObjectRecipient(userToAssign.getName(), ObjectRecipient.Type.USER));
+        new RepositoryObjectRecipient(userToAssign, ObjectRecipient.Type.USER));
     aclsToAdd.add(new UIRepositoryObjectAcl(ace));    
-    removeFromAvailableUsers(userToAssign.getName());   
+    removeFromAvailableUsers(userToAssign);   
   }
 
   private void removeFromAvailableAcls(UIRepositoryObjectAcl acl) {
@@ -370,49 +359,49 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
     }   
   }
   
-  public UIRepositoryUser getAvailableUser(int index) {
+  public String getAvailableUser(int index) {
     return availableUserList.get(index);
   }
 
-  public int getAvailableUserIndex(UIRepositoryUser user) {
+  public int getAvailableUserIndex(String user) {
     for(int i=0;i<availableUserList.size();i++) {
-      UIRepositoryUser u = availableUserList.get(i);
-      if(u.getName().equals(user.getName())) {
+      String u = availableUserList.get(i);
+      if(u.equals(user)) {
         return i;
       }
     }
     return -1; 
   }
 
-  public UIRepositoryRole getAvailableRole(int index) {
+  public String getAvailableRole(int index) {
     return availableRoleList.get(index);
   }
 
-  public int getAvailableRoleIndex(UIRepositoryRole role) {
+  public int getAvailableRoleIndex(String role) {
     for(int i=0;i<availableRoleList.size();i++) {
-      UIRepositoryRole r = availableRoleList.get(i);
-      if(r.getName().equals(role.getName())) {
+      String r = availableRoleList.get(i);
+      if(r.equals(role)) {
         return i;
       }
     }
     return -1; 
   }
 
-  private UIRepositoryObjectAcl createAclFromRole(UIRepositoryRole role) {
+  private UIRepositoryObjectAcl createAclFromRole(String role) {
     ObjectAce ace = new RepositoryObjectAce(
-      new RepositoryObjectRecipient(role.getName(), ObjectRecipient.Type.ROLE));
+      new RepositoryObjectRecipient(role, ObjectRecipient.Type.ROLE));
     return new UIRepositoryObjectAcl(ace);
   }
 
-  private UIRepositoryObjectAcl createAclFromUser(UIRepositoryUser user) {
+  private UIRepositoryObjectAcl createAclFromUser(String user) {
     ObjectAce ace = new RepositoryObjectAce(
-      new RepositoryObjectRecipient(user.getName(), ObjectRecipient.Type.USER));
+      new RepositoryObjectRecipient(user, ObjectRecipient.Type.USER));
     return new UIRepositoryObjectAcl(ace);
   }
 
   private void removeFromAvailableUsers(String name) {
-    for(UIRepositoryUser user:availableUserList) {
-      if(user.getName().equals(name)) {
+    for(String user:availableUserList) {
+      if(user.equals(name)) {
         availableUserList.remove(user);
         break;
       }
@@ -422,8 +411,8 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
   }
 
   private void removeFromAvailableRoles(String name) {
-    for(UIRepositoryRole role:availableRoleList) {
-      if(role.getName().equals(name)) {
+    for(String role:availableRoleList) {
+      if(role.equals(name)) {
         availableRoleList.remove(role);
         break;
       }
@@ -433,8 +422,8 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
   }
 
   private void addToAvailableUsers(String name) {
-    for(UIRepositoryUser user:masterAvailableUserList) {
-      if(user.getName().equals(name)) {
+    for(String user:masterAvailableUserList) {
+      if(user.equals(name)) {
         availableUserList.add(user);
         break;
       }
@@ -444,8 +433,8 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
   }
 
   private void addToAvailableRoles(String name) {
-    for(UIRepositoryRole role:masterAvailableRoleList) {
-      if(role.getName().equals(name)) {
+    for(String role:masterAvailableRoleList) {
+      if(role.equals(name)) {
         availableRoleList.add(role);
         break;
       }
@@ -484,24 +473,7 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter{
     selectedAcls.addAcls(aclsToAdd);
     selectedAcls.removeAcls(aclsToRemove);
   }
-  
-  private UIRepositoryRole getRole(String recipientName) {
-    for(UIRepositoryRole role:masterAvailableRoleList) {
-      if(role.getName().equals(recipientName)) {
-        return role;
-      }
-    }
-    return null;
-  }
-  private UIRepositoryUser getUser(String recipientName) {
-    for(UIRepositoryUser user:masterAvailableUserList) {
-      if(user.getName().equals(recipientName)) {
-        return user;
-      }
-    }
-    return null;
-  }
-  
+ 
   public UIRepositoryObjectAcl getSelectedUser(int index) {
     return getSelectedUserList().get(index);
   }

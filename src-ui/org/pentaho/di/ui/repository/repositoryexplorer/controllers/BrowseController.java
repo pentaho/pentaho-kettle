@@ -19,6 +19,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListenerCollection;
@@ -50,6 +51,8 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  * 
  */
 public class BrowseController extends AbstractXulEventHandler {
+
+  private ResourceBundle messages;
 
   private XulTree folderTree;
 
@@ -83,18 +86,18 @@ public class BrowseController extends AbstractXulEventHandler {
   }
 
   private void createBindings() {
-    folderTree = (XulTree) document.getElementById("folder-tree");
-    fileTable = (XulTree) document.getElementById("file-table");
+    folderTree = (XulTree) document.getElementById("folder-tree"); //$NON-NLS-1$
+    fileTable = (XulTree) document.getElementById("file-table"); //$NON-NLS-1$ 
 
     // Bind the repository folder structure to the folder tree.
     //bf.setBindingType(Binding.Type.ONE_WAY);
-    directoryBinding = bf.createBinding(repositoryDirectory, "children", folderTree, "elements");
-
+    directoryBinding = bf.createBinding(repositoryDirectory, "children", folderTree, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
+ 
     // Bind the selected index from the folder tree to the list of repository objects in the file table. 
     bf.setBindingType(Binding.Type.ONE_WAY);
 
-    bf.createBinding(folderTree, "selectedItems", this, "selectedFolderItems");
-    bf.createBinding(this, "repositoryDirectories", fileTable, "elements",
+    bf.createBinding(folderTree, "selectedItems", this, "selectedFolderItems"); //$NON-NLS-1$  //$NON-NLS-2$
+    bf.createBinding(this, "repositoryDirectories", fileTable, "elements",  //$NON-NLS-1$  //$NON-NLS-2$
         new BindingConvertor<List<UIRepositoryDirectory>, UIRepositoryObjects>() {
           @Override
           public UIRepositoryObjects sourceToTarget(List<UIRepositoryDirectory> rd) {
@@ -109,7 +112,7 @@ public class BrowseController extends AbstractXulEventHandler {
             try {
               listOfObjects = rd.get(0).getRepositoryObjects();
               bf.setBindingType(Binding.Type.ONE_WAY);
-              bf.createBinding(listOfObjects, "children", fileTable, "elements");
+              bf.createBinding(listOfObjects, "children", fileTable, "elements");  //$NON-NLS-1$  //$NON-NLS-2$
             } catch (Exception e) {
               // how do we handle exceptions in a binding? dialog here? 
               // TODO: handle exception
@@ -138,13 +141,13 @@ public class BrowseController extends AbstractXulEventHandler {
   }
 
   private void createRevisionBindings() {
-    revisionTable = (XulTree) document.getElementById("revision-table");
+    revisionTable = (XulTree) document.getElementById("revision-table"); //$NON-NLS-1$
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    Binding revisionTreeBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-table",
-        "!disabled");
-    Binding revisionLabelBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-label",
-        "!disabled");
+    Binding revisionTreeBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-table",    //$NON-NLS-1$ //$NON-NLS-2$
+        "!disabled"); //$NON-NLS-1$
+    Binding revisionLabelBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-label",   //$NON-NLS-1$ //$NON-NLS-2$
+        "!disabled"); //$NON-NLS-1$
 
     BindingConvertor<int[], Boolean> forButtons = new BindingConvertor<int[], Boolean>() {
 
@@ -159,14 +162,14 @@ public class BrowseController extends AbstractXulEventHandler {
       }
     };
 
-    Binding buttonBinding = bf.createBinding(revisionTable, "selectedRows", "revision-open", "!disabled", forButtons);
+    Binding buttonBinding = bf.createBinding(revisionTable, "selectedRows", "revision-open", "!disabled", forButtons); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     //bf.createBinding(revisionTable,"selectedRows", "revision-remove", "!disabled", forButtons);
 
     Binding revisionBinding = null;
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems");
-    revisionBinding = bf.createBinding(this, "repositoryObjects", revisionTable, "elements",
+    bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
+    revisionBinding = bf.createBinding(this, "repositoryObjects", revisionTable, "elements", //$NON-NLS-1$ //$NON-NLS-2$
         new BindingConvertor<List<UIRepositoryObject>, UIRepositoryObjectRevisions>() {
           @Override
           public UIRepositoryObjectRevisions sourceToTarget(List<UIRepositoryObject> ro) {
@@ -185,7 +188,7 @@ public class BrowseController extends AbstractXulEventHandler {
               UIRepositoryContent rc = (UIRepositoryContent) ro.get(0);
               revisions = rc.getRevisions();
               bf.setBindingType(Binding.Type.ONE_WAY);
-              bf.createBinding(revisions, "children", revisionTable, "elements");
+              bf.createBinding(revisions, "children", revisionTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
 
             } catch (Exception e) {
               // how do we handle exceptions in a binding? dialog here? 
@@ -216,8 +219,17 @@ public class BrowseController extends AbstractXulEventHandler {
     this.bf = bf;
   }
 
+  
+  public ResourceBundle getMessages() {
+    return messages;
+  }
+
+  public void setMessages(ResourceBundle messages) {
+    this.messages = messages;
+  }
+  
   public String getName() {
-    return "browseController";
+    return "browseController"; //$NON-NLS-1$
   }
 
   public UIRepositoryDirectory getRepositoryDirectory() {
@@ -354,13 +366,14 @@ public class BrowseController extends AbstractXulEventHandler {
   }
 
   private XulPromptBox promptForName(final UIRepositoryObject object) throws XulException {
-    XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox");
-    String currentName = (object == null) ? "New Folder" : object.getName();
+    XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
+    String currentName = (object == null) ? messages.getString("BrowserController.NewFolder") //$NON-NLS-1$
+        : object.getName();
+    
+    prompt.setTitle(messages.getString("BrowserController.Name").concat(currentName));//$NON-NLS-1$
+    prompt.setButtons(new String[] { "Accept", "Cancel" });//$NON-NLS-1$ //$NON-NLS-2$
 
-    prompt.setTitle("Name ".concat(currentName));
-    prompt.setButtons(new String[] { "Accept", "Cancel" });
-
-    prompt.setMessage("Enter name for ".concat(currentName));
+    prompt.setMessage(messages.getString("BrowserController.NameLabel").concat(currentName));//$NON-NLS-1$
     prompt.setValue(currentName);
     return prompt;
   }
@@ -460,7 +473,7 @@ public class BrowseController extends AbstractXulEventHandler {
 
   public void setRepositoryObjects(List<UIRepositoryObject> selectedFileItems) {
     this.repositoryObjects = selectedFileItems;
-    firePropertyChange("repositoryObjects", null, selectedFileItems);
+    firePropertyChange("repositoryObjects", null, selectedFileItems);//$NON-NLS-1$
   }
 
   public List<UIRepositoryObject> getRepositoryObjects() {
@@ -473,7 +486,7 @@ public class BrowseController extends AbstractXulEventHandler {
 
   public void setRepositoryDirectories(List<UIRepositoryDirectory> selectedFolderItems) {
     this.repositoryDirectories = selectedFolderItems;
-    firePropertyChange("repositoryDirectories", null, selectedFolderItems);
+    firePropertyChange("repositoryDirectories", null, selectedFolderItems); //$NON-NLS-1$
   }
 
   public void addContextChangeListener(ContextChangeListener listener) {

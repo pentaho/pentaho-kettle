@@ -13,6 +13,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -26,6 +27,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnection;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnections;
 import org.pentaho.ui.xul.binding.Binding;
@@ -38,6 +40,8 @@ import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
 public class ConnectionsController extends AbstractXulEventHandler {
 
+  private ResourceBundle messages;
+  
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
   
   private XulTree connectionsTable = null;
@@ -174,13 +178,13 @@ public class ConnectionsController extends AbstractXulEventHandler {
       databaseMeta.initializeVariablesFrom(null);
       DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
       String dbName = dd.open();
-      if (dbName != null && !dbName.equals(""))
+      if (dbName != null && !dbName.equals(""))//$NON-NLS-1$
       {
         // See if this user connection exists...
         ObjectId idDatabase = repository.getDatabaseID(dbName);
         if (idDatabase==null)
         {
-          repository.insertLogEntry("Creating new database '"+databaseMeta.getName()+"'");
+          repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class, "ConnectionsController.Message.CreatingDatabase",databaseMeta.getName()));//$NON-NLS-1$
           repository.save(databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null);
         }
         else
@@ -230,11 +234,13 @@ public class ConnectionsController extends AbstractXulEventHandler {
                 mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.AlreadyExists.Title")); //$NON-NLS-1$
                 mb.open();
               } else {
-                repository.insertLogEntry("Updating database connection name from '" + originalDbName + "' to '" + databaseMeta.getName() + "'");
+                repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
+                    "ConnectionsController.Message.UpdatingDatabaseFromTo", originalDbName,databaseMeta.getName()));//$NON-NLS-1$
                 repository.renameDatabase(idDatabase, dbName);
               }
             } else {
-              repository.insertLogEntry("Updating database connection '"+databaseMeta.getName()+"'");
+              repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
+                  "ConnectionsController.Message.UpdatingDatabase",databaseMeta.getName()));//$NON-NLS-1$
               repository.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
             }
           }
@@ -301,5 +307,13 @@ public class ConnectionsController extends AbstractXulEventHandler {
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
+  }
+
+  public void setMessages(ResourceBundle messages) {
+    this.messages = messages;
+  }
+
+  public ResourceBundle getMessages() {
+    return messages;
   }
 }

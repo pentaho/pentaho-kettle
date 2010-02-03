@@ -16,10 +16,13 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer;
 
+import java.util.Enumeration;
+import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
@@ -46,28 +49,52 @@ import org.pentaho.ui.xul.swt.SwtXulRunner;
 public class RepositoryExplorer {
 
   private static Log log = LogFactory.getLog(RepositoryExplorer.class);
-  
+
+  @SuppressWarnings("unchecked")
+  private static final Class CLZ = RepositoryExplorer.class;
   private MainController mainController = new MainController();
+
   private BrowseController browseController = new BrowseController();
+
   private SecurityController securityController = new SecurityController();
+
   private ConnectionsController connectionsController = new ConnectionsController();
+
   private SlavesController slavesController = new SlavesController();
+
   private PartitionsController partitionsController = new PartitionsController();
+
   private ClustersController clustersController = new ClustersController();
+
   private PermissionsController permissionsController = new PermissionsController();
-  
+
   private XulDomContainer container;
+
+  private Directory repositoryDirectory;
   
-  private Directory repositoryDirectory; 
-  
+  private ResourceBundle resourceBundle = new ResourceBundle() {
+
+    @Override
+    public Enumeration<String> getKeys() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    protected Object handleGetObject(String key) {
+      return BaseMessages.getString(CLZ, key);
+    }
+    
+  };  
+
   // private Repository repository;
 
-  public RepositoryExplorer(Directory rd, Repository rep, RepositoryExplorerCallback callback, VariableSpace variableSpace) {
+  public RepositoryExplorer(Directory rd, Repository rep, RepositoryExplorerCallback callback,
+      VariableSpace variableSpace) {
     repositoryDirectory = rd;
     /// repository = rep;
     try {
-      container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul"); //$NON-NLS-1$
-
+      container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
       final XulRunner runner = new SwtXulRunner();
       runner.addContainer(container);
 
@@ -84,27 +111,32 @@ public class RepositoryExplorer {
       container.addEventHandler(browseController);
       browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
       browseController.setCallback(callback);
-      
+
       permissionsController.setBindingFactory(bf);
       permissionsController.setBrowseController(browseController);
+      permissionsController.setMessages(resourceBundle);
       container.addEventHandler(permissionsController);
       permissionsController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
-      
+
       connectionsController.setRepository(rep);
+      connectionsController.setMessages(resourceBundle);
       connectionsController.setBindingFactory(bf);
       container.addEventHandler(connectionsController);
-      
+
       slavesController.setRepository(rep);
       slavesController.setBindingFactory(bf);
+      slavesController.setMessages(resourceBundle);
       container.addEventHandler(slavesController);
-      
+
       partitionsController.setRepository(rep);
       partitionsController.setVariableSpace(variableSpace);
       partitionsController.setBindingFactory(bf);
+      partitionsController.setMessages(resourceBundle);
       container.addEventHandler(partitionsController);
-      
+
       clustersController.setRepository(rep);
       clustersController.setBindingFactory(bf);
+      clustersController.setMessages(resourceBundle);
       container.addEventHandler(clustersController);
 
       boolean securityEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().managesUsers();
@@ -114,72 +146,74 @@ public class RepositoryExplorer {
       loadAclOverlay(aclEnabled);
 
       container.addEventHandler(securityController);
-      if (securityEnabled){
+      if (securityEnabled) {
         securityController.setBindingFactory(bf);
         securityController.setRepositoryUserInterface(rep.getSecurityProvider());
+        securityController.setMessages(resourceBundle);
       }
-      
+
       boolean aclsEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsAcls();
       container.addEventHandler(permissionsController);
-      if (aclsEnabled && securityEnabled){
-    	  permissionsController.setBindingFactory(bf);
-    	  permissionsController.setRepositoryUserInterface(rep.getSecurityProvider());
+      if (aclsEnabled && securityEnabled) {
+        permissionsController.setBindingFactory(bf);
+        permissionsController.setRepositoryUserInterface(rep.getSecurityProvider());
+        permissionsController.setMessages(resourceBundle);
       }
 
       try {
         runner.initialize();
       } catch (XulException e) {
-        log.error("error starting Xul application", e);
+        log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);//$NON-NLS-1$
       }
 
     } catch (XulException e) {
-      log.error("error loading Xul application", e);
+      log.error(resourceBundle.getString("RepositoryExplorer.ErrorLoadingXulApplication"), e);//$NON-NLS-1$
     }
   }
 
-  public Composite getDialogArea(){
+  public Composite getDialogArea() {
     XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
     return (Composite) dialog.getManagedObject();
   }
-  
-  public void show(){
+
+  public void show() {
     XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
     dialog.show();
-    
+
   }
 
-  private void loadSecurityOverlay(boolean securityEnabled){
+  private void loadSecurityOverlay(boolean securityEnabled) {
+    String overlay = null;
     try {
-      String overlay = securityEnabled ? 
-          "org/pentaho/di/ui/repository/repositoryexplorer/xul/security-enabled-layout-overlay.xul" : //$NON-NLS-1$
-            "org/pentaho/di/ui/repository/repositoryexplorer/xul/security-disabled-layout-overlay.xul"; //$NON-NLS-1$
+      overlay = securityEnabled ? "org/pentaho/di/ui/repository/repositoryexplorer/xul/security-enabled-layout-overlay.xul" : //$NON-NLS-1$
+          "org/pentaho/di/ui/repository/repositoryexplorer/xul/security-disabled-layout-overlay.xul"; //$NON-NLS-1$
       container.loadOverlay(overlay);
     } catch (XulException e) {
-      log.error("Error loading Xul overlay: security-layout-overlay.xul");
+      log.error(BaseMessages.getString(CLZ, "RepositoryExplorer.ErrorLoadingXulOverlay", overlay));//$NON-NLS-1$
       e.printStackTrace();
     }
   }
 
-  private void loadAclOverlay(boolean aclEnabled){
-	    try {
-	      String overlay = aclEnabled ? 
-	          "org/pentaho/di/ui/repository/repositoryexplorer/xul/acl-enabled-layout-overlay.xul" : //$NON-NLS-1$
-	            "org/pentaho/di/ui/repository/repositoryexplorer/xul/acl-disabled-layout-overlay.xul"; //$NON-NLS-1$
-	      container.loadOverlay(overlay);
-	    } catch (XulException e) {
-	      log.error("Error loading Xul overlay: acl-layout-overlay.xul");
-	      e.printStackTrace();
-	    }
-	  }
-
-  private void loadVersionOverlay(boolean versionEnabled){
+  private void loadAclOverlay(boolean aclEnabled) {
+    String overlay = null;
     try {
-      String overlay = versionEnabled ? 
-          "org/pentaho/di/ui/repository/repositoryexplorer/xul/version-layout-overlay.xul" : //$NON-NLS-1$
-            "org/pentaho/di/ui/repository/repositoryexplorer/xul/version-disabled-layout-overlay.xul"; //$NON-NLS-1$
+      overlay = aclEnabled ? "org/pentaho/di/ui/repository/repositoryexplorer/xul/acl-enabled-layout-overlay.xul" : //$NON-NLS-1$
+          "org/pentaho/di/ui/repository/repositoryexplorer/xul/acl-disabled-layout-overlay.xul"; //$NON-NLS-1$
       container.loadOverlay(overlay);
     } catch (XulException e) {
-      log.error("Error loading Xul overlay: version-layout-overlay.xul");
+      log.error(BaseMessages.getString(CLZ, "RepositoryExplorer.ErrorLoadingXulOverlay", overlay));//$NON-NLS-1$
+      e.printStackTrace();
+    }
+  }
+
+  private void loadVersionOverlay(boolean versionEnabled) {
+    String overlay = null;
+    try {
+      overlay = versionEnabled ? "org/pentaho/di/ui/repository/repositoryexplorer/xul/version-layout-overlay.xul" : //$NON-NLS-1$
+          "org/pentaho/di/ui/repository/repositoryexplorer/xul/version-disabled-layout-overlay.xul"; //$NON-NLS-1$
+      container.loadOverlay(overlay);
+    } catch (XulException e) {
+      log.error(BaseMessages.getString(CLZ, "RepositoryExplorer.ErrorLoadingXulOverlay", overlay));//$NON-NLS-1$
       e.printStackTrace();
     }
   }
@@ -191,5 +225,5 @@ public class RepositoryExplorer {
   public void setRepositoryDirectory(Directory repositoryDirectory) {
     this.repositoryDirectory = repositoryDirectory;
   }
-  
+
 }

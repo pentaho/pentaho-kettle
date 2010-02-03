@@ -18,6 +18,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -31,6 +32,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UICluster;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIClusters;
 import org.pentaho.ui.xul.binding.BindingConvertor;
@@ -42,6 +44,8 @@ import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
 public class ClustersController extends AbstractXulEventHandler {
 
+  private ResourceBundle messages;
+  
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private BindingFactory bf = null;
@@ -126,8 +130,8 @@ public class ClustersController extends AbstractXulEventHandler {
         } else {
           ClusterSchemaDialog csd = new ClusterSchemaDialog(shell, clusterSchema, repository.getSlaveServers());
           if(csd.open()) {
-            if(clusterSchema.getName() != null  && !clusterSchema.getName().equals("")) {
-              repository.insertLogEntry("Updating cluster schema '"+clusterSchema.getName()+"'");
+            if(clusterSchema.getName() != null  && !clusterSchema.getName().equals("")) {//$NON-NLS-1$
+              repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class, "ClusterController.Message.UpdatingCluster", clusterSchema.getName())); //$NON-NLS-1$
               repository.save(clusterSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
             } else {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -160,8 +164,8 @@ public class ClustersController extends AbstractXulEventHandler {
         // See if this cluster already exists...
         ObjectId idCluster = repository.getClusterID(cluster.getName());
         if (idCluster == null) {
-          if(cluster.getName() != null && !cluster.getName().equals("")) {
-            repository.insertLogEntry("Creating new cluster '" + cluster.getName() + "'");
+          if(cluster.getName() != null && !cluster.getName().equals("")) {//$NON-NLS-1$
+            repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class, "ClusterController.Message.CreatingNewCluster", cluster.getName())); //$NON-NLS-1$
             repository.save(cluster, Const.VERSION_COMMENT_INITIAL_VERSION, null);
           } else {
             MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -177,7 +181,7 @@ public class ClustersController extends AbstractXulEventHandler {
         }
       }
     } catch (KettleException e) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG,"RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title"), 
+      new ErrorDialog(shell, BaseMessages.getString(PKG,"RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title"), //$NON-NLS-1$
     		  BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshClusters();
@@ -250,6 +254,14 @@ public class ClustersController extends AbstractXulEventHandler {
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
+  }
+
+  public void setMessages(ResourceBundle messages) {
+    this.messages = messages;
+  }
+
+  public ResourceBundle getMessages() {
+    return messages;
   }
 
 }

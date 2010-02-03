@@ -175,4 +175,24 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
 		// TODO Auto-generated method stub
 		
 	}
+
+  public List<String> getAllRoles() throws KettleException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public List<String> getAllUsers() throws KettleException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public List<String> getAllUsersInRole(String role) throws KettleException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public List<String> getRolesForUser(String userName) throws KettleException {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

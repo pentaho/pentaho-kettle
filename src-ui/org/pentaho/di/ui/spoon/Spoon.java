@@ -5029,6 +5029,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     ((XulMenuitem) doc.getElementById("repository-disconnect")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!enableRepositoryMenu);
+    ((XulMenuitem) doc.getElementById("repository-explore-experimental")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("repository-edit-user")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
 

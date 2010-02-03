@@ -18,6 +18,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -32,6 +33,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartition;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartitions;
 import org.pentaho.ui.xul.binding.BindingConvertor;
@@ -43,6 +45,8 @@ import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
 public class PartitionsController extends AbstractXulEventHandler {
 
+  private ResourceBundle messages;
+  
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private BindingFactory bf = null;
@@ -132,8 +136,9 @@ public class PartitionsController extends AbstractXulEventHandler {
         } else {
           PartitionSchemaDialog partitionDialog = new PartitionSchemaDialog(shell, partitionSchema, repository.readDatabases(), variableSpace);
           if (partitionDialog.open()) {
-            if(partitionSchema.getName() != null && !partitionSchema.getName().equals("")) {
-              repository.insertLogEntry("Updating partition schema '" + partitionSchema.getName() + "'");
+            if(partitionSchema.getName() != null && !partitionSchema.getName().equals("")) {//$NON-NLS-1$
+              repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
+                  "PartitionsController.Message.UpdatingPartition",partitionSchema.getName()));//$NON-NLS-1$
               repository.save(partitionSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
             } else {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -152,7 +157,8 @@ public class PartitionsController extends AbstractXulEventHandler {
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.UnexpectedError.Message") + partitionSchemaName + "]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title"), //$NON-NLS-1$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.UnexpectedError.Message") + partitionSchemaName + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
     } finally {
       refreshPartitions();
     }
@@ -166,8 +172,8 @@ public class PartitionsController extends AbstractXulEventHandler {
         // See if this partition already exists...
         ObjectId idPartition = repository.getPartitionSchemaID(partition.getName());
         if (idPartition == null) {
-          if(partition.getName() != null && !partition.getName().equals("")) {
-            repository.insertLogEntry("Creating new partition '" + partition.getName() + "'");
+          if(partition.getName() != null && !partition.getName().equals("")) {//$NON-NLS-1$
+            repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class, "PartitionsController.Message.CreatingPartition",partition.getName()));//$NON-NLS-1$
             repository.save(partition, Const.VERSION_COMMENT_INITIAL_VERSION, null);
           } else {
             MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -183,7 +189,7 @@ public class PartitionsController extends AbstractXulEventHandler {
         }
       }
     } catch (KettleException e) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG,"RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title"), 
+      new ErrorDialog(shell, BaseMessages.getString(PKG,"RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title"), //$NON-NLS-1$
           BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshPartitions();
@@ -255,5 +261,13 @@ public class PartitionsController extends AbstractXulEventHandler {
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
+  }
+
+  public void setMessages(ResourceBundle messages) {
+    this.messages = messages;
+  }
+
+  public ResourceBundle getMessages() {
+    return messages;
   }
 }

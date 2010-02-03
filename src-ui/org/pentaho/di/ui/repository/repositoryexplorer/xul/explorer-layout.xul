@@ -7,19 +7,19 @@
   onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init(), permissionsController.init()">
 
 	<dialog id="repository-explorer-dialog" 
-		title="Dev Repository"
+		title="${RepositoryExplorerDialog.Title}"
 	    height="600" width="800"
 		appicon="ui/images/spoon.ico"
 		buttons="accept"
 		buttonalign="end" 
-		buttonlabelaccept="Close" 
+		buttonlabelaccept="${Dialog.Close}" 
 		ondialogaccept="mainController.closeDialog()">
 	
 		<menupopup id="folderContextMenu">
-			<menuitem label="New Folder" command="browseController.createFolder()"/>
-			<menuitem label="Open" />
-			<menuitem label="Rename" command="browseController.renameFolder()"/>
-			<menuitem label="Delete" command="browseController.deleteFolder()"/>
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.NewFolder}" command="browseController.createFolder()"/>
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Open}" />
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameFolder()"/>
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteFolder()"/>
 		</menupopup>
 	
 		<menupopup id="revisionContextMenu">
@@ -28,20 +28,20 @@
 		</menupopup>
 	
 		<menupopup id="fileContextMenu">
-			<menuitem label="Open" command="browseController.openContent()"/>
-			<menuitem label="Rename" command="browseController.renameContent()"/>
-			<menuitem label="Delete" command="browseController.deleteContent()"/>
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameContent()"/>
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteContent()"/>
 		</menupopup>
 	
 		<tabbox id="repositoryExplorerTabs" flex="1">
 	
 			<tabs>
-				<tab label="Browse" />
-				<tab label="Connections" />
-				<tab label="Security" />
-				<tab label="Slaves" />
-				<tab label="Partitions" />
-				<tab label="Clusters" />
+				<tab label="${RepositoryExplorerDialog.Tabs.Browse}" />
+				<tab label="${RepositoryExplorerDialog.Tabs.Connections}" />
+				<tab label="${RepositoryExplorerDialog.Tabs.Security}" />
+				<tab label="${RepositoryExplorerDialog.Tabs.Slaves}" />
+				<tab label="${RepositoryExplorerDialog.Tabs.Partitions}" />
+				<tab label="${RepositoryExplorerDialog.Tabs.Clusters}" />
 			</tabs>
 	
 			<tabpanels flex="1">
@@ -60,7 +60,7 @@
 							<splitter flex="1" orient="HORIZONTAL">  
 								<vbox flex="1"> 
 									<hbox>
-										<label id="folder-label" value="Folders:" />
+										<label id="folder-label" value="${RepositoryExplorerDialog.BrowseTab.Label}" />
 										<label id="spacer-label" flex="1" />
 										<button id="folder-expand-all" image="images/ExpandAll.png" onclick="browseController.expandAllFolders()"
 											context="folderContextMenu" />
@@ -92,18 +92,18 @@
 											ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()" 
 											pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
 											<treecols>
-												<treecol id="name-col" flex="1" label="Name"
+												<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}"
 													pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
 													pen:comparatorbinding="comparator"/>
-												<treecol id="type-col" flex="1" label="Type"
+												<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}"
 													pen:binding="type" />
-												<treecol id="date-mod-col" flex="1" label="Date Modified"
+												<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}"
 													pen:binding="formatModifiedDate" />
-												<treecol id="size-col" flex="1" label="Size" />
+												<treecol id="size-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Size}" />
 		<!-- 
-												<treecol id="desc-col" flex="1" label="Description"
+												<treecol id="desc-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Description}"
 													pen:binding="description" />
-												<treecol id="lock-msg-col" flex="1" label="Lock Message"
+												<treecol id="lock-msg-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.LockMessage}"
 													pen:binding="lockMessage" />
 		-->											
 		
@@ -140,7 +140,7 @@
 					<vbox flex="1">
 						<!-- Connection list tool pane -->
 						<hbox height="20px">
-							<label value="Available:"/>
+							<label value="${RepositoryExplorerDialog.ConnectionsTab.Label}"/>
 							<label id="spacer-label" flex="1" />
 							<button id="connections-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="connectionsController.editConnection()"/>
 							<button id="connections-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="connectionsController.createConnection()"/>
@@ -149,10 +149,10 @@
 						<!-- Connection list -->
 						<tree id="connections-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
 							<treecols>
-								<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
-								<treecol id="type-col" flex="1" label="Type" pen:binding="type"/>
-								<treecol id="date-mod-col" flex="1" label="Date Modified" pen:binding="dateModified"/>
-								<treecol id="size-col" flex="1" label="Size"/>
+								<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+								<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}" pen:binding="type"/>
+								<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}" pen:binding="dateModified"/>
+								<treecol id="size-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Size}"/>
 							</treecols>
 							<treechildren/>
 						</tree>
@@ -167,13 +167,13 @@
 						<tree id="connection-revision-table" flex="1" hidecolumnpicker="true"
 							enableColumnDrag="true" context="revisionContextMenu">
 							<treecols>
-								<treecol id="revision-label-col" flex="1" label="Label"
+								<treecol id="revision-label-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Label}" 
 									pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
-								<treecol id="revision-date-mod-col" flex="1" label="Date Created"
+								<treecol id="revision-date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.DateCreated}"
 									pen:binding="formatCreationDate" context="revisionContextMenu" />
-								<treecol id="revision-comment-col" flex="1" label="Comment"
+								<treecol id="revision-comment-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Comment}"
 									pen:binding="comment" />
-								<treecol id="revision-user-col" flex="1" label="User"
+								<treecol id="revision-user-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.User}"
 									pen:binding="login" />
 							</treecols>
 							<treechildren />
@@ -232,7 +232,7 @@
 					<vbox flex="1">
 						<!-- Slaves list tool pane -->
 						<hbox>
-							<label value="Available:"/>
+							<label value="${RepositoryExplorerDialog.SlavesTab.Label}"/>
 							<label id="spacer-label" flex="1" />
 							<button id="slaves-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="slavesController.editSlave()"/>
 							<button id="slaves-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="slavesController.createSlave()"/>
@@ -241,10 +241,10 @@
 						<!-- Slaves list -->
 						<tree id="slaves-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
 							<treecols>
-								<treecol id="name-col" flex="4" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
-								<treecol id="host-col" flex="4" label="Host" pen:binding="host"/>
-								<treecol id="port-col" flex="2" label="Port" pen:binding="port"/>
-								<treecol id="master-col" flex="1" label="Master" pen:binding="master"/>
+								<treecol id="name-col" flex="4" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+								<treecol id="host-col" flex="4" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Host}" pen:binding="host"/>
+								<treecol id="port-col" flex="2" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Port}" pen:binding="port"/>
+								<treecol id="master-col" flex="1" label="${RepositoryExplorerDialog.SlavesTab.TableColumn.Master}" pen:binding="master"/>
 							</treecols>
 							<treechildren/>
 						</tree>
@@ -276,7 +276,7 @@
 					<vbox flex="1">
 						<!-- Partition list tool pane -->
 						<hbox>
-							<label value="Available:"/>
+							<label value="${RepositoryExplorerDialog.PartitionsTab.Label}"/>
 							<label id="spacer-label" flex="1" />
 							<button id="partitions-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="partitionsController.editPartition()"/>
 							<button id="partitions-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="partitionsController.createPartition()"/>
@@ -285,7 +285,7 @@
 						<!-- Partition list -->
 						<tree id="partitions-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
 							<treecols>
-								<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+								<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
 							</treecols>
 							<treechildren/>
 						</tree>
@@ -317,7 +317,7 @@
 					<vbox flex="1">
 						<!-- Cluster list tool pane -->
 						<hbox>
-							<label value="Available:"/>
+							<label value="${RepositoryExplorerDialog.ClustersTab.Label}"/>
 							<label id="spacer-label" flex="1" />
 							<button id="clusters-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="clustersController.editCluster()"/>
 							<button id="clusters-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="clustersController.createCluster()"/>
@@ -326,8 +326,8 @@
 						<!-- Cluster list -->
 						<tree id="clusters-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
 							<treecols>
-								<treecol id="name-col" flex="1" label="Name" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
-								<treecol id="servers-col" flex="4" label="Server(s)" pen:binding="serverList"/>
+								<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.ClustersTab.TableColumn.Name}" pen:binding="name" sortActive="true" sortDirection="ASCENDING"/>
+								<treecol id="servers-col" flex="4" label="${RepositoryExplorerDialog.ClustersTab.TableColumn.Servers}" pen:binding="serverList"/>
 							</treecols>
 							<treechildren/>
 						</tree>
@@ -353,18 +353,18 @@
     <!--     MANAGE ACLS DIALOG: Dialog to manage acls                                      -->
     <!--  ###############################################################################   -->    
 	
-	<dialog id="manage-acls-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel"
+	<dialog id="manage-acls-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
 	    		ondialogaccept="permissionsController.updateAcls()"
 	    		ondialogcancel="permissionsController.closeManageAclsDialog()" 
-	    		buttons="accept, cancel" buttonalign="right" title="Select User or Role" 
+	    		buttons="accept, cancel" buttonalign="right" title="${ManageAclsDialog.Title}" 
 	    		height="500" width="400">
 	    	<vbox flex="1">
 		    	<groupbox id="user-section" flex="1">
 		    		<caption label="User" />
 		    		<hbox flex="1">
 			    		<vbox flex="2">
-							<label value="Available:"/>
-							<listbox id="available-user-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>					
+							<label value="${ManageAclsDialog.Available}"/>
+							<listbox id="available-user-list" disabled="false" flex="1" seltype="multi"/>					
 			    		</vbox>
 					    <vbox>
 					    	<label id="spacer-label" flex="1" />
@@ -373,7 +373,7 @@
 							<label id="spacer-label" flex="1" />					    
 						</vbox>
 			    		<vbox flex="2">
-							<label value="Selected:"/>
+							<label value="${ManageAclsDialog.Selected}"/>
 							<listbox id="selected-user-list" pen:binding="recipientName" disabled="false" flex="1" seltype="multi"/>					
 			    		</vbox>	    		
 		    		</hbox>
@@ -382,8 +382,8 @@
 		    		<caption label="Role" />
 		    		<hbox flex="1">
 			    		<vbox flex="2">
-							<label value="Available:"/>
-							<listbox id="available-role-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>					
+							<label value="${ManageAclsDialog.Available}"/>
+							<listbox id="available-role-list" disabled="false" flex="1" seltype="multi"/>					
 			    		</vbox>
 					    <vbox>
 					    	<label id="spacer-label" flex="1" />
@@ -392,7 +392,7 @@
 							<label id="spacer-label" flex="1" />					    
 						</vbox>
 			    		<vbox flex="2">
-							<label value="Selected:"/>
+							<label value="${ManageAclsDialog.Selected}"/>
 							<listbox id="selected-role-list" pen:binding="recipientName" disabled="false" flex="1" seltype="multi"/>					
 			    		</vbox>	    		
 		    		</hbox>
@@ -402,23 +402,23 @@
   <!--  ###############################################################################   -->
   <!--     ADD USER DIALOG: Dialog to add/edit/manage user                                -->
   <!--  ###############################################################################   -->    
-    <dialog id="add-user-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel"
+    <dialog id="add-user-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
     		ondialogaccept="securityController.saveUser()"
     		ondialogcancel="securityController.cancelAddUserDialog()" 
-    		buttons="accept, cancel" buttonalign="right" title="Add User" 
+    		buttons="accept, cancel" buttonalign="right" title="${AddUserDialog.Title}" 
     		height="400" width="350">
        <vbox>
-			<label value="User Name:" />
+			<label value="${AddUserDialog.UserName}" />
 			<hbox>
 				<textbox id="user-name" flex="3" multiline="false"/>
 				<label id="spacer-label" flex="1" />
 			</hbox>
-			<label value="Password:"/>
+			<label value="${AddUserDialog.Password}"/>
 			<hbox>
 				<textbox id="user-password" flex="3" type="password" multiline="false"/>
 				<label id="spacer-label" flex="1" />
 			</hbox>
-			<label value="Description:"/>
+			<label value="${AddUserDialog.Description}"/>
 			<hbox>
 				<textbox id="user-description" flex="3" multiline="false"/>
 				<label id="spacer-label" flex="1" />
@@ -428,7 +428,7 @@
       	<caption label="Member"/>
 	       <hbox flex="1">
 		       <vbox flex="1">
-		       	   <label value="Available"/>
+		       	   <label value="${AddUserDialog.Available}"/>
 		    	   <listbox id="available-roles-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
 		       </vbox>
 		       <vbox>
@@ -438,7 +438,7 @@
 		       		<label id="spacer-label" flex="1" />
 		       </vbox>
 	   	       <vbox flex="1">
-			       <label value="Assigned"/>
+			       <label value="${AddUserDialog.Assigned}"/>
 			       <listbox id="selected-roles-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
 		       </vbox>
 	       </hbox>      	
@@ -448,19 +448,19 @@
   <!--     ADD ROLE DIALOG: Dialog to add/edit/manage role                                -->
   <!--  ###############################################################################   -->    
   
-  <dialog id="add-role-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel"
+  <dialog id="add-role-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
     		ondialogaccept="securityController.saveRole()"
     		ondialogcancel="securityController.cancelAddRoleDialog()" 
-    		buttons="accept, cancel" buttonalign="right" title="Add Role" 
+    		buttons="accept, cancel" buttonalign="right" title="${AddRoleDialog.AddRole}" 
     		height="400" width="350">
        <vbox>
-			<label value="Role Name:" />
+			<label value="${AddUserDialog.RoleName}" />
 			<hbox>
 				<textbox id="role-name"  flex="3" multiline="false"/>
 				<label id="spacer-label" flex="1" />
 			</hbox>
 			
-			<label value="Description:"/>
+			<label value="${AddUserDialog.Description}"/>
 			<hbox>
 				<textbox id="role-description"  flex="3" multiline="false"/>
 				<label id="spacer-label" flex="1" />
@@ -470,7 +470,7 @@
       	  <caption label="Member"/>
 	      <hbox flex="1">
 		       <vbox flex="1">
-		       	   <label value="Available"/>
+		       	   <label value="${AddRoleDialog.Available}"/>
 		    	   <listbox id="available-users-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
 		       </vbox>
 		       <vbox>
@@ -480,7 +480,7 @@
 					<label id="spacer-label" flex="1" />
 		       </vbox>
 	   	       <vbox flex="1">
-			       <label value="Assigned"/>
+			       <label value="${AddRoleDialog.Assigned}"/>
 			       <listbox id="selected-users-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
 		       </vbox>
 	       </hbox>
@@ -491,14 +491,14 @@
   <!--     message to the user. User needs to select either of the two options or click   -->
   <!--         cancel   												                  -->
   <!--  ###############################################################################   -->    
-  <dialog id="apply-acl-confirmation-dialog" buttonlabelaccept="Ok" buttonlabelcancel="Cancel" buttons="accept, cancel" ondialogcancel="permissionsController.closeApplyAclConfirmationDialog()"
-	  ondialogaccept="permissionsController.applyAcl()" buttonalign="right" title="Security" 
+  <dialog id="apply-acl-confirmation-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}" buttons="accept, cancel" ondialogcancel="permissionsController.closeApplyAclConfirmationDialog()"
+	  ondialogaccept="permissionsController.applyAcl()" buttonalign="right" title="${ApplyAclConfirmationDialog.Title}" 
   		xmlns:pen="http://www.pentaho.org/2008/xul" height="180" width="320">
        <vbox>
-        <label value="You have chosen to make permission changes on this folder."/>
-        <label value="Do you want to apply these changes to this folder only or apply to all subfolders and files as well ?"/>
-        <radio id="apply-only-radio-button" label="Apply changes to this folder only" command="permissionsController.setApplyOnly()" />		    
-       	<radio id="apply-recursive-radio-button" label="Apply changes to this folder, subfolders and files" command="permissionsController.setApplyRecursive()" />
+        <label value="${ApplyAclConfirmationDialog.ConfirmMessage1}"/>
+        <label value="${ApplyAclConfirmationDialog.ConfirmMessage2}"/>
+        <radio id="apply-only-radio-button" label="${ApplyAclConfirmationDialog.ApplyOnly}" command="permissionsController.setApplyOnly()" />		    
+       	<radio id="apply-recursive-radio-button" label="${ApplyAclConfirmationDialog.ApplyRecursive}" command="permissionsController.setApplyRecursive()" />
       </vbox>
   </dialog>  
 </window>  

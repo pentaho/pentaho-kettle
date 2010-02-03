@@ -19,13 +19,13 @@
 										<tree id="revision-table" flex="1" hidecolumnpicker="true"
 											enableColumnDrag="true" context="revisionContextMenu" treeLines="false">
 											<treecols>
-												<treecol id="revision-label-col" flex="1" label="Label"
+												<treecol id="revision-label-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Label}"
 													pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
-												<treecol id="revision-date-mod-col" flex="1" label="Date Created"
+												<treecol id="revision-date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.DateCreated}"
 													pen:binding="formatCreationDate" context="revisionContextMenu" />
-												<treecol id="revision-comment-col" flex="1" label="Comment"
+												<treecol id="revision-comment-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Comment}"
 													pen:binding="comment" />
-												<treecol id="revision-user-col" flex="1" label="User"
+												<treecol id="revision-user-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.User}"
 													pen:binding="login" />
 											</treecols>
 											<treechildren />
@@ -34,7 +34,7 @@
 									<tabpanel id="acl-tab">
 										<deck id="acl-deck">
 											<vbox id="no-acl-box" flex="1">
-												<label value="Permission information is not available"/> 
+												<label value="${PermissionsTab.NoPermission}"/> 
 											</vbox>
 											<vbox id="acl-box" flex="1"/>
 										</deck>

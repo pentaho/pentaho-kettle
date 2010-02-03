@@ -20,14 +20,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectRecipient;
 import org.pentaho.di.repository.RepositoryUserInterface;
 import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ObjectRecipient.Type;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryRole;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryUser;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity;
@@ -42,7 +45,6 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.components.XulMessageBox;
-import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDeck;
@@ -60,6 +62,8 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  */
 public class SecurityController extends AbstractXulEventHandler{
 
+  private ResourceBundle messages;
+  
   public static final int ROLE_DECK = 0;
 
   public static final int USER_DECK = 1;
@@ -153,8 +157,8 @@ public class SecurityController extends AbstractXulEventHandler{
     securityRole = new UISecurityRole();
     securityUser = new UISecurityUser();
     try {
-    confirmBox = (XulConfirmBox) document.createElement("confirmbox");
-    messageBox = (XulMessageBox) document.createElement("promptbox");
+    confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
+    messageBox = (XulMessageBox) document.createElement("promptbox");//$NON-NLS-1$
     } catch (XulException xe) {
       
     }
@@ -166,42 +170,42 @@ public class SecurityController extends AbstractXulEventHandler{
   private void createBindings() {
     //User Role Binding
 
-    roleRadioButton = (XulRadio) document.getElementById("role-radio-button");
-    userRadioButton = (XulRadio) document.getElementById("user-radio-button");
+    roleRadioButton = (XulRadio) document.getElementById("role-radio-button");//$NON-NLS-1$
+    userRadioButton = (XulRadio) document.getElementById("user-radio-button");//$NON-NLS-1$
 
-    roleEditButton = (XulButton) document.getElementById("role-edit");
-    roleRemoveButton = (XulButton) document.getElementById("role-remove");
-    userEditButton = (XulButton) document.getElementById("user-edit");
-    userRemoveButton = (XulButton) document.getElementById("user-remove");
+    roleEditButton = (XulButton) document.getElementById("role-edit");//$NON-NLS-1$
+    roleRemoveButton = (XulButton) document.getElementById("role-remove");//$NON-NLS-1$
+    userEditButton = (XulButton) document.getElementById("user-edit");//$NON-NLS-1$
+    userRemoveButton = (XulButton) document.getElementById("user-remove");//$NON-NLS-1$
 
-    addUserToRoleButton = (XulButton) document.getElementById("add-user-to-role");
-    removeUserFromRoleButton = (XulButton) document.getElementById("remove-user-from-role");
-    addRoleToUserButton = (XulButton) document.getElementById("add-role-to-user");
-    removeRoleFromUserButton = (XulButton) document.getElementById("remove-role-from-user");
+    addUserToRoleButton = (XulButton) document.getElementById("add-user-to-role");//$NON-NLS-1$
+    removeUserFromRoleButton = (XulButton) document.getElementById("remove-user-from-role");//$NON-NLS-1$
+    addRoleToUserButton = (XulButton) document.getElementById("add-role-to-user");//$NON-NLS-1$
+    removeRoleFromUserButton = (XulButton) document.getElementById("remove-role-from-user");//$NON-NLS-1$
 
-    userDialog = (XulDialog) document.getElementById("add-user-dialog");
-    roleDialog = (XulDialog) document.getElementById("add-role-dialog");
-    userRoleDeck = (XulDeck) document.getElementById("user-role-deck");
-    roleListBox = (XulListbox) document.getElementById("roles-list");
-    userListBox = (XulListbox) document.getElementById("users-list");
-    roleDetailTable = (XulTree) document.getElementById("role-detail-table");
-    userDetailTable = (XulTree) document.getElementById("user-detail-table");
+    userDialog = (XulDialog) document.getElementById("add-user-dialog");//$NON-NLS-1$
+    roleDialog = (XulDialog) document.getElementById("add-role-dialog");//$NON-NLS-1$
+    userRoleDeck = (XulDeck) document.getElementById("user-role-deck");//$NON-NLS-1$
+    roleListBox = (XulListbox) document.getElementById("roles-list");//$NON-NLS-1$
+    userListBox = (XulListbox) document.getElementById("users-list");//$NON-NLS-1$
+    roleDetailTable = (XulTree) document.getElementById("role-detail-table");//$NON-NLS-1$
+    userDetailTable = (XulTree) document.getElementById("user-detail-table");//$NON-NLS-1$
     // Add User Binding
 
-    username = (XulTextbox) document.getElementById("user-name");
-    userPassword = (XulTextbox) document.getElementById("user-password");
-    userDescription = (XulTextbox) document.getElementById("user-description");
-    availableRoles = (XulListbox) document.getElementById("available-roles-list");
-    assignedRoles = (XulListbox) document.getElementById("selected-roles-list");
-    assignRoleToUserButton = (XulButton) document.getElementById("assign-role-to-user");
-    unassignRoleFromUserButton = (XulButton) document.getElementById("unassign-role-from-user");
+    username = (XulTextbox) document.getElementById("user-name");//$NON-NLS-1$
+    userPassword = (XulTextbox) document.getElementById("user-password");//$NON-NLS-1$
+    userDescription = (XulTextbox) document.getElementById("user-description");//$NON-NLS-1$
+    availableRoles = (XulListbox) document.getElementById("available-roles-list");//$NON-NLS-1$
+    assignedRoles = (XulListbox) document.getElementById("selected-roles-list");//$NON-NLS-1$
+    assignRoleToUserButton = (XulButton) document.getElementById("assign-role-to-user");//$NON-NLS-1$
+    unassignRoleFromUserButton = (XulButton) document.getElementById("unassign-role-from-user");//$NON-NLS-1$
 
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    bf.createBinding(securityUser, "name", username, "value");
-    bf.createBinding(securityUser, "password", userPassword, "value");
-    bf.createBinding(securityUser, "description", userDescription, "value");
-    bf.createBinding(securityUser, "assignedRoles", assignedRoles, "elements");
-    bf.createBinding(securityUser, "availableRoles", availableRoles, "elements");
+    bf.createBinding(securityUser, "name", username, "value");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityUser, "password", userPassword, "value");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityUser, "description", userDescription, "value");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityUser, "assignedRoles", assignedRoles, "elements");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityUser, "availableRoles", availableRoles, "elements");//$NON-NLS-1$ //$NON-NLS-2$
 
     // Binding to convert role array to a role list object and vice versa
     BindingConvertor<List<UIRepositoryRole>, Object[]> arrayToListRoleConverter = new BindingConvertor<List<UIRepositoryRole>, Object[]>() {
@@ -264,10 +268,10 @@ public class SecurityController extends AbstractXulEventHandler{
     };
 
  
-    bf.createBinding(securityUser, "availableSelectedRoles", availableRoles, "selectedItems", arrayToListRoleConverter);
-    bf.createBinding(securityUser, "assignedSelectedRoles", assignedRoles, "selectedItems", arrayToListRoleConverter);
+    bf.createBinding(securityUser, "availableSelectedRoles", availableRoles, "selectedItems", arrayToListRoleConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityUser, "assignedSelectedRoles", assignedRoles, "selectedItems", arrayToListRoleConverter);//$NON-NLS-1$ //$NON-NLS-2$
     
-    bf.createBinding(security, "selectedUserIndex", userListBox, "selectedIndex");
+    bf.createBinding(security, "selectedUserIndex", userListBox, "selectedIndex");//$NON-NLS-1$ //$NON-NLS-2$
 
     BindingConvertor<Integer, Boolean> accumulatorButtonConverter = new BindingConvertor<Integer, Boolean>() {
 
@@ -287,33 +291,33 @@ public class SecurityController extends AbstractXulEventHandler{
     };
     
     bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(assignedRoles,  "selectedIndex", securityUser, "roleUnassignmentPossible", accumulatorButtonConverter);
-    bf.createBinding(availableRoles, "selectedIndex", securityUser, "roleAssignmentPossible", accumulatorButtonConverter);
-    bf.createBinding(securityUser, "roleUnassignmentPossible", unassignRoleFromUserButton, "!disabled");
-    bf.createBinding(securityUser, "roleAssignmentPossible", assignRoleToUserButton, "!disabled");
+    bf.createBinding(assignedRoles,  "selectedIndex", securityUser, "roleUnassignmentPossible", accumulatorButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(availableRoles, "selectedIndex", securityUser, "roleAssignmentPossible", accumulatorButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityUser, "roleUnassignmentPossible", unassignRoleFromUserButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityUser, "roleAssignmentPossible", assignRoleToUserButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
 
     // Add Role Binding
-    rolename = (XulTextbox) document.getElementById("role-name");
-    roleDescription = (XulTextbox) document.getElementById("role-description");
-    availableUsers = (XulListbox) document.getElementById("available-users-list");
-    assignedUsers = (XulListbox) document.getElementById("selected-users-list");
-    assignUserToRoleButton = (XulButton) document.getElementById("assign-user-to-role");
-    unassignUserFromRoleButton = (XulButton) document.getElementById("unassign-user-from-role");
+    rolename = (XulTextbox) document.getElementById("role-name");//$NON-NLS-1$
+    roleDescription = (XulTextbox) document.getElementById("role-description");//$NON-NLS-1$
+    availableUsers = (XulListbox) document.getElementById("available-users-list");//$NON-NLS-1$
+    assignedUsers = (XulListbox) document.getElementById("selected-users-list");//$NON-NLS-1$
+    assignUserToRoleButton = (XulButton) document.getElementById("assign-user-to-role");//$NON-NLS-1$
+    unassignUserFromRoleButton = (XulButton) document.getElementById("unassign-user-from-role");//$NON-NLS-1$
 
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    bf.createBinding(securityRole, "name", rolename, "value");
-    bf.createBinding(securityRole, "description", roleDescription, "value");
-    bf.createBinding(securityRole, "assignedUsers", assignedUsers, "elements");
-    bf.createBinding(securityRole, "availableUsers", availableUsers, "elements");    
-    bf.createBinding(securityRole, "availableSelectedUsers", availableUsers, "selectedItems", arrayToListUserConverter);
-    bf.createBinding(securityRole, "assignedSelectedUsers", assignedUsers, "selectedItems", arrayToListUserConverter);
-    bf.createBinding(security, "selectedRoleIndex", roleListBox, "selectedIndex");
+    bf.createBinding(securityRole, "name", rolename, "value");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityRole, "description", roleDescription, "value");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityRole, "assignedUsers", assignedUsers, "elements");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityRole, "availableUsers", availableUsers, "elements");    //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityRole, "availableSelectedUsers", availableUsers, "selectedItems", arrayToListUserConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityRole, "assignedSelectedUsers", assignedUsers, "selectedItems", arrayToListUserConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(security, "selectedRoleIndex", roleListBox, "selectedIndex");//$NON-NLS-1$ //$NON-NLS-2$
 
     bf.setBindingType(Binding.Type.ONE_WAY);    
-    bf.createBinding(assignedUsers,  "selectedIndex", securityRole, "userUnassignmentPossible", accumulatorButtonConverter);
-    bf.createBinding(availableUsers, "selectedIndex", securityRole, "userAssignmentPossible", accumulatorButtonConverter);    
-    bf.createBinding(securityRole, "userUnassignmentPossible", unassignUserFromRoleButton, "!disabled");
-    bf.createBinding(securityRole, "userAssignmentPossible", assignUserToRoleButton, "!disabled");
+    bf.createBinding(assignedUsers,  "selectedIndex", securityRole, "userUnassignmentPossible", accumulatorButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(availableUsers, "selectedIndex", securityRole, "userAssignmentPossible", accumulatorButtonConverter);  //$NON-NLS-1$ //$NON-NLS-2$  
+    bf.createBinding(securityRole, "userUnassignmentPossible", unassignUserFromRoleButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityRole, "userAssignmentPossible", assignUserToRoleButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
 
     try {
       bf.setBindingType(Binding.Type.ONE_WAY);
@@ -334,23 +338,23 @@ public class SecurityController extends AbstractXulEventHandler{
           return null;
         }
       };
-      bf.createBinding(roleListBox, "selectedIndex", roleEditButton, "disabled", buttonConverter);
-      bf.createBinding(roleListBox, "selectedIndex", roleRemoveButton, "disabled", buttonConverter);
-      bf.createBinding(userListBox, "selectedIndex", userEditButton, "disabled", buttonConverter);
-      bf.createBinding(userListBox, "selectedIndex", userRemoveButton, "disabled", buttonConverter);
+      bf.createBinding(roleListBox, "selectedIndex", roleEditButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(roleListBox, "selectedIndex", roleRemoveButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(userListBox, "selectedIndex", userEditButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(userListBox, "selectedIndex", userRemoveButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
 
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(userListBox, "selectedItem", security, "selectedUser");
-      bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");
-      bf.createBinding(roleListBox, "selectedIndex", addUserToRoleButton, "disabled", buttonConverter);
-      bf.createBinding(roleListBox, "selectedIndex", removeUserFromRoleButton, "disabled", buttonConverter);
-      bf.createBinding(userListBox, "selectedIndex", addRoleToUserButton, "disabled", buttonConverter);
-      bf.createBinding(userListBox, "selectedIndex", removeRoleFromUserButton, "disabled", buttonConverter);
-      bf.createBinding(security, "roleList", roleListBox, "elements").fireSourceChanged();
-      bf.createBinding(security, "userList", userListBox, "elements").fireSourceChanged();
-      bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");
-      bf.createBinding(userListBox, "selectedItem", security, "selectedUser");
-      roleDetailBinding = bf.createBinding(security, "selectedRole", roleDetailTable, "elements",
+      bf.createBinding(userListBox, "selectedItem", security, "selectedUser");//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(roleListBox, "selectedIndex", addUserToRoleButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(roleListBox, "selectedIndex", removeUserFromRoleButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(userListBox, "selectedIndex", addRoleToUserButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(userListBox, "selectedIndex", removeRoleFromUserButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(security, "roleList", roleListBox, "elements").fireSourceChanged();//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(security, "userList", userListBox, "elements").fireSourceChanged();//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(userListBox, "selectedItem", security, "selectedUser");//$NON-NLS-1$ //$NON-NLS-2$
+      roleDetailBinding = bf.createBinding(security, "selectedRole", roleDetailTable, "elements",//$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<UIRepositoryRole, List<UIRepositoryUser>>() {
 
             @Override
@@ -372,7 +376,7 @@ public class SecurityController extends AbstractXulEventHandler{
             }
 
           });
-      userDetailBinding = bf.createBinding(security, "selectedUser", userDetailTable, "elements",
+      userDetailBinding = bf.createBinding(security, "selectedUser", userDetailTable, "elements",//$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<UIRepositoryUser, List<UIRepositoryRole>>() {
 
             @Override
@@ -394,7 +398,7 @@ public class SecurityController extends AbstractXulEventHandler{
             }
 
           });
-      bf.createBinding(security, "selectedDeck", userRoleDeck, "selectedIndex",
+      bf.createBinding(security, "selectedDeck", userRoleDeck, "selectedIndex",//$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<ObjectRecipient.Type, Integer>() {
 
             @Override
@@ -451,12 +455,12 @@ public class SecurityController extends AbstractXulEventHandler{
         }
 
       };
-      bf.createBinding(securityRole, "mode", rolename, "disabled", modeBindingConverter);
-      bf.createBinding(securityRole, "mode", roleDescription, "disabled", anotherModeBindingConverter);
+      bf.createBinding(securityRole, "mode", rolename, "disabled", modeBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(securityRole, "mode", roleDescription, "disabled", anotherModeBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
 
-      bf.createBinding(securityUser, "mode", username, "disabled", modeBindingConverter);
-      bf.createBinding(securityUser, "mode", userPassword, "disabled", anotherModeBindingConverter);
-      bf.createBinding(securityUser, "mode", userDescription, "disabled", anotherModeBindingConverter);
+      bf.createBinding(securityUser, "mode", username, "disabled", modeBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(securityUser, "mode", userPassword, "disabled", anotherModeBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(securityUser, "mode", userDescription, "disabled", anotherModeBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
     } catch (Exception e) {
       System.out.println(e.getMessage());
       e.printStackTrace();
@@ -469,7 +473,7 @@ public class SecurityController extends AbstractXulEventHandler{
   }
 
   public String getName() {
-    return "securityController";
+    return "securityController"; //$NON-NLS-1$
   }
 
   public RepositoryUserInterface getRepositoryUserInterface() {
@@ -502,7 +506,7 @@ public class SecurityController extends AbstractXulEventHandler{
       securityUser.setAvailableRoles(convertToUIRoleModel(rui.getRoles()));
     }
     securityUser.setMode(Mode.ADD);
-    userDialog.setTitle("Add User");
+    userDialog.setTitle(messages.getString("AddUserDialog.Title"));//$NON-NLS-1$
     userDialog.show();
   }
 
@@ -533,9 +537,10 @@ public class SecurityController extends AbstractXulEventHandler{
         rui.saveUserInfo(userInfo);
         security.addUser(new UIRepositoryUser(userInfo));
       } catch (KettleException ke) {
-        messageBox.setTitle("Error");
-        messageBox.setAcceptLabel("Ok");
-        messageBox.setMessage("Unable to add a user :" + ke.getLocalizedMessage());
+        messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+        messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+        messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+            "AddUser.UnableToAddUser", ke.getLocalizedMessage()));//$NON-NLS-1$
         messageBox.open();
       }
     }
@@ -547,7 +552,7 @@ public class SecurityController extends AbstractXulEventHandler{
       securityUser.clear();
       securityUser.setUISecurityUser(security.getSelectedUser(), convertToUIRoleModel(rui.getRoles()));
       securityUser.setMode(Mode.EDIT);
-      userDialog.setTitle("Edit User");
+      userDialog.setTitle(messages.getString("EditUserDialog.Title"));//$NON-NLS-1$
       userDialog.show();
     }
   }
@@ -571,9 +576,10 @@ public class SecurityController extends AbstractXulEventHandler{
         security.updateUser(new UIRepositoryUser(userInfo));
         userDetailTable.update();
       } catch (KettleException ke) {
-        messageBox.setTitle("Error");
-        messageBox.setAcceptLabel("Ok");
-        messageBox.setMessage("Unable to update selected user: " + ke.getLocalizedMessage());
+        messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+        messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+        messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+            "UpdateUser.UnableToUpdateUser", ke.getLocalizedMessage()));//$NON-NLS-1$
         messageBox.open();
       }
     }
@@ -585,7 +591,7 @@ public class SecurityController extends AbstractXulEventHandler{
       securityRole.clear();
       securityRole.setAvailableUsers(convertToUIUserModel(rui.getUsers()));
     }
-    roleDialog.setTitle("Add Role");
+    roleDialog.setTitle(messages.getString("AddRoleDialog.Title"));//$NON-NLS-1$
     roleDialog.show();
   }
 
@@ -595,7 +601,7 @@ public class SecurityController extends AbstractXulEventHandler{
       securityRole.setUISecurityRole(security.getSelectedRole(), convertToUIUserModel(rui.getUsers()));
       securityRole.setMode(Mode.EDIT_MEMBER);
     }
-    roleDialog.setTitle("Add User To Role");
+    roleDialog.setTitle(messages.getString("AddUserToRoleDialog.Title"));//$NON-NLS-1$
     roleDialog.show();
   }
 
@@ -604,7 +610,7 @@ public class SecurityController extends AbstractXulEventHandler{
       securityUser.clear();
       securityUser.setUISecurityUser(security.getSelectedUser(), convertToUIRoleModel(rui.getRoles()));
       securityUser.setMode(Mode.EDIT_MEMBER);
-      userDialog.setTitle("Add Role To User");
+      userDialog.setTitle(messages.getString("AddRoleToUserDialog.Title"));//$NON-NLS-1$
       userDialog.show();
     }
   }
@@ -637,9 +643,10 @@ public class SecurityController extends AbstractXulEventHandler{
         rui.createRole(roleInfo);
         security.addRole(new UIRepositoryRole(roleInfo));
       } catch (KettleException ke) {
-        messageBox.setTitle("Error");
-        messageBox.setAcceptLabel("Ok");
-        messageBox.setMessage("Unable to add a role: " + ke.getLocalizedMessage());
+        messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+        messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+        messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+            "AddRole.UnableToAddRole", ke.getLocalizedMessage()));//$NON-NLS-1$
         messageBox.open();
       }
     }
@@ -664,9 +671,10 @@ public class SecurityController extends AbstractXulEventHandler{
         roleDetailTable.update();
         roleDialog.hide();
       } catch (KettleException ke) {
-        messageBox.setTitle("Error");
-        messageBox.setAcceptLabel("Ok");
-        messageBox.setMessage("Unable to update selected role: " + ke.getLocalizedMessage());
+        messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+        messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+        messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+            "UpdateRole.UnableToUpdateRole", ke.getLocalizedMessage()));//$NON-NLS-1$
         messageBox.open();
       }
     }
@@ -679,11 +687,11 @@ public class SecurityController extends AbstractXulEventHandler{
    */
 
   public void removeRole() throws Exception {
-    confirmBox.setTitle("Security");
-    confirmBox.setMessage("You are about to remove selected role(s). Do you want to continue?");
-    confirmBox.setAcceptLabel("Ok");
-    confirmBox.setCancelLabel("Cancel");
-    confirmBox.addDialogCallback(new XulDialogCallback(){
+    confirmBox.setTitle(messages.getString("ConfirmDialog.Title"));//$NON-NLS-1$
+    confirmBox.setMessage(messages.getString("RemoveRoleConfirmDialog.Message"));//$NON-NLS-1$
+    confirmBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+    confirmBox.setCancelLabel(messages.getString("Dialog.Cancel"));//$NON-NLS-1$
+    confirmBox.addDialogCallback(new XulDialogCallback<Object>(){
 
       public void onClose(XulComponent sender, Status returnCode, Object retVal) {
          if(returnCode == Status.ACCEPT){
@@ -693,15 +701,16 @@ public class SecurityController extends AbstractXulEventHandler{
                  rui.deleteRole(security.getSelectedRole().getName());
                  security.removeRole(security.getSelectedRole().getName());
                } catch (KettleException ke) {
-                 messageBox.setTitle("Error");
-                 messageBox.setAcceptLabel("Ok");
-                 messageBox.setMessage("Unable to remove selected role(s) " + ke.getLocalizedMessage());
-                 messageBox.open();
+                 messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+                 messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+                 messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+                     "RemoveRole.UnableToRemoveRole", ke.getLocalizedMessage()));//$NON-NLS-1$
+                 messageBox.open();                 
                }
              } else {
-               messageBox.setTitle("Error");
-               messageBox.setAcceptLabel("Ok");
-               messageBox.setMessage("No role(s) are selected to remove");
+               messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+               messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+               messageBox.setMessage(messages.getString("RemoveRole.NoRoleSelected"));//$NON-NLS-1$
                messageBox.open();
              }
            }
@@ -709,9 +718,10 @@ public class SecurityController extends AbstractXulEventHandler{
       }
 
       public void onError(XulComponent sender, Throwable t) {
-        messageBox.setTitle("Error");
-        messageBox.setAcceptLabel("Ok");
-        messageBox.setMessage("Unable to remove selected role(s)" + t.getLocalizedMessage());
+        messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+        messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+        messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+            "RemoveRole.UnableToRemoveRole", t.getLocalizedMessage()));//$NON-NLS-1$
         messageBox.open();
       }      
     });
@@ -723,7 +733,7 @@ public class SecurityController extends AbstractXulEventHandler{
       securityRole.clear();
       securityRole.setUISecurityRole(security.getSelectedRole(), convertToUIUserModel(rui.getUsers()));
       securityRole.setMode(Mode.EDIT);
-      roleDialog.setTitle("Edit Role");
+      roleDialog.setTitle(messages.getString("EditRoleDialog.Title"));//$NON-NLS-1$
       roleDialog.show();
     }
   }
@@ -734,11 +744,11 @@ public class SecurityController extends AbstractXulEventHandler{
    * @throws Exception
    */
   public void removeUser() throws Exception {
-    confirmBox.setTitle("Security");
-    confirmBox.setMessage("You are about to remove selected user(s). Do you want to continue?");
-    confirmBox.setAcceptLabel("Ok");
-    confirmBox.setCancelLabel("Cancel");
-    confirmBox.addDialogCallback(new XulDialogCallback(){
+    confirmBox.setTitle(messages.getString("ConfirmDialog.Title"));//$NON-NLS-1$
+    confirmBox.setMessage(messages.getString("RemoveUserConfirmDialog.Message"));//$NON-NLS-1$
+    confirmBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+    confirmBox.setCancelLabel(messages.getString("Dialog.Cancel"));//$NON-NLS-1$
+    confirmBox.addDialogCallback(new XulDialogCallback<Object>(){
 
       public void onClose(XulComponent sender, Status returnCode, Object retVal) {
          if(returnCode == Status.ACCEPT){
@@ -748,24 +758,26 @@ public class SecurityController extends AbstractXulEventHandler{
                  rui.delUser(security.getSelectedUser().getName());
                  security.removeUser(security.getSelectedUser().getName());
                } catch (KettleException ke) {
-                 messageBox.setTitle("Error");
-                 messageBox.setAcceptLabel("Ok");
-                 messageBox.setMessage("Unable to remove selected user(s) " + ke.getLocalizedMessage());
+                 messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+                 messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+                 messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+                     "RemoveUser.UnableToRemoveUser", ke.getLocalizedMessage()));//$NON-NLS-1$
                  messageBox.open();
                }
              } else {
-               messageBox.setTitle("Error");
-               messageBox.setAcceptLabel("Ok");
-               messageBox.setMessage("No user(s) are selected to remove");
+               messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+               messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+               messageBox.setMessage(messages.getString("RemoveUser.NoUserSelected"));//$NON-NLS-1$
                messageBox.open();
              }
            }
          } 
       }
       public void onError(XulComponent sender, Throwable t) {
-        messageBox.setTitle("Error");
-        messageBox.setAcceptLabel("Ok");
-        messageBox.setMessage("Unable to remove selected user(s)" + t.getLocalizedMessage());
+        messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+        messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+        messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+            "RemoveUser.UnableToRemoveUser", t.getLocalizedMessage()));//$NON-NLS-1$
         messageBox.open();
       }      
     });
@@ -838,5 +850,13 @@ public class SecurityController extends AbstractXulEventHandler{
       roleSet.add(rr.getRoleInfo());
     }
     return roleSet;
+  }
+
+  public void setMessages(ResourceBundle messages) {
+    this.messages = messages;
+  }
+
+  public ResourceBundle getMessages() {
+    return messages;
   }
 }

@@ -4,15 +4,15 @@
 	<hbox id="security-box" flex="1" >
 		<vbox flex="1">
 			<hbox>
-       			<radio id="role-radio-button" label="Role" command="securityController.changeToRoleDeck()" />		    
-       			<radio id="user-radio-button" label="User" command="securityController.changeToUserDeck()" />
+       			<radio id="role-radio-button" label="${SecurityTab.Role}" command="securityController.changeToRoleDeck()" />		    
+       			<radio id="user-radio-button" label="${SecurityTab.User}" command="securityController.changeToUserDeck()" />
 			</hbox>
 		  	<deck id="user-role-deck" flex="1">
 				<hbox flex="1">
 					<vbox flex="1">
 						<!-- Roles list pane -->
 						<hbox>
-							<label value="Roles:"/>
+							<label value="${SecurityTab.RoleLabel}"/>
 							<label id="spacer-label" flex="1" />
 							<button id="role-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="securityController.showEditRoleDialog()" disabled="true"/>
 							<button id="role-add" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="securityController.showAddRoleDialog()"/>
@@ -23,16 +23,16 @@
 					</vbox>
 					<vbox flex="4">
 						<hbox>
-							<label value="Members:"/>
+							<label value="${SecurityTab.Members}"/>
 							<label id="spacer-label" flex="1" />
 							<button id="add-user-to-role" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="securityController.showAddUserToRoleDialog()" disabled="true"/>
 							<button id="remove-user-from-role" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="securityController.removeUsersFromRole()" disabled="true"/>
 						</hbox>
 						<tree id="role-detail-table" flex="1" hidecolumnpicker="true" enableColumnDrag="true">
 							<treecols>
-								<treecol id="user-name-col" flex="1" label="Name"
+								<treecol id="user-name-col" flex="1" label="${SecurityTab.Name}"
 									pen:binding="name" pen:childrenbinding="children"/>
-								<treecol id="user-desc-col" flex="1" label="Description"
+								<treecol id="user-desc-col" flex="1" label="${SecurityTab.Description}"
 									pen:binding="description"/>
 							</treecols>
 							<treechildren />
@@ -43,7 +43,7 @@
 					<vbox flex="1">
 						<!-- User list pane -->
 						<hbox>
-							<label value="Users"/>
+							<label value="${SecurityTab.UserLabel}"/>
 							<label id="spacer-label" flex="1" />
 							<button id="user-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="securityController.showEditUserDialog()" disabled="true"/>
 							<button id="user-add" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="securityController.showAddUserDialog()"/>
@@ -54,16 +54,16 @@
 					</vbox>
 					<vbox flex="4">
 						<hbox>
-							<label value="Members:"/>
+							<label value="${SecurityTab.Members}"/>
 							<label id="spacer-label" flex="1" />
 							<button id="add-role-to-user" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="securityController.showAddRoleToUserDialog()" disabled="true"/>
 							<button id="remove-role-from-user" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="securityController.removeRolesFromUser()" disabled="true"/>
 						</hbox>
 						<tree id="user-detail-table" flex="1" hidecolumnpicker="true" enableColumnDrag="true">
 							<treecols>
-								<treecol id="role-name-col" flex="1" label="Name"
+								<treecol id="role-name-col" flex="1" label="${SecurityTab.Name}"
 									pen:binding="name" pen:childrenbinding="children"/>
-								<treecol id="role-desc-col" flex="1" label="Description"
+								<treecol id="role-desc-col" flex="1" label="${SecurityTab.Description}"
 									pen:binding="description"/>
 							</treecols>
 							<treechildren />

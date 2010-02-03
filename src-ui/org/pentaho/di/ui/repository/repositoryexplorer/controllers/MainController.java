@@ -18,6 +18,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
@@ -36,6 +37,8 @@ import org.pentaho.ui.xul.util.DialogController;
  * 
  */
 public class MainController extends AbstractXulEventHandler implements DialogController<Object> {
+ 
+  private ResourceBundle messages;
   
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -74,7 +77,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   
   private void createBindings(){
 
-    dialog = (XulDialog) document.getElementById("repository-explorer-dialog");
+    dialog = (XulDialog) document.getElementById("repository-explorer-dialog");//$NON-NLS-1$
     // acceptButton = (XulButton) document.getElementById("repository-explorer-dialog_accept");
 
     try {
@@ -94,7 +97,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   }
   
   public String getName() {
-    return "mainController";
+    return "mainController";//$NON-NLS-1$
   }
   
   @Bindable
@@ -123,6 +126,14 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   public void hideDialog() {
     closeDialog();
     
+  }
+
+  public void setMessages(ResourceBundle messages) {
+    this.messages = messages;
+  }
+
+  public ResourceBundle getMessages() {
+    return messages;
   }
   
 }
