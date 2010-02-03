@@ -12,13 +12,11 @@
 package org.pentaho.di.ui.spoon.trans;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -388,12 +386,12 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     mainComposite = new Composite(this, SWT.NONE);
     mainComposite.setLayout(new FillLayout());
     
-
-    
     // Nick's fix below -------
     Control toolbarControl = (Control) toolbar.getManagedObject();
-    
-    toolbarControl.setLayoutData(new FormData());
+    FormData toolbarFormData = new FormData();
+    toolbarFormData.right = new FormAttachment(100, 0);
+    toolbarFormData.left = new FormAttachment(0, 0);
+    toolbarControl.setLayoutData(toolbarFormData);
     toolbarControl.setParent(this);
     // ------------------------
     
@@ -1523,7 +1521,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
       swtToolbar.pack();
       
       // Hack alert : more XUL limitations...
-      //
       ToolItem sep = new ToolItem(swtToolbar, SWT.SEPARATOR);
 
       zoomLabel = new Combo(swtToolbar, SWT.DROP_DOWN);
