@@ -387,6 +387,16 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     //
     mainComposite = new Composite(this, SWT.NONE);
     mainComposite.setLayout(new FillLayout());
+    
+
+    
+    // Nick's fix below -------
+    Control toolbarControl = (Control) toolbar.getManagedObject();
+    
+    toolbarControl.setLayoutData(new FormData());
+    toolbarControl.setParent(this);
+    // ------------------------
+    
     FormData fdMainComposite = new FormData();
     fdMainComposite.left = new FormAttachment(0, 0);
     fdMainComposite.top = new FormAttachment((Control) toolbar.getManagedObject(), 0);
