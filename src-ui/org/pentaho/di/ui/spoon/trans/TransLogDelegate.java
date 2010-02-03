@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
@@ -19,6 +20,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -28,15 +30,19 @@ import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
-import org.pentaho.xul.toolbar.XulToolbar;
-import org.pentaho.xul.toolbar.XulToolbarButton;
+import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulLoader;
+import org.pentaho.ui.xul.components.XulToolbarbutton;
+import org.pentaho.ui.xul.containers.XulToolbar;
+import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.pentaho.ui.xul.swt.SwtXulLoader;
+import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 
-public class TransLogDelegate extends SpoonDelegate {
-	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
 
 	private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/trans-log-toolbar.xul";
 	public static final String XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES = "ui/trans-log-toolbar.properties";
-
+	private static final Class PKG = TransLogDelegate.class;
 	private TransGraph transGraph;
 
 	private CTabItem transLogTab;
@@ -80,14 +86,13 @@ public class TransLogDelegate extends SpoonDelegate {
 		transLogComposite.setLayout(new FormLayout());
 		
 		addToolBar();
-		addToolBarListeners();
 		
 		transLogText = new StyledText(transLogComposite, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 		spoon.props.setLook(transLogText);
 		FormData fdText = new FormData();
 		fdText.left = new FormAttachment(0,0);
 		fdText.right = new FormAttachment(100,0);
-		fdText.top = new FormAttachment((Control)toolbar.getNativeObject(),0);
+		fdText.top = new FormAttachment((Control)toolbar.getManagedObject(),0);
 		fdText.bottom = new FormAttachment(100,0);
 		transLogText.setLayoutData(fdText);
 		
@@ -111,50 +116,22 @@ public class TransLogDelegate extends SpoonDelegate {
 		transGraph.extraViewTabFolder.setSelection(transLogTab);
 	}
 	
-    private void addToolBar()
-	{
+  private void addToolBar() {
 
-		try {
-			toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_LOG_TOOLBAR, transLogComposite, TransLogDelegate.this, new XulMessages());
+    try {
+      XulLoader loader = new SwtXulLoader();
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages", LanguageChoice.getInstance().getDefaultLocale());
+      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_LOG_TOOLBAR, bundle);
+      xulDomContainer.addEventHandler(this);
+      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
 
-			// Add a few default key listeners
-			//
-			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
-			
-			addToolBarListeners();
-	        toolBar.layout(true, true);
-		} catch (Throwable t ) {
-			log.logError(Const.getStackTracker(t));
-			new ErrorDialog(transLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t));
-		}
-	}
-
-	public void addToolBarListeners()
-	{
-		try
-		{
-			// first get the XML document
-			URL url = XulHelper.getAndValidate(XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES);
-			Properties props = new Properties();
-			props.load(url.openStream());
-			String ids[] = toolbar.getMenuItemIds();
-			for (int i = 0; i < ids.length; i++)
-			{
-				String methodName = (String) props.get(ids[i]);
-				if (methodName != null)
-				{
-					toolbar.addMenuListener(ids[i], this, methodName);
-
-				}
-			}
-
-		} catch (Throwable t ) {
-			t.printStackTrace();
-			new ErrorDialog(transLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
-					BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES), new Exception(t));
-		}
-	}
-
+      ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
+      swtToolBar.layout(true, true);
+    } catch (Throwable t) {
+      log.logError(toString(), Const.getStackTracker(t));
+      new ErrorDialog(transLogComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR), new Exception(t));
+    }
+  }
     
     public void showLogView() {
     	
@@ -271,7 +248,7 @@ public class TransLogDelegate extends SpoonDelegate {
 	}
 	
 	public void pauseLog() {
-		XulToolbarButton pauseContinueButton = toolbar.getButtonById("log-pause");
+		SwtToolbarbutton pauseContinueButton = (SwtToolbarbutton) toolbar.getElementById("log-pause");
 
 		if (logBrowser.isPaused()) {
 			logBrowser.setPaused(false);
@@ -289,4 +266,52 @@ public class TransLogDelegate extends SpoonDelegate {
 	public LogBrowser getLogBrowser() {
 		return logBrowser;
 	}
+
+/* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
+   */
+  public Object getData() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
+   */
+  public String getName() {
+    return "translog";
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
+   */
+  public XulDomContainer getXulDomContainer() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
+   */
+  public void setData(Object data) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
+   */
+  public void setName(String name) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
+   */
+  public void setXulDomContainer(XulDomContainer xulDomContainer) {
+    // TODO Auto-generated method stub
+
+  }
+
 }

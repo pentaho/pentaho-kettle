@@ -1,8 +1,7 @@
 package org.pentaho.di.ui.spoon.trans;
 
-import java.net.URL;
 import java.util.Date;
-import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,21 +20,24 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.XulMessages;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
-import org.pentaho.xul.toolbar.XulToolbar;
-import org.pentaho.xul.toolbar.XulToolbarButton;
+import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulLoader;
+import org.pentaho.ui.xul.containers.XulToolbar;
+import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.pentaho.ui.xul.swt.SwtXulLoader;
+import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 
-public class TransGridDelegate extends SpoonDelegate {
+public class TransGridDelegate extends SpoonDelegate implements XulEventHandler {
 	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
@@ -107,7 +109,6 @@ public class TransGridDelegate extends SpoonDelegate {
 		transGridComposite.setLayout(new FormLayout());
 		
 		addToolBar();
-		addToolBarListeners();
 		
 		ColumnInfo[] colinf = new ColumnInfo[] { 
                 new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
@@ -144,7 +145,7 @@ public class TransGridDelegate extends SpoonDelegate {
 		FormData fdView = new FormData();
 		fdView.left = new FormAttachment(0,0);
 		fdView.right = new FormAttachment(100,0);
-		fdView.top = new FormAttachment((Control)toolbar.getNativeObject(),0);
+		fdView.top = new FormAttachment((Control)toolbar.getManagedObject(),0);
 		fdView.bottom = new FormAttachment(100,0);
 		transGridView.setLayoutData(fdView);
 		
@@ -190,65 +191,30 @@ public class TransGridDelegate extends SpoonDelegate {
 		transGraph.extraViewTabFolder.setSelection(transGridTab);		
 	}
 
-    private void addToolBar()
-	{
+  private void addToolBar() {
 
-		try {
-			toolbar = XulHelper.createToolbar(XUL_FILE_TRANS_GRID_TOOLBAR, transGridComposite, TransGridDelegate.this, new XulMessages());
-			
-			
-			// set the selected icon for the show inactive button.
-			// This is not a XUL standard apparently
-			//
-			XulToolbarButton onlyActiveButton = toolbar.getButtonById("show-inactive");
-			if (onlyActiveButton!=null) {
-				onlyActiveButton.setSelectedImage(GUIResource.getInstance().getImageHideInactive());
-			}
-		
-			// Add a few default key listeners
-			//
-			ToolBar toolBar = (ToolBar) toolbar.getNativeObject();
-			addToolBarListeners();
-	        toolBar.layout(true, true);
-		} catch (Throwable t ) {
-			log.logError(Const.getStackTracker(t));
-			new ErrorDialog(transGridComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
-		}
-	}
+    try {
+      XulLoader loader = new SwtXulLoader();
+      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages", LanguageChoice.getInstance().getDefaultLocale());
+      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_GRID_TOOLBAR, bundle);
+      xulDomContainer.addEventHandler(this);
+      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
 
-	public void addToolBarListeners()
-	{
-		try
-		{
-			// first get the XML document
-			URL url = XulHelper.getAndValidate(XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES);
-			Properties props = new Properties();
-			props.load(url.openStream());
-			String ids[] = toolbar.getMenuItemIds();
-			for (int i = 0; i < ids.length; i++)
-			{
-				String methodName = (String) props.get(ids[i]);
-				if (methodName != null)
-				{
-					toolbar.addMenuListener(ids[i], this, methodName);
-
-				}
-			}
-
-		} catch (Throwable t ) {
-			t.printStackTrace();
-			new ErrorDialog(transGridComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
-					BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES), new Exception(t));
-		}
-	}
-
+      ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
+      swtToolBar.layout(true, true);
+    } catch (Throwable t) {
+      log.logError(toString(), Const.getStackTracker(t));
+      new ErrorDialog(transGridComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
+    }
+  }
+  
 	public void showHideInactive() {
 		hideInactiveSteps=!hideInactiveSteps;
 		
 		// TODO: change icon
-		XulToolbarButton onlyActiveButton = toolbar.getButtonById("show-inactive");
+		SwtToolbarbutton onlyActiveButton = (SwtToolbarbutton) toolbar.getElementById("show-inactive");
 		if (onlyActiveButton!=null) {
-			onlyActiveButton.setSelection(hideInactiveSteps);
+			onlyActiveButton.setSelected(hideInactiveSteps);
 			if (hideInactiveSteps) {
 				onlyActiveButton.setImage(GUIResource.getInstance().getImageHideInactive());
 			} else {
@@ -363,4 +329,50 @@ public class TransGridDelegate extends SpoonDelegate {
 
 	
 
+	/* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
+   */
+  public Object getData() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
+   */
+  public String getName() {
+    return "transgrid";
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
+   */
+  public XulDomContainer getXulDomContainer() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
+   */
+  public void setData(Object data) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
+   */
+  public void setName(String name) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
+   */
+  public void setXulDomContainer(XulDomContainer xulDomContainer) {
+    // TODO Auto-generated method stub
+
+  }
 }
