@@ -401,5 +401,9 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
     	
     	return ioMeta;
     }
+    
+    @Override
+    public void resetStepIoMeta() {
+    }
 
 }
