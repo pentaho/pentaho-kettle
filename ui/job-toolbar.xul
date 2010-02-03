@@ -1,16 +1,6 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
 
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}"
-      onclick="jobgraph.newFileDropDown()" />
-    <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
-      tooltiptext="${Spoon.Tooltip.OpenTranformation}" onclick="jobgraph.openFile()" />
-    <toolbarseparator />
-    <toolbarbutton id="file-save" label="${Spoon.Menu.File.Save}" image="images/save.png"
-      tooltiptext="${Spoon.Tooltip.SaveCurrentTranformation}" onclick="jobgraph.saveFile()" />
-    <toolbarbutton id="file-save-as" label="${Spoon.Menu.File.SaveAs}" image="images/saveas.png"
-      tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="jobgraph.saveFileAs()" />
-    <toolbarseparator />
     <toolbarbutton id="job-run" label="${Spoon.Menu.Job.Run}" image="images/run.png" tooltiptext="${Spoon.Tooltip.RunJob}"
       onclick="jobgraph.runJob()" />
     <toolbarbutton id="job-stop" label="${Spoon.Menu.Job.Stop}" image="images/stop.png" tooltiptext="${Spoon.Tooltip.StopJob}"

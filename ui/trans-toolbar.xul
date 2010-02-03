@@ -1,14 +1,5 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
   <toolbar id="nav-toolbar" mode="icons" >
-    <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}" onclick="transgraph.newFileDropDown()" />
-    <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
-      tooltiptext="${Spoon.Tooltip.OpenTranformation}" onclick="transgraph.openFile()" />
-    <toolbarseparator />
-    <toolbarbutton id="file-save" label="${Spoon.Menu.File.Save}" image="images/save.png"
-      tooltiptext="${Spoon.Tooltip.SaveCurrentTranformation}" onclick="transgraph.saveFile()" />
-    <toolbarbutton id="file-save-as" label="${Spoon.Menu.File.SaveAs}" image="images/saveas.png"
-      tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="transgraph.saveFileAs()" />
-    <toolbarseparator />
     <toolbarbutton id="trans-run" label="${Spoon.Menu.Transformation.Run}" image="images/run.png"
       tooltiptext="${Spoon.Tooltip.RunTranformation}" onclick="transgraph.runTransformation()" />
     <toolbarbutton id="trans-pause" label="${Spoon.Menu.Transformation.Pause}" image="images/pause.png"
