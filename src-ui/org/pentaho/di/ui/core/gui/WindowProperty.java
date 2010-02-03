@@ -99,13 +99,6 @@ public class WindowProperty
             shell.setSize(bounds.width, bounds.height);
         }
 
-        Rectangle shRect = shell.getBounds();
-
-        Rectangle entireClientArea = shell.getDisplay().getClientArea();
-        Rectangle resizedRect = Geometry.copy(shRect);
-        constrainRectangleToContainer(resizedRect, entireClientArea);
-        
-        
         // Just to double check: what is the preferred size of this dialog?
         // This computed is a minimum.  If the minimum is smaller than the 
         // size of the current shell, we make it larger.
@@ -115,14 +108,18 @@ public class WindowProperty
 		if (shellSize.width<computedSize.x) shellSize.width=computedSize.x;
 		if (shellSize.height<computedSize.y) shellSize.height=computedSize.y;
 		shell.setBounds(shellSize);
-		
+
+        Rectangle entireClientArea = shell.getDisplay().getClientArea();
+        Rectangle resizedRect = Geometry.copy(shellSize);
+        constrainRectangleToContainer(resizedRect, entireClientArea);
+        		
 		// If the persisted size/location doesn't perfectly fit
 		// into the entire client area, the persisted settings
 		// likely were not meant for this configuration of monitors.
 		// Relocate the shell into either the parent monitor or if
 		// there is no parent, the primary monitor then center it.
 		//
-        if (!resizedRect.equals(shRect) || isClippedByUnalignedMonitors(resizedRect, shell.getDisplay()))
+        if (!resizedRect.equals(shellSize) || isClippedByUnalignedMonitors(resizedRect, shell.getDisplay()))
         {
             Monitor monitor = shell.getDisplay().getPrimaryMonitor();
             if (shell.getParent() != null)
