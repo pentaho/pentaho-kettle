@@ -14,6 +14,6 @@ package org.pentaho.xul;
 
 public interface Messages {
 
-	public String getString( String key, String...parameters );
-	
+  public String getString( String key, String...parameters );
+  
 }
