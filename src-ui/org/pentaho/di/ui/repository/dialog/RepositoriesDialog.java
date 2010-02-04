@@ -220,8 +220,10 @@ public class RepositoriesDialog implements XulEventHandler {
     props.setLook(swtToolBar);
     FormData fdToolbar = new FormData();
     fdToolbar.left = new FormAttachment(0, 0);
-    // fdToolbar.right = new FormAttachment(middle,-margin);
+    fdToolbar.right = new FormAttachment(middle,-margin);
     fdToolbar.top = new FormAttachment(line, 3 * margin);
+
+    swtToolBar.setParent(shell);
     swtToolBar.setLayoutData(fdToolbar);
 
     wRepository = new org.eclipse.swt.widgets.List(shell, SWT.READ_ONLY | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE);
