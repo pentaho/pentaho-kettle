@@ -67,6 +67,7 @@ import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.TreeAdapter;
 import org.eclipse.swt.events.TreeEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
@@ -1372,28 +1373,43 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		sep0.setLayoutData(fdSep0);
 		Control lastControl = sep0;
 
-    CTabFolder tabFolder = new CTabFolder(mainComposite, SWT.BORDER);
+		// empty panel to correct background color.
+		Composite tabWrapper = new Composite(mainComposite, SWT.NONE);
+		tabWrapper.setLayout(new FormLayout());
+		tabWrapper.setBackground(GUIResource.getInstance().getColorWhite());
+
+    FormData fdTabWrapper = new FormData();
+    fdTabWrapper.left = new FormAttachment(0, 0);
+    fdTabWrapper.top = new FormAttachment(sep0, 0);
+    fdTabWrapper.right = new FormAttachment(100, 0);
+    tabWrapper.setLayoutData(fdTabWrapper);
+    
+    CTabFolder tabFolder = new CTabFolder(tabWrapper, SWT.HORIZONTAL | SWT.FLAT );
     tabFolder.setSimple(false); // Set simple what!!?? Well it sets the style of the tab folder to simple or stylish (curvy borders)
-    tabFolder.setBackground(GUIResource.getInstance().getColorCreamPentaho());
+    tabFolder.setBackground(GUIResource.getInstance().getColorWhite());
+    tabFolder.setBorderVisible(false);
+    tabFolder.setSelectionBackground(new Color[] {
+            display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW),
+            display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW),
+            }, 
+            new int[] { 55, },
+            true);
+    
+    FormData fdTab = new FormData();
+    fdTab.left = new FormAttachment(0, 0);
+    fdTab.top = new FormAttachment(sep0, 0);
+    fdTab.right = new FormAttachment(100, 0);
+    fdTab.height = 0;
+    tabFolder.setLayoutData(fdTab);
 		
 		view = new CTabItem(tabFolder, SWT.NONE);
-		//view.setImage(GUIResource.getInstance().getImageViewPanel());
 		view.setControl(new Composite(tabFolder, SWT.NONE));
 		view.setText(STRING_SPOON_MAIN_TREE);
 		design = new CTabItem(tabFolder, SWT.NONE);
-		//design.setImage(GUIResource.getInstance().getImageDesignPanel());		
     design.setText(STRING_SPOON_CORE_OBJECTS_TREE);
     design.setControl(new Composite(tabFolder, SWT.NONE));
-		//tabFolder.setEnabled(false);
 
-		FormData fdTreeButton = new FormData();
-		fdTreeButton.left = new FormAttachment(0, 0);
-		fdTreeButton.top = new FormAttachment(sep0, 0);
-		fdTreeButton.right = new FormAttachment(100, 0);
-		fdTreeButton.height = 0;
-		
-		tabFolder.setLayoutData(fdTreeButton);
-		lastControl = tabFolder;
+		lastControl = tabWrapper;
 
 		Label sep3 = new Label(mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep3.setBackground(GUIResource.getInstance().getColorWhite());
