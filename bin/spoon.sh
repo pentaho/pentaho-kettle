@@ -14,33 +14,28 @@ set LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
 export MOZILLA_FIVE_HOME LD_LIBRARY_PATH
 
 # **************************************************
-# ** Libraries used by Kettle:                    **
+# ** Init BASEDIR                                 **
 # **************************************************
 
 BASEDIR=`dirname $0`
 cd $BASEDIR
 
-CLASSPATH=$BASEDIR
-
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-db.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-ui-swt.jar
-
-CLASSPATH=$CLASSPATH:$BASEDIR/libswt/jface.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/libswt/runtime.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/libswt/common.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/libswt/commands.jar
 
 # **************************************************
-# ** JDBC & other libraries used by Kettle:       **
+# ** Spoon Plugin libraries                       **
 # **************************************************
 
-for f in `find $BASEDIR/libext -type f -name "*.jar"` `find $BASEDIR/libext -type f -name "*.zip"`
+PLUGINPATH=NONE
+
+for f in `find $BASEDIR/plugins/spoon -maxdepth 2 -type d -name "lib"` 
 do
-  CLASSPATH=$CLASSPATH:$f
-done
-
+if [ "$PLUGINPATH" != "NONE" ]
+then
+	PLUGINPATH=$PLUGINPATH:$f
+else
+	PLUGINPATH=$f
+fi
+done 
 
 # **************************************************
 # ** Platform specific libraries ...              **
@@ -48,19 +43,22 @@ done
 
 JAVA_BIN=java
 LIBPATH="NONE"
+STARTUP="-jar launcher/launcher.jar"
 
 case `uname -s` in 
 	AIX)
-		LIBPATH=$BASEDIR/libswt/aix/
+		LIBPATH=$BASEDIR/../libswt/aix/
 		;;
 
 	SunOS) 
-		LIBPATH=$BASEDIR/libswt/solaris/
+		LIBPATH=$BASEDIR/../libswt/solaris/
 		;;
 
 	Darwin)
-		LIBPATH=$BASEDIR/libswt/osx/
-		JAVA_BIN=$BASEDIR/libswt/osx/java_swt
+		LIBPATH=$BASEDIR/../libswt/osx/
+		JAVA_BIN=$BASEDIR/../libswt/osx/java_swt
+        STARTUP=" -cp launcher.jar org.pentaho.commons.launcher.Launcher"
+        OPT="-XstartOnFirstThread=true "
 		chmod +x $JAVA_BIN
 		;;
 
@@ -68,15 +66,15 @@ case `uname -s` in
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=$BASEDIR/libswt/linux/x86_64/
+				LIBPATH=$BASEDIR/../libswt/linux/x86_64/
 				;;
 
 			i[3-6]86)
-				LIBPATH=$BASEDIR/libswt/linux/x86/
+				LIBPATH=$BASEDIR/../libswt/linux/x86/
 				;;
 
 			ppc)
-				LIBPATH=$BASEDIR/libswt/linux/ppc/
+				LIBPATH=$BASEDIR/../libswt/linux/ppc/
 				;;
 
 			*)	
@@ -90,17 +88,17 @@ case `uname -s` in
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=$BASEDIR/libswt/freebsd/x86_64/
+				LIBPATH=$BASEDIR/../libswt/freebsd/x86_64/
 				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
 			i[3-6]86)
-				LIBPATH=$BASEDIR/libswt/freebsd/x86/
+				LIBPATH=$BASEDIR/../libswt/freebsd/x86/
 				;;
 
 			ppc)
-				LIBPATH=$BASEDIR/libswt/freebsd/ppc/
+				LIBPATH=$BASEDIR/../libswt/freebsd/ppc/
 				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
 				exit
 				;;
@@ -113,7 +111,7 @@ case `uname -s` in
 		;;
 
 	HP-UX) 
-		LIBPATH=$BASEDIR/libswt/hpux/
+		LIBPATH=$BASEDIR/../libswt/hpux/
 		;;
 	CYGWIN*)
 		./Spoon.bat
@@ -128,25 +126,35 @@ esac
 
 export LIBPATH
 
+# **************************************************
+# ** Merge PLUGINPATH and LIBPATH into LIBSPATH   **
+# **************************************************
+
+LIBSPATH=
+
 if [ "$LIBPATH" != "NONE" ]
 then
-  for f in `find $LIBPATH -name '*.jar'`
-  do
-    CLASSPATH=$CLASSPATH:$f
-  done
+ if [ "$PLUGINPATH" != "NONE" ]
+ then
+	LIBSPATH="-lib $LIBPATH:$PLUGINPATH"
+ else 
+	LIBSPATH="-lib $LIBPATH"
+ fi 
+else
+ if [ "$PLUGINPATH" != "NONE" ]
+ then
+    LIBSPATH="-lib $PLUGINPATH"
+ fi
 fi
-
 
 # ******************************************************************
 # ** Set java runtime options                                     **
 # ** Change 256m to higher values in case you run out of memory.  **
 # ******************************************************************
 
-OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
+OPT="$OPT -Xmx256m -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
 
 # ***************
 # ** Run...    **
 # ***************
-
-$JAVA_BIN $OPT org.pentaho.di.ui.spoon.Spoon "${1+$@}"
-
+$JAVA_BIN $OPT $STARTUP $LIBSPATH "${1+$@}"
