@@ -3680,17 +3680,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return exit;
 	}
 
-	public boolean saveFile() throws KettleException {
-		TransMeta transMeta = getActiveTransformation();
-		if (transMeta != null)
-			return saveToFile(transMeta);
+  public boolean saveFile() throws KettleException{
 
-		JobMeta jobMeta = getActiveJob();
-		if (jobMeta != null)
-			return saveToFile(jobMeta);
-
-		return false;
-	}
+    EngineMetaInterface meta = getActiveMeta();
+    if (meta != null) {
+      return saveToFile(meta);
+    }
+    return false;
+  }
 
 	public boolean saveToFile(EngineMetaInterface meta) throws KettleException {
 		if (meta == null)
@@ -3867,17 +3864,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return saveToRepository(jobMeta, ask_name);
 	}
 
-	public boolean saveFileAs() throws KettleException {
-		TransMeta transMeta = getActiveTransformation();
-		if (transMeta != null)
-			return saveFileAs(transMeta);
+  public boolean saveFileAs() throws KettleException{
+    EngineMetaInterface meta = getActiveMeta();
+    if (meta != null)
+      return saveFileAs(meta);
 
-		JobMeta jobMeta = getActiveJob();
-		if (jobMeta != null)
-			return saveFileAs(jobMeta);
-
-		return false;
-	}
+    return false;
+  }
 
 	public boolean saveFileAs(EngineMetaInterface meta) throws KettleException {
 		boolean saved = false;
