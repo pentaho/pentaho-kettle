@@ -100,6 +100,7 @@ import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.lineage.TransDataLineage;
 import org.pentaho.di.repository.Repository;
@@ -1512,7 +1513,7 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
     try {
       XulLoader loader = new SwtXulLoader();
-      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages", LanguageChoice.getInstance().getDefaultLocale());
+      ResourceBundle bundle = GlobalMessages.getBundle(LanguageChoice.getInstance().getDefaultLocale(), "org/pentaho/di/ui/spoon/messages/messages");
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
