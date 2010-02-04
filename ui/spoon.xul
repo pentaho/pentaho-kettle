@@ -12,11 +12,16 @@
     <toolbarseparator />
     <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
       tooltiptext="${Spoon.Tooltip.OpenTranformation}" onclick="spoon.openFile()" />
+      
     <toolbarbutton id="file-save" label="${Spoon.Menu.File.Save}" image="images/save.png"
       tooltiptext="${Spoon.Tooltip.SaveCurrentTranformation}" onclick="spoon.saveFile()" />
     <toolbarbutton id="file-save-as" label="${Spoon.Menu.File.SaveAs}" image="images/saveas.png"
-      tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="spoon.saveFileAs()" />
+      tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="spoon.saveFileAs()"/>
     <toolbarseparator />
+    <toolbarspacer flex="1"/>
+    <toolbaritem>
+      <label value="${Spoon.Perspectives}:"/>
+    </toolbaritem>
   </toolbar>
   
   
