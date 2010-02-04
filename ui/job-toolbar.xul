@@ -17,4 +17,72 @@
     <toolbarseparator />
   </toolbar>
 
+  <menupopup id="job-graph-entry">
+    <menuitem id="job-graph-entry-newhop" label="${JobGraph.PopupMenu.JobEntry.NewHop}" command="jobgraph.newHopClick()" />
+    <menuitem id="job-graph-entry-launch" label="${JobGraph.PopupMenu.JobEntry.LaunchSpoon}" command="jobgraph.launchStuff()" />
+    <menuitem id="job-graph-entry-edit" label="${JobGraph.PopupMenu.JobEntry.Edit}" command="jobgraph.editEntryClick()" />
+    <menuitem id="job-graph-entry-edit-description" label="${JobGraph.PopupMenu.JobEntry.EditDescription}"
+      command="jobgraph.editEntryDescription()" />
+    <menuitem id="job-graph-entry-parallel" type="checkbox" label="${JobGraph.PopupMenu.JobEntry.LaunchParallel}"
+      command="jobgraph.editEntryParallel()" />
+    <menuseparator />
+    <menuitem id="job-graph-entry-duplicate" label="${JobGraph.PopupMenu.JobEntry.Duplicate}" command="jobgraph.duplicateEntry()" />
+    <menuitem id="job-graph-entry-copy" label="${JobGraph.PopupMenu.JobEntry.CopyToClipboard}" command="jobgraph.copyEntry()" />
+    <menuseparator />
+    <menu id="job-graph-entry-align" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute}">
+      <menupopup id="job-graph-entry-align-popup">
+        <menuitem id="job-graph-entry-align-left" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Left}"
+          accesskey="ctrl-left" command="jobgraph.allignleft()" />
+        <menuitem id="job-graph-entry-align-right" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Right}"
+          accesskey="ctrl-right" command="jobgraph.allignright()" />
+        <menuitem id="job-graph-entry-align-top" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Top}"
+          accesskey="ctrl-up" command="jobgraph.alligntop()" />
+        <menuitem id="job-graph-entry-align-bottom" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Bottom}"
+          accesskey="ctrl-down" command="jobgraph.allignbottom()" />
+        <menuseparator />
+        <menuitem id="job-graph-entry-align-horz" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Horizontally}"
+          accesskey="alt-right" command="jobgraph.distributehorizontal()" />
+        <menuitem id="job-graph-entry-align-vert" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Vertically}"
+          accesskey="alt-up" command="jobgraph.distributevertical()" />
+        <menuseparator />
+        <menuitem id="job-graph-entry-align-snap" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid}"
+          accesskey="alt-home" command="jobgraph.snaptogrid()" />
+      </menupopup>
+    </menu>
+    <menuitem id="job-graph-entry-detach" label="${JobGraph.PopupMenu.Hop.Detach}" command="jobgraph.detachEntry()" />
+    <menuitem id="job-graph-entry-hide" label="${JobGraph.PopupMenu.JobEntry.Hide}" command="jobgraph.hideEntry()" />
+    <menuitem id="job-graph-entry-delete" label="${JobGraph.PopupMenu.JobEntry.Delete}" command="jobgraph.deleteEntry()" />
+  </menupopup>
+
+  <menupopup id="job-graph-hop">
+    <menu id="job-graph-hop-evaluation" label="${JobGraph.PopupMenu.Hop.Evaluation}">
+      <menupopup id="job-graph-hop-evaluation-popup">
+        <menuitem id="job-graph-hop-evaluation-uncond" type="checkbox"
+          label="${JobGraph.PopupMenu.Hop.Evaluation.Unconditional}" command="jobgraph.setHopConditional()" />
+        <menuitem id="job-graph-hop-evaluation-true" type="checkbox" label="${JobGraph.PopupMenu.Hop.Evaluation.FollowWhenOK}"
+          command="jobgraph.setHopConditional()" />
+        <menuitem id="job-graph-hop-evaluation-false" type="checkbox"
+          label="${JobGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed}" command="jobgraph.setHopConditional()" />
+      </menupopup>
+    </menu>
+    <menuitem id="job-graph-hop-flip" label="${JobGraph.PopupMenu.Hop.FlipDirection}" command="jobgraph.flipHop()" />
+    <menuitem id="job-graph-hop-enabled" label="${JobGraph.PopupMenu.Hop.Disable}" command="jobgraph.disableHop()" />
+    <menuitem id="job-graph-hop-delete" label="${JobGraph.PopupMenu.Hop.Delete}" command="jobgraph.deleteHop()" />
+  </menupopup>
+
+  <menupopup id="job-graph-note">
+    <menuitem id="job-graph-note-edit" label="${JobGraph.PopupMenu.Note.Edit}" command="jobgraph.editNote()" />
+    <menuitem id="job-graph-note-delete" label="${JobGraph.PopupMenu.Note.Delete}" command="jobgraph.deleteNote()" />
+  </menupopup>
+
+  <menupopup id="job-graph-background">
+    <menuitem id="job-graph-note-new" label="${JobGraph.PopupMenu.Note.New}" command="jobgraph.newNote()" />
+    <menuitem id="job-graph-note-paste" label="${JobGraph.PopupMenu.PasteStepFromClipboard}" command="jobgraph.pasteNote()" />
+    <menuseparator />
+    <menuitem id="job-graph-background-select-all" label="${JobGraph.PopupMenu.SelectAll}" command="jobgraph.selectAll()" />
+    <menuitem id="job-graph-background-clear-selection" label="${JobGraph.PopupMenu.ClearSelection}" command="jobgraph.clearSelection()" />
+    <menuseparator />
+    <menuitem id="job-graph-background-settings" label="${JobGraph.PopupMenu.Settings}" command="jobgraph.editJobProperties()" />
+  </menupopup>
+
 </window>

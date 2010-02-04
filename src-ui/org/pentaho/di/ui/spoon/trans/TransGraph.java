@@ -151,6 +151,7 @@ import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
@@ -324,6 +325,8 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
   private Map<StepMeta, DelayTimer> delayTimers;
 
   private StepMeta showTargetStreamsStep;
+  
+  private XulDomContainer xulDomContainer;
 
   public void setCurrentNote(NotePadMeta ni) {
     this.ni = ni;
@@ -364,6 +367,16 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     transGridDelegate = new TransGridDelegate(spoon, this);
     transHistoryDelegate = new TransHistoryDelegate(spoon, this);
     transPerfDelegate = new TransPerfDelegate(spoon, this);
+
+    try {
+      XulLoader loader = new SwtXulLoader();
+      ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
+      XulDomContainer container = loader.loadXul(XUL_FILE_TRANS_TOOLBAR, bundle);
+      container.addEventHandler(this);
+      setXulDomContainer(container);
+    } catch (XulException e1) {
+      log.logError(toString(), Const.getStackTracker(e1));
+    }
 
     setLayout(new FormLayout());
 
@@ -406,10 +419,10 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
     try {
       // first get the XML document
-      menuMap.put("trans-graph-hop", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-hop")); //$NON-NLS-1$ //$NON-NLS-2$
-      menuMap.put("trans-graph-entry", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry"));  //$NON-NLS-1$//$NON-NLS-2$
-      menuMap.put("trans-graph-background", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-background"));  //$NON-NLS-1$//$NON-NLS-2$
-      menuMap.put("trans-graph-note", (XulMenupopup) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-note")); //$NON-NLS-1$ //$NON-NLS-2$
+      menuMap.put("trans-graph-hop", (XulMenupopup) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-hop")); //$NON-NLS-1$ //$NON-NLS-2$
+      menuMap.put("trans-graph-entry", (XulMenupopup) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry"));  //$NON-NLS-1$//$NON-NLS-2$
+      menuMap.put("trans-graph-background", (XulMenupopup) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-background"));  //$NON-NLS-1$//$NON-NLS-2$
+      menuMap.put("trans-graph-note", (XulMenupopup) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-note")); //$NON-NLS-1$ //$NON-NLS-2$
     } catch (Throwable t) {
       // TODO log this
       t.printStackTrace();
@@ -1505,12 +1518,8 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
   private void addToolBar() {
 
     try {
-      XulLoader loader = new SwtXulLoader();
-      ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
-      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_TOOLBAR, bundle);
-      xulDomContainer.addEventHandler(this);
-      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar"); //$NON-NLS-1$
-
+      toolbar = (XulToolbar) getXulDomContainer().getDocumentRoot().getElementById("nav-toolbar"); //$NON-NLS-1$
+      
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
       swtToolbar.pack();
       
@@ -2165,32 +2174,32 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
         if (menu != null) {
             List<StepMeta> selection = transMeta.getSelectedSteps();
             int sels = selection.size();
-            XulMenuitem item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-newhop"); //$NON-NLS-1$
+            XulMenuitem item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-newhop"); //$NON-NLS-1$
             item.setDisabled(sels != 2);
 
-            item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-open-mapping"); //$NON-NLS-1$
+            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-open-mapping"); //$NON-NLS-1$
             item.setDisabled(!stepMeta.isMapping());
 
-            item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
+            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
             item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            XulMenu aMenu = (XulMenu) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-align"); //$NON-NLS-1$
+            XulMenu aMenu = (XulMenu) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-align"); //$NON-NLS-1$
             if (aMenu != null) {
               aMenu.setDisabled(sels < 2);
             }
 
-            item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-data-movement-distribute"); //$NON-NLS-1$
+            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-data-movement-distribute"); //$NON-NLS-1$
             item.setSelected(!stepMeta.isDistributes());
-            item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-data-movement-copy"); //$NON-NLS-1$
+            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-data-movement-copy"); //$NON-NLS-1$
             item.setSelected(!stepMeta.isDistributes());
 
-            item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-hide"); //$NON-NLS-1$
+            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-hide"); //$NON-NLS-1$
             item.setDisabled(!(stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta)));
 
-            item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-detach"); //$NON-NLS-1$
+            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-detach"); //$NON-NLS-1$
             item.setDisabled(!transMeta.isStepUsedInTransHops(stepMeta));
 
-            item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-entry-errors"); //$NON-NLS-1$
+            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-errors"); //$NON-NLS-1$
             item.setDisabled(!stepMeta.supportsErrorHandling());
 
           ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
@@ -2202,7 +2211,7 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
           XulMenupopup menu = menuMap.get("trans-graph-hop"); //$NON-NLS-1$
           if (menu != null) {
             setCurrentHop(hi);
-            XulMenuitem item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-hop-enabled");             //$NON-NLS-1$
+            XulMenuitem item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-hop-enabled");             //$NON-NLS-1$
             if (item != null) {
               if (hi.isEnabled()) {
                 item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
@@ -2227,7 +2236,7 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
             XulMenupopup menu = menuMap.get("trans-graph-background"); //$NON-NLS-1$
             if (menu != null) {
               final String clipcontent = spoon.fromClipboard();
-              XulMenuitem item = (XulMenuitem) spoon.getMainSpoonContainer().getDocumentRoot().getElementById("trans-graph-background-paste");             //$NON-NLS-1$
+              XulMenuitem item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-background-paste");             //$NON-NLS-1$
               if (item != null) {
                 item.setDisabled(clipcontent == null);
               }
@@ -3940,7 +3949,7 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
-    return null;
+    return xulDomContainer;
   }
   
   /* (non-Javadoc)
@@ -3953,8 +3962,8 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
   /* (non-Javadoc)
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
-  public void setXulDomContainer(XulDomContainer arg0) {
-    
+  public void setXulDomContainer(XulDomContainer xulDomContainer) {
+    this.xulDomContainer = xulDomContainer;
   }
 	
   public boolean canHandleSave() {

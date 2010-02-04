@@ -1,242 +1,165 @@
 <popupset>
   <menupopup id="trans-class">
-    <menuitem value="trans-class-new" label="%Spoon.Menu.Popup.BASE.New"/>
+    <menuitem id="trans-class-new" label="%Spoon.Menu.Popup.BASE.New" />
   </menupopup>
 
   <menupopup id="job-class">
-    <menuitem value="job-class-new" label="%Spoon.Menu.Popup.BASE.New"/>
+    <menuitem id="job-class-new" label="%Spoon.Menu.Popup.BASE.New" />
   </menupopup>
 
   <menupopup id="trans-hop-class">
-    <menuitem value="trans-hop-class-new" label="%Spoon.Menu.Popup.BASE.New"/>
-    <menuitem value="trans-hop-class-sort" label="%Spoon.Menu.Popup.HOPS.SortHops"/>
+    <menuitem id="trans-hop-class-new" label="%Spoon.Menu.Popup.BASE.New" />
+    <menuitem id="trans-hop-class-sort" label="%Spoon.Menu.Popup.HOPS.SortHops" />
   </menupopup>
 
   <menupopup id="database-class">
-    <menuitem value="database-class-new" label="%Spoon.Menu.Popup.BASE.New"/>
-    <menuitem value="database-class-connection-wizard" label="%Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard"/>
-    <menuitem value="database-class-clear-cache" label="%Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete"/>
+    <menuitem id="database-class-new" label="%Spoon.Menu.Popup.BASE.New" />
+    <menuitem id="database-class-connection-wizard" label="%Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard" />
+    <menuitem id="database-class-clear-cache" label="%Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete" />
   </menupopup>
 
   <menupopup id="partition-schema-class">
-    <menuitem value="partition-schema-class-new" label="%Spoon.Menu.Popup.BASE.New"/>
+    <menuitem id="partition-schema-class-new" label="%Spoon.Menu.Popup.BASE.New" />
   </menupopup>
 
   <menupopup id="cluster-schema-class">
-    <menuitem value="cluster-schema-class-new" label="%Spoon.Menu.Popup.BASE.New"/>
+    <menuitem id="cluster-schema-class-new" label="%Spoon.Menu.Popup.BASE.New" />
   </menupopup>
 
   <menupopup id="slave-cluster-class">
-    <menuitem value="slave-cluster-class-new" label="%Spoon.Menu.Popup.BASE.New"/>
+    <menuitem id="slave-cluster-class-new" label="%Spoon.Menu.Popup.BASE.New" />
   </menupopup>
 
   <menupopup id="trans-inst">
-    <menuitem value="trans-inst-settings" label="%Spoon.Menu.Transformation.Settings"/>
-    <menuitem value="trans-inst-logging" label="%Spoon.Menu.Popup.BASE.LogWindow"/>
-    <menuitem value="trans-inst-history" label="%Spoon.Menu.Popup.BASE.HistoryWindow"/>
+    <menuitem id="trans-inst-settings" label="%Spoon.Menu.Transformation.Settings" />
+    <menuitem id="trans-inst-logging" label="%Spoon.Menu.Popup.BASE.LogWindow" />
+    <menuitem id="trans-inst-history" label="%Spoon.Menu.Popup.BASE.HistoryWindow" />
   </menupopup>
 
   <menupopup id="job-inst">
-    <menuitem value="job-inst-settings" label="%Spoon.Menu.Job.Settings"/>
-    <menuitem value="job-inst-logging" label="%Spoon.Menu.Popup.BASE.LogWindow"/>
-    <menuitem value="job-inst-history" label="%Spoon.Menu.Popup.BASE.HistoryWindow"/>
+    <menuitem id="job-inst-settings" label="%Spoon.Menu.Job.Settings" />
+    <menuitem id="job-inst-logging" label="%Spoon.Menu.Popup.BASE.LogWindow" />
+    <menuitem id="job-inst-history" label="%Spoon.Menu.Popup.BASE.HistoryWindow" />
   </menupopup>
 
   <menupopup id="step-plugin">
-    <menuitem value="step-plugin-new" label="%Spoon.Menu.Popup.BASE.New"/>
+    <menuitem id="step-plugin-new" label="%Spoon.Menu.Popup.BASE.New" />
   </menupopup>
 
   <menupopup id="database-inst">
-    <menuitem value="database-inst-new" label="%Spoon.Menu.Popup.CONNECTIONS.New"/>
-    <menuitem value="database-inst-edit" label="%Spoon.Menu.Popup.CONNECTIONS.Edit"/>
-    <menuitem value="database-inst-duplicate" label="%Spoon.Menu.Popup.CONNECTIONS.Duplicate"/>
-    <menuitem value="database-inst-copy" label="%Spoon.Menu.Popup.CONNECTIONS.CopyToClipboard"/>
-    <menuitem value="database-inst-delete" label="%Spoon.Menu.Popup.CONNECTIONS.Delete"/>
-	<menuseparator/>
-    <menuitem value="database-inst-sql-edit" label="%Spoon.Menu.Popup.CONNECTIONS.SQLEditor"/>
-    <menuitem value="database-inst-clear-cache" label="%Spoon.Menu.Popup.CONNECTIONS.ClearDBCache"/>
-    <menuitem value="database-inst-share" label="%Spoon.Menu.Popup.CONNECTIONS.Share"/>
-    <menuitem value="database-inst-explore" label="%Spoon.Menu.Popup.CONNECTIONS.Explore"/>
+    <menuitem id="database-inst-new" label="%Spoon.Menu.Popup.CONNECTIONS.New" />
+    <menuitem id="database-inst-edit" label="%Spoon.Menu.Popup.CONNECTIONS.Edit" />
+    <menuitem id="database-inst-duplicate" label="%Spoon.Menu.Popup.CONNECTIONS.Duplicate" />
+    <menuitem id="database-inst-copy" label="%Spoon.Menu.Popup.CONNECTIONS.CopyToClipboard" />
+    <menuitem id="database-inst-delete" label="%Spoon.Menu.Popup.CONNECTIONS.Delete" />
+    <menuseparator />
+    <menuitem id="database-inst-sql-edit" label="%Spoon.Menu.Popup.CONNECTIONS.SQLEditor" />
+    <menuitem id="database-inst-clear-cache" label="%Spoon.Menu.Popup.CONNECTIONS.ClearDBCache" />
+    <menuitem id="database-inst-share" label="%Spoon.Menu.Popup.CONNECTIONS.Share" />
+    <menuitem id="database-inst-explore" label="%Spoon.Menu.Popup.CONNECTIONS.Explore" />
   </menupopup>
 
   <menupopup id="step-inst">
-    <menuitem value="step-inst-edit" label="%Spoon.Menu.Popup.STEPS.Edit"/>
-    <menuitem value="step-inst-duplicate" label="%Spoon.Menu.Popup.STEPS.Duplicate"/>
-    <menuitem value="step-inst-delete" label="%Spoon.Menu.Popup.STEPS.Delete"/>
-    <menuitem value="step-inst-share" label="%Spoon.Menu.Popup.STEPS.Share"/>
+    <menuitem id="step-inst-edit" label="%Spoon.Menu.Popup.STEPS.Edit" />
+    <menuitem id="step-inst-duplicate" label="%Spoon.Menu.Popup.STEPS.Duplicate" />
+    <menuitem id="step-inst-delete" label="%Spoon.Menu.Popup.STEPS.Delete" />
+    <menuitem id="step-inst-share" label="%Spoon.Menu.Popup.STEPS.Share" />
   </menupopup>
 
   <menupopup id="job-entry-copy-inst">
-    <menuitem value="job-entry-copy-edit" label="%Spoon.Menu.Popup.STEPS.Edit"/>
-    <menuitem value="job-entry-copy-duplicate" label="%Spoon.Menu.Popup.STEPS.Duplicate"/>
-    <menuitem value="job-entry-copy-delete" label="%Spoon.Menu.Popup.STEPS.Delete"/>
+    <menuitem id="job-entry-copy-edit" label="%Spoon.Menu.Popup.STEPS.Edit" />
+    <menuitem id="job-entry-copy-duplicate" label="%Spoon.Menu.Popup.STEPS.Duplicate" />
+    <menuitem id="job-entry-copy-delete" label="%Spoon.Menu.Popup.STEPS.Delete" />
   </menupopup>
 
   <menupopup id="trans-hop-inst">
-    <menuitem value="trans-hop-inst-edit" label="%Spoon.Menu.Popup.STEPS.Edit"/>
-    <menuitem value="trans-hop-inst-delete" label="%Spoon.Menu.Popup.STEPS.Delete"/>
+    <menuitem id="trans-hop-inst-edit" label="%Spoon.Menu.Popup.STEPS.Edit" />
+    <menuitem id="trans-hop-inst-delete" label="%Spoon.Menu.Popup.STEPS.Delete" />
   </menupopup>
 
   <menupopup id="partition-schema-inst">
-    <menuitem value="partition-schema-inst-edit" label="%Spoon.Menu.Popup.STEPS.Edit"/>
-    <menuitem value="partition-schema-inst-delete" label="%Spoon.Menu.Popup.STEPS.Delete"/>
-    <menuitem value="partition-schema-inst-share" label="%Spoon.Menu.Popup.STEPS.Share"/>
+    <menuitem id="partition-schema-inst-edit" label="%Spoon.Menu.Popup.STEPS.Edit" />
+    <menuitem id="partition-schema-inst-delete" label="%Spoon.Menu.Popup.STEPS.Delete" />
+    <menuitem id="partition-schema-inst-share" label="%Spoon.Menu.Popup.STEPS.Share" />
   </menupopup>
 
   <menupopup id="cluster-schema-inst">
-    <menuitem value="cluster-schema-inst-edit" label="%Spoon.Menu.Popup.STEPS.Edit"/>
-    <menuitem value="cluster-schema-inst-delete" label="%Spoon.Menu.Popup.STEPS.Delete"/>
-    <menuitem value="cluster-schema-inst-share" label="%Spoon.Menu.Popup.STEPS.Share"/>
-    <menuitem value="cluster-schema-inst-monitor" label="%Spoon.Menu.Popup.CLUSTERS.Monitor"/>
+    <menuitem id="cluster-schema-inst-edit" label="%Spoon.Menu.Popup.STEPS.Edit" />
+    <menuitem id="cluster-schema-inst-delete" label="%Spoon.Menu.Popup.STEPS.Delete" />
+    <menuitem id="cluster-schema-inst-share" label="%Spoon.Menu.Popup.STEPS.Share" />
+    <menuitem id="cluster-schema-inst-monitor" label="%Spoon.Menu.Popup.CLUSTERS.Monitor" />
   </menupopup>
 
   <menupopup id="slave-server-inst">
-    <menuitem value="slave-server-inst-edit" label="%Spoon.Menu.Popup.STEPS.Edit"/>
-    <menuitem value="slave-server-inst-delete" label="%Spoon.Menu.Popup.STEPS.Delete"/>
-    <menuitem value="slave-server-inst-share" label="%Spoon.Menu.Popup.STEPS.Share"/>
-    <menuitem value="slave-server-inst-monitor" label="%Spoon.Menu.Popup.SLAVE_SERVER.Monitor"/>
-  </menupopup>
-
-  <menupopup id="trans-graph-entry">
-    <menuitem value="trans-graph-entry-newhop" label="%TransGraph.PopupMenu.NewHop"/>
-    <menuitem value="trans-graph-entry-open-mapping" label="%TransGraph.PopupMenu.OpenMapping"/>
-    <menuitem value="trans-graph-entry-edit" label="%TransGraph.PopupMenu.EditStep"/>
-    <menuitem value="trans-graph-entry-edit-description" label="%TransGraph.PopupMenu.EditStepDescription"/>
-	<menuseparator/>
-    <menu value="trans-graph-entry-data-movement" label="%TransGraph.PopupMenu.DataMovement">
-		<menupopup>
-			<menuitem value="trans-graph-entry-data-movement-distribute" type="checkbox" label="%TransGraph.PopupMenu.DistributeData"/>
-			<menuitem value="trans-graph-entry-data-movement-copy" type="checkbox" label="%TransGraph.PopupMenu.CopyData"/>
-		</menupopup>
-	</menu>
-    <menuitem value="trans-graph-entry-copies" label="%TransGraph.PopupMenu.NumberOfCopies"/>
-	<menuseparator/>
-	<menuitem value="trans-graph-entry-copy" label="%TransGraph.PopupMenu.CopyToClipboard"/>
-    <menuitem value="trans-graph-entry-duplicate" label="%TransGraph.PopupMenu.DuplicateStep"/>
-	<menuitem value="trans-graph-entry-delete" label="%TransGraph.PopupMenu.DeleteStep"/>
-    <menuitem value="trans-graph-entry-hide" label="%TransGraph.PopupMenu.HideStep"/>
-    <menuitem value="trans-graph-entry-detach" label="%TransGraph.PopupMenu.DetachStep"/>
-	<menuseparator/>
-    <menuitem value="trans-graph-entry-inputs" label="%TransGraph.PopupMenu.ShowInputFields"/>
-    <menuitem value="trans-graph-entry-outputs" label="%TransGraph.PopupMenu.ShowOutputFields"/>
-    <!--- 
-    	<menuitem value="trans-graph-entry-lineage" label="%TransGraph.PopupMenu.ShowDataLineage"/> 
-      -->
-    <menu value="trans-graph-entry-sniff" label="%TransGraph.PopupMenu.Sniff"> 
-		<menupopup>
-	    <menuitem value="trans-graph-entry-sniff-input" label="%TransGraph.PopupMenu.SniffInput"/> 
-	    <menuitem value="trans-graph-entry-sniff-output" label="%TransGraph.PopupMenu.SniffOutput"/> 
-	    <menuitem value="trans-graph-entry-sniff-error" label="%TransGraph.PopupMenu.SniffError"/> 
-		</menupopup>
-	</menu>
-	<menuseparator/>
-    <menu value="trans-graph-entry-align" label="%TransGraph.PopupMenu.AllignDistribute">
-		<menupopup>
-			<menuitem value="trans-graph-entry-align-left" label="%TransGraph.PopupMenu.AllignLeft" accesskey="ctrl-left"/>
-			<menuitem value="trans-graph-entry-align-right" label="%TransGraph.PopupMenu.AllignRight" accesskey="ctrl-right"/>
-			<menuitem value="trans-graph-entry-align-top" label="%TransGraph.PopupMenu.AllignTop" accesskey="ctrl-up"/>
-			<menuitem value="trans-graph-entry-align-bottom" label="%TransGraph.PopupMenu.AllignBottom" accesskey="ctrl-down"/>
-			<menuseparator/>
-			<menuitem value="trans-graph-entry-align-horz" label="%TransGraph.PopupMenu.DistributeHorizontally" accesskey="alt-right"/>
-			<menuitem value="trans-graph-entry-align-vert" label="%TransGraph.PopupMenu.DistributeVertically" accesskey="alt-up" />
-			<menuseparator/>
-			<menuitem value="trans-graph-entry-align-snap" label="%TransGraph.PopupMenu.SnapToGrid" accesskey="alt-home" />
-		</menupopup>
-	</menu>
-	<menuseparator/>
-    <menuitem value="trans-graph-entry-verify" label="%TransGraph.PopupMenu.CheckSelectedSteps"/>
-    <menuitem value="trans-graph-entry-mapping" label="%TransGraph.PopupMenu.GenerateMappingToThisStep"/>
-    <menuitem value="trans-graph-entry-partitioning" label="%TransGraph.PopupMenu.Partitioning"/>
-    <menuitem value="trans-graph-entry-clustering" label="%TransGraph.PopupMenu.Clustering"/>
-    <menuitem value="trans-graph-entry-errors" label="%TransGraph.PopupMenu.Error"/>
-	<menuseparator/>
-    <menuitem value="trans-graph-entry-preview" label="%TransGraph.PopupMenu.Preview"/>
-  </menupopup>
-
-  <menupopup id="trans-graph-hop">
-    <menuitem value="trans-graph-hop-edit" label="%TransGraph.PopupMenu.EditHop"/>
-    <menuitem value="trans-graph-hop-flip" label="%TransGraph.PopupMenu.FlipDirection"/>
-    <menuitem value="trans-graph-hop-enabled" label="%TransGraph.PopupMenu.DisableHop"/>
-    <menuitem value="trans-graph-hop-delete" label="%TransGraph.PopupMenu.DeleteHop"/>
-  </menupopup>
-
-  <menupopup id="trans-graph-note">
-    <menuitem value="trans-graph-note-edit" label="%TransGraph.PopupMenu.EditNote"/>
-    <menuitem value="trans-graph-note-delete" label="%TransGraph.PopupMenu.DeleteNote"/>
-    <menuitem value="trans-graph-note-raise" label="%TransGraph.PopupMenu.RaiseNote"/>
-    <menuitem value="trans-graph-note-lower" label="%TransGraph.PopupMenu.LowerNote"/>
-  </menupopup>
-
-  <menupopup id="trans-graph-background">
-    <menuitem value="trans-graph-background-new-note" label="%TransGraph.PopupMenu.NewNote"/>
-    <menu value="trans-graph-background-new-step" label="%TransGraph.PopupMenu.NewStep">
-		<menupopup>
-		</menupopup>
-	</menu>
-	
-    <menuitem value="trans-graph-background-paste" label="%TransGraph.PopupMenu.PasteStepFromClipboard"/>
-	<menuseparator/>
-	<menuitem value="trans-graph-background-select-all" label="%TransGraph.PopupMenu.SelectAll"/>
-	<menuitem value="trans-graph-background-clear-selection" label="%TransGraph.PopupMenu.ClearSelection"/>
-	<menuseparator/>
-    <menuitem value="trans-graph-background-settings" label="%TransGraph.PopupMenu.Settings"/>
-	
+    <menuitem id="slave-server-inst-edit" label="%Spoon.Menu.Popup.STEPS.Edit" />
+    <menuitem id="slave-server-inst-delete" label="%Spoon.Menu.Popup.STEPS.Delete" />
+    <menuitem id="slave-server-inst-share" label="%Spoon.Menu.Popup.STEPS.Share" />
+    <menuitem id="slave-server-inst-monitor" label="%Spoon.Menu.Popup.SLAVE_SERVER.Monitor" />
   </menupopup>
 
   <menupopup id="job-graph-entry">
-    <menuitem value="job-graph-entry-newhop" label="%JobGraph.PopupMenu.JobEntry.NewHop"/>
-    <menuitem value="job-graph-entry-launch" label="%JobGraph.PopupMenu.JobEntry.LaunchSpoon"/>
-    <menuitem value="job-graph-entry-edit" label="%JobGraph.PopupMenu.JobEntry.Edit"/>
-    <menuitem value="job-graph-entry-edit-description" label="%JobGraph.PopupMenu.JobEntry.EditDescription"/>
-    <menuitem value="job-graph-entry-parallel" type="checkbox" label="%JobGraph.PopupMenu.JobEntry.LaunchParallel"/>
-	<menuseparator/>
-    <menuitem value="job-graph-entry-duplicate" label="%JobGraph.PopupMenu.JobEntry.Duplicate"/>
-    <menuitem value="job-graph-entry-copy" label="%JobGraph.PopupMenu.JobEntry.CopyToClipboard"/>
-	<menuseparator/>
-    <menu value="job-graph-entry-align" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute">
-		<menupopup>
-			<menuitem value="job-graph-entry-align-left" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Left" accesskey="ctrl-left"/>
-			<menuitem value="job-graph-entry-align-right" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Right" accesskey="ctrl-right"/>
-			<menuitem value="job-graph-entry-align-top" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Top" accesskey="ctrl-up"/>
-			<menuitem value="job-graph-entry-align-bottom" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Bottom" accesskey="ctrl-down"/>
-			<menuseparator/>
-			<menuitem value="job-graph-entry-align-horz" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Horizontally" accesskey="alt-right"/>
-			<menuitem value="job-graph-entry-align-vert" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Vertically" accesskey="alt-up" />
-			<menuseparator/>
-			<menuitem value="job-graph-entry-align-snap" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid" accesskey="alt-home" />
-		</menupopup>
-	</menu>
-    <menuitem value="job-graph-entry-detach" label="%JobGraph.PopupMenu.Hop.Detach"/>
-    <menuitem value="job-graph-entry-hide" label="%JobGraph.PopupMenu.JobEntry.Hide"/>
-    <menuitem value="job-graph-entry-delete" label="%JobGraph.PopupMenu.JobEntry.Delete"/>
+    <menuitem id="job-graph-entry-newhop" label="%JobGraph.PopupMenu.JobEntry.NewHop" />
+    <menuitem id="job-graph-entry-launch" label="%JobGraph.PopupMenu.JobEntry.LaunchSpoon" />
+    <menuitem id="job-graph-entry-edit" label="%JobGraph.PopupMenu.JobEntry.Edit" />
+    <menuitem id="job-graph-entry-edit-description" label="%JobGraph.PopupMenu.JobEntry.EditDescription" />
+    <menuitem id="job-graph-entry-parallel" type="checkbox" label="%JobGraph.PopupMenu.JobEntry.LaunchParallel" />
+    <menuseparator />
+    <menuitem id="job-graph-entry-duplicate" label="%JobGraph.PopupMenu.JobEntry.Duplicate" />
+    <menuitem id="job-graph-entry-copy" label="%JobGraph.PopupMenu.JobEntry.CopyToClipboard" />
+    <menuseparator />
+    <menu id="job-graph-entry-align" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute">
+      <menupopup>
+        <menuitem id="job-graph-entry-align-left" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Left"
+          accesskey="ctrl-left" />
+        <menuitem id="job-graph-entry-align-right" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Right"
+          accesskey="ctrl-right" />
+        <menuitem id="job-graph-entry-align-top" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Top"
+          accesskey="ctrl-up" />
+        <menuitem id="job-graph-entry-align-bottom" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Bottom"
+          accesskey="ctrl-down" />
+        <menuseparator />
+        <menuitem id="job-graph-entry-align-horz" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Horizontally"
+          accesskey="alt-right" />
+        <menuitem id="job-graph-entry-align-vert" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Vertically"
+          accesskey="alt-up" />
+        <menuseparator />
+        <menuitem id="job-graph-entry-align-snap" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid"
+          accesskey="alt-home" />
+      </menupopup>
+    </menu>
+    <menuitem id="job-graph-entry-detach" label="%JobGraph.PopupMenu.Hop.Detach" />
+    <menuitem id="job-graph-entry-hide" label="%JobGraph.PopupMenu.JobEntry.Hide" />
+    <menuitem id="job-graph-entry-delete" label="%JobGraph.PopupMenu.JobEntry.Delete" />
   </menupopup>
 
   <menupopup id="job-graph-hop">
-    <menu value="job-graph-hop-evaluation" label="%JobGraph.PopupMenu.Hop.Evaluation">
-		<menupopup>
-			<menuitem value="job-graph-hop-evaluation-uncond" type="checkbox" label="%JobGraph.PopupMenu.Hop.Evaluation.Unconditional"/>
-			<menuitem value="job-graph-hop-evaluation-true" type="checkbox" label="%JobGraph.PopupMenu.Hop.Evaluation.FollowWhenOK"/>
-			<menuitem value="job-graph-hop-evaluation-false" type="checkbox" label="%JobGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed"/>
-		</menupopup>
-	</menu>
-    <menuitem value="job-graph-hop-flip" label="%JobGraph.PopupMenu.Hop.FlipDirection"/>
-    <menuitem value="job-graph-hop-enabled" label="%JobGraph.PopupMenu.Hop.Disable"/>
-    <menuitem value="job-graph-hop-delete" label="%JobGraph.PopupMenu.Hop.Delete"/>
+    <menu id="job-graph-hop-evaluation" label="%JobGraph.PopupMenu.Hop.Evaluation">
+      <menupopup>
+        <menuitem id="job-graph-hop-evaluation-uncond" type="checkbox"
+          label="%JobGraph.PopupMenu.Hop.Evaluation.Unconditional" />
+        <menuitem id="job-graph-hop-evaluation-true" type="checkbox" label="%JobGraph.PopupMenu.Hop.Evaluation.FollowWhenOK" />
+        <menuitem id="job-graph-hop-evaluation-false" type="checkbox"
+          label="%JobGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed" />
+      </menupopup>
+    </menu>
+    <menuitem id="job-graph-hop-flip" label="%JobGraph.PopupMenu.Hop.FlipDirection" />
+    <menuitem id="job-graph-hop-enabled" label="%JobGraph.PopupMenu.Hop.Disable" />
+    <menuitem id="job-graph-hop-delete" label="%JobGraph.PopupMenu.Hop.Delete" />
   </menupopup>
 
   <menupopup id="job-graph-note">
-    <menuitem value="job-graph-note-edit" label="%JobGraph.PopupMenu.Note.Edit"/>
-    <menuitem value="job-graph-note-delete" label="%JobGraph.PopupMenu.Note.Delete"/>
+    <menuitem id="job-graph-note-edit" label="%JobGraph.PopupMenu.Note.Edit" />
+    <menuitem id="job-graph-note-delete" label="%JobGraph.PopupMenu.Note.Delete" />
   </menupopup>
 
   <menupopup id="job-graph-background">
-    <menuitem value="job-graph-note-new" label="%JobGraph.PopupMenu.Note.New"/>
-    <menuitem value="job-graph-note-paste" label="%JobGraph.PopupMenu.PasteStepFromClipboard"/>
-	<menuseparator/>
-	<menuitem value="job-graph-background-select-all" label="%JobGraph.PopupMenu.SelectAll"/>
-	<menuitem value="job-graph-background-clear-selection" label="%JobGraph.PopupMenu.ClearSelection"/>
-	<menuseparator/>
-    <menuitem value="job-graph-background-settings" label="%JobGraph.PopupMenu.Settings"/>
+    <menuitem id="job-graph-note-new" label="%JobGraph.PopupMenu.Note.New" />
+    <menuitem id="job-graph-note-paste" label="%JobGraph.PopupMenu.PasteStepFromClipboard" />
+    <menuseparator />
+    <menuitem id="job-graph-background-select-all" label="%JobGraph.PopupMenu.SelectAll" />
+    <menuitem id="job-graph-background-clear-selection" label="%JobGraph.PopupMenu.ClearSelection" />
+    <menuseparator />
+    <menuitem id="job-graph-background-settings" label="%JobGraph.PopupMenu.Settings" />
   </menupopup>
 
 </popupset>

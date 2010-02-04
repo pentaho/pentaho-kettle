@@ -92,8 +92,6 @@ import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.i18n.GlobalMessages;
-import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryListener;
 import org.pentaho.di.job.JobEntryResult;
@@ -135,6 +133,7 @@ import org.pentaho.di.ui.spoon.trans.DelayListener;
 import org.pentaho.di.ui.spoon.trans.DelayTimer;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
@@ -157,8 +156,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
   private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private static final String XUL_FILE_JOB_TOOLBAR = "ui/job-toolbar.xul";
-
-  public static final String XUL_FILE_JOB_TOOLBAR_PROPERTIES = "ui/job-toolbar.properties";
 
   public final static String START_TEXT = BaseMessages.getString(PKG, "JobLog.Button.Start"); //$NON-NLS-1$
 
@@ -288,6 +285,8 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
 	private Point[]											previous_note_locations;
 	private JobEntryCopy									currentEntry;
 
+	private XulDomContainer xulDomContainer;
+	
 public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     super(par, SWT.NONE);
     shell = par.getShell();
@@ -305,6 +304,18 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     jobGridDelegate = new JobGridDelegate(spoon, this);
 
     refreshListeners = new ArrayList<RefreshListener>();
+    try {
+      XulLoader loader = new SwtXulLoader();
+      
+      ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
+      XulDomContainer container = loader.loadXul(XUL_FILE_JOB_TOOLBAR, bundle);
+      container.addEventHandler(this);
+      setXulDomContainer(container);
+    } catch (XulException e1) {
+      log.logError(toString(), Const.getStackTracker(e1));
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
+          BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(e1));
+    }
     
     setLayout(new FormLayout());
 
@@ -1252,12 +1263,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   private void addToolBar() {
 
     try {
-      XulLoader loader = new SwtXulLoader();
-      
-      ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
-      XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_JOB_TOOLBAR, bundle);
-      xulDomContainer.addEventHandler(this);
-      toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
+      toolbar = (XulToolbar) getXulDomContainer().getDocumentRoot().getElementById("nav-toolbar");
       
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
       swtToolbar.pack();
@@ -3242,8 +3248,7 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
-    // TODO Auto-generated method stub
-    return null;
+    return xulDomContainer;
   }
 
   /* (non-Javadoc)
@@ -3258,8 +3263,7 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer(XulDomContainer xulDomContainer) {
-    // TODO Auto-generated method stub
-    
+    this.xulDomContainer = xulDomContainer;
   }
 
   public boolean canHandleSave() {

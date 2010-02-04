@@ -1,12 +1,12 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
 
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton value="refresh-history" label="${TransHistory.Button.Refresh}" image="images/refresh.png"
+    <toolbarbutton id="refresh-history" label="${TransHistory.Button.Refresh}" image="images/refresh.png"
       tooltiptext="${TransHistory.Button.Refresh}" onclick="transhistory.refreshHistory()"/>
-    <toolbarbutton value="replay-history" label="${TransHistory.Button.Replay}" image="images/replay.png"
+    <toolbarbutton id="replay-history" label="${TransHistory.Button.Replay}" image="images/replay.png"
       tooltiptext="${TransHistory.Button.Replay}" onclick="transhistory.replayHistory()" />
     <toolbarseparator />
-    <toolbarbutton value="clear-history" label="${TransHistory.Button.Clear}" image="images/clear-log.png"
+    <toolbarbutton id="clear-history" label="${TransHistory.Button.Clear}" image="images/clear-log.png"
       tooltiptext="${TransHistory.Button.Clear}" onclick="transhistory.clearLogTable()" />
   </toolbar>
 
