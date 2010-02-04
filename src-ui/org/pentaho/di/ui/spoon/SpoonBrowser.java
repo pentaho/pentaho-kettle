@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -146,7 +147,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
     try {
       XulLoader loader = new SwtXulLoader();
-      ResourceBundle bundle = ResourceBundle.getBundle("org/pentaho/di/ui/spoon/messages/messages", LanguageChoice.getInstance().getDefaultLocale());
+      ResourceBundle bundle = GlobalMessages.getBundle(LanguageChoice.getInstance().getDefaultLocale(), "org/pentaho/di/ui/spoon/messages/messages");
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_BROWSER_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
