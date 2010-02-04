@@ -598,7 +598,7 @@ public class JobDialog extends Dialog
         wlFields.setLayoutData(fdlFields);
         
         final int FieldsCols=3;
-        final int FieldsRows=100;  // TODO get the real number of parameters?
+        final int FieldsRows=jobMeta.listParameters().length;
         
         ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
         colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "JobDialog.ColumnInfo.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
