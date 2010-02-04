@@ -36,7 +36,7 @@ FOR /D %%F IN (plugins\spoon\*) DO call :addpp %%F
 goto extlibe
 
 :addpp
-set LIBSPATH=%LIBSPATH%;%1\lib
+set LIBSPATH=%LIBSPATH%;..\%1\lib
 goto :eof
 
 :extlibe

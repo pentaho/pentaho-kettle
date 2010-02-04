@@ -31,11 +31,11 @@ for f in `find $BASEDIR/plugins/spoon -maxdepth 2 -type d -name "lib"`
 do
 if [ "$PLUGINPATH" != "NONE" ]
 then
-	PLUGINPATH=$PLUGINPATH:$f
+	PLUGINPATH=$PLUGINPATH:../$f
 else
-	PLUGINPATH=$f
+	PLUGINPATH=../$f
 fi
-done 
+done
 
 # **************************************************
 # ** Platform specific libraries ...              **
