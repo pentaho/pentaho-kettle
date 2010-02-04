@@ -1,11 +1,8 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical" >
 	 
-	 <toolbox>
-		<toolbar id="nav-toolbar" mode="full">
-			<toolbarbutton id="new-repository" label="${RepositoryDialog.Label.Repository.New}" image="ui/images/generic-new.png" tooltiptext="${RepositoryDialog.Tooltip.Repository.New}" onclick="repositories.newRepository()"/>
-			<toolbarbutton id="edit-repository" label="${RepositoryDialog.Label.Repository.Edit}" image="ui/images/generic-edit.png" tooltiptext="${RepositoryDialog.Tooltip.Repository.Edit}" onclick="repositories.editRepository()"/>
-			<toolbarbutton id="delete-repository" label="${RepositoryDialog.Label.Repository.Delete}" image="ui/images/generic-delete.png" tooltiptext="${RepositoryDialog.Tooltip.Repository.Delete}" onclick="repositories.deleteRepository()"/>
-		</toolbar>
-	</toolbox>
-
+	<toolbar id="nav-toolbar" mode="full">
+		<toolbarbutton id="new-repository" label="${RepositoryDialog.Label.Repository.New}" image="ui/images/generic-new.png" tooltiptext="${RepositoryDialog.Tooltip.Repository.New}" onclick="repositories.newRepository()"/>
+		<toolbarbutton id="edit-repository" label="${RepositoryDialog.Label.Repository.Edit}" image="ui/images/generic-edit.png" tooltiptext="${RepositoryDialog.Tooltip.Repository.Edit}" onclick="repositories.editRepository()"/>
+		<toolbarbutton id="delete-repository" label="${RepositoryDialog.Label.Repository.Delete}" image="ui/images/generic-delete.png" tooltiptext="${RepositoryDialog.Tooltip.Repository.Delete}" onclick="repositories.deleteRepository()"/>
+	</toolbar>
 </window>
