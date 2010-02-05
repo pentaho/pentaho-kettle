@@ -362,34 +362,4 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     {
         return new String[] { "jaybird-full-2.1.0.jar" };
     }	
-
-    /**
-    * Check if a sequence exists.
-    * @param sequenceName The sequence to check
-    * @return The SQL to get the name of the sequence back from the databases data dictionary
-    */
-    public String getSQLSequenceExists(String sequenceName)
-    {
-        return "SELECT * FROM RDB$GENERATORS WHERE RDB$GENERATOR_NAME = '"+sequenceName.toUpperCase()+"'";
-    }
-
-    /**
-    * Get the current value of a database sequence
-    * @param sequenceName The sequence to check
-    * @return The current value of a database sequence
-    */
-    public String getSQLCurrentSequenceValue(String sequenceName)
-    {
-        return "SELECT GEN_ID("+sequenceName+", 0 ) FROM RDB$DATABASE;";
-    }
-
-    /**
-    * Get the SQL to get the next value of a sequence.
-    * @param sequenceName The sequence name
-    * @return the SQL to get the next value of a sequence.
-    */
-    public String getSQLNextSequenceValue(String sequenceName)
-    {
-        return "SELECT GEN_ID("+sequenceName+", 1 ) FROM RDB$DATABASE;";
-    } 
 }
