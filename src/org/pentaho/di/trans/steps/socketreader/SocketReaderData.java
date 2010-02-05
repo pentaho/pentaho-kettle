@@ -42,4 +42,18 @@ public class SocketReaderData extends BaseStepData implements StepDataInterface
 		super();
 	}
 
+	@Override
+	protected void finalize() throws Throwable {
+		try {
+			if (socket!=null) {
+				socket.shutdownInput();
+				socket.shutdownOutput();
+				socket.close();
+			}
+		} catch (java.io.IOException e) {
+		} finally {
+			super.finalize();
+		}
+	}
+
 }
