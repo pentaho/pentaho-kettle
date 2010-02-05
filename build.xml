@@ -917,6 +917,7 @@
 	  			<!-- patch Info.plist with StartOnMainThread property need to make sure that the token is in the right place-->
 	  			<replace file="${macdistrib}/${ant.project.name}.app/Contents/Info.plist" token="&lt;key&gt;ClassPath" value="&lt;key&gt;StartOnMainThread&lt;/key&gt;&lt;true/&gt; &lt;key&gt;ClassPath" />
 	  			<!-- Create a .dmg file containing the app and docs -->
+                            <echo>Creating .dmg package...</echo>
 	  		    <exec executable="/usr/bin/hdiutil" os="Mac OS X">
 	  		      <arg value="create"/>
 	  		      <arg value="-srcfolder"/>
