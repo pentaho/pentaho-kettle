@@ -441,6 +441,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         ((VariableSpace)cloneJei).copyVariablesFrom(this);
         cloneJei.setRepository(rep);
         cloneJei.setParentJob(this);
+        final long start = System.currentTimeMillis();
                 
         cloneJei.getLogChannel().logDetailed("Starting job entry");
         for (JobEntryListener jobEntryListener : jobEntryListeners) {
@@ -455,6 +456,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			}
         }
         final Result result = cloneJei.execute(prevResult, nr);
+        final long end = System.currentTimeMillis();
         if (interactive) {
 			if (jobEntryCopy.isTransformation()) {
 				getActiveJobEntryTransformations().remove(jobEntryCopy);
@@ -464,6 +466,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			}
         }
 
+        if (cloneJei instanceof JobEntryTrans)
+        {
+        	String throughput = result.getReadWriteThroughput((int)((end-start) / 1000));
+        	if (throughput != null) {
+        		log.logMinimal(cloneJei.getName(), throughput);
+        	}
+        }
         for (JobEntryListener jobEntryListener : jobEntryListeners) {
         	jobEntryListener.afterExecution(this, jobEntryCopy, cloneJei, result);
         }
