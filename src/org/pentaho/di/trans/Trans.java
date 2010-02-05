@@ -367,12 +367,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		{
 			if (transMeta.getFilename()!=null)
 			{
-				log.logMinimal(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForFilename",transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
+				log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForFilename",transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		else
 		{
-			log.logMinimal(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForTransformation",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForTransformation",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		if (transMeta.getArguments()!=null)
@@ -2768,7 +2768,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             }
         }
         
-        log.logMinimal("All transformations in the cluster have finished.");
+        log.logBasic("All transformations in the cluster have finished.");
         
         // All transformations have finished, with or without error.
         // Now run a cleanup on all the transformation on the master and the slaves.
