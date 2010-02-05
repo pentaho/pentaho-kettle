@@ -285,6 +285,8 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
 				
+                data.db.setCommit(100); // we never get a commit, but it just turns off auto-commit.
+
                 if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "DynamicSQLRow.Log.ConnectedToDB")); //$NON-NLS-1$
 	
 				data.db.setQueryLimit(meta.getRowLimit());
