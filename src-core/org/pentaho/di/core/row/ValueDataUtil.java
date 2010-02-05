@@ -14,6 +14,7 @@ package org.pentaho.di.core.row;
 
 import java.io.FileInputStream;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -346,40 +347,63 @@ public class ValueDataUtil
 
         if ((metaB.isString() && metaA.isNumeric()) || (metaB.isNumeric() && metaA.isString()))
         {
-            StringBuffer s;
-            String append="";
-            int n;
-            if (metaB.isString())
-            {
-                s=new StringBuffer(metaB.getString(dataB));
-                append=metaB.getString(dataB);
-                n=metaA.getInteger(dataA).intValue();
-            }
-            else
-            {
-                s=new StringBuffer(metaA.getString(dataA));
-                append=metaA.getString(dataA);
-                n=metaB.getInteger(dataB).intValue();
-            }
-
-            if (n==0) s.setLength(0);
-            else
-            for (int i=1;i<n;i++) s.append(append);
-
-            return s.toString();
+            return multiplyString(metaA, dataA, metaB, dataB);
         }
-        
+
+        return multiplyNumeric(metaA, dataA, metaB, dataB);
+    }
+
+    protected static Object multiplyNumeric(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    {
         switch(metaA.getType())
         {
-        case ValueMetaInterface.TYPE_NUMBER    : 
-            return new Double( metaA.getNumber(dataA).doubleValue()*metaB.getNumber(dataB).doubleValue());
-        case ValueMetaInterface.TYPE_INTEGER   : 
-            return new Long( metaA.getInteger(dataA).longValue()*metaB.getInteger(dataB).longValue());
-        case ValueMetaInterface.TYPE_BIGNUMBER : 
-            return metaA.getBigNumber(dataA).multiply( metaB.getBigNumber(dataB));
-            
-        default: throw new KettleValueException("The 'multiply' function only works on numeric data optionally multiplying strings." );
+            case ValueMetaInterface.TYPE_NUMBER    : 
+                return multiplyDoubles(metaA.getNumber(dataA), metaB.getNumber(dataB));
+            case ValueMetaInterface.TYPE_INTEGER   : 
+                return multiplyLongs(metaA.getInteger(dataA), metaB.getInteger(dataB));
+            case ValueMetaInterface.TYPE_BIGNUMBER : 
+                return multiplyBigDecimals(metaA.getBigNumber(dataA), metaB.getBigNumber(dataB), null);
+
+            default: throw new KettleValueException("The 'multiply' function only works on numeric data optionally multiplying strings." );
         }
+    }
+    public static Double multiplyDoubles(Double a, Double b)
+    {
+        return new Double(a.doubleValue() * b.doubleValue());
+    }
+    public static Long multiplyLongs(Long a, Long b)
+    {
+        return new Long(a.longValue() * b.longValue());
+    }
+    public static BigDecimal multiplyBigDecimals(BigDecimal a, BigDecimal b, MathContext mc)
+    {
+        if (mc == null) mc = MathContext.DECIMAL64;
+        return a.multiply(b, mc);
+    }
+
+    protected static Object multiplyString(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    {
+        StringBuffer s;
+        String append="";
+        int n;
+        if (metaB.isString())
+        {
+            s=new StringBuffer(metaB.getString(dataB));
+            append=metaB.getString(dataB);
+            n=metaA.getInteger(dataA).intValue();
+        }
+        else
+        {
+            s=new StringBuffer(metaA.getString(dataA));
+            append=metaA.getString(dataA);
+            n=metaB.getInteger(dataB).intValue();
+        }
+
+        if (n==0) s.setLength(0);
+        else
+            for (int i=1;i<n;i++) s.append(append);
+
+        return s.toString();
     }
 
     public static Object divide(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
@@ -388,15 +412,28 @@ public class ValueDataUtil
 
         switch(metaA.getType())
         {
-        case ValueMetaInterface.TYPE_NUMBER    : 
-            return new Double( metaA.getNumber(dataA).doubleValue() / metaB.getNumber(dataB).doubleValue());
-        case ValueMetaInterface.TYPE_INTEGER   : 
-            return new Long( metaA.getInteger(dataA).longValue() / metaB.getInteger(dataB).longValue());
-        case ValueMetaInterface.TYPE_BIGNUMBER : 
-            return metaA.getBigNumber(dataA).divide( metaB.getBigNumber(dataB), BigDecimal.ROUND_HALF_UP);
+            case ValueMetaInterface.TYPE_NUMBER    : 
+                return divideDoubles(metaA.getNumber(dataA), metaB.getNumber(dataB));
+            case ValueMetaInterface.TYPE_INTEGER   : 
+                return divideLongs(metaA.getInteger(dataA), metaB.getInteger(dataB));
+            case ValueMetaInterface.TYPE_BIGNUMBER : 
+                return divideBigDecimals(metaA.getBigNumber(dataA), metaB.getBigNumber(dataB), null);
             
         default: throw new KettleValueException("The 'divide' function only works on numeric data." );
         }
+    }
+    public static Double divideDoubles(Double a, Double b)
+    {
+        return new Double(a.doubleValue() / b.doubleValue());
+    }
+    public static Long divideLongs(Long a, Long b)
+    {
+        return new Long(a.longValue() / b.longValue());
+    }
+    public static BigDecimal divideBigDecimals(BigDecimal a, BigDecimal b, MathContext mc)
+    {
+        if (mc == null) mc = MathContext.DECIMAL64;
+        return a.divide(b, mc);
     }
     
     public static Object sqrt(ValueMetaInterface metaA, Object dataA) throws KettleValueException
@@ -412,7 +449,7 @@ public class ValueDataUtil
         case ValueMetaInterface.TYPE_BIGNUMBER : 
             return BigDecimal.valueOf( Math.sqrt( metaA.getNumber(dataA).doubleValue()) );
             
-        default: throw new KettleValueException("The 'multiply' function only works on numeric data optionally multiplying strings." );
+        default: throw new KettleValueException("The 'sqrt' function only works on numeric data." );
         }
     }
     
@@ -433,11 +470,11 @@ public class ValueDataUtil
         switch(metaA.getType())
         {
         case ValueMetaInterface.TYPE_NUMBER    : 
-            return new Double( 100.0 * metaA.getNumber(dataA).doubleValue() / metaB.getNumber(dataB).doubleValue());
+            return divideDoubles(multiplyDoubles(100.0D, metaA.getNumber(dataA)), metaB.getNumber(dataB));
         case ValueMetaInterface.TYPE_INTEGER   : 
-            return new Long( 100 * metaA.getInteger(dataA).longValue() / metaB.getInteger(dataB).longValue());
+            return divideLongs(multiplyLongs(100L, metaA.getInteger(dataA)), metaB.getInteger(dataB));
         case ValueMetaInterface.TYPE_BIGNUMBER : 
-            return metaA.getBigNumber(dataA).multiply( new BigDecimal(100) ).divide( metaB.getBigNumber(dataB), BigDecimal.ROUND_HALF_UP );
+            return divideBigDecimals(multiplyBigDecimals(metaA.getBigNumber(dataA), new BigDecimal(100), null), metaB.getBigNumber(dataB), null);
             
         default: throw new KettleValueException("The 'A/B in %' function only works on numeric data" );
         }
@@ -460,11 +497,11 @@ public class ValueDataUtil
         switch(metaA.getType())
         {
         case ValueMetaInterface.TYPE_NUMBER    : 
-            return new Double( metaA.getNumber(dataA).doubleValue()  - ( metaA.getNumber(dataA).doubleValue() * metaB.getNumber(dataB).doubleValue() / 100.0 ));
+            return new Double( metaA.getNumber(dataA).doubleValue()  - divideDoubles(multiplyDoubles(metaA.getNumber(dataA), metaB.getNumber(dataB)), 100.0D));
         case ValueMetaInterface.TYPE_INTEGER   : 
-            return new Long( metaA.getInteger(dataA).longValue() - ( metaA.getInteger(dataA).longValue() * metaB.getInteger(dataB).longValue() * 100 ));
+            return new Long( metaA.getInteger(dataA).longValue() - divideLongs(multiplyLongs(metaA.getInteger(dataA), metaB.getInteger(dataB)), 100L));
         case ValueMetaInterface.TYPE_BIGNUMBER : 
-            return metaA.getBigNumber(dataA).subtract( metaA.getBigNumber(dataA).multiply(metaB.getBigNumber(dataB)).divide( new BigDecimal(100), BigDecimal.ROUND_HALF_UP ) );
+            return metaA.getBigNumber(dataA).subtract( divideBigDecimals(metaA.getBigNumber(dataA), multiplyBigDecimals(metaB.getBigNumber(dataB), new BigDecimal(100), null), null));
         default: throw new KettleValueException("The 'A-B%' function only works on numeric data" );
         }
     }
@@ -485,12 +522,12 @@ public class ValueDataUtil
 
         switch(metaA.getType())
         {
-        case ValueMetaInterface.TYPE_NUMBER    : 
-            return new Double( metaA.getNumber(dataA).doubleValue()  + ( metaA.getNumber(dataA).doubleValue() * metaB.getNumber(dataB).doubleValue() / 100.0 ));
-        case ValueMetaInterface.TYPE_INTEGER   : 
-            return new Long( metaA.getInteger(dataA).longValue() + ( metaA.getInteger(dataA).longValue() * metaB.getInteger(dataB).longValue() * 100 ));
-        case ValueMetaInterface.TYPE_BIGNUMBER : 
-            return metaA.getBigNumber(dataA).add( metaA.getBigNumber(dataA).multiply(metaB.getBigNumber(dataB)).divide( new BigDecimal(100), BigDecimal.ROUND_HALF_UP ) );
+            case ValueMetaInterface.TYPE_NUMBER    : 
+                return new Double( metaA.getNumber(dataA).doubleValue() + divideDoubles(multiplyDoubles(metaA.getNumber(dataA), metaB.getNumber(dataB)), 100.0D));
+            case ValueMetaInterface.TYPE_INTEGER   : 
+                return new Long( metaA.getInteger(dataA).longValue() + divideLongs(multiplyLongs(metaA.getInteger(dataA), metaB.getInteger(dataB)), 100L));
+            case ValueMetaInterface.TYPE_BIGNUMBER : 
+                return metaA.getBigNumber(dataA).add( divideBigDecimals(metaA.getBigNumber(dataA), multiplyBigDecimals(metaB.getBigNumber(dataB), new BigDecimal(100), null), null));
         default: throw new KettleValueException("The 'A+B%' function only works on numeric data" );
         }
     }   
@@ -516,8 +553,7 @@ public class ValueDataUtil
         case ValueMetaInterface.TYPE_INTEGER   : 
             return new Long( metaA.getInteger(dataA).longValue() + ( metaB.getInteger(dataB).longValue() * metaC.getInteger(dataC).longValue() ));
         case ValueMetaInterface.TYPE_BIGNUMBER : 
-            BigDecimal product = metaB.getBigNumber(dataB).multiply( metaC.getBigNumber(dataC));
-            return metaA.getBigNumber(dataA).add(product);
+            return metaA.getBigNumber(dataA).add(multiplyBigDecimals(metaB.getBigNumber(dataB), metaC.getBigNumber(dataC), null));
             
         default: throw new KettleValueException("The 'combination1' function only works on numeric data" );
         }

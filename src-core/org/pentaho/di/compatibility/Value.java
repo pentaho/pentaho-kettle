@@ -33,6 +33,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.w3c.dom.Node;
@@ -2105,7 +2106,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
         // big numbers
         if (isBigNumber() || v.isBigNumber())
         {
-            setValue(getBigNumber().multiply(v.getBigNumber()));
+            setValue(ValueDataUtil.multiplyBigDecimals(getBigNumber(), v.getBigNumber(), null));
         }
         else
 		// numbers
