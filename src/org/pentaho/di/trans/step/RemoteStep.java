@@ -326,6 +326,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					//
 					try {
 						if (socket!=null) {
+							socket.shutdownInput();
+							socket.shutdownOutput();
 							socket.close();
 						}
 					} catch (IOException e) {
@@ -421,6 +423,13 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	            try {
 					Thread.sleep(250);
 				} catch (InterruptedException e) {
+					if (socket!=null) {
+						socket.shutdownInput();
+						socket.shutdownOutput();
+						socket.close();
+						baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server "+realHostname+" port "+portNumber+" - Local port="+socket.getLocalPort());
+					}
+
 					throw new KettleException("Interrupted while trying to connect to server socket: "+e.toString());
 				}
 	        }
@@ -429,7 +438,14 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         // See if all was OK...
         if (lastException!=null)
         {
+
         	baseStep.logError("Error initialising step: "+lastException.toString());
+			if (socket!=null) {
+				socket.shutdownInput();
+				socket.shutdownOutput();
+				socket.close();
+				baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server "+realHostname+" port "+portNumber+" - Local port="+socket.getLocalPort());
+			}
             throw lastException;
         }
         else
@@ -495,6 +511,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					// Close the socket
 					try {
 						if (socket!=null) {
+							socket.shutdownInput();
+							socket.shutdownOutput();
 							socket.close();
 							baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server "+realHostname+" port "+portNumber+" - Local port="+socket.getLocalPort());
 						}
@@ -640,5 +658,22 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	 */
 	public void setSourceSlaveServerName(String sourceSlaveServerName) {
 		this.sourceSlaveServerName = sourceSlaveServerName;
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		try {
+			if (socket!=null) {
+				socket.shutdownInput();
+				socket.shutdownOutput();
+				socket.close();
+			}
+			if (serverSocket!=null) {
+				serverSocket.close();
+			}
+		} catch (IOException e) {
+		} finally {
+			super.finalize();
+		}
 	}
 }
