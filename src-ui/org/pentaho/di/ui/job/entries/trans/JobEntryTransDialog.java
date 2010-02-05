@@ -16,20 +16,21 @@
 
 package org.pentaho.di.ui.job.entries.trans;
 
-import java.io.IOException;
+import java.io.File;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.VFS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -37,6 +38,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -48,6 +50,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -64,8 +67,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 /**
  * This dialog allows you to edit the transformation job entry (JobEntryTrans)
@@ -77,13 +80,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 {
 	private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static final String[] FILE_FILTERNAMES = new String[] {
-			BaseMessages.getString(PKG, "JobTrans.Fileformat.Kettle"), BaseMessages.getString(PKG, "JobTrans.Fileformat.XML"),
-			BaseMessages.getString(PKG, "JobTrans.Fileformat.All") };
-
 	private Label wlName;
 
-	private Group wSpec;
+	private Composite wSpec;
 	private FormData fdSpec;
 
 	private Text wName;
@@ -99,7 +98,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	private Button wbFilename;
 	private TextVar wFilename;
 
-	private Group wLogging;
+	private Composite wLogging;
 
 	private Label wlSetLogfile;
 	private Button wSetLogfile;
@@ -183,6 +182,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
 	private TextVar	wByReference;
 
+	private Composite	wAdvanced;
+
 	public JobEntryTransDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
 	{
 		super(parent, jobEntryInt, rep, jobMeta);
@@ -191,9 +192,6 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
 	public JobEntryInterface open()
 	{
-		CTabFolder   wTabFolder;
-		FormData     fdTabFolder;
-
 		Shell parent = getParent();
 		display = parent.getDisplay();
 
@@ -239,16 +237,24 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdName.right = new FormAttachment(100, 0);
 		wName.setLayoutData(fdName);
 
-		// ////////////////////////
-		// START OF SPECIFICATION GROUP///
-		// /
-		wSpec = new Group(shell, SWT.SHADOW_NONE);
+		CTabFolder wTabFolder = new CTabFolder(shell, SWT.BORDER);
+		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+
+		
+		// Specification
+		//
+		CTabItem wSpecTab = new CTabItem(wTabFolder, SWT.NONE);
+		wSpecTab.setText(BaseMessages.getString(PKG, "JobTrans.Specification.Group.Label")); //$NON-NLS-1$
+        
+        ScrolledComposite wSSpec = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
+        wSSpec.setLayout(new FillLayout());
+
+		wSpec = new Composite(wSSpec, SWT.SHADOW_NONE);
 		props.setLook(wSpec);
-		wSpec.setText(BaseMessages.getString(PKG, "JobTrans.Specification.Group.Label"));
 
 		FormLayout specLayout = new FormLayout();
-		specLayout.marginWidth = 10;
-		specLayout.marginHeight = 10;
+		specLayout.marginWidth = Const.FORM_MARGIN;
+		specLayout.marginHeight = Const.FORM_MARGIN;
 		wSpec.setLayout(specLayout);
 
 		// The specify by filename option...
@@ -256,8 +262,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		Group gFilename = new Group(wSpec, SWT.SHADOW_ETCHED_IN);
 		props.setLook(gFilename);
 		FormLayout gFileLayout = new FormLayout();
-		gFileLayout.marginWidth = 10;
-		gFileLayout.marginHeight = 10;
+		gFileLayout.marginWidth = Const.FORM_MARGIN;
+		gFileLayout.marginHeight = Const.FORM_MARGIN;
 		gFilename.setLayout(gFileLayout);
 		
 		radioFilename = new Button(gFilename, SWT.RADIO);
@@ -291,6 +297,12 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdFilename.left = new FormAttachment(middle, 0);
 		fdFilename.right = new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
+		wFilename.addModifyListener(new ModifyListener() {
+			
+			public void modifyText(ModifyEvent arg0) {
+				radioFilename.setSelection(true);
+			}
+		});
 
 		FormData fdgFilename= new FormData();
 		fdgFilename.top = new FormAttachment(0, 0);
@@ -303,8 +315,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		Group gByName = new Group(wSpec, SWT.SHADOW_ETCHED_IN);
 		props.setLook(gByName);
 		FormLayout gByNameLayout = new FormLayout();
-		gByNameLayout.marginWidth = 10;
-		gByNameLayout.marginHeight = 10;
+		gByNameLayout.marginWidth = Const.FORM_MARGIN;
+		gByNameLayout.marginHeight = Const.FORM_MARGIN;
 		gByName.setLayout(gByNameLayout);
 
 		radioByName = new Button(gByName, SWT.RADIO);
@@ -329,7 +341,6 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdbTransname.top = new FormAttachment(0, 0);
 		fdbTransname.right = new FormAttachment(100, 0);
 		wbTransname.setLayoutData(fdbTransname);
-		wbTransname.setEnabled(rep != null);
 
 		wTransname = new TextVar(jobMeta, gByName, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wTransname);
@@ -340,18 +351,6 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdTransname.right = new FormAttachment(wbTransname, -margin);
 		wTransname.setLayoutData(fdTransname);
 
-		/*
-		// Directory line
-		wlDirectory = new Label(gByName, SWT.RIGHT);
-		wlDirectory.setText(BaseMessages.getString(PKG, "JobTrans.RepositoryDir.Label"));
-		props.setLook(wlDirectory);
-		FormData fdlDirectory = new FormData();
-		fdlDirectory.top = new FormAttachment(wTransname, margin * 2);
-		fdlDirectory.left = new FormAttachment(0, 0);
-		fdlDirectory.right = new FormAttachment(middle, -margin);
-		wlDirectory.setLayoutData(fdlDirectory);
-		*/
-		
 		wDirectory = new TextVar(jobMeta, gByName, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wDirectory);
 		wDirectory.addModifyListener(lsMod);
@@ -372,8 +371,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		Group gByReference = new Group(wSpec, SWT.SHADOW_ETCHED_IN);
 		props.setLook(gByReference);
 		FormLayout gByReferenceLayout = new FormLayout();
-		gByReferenceLayout.marginWidth = 10;
-		gByReferenceLayout.marginHeight = 10;
+		gByReferenceLayout.marginWidth = Const.FORM_MARGIN;
+		gByReferenceLayout.marginHeight = Const.FORM_MARGIN;
 		gByReference.setLayout(gByReferenceLayout);
 		
 		radioByReference = new Button(gByReference, SWT.RADIO);
@@ -414,23 +413,261 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdgByReference.right = new FormAttachment(100, 0);
 		gByReference.setLayoutData(fdgByReference);
 		
-		
+		wSpec.pack();
+		Rectangle bounds = wSpec.getBounds();
+
+		wSSpec.setContent(wSpec);
+		wSSpec.setExpandHorizontal(true);
+		wSSpec.setExpandVertical(true);
+		wSSpec.setMinWidth(bounds.width);
+		wSSpec.setMinHeight(bounds.height);
+
+		wSpecTab.setControl(wSSpec);		        
+
 		fdSpec = new FormData();
-		fdSpec.left = new FormAttachment(0, margin);
-		fdSpec.top = new FormAttachment(wName, margin);
-		fdSpec.right = new FormAttachment(100, -margin);
+		fdSpec.left = new FormAttachment(0, 0);
+		fdSpec.top = new FormAttachment(0, 0);
+		fdSpec.right = new FormAttachment(100, 0);
+		fdSpec.bottom= new FormAttachment(100, 0);
 		wSpec.setLayoutData(fdSpec);
 		
-		// ////////////////////////
-		// START OF LOGGING GROUP///
-		// /
-		wLogging = new Group(shell, SWT.SHADOW_NONE);
+        
+
+		
+		
+		
+		// Advanced 
+		//
+		CTabItem wAdvancedTab = new CTabItem(wTabFolder, SWT.NONE);
+		wAdvancedTab.setText(BaseMessages.getString(PKG, "JobTrans.Advanced.Group.Label")); //$NON-NLS-1$
+
+        ScrolledComposite wSAdvanced= new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
+        wSAdvanced.setLayout(new FillLayout());
+
+		wAdvanced = new Composite(wSAdvanced, SWT.SHADOW_NONE);
+		props.setLook(wAdvanced);
+
+		FormLayout advancedLayout = new FormLayout();
+		advancedLayout.marginWidth = Const.FORM_MARGIN;
+		advancedLayout.marginHeight = Const.FORM_MARGIN;
+		wAdvanced.setLayout(advancedLayout);
+
+		wlPrevious = new Label(wAdvanced, SWT.RIGHT);
+		wlPrevious.setText(BaseMessages.getString(PKG, "JobTrans.Previous.Label"));
+		props.setLook(wlPrevious);
+		FormData fdlPrevious = new FormData();
+		fdlPrevious.left = new FormAttachment(0, 0);
+		fdlPrevious.top = new FormAttachment(0, 0);
+		fdlPrevious.right = new FormAttachment(middle, -margin);
+		wlPrevious.setLayoutData(fdlPrevious);
+		wPrevious = new Button(wAdvanced, SWT.CHECK);
+		props.setLook(wPrevious);
+		wPrevious.setSelection(jobEntry.argFromPrevious);
+		wPrevious.setToolTipText(BaseMessages.getString(PKG, "JobTrans.Previous.Tooltip"));
+		FormData fdPrevious = new FormData();
+		fdPrevious.left = new FormAttachment(middle, 0);
+		fdPrevious.top = new FormAttachment(0, 0);
+		fdPrevious.right = new FormAttachment(100, 0);
+		wPrevious.setLayoutData(fdPrevious);
+		wPrevious.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				wFields.setEnabled(!jobEntry.argFromPrevious);
+			}
+		});
+		
+		wlPrevToParams = new Label(wAdvanced, SWT.RIGHT);
+		wlPrevToParams.setText(BaseMessages.getString(PKG, "JobTrans.PrevToParams.Label"));
+		props.setLook(wlPrevToParams);
+		FormData fdlPrevToParams = new FormData();
+		fdlPrevToParams.left = new FormAttachment(0, 0);
+		fdlPrevToParams.top = new FormAttachment(wPrevious, margin * 3);
+		fdlPrevToParams.right = new FormAttachment(middle, -margin);
+		wlPrevToParams.setLayoutData(fdlPrevToParams);
+		wPrevToParams = new Button(wAdvanced, SWT.CHECK);
+		props.setLook(wPrevToParams);
+		wPrevToParams.setSelection(jobEntry.paramsFromPrevious);
+		wPrevToParams.setToolTipText(BaseMessages.getString(PKG, "JobTrans.PrevToParams.Tooltip"));
+		FormData fdPrevToParams = new FormData();
+		fdPrevToParams.left = new FormAttachment(middle, 0);
+		fdPrevToParams.top = new FormAttachment(wPrevious, margin * 3);
+		fdPrevToParams.right = new FormAttachment(100, 0);
+		wPrevToParams.setLayoutData(fdPrevToParams);
+		wPrevToParams.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});		
+
+		wlEveryRow = new Label(wAdvanced, SWT.RIGHT);
+		wlEveryRow.setText(BaseMessages.getString(PKG, "JobTrans.ExecForEveryInputRow.Label"));
+		props.setLook(wlEveryRow);
+		FormData fdlEveryRow = new FormData();
+		fdlEveryRow.left = new FormAttachment(0, 0);
+		fdlEveryRow.top = new FormAttachment(wPrevToParams, margin);
+		fdlEveryRow.right = new FormAttachment(middle, -margin);
+		wlEveryRow.setLayoutData(fdlEveryRow);
+		wEveryRow = new Button(wAdvanced, SWT.CHECK);
+		props.setLook(wEveryRow);
+		wEveryRow.setToolTipText(BaseMessages.getString(PKG, "JobTrans.ExecForEveryInputRow.Tooltip"));
+		FormData fdEveryRow = new FormData();
+		fdEveryRow.left = new FormAttachment(middle, 0);
+		fdEveryRow.top = new FormAttachment(wPrevToParams, margin);
+		fdEveryRow.right = new FormAttachment(100, 0);
+		wEveryRow.setLayoutData(fdEveryRow);
+
+		// Clear the result rows before executing the transformation?
+		//
+		wlClearRows = new Label(wAdvanced, SWT.RIGHT);
+		wlClearRows.setText(BaseMessages.getString(PKG, "JobTrans.ClearResultList.Label"));
+		props.setLook(wlClearRows);
+		FormData fdlClearRows = new FormData();
+		fdlClearRows.left = new FormAttachment(0, 0);
+		fdlClearRows.top = new FormAttachment(wEveryRow, margin);
+		fdlClearRows.right = new FormAttachment(middle, -margin);
+		wlClearRows.setLayoutData(fdlClearRows);
+		wClearRows = new Button(wAdvanced, SWT.CHECK);
+		props.setLook(wClearRows);
+		FormData fdClearRows = new FormData();
+		fdClearRows.left = new FormAttachment(middle, 0);
+		fdClearRows.top = new FormAttachment(wEveryRow, margin);
+		fdClearRows.right = new FormAttachment(100, 0);
+		wClearRows.setLayoutData(fdClearRows);
+
+		// Clear the result files before executing the transformation?
+		//
+		wlClearFiles = new Label(wAdvanced, SWT.RIGHT);
+		wlClearFiles.setText(BaseMessages.getString(PKG, "JobTrans.ClearResultFiles.Label"));
+		props.setLook(wlClearFiles);
+		FormData fdlClearFiles = new FormData();
+		fdlClearFiles.left = new FormAttachment(0, 0);
+		fdlClearFiles.top = new FormAttachment(wClearRows, margin);
+		fdlClearFiles.right = new FormAttachment(middle, -margin);
+		wlClearFiles.setLayoutData(fdlClearFiles);
+		wClearFiles = new Button(wAdvanced, SWT.CHECK);
+		props.setLook(wClearFiles);
+		FormData fdClearFiles = new FormData();
+		fdClearFiles.left = new FormAttachment(middle, 0);
+		fdClearFiles.top = new FormAttachment(wClearRows, margin);
+		fdClearFiles.right = new FormAttachment(100, 0);
+		wClearFiles.setLayoutData(fdClearFiles);
+
+		// Clear the result rows before executing the transformation?
+		//
+		wlCluster = new Label(wAdvanced, SWT.RIGHT);
+		wlCluster.setText(BaseMessages.getString(PKG, "JobTrans.RunTransInCluster.Label"));
+		props.setLook(wlCluster);
+		FormData fdlCluster = new FormData();
+		fdlCluster.left = new FormAttachment(0, 0);
+		fdlCluster.top = new FormAttachment(wClearFiles, margin);
+		fdlCluster.right = new FormAttachment(middle, -margin);
+		wlCluster.setLayoutData(fdlCluster);
+		wCluster = new Button(wAdvanced, SWT.CHECK);
+		props.setLook(wCluster);
+		FormData fdCluster = new FormData();
+		fdCluster.left = new FormAttachment(middle, 0);
+		fdCluster.top = new FormAttachment(wClearFiles, margin);
+		fdCluster.right = new FormAttachment(100, 0);
+		wCluster.setLayoutData(fdCluster);
+		wCluster.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setActive(); } });
+
+		// The remote slave server
+		//
+		wlSlaveServer = new Label(wAdvanced, SWT.RIGHT);
+		wlSlaveServer.setText(BaseMessages.getString(PKG, "JobTrans.SlaveServer.Label"));
+		wlSlaveServer.setToolTipText(BaseMessages.getString(PKG, "JobTrans.SlaveServer.ToolTip"));
+		props.setLook(wlSlaveServer);
+		FormData fdlSlaveServer = new FormData();
+		fdlSlaveServer.left = new FormAttachment(0, 0);
+		fdlSlaveServer.right = new FormAttachment(middle, -margin);
+		fdlSlaveServer.top = new FormAttachment(wCluster, margin);
+		wlSlaveServer.setLayoutData(fdlSlaveServer);
+		wSlaveServer = new ComboVar(jobMeta, wAdvanced, SWT.SINGLE | SWT.BORDER);
+		wSlaveServer.setItems(SlaveServer.getSlaveServerNames(jobMeta.getSlaveServers()));
+		wSlaveServer.setToolTipText(BaseMessages.getString(PKG, "JobTrans.SlaveServer.ToolTip"));
+		props.setLook(wSlaveServer);
+		FormData fdSlaveServer = new FormData();
+		fdSlaveServer.left = new FormAttachment(middle, 0);
+		fdSlaveServer.top = new FormAttachment(wCluster, margin);
+		fdSlaveServer.right = new FormAttachment(100, 0);
+		wSlaveServer.setLayoutData(fdSlaveServer);
+		wSlaveServer.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setActive(); } });
+
+		// Wait for the remote transformation to finish?
+		//
+		wlWaitingToFinish = new Label(wAdvanced, SWT.RIGHT);
+		wlWaitingToFinish.setText(BaseMessages.getString(PKG, "JobTrans.WaitToFinish.Label"));
+		props.setLook(wlWaitingToFinish);
+		FormData fdlWaitingToFinish = new FormData();
+		fdlWaitingToFinish.left = new FormAttachment(0, 0);
+		fdlWaitingToFinish.top = new FormAttachment(wSlaveServer, margin);
+		fdlWaitingToFinish.right = new FormAttachment(middle, -margin);
+		wlWaitingToFinish.setLayoutData(fdlWaitingToFinish);
+		wWaitingToFinish = new Button(wAdvanced, SWT.CHECK);
+		props.setLook(wWaitingToFinish);
+		FormData fdWaitingToFinish = new FormData();
+		fdWaitingToFinish.left = new FormAttachment(middle, 0);
+		fdWaitingToFinish.top = new FormAttachment(wSlaveServer, margin);
+		fdWaitingToFinish.right = new FormAttachment(100, 0);
+		wWaitingToFinish.setLayoutData(fdWaitingToFinish);
+		wWaitingToFinish.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setActive(); } });
+
+		// Follow a local abort remotely?
+		//
+		wlFollowingAbortRemotely = new Label(wAdvanced, SWT.RIGHT);
+		wlFollowingAbortRemotely.setText(BaseMessages.getString(PKG, "JobTrans.AbortRemote.Label"));
+		props.setLook(wlFollowingAbortRemotely);
+		FormData fdlFollowingAbortRemotely = new FormData();
+		fdlFollowingAbortRemotely.left = new FormAttachment(0, 0);
+		fdlFollowingAbortRemotely.top = new FormAttachment(wWaitingToFinish, margin);
+		fdlFollowingAbortRemotely.right = new FormAttachment(middle, -margin);
+		wlFollowingAbortRemotely.setLayoutData(fdlFollowingAbortRemotely);
+		wFollowingAbortRemotely = new Button(wAdvanced, SWT.CHECK);
+		props.setLook(wFollowingAbortRemotely);
+		FormData fdFollowingAbortRemotely = new FormData();
+		fdFollowingAbortRemotely.left = new FormAttachment(middle, 0);
+		fdFollowingAbortRemotely.top = new FormAttachment(wWaitingToFinish, margin);
+		fdFollowingAbortRemotely.right = new FormAttachment(100, 0);
+		wFollowingAbortRemotely.setLayoutData(fdFollowingAbortRemotely);
+				
+		FormData fdAdvanced = new FormData();
+		fdAdvanced.left = new FormAttachment(0, 0);
+		fdAdvanced.top = new FormAttachment(0, 0);
+		fdAdvanced.right = new FormAttachment(100, 0);
+		fdAdvanced.bottom = new FormAttachment(100, 0);
+		wAdvanced.setLayoutData(fdAdvanced);
+		
+		wAdvanced.pack();
+		bounds = wAdvanced.getBounds();
+
+		wSAdvanced.setContent(wAdvanced);
+		wSAdvanced.setExpandHorizontal(true);
+		wSAdvanced.setExpandVertical(true);
+		wSAdvanced.setMinWidth(bounds.width);
+		wSAdvanced.setMinHeight(bounds.height);
+
+		wAdvancedTab.setControl(wSAdvanced);		        
+
+        
+
+        
+		// Logging
+		//
+		CTabItem wLoggingTab = new CTabItem(wTabFolder, SWT.NONE);
+		wLoggingTab.setText(BaseMessages.getString(PKG, "JobTrans.LogSettings.Group.Label")); //$NON-NLS-1$
+
+        ScrolledComposite wSLogging= new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
+        wSLogging.setLayout(new FillLayout());
+
+		wLogging = new Composite(wSLogging, SWT.SHADOW_NONE);
 		props.setLook(wLogging);
-		wLogging.setText(BaseMessages.getString(PKG, "JobTrans.LogSettings.Group.Label"));
 
 		FormLayout groupLayout = new FormLayout();
-		groupLayout.marginWidth = 10;
-		groupLayout.marginHeight = 10;
+		groupLayout.marginWidth = Const.FORM_MARGIN;
+		groupLayout.marginHeight = Const.FORM_MARGIN;
 
 		wLogging.setLayout(groupLayout);
 
@@ -596,230 +833,29 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wLoglevel.setLayoutData(fdLoglevel);
 
 		FormData fdLogging = new FormData();
-		fdLogging.left = new FormAttachment(0, margin);
-		fdLogging.top = new FormAttachment(wSpec, margin);
-		fdLogging.right = new FormAttachment(100, -margin);
+		fdLogging.left = new FormAttachment(0, 0);
+		fdLogging.top = new FormAttachment(0, 0);
+		fdLogging.right = new FormAttachment(100, 0);
+		fdLogging.bottom = new FormAttachment(100, 0);
 		wLogging.setLayoutData(fdLogging);
-		// ///////////////////////////////////////////////////////////
-		// / END OF LOGGING GROUP
-		// ///////////////////////////////////////////////////////////
-
-		wlPrevious = new Label(shell, SWT.RIGHT);
-		wlPrevious.setText(BaseMessages.getString(PKG, "JobTrans.Previous.Label"));
-		props.setLook(wlPrevious);
-		FormData fdlPrevious = new FormData();
-		fdlPrevious.left = new FormAttachment(0, 0);
-		fdlPrevious.top = new FormAttachment(wLogging, margin * 3);
-		fdlPrevious.right = new FormAttachment(middle, -margin);
-		wlPrevious.setLayoutData(fdlPrevious);
-		wPrevious = new Button(shell, SWT.CHECK);
-		props.setLook(wPrevious);
-		wPrevious.setSelection(jobEntry.argFromPrevious);
-		wPrevious.setToolTipText(BaseMessages.getString(PKG, "JobTrans.Previous.Tooltip"));
-		FormData fdPrevious = new FormData();
-		fdPrevious.left = new FormAttachment(middle, 0);
-		fdPrevious.top = new FormAttachment(wLogging, margin * 3);
-		fdPrevious.right = new FormAttachment(100, 0);
-		wPrevious.setLayoutData(fdPrevious);
-		wPrevious.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				wFields.setEnabled(!jobEntry.argFromPrevious);
-			}
-		});
 		
-		wlPrevToParams = new Label(shell, SWT.RIGHT);
-		wlPrevToParams.setText(BaseMessages.getString(PKG, "JobTrans.PrevToParams.Label"));
-		props.setLook(wlPrevToParams);
-		FormData fdlPrevToParams = new FormData();
-		fdlPrevToParams.left = new FormAttachment(0, 0);
-		fdlPrevToParams.top = new FormAttachment(wPrevious, margin * 3);
-		fdlPrevToParams.right = new FormAttachment(middle, -margin);
-		wlPrevToParams.setLayoutData(fdlPrevToParams);
-		wPrevToParams = new Button(shell, SWT.CHECK);
-		props.setLook(wPrevToParams);
-		wPrevToParams.setSelection(jobEntry.paramsFromPrevious);
-		wPrevToParams.setToolTipText(BaseMessages.getString(PKG, "JobTrans.PrevToParams.Tooltip"));
-		FormData fdPrevToParams = new FormData();
-		fdPrevToParams.left = new FormAttachment(middle, 0);
-		fdPrevToParams.top = new FormAttachment(wPrevious, margin * 3);
-		fdPrevToParams.right = new FormAttachment(100, 0);
-		wPrevToParams.setLayoutData(fdPrevToParams);
-		wPrevToParams.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				jobEntry.setChanged();
-			}
-		});		
+		wLogging.pack();
+		bounds = wLogging.getBounds();
 
-		wlEveryRow = new Label(shell, SWT.RIGHT);
-		wlEveryRow.setText(BaseMessages.getString(PKG, "JobTrans.ExecForEveryInputRow.Label"));
-		props.setLook(wlEveryRow);
-		FormData fdlEveryRow = new FormData();
-		fdlEveryRow.left = new FormAttachment(0, 0);
-		fdlEveryRow.top = new FormAttachment(wPrevToParams, margin);
-		fdlEveryRow.right = new FormAttachment(middle, -margin);
-		wlEveryRow.setLayoutData(fdlEveryRow);
-		wEveryRow = new Button(shell, SWT.CHECK);
-		props.setLook(wEveryRow);
-		wEveryRow.setToolTipText(BaseMessages.getString(PKG, "JobTrans.ExecForEveryInputRow.Tooltip"));
-		FormData fdEveryRow = new FormData();
-		fdEveryRow.left = new FormAttachment(middle, 0);
-		fdEveryRow.top = new FormAttachment(wPrevToParams, margin);
-		fdEveryRow.right = new FormAttachment(100, 0);
-		wEveryRow.setLayoutData(fdEveryRow);
+		wSLogging.setContent(wLogging);
+		wSLogging.setExpandHorizontal(true);
+		wSLogging.setExpandVertical(true);
+		wSLogging.setMinWidth(bounds.width);
+		wSLogging.setMinHeight(bounds.height);
 
-		// Clear the result rows before executing the transformation?
-		//
-		wlClearRows = new Label(shell, SWT.RIGHT);
-		wlClearRows.setText(BaseMessages.getString(PKG, "JobTrans.ClearResultList.Label"));
-		props.setLook(wlClearRows);
-		FormData fdlClearRows = new FormData();
-		fdlClearRows.left = new FormAttachment(0, 0);
-		fdlClearRows.top = new FormAttachment(wEveryRow, margin);
-		fdlClearRows.right = new FormAttachment(middle, -margin);
-		wlClearRows.setLayoutData(fdlClearRows);
-		wClearRows = new Button(shell, SWT.CHECK);
-		props.setLook(wClearRows);
-		FormData fdClearRows = new FormData();
-		fdClearRows.left = new FormAttachment(middle, 0);
-		fdClearRows.top = new FormAttachment(wEveryRow, margin);
-		fdClearRows.right = new FormAttachment(100, 0);
-		wClearRows.setLayoutData(fdClearRows);
-
-		// Clear the result files before executing the transformation?
-		//
-		wlClearFiles = new Label(shell, SWT.RIGHT);
-		wlClearFiles.setText(BaseMessages.getString(PKG, "JobTrans.ClearResultFiles.Label"));
-		props.setLook(wlClearFiles);
-		FormData fdlClearFiles = new FormData();
-		fdlClearFiles.left = new FormAttachment(0, 0);
-		fdlClearFiles.top = new FormAttachment(wClearRows, margin);
-		fdlClearFiles.right = new FormAttachment(middle, -margin);
-		wlClearFiles.setLayoutData(fdlClearFiles);
-		wClearFiles = new Button(shell, SWT.CHECK);
-		props.setLook(wClearFiles);
-		FormData fdClearFiles = new FormData();
-		fdClearFiles.left = new FormAttachment(middle, 0);
-		fdClearFiles.top = new FormAttachment(wClearRows, margin);
-		fdClearFiles.right = new FormAttachment(100, 0);
-		wClearFiles.setLayoutData(fdClearFiles);
-
-		// Clear the result rows before executing the transformation?
-		//
-		wlCluster = new Label(shell, SWT.RIGHT);
-		wlCluster.setText(BaseMessages.getString(PKG, "JobTrans.RunTransInCluster.Label"));
-		props.setLook(wlCluster);
-		FormData fdlCluster = new FormData();
-		fdlCluster.left = new FormAttachment(0, 0);
-		fdlCluster.top = new FormAttachment(wClearFiles, margin);
-		fdlCluster.right = new FormAttachment(middle, -margin);
-		wlCluster.setLayoutData(fdlCluster);
-		wCluster = new Button(shell, SWT.CHECK);
-		props.setLook(wCluster);
-		FormData fdCluster = new FormData();
-		fdCluster.left = new FormAttachment(middle, 0);
-		fdCluster.top = new FormAttachment(wClearFiles, margin);
-		fdCluster.right = new FormAttachment(100, 0);
-		wCluster.setLayoutData(fdCluster);
-		wCluster.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setActive(); } });
-
-		// The remote slave server
-		//
-		wlSlaveServer = new Label(shell, SWT.RIGHT);
-		wlSlaveServer.setText(BaseMessages.getString(PKG, "JobTrans.SlaveServer.Label"));
-		wlSlaveServer.setToolTipText(BaseMessages.getString(PKG, "JobTrans.SlaveServer.ToolTip"));
-		props.setLook(wlSlaveServer);
-		FormData fdlSlaveServer = new FormData();
-		fdlSlaveServer.left = new FormAttachment(0, 0);
-		fdlSlaveServer.right = new FormAttachment(middle, -margin);
-		fdlSlaveServer.top = new FormAttachment(wCluster, margin);
-		wlSlaveServer.setLayoutData(fdlSlaveServer);
-		wSlaveServer = new ComboVar(jobMeta, shell, SWT.SINGLE | SWT.BORDER);
-		wSlaveServer.setItems(SlaveServer.getSlaveServerNames(jobMeta.getSlaveServers()));
-		wSlaveServer.setToolTipText(BaseMessages.getString(PKG, "JobTrans.SlaveServer.ToolTip"));
-		props.setLook(wSlaveServer);
-		FormData fdSlaveServer = new FormData();
-		fdSlaveServer.left = new FormAttachment(middle, 0);
-		fdSlaveServer.top = new FormAttachment(wCluster, margin);
-		fdSlaveServer.right = new FormAttachment(100, 0);
-		wSlaveServer.setLayoutData(fdSlaveServer);
-		wSlaveServer.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setActive(); } });
-
-		// Wait for the remote transformation to finish?
-		//
-		wlWaitingToFinish = new Label(shell, SWT.RIGHT);
-		wlWaitingToFinish.setText(BaseMessages.getString(PKG, "JobTrans.WaitToFinish.Label"));
-		props.setLook(wlWaitingToFinish);
-		FormData fdlWaitingToFinish = new FormData();
-		fdlWaitingToFinish.left = new FormAttachment(0, 0);
-		fdlWaitingToFinish.top = new FormAttachment(wSlaveServer, margin);
-		fdlWaitingToFinish.right = new FormAttachment(middle, -margin);
-		wlWaitingToFinish.setLayoutData(fdlWaitingToFinish);
-		wWaitingToFinish = new Button(shell, SWT.CHECK);
-		props.setLook(wWaitingToFinish);
-		FormData fdWaitingToFinish = new FormData();
-		fdWaitingToFinish.left = new FormAttachment(middle, 0);
-		fdWaitingToFinish.top = new FormAttachment(wSlaveServer, margin);
-		fdWaitingToFinish.right = new FormAttachment(100, 0);
-		wWaitingToFinish.setLayoutData(fdWaitingToFinish);
-		wWaitingToFinish.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setActive(); } });
-
-		// Follow a local abort remotely?
-		//
-		wlFollowingAbortRemotely = new Label(shell, SWT.RIGHT);
-		wlFollowingAbortRemotely.setText(BaseMessages.getString(PKG, "JobTrans.AbortRemote.Label"));
-		props.setLook(wlFollowingAbortRemotely);
-		FormData fdlFollowingAbortRemotely = new FormData();
-		fdlFollowingAbortRemotely.left = new FormAttachment(0, 0);
-		fdlFollowingAbortRemotely.top = new FormAttachment(wWaitingToFinish, margin);
-		fdlFollowingAbortRemotely.right = new FormAttachment(middle, -margin);
-		wlFollowingAbortRemotely.setLayoutData(fdlFollowingAbortRemotely);
-		wFollowingAbortRemotely = new Button(shell, SWT.CHECK);
-		props.setLook(wFollowingAbortRemotely);
-		FormData fdFollowingAbortRemotely = new FormData();
-		fdFollowingAbortRemotely.left = new FormAttachment(middle, 0);
-		fdFollowingAbortRemotely.top = new FormAttachment(wWaitingToFinish, margin);
-		fdFollowingAbortRemotely.right = new FormAttachment(100, 0);
-		wFollowingAbortRemotely.setLayoutData(fdFollowingAbortRemotely);
-		
-//		wlFields = new Label(shell, SWT.NONE);
-//		wlFields.setText(BaseMessages.getString(PKG, "JobTrans.Fields.Label"));
-//		props.setLook(wlFields);
-//		fdlFields = new FormData();
-//		fdlFields.left = new FormAttachment(0, 0);
-//		fdlFields.top = new FormAttachment(wFollowingAbortRemotely, margin);
-//		wlFields.setLayoutData(fdlFields);
-//
-//		final int FieldsCols = 1;
-//		int rows = jobEntry.arguments == null ? 1 : (jobEntry.arguments.length == 0 ? 0
-//				: jobEntry.arguments.length);
-//		final int FieldsRows = rows;
-//
-//		ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
-//		colinf[0] = new ColumnInfo(BaseMessages.getString(PKG, "JobTrans.Fields.Argument.Label"),
-//				ColumnInfo.COLUMN_TYPE_TEXT, false);
-//		colinf[0].setUsingVariables(true);
-//
-//		wFields = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
-//				FieldsRows, lsMod, props);
-//
-//		fdFields = new FormData();
-//		fdFields.left = new FormAttachment(0, 0);
-//		fdFields.top = new FormAttachment(wlFields, margin);
-//		fdFields.right = new FormAttachment(100, 0);
-//		fdFields.bottom = new FormAttachment(100, -50);
-//		wFields.setLayoutData(fdFields);
-//
-//		wlFields.setEnabled(!jobEntry.argFromPrevious);
-//		wFields.setEnabled(!jobEntry.argFromPrevious);
-
-		wTabFolder = new CTabFolder(shell, SWT.BORDER);
-		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+		wLoggingTab.setControl(wSLogging);
 	
-		// The Argument tab
+
+        
+        
+        
+		// Arguments
+        //
 		CTabItem wFieldTab = new CTabItem(wTabFolder, SWT.NONE);
 		wFieldTab.setText(BaseMessages.getString(PKG, "JobTrans.Fields.Argument.Label")); //$NON-NLS-1$
         
@@ -891,17 +927,13 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdPassParams.right = new FormAttachment(100, 0);
 		wPassParams.setLayoutData(fdPassParams);
 
-		final int ParameterCols = 3;
-		rows = 100;
-		final int parameterRows = rows;
+		final int parameterRows = jobEntry.parameters.length;
 
-	    colinf = new ColumnInfo[ParameterCols];
-		colinf[0] = new ColumnInfo(BaseMessages.getString(PKG, "JobTrans.Parameters.Parameter.Label"),
-				ColumnInfo.COLUMN_TYPE_TEXT, false);
-		colinf[1] = new ColumnInfo(BaseMessages.getString(PKG, "JobTrans.Parameters.ColumnName.Label"),
-				ColumnInfo.COLUMN_TYPE_TEXT, false);
-		colinf[2] = new ColumnInfo(BaseMessages.getString(PKG, "JobTrans.Parameters.Value.Label"),
-				ColumnInfo.COLUMN_TYPE_TEXT, false);		
+	    colinf = new ColumnInfo[] {
+			new ColumnInfo(BaseMessages.getString(PKG, "JobTrans.Parameters.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+			new ColumnInfo(BaseMessages.getString(PKG, "JobTrans.Parameters.ColumnName.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+			new ColumnInfo(BaseMessages.getString(PKG, "JobTrans.Parameters.Value.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+	    };
 		colinf[2].setUsingVariables(true);
 
 		wParameters = new TableView(jobMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
@@ -924,9 +956,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         wParameterComp.layout();
         wParametersTab.setControl(wParameterComp);		        
         
-		fdTabFolder = new FormData();
+		FormData fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
-		fdTabFolder.top   = new FormAttachment(wFollowingAbortRemotely, 0);
+		fdTabFolder.top   = new FormAttachment(wName, margin*3);
 		fdTabFolder.right = new FormAttachment(100, 0);
 		fdTabFolder.bottom= new FormAttachment(100, -50);
 		wTabFolder.setLayoutData(fdTabFolder);
@@ -993,59 +1025,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				FileObject fileName = null;
-
-				try
-				{
-					String curFile = wFilename.getText();
-
-					if (curFile.trim().length() > 0)
-						fileName = VFS.getManager().resolveFile(
-								jobMeta.environmentSubstitute(wFilename.getText()));
-					else
-						fileName = VFS.getManager().resolveFile(Const.USER_HOME_DIRECTORY);
-
-				} catch (IOException ex)
-				{
-					try
-					{
-						fileName = VFS.getManager().resolveFile(Const.USER_HOME_DIRECTORY);
-					} catch (IOException iex)
-					{
-						// this should not happen
-						throw new RuntimeException(iex);
-					}
-				}
-
-				try
-				{
-					VfsFileChooserDialog dialog = new VfsFileChooserDialog(fileName.getParent(), fileName);
-					FileObject lroot = dialog.open(shell, null, new String[] { "*.ktr;*.xml", "*.xml", "*" }, //$NON-NLS-1$
-							FILE_FILTERNAMES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE); //$NON-NLS-1$
-
-					if (lroot == null) {
-					  return;
-					}
-					String selected = lroot.getURL().toString();
-
-					wFilename.setText(lroot != null ? selected : Const.EMPTY_STRING);
-
-					TransMeta transMeta = new TransMeta(wFilename.getText());
-					if (transMeta.getName() != null) {
-						wName.setText(transMeta.getName());
-					} else {
-						wName.setText(selected);
-					}
-					
-				} catch (Exception ke)
-				{
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					mb.setText(BaseMessages.getString(PKG, "JobTrans.ErrorReadingTransformation.Text"));
-					mb.setMessage(BaseMessages.getString(PKG, "JobTrans.ErrorReadingTransformation.Text", wFilename
-							.getText(), ke.getMessage()));
-					mb.open();
-				}
-
+				pickFileVFS();
 			}
 		});
 
@@ -1073,6 +1053,72 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		return jobEntry;
 	}
 
+	protected void pickFileVFS() {
+		
+		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+		dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
+		dialog.setFilterNames(Const.getTransformationFilterNames());
+		String prevName = jobMeta.environmentSubstitute(wFilename.getText());
+		String parentFolder = null;
+		try {
+			parentFolder = KettleVFS.getFilename( KettleVFS.getFileObject(jobMeta.environmentSubstitute(jobMeta.getFilename())).getParent() );
+		} catch(Exception e) {
+			// not that important
+		}
+		if (!Const.isEmpty(prevName)) {
+			try {
+				if (KettleVFS.fileExists(prevName)) {
+					dialog.setFilterPath(KettleVFS.getFilename( KettleVFS.getFileObject(prevName).getParent() ));
+				} else {
+
+					if (!prevName.endsWith(".ktr")) {
+						prevName = "${"+Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY+"}/"+Const.trim(wFilename.getText())+".ktr";
+					}
+					if (KettleVFS.fileExists(prevName)) {
+						wFilename.setText(prevName);
+						return;
+					} else {
+						// File specified doesn't exist.  Ask if we should create the file...
+						//
+						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+						mb.setMessage(BaseMessages.getString(PKG, "JobTrans.Dialog.CreateTransformationQuestion.Message"));
+						mb.setText(BaseMessages.getString(PKG, "JobTrans.Dialog.CreateTransformationQuestion.Title")); // Sorry!
+						int answer = mb.open();
+						if (answer == SWT.YES) {
+							
+							Spoon spoon = Spoon.getInstance();
+							spoon.newTransFile();
+							TransMeta transMeta = spoon.getActiveTransformation();
+							transMeta.initializeVariablesFrom(jobEntry);
+							transMeta.setFilename(jobMeta.environmentSubstitute(prevName));
+							wFilename.setText(prevName);
+							spoon.saveFile();
+							return;
+						}
+					}
+				}
+			} catch(Exception e) {
+				dialog.setFilterPath(parentFolder);
+			}
+		} else if (!Const.isEmpty(parentFolder)) {
+			dialog.setFilterPath(parentFolder);
+		}
+		
+		String fname = dialog.open();
+		if (fname != null) {
+			File file = new File(fname);
+			String name = file.getName();
+			String parentFolderSelection = file.getParentFile().toString();
+			
+			if (!Const.isEmpty(parentFolder) && parentFolder.equals(parentFolderSelection)) {
+				wFilename.setText("${"+Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY+"}/"+name);
+			} else {
+				wFilename.setText(fname);
+			}
+			
+		}
+	}
+
 	public void dispose()
 	{
 		WindowProperty winprop = new WindowProperty(shell);
@@ -1081,7 +1127,13 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	}
 
 	public void setActive()
-	{
+	{	
+		radioByName.setEnabled(rep != null);
+		radioByReference.setEnabled(rep != null);
+		wTransname.setEnabled(rep != null);
+		wbTransname.setEnabled(rep != null);
+		wbByReference.setEnabled(rep != null);
+
 		wlLogfile.setEnabled(wSetLogfile.getSelection());
 		wLogfile.setEnabled(wSetLogfile.getSelection());
 

@@ -3541,6 +3541,7 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
   public synchronized void setControlStates() {
     if (getDisplay().isDisposed()) return;
+    if (((Control)toolbar.getManagedObject()).isDisposed()) return;
     
       getDisplay().asyncExec(new Runnable() {
 
@@ -3549,7 +3550,7 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
           //
           XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("trans-run"); //$NON-NLS-1$
           if (runButton != null) {
-            runButton.setDisabled(running);
+        	runButton.setDisabled(running);
           }
 
           // Pause button...

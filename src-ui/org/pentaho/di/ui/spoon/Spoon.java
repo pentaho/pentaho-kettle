@@ -44,8 +44,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Listener;
-import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.Clipboard;
@@ -1305,7 +1303,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void lastFileSelect(String id) {
 
-		int idx = Integer.parseInt(id.substring("last-file-".length()));
+		int idx = Integer.parseInt(id);
 		List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
 		final LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(idx);
 
