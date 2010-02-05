@@ -12,6 +12,7 @@
 
 package org.pentaho.di.trans.steps.randomvalue;
 
+import java.util.Random;
 import javax.crypto.KeyGenerator;
 
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -34,7 +35,9 @@ public class RandomValueData extends BaseStepData implements StepDataInterface {
 	/* Generating a random Message Authentication Code (MAC SHA1) */
 	public KeyGenerator keyGenHmacSHA1;
 
-	/**
+    public final Random randomgen = new Random();
+
+    /**
 	 * 
 	 */
 	public RandomValueData() {

@@ -14,8 +14,6 @@ package org.pentaho.di.trans.steps.randomvalue;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Random;
-
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -66,16 +64,13 @@ public class RandomValue extends BaseStep implements StepInterface {
 		for (int i = 0, index = inputRowMeta.size(); i < meta.getFieldName().length; i++, index++) {
 			switch (meta.getFieldType()[i]) {
 			case RandomValueMeta.TYPE_RANDOM_NUMBER:
-				Random randomgen = new Random();
-				row[index] = randomgen.nextDouble();
+				row[index] = data.randomgen.nextDouble();
 				break;
 			case RandomValueMeta.TYPE_RANDOM_INTEGER:
-				randomgen = new Random();
-				row[index] = new Long(randomgen.nextInt(2147483647)); // 2147483647 is the max value for integer (32 bits)
+				row[index] = new Long(data.randomgen.nextInt()); // nextInt() already returns all 2^32 numbers.
 				break;
 			case RandomValueMeta.TYPE_RANDOM_STRING:
-				randomgen = new Random();
-				row[index] = Long.toString(Math.abs(randomgen.nextLong()), 32);
+				row[index] = Long.toString(Math.abs(data.randomgen.nextLong()), 32);
 				break;
 			case RandomValueMeta.TYPE_RANDOM_UUID:
 				row[index] = UUIDUtil.getUUIDAsString();
