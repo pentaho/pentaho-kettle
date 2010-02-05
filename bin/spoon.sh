@@ -56,8 +56,8 @@ case `uname -s` in
 
 	Darwin)
 		LIBPATH=$BASEDIR/../libswt/osx/
-		JAVA_BIN=$BASEDIR/../libswt/osx/java_swt
-        STARTUP=" -cp launcher.jar org.pentaho.commons.launcher.Launcher"
+		JAVA_BIN=$BASEDIR/libswt/osx/java_swt
+        STARTUP=" -cp launcher/launcher.jar org.pentaho.commons.launcher.Launcher"
         OPT="-XstartOnFirstThread=true "
 		chmod +x $JAVA_BIN
 		;;
