@@ -109,6 +109,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 	public String editStep(TransMeta transMeta, StepMeta stepMeta)
 	{
 		boolean refresh = false;
+        String stepname = null;
 		try
 		{
 			String name = stepMeta.getName();
@@ -118,7 +119,6 @@ public class SpoonStepsDelegate extends SpoonDelegate
 			//
 			StepMeta before = (StepMeta) stepMeta.clone();
 			StepDialogInterface dialog = spoon.getStepEntryDialog(stepMeta.getStepMetaInterface(), transMeta, name);
-			String stepname = null;
 			if (dialog != null)
 			{
 				dialog.setRepository(spoon.getRepository());
@@ -194,7 +194,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 		// the step
 		// dialog or the step name changed.
 
-		return stepMeta.getName();
+		return stepname;
 	}
 
 	public void delStep(TransMeta transMeta, StepMeta stepMeta)
