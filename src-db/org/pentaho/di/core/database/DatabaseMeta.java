@@ -1650,6 +1650,7 @@ public class DatabaseMeta
         if (fieldname.indexOf(']')>=0) return true; 
         if (fieldname.indexOf('%')>=0) return true; 
         if (fieldname.indexOf('@')>=0) return true; 
+        if (fieldname.indexOf('?')>=0) return true; 
         return false;
     }
     
