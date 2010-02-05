@@ -417,6 +417,9 @@ public class SlaveServer
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
+        } catch (Exception e) {
+        	log.logError(toString(), String.format("Exception sending message to service %s", service), e);
+        	throw e;
         }
         finally
         {
@@ -598,8 +601,8 @@ public class SlaveServer
             
             try
             {
-                if(log.isBasic())
-                	log.logBasic(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlToUse)); //$NON-NLS-1$
+                if(log.isDetailed())
+                	log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlToUse)); //$NON-NLS-1$
 
                 if (proxyHostname!=null) 
                 {
@@ -638,8 +641,8 @@ public class SlaveServer
                     result.append(line).append(Const.CR);
                     bytesRead+=line.length();
                 }
-                if(log.isBasic())
-                	log.logBasic(BaseMessages.getString(PKG, "SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
+                if(log.isDetailed())
+                	log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
                 if(log.isDebug())
                 	log.logDebug("response from the webserver: {0}", result);
             }
