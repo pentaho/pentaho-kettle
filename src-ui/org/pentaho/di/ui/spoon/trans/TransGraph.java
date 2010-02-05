@@ -142,6 +142,7 @@ import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.spoon.SwtScrollBar;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
@@ -153,6 +154,7 @@ import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
+import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulMenu;
@@ -373,6 +375,15 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer container = loader.loadXul(XUL_FILE_TRANS_TOOLBAR, bundle);
       container.addEventHandler(this);
+      
+      for(XulOverlay overlay : SpoonPluginManager.getInstance().getOverlaysforContainer("trans-graph")){
+        xulDomContainer.loadOverlay(overlay.getOverlayUri());
+      }
+      
+      for(XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("trans-graph")){
+        xulDomContainer.addEventHandler(handler);
+      }
+      
       setXulDomContainer(container);
     } catch (XulException e1) {
       log.logError(toString(), Const.getStackTracker(e1));
