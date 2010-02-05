@@ -1177,6 +1177,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 			// Close previous file!
 			if (data.filename != null)
 			{
+				// Increment the lines updated to reflect another file has been finished.
+				// This allows us to give a state of progress in the run time metrics
+				incrementLinesUpdated();
                 String sFileCompression = meta.getFileCompression();
 				if (sFileCompression != null && sFileCompression.equals("Zip"))
 				{
@@ -1209,7 +1212,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 		{
 			// This is for bug #5797 : it tries to assure that the file handle
 			// is actually freed/garbarge collected.
-			System.gc();
+			// XXX deinspanjer 2009-07-07: I'm stubbing this out. The bug was ancient and it is worth reevaluating 
+			// to avoid the performance hit of a System GC on every file close
+			//System.gc();
 		}
 
 		return !data.isLastFile;
@@ -1325,7 +1330,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				if (line != null)
 				{
 					// when there is no header, check the filter for the first line
-					if (!meta.hasHeader())
+					if (!meta.hasHeader() || i >= meta.getNrHeaderLines())
 					{
 						// Filter row?
 						boolean isFilterLastLine = false;
