@@ -109,8 +109,8 @@ public class UISecurity  extends XulEventSourceAdapter{
 		UIRepositoryUser user = getUser(userToUpdate.getName());
 		user.setDescription(userToUpdate.getDescription());
 		user.setRoles(userToUpdate.getRoles());
-		this.firePropertyChange("userList", null, userList); //$NON-NLS-1$
-		this.firePropertyChange("selectedUser", null, selectedUser); //$NON-NLS-1$
+    this.firePropertyChange("userList", null, userList); //$NON-NLS-1$
+		setSelectedUser(user);
 	}
 	
 	public void updateRole(UIRepositoryRole roleToUpdate) {
@@ -118,7 +118,7 @@ public class UISecurity  extends XulEventSourceAdapter{
 		role.setDescription(roleToUpdate.getDescription());
 		role.setUsers(roleToUpdate.getUsers());
 		this.firePropertyChange("roleList", null, roleList); //$NON-NLS-1$
-    this.firePropertyChange("selectedRole", null, selectedRole); //$NON-NLS-1$
+		setSelectedRole(role);
 	}
 	
 	public void removeRole(String name) {

@@ -141,7 +141,8 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
 	public void saveUserInfo(UserInfo userInfo) throws KettleException {}
 
 	public void createRole(RoleInfo role) throws KettleException {}
-	public void deleteRole(RoleInfo role) throws KettleException {}
+  public void deleteUsers(List<UserInfo> users) throws KettleException {}
+	public void deleteRoles(List<RoleInfo> roles) throws KettleException {}
 	public RoleInfo getRole(String name) throws KettleException {return null;}
 	public List<RoleInfo> getRoles() throws KettleException {return null;}
 	public void updateRole(RoleInfo role) throws KettleException {}

@@ -227,7 +227,7 @@ public class UserInfo {
 	}
 
 	public void setRoles(Set<RoleInfo> roles) {
-		this.roles.addAll(roles);
+		this.roles = roles;
 	}
 
 	public Set<RoleInfo> getRoles() {

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.repository.RoleInfo;
+import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.util.AbstractModelList;
@@ -48,7 +49,8 @@ public class UISecurityUser extends XulEventSourceAdapter{
     setAvailableRoles(roles);
     setDescription(user.getDescription());
     setName(user.getName());
-    setPassword(user.getPassword());
+    // Show empty password on the client site
+    setPassword("");
     for(RoleInfo role:user.getRoles()) {
       removeFromAvailableRoles(role.getName());
       addToSelectedRoles(new UIRepositoryRole(role));
@@ -61,11 +63,16 @@ public class UISecurityUser extends XulEventSourceAdapter{
   }
 
   public void setAvailableSelectedRoles(List<Object> availableSelectedRoles) {
+    List<Object> previousVal = new ArrayList<Object>();
+    previousVal.addAll(this.availableSelectedRoles);
     this.availableSelectedRoles.clear();
-    for(Object role:availableSelectedRoles) {
-      this.availableSelectedRoles.add((UIRepositoryRole) role);
+    if(availableSelectedRoles != null && availableSelectedRoles.size() > 0) {
+      for(Object role:availableSelectedRoles) {
+        this.availableSelectedRoles.add((UIRepositoryRole) role);
+      }
     }
-    this.firePropertyChange("availableSelectedRoles", null, this.availableSelectedRoles); //$NON-NLS-1$
+    this.firePropertyChange("availableSelectedRoles", previousVal, this.availableSelectedRoles); //$NON-NLS-1$
+    fireRoleAssignmentPropertyChange();
   }
 
   public List<UIRepositoryRole> getAssignedSelectedRoles() {
@@ -73,12 +80,16 @@ public class UISecurityUser extends XulEventSourceAdapter{
   }
 
   public void setAssignedSelectedRoles(List<Object> assignedSelectedRoles) {
+    List<Object> previousVal = new ArrayList<Object>();
+    previousVal.addAll(this.availableSelectedRoles);
     this.assignedSelectedRoles.clear();
-    for(Object role:assignedSelectedRoles) {
-      this.assignedSelectedRoles.add((UIRepositoryRole) role);
+    if(assignedSelectedRoles != null && assignedSelectedRoles.size() > 0) {
+      for(Object role:assignedSelectedRoles) {
+        this.assignedSelectedRoles.add((UIRepositoryRole) role);
+      }
     }
     this.firePropertyChange("assignedSelectedRoles", null, this.assignedSelectedRoles); //$NON-NLS-1$
-    
+    fireRoleUnassignmentPropertyChange();
   }
 
 
@@ -143,6 +154,8 @@ public class UISecurityUser extends XulEventSourceAdapter{
     setName("");
     setDescription("");
     setPassword("");
+    setAssignedSelectedRoles(null);
+    setAvailableSelectedRoles(null);
     setAvailableRoles(null);
     setAssignedRoles(null);
     setRoleAssignmentPossible(false);
@@ -194,7 +207,18 @@ public class UISecurityUser extends XulEventSourceAdapter{
     this.roleUnassignmentPossible = roleUnassignmentPossible;
     fireRoleUnassignmentPropertyChange();
   }
-
+  public UserInfo getUserInfo() {
+    UserInfo userInfo = new UserInfo();
+    userInfo.setDescription(description);
+    userInfo.setLogin(name);
+    userInfo.setName(name);
+    userInfo.setUsername(name);
+    userInfo.setPassword(password);
+    for (UIRepositoryRole role : getAssignedRoles()) {
+      userInfo.addRole(role.getRoleInfo());
+    }
+    return userInfo;
+  }
 
   private void addToSelectedRoles(UIRepositoryRole roleToAdd) {
     List<UIRepositoryRole> previousValue = getPreviousSelectedRoles();
@@ -235,14 +259,14 @@ public class UISecurityUser extends XulEventSourceAdapter{
     fireRoleUnassignmentPropertyChange();
   }
   private void fireRoleUnassignmentPropertyChange () {
-    if(roleUnassignmentPossible && assignedRoles.size() > 0) {
+    if(roleUnassignmentPossible && assignedRoles.size() > 0 && assignedSelectedRoles.size() > 0) {
       this.firePropertyChange("roleUnassignmentPossible", null, true); //$NON-NLS-1$
     } else {
       this.firePropertyChange("roleUnassignmentPossible", null, false); //$NON-NLS-1$
     }
   }
   private void fireRoleAssignmentPropertyChange () {
-    if(roleAssignmentPossible && availableRoles.size() > 0) {
+    if(roleAssignmentPossible && availableRoles.size() > 0 && availableSelectedRoles.size() > 0) {
       this.firePropertyChange("roleAssignmentPossible", null, true); //$NON-NLS-1$
     } else {
       this.firePropertyChange("roleAssignmentPossible", null, false); //$NON-NLS-1$

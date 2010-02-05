@@ -32,7 +32,7 @@ public interface RepositoryUserInterface {
 
   public List<UserInfo> getUsers() throws KettleException;
 
-  public void setUsers(List<UserInfo> roles) throws KettleException;
+  public void setUsers(List<UserInfo> users) throws KettleException;
 
   public ObjectId getUserID(String login) throws KettleException;
 
@@ -64,7 +64,9 @@ public interface RepositoryUserInterface {
 
   public void updateRole(RoleInfo role) throws KettleException;
 
-  public void deleteRole(RoleInfo role) throws KettleException;
+  public void deleteUsers(List<UserInfo> users) throws KettleException;
+  
+  public void deleteRoles(List<RoleInfo> roles) throws KettleException;
 
   public void deleteRole(String name) throws KettleException;
   

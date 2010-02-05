@@ -158,7 +158,7 @@ public class SecurityController extends AbstractXulEventHandler{
     securityUser = new UISecurityUser();
     try {
     confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
-    messageBox = (XulMessageBox) document.createElement("promptbox");//$NON-NLS-1$
+    messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
     } catch (XulException xe) {
       
     }
@@ -338,6 +338,22 @@ public class SecurityController extends AbstractXulEventHandler{
           return null;
         }
       };
+      BindingConvertor<Object, Boolean> removeButtonConverter = new BindingConvertor<Object, Boolean>() {
+
+        @Override
+        public Boolean sourceToTarget(Object value) {
+          if (value != null) {
+            return false;
+          }
+          return true;
+        }
+
+        @Override
+        public Object targetToSource(Boolean value) {
+          // TODO Auto-generated method stub
+          return null;
+        }
+      };
       bf.createBinding(roleListBox, "selectedIndex", roleEditButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedIndex", roleRemoveButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(userListBox, "selectedIndex", userEditButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
@@ -347,9 +363,9 @@ public class SecurityController extends AbstractXulEventHandler{
       bf.createBinding(userListBox, "selectedItem", security, "selectedUser");//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedIndex", addUserToRoleButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(roleListBox, "selectedIndex", removeUserFromRoleButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(roleDetailTable, "selectedItem", removeUserFromRoleButton, "disabled", removeButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(userListBox, "selectedIndex", addRoleToUserButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(userListBox, "selectedIndex", removeRoleFromUserButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(userDetailTable, "selectedItem", removeRoleFromUserButton, "disabled", removeButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(security, "roleList", roleListBox, "elements").fireSourceChanged();//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(security, "userList", userListBox, "elements").fireSourceChanged();//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");//$NON-NLS-1$ //$NON-NLS-2$
@@ -525,17 +541,9 @@ public class SecurityController extends AbstractXulEventHandler{
    */
   private void addUser() throws Exception {
     if (rui != null) {
-      UserInfo userInfo = new UserInfo();
-      userInfo.setDescription(securityUser.getDescription());
-      userInfo.setLogin(securityUser.getName());
-      userInfo.setName(securityUser.getName());
-      userInfo.setUsername(securityUser.getName());
-      for (UIRepositoryRole role : securityUser.getAssignedRoles()) {
-        userInfo.addRole(role.getRoleInfo());
-      }
       try {
-        rui.saveUserInfo(userInfo);
-        security.addUser(new UIRepositoryUser(userInfo));
+        rui.saveUserInfo(securityUser.getUserInfo());
+        security.addUser(new UIRepositoryUser(securityUser.getUserInfo()));
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
         messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
@@ -565,16 +573,9 @@ public class SecurityController extends AbstractXulEventHandler{
 
   private void updateUser() throws Exception {
     if (rui != null) {
-      UserInfo userInfo = new UserInfo();
-      userInfo.setDescription(securityUser.getDescription());
-      userInfo.setName(securityUser.getName());
-      userInfo.setLogin(securityUser.getName());
-      userInfo.setPassword(securityUser.getPassword());
-      userInfo.setRoles(convertToDomainRoleModel(securityUser.getAssignedRoles()));
       try {
-        rui.updateUser(userInfo);
-        security.updateUser(new UIRepositoryUser(userInfo));
-        userDetailTable.update();
+        rui.updateUser(securityUser.getUserInfo());
+        security.updateUser(new UIRepositoryUser(securityUser.getUserInfo()));
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
         messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
@@ -633,15 +634,9 @@ public class SecurityController extends AbstractXulEventHandler{
 
   private void addRole() throws Exception {
     if (rui != null) {
-      RoleInfo roleInfo = new RoleInfo();
-      roleInfo.setDescription(securityRole.getDescription());
-      roleInfo.setName(securityRole.getName());
-      for (UIRepositoryUser user : securityRole.getAssignedUsers()) {
-        roleInfo.addUser(user.getUserInfo());
-      }
       try {
-        rui.createRole(roleInfo);
-        security.addRole(new UIRepositoryRole(roleInfo));
+        rui.createRole(securityRole.getRoleInfo());
+        security.addRole(new UIRepositoryRole(securityRole.getRoleInfo()));
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
         messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
@@ -661,13 +656,9 @@ public class SecurityController extends AbstractXulEventHandler{
 
   private void updateRole() throws Exception {
     if (rui != null) {
-      RoleInfo roleInfo = new RoleInfo();
-      roleInfo.setDescription(securityRole.getDescription());
-      roleInfo.setName(securityRole.getName());
-      roleInfo.setUsers(convertToDomainUserModel(securityRole.getAssignedUsers()));
       try {
-        rui.updateRole(roleInfo);
-        security.updateRole(new UIRepositoryRole(roleInfo));
+        rui.updateRole(securityRole.getRoleInfo());
+        security.updateRole(new UIRepositoryRole(securityRole.getRoleInfo()));
         roleDetailTable.update();
         roleDialog.hide();
       } catch (KettleException ke) {

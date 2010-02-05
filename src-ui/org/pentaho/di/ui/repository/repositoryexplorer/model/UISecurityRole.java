@@ -5,7 +5,9 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.util.AbstractModelList;
@@ -46,11 +48,16 @@ public class UISecurityRole extends XulEventSourceAdapter {
   }
 
   public void setAvailableSelectedUsers(List<Object> availableSelectedUsers) {
+    List<Object> previousVal = new ArrayList<Object>();
+    previousVal.addAll(this.availableSelectedUsers);
     this.availableSelectedUsers.clear();
-    for(Object user:availableSelectedUsers) {
-      this.availableSelectedUsers.add((UIRepositoryUser) user);
+    if(availableSelectedUsers != null  && availableSelectedUsers.size() > 0) {
+      for(Object user:availableSelectedUsers) {
+        this.availableSelectedUsers.add((UIRepositoryUser) user);
+      }
     }
-    this.firePropertyChange("availableSelectedUsers",  null, this.availableSelectedUsers);
+    this.firePropertyChange("availableSelectedUsers",  previousVal, this.availableSelectedUsers);
+    fireUserAssignmentPropertyChange();
   }
 
   public List<UIRepositoryUser> getAssignedSelectedUsers() {
@@ -58,11 +65,16 @@ public class UISecurityRole extends XulEventSourceAdapter {
   }
 
   public void setAssignedSelectedUsers(List<Object> assignedSelectedUsers) {
+    List<Object> previousVal = new ArrayList<Object>();
+    previousVal.addAll(this.assignedSelectedUsers);
     this.assignedSelectedUsers.clear();
-    for(Object user:assignedSelectedUsers) {
-      this.assignedSelectedUsers.add((UIRepositoryUser) user);
+    if(assignedSelectedUsers != null && assignedSelectedUsers.size() > 0) {
+      for(Object user:assignedSelectedUsers) {
+        this.assignedSelectedUsers.add((UIRepositoryUser) user);
+      }
     }
-    this.firePropertyChange("assignedSelectedUsers",  null, this.assignedSelectedUsers);
+    this.firePropertyChange("assignedSelectedUsers",  previousVal, this.assignedSelectedUsers);
+    fireUserUnassignmentPropertyChange();
   }
 
 
@@ -140,6 +152,8 @@ public class UISecurityRole extends XulEventSourceAdapter {
     setName("");
     setDescription("");
     setAvailableUsers(null);
+    setAssignedSelectedUsers(null);
+    setAvailableSelectedUsers(null);
     setAssignedUsers(null);
     setUserAssignmentPossible(false);
     setUserUnassignmentPossible(false);
@@ -191,6 +205,15 @@ public class UISecurityRole extends XulEventSourceAdapter {
     fireUserUnassignmentPropertyChange ();
   }
 
+  public RoleInfo getRoleInfo() {
+    RoleInfo roleInfo = new RoleInfo();
+    roleInfo.setDescription(description);
+    roleInfo.setName(name);
+    for (UIRepositoryUser user : getAssignedUsers()) {
+      roleInfo.addUser(user.getUserInfo());
+    }
+    return roleInfo;
+  }
   private void addToAssignedUsers(UIRepositoryUser userToAdd) {
     List<UIRepositoryUser> previousValue = getPreviousSelectedUsers();
     assignedUsers.add(userToAdd);
@@ -240,14 +263,14 @@ public class UISecurityRole extends XulEventSourceAdapter {
   }
   
   private void fireUserUnassignmentPropertyChange () {
-    if(userUnassignmentPossible && assignedUsers.size() > 0) {
+    if(userUnassignmentPossible && assignedUsers.size() > 0 && assignedSelectedUsers.size() > 0) {
       this.firePropertyChange("userUnassignmentPossible", null, true); //$NON-NLS-1$
     } else {
       this.firePropertyChange("userUnassignmentPossible", null, false); //$NON-NLS-1$
     }
   }
   private void fireUserAssignmentPropertyChange () {
-    if(userAssignmentPossible && availableUsers.size() > 0) {
+    if(userAssignmentPossible && availableUsers.size() > 0 && availableSelectedUsers.size() > 0) {
       this.firePropertyChange("userAssignmentPossible", null, true); //$NON-NLS-1$
     } else {
       this.firePropertyChange("userAssignmentPossible", null, false); //$NON-NLS-1$
