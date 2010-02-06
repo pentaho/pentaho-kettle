@@ -122,6 +122,7 @@ import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterf
 import org.pentaho.di.ui.spoon.JobPainter;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.spoon.SwtScrollBar;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
@@ -135,6 +136,7 @@ import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
+import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulMenu;
@@ -155,7 +157,7 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
 	
   private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-  private static final String XUL_FILE_JOB_TOOLBAR = "ui/job-toolbar.xul";
+  private static final String XUL_FILE_JOB_GRAPH = "ui/job-graph.xul";
 
   public final static String START_TEXT = BaseMessages.getString(PKG, "JobLog.Button.Start"); //$NON-NLS-1$
 
@@ -304,18 +306,26 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     jobGridDelegate = new JobGridDelegate(spoon, this);
 
     refreshListeners = new ArrayList<RefreshListener>();
+    
     try {
       XulLoader loader = new SwtXulLoader();
-      
-      ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
-      XulDomContainer container = loader.loadXul(XUL_FILE_JOB_TOOLBAR, bundle);
+      ResourceBundle bundle = new XulSpoonResourceBundle(JobGraph.class);
+      XulDomContainer container = loader.loadXul(XUL_FILE_JOB_GRAPH, bundle);
       container.addEventHandler(this);
+      
+      for(XulOverlay overlay : SpoonPluginManager.getInstance().getOverlaysforContainer("job-graph")){
+        xulDomContainer.loadOverlay(overlay.getOverlayUri());
+      }
+      
+      for(XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("job-graph")){
+        xulDomContainer.addEventHandler(handler);
+      }
+      
       setXulDomContainer(container);
     } catch (XulException e1) {
       log.logError(toString(), Const.getStackTracker(e1));
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
-          BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(e1));
     }
+
     
     setLayout(new FormLayout());
 
@@ -356,7 +366,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     sashForm.setWeights(new int[] { 100, });
 
     try {
-      Document doc = spoon.getMainSpoonContainer().getDocumentRoot();
+      Document doc = xulDomContainer.getDocumentRoot();
       menuMap.put("job-graph-hop", (XulMenupopup) doc.getElementById("job-graph-hop"));
       menuMap.put("job-graph-note", (XulMenupopup) doc.getElementById("job-graph-note"));
       menuMap.put("job-graph-background", (XulMenupopup) doc.getElementById("job-graph-background"));
@@ -1297,7 +1307,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     } catch (Throwable t) {
       log.logError(Const.getStackTracker(t));
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), 
-    		  BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_TOOLBAR), new Exception(t));
+    		  BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_JOB_GRAPH), new Exception(t));
     }
   }
 
@@ -1400,7 +1410,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   }
 
   public boolean setFocus() {
-    spoon.getMainSpoonContainer().addEventHandler(this);
+    xulDomContainer.addEventHandler(this);
     return canvas.setFocus();
   }
 
@@ -1703,16 +1713,16 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 
     final JobEntryCopy jobEntry = jobMeta.getJobEntryCopy(x, y, iconsize);
     setJobEntry(jobEntry);
-    Document doc = spoon.getMainSpoonContainer().getDocumentRoot();
+    Document doc = xulDomContainer.getDocumentRoot();
     if (jobEntry != null) // We clicked on a Job Entry!
     {
-      XulMenupopup menu = (XulMenupopup)doc.getElementById("job-graph-entry");
+      XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-entry");
       if (menu != null) {
         List<JobEntryCopy> selection = jobMeta.getSelectedEntries();
         int sels = selection.size();
         
         XulMenuitem item = (XulMenuitem) doc.getElementById("job-graph-entry-newhop");
-        item.setDisabled(sels == 2);
+        item.setDisabled(sels < 2);
         
         item = (XulMenuitem) doc.getElementById("job-graph-entry-launch");
         if (jobEntry.isTransformation()) {
@@ -2449,7 +2459,10 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
   }
 
   protected void newHop() {
-	List<JobEntryCopy> selection = jobMeta.getSelectedEntries();
+    List<JobEntryCopy> selection = jobMeta.getSelectedEntries();
+    if(selection == null || selection.size() < 2){
+      return;
+    }
     JobEntryCopy fr = selection.get(0);
     JobEntryCopy to = selection.get(1);
     spoon.newJobHop(jobMeta, fr, to);
