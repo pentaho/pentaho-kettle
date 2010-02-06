@@ -68,7 +68,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -140,6 +139,7 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
+import org.pentaho.di.ui.spoon.AbstractGraph;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
@@ -171,7 +171,7 @@ import org.pentaho.ui.xul.swt.SwtXulLoader;
  * @since 17-mei-2003
  * 
  */
-public class TransGraph extends Composite implements XulEventHandler, Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener, MouseWheelListener, KeyListener {
+public class TransGraph extends AbstractGraph implements XulEventHandler, Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener, MouseWheelListener, KeyListener {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private LogChannelInterface log;
@@ -195,8 +195,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
   private Shell shell;
 
   private Composite mainComposite;
-
-  private Canvas canvas;
 
   private DefaultToolTip toolTip;
 
@@ -229,12 +227,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
   private Point drop_candidate;
 
   private Spoon spoon;
-
-  private Point offset, iconoffset, noteoffset;
-
-  private ScrollBar hori;
-
-  private ScrollBar vert;
 
   // public boolean           shift, control;
 
@@ -298,8 +290,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
   private boolean pausing;
 
-  private float magnification = 1.0f;
-
   public TransLogDelegate transLogDelegate;
 
   public TransGridDelegate transGridDelegate;
@@ -308,8 +298,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
   public TransPerfDelegate transPerfDelegate;
 
-  private Combo zoomLabel;
-  
   /** A map that keeps track of which log line was written by which step */
   private Map<StepMeta, String> stepLogMap;
 
@@ -923,7 +911,7 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
                 // We moved around some items: store undo info...
                 // 
                 boolean also = false;
-                if (selectedNotes != null && previous_note_locations != null) {
+                if (selectedNotes != null && selectedNotes.size() > 0 && previous_note_locations != null) {
                   int indexes[] = transMeta.getNoteIndexes(selectedNotes);
                   addUndoPosition(selectedNotes.toArray(new NotePadMeta[selectedNotes.size()]), indexes, previous_note_locations, transMeta
                       .getSelectedNoteLocations(), also);
@@ -1011,12 +999,12 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
                   // We moved around some items: store undo info...
                   boolean also = false;
-                  if (selectedNotes != null && previous_note_locations != null) {
+                  if (selectedNotes != null && selectedNotes.size() > 0 && previous_note_locations != null) {
                     int indexes[] = transMeta.getNoteIndexes(selectedNotes);
                     addUndoPosition(selectedNotes.toArray(new NotePadMeta[selectedNotes.size()]), indexes, previous_note_locations, transMeta.getSelectedNoteLocations(), also);
                     also = selectedSteps != null && selectedSteps.size() > 0;
                   }
-                  if (selectedSteps != null && previous_step_locations != null) {
+                  if (selectedSteps != null && selectedSteps.size() > 0 && previous_step_locations != null) {
                     int indexes[] = transMeta.getStepIndexes(selectedSteps);
                     addUndoPosition(selectedSteps.toArray(new StepMeta[selectedSteps.size()]), indexes, previous_step_locations, transMeta.getSelectedStepLocations(), also);
                   }
@@ -1567,9 +1555,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     }
   }
 
-  private void setZoomLabel() {
-    zoomLabel.setText(Integer.toString(Math.round(magnification * 100)) + "%"); //$NON-NLS-1$
-  }
   /**
    * Allows for magnifying to any percentage entered by the user...
    */
@@ -1727,15 +1712,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
   public void keyReleased(KeyEvent e) {
   }
-  
-  public void redraw() {
-    canvas.redraw();
-    setZoomLabel();
-  }
-
-  public boolean forceFocus() {
-    return canvas.forceFocus();
-  }
 
   public boolean setFocus() {
     return canvas.setFocus();
@@ -1794,25 +1770,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
       i++;
     }
     return retval;
-  }
-
-  public Point screen2real(int x, int y) {
-    offset = getOffset();
-    Point real;
-    if (offset != null) {
-      real = new Point(Math.round((x / magnification - offset.x)), Math.round((y / magnification - offset.y)));
-    } else {
-      real = new Point(x, y);
-    }
-
-    return real;
-  }
-
-  public Point real2screen(int x, int y) {
-    offset = getOffset();
-    Point screen = new Point(x + offset.x, y + offset.y);
-
-    return screen;
   }
 
   public Point getRealPosition(Composite canvas, int x, int y) {
@@ -2615,57 +2572,11 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
     return img;
   }
 
-  private Point getArea() {
-    org.eclipse.swt.graphics.Rectangle rect = canvas.getClientArea();
-    Point area = new Point(rect.width, rect.height);
-
-    return area;
-  }
-
-  private Point magnifyPoint(Point p) {
-    return new Point(Math.round(p.x * magnification), Math.round(p.y * magnification));
-  }
-
-  private Point getThumb(Point area, Point transMax) {
-    Point resizedMax = magnifyPoint(transMax);
-
-    Point thumb = new Point(0, 0);
-    if (resizedMax.x <= area.x)
-      thumb.x = 100;
-    else
-      thumb.x = 100 * area.x / resizedMax.x;
-
-    if (resizedMax.y <= area.y)
-      thumb.y = 100;
-    else
-      thumb.y = 100 * area.y / resizedMax.y;
-
-    return thumb;
-  }
-
-  private Point getOffset() {
+  protected Point getOffset() {
     Point area = getArea();
     Point max = transMeta.getMaximum();
     Point thumb = getThumb(area, max);
-
     return getOffset(thumb, area);
-  }
-
-  private Point getOffset(Point thumb, Point area) {
-    Point p = new Point(0, 0);
-    Point sel = new Point(hori.getSelection(), vert.getSelection());
-
-    if (thumb.x == 0 || thumb.y == 0)
-      return p;
-
-    p.x = -sel.x * area.x / thumb.x;
-    p.y = -sel.y * area.y / thumb.y;
-
-    return p;
-  }
-
-  public int sign(int n) {
-    return n < 0 ? -1 : (n > 0 ? 1 : 1);
   }
 
   private void editStep(StepMeta stepMeta) {
@@ -2796,31 +2707,6 @@ public class TransGraph extends Composite implements XulEventHandler, Redrawable
 
   public void distributevertical() {
     createSnapAllignDistribute().distributevertical();
-  }
-
-  public void zoomIn() {
-    /*      if (magnificationIndex+1<TransPainter.magnifications.length) {
-            magnification = TransPainter.magnifications[++magnificationIndex];
-          }
-    */
-    magnification += .1f;
-    redraw();
-  }
-
-  public void zoomOut() {
-    /*      if (magnificationIndex>0) {
-            magnification = TransPainter.magnifications[--magnificationIndex];
-          }
-    */
-    magnification -= .1f;
-    redraw();
-  }
-
-  public void zoom100Percent() {
-    //magnificationIndex=TransPainter.MAGNIFICATION_100_PERCENT_INDEX;
-    //magnification = TransPainter.magnifications[magnificationIndex];
-    magnification = 1.0f;
-    redraw();
   }
 
   private void detach(StepMeta stepMeta) {

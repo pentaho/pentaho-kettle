@@ -66,7 +66,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -119,6 +118,7 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
+import org.pentaho.di.ui.spoon.AbstractGraph;
 import org.pentaho.di.ui.spoon.JobPainter;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -153,7 +153,7 @@ import org.pentaho.ui.xul.swt.SwtXulLoader;
  * Created on 17-may-2003
  *
  */
-public class JobGraph extends Composite implements XulEventHandler, Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener, MouseWheelListener, KeyListener {
+public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawable, TabItemInterface, LogParentProvidedInterface, MouseListener, MouseMoveListener, MouseTrackListener, MouseWheelListener, KeyListener {
 	
   private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -170,8 +170,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
   private static final int HOP_SEL_MARGIN = 9;
 
   protected Shell shell;
-
-  protected Canvas canvas;
 
   protected LogChannelInterface log;
 
@@ -205,12 +203,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
   protected Point drop_candidate;
 
   protected Spoon spoon;
-
-  protected Point offset, iconoffset, noteoffset;
-
-  protected ScrollBar hori;
-
-  protected ScrollBar vert;
 
   // public boolean shift, control;
   protected boolean split_hop;
@@ -248,8 +240,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
 
   private XulToolbar toolbar;
 
-  private float magnification = 1.0f;
-
   public JobLogDelegate jobLogDelegate;
 
   public JobHistoryDelegate jobHistoryDelegate;
@@ -264,8 +254,6 @@ public class JobGraph extends Composite implements XulEventHandler, Redrawable, 
 
   private Label minMaxButton;
 
-  private Combo zoomLabel;
-  
   private CheckBoxToolTip helpTip;
 
   private List<AreaOwner> areaOwners;
@@ -805,14 +793,14 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
               // We moved around some items: store undo info...
               // 
               boolean also = false;
-              if (selectedNotes != null && previous_note_locations != null) {
+              if (selectedNotes != null && selectedNotes.size() > 0 && previous_note_locations != null) {
                 int indexes[] = jobMeta.getNoteIndexes(selectedNotes);
                 
                 addUndoPosition(selectedNotes.toArray(new NotePadMeta[selectedNotes.size()]), indexes, previous_note_locations, jobMeta
                     .getSelectedNoteLocations(), also);
                 also = selectedEntries != null && selectedEntries.size() > 0;
               }
-              if (selectedEntries != null && previous_step_locations != null) {
+              if (selectedEntries != null && selectedEntries.size() > 0 && previous_step_locations != null) {
                 int indexes[] = jobMeta.getEntryIndexes(selectedEntries);
                 addUndoPosition(selectedEntries.toArray(new JobEntryCopy[selectedEntries.size()]), indexes, previous_step_locations, jobMeta.getSelectedLocations(), also);
               }
@@ -900,12 +888,12 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 
                 // We moved around some items: store undo info...
                 boolean also = false;
-                if (selectedNotes != null && previous_note_locations != null) {
+                if (selectedNotes != null && selectedNotes.size() > 0 && previous_note_locations != null) {
                   int indexes[] = jobMeta.getNoteIndexes(selectedNotes);
                   addUndoPosition(selectedNotes.toArray(new NotePadMeta[selectedNotes.size()]), indexes, previous_note_locations, jobMeta.getSelectedNoteLocations(), also);
                   also = selectedEntries != null && selectedEntries.size() > 0;
                 }
-                if (selectedEntries != null && previous_step_locations != null) {
+                if (selectedEntries != null && selectedEntries.size() > 0 && previous_step_locations != null) {
                   int indexes[] = jobMeta.getEntryIndexes(selectedEntries);
                   addUndoPosition(selectedEntries.toArray(new JobEntryCopy[selectedEntries.size()]), indexes, previous_step_locations, jobMeta.getSelectedLocations(), also);
                 }
@@ -1311,10 +1299,6 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     }
   }
 
-  private void setZoomLabel() {
-    zoomLabel.setText(Integer.toString(Math.round(magnification * 100)) + "%");
-  }
-  
   /**
    * Allows for magnifying to any percentage entered by the user...
    */
@@ -1400,15 +1384,6 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     }
   }
 
-  public void redraw() {
-    canvas.redraw();
-    setZoomLabel();
-  }
-
-  public boolean forceFocus() {
-    return canvas.forceFocus();
-  }
-
   public boolean setFocus() {
     xulDomContainer.addEventHandler(this);
     return canvas.setFocus();
@@ -1488,25 +1463,6 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     }
     
     stopEntryMouseOverDelayTimers();
-  }
-
-  public Point screen2real(int x, int y) {
-    getOffset();
-    Point real;
-    if (offset != null) {
-      real = new Point(Math.round((x / magnification - offset.x)), Math.round((y / magnification - offset.y)));
-    } else {
-      real = new Point(x, y);
-    }
-
-    return real;
-  }
-
-  public Point real2screen(int x, int y) {
-    getOffset();
-    Point screen = new Point(x + offset.x, y + offset.y);
-
-    return screen;
   }
 
   public Point getRealPosition(Composite canvas, int x, int y) {
@@ -2403,59 +2359,11 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 	    return (Image) gc.getImage();
   }
 
-
-  protected Point getArea() {
-    org.eclipse.swt.graphics.Rectangle rect = canvas.getClientArea();
-    Point area = new Point(rect.width, rect.height);
-
-    return area;
-  }
-
-  private Point magnifyPoint(Point p) {
-	  return new Point(Math.round(p.x * magnification), Math.round(p.y * magnification));
-  } 
-
-  private Point getThumb(Point area, Point transMax) {
-    Point resizedMax = magnifyPoint(transMax);
-
-    Point thumb = new Point(0, 0);
-    if (resizedMax.x <= area.x)
-      thumb.x = 100;
-    else
-      thumb.x = 100 * area.x / resizedMax.x;
-
-    if (resizedMax.y <= area.y)
-      thumb.y = 100;
-    else
-      thumb.y = 100 * area.y / resizedMax.y;
-
-    return thumb;
-  }
-
   protected Point getOffset() {
     Point area = getArea();
     Point max = jobMeta.getMaximum();
     Point thumb = getThumb(area, max);
-
     return getOffset(thumb, area);
-
-  }
-
-  protected Point getOffset(Point thumb, Point area) {
-    Point p = new Point(0, 0);
-    Point sel = new Point(hori.getSelection(), vert.getSelection());
-
-    if (thumb.x == 0 || thumb.y == 0)
-      return p;
-
-    p.x = -sel.x * area.x / thumb.x;
-    p.y = -sel.y * area.y / thumb.y;
-
-    return p;
-  }
-
-  public int sign(int n) {
-    return n < 0 ? -1 : (n > 0 ? 1 : 1);
   }
 
   protected void newHop() {
@@ -2506,9 +2414,6 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 		ni.height = ConstUI.NOTE_MIN_SIZE;
 		spoon.refreshGraph();
     }
-    
-    
-    
   }
 
   protected void drawArrow(GC gc, int line[]) {
@@ -2636,31 +2541,6 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 
   public void distributevertical() {
     createSnapAllignDistribute().distributevertical();
-  }
-
-  public void zoomIn() {
-    /*    	if (magnificationIndex+1<TransPainter.magnifications.length) {
-        		magnification = TransPainter.magnifications[++magnificationIndex];
-        	}
-    */
-    magnification += .1f;
-    redraw();
-  }
-
-  public void zoomOut() {
-    /*    	if (magnificationIndex>0) {
-        		magnification = TransPainter.magnifications[--magnificationIndex];
-        	}
-    */
-    magnification -= .1f;
-    redraw();
-  }
-
-  public void zoom100Percent() {
-    //magnificationIndex=TransPainter.MAGNIFICATION_100_PERCENT_INDEX;
-    //magnification = TransPainter.magnifications[magnificationIndex];
-    magnification = 1.0f;
-    redraw();
   }
 
   protected void drawRect(GC gc, Rectangle rect) {

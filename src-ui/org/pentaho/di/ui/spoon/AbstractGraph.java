@@ -1,0 +1,136 @@
+/* Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.*/
+
+package org.pentaho.di.ui.spoon;
+
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.pentaho.di.core.gui.Point;
+
+/**
+ * The beginnings of a common graph object, used by JobGraph and TransGraph to share common behaviors.
+ * 
+ * @author Will Gorman (wgorman@pentaho.com)
+ */
+public abstract class AbstractGraph extends Composite {
+  
+  protected Point offset, iconoffset, noteoffset;
+  
+  protected ScrollBar vert, hori;
+  
+  protected Canvas canvas;
+  
+  protected float magnification = 1.0f;
+  
+  protected Combo zoomLabel;
+  
+  public AbstractGraph(Composite parent, int style) {
+    super(parent, style);
+  }
+
+  protected abstract Point getOffset();
+  
+  protected Point getOffset(Point thumb, Point area) {
+    Point p = new Point(0, 0);
+    Point sel = new Point(hori.getSelection(), vert.getSelection());
+
+    if (thumb.x == 0 || thumb.y == 0)
+      return p;
+
+    p.x = Math.round(-sel.x * area.x / thumb.x / magnification);
+    p.y = Math.round(-sel.y * area.y / thumb.y / magnification);
+
+    return p;
+  }
+  
+  protected Point magnifyPoint(Point p) {
+    return new Point(Math.round(p.x * magnification), Math.round(p.y * magnification));
+  }
+
+  protected Point getThumb(Point area, Point transMax) {
+    Point resizedMax = magnifyPoint(transMax);
+
+    Point thumb = new Point(0, 0);
+    if (resizedMax.x <= area.x)
+      thumb.x = 100;
+    else
+      thumb.x = 100 * area.x / resizedMax.x;
+
+    if (resizedMax.y <= area.y)
+      thumb.y = 100;
+    else
+      thumb.y = 100 * area.y / resizedMax.y;
+
+    return thumb;
+  }
+  
+  public int sign(int n) {
+    return n < 0 ? -1 : (n > 0 ? 1 : 1);
+  }
+
+  protected Point getArea() {
+    org.eclipse.swt.graphics.Rectangle rect = canvas.getClientArea();
+    Point area = new Point(rect.width, rect.height);
+
+    return area;
+  }
+  
+  protected void setZoomLabel() {
+    zoomLabel.setText(Integer.toString(Math.round(magnification * 100)) + "%");
+  }
+  
+  public void redraw() {
+    canvas.redraw();
+    setZoomLabel();
+  }
+  
+  public void zoomIn() {
+    magnification += .1f;
+    redraw();
+  }
+
+  public void zoomOut() {
+    magnification -= .1f;
+    redraw();
+  }
+
+  public void zoom100Percent() {
+    magnification = 1.0f;
+    redraw();
+  }
+  
+  
+  public Point screen2real(int x, int y) {
+    offset = getOffset();
+    Point real;
+    if (offset != null) {
+      real = new Point(Math.round((x / magnification - offset.x)), Math.round((y / magnification - offset.y)));
+    } else {
+      real = new Point(x, y);
+    }
+
+    return real;
+  }
+
+  public Point real2screen(int x, int y) {
+    offset = getOffset();
+    Point screen = new Point(x + offset.x, y + offset.y);
+
+    return screen;
+  }
+
+  public boolean forceFocus() {
+    return canvas.forceFocus();
+  }
+
+}

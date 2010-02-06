@@ -219,8 +219,8 @@ public class BasePainter {
 
         if (thumb.x == 0 || thumb.y == 0) return p;
 
-        p.x = -sel.x * area.x / thumb.x;
-        p.y = -sel.y * area.y / thumb.y;
+        p.x = Math.round(-sel.x * area.x / thumb.x / magnification);
+        p.y = Math.round(-sel.y * area.y / thumb.y / magnification);
 
         return p;
     }
