@@ -73,9 +73,13 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
                 {
                     db.disconnect();
                 }
-                appendConnectionInfo(report, db.environmentSubstitute(databaseMeta.getHostname()), 
-                		                     db.environmentSubstitute(databaseMeta.getDatabasePortNumberString()), 
-                		                     db.environmentSubstitute(databaseMeta.getDatabaseName()));
+                if (databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI) {
+                  appendJndiConnectionInfo(report, db.environmentSubstitute(databaseMeta.getDatabaseName()));
+                } else {
+                  appendConnectionInfo(report, db.environmentSubstitute(databaseMeta.getHostname()), 
+                  		                     db.environmentSubstitute(databaseMeta.getDatabasePortNumberString()), 
+                  		                     db.environmentSubstitute(databaseMeta.getDatabaseName()));
+                }
                 report.append(Const.CR);
             }
             return report.toString();
@@ -85,6 +89,11 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
 			return BaseMessages.getString(PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message"); // $NON-NLS-1
 		}
 
+	}
+	
+	private StringBuffer appendJndiConnectionInfo(StringBuffer report, String jndiName) {
+    report.append(BaseMessages.getString(PKG, "DatabaseMeta.report.JndiName")).append(jndiName).append(Const.CR); //$NON-NLS-1$
+    return report;
 	}
 	
 	private StringBuffer appendConnectionInfo(StringBuffer report, String hostName, String portNumber, String dbName) {
