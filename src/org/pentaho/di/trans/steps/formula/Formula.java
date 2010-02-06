@@ -95,7 +95,7 @@ public class Formula extends BaseStep implements StepInterface
         if (log.isRowLevel()) logRowlevel("Read row #"+getLinesRead()+" : "+r);
 
         Object[] outputRowData = calcFields(getInputRowMeta(), r);		
-		putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
+        putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 
         if (log.isRowLevel()) logRowlevel("Wrote row #"+getLinesWritten()+" : "+r);        
         if (checkFeedback(getLinesRead())) logBasic("Linenr "+getLinesRead());
@@ -196,7 +196,13 @@ public class Formula extends BaseStep implements StepInterface
                     }
                     
                     switch(data.returnType[i]) {
-                    case FormulaData.RETURN_TYPE_STRING  : value = formulaResult.toString(); break;
+                    case FormulaData.RETURN_TYPE_STRING  :
+                      if (formulaResult != null) {
+                        value = formulaResult.toString();
+                      } else {
+                        value = null;
+                      }
+                      break;
                     case FormulaData.RETURN_TYPE_NUMBER  : value = new Double(((Number)formulaResult).doubleValue()); break;
                     case FormulaData.RETURN_TYPE_INTEGER : value = new Long( ((Integer)formulaResult).intValue() ); break;
                     case FormulaData.RETURN_TYPE_LONG : value = (Long)formulaResult; break;
