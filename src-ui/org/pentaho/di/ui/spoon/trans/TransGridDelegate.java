@@ -110,6 +110,17 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 		transGridComposite.setLayout(new FormLayout());
 		
 		addToolBar();
+
+    Control toolbarControl = (Control) toolbar.getManagedObject();
+    
+    toolbarControl.setLayoutData(new FormData());
+    FormData fd = new FormData();
+    fd.left = new FormAttachment(0, 0); // First one in the left top corner
+    fd.top = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(100, 0);
+    toolbarControl.setLayoutData(fd);
+    
+    toolbarControl.setParent(transGridComposite);
 		
 		ColumnInfo[] colinf = new ColumnInfo[] { 
                 new ColumnInfo(BaseMessages.getString(PKG, "TransLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$

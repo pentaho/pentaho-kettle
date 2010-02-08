@@ -84,6 +84,17 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
 
     addToolBar();
 
+    Control toolbarControl = (Control) toolbar.getManagedObject();
+    
+    toolbarControl.setLayoutData(new FormData());
+    FormData fd = new FormData();
+    fd.left = new FormAttachment(0, 0); // First one in the left top corner
+    fd.top = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(100, 0);
+    toolbarControl.setLayoutData(fd);
+    
+    toolbarControl.setParent(transLogComposite);
+
     transLogText = new StyledText(transLogComposite, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
     spoon.props.setLook(transLogText);
     FormData fdText = new FormData();

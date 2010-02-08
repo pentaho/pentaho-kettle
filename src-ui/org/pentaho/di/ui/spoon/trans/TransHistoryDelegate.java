@@ -130,6 +130,18 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     spoon.props.setLook(transHistoryComposite);
 
     addToolBar();
+
+    Control toolbarControl = (Control) toolbar.getManagedObject();
+    
+    toolbarControl.setLayoutData(new FormData());
+    FormData fd = new FormData();
+    fd.left = new FormAttachment(0, 0); // First one in the left top corner
+    fd.top = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(100, 0);
+    toolbarControl.setLayoutData(fd);
+    
+    toolbarControl.setParent(transHistoryComposite);
+    
     addLogTableTabs();
     tabFolder.setSelection(0);
 
