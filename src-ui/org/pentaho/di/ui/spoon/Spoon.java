@@ -4587,7 +4587,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					if (!props.isOnlyActiveFileShownInTree() || showAll || (activeJobMeta != null && activeJobMeta.equals(jobMeta))) {
 						// Add a tree item with the name of job
 						//
-						String name = delegates.tabs.makeTabName(jobMeta, true);
+						String name = delegates.tabs.makeTabName(jobMeta, entry.isShowingLocation());
 						if (Const.isEmpty(name)) {
 							name = STRING_JOB_NO_NAME;
 						}
