@@ -128,6 +128,19 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     spoon.props.setLook(jobHistoryComposite);
 
     addToolBar();
+    
+
+    Control toolbarControl = (Control) toolbar.getManagedObject();
+    
+    toolbarControl.setLayoutData(new FormData());
+    FormData fd = new FormData();
+    fd.left = new FormAttachment(0, 0); // First one in the left top corner
+    fd.top = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(100, 0);
+    toolbarControl.setLayoutData(fd);
+    
+    toolbarControl.setParent(jobHistoryComposite);
+    
     addLogTableTabs();
     tabFolder.setSelection(0);
 
