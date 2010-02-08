@@ -180,7 +180,7 @@
   </menupopup>
 
   <menupopup id="job-class">
-    <menuitem id="job-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="jobgraph.newJobFile()" />
+    <menuitem id="job-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newJobFile()" />
   </menupopup>
 
   <menupopup id="trans-hop-class">
