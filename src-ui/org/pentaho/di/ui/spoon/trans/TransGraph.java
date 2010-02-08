@@ -491,6 +491,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     canvas.addMouseMoveListener(this);
     canvas.addMouseTrackListener(this);
     canvas.addMouseWheelListener(this);
+    canvas.addKeyListener(this);
 
     // Drag & Drop for steps
     Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
