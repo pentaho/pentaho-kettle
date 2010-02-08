@@ -69,6 +69,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
@@ -3072,6 +3073,14 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 	  }
 	  setControlStates();
   }
+  
+  private boolean controlDisposed(XulToolbarbutton button) {
+	  if (button.getManagedObject() instanceof Widget) {
+		  Widget widget = (Widget) button.getManagedObject();
+		  return widget.isDisposed();
+	  }
+	  return false;
+  }
 
   public void setControlStates() {
 	  if (getDisplay().isDisposed()) return;
@@ -3083,7 +3092,7 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
         //
     	boolean running = job!=null && job.isActive();
         XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("job-run");
-        if (runButton != null) {
+        if (runButton != null && !controlDisposed(runButton)) {
           runButton.setDisabled(running);
         }
 
@@ -3092,7 +3101,7 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
         // Pause button...
         //
         XulToolbarButton pauseButton = toolbar.getButtonById("trans-pause");
-        if (pauseButton!=null)
+        if (pauseButton!=null && !controlDisposed(pauseButton))
         {
         	pauseButton.setEnable(running);
         	pauseButton.setText( pausing ? RESUME_TEXT : PAUSE_TEXT );
@@ -3102,14 +3111,14 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
         // Stop button...
         //
         XulToolbarbutton stopButton = (XulToolbarbutton) toolbar.getElementById("job-stop");
-        if (stopButton != null) {
+        if (stopButton != null && !controlDisposed(stopButton)) {
           stopButton.setDisabled(!running);
         }
 
         // version browser button...
         //
         XulToolbarbutton versionsButton = (XulToolbarbutton)toolbar.getElementById("browse-versions");
-        if (versionsButton != null) {
+        if (versionsButton != null && !controlDisposed(versionsButton)) {
           boolean hasRepository = spoon.rep!=null;
           boolean enabled = hasRepository && spoon.rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions(); 
           versionsButton.setDisabled(!enabled);

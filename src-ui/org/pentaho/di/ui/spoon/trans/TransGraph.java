@@ -71,6 +71,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -3451,6 +3452,15 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
   }
 
+  private boolean controlDisposed(XulToolbarbutton button) {
+	  if (button.getManagedObject() instanceof Widget) {
+		  Widget widget = (Widget) button.getManagedObject();
+		  return widget.isDisposed();
+	  }
+	  return false;
+  }
+
+
   public synchronized void setControlStates() {
     if (getDisplay().isDisposed()) return;
     if (((Control)toolbar.getManagedObject()).isDisposed()) return;
@@ -3461,14 +3471,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // Start/Run button...
           //
           XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("trans-run"); //$NON-NLS-1$
-          if (runButton != null) {
+          if (runButton != null && !controlDisposed(runButton)) {
         	runButton.setDisabled(running);
           }
 
           // Pause button...
           //
           XulToolbarbutton pauseButton = (XulToolbarbutton) toolbar.getElementById("trans-pause"); //$NON-NLS-1$
-          if (pauseButton != null) {
+          if (pauseButton != null && !controlDisposed(pauseButton)) {
             pauseButton.setDisabled(!running);
             pauseButton.setLabel(pausing ? RESUME_TEXT : PAUSE_TEXT);
             pauseButton.setTooltiptext(pausing ? BaseMessages.getString(PKG, "Spoon.Tooltip.ResumeTranformation") : BaseMessages  //$NON-NLS-1$
@@ -3478,25 +3488,23 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // Stop button...
           //
           XulToolbarbutton stopButton = (XulToolbarbutton) toolbar.getElementById("trans-stop"); //$NON-NLS-1$
-          if (stopButton != null) {
+          if (stopButton != null && !controlDisposed(stopButton)) {
             stopButton.setDisabled(!running);
           }
 
           // Debug button...
           //
           XulToolbarbutton debugButton = (XulToolbarbutton) toolbar.getElementById("trans-debug"); //$NON-NLS-1$
-          if (debugButton != null) {
+          if (debugButton != null && !controlDisposed(debugButton)) {
             debugButton.setDisabled(running);
           }
 
           // Preview button...
           //
           XulToolbarbutton previewButton = (XulToolbarbutton) toolbar.getElementById("trans-preview"); //$NON-NLS-1$
-          if (previewButton != null) {
+          if (previewButton != null && !controlDisposed(previewButton)) {
             previewButton.setDisabled(running);
           }
-
-          // TODO: enable/disable Transformation menu entries too
         }
 
       });

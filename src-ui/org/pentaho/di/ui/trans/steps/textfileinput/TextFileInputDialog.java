@@ -896,10 +896,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         }
 
         fdAccepting=new FormData();
-        fdAccepting.left   = new FormAttachment(middle, 0);
+        fdAccepting.left   = new FormAttachment(0, 0);
         fdAccepting.right  = new FormAttachment(100, 0);
         fdAccepting.bottom = new FormAttachment(wFirstHeader, -margin*2);
-        // fdAccepting.bottom = new FormAttachment(wAccStep, margin);
         gAccepting.setLayoutData(fdAccepting);
 
         ColumnInfo[] colinfo=new ColumnInfo[]
