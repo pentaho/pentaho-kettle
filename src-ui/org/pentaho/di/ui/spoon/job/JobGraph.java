@@ -2116,6 +2116,18 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       }
     }
   }
+  
+  public void launchStuff(){
+    List<JobEntryCopy> entries = jobMeta.getSelectedEntries();
+    if(entries == null || entries.size() > 1 || entries.size() == 0){
+      return;
+    }
+    JobEntryCopy current = entries.get(0);
+    
+    if(current != null){
+      launchStuff(current);
+    }
+  }
 
   protected void openTransformation(JobEntryTrans entry, JobEntryCopy jobEntryCopy) {
     String exactFilename = jobMeta.environmentSubstitute(entry.getFilename());
