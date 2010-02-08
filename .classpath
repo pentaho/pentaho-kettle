@@ -122,11 +122,6 @@
 	<classpathentry kind="lib" path="libext/web/jetty-6.1.21.jar"/>
 	<classpathentry kind="lib" path="libext/web/jetty-plus-6.1.21.jar"/>
 	<classpathentry kind="lib" path="libext/web/jetty-util-6.1.21.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/metro-webservices-api-2.0.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/metro-webservices-extra-2.0.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/metro-webservices-extra-api-2.0.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/metro-webservices-rt-2.0.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/metro-webservices-tools-2.0.jar"/>
 	<classpathentry kind="lib" path="libext/junit-4.7.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
