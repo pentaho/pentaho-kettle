@@ -3780,6 +3780,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
 	public void sniff(final boolean input, final boolean output, final boolean error) {
 		StepMeta stepMeta = getCurrentStep();
+		if(stepMeta == null || trans == null){
+		  return;
+		}
 		final StepInterface runThread = trans.findRunThread(stepMeta.getName());
 		if (runThread!=null) {
 			
