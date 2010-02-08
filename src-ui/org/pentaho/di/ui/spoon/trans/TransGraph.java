@@ -160,6 +160,7 @@ import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulMenu;
 import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
+import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 
@@ -2143,34 +2144,47 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         if (menu != null) {
             List<StepMeta> selection = transMeta.getSelectedSteps();
             int sels = selection.size();
-            XulMenuitem item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-newhop"); //$NON-NLS-1$
+
+            Document doc = getXulDomContainer().getDocumentRoot();
+            XulMenuitem item = (XulMenuitem) doc.getElementById("trans-graph-entry-newhop"); //$NON-NLS-1$
             item.setDisabled(sels != 2);
 
-            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-open-mapping"); //$NON-NLS-1$
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-open-mapping"); //$NON-NLS-1$
             item.setDisabled(!stepMeta.isMapping());
 
-            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
             item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            XulMenu aMenu = (XulMenu) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-align"); //$NON-NLS-1$
+            XulMenu men = (XulMenu) doc.getElementById("trans-graph-entry-sniff");
+            men.setDisabled(trans==null || trans.isRunning() == false); //$NON-NLS-1$
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-sniff-input"); //$NON-NLS-1$
+            item.setDisabled(trans==null || trans.isRunning() == false); //$NON-NLS-1$
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-sniff-output"); //$NON-NLS-1$
+            item.setDisabled(trans==null || trans.isRunning() == false); //$NON-NLS-1$
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-sniff-error"); //$NON-NLS-1$
+            item.setDisabled(!(stepMeta.supportsErrorHandling() && stepMeta.getStepErrorMeta()!=null && stepMeta.getStepErrorMeta().getTargetStep()!=null && trans!=null && trans.isRunning()));
+
+            
+            XulMenu aMenu = (XulMenu) doc.getElementById("trans-graph-entry-align"); //$NON-NLS-1$
             if (aMenu != null) {
               aMenu.setDisabled(sels < 2);
             }
 
-            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-data-movement-distribute"); //$NON-NLS-1$
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-distribute"); //$NON-NLS-1$
             item.setSelected(!stepMeta.isDistributes());
-            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-data-movement-copy"); //$NON-NLS-1$
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-copy"); //$NON-NLS-1$
             item.setSelected(!stepMeta.isDistributes());
 
-            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-hide"); //$NON-NLS-1$
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-hide"); //$NON-NLS-1$
             item.setDisabled(!(stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta)));
 
-            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-detach"); //$NON-NLS-1$
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-detach"); //$NON-NLS-1$
             item.setDisabled(!transMeta.isStepUsedInTransHops(stepMeta));
 
-            item = (XulMenuitem) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-entry-errors"); //$NON-NLS-1$
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-errors"); //$NON-NLS-1$
             item.setDisabled(!stepMeta.supportsErrorHandling());
-
+            
+           
           ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
         }
       } else {
