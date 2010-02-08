@@ -927,7 +927,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdPassParams.right = new FormAttachment(100, 0);
 		wPassParams.setLayoutData(fdPassParams);
 
-		final int parameterRows = jobEntry.parameters.length;
+		final int parameterRows = jobEntry.parameters != null ? jobEntry.parameters.length : 0;
 
 	    colinf = new ColumnInfo[] {
 			new ColumnInfo(BaseMessages.getString(PKG, "JobTrans.Parameters.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false),
