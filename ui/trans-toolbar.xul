@@ -66,6 +66,14 @@
       - <menuitem id="trans-graph-entry-lineage" label="${TransGraph.PopupMenu.ShowDataLineage}"
       command="transgraph.fieldsLineage()" />
     -->
+	<menu id="trans-graph-entry-sniff" label="${TransGraph.PopupMenu.Sniff}"> 
+      <menupopup>
+        <menuitem id="trans-graph-entry-sniff-input" label="${TransGraph.PopupMenu.SniffInput}" command="transgraph.sniffInput()" /> 
+        <menuitem id="trans-graph-entry-sniff-output" label="${TransGraph.PopupMenu.SniffOutput}" command="transgraph.sniffOutput()" /> 
+        <menuitem id="trans-graph-entry-sniff-error" label="${TransGraph.PopupMenu.SniffError}" command="transgraph.sniffError()" /> 
+      </menupopup>
+    </menu>
+    
     <menuseparator />
     <menu id="trans-graph-entry-align" label="${TransGraph.PopupMenu.AllignDistribute}">
       <menupopup id="trans-graph-entry-align-popup">
