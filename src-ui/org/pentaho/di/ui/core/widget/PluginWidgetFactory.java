@@ -7,7 +7,7 @@
  * COPYRIGHTS
  * ==========================================================
  */
-package org.pentaho.di.core.util;
+package org.pentaho.di.ui.core.widget;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.ui.core.widget.TextVar;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
