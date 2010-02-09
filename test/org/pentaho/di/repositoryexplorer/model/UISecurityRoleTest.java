@@ -1,19 +1,12 @@
 package org.pentaho.di.repositoryexplorer.model;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryRole;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryUser;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurityRole;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
 
 public class UISecurityRoleTest {
   private List<UserInfo> users = new ArrayList<UserInfo>();
