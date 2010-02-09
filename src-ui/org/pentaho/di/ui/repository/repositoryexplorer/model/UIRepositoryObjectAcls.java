@@ -27,8 +27,8 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
 
   public void setObjectAcl(ObjectAcl obj) {
     this.obj = obj;
-    this.firePropertyChange("acls", null, getAcls());
-    this.firePropertyChange("entriesInheriting", null, isEntriesInheriting());
+    this.firePropertyChange("acls", null, getAcls()); //$NON-NLS-1$
+    this.firePropertyChange("entriesInheriting", null, isEntriesInheriting()); //$NON-NLS-1$
   }
 
   public ObjectAcl getObjectAcl() {
@@ -56,14 +56,14 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
         obj.getAces().add(acl.getAce());
       }
     }
-    this.firePropertyChange("acls", prevousVal, getAcls());
+    this.firePropertyChange("acls", prevousVal, getAcls()); //$NON-NLS-1$
   }
 
   public void addAcls(List<UIRepositoryObjectAcl> aclsToAdd) {
     for (UIRepositoryObjectAcl acl : aclsToAdd) {
       addAcl(acl);
     }
-    this.firePropertyChange("acls", null, getAcls());
+    this.firePropertyChange("acls", null, getAcls()); //$NON-NLS-1$
     // Setting the selected index to the first item in the list
     if(obj.getAces().size() > 0) {
       List<UIRepositoryObjectAcl> aclList = new ArrayList<UIRepositoryObjectAcl>();
@@ -82,7 +82,7 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
       removeAcl(acl.getRecipientName());
     }
 
-    this.firePropertyChange("acls", null, getAcls());
+    this.firePropertyChange("acls", null, getAcls()); //$NON-NLS-1$
     if(obj.getAces().size() > 0) {
       List<UIRepositoryObjectAcl> aclList = new ArrayList<UIRepositoryObjectAcl>();
       aclList.add(new UIRepositoryObjectAcl(getAceAtIndex(0)));
@@ -118,7 +118,7 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     }
     UIRepositoryObjectAcl acl = getAcl(aclToUpdate.getRecipientName());
     acl.setPermissionSet(aclToUpdate.getPermissionSet());
-    this.firePropertyChange("acls", null, getAcls());
+    this.firePropertyChange("acls", null, getAcls()); //$NON-NLS-1$
     // Setting the selected index
     List<UIRepositoryObjectAcl> aclList = new ArrayList<UIRepositoryObjectAcl>();
     aclList.add(aclToUpdate);

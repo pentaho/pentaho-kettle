@@ -80,4 +80,12 @@ public class UIRepositoryUser extends XulEventSourceAdapter {
   public Set<RoleInfo> getRoles() {
     return rui.getRoles();
   }
+  
+  public boolean equals(Object o) {
+    return ((o instanceof UIRepositoryUser) ? getName().equals(((UIRepositoryUser) o).getName()) : false);
+  }
+
+  public int hashCode() {
+    return getName().hashCode();
+  }
 }

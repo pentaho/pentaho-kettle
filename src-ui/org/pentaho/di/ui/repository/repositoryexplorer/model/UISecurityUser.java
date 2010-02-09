@@ -25,18 +25,18 @@ public class UISecurityUser extends XulEventSourceAdapter{
   private String password;
   public UISecurityUser() {
     availableRoles = new AbstractModelList<UIRepositoryRole>();
-    availableRoles.addPropertyChangeListener("children", new PropertyChangeListener() {
+    availableRoles.addPropertyChangeListener("children", new PropertyChangeListener() { //$NON-NLS-1$
       
       public void propertyChange(PropertyChangeEvent evt) {
-        UISecurityUser.this.firePropertyChange("availableRoles", null, availableRoles);
+        UISecurityUser.this.firePropertyChange("availableRoles", null, availableRoles); //$NON-NLS-1$
       }
     });
     
     assignedRoles = new AbstractModelList<UIRepositoryRole>();
-    assignedRoles.addPropertyChangeListener("children", new PropertyChangeListener() {
+    assignedRoles.addPropertyChangeListener("children", new PropertyChangeListener() { //$NON-NLS-1$
       
       public void propertyChange(PropertyChangeEvent evt) {
-        UISecurityUser.this.firePropertyChange("assignedRoles", null, assignedRoles);
+        UISecurityUser.this.firePropertyChange("assignedRoles", null, assignedRoles); //$NON-NLS-1$
       }
     });
     description = null;
@@ -45,12 +45,12 @@ public class UISecurityUser extends XulEventSourceAdapter{
     
   }
 
-  public void setUISecurityUser(UIRepositoryUser user, List<UIRepositoryRole> roles) {
+  public void setUser(UIRepositoryUser user, List<UIRepositoryRole> roles) {
     setAvailableRoles(roles);
     setDescription(user.getDescription());
     setName(user.getName());
     // Show empty password on the client site
-    setPassword("");
+    setPassword("");//$NON-NLS-1$
     for(RoleInfo role:user.getRoles()) {
       removeFromAvailableRoles(role.getName());
       addToSelectedRoles(new UIRepositoryRole(role));
@@ -151,9 +151,9 @@ public class UISecurityUser extends XulEventSourceAdapter{
   }
   public void clear() {
     setMode(Mode.ADD);
-    setName("");
-    setDescription("");
-    setPassword("");
+    setName("");//$NON-NLS-1$
+    setDescription("");//$NON-NLS-1$
+    setPassword("");//$NON-NLS-1$
     setAssignedSelectedRoles(null);
     setAvailableSelectedRoles(null);
     setAvailableRoles(null);

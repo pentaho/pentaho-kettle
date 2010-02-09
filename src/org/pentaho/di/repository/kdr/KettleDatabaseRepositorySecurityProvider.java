@@ -1,9 +1,11 @@
 package org.pentaho.di.repository.kdr;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.repository.ActionPermission;
 import org.pentaho.di.repository.BaseRepositorySecurityProvider;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ProfileMeta;
@@ -365,5 +367,9 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   public List<String> getRolesForUser(String userName) throws KettleException {
     // TODO Auto-generated method stub
     return null;
+  }
+  public void setActionPermissions(String rolename, EnumSet<ActionPermission> permissions) throws KettleException {
+    // TODO Auto-generated method stub
+    
   }
 }

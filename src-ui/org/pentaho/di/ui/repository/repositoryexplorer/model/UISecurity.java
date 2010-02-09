@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.ActionPermission;
 import org.pentaho.di.repository.RepositoryUserInterface;
 import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
@@ -188,6 +189,12 @@ public class UISecurity  extends XulEventSourceAdapter{
     this.firePropertyChange("selectedRole", null, selectedRole); //$NON-NLS-1$
   } 
 
+  public void addRoleActionPermission(ActionPermission permission) {
+    selectedRole.addActionPermission(permission);
+  }
+  public void removeRoleActionPermission(ActionPermission permission) {
+    selectedRole.removeActionPermission(permission);
+  }
 	private void removeUserFromSelectedRole(String userName) {
     selectedRole.getUsers().remove(findUserInSelectedRole(userName));
 	}
@@ -239,5 +246,4 @@ public class UISecurity  extends XulEventSourceAdapter{
     }
     return -1;
   }
-	
 }

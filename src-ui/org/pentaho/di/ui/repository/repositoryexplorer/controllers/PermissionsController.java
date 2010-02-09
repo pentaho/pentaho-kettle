@@ -218,7 +218,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     };
 
     // indexToAvalableUserConverter convert the selected indices to the list of objects and vice versa
-    BindingConvertor<int[], List<String>> indexToAvalableUserConverter = new BindingConvertor<int[], List<String>>() {
+    BindingConvertor<int[], List<String>> indexToAvailableUserConverter = new BindingConvertor<int[], List<String>>() {
 
       @Override
       public List<String> sourceToTarget(int[] indices) {
@@ -241,7 +241,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
     };
 
-    BindingConvertor<int[], List<String>> indexToAvalableRoleConverter = new BindingConvertor<int[], List<String>>() {
+    BindingConvertor<int[], List<String>> indexToAvailableRoleConverter = new BindingConvertor<int[], List<String>>() {
 
       @Override
       public List<String> sourceToTarget(int[] indices) {
@@ -286,7 +286,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
     };
 
-    BindingConvertor<int[], List<UIRepositoryObjectAcl>> indexToSelctedRoleConverter = new BindingConvertor<int[], List<UIRepositoryObjectAcl>>() {
+    BindingConvertor<int[], List<UIRepositoryObjectAcl>> indexToSelectedRoleConverter = new BindingConvertor<int[], List<UIRepositoryObjectAcl>>() {
 
       @Override
       public List<UIRepositoryObjectAcl> sourceToTarget(int[] indices) {
@@ -312,13 +312,13 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
 
     bf.createBinding(availableUserList, "selectedIndices", manageAclsModel, "selectedAvailableUsers",//$NON-NLS-1$ //$NON-NLS-2$
-        indexToAvalableUserConverter);
+        indexToAvailableUserConverter);
     bf.createBinding(selectedUserList, "selectedIndices", manageAclsModel, "selectedAssignedUsers",//$NON-NLS-1$ //$NON-NLS-2$
         indexToSelectedUserConverter);
     bf.createBinding(availableRoleList, "selectedIndices", manageAclsModel, "selectedAvailableRoles",//$NON-NLS-1$ //$NON-NLS-2$
-        indexToAvalableRoleConverter);
+        indexToAvailableRoleConverter);
     bf.createBinding(selectedRoleList, "selectedIndices", manageAclsModel, "selectedAssignedRoles",//$NON-NLS-1$ //$NON-NLS-2$
-        indexToSelctedRoleConverter);
+        indexToSelectedRoleConverter);
 
     // accumulatorButtonConverter determine whether to enable of disable the accumulator buttons
     BindingConvertor<Integer, Boolean> accumulatorButtonConverter = new BindingConvertor<Integer, Boolean>() {
@@ -532,7 +532,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   public void showManageAclsDialog() throws Exception {
     try {
-      manageAclsModel.setUserList(rui.getAllUsers(), rui.getAllRoles());
+      manageAclsModel.setAclsList(rui.getAllUsers(), rui.getAllRoles());
     } catch (KettleException ke) {
       messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$

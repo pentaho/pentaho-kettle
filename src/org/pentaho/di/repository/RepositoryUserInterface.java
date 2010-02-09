@@ -1,5 +1,6 @@
 package org.pentaho.di.repository;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
@@ -77,5 +78,7 @@ public interface RepositoryUserInterface {
   public List<String> getAllUsersInRole(String role) throws KettleException;
 
   public List<String> getRolesForUser(String userName) throws KettleException;
+  
+  public void setActionPermissions(String rolename, EnumSet<ActionPermission> permissions) throws KettleException;
 
 }

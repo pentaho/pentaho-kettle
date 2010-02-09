@@ -29,12 +29,12 @@ public class UISecurityRole extends XulEventSourceAdapter {
     availableUsers = new ArrayList<UIRepositoryUser>();
     assignedUsers = new AbstractModelList<UIRepositoryUser>();
 
-    assignedUsers.addPropertyChangeListener("children",
+    assignedUsers.addPropertyChangeListener("children", //$NON-NLS-1$
         new PropertyChangeListener() {
 
           public void propertyChange(PropertyChangeEvent evt) {
             List<UIRepositoryUser> previousValue = getPreviousSelectedUsers();
-            UISecurityRole.this.firePropertyChange("selectedUsers",
+            UISecurityRole.this.firePropertyChange("selectedUsers", //$NON-NLS-1$
                 previousValue, assignedUsers);
           }
         });
@@ -56,7 +56,7 @@ public class UISecurityRole extends XulEventSourceAdapter {
         this.availableSelectedUsers.add((UIRepositoryUser) user);
       }
     }
-    this.firePropertyChange("availableSelectedUsers",  previousVal, this.availableSelectedUsers);
+    this.firePropertyChange("availableSelectedUsers",  previousVal, this.availableSelectedUsers); //$NON-NLS-1$
     fireUserAssignmentPropertyChange();
   }
 
@@ -73,7 +73,7 @@ public class UISecurityRole extends XulEventSourceAdapter {
         this.assignedSelectedUsers.add((UIRepositoryUser) user);
       }
     }
-    this.firePropertyChange("assignedSelectedUsers",  previousVal, this.assignedSelectedUsers);
+    this.firePropertyChange("assignedSelectedUsers",  previousVal, this.assignedSelectedUsers); //$NON-NLS-1$
     fireUserUnassignmentPropertyChange();
   }
 
@@ -82,8 +82,7 @@ public class UISecurityRole extends XulEventSourceAdapter {
     return this;
   }
 
-  public void setUISecurityRole(UIRepositoryRole role,
-      List<UIRepositoryUser> users) {
+  public void setRole(UIRepositoryRole role,List<UIRepositoryUser> users) {
     setAvailableUsers(users);
     setDescription(role.getDescription());
     setName(role.getName());
@@ -149,8 +148,8 @@ public class UISecurityRole extends XulEventSourceAdapter {
 
   public void clear() {
     setMode(Mode.ADD);
-    setName("");
-    setDescription("");
+    setName("");//$NON-NLS-1$
+    setDescription(""); //$NON-NLS-1$
     setAvailableUsers(null);
     setAssignedSelectedUsers(null);
     setAvailableSelectedUsers(null);

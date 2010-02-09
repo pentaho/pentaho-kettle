@@ -11,6 +11,7 @@
 
 package org.pentaho.di.repository;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public class UserInfo {
 	// private static Class<?> PKG = UserInfo.class; // for i18n purposes,
 	// needed by Translator2!! $NON-NLS-1$
 
-	public static final String REPOSITORY_ELEMENT_TYPE = "user";
+	public static final String REPOSITORY_ELEMENT_TYPE = "user"; //$NON-NLS-1$
 
 	private ObjectId id;
 
@@ -34,8 +35,13 @@ public class UserInfo {
 	private boolean enabled; // Enabled: yes or no
 
 	private ProfileMeta profile; // user profile information
-	private Set<RoleInfo> roles = new HashSet<RoleInfo>();
-
+	private Set<RoleInfo> roles;
+	
+  public UserInfo(String login, String password, String username, String description, boolean enabled,
+      Set<RoleInfo> roles) {
+    this(login, password, username, description, enabled);
+    this.roles = roles;
+  }	
 	public UserInfo(String login, String password, String username,
 			String description, boolean enabled) {
 		this.login = login;
@@ -43,6 +49,7 @@ public class UserInfo {
 		this.username = username;
 		this.description = description;
 		this.enabled = enabled;
+    this.roles = new HashSet<RoleInfo>();
 	}
 	public UserInfo(String login, String password, String username,
 			String description, boolean enabled, ProfileMeta profile) {
@@ -62,6 +69,7 @@ public class UserInfo {
 		this.description = null;
 		this.enabled = true;
 		this.profile = null;
+		this.roles = new HashSet<RoleInfo>();
 	}
 
 	public void setLogin(String login) {
