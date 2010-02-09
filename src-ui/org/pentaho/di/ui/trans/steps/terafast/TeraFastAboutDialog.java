@@ -49,7 +49,6 @@ public class TeraFastAboutDialog {
     
     private Shell dialog;
     private Link ascLink;
-    private Label buildInfo;
     private Label iconLabel;
     
     /**
