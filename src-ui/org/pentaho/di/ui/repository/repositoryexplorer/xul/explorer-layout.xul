@@ -72,8 +72,7 @@
 									pen:drageffect="move" pen:preserveexpandedstate="true" command="browseController.onDoubleClick()">
 										<treecols>
 											<treecol flex="1" label="" primary="true" pen:binding="name"
-												pen:childrenbinding="children" pen:imagebinding="image" expandedbinding="expanded" 
-												sortActive="true" sortDirection="ASCENDING"/>
+												pen:childrenbinding="children" pen:imagebinding="image" expandedbinding="expanded" />
 										</treecols>
 										<treechildren>
 											<treeitem container="true" open="true">
