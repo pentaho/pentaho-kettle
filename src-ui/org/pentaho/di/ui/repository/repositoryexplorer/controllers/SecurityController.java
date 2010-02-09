@@ -24,14 +24,12 @@ import java.util.ResourceBundle;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ActionPermission;
-import org.pentaho.di.repository.ObjectPermission;
 import org.pentaho.di.repository.ObjectRecipient;
 import org.pentaho.di.repository.RepositoryUserInterface;
 import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ObjectRecipient.Type;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectAcl;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryRole;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryUser;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity;
@@ -137,7 +135,7 @@ public class SecurityController extends AbstractXulEventHandler{
   private XulCheckbox administerSecurity;
 
   private RepositoryUserInterface rui;
-
+  private XulButton applyActionPermissionButton;
 
   private UISecurity security;
 
@@ -201,6 +199,7 @@ public class SecurityController extends AbstractXulEventHandler{
     createContent = (XulCheckbox) document.getElementById("role-create-content-checkbox");//$NON-NLS-1$
     readContent = (XulCheckbox) document.getElementById("role-read-content-checkbox");//$NON-NLS-1$
     administerSecurity = (XulCheckbox) document.getElementById("role-administer-security-checkbox");//$NON-NLS-1$
+    applyActionPermissionButton = (XulButton) document.getElementById("apply-action-permission");//$NON-NLS-1$
     // Add User Binding
 
     username = (XulTextbox) document.getElementById("user-name");//$NON-NLS-1$
@@ -375,6 +374,7 @@ public class SecurityController extends AbstractXulEventHandler{
       bf.createBinding(roleListBox, "selectedIndex", createContent, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedIndex", readContent, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedIndex", administerSecurity, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(roleListBox, "selectedIndex", applyActionPermissionButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
       
       bf.createBinding(userListBox, "selectedItem", security, "selectedUser");//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");//$NON-NLS-1$ //$NON-NLS-2$
@@ -535,6 +535,7 @@ public class SecurityController extends AbstractXulEventHandler{
   }
 
   public void showAddUserDialog() throws Exception {
+    try {
     if (rui != null && rui.getRoles() != null) {
       securityUser.clear();
       securityUser.setAvailableRoles(convertToUIRoleModel(rui.getRoles()));
@@ -542,6 +543,13 @@ public class SecurityController extends AbstractXulEventHandler{
     securityUser.setMode(Mode.ADD);
     userDialog.setTitle(messages.getString("AddUserDialog.Title"));//$NON-NLS-1$
     userDialog.show();
+    } catch(KettleException e) {
+      messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+      messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+      messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+          "SecurityController.AddUser.UnableToShowAddUser", e.getLocalizedMessage()));//$NON-NLS-1$
+      messageBox.open();
+    }
   }
 
   public void cancelAddUserDialog() throws Exception {
@@ -606,12 +614,21 @@ public class SecurityController extends AbstractXulEventHandler{
   }
 
   public void showAddRoleDialog() throws Exception {
+    try {
     if (rui != null && rui.getUsers() != null) {
       securityRole.clear();
       securityRole.setAvailableUsers(convertToUIUserModel(rui.getUsers()));
     }
     roleDialog.setTitle(messages.getString("AddRoleDialog.Title"));//$NON-NLS-1$
     roleDialog.show();
+    } catch(KettleException e) {
+      messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+      messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+      messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+          "SecurityController.AddRole.UnableToShowAddRole", e.getLocalizedMessage()));//$NON-NLS-1$
+      messageBox.open();
+      
+    }
   }
 
   public void showAddUserToRoleDialog() throws Exception {

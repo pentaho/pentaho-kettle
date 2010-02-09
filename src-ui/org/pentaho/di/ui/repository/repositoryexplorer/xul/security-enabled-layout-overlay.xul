@@ -47,7 +47,7 @@
 						</groupbox>
 						<hbox>
 							<label id="spacer-label" flex="1" />
-							<button id="apply-action-permission" label="${Dialog.Apply}" onclick="securityController.applyRoleActionPermission()"/>												
+							<button id="apply-action-permission" label="${Dialog.Apply}" onclick="securityController.applyRoleActionPermission()"  disabled="true"/>												
 						</hbox>
 					</vbox>				
 				</hbox>

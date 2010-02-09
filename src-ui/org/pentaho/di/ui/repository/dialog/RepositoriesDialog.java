@@ -644,8 +644,6 @@ public class RepositoriesDialog implements XulEventHandler {
         try {
           if (repinfo.getRepositoryCapabilities().managesUsers()) {
             userinfo = rep.getSecurityProvider().loadUserInfo(wUsername.getText(), wPassword.getText());
-            // This is a hack . Some how Kettle need this password, which is not returned but loadUserInfo any more
-            userinfo.setPassword(wPassword.getText());
           }
           props.setLastRepository(repinfo.getName());
           props.setLastRepositoryLogin(wUsername.getText());
