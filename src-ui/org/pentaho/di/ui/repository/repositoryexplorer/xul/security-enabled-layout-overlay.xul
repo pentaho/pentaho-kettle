@@ -38,12 +38,8 @@
 							<treechildren />
 						</tree>
 						<groupbox id="role-action-permissions-groupbox">
-							<caption label="${SecurityTab.ActionPermission.Priveleges}"/>
-						    <vbox flex="1">
-								<checkbox id="role-create-content-checkbox" command="securityController.updateRoleActionPermission()" flex="1" label="${SecurityTab.ActionPermission.CreateContent}" disabled="true"/>
-								<checkbox id="role-read-content-checkbox" command="securityController.updateRoleActionPermission()" flex="1" label="${SecurityTab.ActionPermission.ReadContent}" disabled="true"/>														
-								<checkbox id="role-administer-security-checkbox" command="securityController.updateRoleActionPermission()" flex="1" label="${SecurityTab.ActionPermission.AdministerSecurity}" disabled="true"/>
-							</vbox>																																								
+							<caption label="${SecurityTab.ActionPermission.Permissions}"/>
+						    <vbox flex="1" id="role-action-permissions-vbox"/>
 						</groupbox>
 						<hbox>
 							<label id="spacer-label" flex="1" />

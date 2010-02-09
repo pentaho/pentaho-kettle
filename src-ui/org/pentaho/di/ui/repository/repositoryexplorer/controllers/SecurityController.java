@@ -18,8 +18,11 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Map.Entry;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -51,6 +54,7 @@ import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulTree;
+import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
@@ -60,10 +64,10 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  * browse functionality.
  * 
  */
-public class SecurityController extends AbstractXulEventHandler{
+public class SecurityController extends AbstractXulEventHandler {
 
   private ResourceBundle messages;
-  
+
   public static final int ROLE_DECK = 0;
 
   public static final int USER_DECK = 1;
@@ -128,13 +132,10 @@ public class SecurityController extends AbstractXulEventHandler{
 
   private XulButton unassignUserFromRoleButton;
 
-  private XulCheckbox createContent;
-  
-  private XulCheckbox readContent;
-  
-  private XulCheckbox administerSecurity;
+  private XulVbox actionPermissionsBox;
 
   private RepositoryUserInterface rui;
+
   private XulButton applyActionPermissionButton;
 
   private UISecurity security;
@@ -150,9 +151,15 @@ public class SecurityController extends AbstractXulEventHandler{
   private UISecurityUser securityUser;
 
   private UISecurityRole securityRole;
+
   XulConfirmBox confirmBox = null;
+
   XulMessageBox messageBox = null;
-  
+
+  Map<XulCheckbox, ActionPermission> actionPermissionCheckboxMap;
+
+  private BindingConvertor<Integer, Boolean> buttonConverter = null;
+
   public SecurityController() {
   }
 
@@ -162,10 +169,10 @@ public class SecurityController extends AbstractXulEventHandler{
     securityRole = new UISecurityRole();
     securityUser = new UISecurityUser();
     try {
-    confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
-    messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
+      confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
+      messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
     } catch (XulException xe) {
-      
+
     }
     if (bf != null) {
       createBindings();
@@ -195,11 +202,10 @@ public class SecurityController extends AbstractXulEventHandler{
     userListBox = (XulListbox) document.getElementById("users-list");//$NON-NLS-1$
     roleDetailTable = (XulTree) document.getElementById("role-detail-table");//$NON-NLS-1$
     userDetailTable = (XulTree) document.getElementById("user-detail-table");//$NON-NLS-1$
-    
-    createContent = (XulCheckbox) document.getElementById("role-create-content-checkbox");//$NON-NLS-1$
-    readContent = (XulCheckbox) document.getElementById("role-read-content-checkbox");//$NON-NLS-1$
-    administerSecurity = (XulCheckbox) document.getElementById("role-administer-security-checkbox");//$NON-NLS-1$
+
     applyActionPermissionButton = (XulButton) document.getElementById("apply-action-permission");//$NON-NLS-1$
+    actionPermissionsBox = (XulVbox) document.getElementById("role-action-permissions-vbox");//$NON-NLS-1$
+
     // Add User Binding
 
     username = (XulTextbox) document.getElementById("user-name");//$NON-NLS-1$
@@ -222,10 +228,10 @@ public class SecurityController extends AbstractXulEventHandler{
 
       @Override
       public Object[] sourceToTarget(List<UIRepositoryRole> roles) {
-        if(roles != null) {
+        if (roles != null) {
           Object[] retVal = new Object[roles.size()];
-          int i=0;
-          for(UIRepositoryRole role:roles) {
+          int i = 0;
+          for (UIRepositoryRole role : roles) {
             retVal[i++] = role;
           }
           return retVal;
@@ -235,16 +241,16 @@ public class SecurityController extends AbstractXulEventHandler{
 
       @Override
       public List<UIRepositoryRole> targetToSource(Object[] roles) {
-        if(roles != null) {
+        if (roles != null) {
           List<UIRepositoryRole> retVal = new ArrayList<UIRepositoryRole>();
-          for(int i=0;i<roles.length;i++) {
-            retVal.add((UIRepositoryRole)roles[i]);
+          for (int i = 0; i < roles.length; i++) {
+            retVal.add((UIRepositoryRole) roles[i]);
           }
           return retVal;
         }
         return null;
       }
-      
+
     };
 
     // Binding to convert user array to a user list object and vice versa
@@ -252,10 +258,10 @@ public class SecurityController extends AbstractXulEventHandler{
 
       @Override
       public Object[] sourceToTarget(List<UIRepositoryUser> users) {
-        if(users != null) {
+        if (users != null) {
           Object[] retVal = new Object[users.size()];
-          int i=0;
-          for(UIRepositoryUser user:users) {
+          int i = 0;
+          for (UIRepositoryUser user : users) {
             retVal[i++] = user;
           }
           return retVal;
@@ -265,22 +271,21 @@ public class SecurityController extends AbstractXulEventHandler{
 
       @Override
       public List<UIRepositoryUser> targetToSource(Object[] users) {
-        if(users != null) {
+        if (users != null) {
           List<UIRepositoryUser> retVal = new ArrayList<UIRepositoryUser>();
-          for(int i=0;i<users.length;i++) {
-            retVal.add((UIRepositoryUser)users[i]);
+          for (int i = 0; i < users.length; i++) {
+            retVal.add((UIRepositoryUser) users[i]);
           }
           return retVal;
         }
         return null;
       }
-      
+
     };
 
- 
     bf.createBinding(securityUser, "availableSelectedRoles", availableRoles, "selectedItems", arrayToListRoleConverter);//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(securityUser, "assignedSelectedRoles", assignedRoles, "selectedItems", arrayToListRoleConverter);//$NON-NLS-1$ //$NON-NLS-2$
-    
+
     bf.createBinding(security, "selectedUserIndex", userListBox, "selectedIndex");//$NON-NLS-1$ //$NON-NLS-2$
 
     BindingConvertor<Integer, Boolean> accumulatorButtonConverter = new BindingConvertor<Integer, Boolean>() {
@@ -299,10 +304,12 @@ public class SecurityController extends AbstractXulEventHandler{
         return null;
       }
     };
-    
+
     bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(assignedRoles,  "selectedIndex", securityUser, "roleUnassignmentPossible", accumulatorButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(availableRoles, "selectedIndex", securityUser, "roleAssignmentPossible", accumulatorButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(assignedRoles,
+        "selectedIndex", securityUser, "roleUnassignmentPossible", accumulatorButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(availableRoles,
+        "selectedIndex", securityUser, "roleAssignmentPossible", accumulatorButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(securityUser, "roleUnassignmentPossible", unassignRoleFromUserButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(securityUser, "roleAssignmentPossible", assignRoleToUserButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
 
@@ -318,21 +325,23 @@ public class SecurityController extends AbstractXulEventHandler{
     bf.createBinding(securityRole, "name", rolename, "value");//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(securityRole, "description", roleDescription, "value");//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(securityRole, "assignedUsers", assignedUsers, "elements");//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(securityRole, "availableUsers", availableUsers, "elements");    //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(securityRole, "availableUsers", availableUsers, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(securityRole, "availableSelectedUsers", availableUsers, "selectedItems", arrayToListUserConverter);//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(securityRole, "assignedSelectedUsers", assignedUsers, "selectedItems", arrayToListUserConverter);//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(security, "selectedRoleIndex", roleListBox, "selectedIndex");//$NON-NLS-1$ //$NON-NLS-2$
 
-    bf.setBindingType(Binding.Type.ONE_WAY);    
-    bf.createBinding(assignedUsers,  "selectedIndex", securityRole, "userUnassignmentPossible", accumulatorButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(availableUsers, "selectedIndex", securityRole, "userAssignmentPossible", accumulatorButtonConverter);  //$NON-NLS-1$ //$NON-NLS-2$  
+    bf.setBindingType(Binding.Type.ONE_WAY);
+    bf.createBinding(assignedUsers,
+        "selectedIndex", securityRole, "userUnassignmentPossible", accumulatorButtonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(availableUsers,
+        "selectedIndex", securityRole, "userAssignmentPossible", accumulatorButtonConverter); //$NON-NLS-1$ //$NON-NLS-2$  
     bf.createBinding(securityRole, "userUnassignmentPossible", unassignUserFromRoleButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(securityRole, "userAssignmentPossible", assignUserToRoleButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
 
     try {
       bf.setBindingType(Binding.Type.ONE_WAY);
 
-      BindingConvertor<Integer, Boolean> buttonConverter = new BindingConvertor<Integer, Boolean>() {
+      buttonConverter = new BindingConvertor<Integer, Boolean>() {
 
         @Override
         public Boolean sourceToTarget(Integer value) {
@@ -371,11 +380,8 @@ public class SecurityController extends AbstractXulEventHandler{
 
       bf.setBindingType(Binding.Type.ONE_WAY);
       // Action based security permissions
-      bf.createBinding(roleListBox, "selectedIndex", createContent, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(roleListBox, "selectedIndex", readContent, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(roleListBox, "selectedIndex", administerSecurity, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedIndex", applyActionPermissionButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
-      
+
       bf.createBinding(userListBox, "selectedItem", security, "selectedUser");//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedIndex", addUserToRoleButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
@@ -387,7 +393,7 @@ public class SecurityController extends AbstractXulEventHandler{
       bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(userListBox, "selectedItem", security, "selectedUser");//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(security, "selectedRole", this, "selectedRoleChanged");//$NON-NLS-1$ //$NON-NLS-2$
-      
+
       roleDetailBinding = bf.createBinding(security, "selectedRole", roleDetailTable, "elements",//$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<UIRepositoryRole, List<UIRepositoryUser>>() {
 
@@ -499,6 +505,7 @@ public class SecurityController extends AbstractXulEventHandler{
       System.out.println(e.getMessage());
       e.printStackTrace();
     }
+    initializeActionPermissionUI();
     changeToRoleDeck();
   }
 
@@ -536,14 +543,14 @@ public class SecurityController extends AbstractXulEventHandler{
 
   public void showAddUserDialog() throws Exception {
     try {
-    if (rui != null && rui.getRoles() != null) {
-      securityUser.clear();
-      securityUser.setAvailableRoles(convertToUIRoleModel(rui.getRoles()));
-    }
-    securityUser.setMode(Mode.ADD);
-    userDialog.setTitle(messages.getString("AddUserDialog.Title"));//$NON-NLS-1$
-    userDialog.show();
-    } catch(KettleException e) {
+      if (rui != null && rui.getRoles() != null) {
+        securityUser.clear();
+        securityUser.setAvailableRoles(convertToUIRoleModel(rui.getRoles()));
+      }
+      securityUser.setMode(Mode.ADD);
+      userDialog.setTitle(messages.getString("AddUserDialog.Title"));//$NON-NLS-1$
+      userDialog.show();
+    } catch (KettleException e) {
       messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
       messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
@@ -615,19 +622,19 @@ public class SecurityController extends AbstractXulEventHandler{
 
   public void showAddRoleDialog() throws Exception {
     try {
-    if (rui != null && rui.getUsers() != null) {
-      securityRole.clear();
-      securityRole.setAvailableUsers(convertToUIUserModel(rui.getUsers()));
-    }
-    roleDialog.setTitle(messages.getString("AddRoleDialog.Title"));//$NON-NLS-1$
-    roleDialog.show();
-    } catch(KettleException e) {
+      if (rui != null && rui.getUsers() != null) {
+        securityRole.clear();
+        securityRole.setAvailableUsers(convertToUIUserModel(rui.getUsers()));
+      }
+      roleDialog.setTitle(messages.getString("AddRoleDialog.Title"));//$NON-NLS-1$
+      roleDialog.show();
+    } catch (KettleException e) {
       messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
       messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
           "SecurityController.AddRole.UnableToShowAddRole", e.getLocalizedMessage()));//$NON-NLS-1$
       messageBox.open();
-      
+
     }
   }
 
@@ -717,30 +724,30 @@ public class SecurityController extends AbstractXulEventHandler{
     confirmBox.setMessage(messages.getString("RemoveRoleConfirmDialog.Message"));//$NON-NLS-1$
     confirmBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
     confirmBox.setCancelLabel(messages.getString("Dialog.Cancel"));//$NON-NLS-1$
-    confirmBox.addDialogCallback(new XulDialogCallback<Object>(){
+    confirmBox.addDialogCallback(new XulDialogCallback<Object>() {
 
       public void onClose(XulComponent sender, Status returnCode, Object retVal) {
-         if(returnCode == Status.ACCEPT){
-           if (rui != null) {
-             if (security != null && security.getSelectedRole() != null) {
-               try {
-                 rui.deleteRole(security.getSelectedRole().getName());
-                 security.removeRole(security.getSelectedRole().getName());
-               } catch (KettleException ke) {
-                 messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-                 messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-                 messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
-                     "RemoveRole.UnableToRemoveRole", ke.getLocalizedMessage()));//$NON-NLS-1$
-                 messageBox.open();                 
-               }
-             } else {
-               messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-               messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-               messageBox.setMessage(messages.getString("RemoveRole.NoRoleSelected"));//$NON-NLS-1$
-               messageBox.open();
-             }
-           }
-         } 
+        if (returnCode == Status.ACCEPT) {
+          if (rui != null) {
+            if (security != null && security.getSelectedRole() != null) {
+              try {
+                rui.deleteRole(security.getSelectedRole().getName());
+                security.removeRole(security.getSelectedRole().getName());
+              } catch (KettleException ke) {
+                messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+                messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+                messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+                    "RemoveRole.UnableToRemoveRole", ke.getLocalizedMessage()));//$NON-NLS-1$
+                messageBox.open();
+              }
+            } else {
+              messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+              messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+              messageBox.setMessage(messages.getString("RemoveRole.NoRoleSelected"));//$NON-NLS-1$
+              messageBox.open();
+            }
+          }
+        }
       }
 
       public void onError(XulComponent sender, Throwable t) {
@@ -749,7 +756,7 @@ public class SecurityController extends AbstractXulEventHandler{
         messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
             "RemoveRole.UnableToRemoveRole", t.getLocalizedMessage()));//$NON-NLS-1$
         messageBox.open();
-      }      
+      }
     });
     confirmBox.open();
   }
@@ -774,38 +781,39 @@ public class SecurityController extends AbstractXulEventHandler{
     confirmBox.setMessage(messages.getString("RemoveUserConfirmDialog.Message"));//$NON-NLS-1$
     confirmBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
     confirmBox.setCancelLabel(messages.getString("Dialog.Cancel"));//$NON-NLS-1$
-    confirmBox.addDialogCallback(new XulDialogCallback<Object>(){
+    confirmBox.addDialogCallback(new XulDialogCallback<Object>() {
 
       public void onClose(XulComponent sender, Status returnCode, Object retVal) {
-         if(returnCode == Status.ACCEPT){
-           if (rui != null) {
-             if (security != null && security.getSelectedUser() != null) {
-               try {
-                 rui.delUser(security.getSelectedUser().getName());
-                 security.removeUser(security.getSelectedUser().getName());
-               } catch (KettleException ke) {
-                 messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-                 messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-                 messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
-                     "RemoveUser.UnableToRemoveUser", ke.getLocalizedMessage()));//$NON-NLS-1$
-                 messageBox.open();
-               }
-             } else {
-               messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-               messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-               messageBox.setMessage(messages.getString("RemoveUser.NoUserSelected"));//$NON-NLS-1$
-               messageBox.open();
-             }
-           }
-         } 
+        if (returnCode == Status.ACCEPT) {
+          if (rui != null) {
+            if (security != null && security.getSelectedUser() != null) {
+              try {
+                rui.delUser(security.getSelectedUser().getName());
+                security.removeUser(security.getSelectedUser().getName());
+              } catch (KettleException ke) {
+                messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+                messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+                messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+                    "RemoveUser.UnableToRemoveUser", ke.getLocalizedMessage()));//$NON-NLS-1$
+                messageBox.open();
+              }
+            } else {
+              messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+              messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+              messageBox.setMessage(messages.getString("RemoveUser.NoUserSelected"));//$NON-NLS-1$
+              messageBox.open();
+            }
+          }
+        }
       }
+
       public void onError(XulComponent sender, Throwable t) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
         messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
         messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
             "RemoveUser.UnableToRemoveUser", t.getLocalizedMessage()));//$NON-NLS-1$
         messageBox.open();
-      }      
+      }
     });
     confirmBox.open();
   }
@@ -818,7 +826,6 @@ public class SecurityController extends AbstractXulEventHandler{
     security.setSelectedDeck(ObjectRecipient.Type.USER);
   }
 
-
   /**
    * saveUser method is called when the user click on the ok button of a Add or Edit User dialog
    * Depending on the mode it calls add of update user method
@@ -826,7 +833,7 @@ public class SecurityController extends AbstractXulEventHandler{
    */
 
   public void saveUser() throws Exception {
-    if(securityUser.getMode().equals(Mode.ADD)) {
+    if (securityUser.getMode().equals(Mode.ADD)) {
       addUser();
     } else {
       updateUser();
@@ -838,32 +845,31 @@ public class SecurityController extends AbstractXulEventHandler{
    * Depending on the mode it calls add of update role method
    * @throws Exception
    */
-  public void saveRole() throws Exception{
-    if(securityRole.getMode().equals(Mode.ADD)) {
+  public void saveRole() throws Exception {
+    if (securityRole.getMode().equals(Mode.ADD)) {
       addRole();
     } else {
       updateRole();
-    } 
+    }
   }
 
+  /**
+   * Update the model with the current status
+   */
   public void updateRoleActionPermission() {
-    if(createContent.isChecked()) {
-      security.addRoleActionPermission(ActionPermission.CREATE_CONTENT);
-    } else {
-      security.removeRoleActionPermission(ActionPermission.CREATE_CONTENT);
+    for(Entry<XulCheckbox, ActionPermission> currentEntry:actionPermissionCheckboxMap.entrySet()) {
+      XulCheckbox permissionCheckbox = currentEntry.getKey();
+      if(permissionCheckbox.isChecked()) {
+        security.addRoleActionPermission(currentEntry.getValue());
+      } else {
+        security.removeRoleActionPermission(currentEntry.getValue());
+      }
     }
-    if(readContent.isChecked()) {
-      security.addRoleActionPermission(ActionPermission.READ_CONTENT);
-    } else {
-      security.removeRoleActionPermission(ActionPermission.READ_CONTENT);
-    }
-    if(administerSecurity.isChecked()) {
-      security.addRoleActionPermission(ActionPermission.ADMINISTER_SECURITY);
-    } else {
-      security.removeRoleActionPermission(ActionPermission.ADMINISTER_SECURITY);
-    }    
   }
-  
+
+  /**
+   * Save the permission for the selected role
+   */
   public void applyRoleActionPermission() {
     try {
       String rolename = security.getSelectedRole().getName();
@@ -872,7 +878,7 @@ public class SecurityController extends AbstractXulEventHandler{
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
       messageBox.setMessage(messages.getString("SecurityController.RoleActionPermission.Success"));//$NON-NLS-1$
       messageBox.open();
-      
+
     } catch (KettleException e) {
       messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
@@ -881,8 +887,8 @@ public class SecurityController extends AbstractXulEventHandler{
       messageBox.open();
     }
   }
-  
-  /*
+
+  /**
    * The method is called when a user select a role from the role list. This method reads the current selected
    * role and populates the Action Permission UI with the details
    */
@@ -891,22 +897,65 @@ public class SecurityController extends AbstractXulEventHandler{
     if (role != null && role.getActionPermissions() != null) {
       for (ActionPermission permission : role.getActionPermissions()) {
         if (permission.equals(ActionPermission.CREATE_CONTENT)) {
-          createContent.setChecked(true);
+          XulCheckbox permissionCheckbox = findCheckbox(ActionPermission.CREATE_CONTENT);
+          if(permissionCheckbox != null) {
+            permissionCheckbox.setChecked(true);
+          }
         } else if (permission.equals(ActionPermission.READ_CONTENT)) {
-          readContent.setChecked(true);
+          XulCheckbox permissionCheckbox = findCheckbox(ActionPermission.READ_CONTENT);
+          if(permissionCheckbox != null) {
+            permissionCheckbox.setChecked(true);
+          }
         } else if (permission.equals(ActionPermission.ADMINISTER_SECURITY)) {
-          administerSecurity.setChecked(true);
+          XulCheckbox permissionCheckbox = findCheckbox(ActionPermission.ADMINISTER_SECURITY);
+          if(permissionCheckbox != null) {
+            permissionCheckbox.setChecked(true);
+          }
         }
       }
     }
   }
 
-  
-  private void uncheckAllActionPermissions() {
-    createContent.setChecked(false);
-    readContent.setChecked(false);
-    administerSecurity.setChecked(false);
+  private XulCheckbox findCheckbox(ActionPermission permission) {
+    for(Entry<XulCheckbox, ActionPermission> currentEntry:actionPermissionCheckboxMap.entrySet()) {
+      if(currentEntry.getValue().equals(permission)) {
+        return currentEntry.getKey();
+      }
+    }
+    return null;
   }
+  
+  /**
+   * Initialized the ActionPermissions UI with all the possible values from  ActionPermission enum
+   */
+  private void initializeActionPermissionUI() {
+    actionPermissionCheckboxMap = new HashMap<XulCheckbox, ActionPermission>();
+    try {
+      ActionPermission[] permissionArray = ActionPermission.values();
+      for (int i = 0; i < permissionArray.length; i++) {
+        XulCheckbox actionPermissionCheckBox;
+        actionPermissionCheckBox = (XulCheckbox) document.createElement("checkbox");//$NON-NLS-1$
+        actionPermissionCheckBox.setLabel(messages.getString(permissionArray[i].getDescription()));
+        actionPermissionCheckBox.setId(permissionArray[i].name());
+        actionPermissionCheckBox.setCommand("securityController.updateRoleActionPermission()");//$NON-NLS-1$
+        actionPermissionCheckBox.setFlex(1);
+        actionPermissionCheckBox.setDisabled(true);
+        actionPermissionsBox.addChild(actionPermissionCheckBox);
+        actionPermissionCheckboxMap.put(actionPermissionCheckBox,permissionArray[i]);
+        bf.setBindingType(Binding.Type.ONE_WAY);
+        bf.createBinding(roleListBox, "selectedIndex", actionPermissionCheckBox, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
+      }
+    } catch (XulException xe) {
+
+    }
+  }
+
+  private void uncheckAllActionPermissions() {
+    for(XulCheckbox permissionCheckbox:actionPermissionCheckboxMap.keySet()) {
+      permissionCheckbox.setChecked(false);
+    }
+  }
+
   private List<UIRepositoryRole> convertToUIRoleModel(List<RoleInfo> roles) {
     List<UIRepositoryRole> rroles = new ArrayList<UIRepositoryRole>();
     for (RoleInfo role : roles) {
