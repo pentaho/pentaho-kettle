@@ -42,6 +42,7 @@ import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.swt.custom.DialogConstant;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 /**
@@ -371,7 +372,7 @@ public class BrowseController extends AbstractXulEventHandler {
         : object.getName();
     
     prompt.setTitle(messages.getString("BrowserController.Name").concat(currentName));//$NON-NLS-1$
-    prompt.setButtons(new String[] { "Accept", "Cancel" });//$NON-NLS-1$ //$NON-NLS-2$
+    prompt.setButtons(new DialogConstant[] { DialogConstant.OK, DialogConstant.CANCEL });
 
     prompt.setMessage(messages.getString("BrowserController.NameLabel").concat(currentName));//$NON-NLS-1$
     prompt.setValue(currentName);
