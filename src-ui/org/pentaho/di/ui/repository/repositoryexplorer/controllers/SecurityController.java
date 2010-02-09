@@ -24,12 +24,14 @@ import java.util.ResourceBundle;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ActionPermission;
+import org.pentaho.di.repository.ObjectPermission;
 import org.pentaho.di.repository.ObjectRecipient;
 import org.pentaho.di.repository.RepositoryUserInterface;
 import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ObjectRecipient.Type;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectAcl;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryRole;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryUser;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity;
@@ -384,6 +386,8 @@ public class SecurityController extends AbstractXulEventHandler{
       bf.createBinding(security, "userList", userListBox, "elements").fireSourceChanged();//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(roleListBox, "selectedItem", security, "selectedRole");//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(userListBox, "selectedItem", security, "selectedUser");//$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(security, "selectedRole", this, "selectedRoleChanged");//$NON-NLS-1$ //$NON-NLS-2$
+      
       roleDetailBinding = bf.createBinding(security, "selectedRole", roleDetailTable, "elements",//$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<UIRepositoryRole, List<UIRepositoryUser>>() {
 
@@ -849,7 +853,7 @@ public class SecurityController extends AbstractXulEventHandler{
       rui.setActionPermissions(rolename, security.getSelectedRole().getActionPermissions());
       messageBox.setTitle(messages.getString("Dialog.Success"));//$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-      messages.getString("SecurityController.RoleActionPermission.Success");//$NON-NLS-1$
+      messageBox.setMessage(messages.getString("SecurityController.RoleActionPermission.Success"));//$NON-NLS-1$
       messageBox.open();
       
     } catch (KettleException e) {
@@ -859,6 +863,32 @@ public class SecurityController extends AbstractXulEventHandler{
           "SecurityController.RoleActionPermission.UnableToApplyPermissions", rolename, e.getLocalizedMessage()));//$NON-NLS-1$
       messageBox.open();
     }
+  }
+  
+  /*
+   * The method is called when a user select a role from the role list. This method reads the current selected
+   * role and populates the Action Permission UI with the details
+   */
+  public void setSelectedRoleChanged(UIRepositoryRole role) throws Exception {
+    uncheckAllActionPermissions();
+    if (role != null && role.getActionPermissions() != null) {
+      for (ActionPermission permission : role.getActionPermissions()) {
+        if (permission.equals(ActionPermission.CREATE_CONTENT)) {
+          createContent.setChecked(true);
+        } else if (permission.equals(ActionPermission.READ_CONTENT)) {
+          readContent.setChecked(true);
+        } else if (permission.equals(ActionPermission.ADMINISTER_SECURITY)) {
+          administerSecurity.setChecked(true);
+        }
+      }
+    }
+  }
+
+  
+  private void uncheckAllActionPermissions() {
+    createContent.setChecked(false);
+    readContent.setChecked(false);
+    administerSecurity.setChecked(false);
   }
   private List<UIRepositoryRole> convertToUIRoleModel(List<RoleInfo> roles) {
     List<UIRepositoryRole> rroles = new ArrayList<UIRepositoryRole>();
