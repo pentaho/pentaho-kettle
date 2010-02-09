@@ -1,18 +1,10 @@
 package org.pentaho.di.repositoryexplorer.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.repository.RoleInfo;
-import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryRole;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryUser;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity;
 
 public class UISecurityTest {
-  private List<UserInfo> users = new ArrayList<UserInfo>();
+ /* private List<UserInfo> users = new ArrayList<UserInfo>();
   private List<RoleInfo> roles = new ArrayList<RoleInfo>();
   private UISecurity security = new UISecurity();
   List<UIRepositoryRole> rroles;
@@ -28,7 +20,7 @@ public class UISecurityTest {
   RoleInfo ctoRole =  new RoleInfo("cto","Chief Technology Officer");
   RoleInfo devRole =  new RoleInfo("dev","Developer");
   RoleInfo devmgrRole =  new RoleInfo("devmgr","Development Manager");
-  RoleInfo isRole =  new RoleInfo("is","Information Services");
+  RoleInfo isRole =  new RoleInfo("is","Information Services");*/
   @Before
   public void init() {    
   /*    roles.add(adminRole);
