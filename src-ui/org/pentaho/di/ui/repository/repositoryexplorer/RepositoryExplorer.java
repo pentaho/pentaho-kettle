@@ -109,6 +109,7 @@ public class RepositoryExplorer {
       loadVersionOverlay(versionsEnabled);
       browseController.setBindingFactory(bf);
       container.addEventHandler(browseController);
+      browseController.setMessages(resourceBundle);
       browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
       browseController.setCallback(callback);
 
