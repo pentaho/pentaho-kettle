@@ -2961,5 +2961,4 @@ public class TableView extends Composite
 			lsFocusText.focusLost(null);
 		}
 	}
-	
 };

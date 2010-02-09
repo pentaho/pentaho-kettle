@@ -135,7 +135,7 @@
 		<class-name>org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta</class-name>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.OraBulkLoader</tooltip>
-		<image-uri>ui/images/OBL.png</image-uri>
+		<image-uri>ui/images/BulkIn.png</image-uri>
 	</step>
 
 	<step id="Injector">
@@ -1097,4 +1097,13 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Script</tooltip>
 		<image-uri>ui/images/SCR_mod.png</image-uri>
 	</step>
+	
+	<step id="TeraFast,TeraFastPlugin">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TeraFast</description>
+		<class-name>org.pentaho.di.trans.steps.terafast.TeraFastMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TeraFast</tooltip>
+		<image-uri>ui/images/BulkIn.png</image-uri>
+	</step>
+	
 </steps>

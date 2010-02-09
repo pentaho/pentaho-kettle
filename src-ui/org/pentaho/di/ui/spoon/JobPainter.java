@@ -115,8 +115,8 @@ public class JobPainter extends BasePainter {
 				} else {
 					gc.setForeground(EColor.BLUE);
 				}
-	        	Point start = real2screen(fr.x+iconsize/2, fr.y+iconsize/2, offset);
-	        	Point end = real2screen(to.x, to.y, offset);
+	        	Point start = real2screen(fr.x+iconsize/2, fr.y+iconsize/2);
+	        	Point end = real2screen(to.x, to.y);
 				drawArrow(start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopEntry, endHopEntry == null ? endHopLocation : endHopEntry);
 			} else if (endHopEntry != null && endHopLocation != null) {
 				Point fr = endHopLocation;
@@ -126,8 +126,8 @@ public class JobPainter extends BasePainter {
 				} else {
 					gc.setForeground(EColor.BLUE);
 				}
-	        	Point start = real2screen(fr.x, fr.y, offset);
-	        	Point end = real2screen(to.x+iconsize/2, to.y+iconsize/2, offset);
+	        	Point start = real2screen(fr.x, fr.y);
+	        	Point end = real2screen(to.x+iconsize/2, to.y+iconsize/2);
 				drawArrow(start.x, start.y, end.x, end.y + iconsize / 2, theta, calcArrowLength(), 1.2, null, startHopEntry == null ? endHopLocation : startHopEntry, endHopEntry);
 			}
 		}		
@@ -151,7 +151,7 @@ public class JobPainter extends BasePainter {
 		if (drop_candidate != null) {
 			gc.setLineStyle(ELineStyle.SOLID);
 			gc.setForeground(EColor.BLACK);
-			Point screen = real2screen(drop_candidate.x, drop_candidate.y, offset);
+			Point screen = real2screen(drop_candidate.x, drop_candidate.y);
 			gc.drawRectangle(screen.x, screen.y, iconsize, iconsize);
 		}
 
@@ -169,7 +169,7 @@ public class JobPainter extends BasePainter {
 			pt = new Point(50,50);
 		}
 		
-		Point screen = real2screen(pt.x, pt.y, offset);
+		Point screen = real2screen(pt.x, pt.y);
 		int x=screen.x;
 		int y=screen.y;
 		
@@ -395,8 +395,8 @@ public class JobPainter extends BasePainter {
 	
     private void drawArrow(int line[], JobHopMeta jobHop, Object startObject, Object endObject)
     {
-    	Point screen_from = real2screen(line[0], line[1], offset);
-        Point screen_to = real2screen(line[2], line[3], offset);
+    	Point screen_from = real2screen(line[0], line[1]);
+        Point screen_to = real2screen(line[2], line[3]);
         
         drawArrow(screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, jobHop, startObject, endObject);
     }

@@ -124,7 +124,7 @@ public class BasePainter {
         }
         Point p = new Point(ext.x, ext.y);
         Point loc = notePadMeta.getLocation();
-        Point note = real2screen(loc.x, loc.y, offset);
+        Point note = real2screen(loc.x, loc.y);
         int margin = Const.NOTE_MARGIN;
         p.x += 2 * margin;
         p.y += 2 * margin;
@@ -180,9 +180,9 @@ public class BasePainter {
         }
     }
 	
-    protected static final Point real2screen(int x, int y, Point offset)
+    protected Point real2screen(int x, int y)
     {
-        Point screen = new Point(x + offset.x, y + offset.y);
+        Point screen = new Point( x + offset.x, y + offset.y );
 
         return screen;
     }
@@ -195,12 +195,12 @@ public class BasePainter {
         if (resizedMax.x <= area.x)
             thumb.x = 100;
         else
-            thumb.x = 100 * area.x / resizedMax.x;
+            thumb.x = Math.round( 100f * area.x / resizedMax.x );
 
         if (resizedMax.y <= area.y)
             thumb.y = 100;
         else
-            thumb.y = 100 * area.y / resizedMax.y;
+            thumb.y = Math.round( 100f * area.y / resizedMax.y );
 
         return thumb;
     }
@@ -232,7 +232,7 @@ public class BasePainter {
         gc.setLineWidth(linewidth);
         gc.setForeground(EColor.GRAY);
         // PDI-2619: SWT on Windows doesn't cater for negative rect.width/height so handle here. 
-        Point s = real2screen(rect.x, rect.y, offset);
+        Point s = real2screen(rect.x, rect.y);
         if (rect.width < 0) {
         	s.x = s.x + rect.width;
         }
