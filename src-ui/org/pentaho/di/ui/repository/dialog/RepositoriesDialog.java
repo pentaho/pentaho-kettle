@@ -46,7 +46,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -673,9 +672,9 @@ public class RepositoriesDialog implements XulEventHandler {
       new ErrorDialog(shell, "Error", "Unexpected error writing repository definitions to file", e); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    RepositoryCapabilities capabilities = repinfo.getRepositoryCapabilities();
+    RepositoryCapabilities capabilities = repinfo==null ? null : repinfo.getRepositoryCapabilities();
 
-    if (!capabilities.supportsUsers()) {
+    if (capabilities!=null && !capabilities.supportsUsers()) {
       dispose(); // no users support : go right ahead
       return;
     }

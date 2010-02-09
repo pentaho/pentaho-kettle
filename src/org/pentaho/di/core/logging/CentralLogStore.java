@@ -8,6 +8,8 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.spi.LoggingEvent;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 
 public class CentralLogStore {
 	private static CentralLogStore store;
@@ -72,6 +74,16 @@ public class CentralLogStore {
 	 * @param maxLogTimeoutHours The maximum time that a log line times out in hours.
 	 */
 	public static void init(int maxSize, int maxLogTimeoutMinutes) {
+		if (maxSize>0 || maxLogTimeoutMinutes>0) {
+			store = new CentralLogStore(maxSize, maxLogTimeoutMinutes);
+		} else {
+			init();
+		}
+	}
+	
+	public static void init() {
+		int maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_SIZE_IN_LINES), 0); 
+		int maxLogTimeoutMinutes = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES), 0); 
 		store = new CentralLogStore(maxSize, maxLogTimeoutMinutes);
 	}
 	

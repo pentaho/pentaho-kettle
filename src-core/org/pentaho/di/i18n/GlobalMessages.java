@@ -132,6 +132,37 @@ public class GlobalMessages extends AbstractMessageHandler
     {
         return packageName + "." + BUNDLE_NAME;
     }
+    
+    /**
+     * Retrieve a resource bundle of the default or fail-over locale.
+     * @param packageName The package to search in
+     * @return The resource bundle
+     * @throws MissingResourceException in case both resource bundles couldn't be found.
+     */
+    public static ResourceBundle getBundle(String packageName) throws MissingResourceException
+    {
+    	ResourceBundle bundle ;
+    	try {
+    		// First try to load the bundle in the default locale
+    		//
+    		bundle = getBundle(LanguageChoice.getInstance().getDefaultLocale(), packageName);
+    		return bundle;
+    	} catch(MissingResourceException e) {
+    		try {
+    			// Now retry the fail-over locale (en_US etc)
+    			//
+    			bundle = getBundle(LanguageChoice.getInstance().getFailoverLocale(), packageName);
+    			return bundle;
+    		} catch(MissingResourceException e2) {
+    			// If nothing usable could be found throw an exception...
+    			//
+    			throw new MissingResourceException(
+    					"Unable to find properties file in the default '"+LanguageChoice.getInstance().getDefaultLocale()+
+    					"' nor the failore locale '"+LanguageChoice.getInstance().getFailoverLocale()+"'", 
+    					packageName, packageName);
+    		}
+    	}
+    }
 
     public static ResourceBundle getBundle(Locale locale, String packageName) throws MissingResourceException
     {

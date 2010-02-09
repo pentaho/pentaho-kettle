@@ -145,11 +145,19 @@ public class RepositoriesMeta
 	// 
 	public void readData() throws KettleException
 	{
+		// Clear the information
+		//
+		clear();
+		
 		File file = new File(Const.getKettleLocalRepositoriesFile());
 		if (!file.exists() || !file.isFile())
 		{
 			log.logDetailed("No repositories file found in the local directory: "+file.getAbsolutePath());
 			file = new File(Const.getKettleUserRepositoriesFile());
+			if (!file.exists() || !file.isFile())
+			{
+				return; // nothing to read!
+			}
 		}
 		
 		log.logBasic("Reading repositories XML file: "+file.getAbsoluteFile());
@@ -179,10 +187,6 @@ public class RepositoriesMeta
 					throw new KettleException("Error opening file: "+file.getAbsoluteFile(), ef);
 				}
 			}
-			// InfoHandler sir  = new InfoHandler(doc);
-				
-			// Clear the information
-			clear();
 			
 			// Get the <repositories> node:
 			Node repsnode = XMLHandler.getSubNode(doc, "repositories");

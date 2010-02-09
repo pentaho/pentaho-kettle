@@ -513,6 +513,18 @@ public class Const
 	public static final String KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL";
 
 	/**
+	 * System wide flag to set the maximum number of log lines that are kept internally by Kettle.
+	 * Set to 0 to keep all rows (default)
+	 */
+	public static final String KETTLE_MAX_LOG_SIZE_IN_LINES = "KETTLE_MAX_LOG_SIZE_IN_LINES";
+
+	/**
+	 * System wide flag to set the maximum age (in minutes) of a log line while being kept internally by Kettle.
+	 * Set to 0 to keep all rows indefinitely (default)
+	 */
+	public static final String KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES = "KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES";
+
+	/**
 	 * A general initial version comment 
 	 */
 	public static final String	VERSION_COMMENT_INITIAL_VERSION	= "Creation of initial version";
