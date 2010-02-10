@@ -620,11 +620,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       SpoonPerspectiveManager.getInstance().setXulDoc(mainSpoonContainer); 
       boolean firstBtn = true;
       for(SpoonPerspective per : SpoonPerspectiveManager.getInstance().getPerspectives()){
-        String name = per.getDisplayName(Locale.getDefault());
+        String name = per.getDisplayName(LanguageChoice.getInstance().getDefaultLocale());
         InputStream in = per.getPerspectiveIcon();
         
         final SwtToolbarbutton btn = (SwtToolbarbutton ) mainSpoonContainer.getDocumentRoot().createElement("toolbarbutton");
         btn.setType("toggle");
+        btn.setLabel(name);
         btn.setTooltiptext(name);
         btn.setOnclick("spoon.loadPerspective('"+per.getClass().getName()+"')");
         mainToolbar.addChild(btn);

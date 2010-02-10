@@ -12,6 +12,7 @@ import java.util.Locale;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.gui.SpoonFactory;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.spoon.job.JobGraph;
@@ -27,6 +28,7 @@ public class MainSpoonPerspective implements SpoonPerspective {
   private Composite ui;
   private List<SpoonPerspectiveListener> listeners = new ArrayList<SpoonPerspectiveListener>();
   private TabSet tabfolder;
+  private static final Class PKG = Spoon.class;
   
   public MainSpoonPerspective(Composite ui, TabSet tabfolder){
     this.ui = ui;
@@ -39,7 +41,7 @@ public class MainSpoonPerspective implements SpoonPerspective {
   }
 
   public String getDisplayName(Locale l) {
-    return "Jobs/Transformations";
+    return BaseMessages.getString(PKG, "Spoon.Perspectives.DI");
   }
 
   public InputStream getPerspectiveIcon() {

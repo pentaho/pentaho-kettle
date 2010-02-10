@@ -7,15 +7,15 @@
     
   <pen:include src="menubar.xul" ignoreroot="true"/>
     
-  <toolbar id="main-toolbar" mode="icons" >
-    <toolbarbutton id="file-new" label="${Spoon.Menu.File.New}" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}" menu="new-file-popup" />
+  <toolbar id="main-toolbar" mode="full" >
+    <toolbarbutton id="file-new" image="images/new.png" tooltiptext="${Spoon.Tooltip.NewFile}" menu="new-file-popup" />
     <toolbarseparator />
-    <toolbarbutton id="file-open" label="${Spoon.Menu.File.Open}" image="images/open.png"
+    <toolbarbutton id="file-open" image="images/open.png"
       tooltiptext="${Spoon.Tooltip.OpenTranformation}" onclick="spoon.openFile()" />
       
-    <toolbarbutton id="file-save" label="${Spoon.Menu.File.Save}" image="images/save.png"
+    <toolbarbutton id="file-save" image="images/save.png"
       tooltiptext="${Spoon.Tooltip.SaveCurrentTranformation}" onclick="spoon.saveFile()" />
-    <toolbarbutton id="file-save-as" label="${Spoon.Menu.File.SaveAs}" image="images/saveas.png"
+    <toolbarbutton id="file-save-as" image="images/saveas.png"
       tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="spoon.saveFileAs()"/>
     <toolbarseparator />
     <toolbarspacer flex="1"/>
@@ -32,7 +32,6 @@
     <menuitem label="${Spoon.Menubar.File.NewDatabaseConn}" command="spoon.newConnection()" image="${CNC_image}"/>
     <menuitem label="${Spoon.Menubar.File.NewSlave}" command="spoon.newSlaveServer()" image="${Slave_image}"/>
   </menupopup>
-  
   
   <deck flex="1" id="canvas-deck">
 	</deck>
