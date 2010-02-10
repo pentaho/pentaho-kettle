@@ -26,6 +26,8 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 
+import mondrian.olap.Util;
+
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -1213,8 +1215,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         
         wAccFilenames.setSelection(meta.isAcceptingFilenames());
         
-        if (meta.getAcceptingField()!=null) wAccField.select(wAccField.indexOf(meta.getAcceptingField()));
-        if (meta.getAcceptingField()!=null) wAccStep.select(wAccStep.indexOf(meta.getAcceptingStepName()));
+        if (meta.getAcceptingField() != null && !meta.getAcceptingField().equals("")) wAccField.select(wAccField.indexOf(meta.getAcceptingField())); //$NON-NLS-1$
+        if (meta.getAcceptingStepName() != null && !meta.getAcceptingStepName().equals("")) wAccStep.select(wAccStep.indexOf(meta.getAcceptingStepName())); //$NON-NLS-1$
         
 		wHeader.setSelection(meta.startsWithHeader());
 		wNoempty.setSelection(meta.ignoreEmptyRows());
@@ -1326,8 +1328,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		meta.setIgnoreEmptyRows( wNoempty.getSelection() );
 		meta.setStopOnEmpty( wStoponempty.getSelection() );
 
-        meta.setAcceptingFilenames( wAccFilenames.getSelection() );
-        meta.setAcceptingField( wAccField.getText() );
+    meta.setAcceptingFilenames( wAccFilenames.getSelection() );
+    meta.setAcceptingField( wAccField.getText() );
+    meta.setAcceptingStepName(wAccStep.getText());
+    meta.searchInfoAndTargetSteps(transMeta.findPreviousSteps(transMeta.findStep(stepname)));
 
 		int nrfiles    = wFilenameList.nrNonEmpty();
 		int nrsheets   = wSheetnameList.nrNonEmpty();
