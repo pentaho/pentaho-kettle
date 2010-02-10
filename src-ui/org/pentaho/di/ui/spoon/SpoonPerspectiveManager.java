@@ -117,12 +117,6 @@ public class SpoonPerspectiveManager {
     unloadPerspective(activePerspective);
     activePerspective = sp;
     
-    List<XulEventHandler> theXulEventHandlers = sp.getEventHandlers();
-    if(theXulEventHandlers != null) {
-	    for (XulEventHandler handler : theXulEventHandlers) {
-				domContainer.addEventHandler(handler);
-			}
-    }
 
     List<XulOverlay> overlays = sp.getOverlays();
     if(overlays != null){
@@ -132,6 +126,13 @@ public class SpoonPerspectiveManager {
         } catch (XulException e) {
           e.printStackTrace();
         }
+      }
+    }
+
+    List<XulEventHandler> theXulEventHandlers = sp.getEventHandlers();
+    if(theXulEventHandlers != null) {
+      for (XulEventHandler handler : theXulEventHandlers) {
+        domContainer.addEventHandler(handler);
       }
     }
     
