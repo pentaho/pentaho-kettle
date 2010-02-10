@@ -57,7 +57,34 @@ public class CubeOutput extends BaseStep implements StepInterface
 		boolean result=true;
 		
 		r=getRow();       // This also waits for a row to be finished.
-		
+
+		if(first) // Always run this code once, even if stream is empty (r==null)
+		{
+			if (getInputRowMeta() != null)
+			{
+				data.outputMeta = getInputRowMeta().clone();
+			}
+			else
+			{
+				// If the stream is empty, then row metadata probably hasn't been received. In this case, use
+				// the design-time algorithm to calculate the output metadata.
+				data.outputMeta = getTransMeta().getPrevStepFields(getStepMeta());
+			}
+			
+			// If input stream is empty, but file was already opened in init(), then
+			// write metadata so as to create a valid, empty cube file.
+			if(r==null && data.oneFileOpened)
+			{
+				result=writeHeaderToFile();
+				if (!result)
+				{
+					setErrors(1);
+					stopAll();
+					return false;
+				}
+			}
+		}
+			
 		if (r==null)
 		{
 			setOutputDone();
@@ -79,6 +106,16 @@ public class CubeOutput extends BaseStep implements StepInterface
 					return false;
 				}
 			}
+			
+			result=writeHeaderToFile();
+			if (!result)
+			{
+				setErrors(1);
+				stopAll();
+				return false;
+			}
+			
+			first = false;
 		}
 		result=writeRowToFile(r);
 		if (!result)
@@ -98,17 +135,25 @@ public class CubeOutput extends BaseStep implements StepInterface
 		return result;
 	}
 
+	private synchronized boolean writeHeaderToFile()
+	{
+		try
+		{	
+			data.outputMeta.writeMeta(data.dos);
+		}
+		catch(Exception e)
+		{
+			logError(BaseMessages.getString(PKG, "CubeOutput.Log.ErrorWritingLine")+e.toString()); //$NON-NLS-1$
+			return false;
+		}
+		
+		return true;
+	}
+	
 	private synchronized boolean writeRowToFile(Object[] r)
 	{
 		try
 		{	
-			if (first)
-			{
-				data.outputMeta = getInputRowMeta().clone();
-				// Write meta-data to the cube file...
-				data.outputMeta.writeMeta(data.dos);
-				first=false;
-			}
    			// Write data to the cube file...
 			data.outputMeta.writeData(data.dos, r);
 		}
