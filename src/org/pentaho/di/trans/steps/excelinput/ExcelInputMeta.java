@@ -266,10 +266,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	public void setIncludeSubFolders(String[] includeSubFoldersin) {
-		for (int i=0;i<includeSubFoldersin.length;i++)
-		{
-			this.includeSubFolders[i] = getRequiredFilesCode(includeSubFoldersin[i]);
-		}
+	  includeSubFolders = new String[includeSubFoldersin.length];
+		for (int i=0;i<includeSubFoldersin.length && i <includeSubFolders.length;i++) {
+    		this.includeSubFolders[i] = getRequiredFilesCode(includeSubFoldersin[i]);
+    	}
 	}
 	  public String getRequiredFilesCode(String tt)
 	    {
@@ -1158,8 +1158,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	public void setFileRequired(String[] fileRequiredin) {
-		for (int i=0;i<fileRequiredin.length;i++)
-		{
+	  fileRequired = new String[fileRequiredin.length];
+		for (int i=0;i<fileRequiredin.length && i < fileRequired.length;i++) {
 			this.fileRequired[i] = getRequiredFilesCode(fileRequiredin[i]);
 		}
 	}
