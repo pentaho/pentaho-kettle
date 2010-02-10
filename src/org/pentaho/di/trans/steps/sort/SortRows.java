@@ -520,6 +520,17 @@ public class SortRows extends BaseStep implements StepInterface
 		}
 		return false;
 	}
+	
+	@Override
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+		
+		// Clean out the sort buffer
+		//
+		data.buffer = null;
+		data.rowbuffer = null;
+		
+		super.dispose(smi, sdi);
+	}
 
 	/** 
 	 * Sort the entire vector, if it is not empty.
