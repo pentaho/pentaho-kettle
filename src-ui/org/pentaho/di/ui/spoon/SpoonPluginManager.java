@@ -114,7 +114,9 @@ public class SpoonPluginManager {
         continue;
       }
       if(p.getOverlays().containsKey(category)){
-        overlays.add(p.getOverlays().get(category));
+        for(XulOverlay o : p.getOverlays().get(category)){
+          overlays.add(o);
+        }
       }
     }
     return overlays;
@@ -134,7 +136,9 @@ public class SpoonPluginManager {
         continue;
       }
       if(p.getEventHandlers().containsKey(category)){
-        handlers.add(p.getEventHandlers().get(category));
+        for(XulEventHandler h : p.getEventHandlers().get(category)){
+          handlers.add(h);
+        }
       }
     }
     return handlers;

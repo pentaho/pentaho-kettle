@@ -21,7 +21,7 @@ public interface SpoonPlugin {
    * 
    * @return Map of XulOverlays
    */
-  public Map<String, XulOverlay>  getOverlays();
+  public Map<String, List<XulOverlay>>  getOverlays();
   
   /**
    * Map of XulEventHandlers to be registered at Spoon startup. These Event Handlers can support UI
@@ -29,7 +29,7 @@ public interface SpoonPlugin {
    *  
    * @return Map of XulEventHandlers
    */
-  public Map<String, XulEventHandler>  getEventHandlers();
+  public Map<String, List<XulEventHandler>>  getEventHandlers();
   
   /**
    * Provides an optional SpoonLifecycleListener to be notified of Spoon startup and shutdown.
