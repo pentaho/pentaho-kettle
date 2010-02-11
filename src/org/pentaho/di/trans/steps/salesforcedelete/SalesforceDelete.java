@@ -107,7 +107,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 	{
 		try {			
 
-			if (log.isDetailed()) logDetailed("Called writeToSalesForce with " + data.iBufferPos + " out of " + meta.getBatchSizeInt());
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceDelete.Log.WriteToSalesforce", data.iBufferPos , meta.getBatchSizeInt()));
 			
 			// if there is room in the buffer
 			if ( data.iBufferPos < meta.getBatchSizeInt()) {
@@ -119,11 +119,11 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 			}
 			
 			if ( data.iBufferPos >= meta.getBatchSizeInt()) {
-				if (log.isDetailed()) logDetailed("Calling flush buffer from writeToSalesForce");
+				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceDelete.Log.CallingFlush"));
 				flushBuffers();
 			}
 		} catch (Exception e) {
-			throw new KettleException("\nFailed in writeToSalesForce: "+ e.getMessage());	
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceDelete.Error.WriteToSalesforce", e.getMessage()));	
 		}
 	}
 	
