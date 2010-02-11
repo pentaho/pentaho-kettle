@@ -37,8 +37,10 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
@@ -95,6 +97,7 @@ public class SlaveServer
     private String name;
     private String hostname;
     private String port;
+    private String webAppName;
     private String username;
     private String password;
 
@@ -147,6 +150,7 @@ public class SlaveServer
         this.name       = XMLHandler.getTagValue(slaveNode, "name"); //$NON-NLS-1$
         this.hostname   = XMLHandler.getTagValue(slaveNode, "hostname"); //$NON-NLS-1$
         this.port       = XMLHandler.getTagValue(slaveNode, "port"); //$NON-NLS-1$
+        this.webAppName = XMLHandler.getTagValue(slaveNode, "webAppName"); //$NON-NLS-1$
         this.username   = XMLHandler.getTagValue(slaveNode, "username"); //$NON-NLS-1$
         this.password   = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(slaveNode, "password") ); //$NON-NLS-1$
         this.proxyHostname = XMLHandler.getTagValue(slaveNode, "proxy_hostname"); //$NON-NLS-1$
@@ -167,6 +171,7 @@ public class SlaveServer
         xml.append(XMLHandler.addTagValue("name", name, false)); //$NON-NLS-1$
         xml.append(XMLHandler.addTagValue("hostname", hostname, false)); //$NON-NLS-1$
         xml.append(XMLHandler.addTagValue("port",     port, false)); //$NON-NLS-1$
+        xml.append(XMLHandler.addTagValue("webAppName", webAppName, false)); //$NON-NLS-1$
         xml.append(XMLHandler.addTagValue("username", username, false)); //$NON-NLS-1$
         xml.append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(password), false)); //$NON-NLS-1$
         xml.append(XMLHandler.addTagValue("proxy_hostname", proxyHostname, false)); //$NON-NLS-1$
@@ -191,6 +196,7 @@ public class SlaveServer
         this.name = slaveServer.name;
         this.hostname = slaveServer.hostname;
         this.port = slaveServer.port;
+        this.webAppName = slaveServer.webAppName;
         this.username = slaveServer.username;
         this.password = slaveServer.password;
         this.proxyHostname = slaveServer.proxyHostname;
@@ -269,7 +275,22 @@ public class SlaveServer
         this.username = username;
     }
     
+    /**
+     * @return the username
+     */
+    public String getWebAppName()
+    {
+        return webAppName;
+    }
 
+    /**
+     * @param username the username to set
+     */
+    public void setWebAppName(String webAppName)
+    {
+        this.webAppName = webAppName;
+    }
+    
     /**
      * @return the nonProxyHosts
      */
@@ -332,6 +353,9 @@ public class SlaveServer
     public String constructUrl(String serviceAndArguments) throws UnsupportedEncodingException
     {
         String realHostname = environmentSubstitute(hostname);
+        if (!StringUtils.isEmpty(webAppName)) {
+          serviceAndArguments = "/" + getWebAppName() + serviceAndArguments;
+        }
         String retval =  "http://"+realHostname+getPortSpecification()+serviceAndArguments; //$NON-NLS-1$ $NON-NLS-2$
         retval = Const.replace(retval, " ", "%20"); //$NON-NLS-1$  //$NON-NLS-2$
         return retval;
@@ -353,28 +377,28 @@ public class SlaveServer
         this.port = port;
     }
     
-    public PutMethod getSendByteArrayMethod(byte[] content, String service) throws Exception {
+    public PostMethod getSendByteArrayMethod(byte[] content, String service) throws Exception {
         // Prepare HTTP put
         // 
         String urlString = constructUrl(service);
         log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
-        PutMethod putMethod = new PutMethod(urlString);
+        PostMethod postMethod = new PostMethod(urlString);
         
         // Request content will be retrieved directly from the input stream
         // 
         RequestEntity entity = new ByteArrayRequestEntity(content);
         
-        putMethod.setRequestEntity(entity);
-        putMethod.setDoAuthentication(true);
-        putMethod.addRequestHeader(new Header("Content-Type", "text/xml;charset=" + Const.XML_ENCODING));
+        postMethod.setRequestEntity(entity);
+        postMethod.setDoAuthentication(true);
+        postMethod.addRequestHeader(new Header("Content-Type", "text/xml;charset=" + Const.XML_ENCODING));
         
-        return putMethod;
+        return postMethod;
     }
 
     public String sendXML(String xml, String service) throws Exception
     {
     	byte[] content = xml.getBytes(Const.XML_ENCODING);
-    	PutMethod put = getSendByteArrayMethod(content, service);
+    	PostMethod post = getSendByteArrayMethod(content, service);
     	
         // Get HTTP client
         // 
@@ -385,13 +409,13 @@ public class SlaveServer
         // 
         try
         {
-            int result = client.executeMethod(put);
+            int result = client.executeMethod(post);
             
             // The status code
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
             // the response
-            InputStream inputStream = new BufferedInputStream(put.getResponseBodyAsStream(), 1000);
+            InputStream inputStream = new BufferedInputStream(post.getResponseBodyAsStream(), 1000);
             
             StringBuffer bodyBuffer = new StringBuffer();
             int c;
@@ -424,7 +448,7 @@ public class SlaveServer
         finally
         {
             // Release current connection to the connection pool once you are done
-            put.releaseConnection();
+            post.releaseConnection();
             log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
         }
     }

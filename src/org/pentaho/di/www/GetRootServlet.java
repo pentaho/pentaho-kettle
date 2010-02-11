@@ -9,7 +9,7 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
-*/
+ */
 package org.pentaho.di.www;
 
 import java.io.IOException;
@@ -19,54 +19,53 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 
+public class GetRootServlet extends BaseHttpServlet implements CarteServletInterface {
+  private static Class<?> PKG = GetRootServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-public class GetRootServlet extends BaseHttpServlet implements CarteServletInterface
-{
-	private static Class<?> PKG = GetRootServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static final long serialVersionUID = 3634806745372015720L;
+  public static final String CONTEXT_PATH = "/";
 
-    private static final long serialVersionUID = 3634806745372015720L;
-    public static final String CONTEXT_PATH = "/";
-    
-    private static LogWriter log = LogWriter.getInstance();
-    
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        doGet(request, response);
-    }
-    
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        if (!request.getRequestURI().equals(CONTEXT_PATH)) return;
-        
-        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetRootServlet.RootRequested"));
-        
-        response.setContentType("text/html");
-        response.setStatus(HttpServletResponse.SC_OK);
-        
-        PrintWriter out = response.getWriter();
-        
-        out.println("<HTML>");
-        out.println("<HEAD><TITLE>" + BaseMessages.getString(PKG, "GetRootServlet.KettleSlaveServer.Title")+ "</TITLE></HEAD>");
-        out.println("<BODY>");
-        out.println("<H2>"+ BaseMessages.getString(PKG, "GetRootServlet.SlaveServerMenu")+ "</H2>");
+  public GetRootServlet() {
+  }
 
-        out.println("<p>");
-        out.println("<a href=\"/kettle/status\">"+ BaseMessages.getString(PKG, "GetRootServlet.ShowStatus")+"</a><br>");
+  protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    doGet(request, response);
+  }
 
-        out.println("<p>");
-        out.println("</BODY>");
-        out.println("</HTML>");
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    if (isJettyMode() && !request.getRequestURI().equals(CONTEXT_PATH)) {
+      return;
     }
 
-    public String toString()
-    {
-        return "Root Handler";
-    }
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "GetRootServlet.RootRequested"));
 
-	public String getService() {
-		return CONTEXT_PATH+" ("+toString()+")";
-	}
+    response.setContentType("text/html");
+    response.setStatus(HttpServletResponse.SC_OK);
+
+    PrintWriter out = response.getWriter();
+
+    out.println("<HTML>");
+    out.println("<HEAD><TITLE>" + BaseMessages.getString(PKG, "GetRootServlet.KettleSlaveServer.Title") + "</TITLE></HEAD>");
+    out.println("<BODY>");
+    out.println("<H2>" + BaseMessages.getString(PKG, "GetRootServlet.SlaveServerMenu") + "</H2>");
+
+    out.println("<p>");
+    out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "GetRootServlet.ShowStatus")
+        + "</a><br>");
+
+    out.println("<p>");
+    out.println("</BODY>");
+    out.println("</HTML>");
+  }
+
+  public String toString() {
+    return "Root Handler";
+  }
+
+  public String getService() {
+    return CONTEXT_PATH + " (" + toString() + ")";
+  }
 }

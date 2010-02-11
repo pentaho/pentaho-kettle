@@ -74,7 +74,7 @@ public class SlaveServerDialog extends Dialog
 
 	// Service
 	private Text     wName;
-	private TextVar  wHostname,  wPort, wUsername,  wPassword;
+	private TextVar  wHostname,  wPort, wWebAppName, wUsername,  wPassword;
 	private Button   wMaster;
 
 	// Proxy
@@ -164,6 +164,7 @@ public class SlaveServerDialog extends Dialog
 		wPassword.addSelectionListener(selAdapter);
 		wHostname.addSelectionListener(selAdapter);
 		wPort.addSelectionListener(selAdapter);
+    wWebAppName.addSelectionListener(selAdapter);
 		wProxyHost.addSelectionListener(selAdapter);
 		wProxyPort.addSelectionListener(selAdapter);
 		wNonProxyHosts.addSelectionListener(selAdapter);
@@ -259,12 +260,32 @@ public class SlaveServerDialog extends Dialog
 		fdPort.right= new FormAttachment(95, 0);
 		wPort.setLayoutData(fdPort);
         
+		
+    // webapp name (optional)
+    Label wlWebAppName = new Label(wServiceComp, SWT.RIGHT ); 
+    wlWebAppName.setText(BaseMessages.getString(PKG, "SlaveServerDialog.WebAppName.Label"));  //$NON-NLS-1$
+    props.setLook(wlWebAppName);
+    FormData fdlWebAppName = new FormData();
+    fdlWebAppName.top  = new FormAttachment(wPort, margin);
+    fdlWebAppName.left = new FormAttachment(0,0); 
+    fdlWebAppName.right= new FormAttachment(middle, -margin);
+    wlWebAppName.setLayoutData(fdlWebAppName);
+
+    wWebAppName = new TextVar(slaveServer, wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook(wWebAppName);
+    wWebAppName.addModifyListener(lsMod);
+    FormData fdWebAppName = new FormData();
+    fdWebAppName.top  = new FormAttachment(wPort, margin);
+    fdWebAppName.left = new FormAttachment(middle, 0); 
+    fdWebAppName.right= new FormAttachment(95, 0);
+    wWebAppName.setLayoutData(fdWebAppName);
+		
 		// Username
 		Label wlUsername = new Label(wServiceComp, SWT.RIGHT ); 
 		wlUsername.setText(BaseMessages.getString(PKG, "SlaveServerDialog.UserName.Label"));  //$NON-NLS-1$
 		props.setLook(wlUsername);
 		FormData fdlUsername = new FormData();
-		fdlUsername.top  = new FormAttachment(wPort, margin);
+		fdlUsername.top  = new FormAttachment(wWebAppName, margin);
 		fdlUsername.left = new FormAttachment(0,0); 
 		fdlUsername.right= new FormAttachment(middle, -margin);
 		wlUsername.setLayoutData(fdlUsername);
@@ -273,7 +294,7 @@ public class SlaveServerDialog extends Dialog
 		props.setLook(wUsername);
 		wUsername.addModifyListener(lsMod);
 		FormData fdUsername = new FormData();
-		fdUsername.top  = new FormAttachment(wPort, margin);
+		fdUsername.top  = new FormAttachment(wWebAppName, margin);
 		fdUsername.left = new FormAttachment(middle, 0); 
 		fdUsername.right= new FormAttachment(95, 0);
 		wUsername.setLayoutData(fdUsername);
@@ -429,6 +450,7 @@ public class SlaveServerDialog extends Dialog
 		wName    .setText( Const.NVL(slaveServer.getName(),     "") ); //$NON-NLS-1$
 		wHostname.setText( Const.NVL(slaveServer.getHostname(), "") ); //$NON-NLS-1$
 		wPort    .setText( Const.NVL(slaveServer.getPort(),     "") ); //$NON-NLS-1$
+    wWebAppName.setText( Const.NVL(slaveServer.getWebAppName(), "") ); //$NON-NLS-1$
 		wUsername.setText( Const.NVL(slaveServer.getUsername(), "") ); //$NON-NLS-1$
 		wPassword.setText( Const.NVL(slaveServer.getPassword(), "") ); //$NON-NLS-1$
 
@@ -453,6 +475,7 @@ public class SlaveServerDialog extends Dialog
 		originalServer.setName    (slaveServer.getName());
 		originalServer.setHostname(slaveServer.getHostname());
 		originalServer.setPort    (slaveServer.getPort());
+    originalServer.setWebAppName(slaveServer.getWebAppName());
 		originalServer.setUsername(slaveServer.getUsername());
 		originalServer.setPassword(slaveServer.getPassword());
 
@@ -475,6 +498,7 @@ public class SlaveServerDialog extends Dialog
 		slaveServer.setName    (wName    .getText());
 		slaveServer.setHostname(wHostname.getText());
 		slaveServer.setPort    (wPort    .getText());
+    slaveServer.setWebAppName(wWebAppName.getText());
 		slaveServer.setUsername(wUsername.getText());
 		slaveServer.setPassword(wPassword.getText());
 

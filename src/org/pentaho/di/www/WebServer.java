@@ -127,7 +127,9 @@ public class WebServer
         // Root
         //
         Context root = new Context(contexts, GetRootServlet.CONTEXT_PATH, Context.SESSIONS);
-        root.addServlet(new ServletHolder(new GetRootServlet()), "/*");
+        GetRootServlet rootServlet = new GetRootServlet();
+        rootServlet.setJettyMode(true);
+        root.addServlet(new ServletHolder(rootServlet), "/*");
         
         // Carte Status
         //

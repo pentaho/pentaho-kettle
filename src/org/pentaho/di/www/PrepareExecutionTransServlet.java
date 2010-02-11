@@ -9,7 +9,7 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
-*/
+ */
 package org.pentaho.di.www;
 
 import java.io.IOException;
@@ -22,154 +22,132 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 
+public class PrepareExecutionTransServlet extends BaseHttpServlet implements CarteServletInterface {
+  private static Class<?> PKG = PrepareExecutionTransServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-public class PrepareExecutionTransServlet extends BaseHttpServlet implements CarteServletInterface
-{
-	private static Class<?> PKG = PrepareExecutionTransServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static final long serialVersionUID = 3634806745372015720L;
+  public static final String CONTEXT_PATH = "/kettle/prepareExec";
 
-    private static final long serialVersionUID = 3634806745372015720L;
-    public static final String CONTEXT_PATH = "/kettle/prepareExec";
-    private static LogWriter log = LogWriter.getInstance();
-    private TransformationMap transformationMap;
-    
-    public PrepareExecutionTransServlet(TransformationMap transformationMap)
-    {
-        this.transformationMap = transformationMap;
-    }
-    
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        doGet(request, response);
-    }
+  public PrepareExecutionTransServlet() {
+  }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        if (!request.getContextPath().equals(CONTEXT_PATH)) return;
-        
-        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecutionRequested"));
-        
+  public PrepareExecutionTransServlet(TransformationMap transformationMap) {
+    super(transformationMap);
+  }
 
-        String transName = request.getParameter("name");
-        boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
+  protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    doGet(request, response);
+  }
 
-        response.setStatus(HttpServletResponse.SC_OK);
-        
-        PrintWriter out = response.getWriter();
-        if (useXML)
-        {
-            response.setContentType("text/xml");
-            out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
-        }
-        else
-        {
-        	
-            response.setContentType("text/html");
-            out.println("<HTML>");
-            out.println("<HEAD>");
-            out.println("<TITLE>"+ BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecution") + "</TITLE>");
-            out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">");
-            out.println("</HEAD>");
-            out.println("<BODY>");
-        }
-    
-        try
-        {
-            Trans trans = transformationMap.getTransformation(transName);
-            TransConfiguration transConfiguration = transformationMap.getConfiguration(transName);
-            if (trans!=null && transConfiguration!=null)
-            {
-                TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
-                // Set the appropriate logging, variables, arguments, replay date, ...
-                // etc.
-                log.setLogLevel(executionConfiguration.getLogLevel());
-                trans.getTransMeta().setArguments(executionConfiguration.getArgumentStrings());
-                trans.setReplayDate(executionConfiguration.getReplayDate());
-                trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
-                trans.injectVariables(executionConfiguration.getVariables());
-                                
-                try {
-                	trans.prepareExecution(null);
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH))
+      return;
 
-                    if (useXML)
-                    {
-                        out.println(WebResult.OK.getXML());
-                    }
-                    else
-                    {
-                    	
-                        out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepared",transName) + "</H1>");
-                        out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">"+ BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") +"</a><p>");
-                    }
-                }
-                catch (Exception e) {
-                	
-                	String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true).toString();
-                    if (useXML)
-                    {
-                        out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed",Const.CR+ logText +Const.CR+e.getLocalizedMessage())));
-                    }
-                    else
-                    {
-                        out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Log.TransNotInit",transName) + "</H1>");
-                        
-                        out.println("<pre>");
-                        out.println(logText);
-                        out.println(e.getLocalizedMessage());
-                        out.println("</pre>");
-                        out.println("<a href=\"/kettle/transStatus?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
-                    }
-                }
-            }
-            else
-            {
-                if (useXML)
-                {
-                    out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans",transName)));
-                }
-                else
-                {
-                    out.println("<H1>" + BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindTrans",transName) + "</H1>");
-                    out.println("<a href=\"/kettle/status\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage")+"</a><p>");
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            if (useXML)
-            {
-                out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.UnexpectedError",Const.CR+Const.getStackTracker(ex))));
-                
-            }
-            else
-            {
-                out.println("<p>");
-                out.println("<pre>");
-                ex.printStackTrace(out);
-                out.println("</pre>");
-            }
-        }
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecutionRequested"));
 
-        if (!useXML)
-        {
-            out.println("<p>");
-            out.println("</BODY>");
-            out.println("</HTML>");
-        }
+    String transName = request.getParameter("name");
+    boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
+
+    response.setStatus(HttpServletResponse.SC_OK);
+
+    PrintWriter out = response.getWriter();
+    if (useXML) {
+      response.setContentType("text/xml");
+      out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
+    } else {
+
+      response.setContentType("text/html");
+      out.println("<HTML>");
+      out.println("<HEAD>");
+      out.println("<TITLE>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecution") + "</TITLE>");
+      out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name="
+          + URLEncoder.encode(transName, "UTF-8") + "\">");
+      out.println("</HEAD>");
+      out.println("<BODY>");
     }
 
-    public String toString()
-    {
-        return "Start transformation";
+    try {
+      Trans trans = getTransformationMap().getTransformation(transName);
+      TransConfiguration transConfiguration = getTransformationMap().getConfiguration(transName);
+      if (trans != null && transConfiguration != null) {
+        TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
+        // Set the appropriate logging, variables, arguments, replay date, ...
+        // etc.
+        log.setLogLevel(executionConfiguration.getLogLevel());
+        trans.getTransMeta().setArguments(executionConfiguration.getArgumentStrings());
+        trans.setReplayDate(executionConfiguration.getReplayDate());
+        trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
+        trans.injectVariables(executionConfiguration.getVariables());
+
+        try {
+          trans.prepareExecution(null);
+
+          if (useXML) {
+            out.println(WebResult.OK.getXML());
+          } else {
+
+            out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepared", transName) + "</H1>");
+            out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
+                + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
+          }
+        } catch (Exception e) {
+
+          String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true).toString();
+          if (useXML) {
+            out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed", Const.CR
+                + logText + Const.CR + e.getLocalizedMessage())));
+          } else {
+            out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Log.TransNotInit", transName) + "</H1>");
+
+            out.println("<pre>");
+            out.println(logText);
+            out.println(e.getLocalizedMessage());
+            out.println("</pre>");
+            out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
+                + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
+          }
+        }
+      } else {
+        if (useXML) {
+          out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName)));
+        } else {
+          out.println("<H1>" + BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName) + "</H1>");
+          out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">"
+              + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
+        }
+      }
+    } catch (Exception ex) {
+      if (useXML) {
+        out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.UnexpectedError", Const.CR
+            + Const.getStackTracker(ex))));
+
+      } else {
+        out.println("<p>");
+        out.println("<pre>");
+        ex.printStackTrace(out);
+        out.println("</pre>");
+      }
     }
 
-	public String getService() {
-		return CONTEXT_PATH+" ("+toString()+")";
-	}
+    if (!useXML) {
+      out.println("<p>");
+      out.println("</BODY>");
+      out.println("</HTML>");
+    }
+  }
+
+  public String toString() {
+    return "Start transformation";
+  }
+
+  public String getService() {
+    return CONTEXT_PATH + " (" + toString() + ")";
+  }
 }

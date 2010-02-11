@@ -9,7 +9,7 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
-*/
+ */
 package org.pentaho.di.www;
 
 import java.io.IOException;
@@ -26,114 +26,97 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 
+public class StopJobServlet extends BaseHttpServlet implements CarteServletInterface {
+  private static Class<?> PKG = StopJobServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-public class StopJobServlet extends BaseHttpServlet implements CarteServletInterface
-{
-	private static Class<?> PKG = StopJobServlet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static final long serialVersionUID = 3634806745372015720L;
+  public static final String CONTEXT_PATH = "/kettle/stopJob";
+  private static LogWriter log = LogWriter.getInstance();
 
-    private static final long serialVersionUID = 3634806745372015720L;
-    public static final String CONTEXT_PATH = "/kettle/stopJob";
-    private static LogWriter log = LogWriter.getInstance();
-    private JobMap jobMap;
-    
-    public StopJobServlet(JobMap jobMap)
-    {
-        this.jobMap = jobMap;
+  public StopJobServlet() {
+  }
+
+  public StopJobServlet(JobMap jobMap) {
+    super(jobMap);
+  }
+
+  protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    doGet(request, response);
+  }
+
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
+      return;
     }
-    
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        doGet(request, response);
-    }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        if (!request.getContextPath().equals(CONTEXT_PATH)) return;
-        
-        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "StopJobServlet.log.StopJobRequested"));
-        
-        String jobName = request.getParameter("name");
-        boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
+    if (log.isDebug())
+      logDebug(BaseMessages.getString(PKG, "StopJobServlet.log.StopJobRequested"));
 
-        PrintWriter out = response.getWriter();
-        try
-        {
-            if (useXML)
-            {
-                response.setContentType("text/xml");
-                response.setCharacterEncoding(Const.XML_ENCODING);
-                out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
-            }
-            else
-            {
-                response.setContentType("text/html");
-                out.println("<HTML>");
-                out.println("<HEAD>");
-                out.println("<TITLE>Stop job</TITLE>");
-                out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/jobStatus?name="+URLEncoder.encode(jobName, "UTF-8")+"\">");
-                out.println("</HEAD>");
-                out.println("<BODY>");
-            }
+    String jobName = request.getParameter("name");
+    boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
 
-            Job job = jobMap.getJob(jobName);
-            if (job!=null)
-            {
-                job.stopAll();
-                
-                String message =  BaseMessages.getString(PKG, "JobStatusServlet.Log.JobStopRequested",jobName);
-                if (useXML)
-                {
-                    out.println(new WebResult(WebResult.STRING_OK, message).getXML());
-                }
-                else
-                {
-                    out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/jobStatus?name="+URLEncoder.encode(jobName, "UTF-8")+"\">" +BaseMessages.getString(PKG, "JobStatusServlet.BackToJobStatusPage") + "</a><p>");
-                }
-            }
-            else
-            {
-                String message = BaseMessages.getString(PKG, "StopJobServlet.Log.CoundNotFindJob",jobName);
-                if (useXML)
-                {
-                    out.println(new WebResult(WebResult.STRING_ERROR, message).getXML());
-                }
-                else
-                {
-                    out.println("<H1>"+message+"</H1>");
-                    out.println("<a href=\"/kettle/status\">" +BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
-                }
-            }
+    PrintWriter out = response.getWriter();
+    try {
+      if (useXML) {
+        response.setContentType("text/xml");
+        response.setCharacterEncoding(Const.XML_ENCODING);
+        out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
+      } else {
+        response.setContentType("text/html");
+        out.println("<HTML>");
+        out.println("<HEAD>");
+        out.println("<TITLE>Stop job</TITLE>");
+        out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name="
+            + URLEncoder.encode(jobName, "UTF-8") + "\">");
+        out.println("</HEAD>");
+        out.println("<BODY>");
+      }
+
+      Job job = getJobMap().getJob(jobName);
+      if (job != null) {
+        job.stopAll();
+
+        String message = BaseMessages.getString(PKG, "JobStatusServlet.Log.JobStopRequested", jobName);
+        if (useXML) {
+          out.println(new WebResult(WebResult.STRING_OK, message).getXML());
+        } else {
+          out.println("<H1>" + message + "</H1>");
+          out.println("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "\">"
+              + BaseMessages.getString(PKG, "JobStatusServlet.BackToJobStatusPage") + "</a><p>");
         }
-        catch (Exception ex)
-        {
-            if (useXML)
-            {
-                out.println(new WebResult(WebResult.STRING_ERROR, Const.getStackTracker(ex)).getXML());
-            }
-            else
-            {
-                out.println("<p>");
-                out.println("<pre>");
-                ex.printStackTrace(out);
-                out.println("</pre>");
-            }
+      } else {
+        String message = BaseMessages.getString(PKG, "StopJobServlet.Log.CoundNotFindJob", jobName);
+        if (useXML) {
+          out.println(new WebResult(WebResult.STRING_ERROR, message).getXML());
+        } else {
+          out.println("<H1>" + message + "</H1>");
+          out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + ">"
+              + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
         }
-
-        if (!useXML)
-        {
-            out.println("<p>");
-            out.println("</BODY>");
-            out.println("</HTML>");
-        }
+      }
+    } catch (Exception ex) {
+      if (useXML) {
+        out.println(new WebResult(WebResult.STRING_ERROR, Const.getStackTracker(ex)).getXML());
+      } else {
+        out.println("<p>");
+        out.println("<pre>");
+        ex.printStackTrace(out);
+        out.println("</pre>");
+      }
     }
 
-    public String toString()
-    {
-        return "Stop job";
+    if (!useXML) {
+      out.println("<p>");
+      out.println("</BODY>");
+      out.println("</HTML>");
     }
+  }
 
-	public String getService() {
-		return CONTEXT_PATH+" ("+toString()+")";
-	}
+  public String toString() {
+    return "Stop job";
+  }
+
+  public String getService() {
+    return CONTEXT_PATH + " (" + toString() + ")";
+  }
 }

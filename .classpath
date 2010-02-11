@@ -124,5 +124,6 @@
 	<classpathentry kind="lib" path="libext/web/jetty-util-6.1.21.jar"/>
 	<classpathentry kind="lib" path="libext/junit-4.7.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="libext/web/jetty-servlet-tester-6.1.21.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
