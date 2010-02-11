@@ -30,10 +30,6 @@ public class GetRootServlet extends BaseHttpServlet implements CarteServletInter
   public GetRootServlet() {
   }
 
-  protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    doGet(request, response);
-  }
-
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (isJettyMode() && !request.getRequestURI().equals(CONTEXT_PATH)) {
       return;

@@ -40,10 +40,6 @@ public class StartTransServlet extends BaseHttpServlet implements CarteServletIn
     super(transformationMap);
   }
 
-  protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    doGet(request, response);
-  }
-
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
       return;

@@ -39,10 +39,10 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
   }
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-     if (isJettyMode() && !request.getServletPath().startsWith(CONTEXT_PATH)) {
+    if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
        return;
      }
-
+    
     if (log.isDebug())
       logDebug("Start execution of transformation requested");
     response.setStatus(HttpServletResponse.SC_OK);

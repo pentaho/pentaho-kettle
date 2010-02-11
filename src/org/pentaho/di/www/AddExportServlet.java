@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -60,10 +59,6 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
   
   public AddExportServlet(JobMap jobMap, TransformationMap transformationMap) {
     super(transformationMap, jobMap);
-  }
-
-  protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    doGet(request, response);
   }
 
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
