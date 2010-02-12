@@ -71,6 +71,8 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 	private String deleteField;
 
 	private String readField;
+	
+	private boolean singleStatement;
     
   private boolean replaceVariables;
 
@@ -239,7 +241,8 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta = DatabaseMeta.findDatabase(databases, con);
 			String eachRow = XMLHandler.getTagValue(stepnode, "execute_each_row"); //$NON-NLS-1$
 			executedEachInputRow = "Y".equalsIgnoreCase(eachRow); //$NON-NLS-1$
-      replaceVariables = "Y".equals(XMLHandler.getTagValue(stepnode, "replace_variables"));
+			singleStatement = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "single_statement")); //$NON-NLS-1$
+			replaceVariables = "Y".equals(XMLHandler.getTagValue(stepnode, "replace_variables"));
 			sql = XMLHandler.getTagValue(stepnode, "sql"); //$NON-NLS-1$
 
 			insertField = XMLHandler.getTagValue(stepnode, "insert_field"); //$NON-NLS-1$
@@ -280,10 +283,10 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		StringBuffer retval = new StringBuffer(300);
 
-		retval
-				.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("    ").append(XMLHandler.addTagValue("execute_each_row", executedEachInputRow)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("    ").append(XMLHandler.addTagValue("replace_variables",   replaceVariables));        
+		retval.append("    ").append(XMLHandler.addTagValue("single_statement", singleStatement)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("replace_variables",   replaceVariables));        
 		retval.append("    ").append(XMLHandler.addTagValue("sql", sql)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		retval.append("    ").append(XMLHandler.addTagValue("insert_field", insertField)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -294,8 +297,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    <arguments>").append(Const.CR); //$NON-NLS-1$
 		for (int i = 0; i < arguments.length; i++)
 		{
-			retval
-					.append("       <argument>").append(XMLHandler.addTagValue("name", arguments[i], false)).append("</argument>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			retval.append("       <argument>").append(XMLHandler.addTagValue("name", arguments[i], false)).append("</argument>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		retval.append("    </arguments>").append(Const.CR); //$NON-NLS-1$
 
@@ -309,6 +311,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 			executedEachInputRow = rep.getStepAttributeBoolean(id_step, "execute_each_row"); //$NON-NLS-1$
+			singleStatement = rep.getStepAttributeBoolean(id_step, "single_statement"); //$NON-NLS-1$
 			replaceVariables = rep.getStepAttributeBoolean(id_step, "replace_variables"); //$NON-NLS-1$
 			sql = rep.getStepAttributeString(id_step, "sql"); //$NON-NLS-1$
 
@@ -337,6 +340,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "sql", sql); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "execute_each_row", executedEachInputRow); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "single_statement", singleStatement); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "replace_variables", replaceVariables); //$NON-NLS-1$
 
 			rep.saveStepAttribute(id_transformation, id_step, "insert_field", insertField); //$NON-NLS-1$
@@ -482,4 +486,18 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
     {
         return true;
     }
+
+	/**
+	 * @return the singleStatement
+	 */
+	public boolean isSingleStatement() {
+		return singleStatement;
+	}
+
+	/**
+	 * @param singleStatement the singleStatement to set
+	 */
+	public void setSingleStatement(boolean singleStatement) {
+		this.singleStatement = singleStatement;
+	}
 }

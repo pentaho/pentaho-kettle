@@ -13,8 +13,9 @@
 
 package org.pentaho.di.core.database;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.trans.steps.sapinput.mock.SAPConnectionFactory;
+import org.pentaho.di.core.util.EnvUtil;
 
 /**
  * Contains SAP R/3 system specific information through static final members 
@@ -149,6 +150,6 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     }
     
 	public String getDatabaseFactoryName() {
-		return SAPConnectionFactory.class.getName();
+		return EnvUtil.getSystemProperty(Const.KETTLE_SAP_CONNECTION_FACTORY, Const.KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME);
 	}
 }

@@ -422,7 +422,7 @@ public void setPosition(){
 	{
 		if (input.getSQL() != null) wSQL.setText(input.getSQL());
 		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
-		wLimit.setText(input.getRowLimit()); //$NON-NLS-1$
+		wLimit.setText(Const.NVL(input.getRowLimit(), "")); //$NON-NLS-1$
 		
         if (input.getLookupStepname() != null)
         {
