@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Directory;
@@ -89,9 +90,10 @@ public class RepositoryExplorer {
 
   // private Repository repository;
 
-  public RepositoryExplorer(Directory rd, Repository rep, RepositoryExplorerCallback callback,
+  public RepositoryExplorer(final Repository rep, RepositoryExplorerCallback callback,
       VariableSpace variableSpace) {
-    repositoryDirectory = rd;
+    
+    // repositoryDirectory = rd;
     /// repository = rep;
     try {
       container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
@@ -110,7 +112,6 @@ public class RepositoryExplorer {
       browseController.setBindingFactory(bf);
       container.addEventHandler(browseController);
       browseController.setMessages(resourceBundle);
-      browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
       browseController.setCallback(callback);
 
       permissionsController.setBindingFactory(bf);
@@ -160,6 +161,17 @@ public class RepositoryExplorer {
         permissionsController.setRepositoryUserInterface(rep.getSecurityProvider());
         permissionsController.setMessages(resourceBundle);
       }
+      container.invokeLater(new Runnable() {
+        public void run() {
+          try {
+            repositoryDirectory = rep.loadRepositoryDirectoryTree();
+            browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
+            browseController.init();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+      });
 
       try {
         runner.initialize();
@@ -168,7 +180,7 @@ public class RepositoryExplorer {
       }
 
     } catch (XulException e) {
-      log.error(resourceBundle.getString("RepositoryExplorer.ErrorLoadingXulApplication"), e);//$NON-NLS-1$
+     log.error(resourceBundle.getString("RepositoryExplorer.ErrorLoadingXulApplication"), e);//$NON-NLS-1$
     }
   }
 

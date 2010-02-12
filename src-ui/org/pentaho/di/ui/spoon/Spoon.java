@@ -786,6 +786,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   
   @SuppressWarnings("unchecked")
   public void loadPerspective(String className){
+    
     Class clazz;
     try {
       clazz = Class.forName(className);
@@ -2993,15 +2994,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           }
       };
 
-      try {
-        Directory root = rep.loadRepositoryDirectoryTree();
-        RepositoryExplorer explorer = new RepositoryExplorer(root, rep, cb, Variables.getADefaultVariableSpace());
-        explorer.show();
-      } catch (KettleSecurityException e) {
-        e.printStackTrace();
-      } catch (KettleException e) {
-        e.printStackTrace();
-      }
+      RepositoryExplorer explorer = new RepositoryExplorer(rep, cb, Variables.getADefaultVariableSpace());
+      explorer.show();
 
     }
   }

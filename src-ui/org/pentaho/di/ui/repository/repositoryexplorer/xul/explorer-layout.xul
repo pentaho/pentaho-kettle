@@ -4,7 +4,7 @@
   height="600" width="800"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:pen="http://www.pentaho.org/2008/xul" 
-  onload="mainController.init(), browseController.init(), securityController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init(), permissionsController.init()">
+  onload="mainController.init(), securityController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init(), permissionsController.init()">
 
 	<dialog id="repository-explorer-dialog" 
 		title="${RepositoryExplorerDialog.Title}"
