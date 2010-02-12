@@ -327,6 +327,17 @@ public interface Repository {
 
     public List<RepositoryObject> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
+    /**
+     * Gets all job and transformation objects in the given directory. (Combines 
+     * {@link #getJobObjects(ObjectId, boolean)} and {@link #getTransformationObjects(ObjectId, boolean)} into one 
+     * operation.
+     * 
+     * @param id_directory directory
+     * @param includeDeleted true to return deleted objects
+     * @return list of repository objects
+     * @throws KettleException In case something goes wrong
+     */
+    public List<RepositoryObject> getJobAndTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
   public String[] getJobNames(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 

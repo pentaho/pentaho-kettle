@@ -1110,5 +1110,14 @@ public class KettleFileRepository implements Repository {
     // TODO Auto-generated method stub
     return null;
   }
+  
+  public List<RepositoryObject> getJobAndTransformationObjects(ObjectId id_directory, boolean includeDeleted)
+      throws KettleException {
+    // TODO not the most efficient impl; also, no sorting is done
+    List<RepositoryObject> objs = new ArrayList<RepositoryObject>();
+    objs.addAll(getJobObjects(id_directory, includeDeleted));
+    objs.addAll(getTransformationObjects(id_directory, includeDeleted));
+    return objs;
+  }
 	
 }
