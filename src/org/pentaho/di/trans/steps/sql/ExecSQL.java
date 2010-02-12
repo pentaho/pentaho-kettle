@@ -173,7 +173,11 @@ public class ExecSQL extends BaseStep implements StepInterface
 		String errorMessage = null;
 		try{
 			
-			data.result = data.db.execStatements(sql);
+			if (meta.isSingleStatement()) {
+				data.result = data.db.execStatement(sql);
+			} else {
+				data.result = data.db.execStatements(sql);
+			}
 	
 			RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
 			
@@ -277,7 +281,11 @@ public class ExecSQL extends BaseStep implements StepInterface
 				// somewhere.
 				if (!meta.isExecutedEachInputRow())
 				{
-					data.result = data.db.execStatements(data.sql);
+					if (meta.isSingleStatement()) {
+						data.result = data.db.execStatement(data.sql);
+					} else {
+						data.result = data.db.execStatements(data.sql);
+					}
 					if (!data.db.isAutoCommit()) data.db.commit();
 				}
 				return true;
