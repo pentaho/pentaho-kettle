@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 public class CarteServlet extends HttpServlet {
 
   private static final long serialVersionUID = 2434694833497859776L;
-  private static Class<?> PKG = CarteServlet.class; // for i18n purposes, needed
   // by
   private AddExportServlet addExportServlet = new AddExportServlet();
   private AddJobServlet addJobServlet = new AddJobServlet();
