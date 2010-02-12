@@ -90,7 +90,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog
 	private DatabaseMeta dbMeta;
 	private DBCache dbcache;
 	
-	private static final Class PKG = DatabaseExplorerDialogLegacy.class;
+	private static final Class<?> PKG = DatabaseExplorerDialogLegacy.class;
 	
 	private static final String STRING_CATALOG  = BaseMessages.getString(PKG,"DatabaseExplorerDialog.Catalogs.Label");
 	private static final String STRING_SCHEMAS  = BaseMessages.getString(PKG,"DatabaseExplorerDialog.Schemas.Label");
@@ -706,12 +706,6 @@ public class DatabaseExplorerDialogLegacy extends Dialog
 				mb.open();
 			}
 	    }
-	}
-
-	public void editTable(String tableName)
-	{
-		EditDatabaseTable edt = new EditDatabaseTable(shell, SWT.NONE, dbMeta, tableName, 20);
-		edt.open();
 	}
 
 	public void showTable(String tableName)

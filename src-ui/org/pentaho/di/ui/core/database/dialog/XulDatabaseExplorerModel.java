@@ -86,5 +86,6 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 	}
 
 	public static class XulDatabaseExplorerNode extends AbstractModelNode<DatabaseExplorerNode> {
+		private static final long	serialVersionUID	= 2466708563640027488L;
 	}
 }

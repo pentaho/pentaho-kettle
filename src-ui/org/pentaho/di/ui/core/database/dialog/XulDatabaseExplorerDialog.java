@@ -38,7 +38,7 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class XulDatabaseExplorerDialog {
 
-  private static final Class PKG = XulDatabaseExplorerDialog.class;
+  private static final Class<?> PKG = XulDatabaseExplorerDialog.class;
   
 	private Shell shell;
 	private XulDomContainer container;

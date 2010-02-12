@@ -1105,5 +1105,13 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TeraFast</tooltip>
 		<image-uri>ui/images/BulkIn.png</image-uri>
 	</step>
+
+	<step id="SapInput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SapInput</description>
+		<class-name>org.pentaho.di.trans.steps.sapinput.SapInputMeta</class-name>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SapInput</tooltip>
+		<image-uri>ui/images/SIP.png</image-uri>
+	</step>
 	
 </steps>

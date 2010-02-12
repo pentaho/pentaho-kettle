@@ -18,10 +18,10 @@ import org.pentaho.di.i18n.BaseMessages;
  * @author nbaker
  */
 public class XulSpoonResourceBundle extends ResourceBundle{
-  private static Class BASE_PKG = Spoon.class;
-  private Class PKG;
+  private static Class<?> BASE_PKG = Spoon.class;
+  private Class<?> PKG;
   
-  public XulSpoonResourceBundle(final Class PKG){
+  public XulSpoonResourceBundle(final Class<?> PKG){
     this.PKG = PKG;
   }
   

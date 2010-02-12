@@ -54,7 +54,7 @@ import org.pentaho.di.i18n.BaseMessages;
 @SuppressWarnings("unchecked")
 public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
-  private static final Class PKG = XulDatabaseExplorerController.class;
+  private static final Class<?> PKG = XulDatabaseExplorerController.class;
   
 	private XulDatabaseExplorerModel model;
 	private Binding databaseTreeBinding;
@@ -275,7 +275,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 	private void createDatabaseNodes() {
 		try {
-			Database theDatabase = new Database(this.model.getDatabaseMeta());
+			Database theDatabase = new Database(null, this.model.getDatabaseMeta());
 			theDatabase.connect();
 
 			// Adds the main database node.
@@ -347,7 +347,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void getDDL() {
-		Database db = new Database(this.model.getDatabaseMeta());
+		Database db = new Database(null, this.model.getDatabaseMeta());
 		try {
 			db.connect();
 			RowMetaInterface r = db.getTableFields(this.model.getTable());
@@ -364,7 +364,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	public void getDDLForOther() {
 
 		if (databases != null) {
-			Database db = new Database(this.model.getDatabaseMeta());
+			Database db = new Database(null, this.model.getDatabaseMeta());
 			try {
 				db.connect();
 
@@ -386,7 +386,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				String target = esd.open();
 				if (target != null) {
 					DatabaseMeta targetdbi = DatabaseMeta.findDatabase(dbs, target);
-					Database targetdb = new Database(targetdbi);
+					Database targetdb = new Database(null, targetdbi);
 
 					String sql = targetdb.getCreateTableStatement(this.model.getTable(), r, null, false, null, true);
 					SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);

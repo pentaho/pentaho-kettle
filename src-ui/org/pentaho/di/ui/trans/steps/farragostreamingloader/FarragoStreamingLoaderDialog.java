@@ -1257,10 +1257,6 @@ public class FarragoStreamingLoaderDialog
         // Get the information for the dialog into the input structure.
         getInfo(input);
 
-        // String name = stepname; // new name might not yet be linked to other
-        // steps!
-        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG,
-        // "FarragoStreamingLoaderDialog.StepMeta.Title"), name, input);
         RowMetaInterface prev;
         try {
             prev = transMeta.getPrevStepFields(stepname);
@@ -1330,10 +1326,6 @@ public class FarragoStreamingLoaderDialog
         FarragoStreamingLoaderMeta info = new FarragoStreamingLoaderMeta();
         getInfo(info);
 
-        // String name = stepname; // new name might not yet be linked to other
-        // steps!
-        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG,
-        // "FarragoStreamingLoaderDialog.StepMeta.Title"), name, info);
         RowMetaInterface prev;
         try {
             prev = transMeta.getPrevStepFields(stepname);

@@ -1839,7 +1839,7 @@ public class DatabaseMeta
             String pwd = getPassword();
             setPassword("password"); // Don't give away the password in the URL!
             String url = "";
-            try { url = getURL(); } catch(KettleDatabaseException e) {}
+            try { url = getURL(); } catch(Exception e) { url=""; } // SAP etc.
             r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "URL"); r.addValue(val, ValueMetaInterface.TYPE_STRING, url); list.add(r);
             setPassword(pwd);
             // SQL: Next sequence value

@@ -43,6 +43,9 @@
     <filename>JobEntryValidatorUtils.java</filename>
     <filename>Const.java</filename>
     <filename>XulHelper.java</filename>
+    <filename>XulDatabaseExplorerDialog.java</filename>
+    <filename>XulSpoonResourceBundle.java</filename>
+    
   </files-to-avoid>
   
   <xml-folders-to-scan>

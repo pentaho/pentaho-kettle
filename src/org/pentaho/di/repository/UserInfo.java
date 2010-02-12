@@ -11,7 +11,6 @@
 
 package org.pentaho.di.repository;
 
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 

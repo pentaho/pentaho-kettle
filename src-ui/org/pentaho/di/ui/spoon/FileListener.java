@@ -12,7 +12,6 @@
 */
 package org.pentaho.di.ui.spoon;
 
-import java.io.File;
 import java.util.Locale;
 
 import org.pentaho.di.core.EngineMetaInterface;

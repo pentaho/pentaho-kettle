@@ -26,11 +26,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
-import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulLoader;
@@ -38,7 +37,6 @@ import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
-import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * This class handles the display of help information like the welcome page and JDBC info in an embedded browser.
@@ -51,7 +49,7 @@ import org.pentaho.di.i18n.BaseMessages;
 public class SpoonBrowser implements TabItemInterface, XulEventHandler {
   protected static final LogWriter log = LogWriter.getInstance();
   
-  private static final Class PKG = SpoonBrowser.class;
+  private static final Class<?> PKG = SpoonBrowser.class;
 
   private static final String XUL_FILE_BROWSER_TOOLBAR = "ui/browser-toolbar.xul";
 

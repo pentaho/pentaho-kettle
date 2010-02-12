@@ -145,6 +145,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	 */
 	public Database(DatabaseMeta databaseMeta)
 	{
+		this.parentLoggingObject = null;
 		this.databaseMeta = databaseMeta;
 		shareVariablesWith(databaseMeta);
 		
@@ -171,7 +172,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		this.databaseMeta = databaseMeta;
 		shareVariablesWith(databaseMeta);
 		
-		log=new LogChannel(this); // In this case we don't have the 
+		log=new LogChannel(this);
 
 		pstmt = null;
 		rowMeta = null;

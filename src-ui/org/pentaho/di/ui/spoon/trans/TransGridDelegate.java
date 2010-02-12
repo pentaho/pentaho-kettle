@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
-import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;

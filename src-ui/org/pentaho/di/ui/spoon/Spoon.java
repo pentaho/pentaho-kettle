@@ -784,8 +784,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     return mainSpoonContainer;
   }
   
+  @SuppressWarnings("unchecked")
   public void loadPerspective(String className){
-    
     Class clazz;
     try {
       clazz = Class.forName(className);
@@ -2320,7 +2320,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     // Not clicked on a real object: returns a class
     XulMenupopup spoonMenu = null;
-    if (selection instanceof Class) {
+    if (selection instanceof Class<?>) {
       if (selection.equals(TransMeta.class)) {
         // New
         spoonMenu = (XulMenupopup) menuMap.get("trans-class");

@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.trans.steps.sapinput.mock.SAPConnectionFactory;
 
 /**
  * Contains SAP R/3 system specific information through static final members 
@@ -146,4 +147,8 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     {
         return new String[] { };
     }
+    
+	public String getDatabaseFactoryName() {
+		return SAPConnectionFactory.class.getName();
+	}
 }

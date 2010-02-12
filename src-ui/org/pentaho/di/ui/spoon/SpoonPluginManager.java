@@ -65,6 +65,7 @@ public class SpoonPluginManager {
     }
   }
   
+  @SuppressWarnings("unchecked")
   private void loadPlugin(final File pluginFile){
     try {
       ApplicationContext context = new FileSystemXmlApplicationContext(pluginFile.getPath());

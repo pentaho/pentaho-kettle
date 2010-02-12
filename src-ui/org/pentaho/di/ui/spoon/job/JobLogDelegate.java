@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;

@@ -56,6 +56,7 @@ import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -68,7 +69,6 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.i18n.BaseMessages;
 
 
 /**
@@ -82,7 +82,7 @@ import org.pentaho.di.i18n.BaseMessages;
  */
 public class ClassicDatabaseDialog extends Dialog
 {
-  private static Class PKG = ClassicDatabaseDialog.class;
+    private static Class<?> PKG = ClassicDatabaseDialog.class;
   
     private DatabaseMeta   databaseMeta;
 

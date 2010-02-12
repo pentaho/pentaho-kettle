@@ -13,8 +13,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.ui.xul.XulOverlay;
@@ -28,7 +26,7 @@ public class MainSpoonPerspective implements SpoonPerspective {
   private Composite ui;
   private List<SpoonPerspectiveListener> listeners = new ArrayList<SpoonPerspectiveListener>();
   private TabSet tabfolder;
-  private static final Class PKG = Spoon.class;
+  private static final Class<?> PKG = Spoon.class;
   
   public MainSpoonPerspective(Composite ui, TabSet tabfolder){
     this.ui = ui;
