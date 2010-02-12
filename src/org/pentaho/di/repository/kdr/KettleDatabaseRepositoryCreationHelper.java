@@ -1803,7 +1803,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_USER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_LOCK_LOCK_MESSAGE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_LOCK_LOCK_DATE, ValueMetaInterface.TYPE_DATE, 0, 0));
-		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANS_HOP, false);
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_TRANS_LOCK, false);
 
 		if (!Const.isEmpty(sql))
 		{
@@ -1833,7 +1833,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_LOCK_ID_USER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_LOCK_LOCK_MESSAGE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_LOCK_LOCK_DATE, ValueMetaInterface.TYPE_DATE, 0, 0));
-		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANS_HOP, false);
+		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_LOCK_ID_JOB_LOCK, false);
 
 		if (!Const.isEmpty(sql))
 		{
