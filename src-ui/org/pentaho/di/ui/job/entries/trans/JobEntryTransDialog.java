@@ -1154,6 +1154,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		jobEntry.loglevel = wLoglevel.getSelectionIndex();
 
 		jobEntry.argFromPrevious = wPrevious.getSelection();
+		jobEntry.paramsFromPrevious = wPrevToParams.getSelection();
 		jobEntry.execPerRow = wEveryRow.getSelection();
 		jobEntry.setLogfile = wSetLogfile.getSelection();
 		jobEntry.addDate = wAddDate.getSelection();

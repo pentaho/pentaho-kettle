@@ -411,6 +411,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory() != null ? getDirectory() : "");
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
+			rep.saveJobEntryAttribute(id_job, getID(), "params_from_previous", paramsFromPrevious);
 			rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
 			rep.saveJobEntryAttribute(id_job, getID(), "clear_rows", clearResultRows);
 			rep.saveJobEntryAttribute(id_job, getID(), "clear_files", clearResultFiles);
