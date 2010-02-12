@@ -106,6 +106,7 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 		SwtTreeCols theColumns = new SwtTreeCols(null, thePreviewTable, null, null);
 		for (int i = 0; i < theFieldNames.length; i++) {
 			theColumn = new SwtTreeCol(null, null, null, null);
+			theColumn.setWidth(100);
 			theColumn.setLabel(theFieldNames[i]);
 			theColumns.addColumn(theColumn);
 		}
