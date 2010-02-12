@@ -525,6 +525,17 @@ public class Const
 	public static final String KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES = "KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES";
 
 	/**
+	 * The name of the system wide variable that can contain the name of the SAP Connection factory for the test button in the DB dialog.
+	 * This defaults to  
+	 */
+	public static final String	KETTLE_SAP_CONNECTION_FACTORY	= "KETTLE_SAP_CONNECTION_FACTORY";
+
+	/**
+	 * The default SAP R/3 connection factory
+	 */
+	public static final String	KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME	= "org.pentaho.di.ui.trans.steps.sapinput.SAPConnectionFactory";
+	
+	/**
 	 * A general initial version comment 
 	 */
 	public static final String	VERSION_COMMENT_INITIAL_VERSION	= "Creation of initial version";
@@ -533,6 +544,8 @@ public class Const
 	 * A general edit version comment 
 	 */
 	public static final String	VERSION_COMMENT_EDIT_VERSION	= "Modification by user";
+
+
 
     private static String[] emptyPaddedSpacesStrings;
 
