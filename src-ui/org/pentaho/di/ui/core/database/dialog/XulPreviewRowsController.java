@@ -94,11 +94,9 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 			theRowCount++;
 			for (int i = 0; i < theObj.length; i++) {
 				theValue = theObj[i];
-				if (theValue != null) {
-					theCell = new SwtTreeCell(null);
-					theCell.setLabel(theValue.toString());
-					theRow.addCell(theCell);
-				}
+				theCell = new SwtTreeCell(null);
+				theCell.setLabel(theValue == null ? "" : theValue.toString());					
+				theRow.addCell(theCell);
 			}
 		}
 
