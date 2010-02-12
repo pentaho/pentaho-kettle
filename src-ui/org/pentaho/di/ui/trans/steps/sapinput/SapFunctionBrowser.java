@@ -43,6 +43,7 @@ import org.pentaho.di.trans.steps.sapinput.sap.SAPFunction;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -141,7 +142,7 @@ public class SapFunctionBrowser extends Dialog
         wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wOK.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { ok(); } });
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         wCancel.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { cancel(); } });
 
         // Position the buttons...
@@ -186,6 +187,8 @@ public class SapFunctionBrowser extends Dialog
     }
     
     private void dispose() {
+        WindowProperty winprop = new WindowProperty(shell);
+        props.setScreen(winprop);
     	shell.dispose();
     }
 

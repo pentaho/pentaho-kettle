@@ -506,7 +506,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 			//
 			if (function!=null) {
 				if (wInput.nrNonEmpty()!=0 || wOutput.nrNonEmpty()!=0) {
-					MessageBox mb = new MessageBox(shell, SWT.YES | SWT.CANCEL | SWT.ICON_QUESTION);
+					MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
 					mb.setMessage(BaseMessages.getString(PKG, "SapInputDialog.ClearInputOutput.DialogMessage")); //$NON-NLS-1$
 					mb.setText(BaseMessages.getString(PKG, "SapInputDialog.ClearInputOutput.DialogTitle")); //$NON-NLS-1$
 					int answer = mb.open();
