@@ -2470,7 +2470,7 @@ public class ValueMeta implements ValueMetaInterface
     	xml.append(XMLHandler.openTag(XML_META_TAG));
     	
         xml.append( XMLHandler.addTagValue("type", getTypeDesc()) ) ;
-        xml.append( XMLHandler.addTagValue("storagetype", getStorageType()) );
+        xml.append( XMLHandler.addTagValue("storagetype", getStorageTypeCode(getStorageType())) );
 
         switch(storageType) {
         case STORAGE_TYPE_INDEXED:
@@ -2635,12 +2635,12 @@ public class ValueMeta implements ValueMetaInterface
 	            	//
 	                switch(getType())
 	                {
-	                case TYPE_STRING     : xml.append( XMLHandler.addTagValue("string-value", (String)object) ); break;
-	                case TYPE_NUMBER     : xml.append( XMLHandler.addTagValue("number-value", (Double)object) ); break;
-	                case TYPE_INTEGER    : xml.append( XMLHandler.addTagValue("integer-value", (Long)object) ); break;
-	                case TYPE_DATE       : xml.append( XMLHandler.addTagValue("date-value", (Date)object) ); break;
-	                case TYPE_BIGNUMBER  : xml.append( XMLHandler.addTagValue("bignumber-value", (BigDecimal)object) ); break;
-	                case TYPE_BOOLEAN    : xml.append( XMLHandler.addTagValue("boolean-value", (Boolean)object) ); break;
+	                case TYPE_STRING     : xml.append( (String)object ); break;
+	                case TYPE_NUMBER     : xml.append( (Double)object ); break;
+	                case TYPE_INTEGER    : xml.append( (Long)object ); break;
+	                case TYPE_DATE       : xml.append( XMLHandler.date2string( (Date)object ) ); break;
+	                case TYPE_BIGNUMBER  : xml.append( (BigDecimal)object ); break;
+	                case TYPE_BOOLEAN    : xml.append( (Boolean)object ); break;
 	                case TYPE_BINARY     : xml.append( XMLHandler.addTagValue("binary-value", (byte[])object) ); break;
 	                default: throw new IOException(toString()+" : Unable to serialize data type to XML "+getType());
 	                }
@@ -2682,7 +2682,7 @@ public class ValueMeta implements ValueMetaInterface
         switch(storageType)
         {
         case STORAGE_TYPE_NORMAL:
-    		String valueString = XMLHandler.getTagValue(node, "value");
+    		String valueString = XMLHandler.getNodeValue(node);
     		if (Const.isEmpty(valueString)) return null;
     		
             // Handle Content -- only when not NULL
@@ -2695,7 +2695,7 @@ public class ValueMeta implements ValueMetaInterface
             case TYPE_DATE:      return XMLHandler.stringToDate( valueString ); 
             case TYPE_BIGNUMBER: return new BigDecimal( valueString );
             case TYPE_BOOLEAN:   return Boolean.valueOf("Y".equalsIgnoreCase( valueString)); 
-            case TYPE_BINARY:    return XMLHandler.stringToBinary( valueString );
+            case TYPE_BINARY:    return XMLHandler.stringToBinary( XMLHandler.getTagValue(node, "binary-value") );
             default: throw new KettleException(toString()+" : Unable to de-serialize '"+valueString+"' from XML for data type "+getType());
             }
             

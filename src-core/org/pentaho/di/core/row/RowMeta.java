@@ -936,7 +936,7 @@ public class RowMeta implements RowMetaInterface
 			Node valueDataNode = XMLHandler.getSubNodeByNr(node, ValueMeta.XML_DATA_TAG, i);
 			rowData[i] = getValueMeta(i).getValue(valueDataNode);
 		}
-		return null;
+		return rowData;
 	}
 
 }

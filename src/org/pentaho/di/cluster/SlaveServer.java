@@ -73,6 +73,7 @@ import org.pentaho.di.www.SlaveServerDetection;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.di.www.SlaveServerStatus;
 import org.pentaho.di.www.SlaveServerTransStatus;
+import org.pentaho.di.www.SniffStepServlet;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.StartTransServlet;
 import org.pentaho.di.www.StopJobServlet;
@@ -986,5 +987,26 @@ public class SlaveServer
 	
 	public void setDescription(String description) {
 		// NOT USED
+	}
+
+	/**
+	 * Sniff rows on a the slave server, return xml containing the row metadata and data.
+	 * 
+	 * @param transName
+	 * @param stepName
+	 * @param copyNr
+	 * @param lines
+	 * @return
+	 * @throws Exception
+	 */
+	public String sniffStep(String transName, String stepName, String copyNr, int lines, String type) throws Exception {
+		String xml = execService(
+				SniffStepServlet.CONTEXT_PATH+"/?trans="+URLEncoder.encode(transName, "UTF-8")+
+				"&step="+URLEncoder.encode(stepName, "UTF-8")+
+				"&copy="+copyNr+
+				"&type="+type+
+				"&lines="+lines+
+				"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+		return xml;
 	}
 }

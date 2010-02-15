@@ -44,8 +44,7 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 		{
 			SpoonSlave spoonSlave = new SpoonSlave(tabfolder.getSwtTabset(), SWT.NONE, spoon, slaveServer);
 			TabItem tabItem = new TabItem(tabfolder, tabName, tabName);
-			tabItem.setToolTipText("Status of slave server : " + slaveServer.getName() + " : "
-					+ slaveServer.getServerAndPort());
+			tabItem.setToolTipText("Status of slave server : " + slaveServer.getName() + " : " + slaveServer.getServerAndPort());
 			tabItem.setControl(spoonSlave);
 
 			tabMapEntry = new TabMapEntry(tabItem, null, tabName, null, null, spoonSlave, ObjectType.SLAVE_SERVER);

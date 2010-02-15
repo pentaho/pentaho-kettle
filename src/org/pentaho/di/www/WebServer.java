@@ -181,6 +181,10 @@ public class WebServer
         Context getPort = new Context(contexts, AllocateServerSocketServlet.CONTEXT_PATH, Context.SESSIONS);
         getPort.addServlet(new ServletHolder(new AllocateServerSocketServlet(transformationMap)), "/*");
         
+        // Sniff transformation step
+        //
+        Context sniffStep = new Context(contexts, SniffStepServlet.CONTEXT_PATH, Context.SESSIONS);
+        sniffStep.addServlet(new ServletHolder(new SniffStepServlet(transformationMap)), "/*");
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
         //

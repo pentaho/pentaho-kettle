@@ -294,6 +294,8 @@ public class EnterSelectionDialog extends Dialog
 		
 		BaseStepDialog.setSize(shell);
 		
+		wOK.setFocus();
+		
 		shell.open();
 		
 		while (!shell.isDisposed())

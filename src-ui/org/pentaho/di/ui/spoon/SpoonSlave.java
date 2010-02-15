@@ -43,6 +43,10 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
@@ -51,9 +55,12 @@ import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TreeMemory;
@@ -62,7 +69,10 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.di.www.SlaveServerStatus;
 import org.pentaho.di.www.SlaveServerTransStatus;
+import org.pentaho.di.www.SniffStepServlet;
 import org.pentaho.di.www.WebResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * SpoonSlave handles the display of the slave server information in a Spoon tab.
@@ -97,6 +107,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 	private Button wError;
     private Button wStart;
     private Button wStop;
+    private Button wSniff;
     private Button wRefresh;
 
     private FormData fdTree, fdText, fdSash;
@@ -179,6 +190,21 @@ public class SpoonSlave extends Composite implements TabItemInterface
             treeColumn.setText(columnInfo.getName());
             treeColumn.setWidth(bounds.width/colinf.length);
         }
+        wTree.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent e) {
+                TreeItem ti[] = wTree.getSelection();
+                if (ti.length==1)
+                {
+                    TreeItem treeItem = ti[0];
+                    String[] path = ConstUI.getTreeStrings(treeItem);
+                    
+                    // Make sure we're positioned on a step
+                    //
+                    wSniff.setEnabled(path.length>2);
+                }
+        	}
+		});
 
         transParentItem = new TreeItem(wTree, SWT.NONE);
         transParentItem.setText(Spoon.STRING_TRANSFORMATIONS);
@@ -211,6 +237,11 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		wError.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.ShowErrorLines")); //$NON-NLS-1$
         wError.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showErrors(); } } );
 
+        wSniff= new Button(this, SWT.PUSH);
+        wSniff.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.Sniff"));
+        wSniff.setEnabled(false);
+        wSniff.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { sniff(); } });
+
         wStart= new Button(this, SWT.PUSH);
         wStart.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.Start"));
         wStart.setEnabled(false);
@@ -221,7 +252,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
         wStop.setEnabled(false);
         wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stop(); } });
 
-        BaseStepDialog.positionBottomButtons(this, new Button[] { wRefresh, wStart, wStop, wError }, Const.MARGIN, null);
+        BaseStepDialog.positionBottomButtons(this, new Button[] { wRefresh, wSniff, wStart, wStop, wError }, Const.MARGIN, null);
         
         // Put tree on top
         fdTree = new FormData();
@@ -843,5 +874,65 @@ public class SpoonSlave extends Composite implements TabItemInterface
 	public boolean canHandleSave(){
 	  return false;
 	}
-
+	
+    protected void sniff()
+    {
+        TreeItem ti[] = wTree.getSelection();
+        if (ti.length==1)
+        {
+            TreeItem treeItem = ti[0];
+            String[] path = ConstUI.getTreeStrings(treeItem);
+            
+            // Make sure we're positioned on a step
+            //
+            if (path.length<=2) {
+            	return;
+            }
+            
+            String name = path[1];
+            String step = path[2];
+            String copy = treeItem.getText(1);
+            
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 
+            		PropsUI.getInstance().getDefaultPreviewSize(), 
+            		BaseMessages.getString(PKG, "SpoonSlave.SniffSizeQuestion.Title"), 
+            		BaseMessages.getString(PKG, "SpoonSlave.SniffSizeQuestion.Message")
+            	);
+            int lines = numberDialog.open();
+            if (lines<=0) {
+            	return;
+            }
+            
+            EnterSelectionDialog selectionDialog = new EnterSelectionDialog(shell, new String[] { SniffStepServlet.TYPE_INPUT, SniffStepServlet.TYPE_OUTPUT, }, 
+            		BaseMessages.getString(PKG, "SpoonSlave.SniffTypeQuestion.Title"), 
+            		BaseMessages.getString(PKG, "SpoonSlave.SniffTypeQuestion.Message")
+            	);
+            String type = selectionDialog.open(1);
+            if (type==null) {
+            	return;
+            }
+            
+            try {
+	            String xml = slaveServer.sniffStep(name, step, copy, lines, type);
+	            
+	            Document doc = XMLHandler.loadXMLString(xml);
+	            Node node = XMLHandler.getSubNode(doc, SniffStepServlet.XML_TAG);
+	            Node metaNode = XMLHandler.getSubNode(node, RowMeta.XML_META_TAG);
+	            RowMetaInterface rowMeta = new RowMeta(metaNode);
+	            
+	            int nrRows = Const.toInt(XMLHandler.getTagValue(node, "nr_rows"), 0);
+	            List<Object[]> rowBuffer = new ArrayList<Object[]>();
+	            for (int i=0;i<nrRows;i++) {
+	            	Node dataNode = XMLHandler.getSubNodeByNr(node, RowMeta.XML_DATA_TAG, i);
+	            	Object[] row = rowMeta.getRow(dataNode);
+	            	rowBuffer.add(row);
+	            }
+	            
+	            PreviewRowsDialog prd = new PreviewRowsDialog(shell, new Variables(), SWT.NONE, step, rowMeta, rowBuffer);
+	            prd.open();
+            } catch(Exception e) {
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorSniffingStep.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorSniffingStep.Message"), e);
+            }
+        }
+    }
 }

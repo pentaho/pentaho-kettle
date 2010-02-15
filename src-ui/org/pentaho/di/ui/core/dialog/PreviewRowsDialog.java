@@ -152,7 +152,9 @@ public class PreviewRowsDialog extends Dialog
         shell.setLayout(formLayout);
         shell.setText(title);
 
-        addFields();
+        if (addFields()) {
+        	return;
+        }
         
         List<Button> buttons = new ArrayList<Button>();
         
@@ -208,7 +210,7 @@ public class PreviewRowsDialog extends Dialog
         }
     }
 
-    private void addFields() {
+    private boolean addFields() {
         // int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
@@ -237,7 +239,7 @@ public class PreviewRowsDialog extends Dialog
 	            ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_WARNING, BaseMessages.getString(PKG, "PreviewRowsDialog.NoRows.Text"), BaseMessages.getString(PKG, "PreviewRowsDialog.NoRows.Message"));
 	            dialog.open();
 	            shell.dispose();
-	            return;
+	            return true;
 	        }
         }
 
@@ -262,6 +264,8 @@ public class PreviewRowsDialog extends Dialog
         if (dynamic) {
         	shell.layout(true, true);
         }
+        
+        return false;
 	}
 
 	public void dispose()
