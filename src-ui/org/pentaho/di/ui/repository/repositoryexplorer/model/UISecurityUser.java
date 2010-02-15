@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.repository.IRole;
 import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
@@ -51,7 +52,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
     setName(user.getName());
     // Show empty password on the client site
     setPassword("");//$NON-NLS-1$
-    for(RoleInfo role:user.getRoles()) {
+    for(IRole role:user.getRoles()) {
       removeFromAvailableRoles(role.getName());
       addToSelectedRoles(new UIRepositoryRole(role));
     }
@@ -215,7 +216,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
     userInfo.setUsername(name);
     userInfo.setPassword(password);
     for (UIRepositoryRole role : getAssignedRoles()) {
-      userInfo.addRole(role.getRoleInfo());
+      userInfo.addRole(role.getRole());
     }
     return userInfo;
   }

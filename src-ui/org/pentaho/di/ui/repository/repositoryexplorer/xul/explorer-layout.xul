@@ -4,7 +4,7 @@
   height="600" width="800"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:pen="http://www.pentaho.org/2008/xul" 
-  onload="mainController.init(), securityController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init(), permissionsController.init()">
+  onload="mainController.init(), iSecurityController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init(), permissionsController.init()">
 
 	<dialog id="repository-explorer-dialog" 
 		title="${RepositoryExplorerDialog.Title}"
@@ -402,8 +402,8 @@
   <!--     ADD USER DIALOG: Dialog to add/edit/manage user                                -->
   <!--  ###############################################################################   -->    
     <dialog id="add-user-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
-    		ondialogaccept="securityController.saveUser()"
-    		ondialogcancel="securityController.cancelAddUserDialog()" 
+    		ondialogaccept="iSecurityController.saveUser()"
+    		ondialogcancel="iSecurityController.cancelAddUserDialog()" 
     		buttons="accept, cancel" buttonalign="right" title="${AddUserDialog.Title}" 
     		height="400" width="350">
        <vbox>
@@ -432,8 +432,8 @@
 		       </vbox>
 		       <vbox>
    		       		<label id="spacer-label" flex="1" />
-					<button id="assign-role-to-user" image="images/accum_add.png"  pen:disabledimage="images/accum_add_disable.png" onclick="securityController.assignRolesToUser()"  disabled="true"/>					    
-					<button id="unassign-role-from-user" image="images/accum_remove.png"  pen:disabledimage="images/accum_remove_disable.png" onclick="securityController.unassignRolesFromUser()" disabled="true"/>
+					<button id="assign-role-to-user" image="images/accum_add.png"  pen:disabledimage="images/accum_add_disable.png" onclick="iSecurityController.assignRolesToUser()"  disabled="true"/>					    
+					<button id="unassign-role-from-user" image="images/accum_remove.png"  pen:disabledimage="images/accum_remove_disable.png" onclick="iSecurityController.unassignRolesFromUser()" disabled="true"/>
 		       		<label id="spacer-label" flex="1" />
 		       </vbox>
 	   	       <vbox flex="1">
@@ -448,8 +448,8 @@
   <!--  ###############################################################################   -->    
   
   <dialog id="add-role-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
-    		ondialogaccept="securityController.saveRole()"
-    		ondialogcancel="securityController.cancelAddRoleDialog()" 
+    		ondialogaccept="iSecurityController.saveRole()"
+    		ondialogcancel="iSecurityController.cancelAddRoleDialog()" 
     		buttons="accept, cancel" buttonalign="right" title="${AddRoleDialog.AddRole}" 
     		height="400" width="350">
        <vbox>
@@ -474,8 +474,8 @@
 		       </vbox>
 		       <vbox>
 		       		<label id="spacer-label" flex="1" />
-					<button id="assign-user-to-role" image="images/accum_add.png" pen:disabledimage="images/accum_add_disable.png" onclick="securityController.assignUsersToRole()"  disabled="true"/>					    
-					<button id="unassign-user-from-role" image="images/accum_remove.png" pen:disabledimage="images/accum_remove_disable.png" onclick="securityController.unassignUsersFromRole()" disabled="true"/>
+					<button id="assign-user-to-role" image="images/accum_add.png" pen:disabledimage="images/accum_add_disable.png" onclick="iSecurityController.assignUsersToRole()"  disabled="true"/>					    
+					<button id="unassign-user-from-role" image="images/accum_remove.png" pen:disabledimage="images/accum_remove_disable.png" onclick="iSecurityController.unassignUsersFromRole()" disabled="true"/>
 					<label id="spacer-label" flex="1" />
 		       </vbox>
 	   	       <vbox flex="1">

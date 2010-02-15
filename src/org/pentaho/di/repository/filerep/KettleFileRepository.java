@@ -1055,62 +1055,53 @@ public class KettleFileRepository implements Repository {
 	}
 
 	public RepositoryLock getJobLock(ObjectId id_job) throws KettleDatabaseException {
-		// TODO Auto-generated method stub
-		return null;
+	  throw new UnsupportedOperationException();
 	}
 
 	public RepositoryLock getTransformationLock(ObjectId id_transformation) throws KettleDatabaseException {
-		// TODO Auto-generated method stub
-		return null;
+	  throw new UnsupportedOperationException();
 	}
 
 	public void lockJob(ObjectId id_job, String message) throws KettleException {
-		// TODO Auto-generated method stub
-		
-	}
+    throw new UnsupportedOperationException();
+  }
 
 	public void lockTransformation(ObjectId id_transformation, String message) throws KettleException {
-		// TODO Auto-generated method stub
-		
+    throw new UnsupportedOperationException();
 	}
 
 	public void unlockJob(ObjectId id_job) throws KettleException {
-		// TODO Auto-generated method stub
-		
+	  throw new UnsupportedOperationException();
 	}
 
 	public void unlockTransformation(ObjectId id_transformation) throws KettleException {
-		// TODO Auto-generated method stub		
+	  throw new UnsupportedOperationException();		
 	}
 	
 	public List<ObjectRevision> getRevisions(RepositoryElementLocationInterface element) throws KettleException {
-		return null; // NOT IMPLEMENTED
+	  throw new UnsupportedOperationException();
 	}
 	
 	public void undeleteObject(RepositoryElementLocationInterface element) throws KettleException {
-		// NOT IMPLEMENTED!
-	}
+    throw new UnsupportedOperationException();
+  }
 
 	public RepositoryVersionRegistry getVersionRegistry() throws KettleException {
-		// NOT IMPLEMENTED
-		return null;
-	}
+    throw new UnsupportedOperationException();
+  }
 
   public void setAcl(ObjectId id,ObjectAcl aclObject) throws KettleException {
-    // TODO Auto-generated method stub
-    
+    throw new UnsupportedOperationException();
   }
 
   public List<ObjectRevision> getRevisions(ObjectId id) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   public ObjectAcl getAcl(ObjectId id) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException();
   }
-  
+
   public List<RepositoryObject> getJobAndTransformationObjects(ObjectId id_directory, boolean includeDeleted)
       throws KettleException {
     // TODO not the most efficient impl; also, no sorting is done
@@ -1119,5 +1110,4 @@ public class KettleFileRepository implements Repository {
     objs.addAll(getTransformationObjects(id_directory, includeDeleted));
     return objs;
   }
-	
 }

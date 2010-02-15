@@ -46,6 +46,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.IRole;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -726,19 +727,10 @@ public class RepositoriesDialog implements XulEventHandler {
         dispose();
       }
     } else {
-      Set<RoleInfo> roleSet = userinfo.getRoles();
-      RoleInfo[] roleArray = new RoleInfo[roleSet.size()];
-      roleSet.toArray(roleArray);
-      for (int i = 0; i < roleArray.length; i++) {
-        if (roleArray[i].getName().equalsIgnoreCase("Admin") || roleArray[i].getName().equalsIgnoreCase("Admin")) { //$NON-NLS-1$//$NON-NLS-2$
-          // TODO find out where do to get appropriate permissions from
-          //
-          ProfileMeta adminProfile = new ProfileMeta("Administrator", "Administrator"); //$NON-NLS-1$//$NON-NLS-2$
-          adminProfile.addPermission(Permission.ADMIN);
-          userinfo.setProfile(adminProfile);
-          break;
-        }
-      }
+      // TODO  Current app will not work without profile. For now giving all users admin access
+      ProfileMeta adminProfile = new ProfileMeta("Administrator", "Administrator"); //$NON-NLS-1$//$NON-NLS-2$
+      adminProfile.addPermission(Permission.ADMIN);
+      userinfo.setProfile(adminProfile);
       dispose();
     }
   }

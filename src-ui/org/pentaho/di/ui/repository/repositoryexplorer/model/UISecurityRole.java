@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.IRole;
+import org.pentaho.di.repository.RepositoryUserInterface;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
@@ -204,8 +207,14 @@ public class UISecurityRole extends XulEventSourceAdapter {
     fireUserUnassignmentPropertyChange ();
   }
 
-  public RoleInfo getRoleInfo() {
-    RoleInfo roleInfo = new RoleInfo();
+  public IRole getRole(RepositoryUserInterface rui) {
+    IRole roleInfo = null;
+    try {
+      roleInfo = rui.constructRole();
+    } catch (KettleException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     roleInfo.setDescription(description);
     roleInfo.setName(name);
     for (UIRepositoryUser user : getAssignedUsers()) {

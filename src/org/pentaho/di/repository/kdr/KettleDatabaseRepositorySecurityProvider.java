@@ -1,19 +1,17 @@
 package org.pentaho.di.repository.kdr;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
-import org.pentaho.di.repository.ActionPermission;
 import org.pentaho.di.repository.BaseRepositorySecurityProvider;
+import org.pentaho.di.repository.IRole;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityProvider;
-import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
@@ -293,83 +291,64 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     profileDelegate.renameProfile(id_profile, newname);
   }
 
-  public void createRole(RoleInfo role) throws KettleException {
-    // NOT IMPLEMENTED
-  }
-
-  public void deleteRoles(List<RoleInfo> roles) throws KettleException {
-    // NOT IMPLEMENTED
+  public void deleteRoles(List<IRole> roles) throws KettleException {
+    throw new UnsupportedOperationException();
   }
 
   public void deleteUsers(List<UserInfo> users) throws KettleException {
-    // NOT IMPLEMENTED
+    throw new UnsupportedOperationException();
   }
 
-  public RoleInfo getRole(String name) throws KettleException {
-    // NOT IMPLEMENTED
-    return null;
-  }
-
-  public List<RoleInfo> getRoles() throws KettleException {
-    // NOT IMPLEMENTED
-    return null;
-  }
-
-  public void updateRole(RoleInfo role) throws KettleException {
-    // NOT IMPLEMENTED
+  public List<IRole> getRoles() throws KettleException {
+    throw new UnsupportedOperationException();
   }
 
   public List<UserInfo> getUsers() throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException();
   }
 
-  public void setRoles(List<RoleInfo> roles) throws KettleException {
-    // TODO Auto-generated method stub
-
+  public void setRoles(List<IRole> roles) throws KettleException {
+    throw new UnsupportedOperationException();
   }
 
   public void setUsers(List<UserInfo> users) throws KettleException {
-    // TODO Auto-generated method stub
-
+    throw new UnsupportedOperationException();
   }
 
   public void delUser(String name) throws KettleException {
-    // TODO Auto-generated method stub
-
+    throw new UnsupportedOperationException();
   }
 
   public void deleteRole(String name) throws KettleException {
-    // TODO Auto-generated method stub
-
+    throw new UnsupportedOperationException();
   }
 
   public void updateUser(UserInfo role) throws KettleException {
-    // TODO Auto-generated method stub
-
+    throw new UnsupportedOperationException();
   }
 
   public List<String> getAllRoles() throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   public List<String> getAllUsers() throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException();
   }
 
-  public List<String> getAllUsersInRole(String role) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+
+  public IRole constructRole() throws KettleException {
+    throw new UnsupportedOperationException();
   }
 
-  public List<String> getRolesForUser(String userName) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+  public void createRole(IRole role) throws KettleException {
+    throw new UnsupportedOperationException();
   }
-  public void setActionPermissions(String rolename, EnumSet<ActionPermission> permissions) throws KettleException {
-    // TODO Auto-generated method stub
-    
+
+  public void updateRole(IRole role) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  public IRole getRole(String name) throws KettleException {
+    throw new UnsupportedOperationException();
   }
 }

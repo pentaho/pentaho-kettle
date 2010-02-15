@@ -172,6 +172,8 @@ import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
+import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.repository.SecurityProviderRegistery;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
@@ -227,6 +229,7 @@ import org.pentaho.di.ui.repository.dialog.UserDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryObjectReference;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
+import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
@@ -333,6 +336,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public PropsUI							props;
 
 	public Repository						rep;
+
+	private RepositorySecurityProvider securityProvider;
+	
 	public RepositoryCapabilities			capabilities;
 
 	/**
@@ -416,6 +422,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   private XulVbox canvas;
 
   private SwtDeck deck;
+  
+  private SecurityProviderRegistery registery = SecurityProviderRegistery.getInstance();
 
   public static final String XUL_FILE_MENUBAR = "ui/menubar.xul";
 
@@ -423,6 +431,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public static final String XUL_FILE_MENUS = "ui/menus.xul";
 
+  
   private Map<String, XulComponent> menuMap = new HashMap<String, XulComponent>();
   
 	/**
@@ -2994,9 +3003,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           }
       };
 
-      RepositoryExplorer explorer = new RepositoryExplorer(rep, cb, Variables.getADefaultVariableSpace());
-      explorer.show();
-
+      try {
+        Directory root = rep.loadRepositoryDirectoryTree();
+        if(getRegistery().getRegisteredSecurityProvider() != null) {
+          setSecurityProvider(getRegistery().createSecurityProvider(rep, rep.getRepositoryMeta(), rep.getUserInfo()));
+        }
+        RepositoryExplorer explorer = new RepositoryExplorer(root, rep, getSecurityProvider(), cb, Variables.getADefaultVariableSpace());
+        explorer.show();
+      } catch (KettleSecurityException e) {
+        e.printStackTrace();
+      } catch (KettleException e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -6932,6 +6950,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   public void setName(String arg0) {}
 
   public void setXulDomContainer(XulDomContainer arg0) {}
+
+  public void setSecurityProvider(RepositorySecurityProvider securityProvider) {
+    this.securityProvider = securityProvider;
+  }
+
+  public RepositorySecurityProvider getSecurityProvider() {
+    return securityProvider;
+  }
+  public SecurityProviderRegistery getRegistery() {
+    return registery;
+  }
   
   /* ========================= End XulEventHandler Methods ========================== */
 

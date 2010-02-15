@@ -1,11 +1,10 @@
 package org.pentaho.di.repository.filerep;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
-import org.pentaho.di.repository.ActionPermission;
+import org.pentaho.di.repository.IRole;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
@@ -125,81 +124,115 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
 	// The file repository does not support users
 	//
 	
-	public void delProfile(ObjectId id_profile) throws KettleException {}
-	public void delUser(ObjectId id_user) throws KettleException {}
-	public ObjectId[] getPermissionIDs(ObjectId id_profile) throws KettleException { return null; }
-	public ObjectId getProfileID(String profilename) throws KettleException { return null; }
-	public String[] getProfiles() throws KettleException { return null; }
-	public ObjectId getUserID(String login) throws KettleException { return null; }
-	public ObjectId[] getUserIDs() throws KettleException { return null; }
-	public String[] getUserLogins() throws KettleException { return null; }
-	public Permission loadPermission(ObjectId id_permission) throws KettleException { return null; }
-	public ProfileMeta loadProfileMeta(ObjectId id_profile) throws KettleException { return null; }
-	public UserInfo loadUserInfo(String login) throws KettleException { return null; }
-	public UserInfo loadUserInfo(String login, String password) throws KettleException { return null; }
-	public void renameProfile(ObjectId id_profile, String newname) throws KettleException { }
-	public void renameUser(ObjectId id_user, String newname) throws KettleException { }
-	public void saveProfile(ProfileMeta profileMeta) throws KettleException {}
-	public void saveUserInfo(UserInfo userInfo) throws KettleException {}
+	public void delProfile(ObjectId id_profile) throws KettleException {
+	   throw new UnsupportedOperationException();
+	}
+	public void delUser(ObjectId id_user) throws KettleException {
+	   throw new UnsupportedOperationException();
+	}
+	public ObjectId[] getPermissionIDs(ObjectId id_profile) throws KettleException {
+	  throw new UnsupportedOperationException();
+	  }
+	public ObjectId getProfileID(String profilename) throws KettleException {
+	  throw new UnsupportedOperationException();
+	}
+	public String[] getProfiles() throws KettleException {
+	  throw new UnsupportedOperationException();
+	}
+	public ObjectId getUserID(String login) throws KettleException {
+	  throw new UnsupportedOperationException();
+	}
+	public ObjectId[] getUserIDs() throws KettleException {
+	  throw new UnsupportedOperationException();
+	}
+	public String[] getUserLogins() throws KettleException {
+	   throw new UnsupportedOperationException();
+	}
+	public Permission loadPermission(ObjectId id_permission) throws KettleException {
+	  throw new UnsupportedOperationException();
+	}
+	public ProfileMeta loadProfileMeta(ObjectId id_profile) throws KettleException {
+	  throw new UnsupportedOperationException(); }
+	public UserInfo loadUserInfo(String login) throws KettleException {
+	  throw new UnsupportedOperationException();
+	}
+	public UserInfo loadUserInfo(String login, String password) throws KettleException {
+	  throw new UnsupportedOperationException();
+	}
+	public void renameProfile(ObjectId id_profile, String newname) throws KettleException {
+	   throw new UnsupportedOperationException();
+	}
+	public void renameUser(ObjectId id_user, String newname) throws KettleException {
+	   throw new UnsupportedOperationException();
+	}
+	public void saveProfile(ProfileMeta profileMeta) throws KettleException {
+	   throw new UnsupportedOperationException();
+	}
+	public void saveUserInfo(UserInfo userInfo) throws KettleException {
+	   throw new UnsupportedOperationException();
+	}
 
-	public void createRole(RoleInfo role) throws KettleException {}
-  public void deleteUsers(List<UserInfo> users) throws KettleException {}
-	public void deleteRoles(List<RoleInfo> roles) throws KettleException {}
-	public RoleInfo getRole(String name) throws KettleException {return null;}
-	public List<RoleInfo> getRoles() throws KettleException {return null;}
-	public void updateRole(RoleInfo role) throws KettleException {}
+	public void createRole(RoleInfo role) throws KettleException {
+	   throw new UnsupportedOperationException();
+	}
+  public void deleteUsers(List<UserInfo> users) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+	public RoleInfo getRole(String name) throws KettleException {
+	  throw new UnsupportedOperationException();
+	}
+	public List<IRole> getRoles() throws KettleException {
+	   throw new UnsupportedOperationException();
+	}
+	public void updateRole(RoleInfo role) throws KettleException {
+	   throw new UnsupportedOperationException();
+	}
 
 	public List<UserInfo> getUsers() throws KettleException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setRoles(List<RoleInfo> roles) throws KettleException {
-		// TODO Auto-generated method stub
-		
-	}
+    throw new UnsupportedOperationException();
+  }
 
 	public void setUsers(List<UserInfo> roles) throws KettleException {
-		// TODO Auto-generated method stub
-		
+    throw new UnsupportedOperationException();		
 	}
 
 	public void delUser(String name) throws KettleException {
-		// TODO Auto-generated method stub
-		
+    throw new UnsupportedOperationException();		
 	}
 
 	public void deleteRole(String name) throws KettleException {
-		// TODO Auto-generated method stub
-		
+    throw new UnsupportedOperationException();		
 	}
 
 	public void updateUser(UserInfo role) throws KettleException {
-		// TODO Auto-generated method stub
-		
+    throw new UnsupportedOperationException();		
 	}
 
   public List<String> getAllRoles() throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   public List<String> getAllUsers() throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException();
   }
 
-  public List<String> getAllUsersInRole(String role) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+  public IRole constructRole() throws KettleException {
+    throw new UnsupportedOperationException();
   }
 
-  public List<String> getRolesForUser(String userName) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+  public void createRole(IRole role) throws KettleException {
+    throw new UnsupportedOperationException();
   }
-  public void setActionPermissions(String rolename, EnumSet<ActionPermission> permissions) throws KettleException {
-    // TODO Auto-generated method stub
-    
+
+  public void deleteRoles(List<IRole> roles) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setRoles(List<IRole> roles) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  public void updateRole(IRole role) throws KettleException {
+    throw new UnsupportedOperationException();
   }
 }

@@ -1,6 +1,5 @@
 package org.pentaho.di.repository;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
@@ -53,32 +52,27 @@ public interface RepositoryUserInterface {
 
   public void renameUser(ObjectId id_user, String newname) throws KettleException;
 
-  public void createRole(RoleInfo role) throws KettleException;
+  public IRole constructRole()  throws KettleException;
+  
+  public void createRole(IRole role) throws KettleException;
 
-  public RoleInfo getRole(String name) throws KettleException;
+  public IRole getRole(String name) throws KettleException;
 
-  public List<RoleInfo> getRoles() throws KettleException;
+  public List<IRole> getRoles() throws KettleException;
 
-  public void setRoles(List<RoleInfo> roles) throws KettleException;
+  public void setRoles(List<IRole> roles) throws KettleException;
 
   public void updateUser(UserInfo role) throws KettleException;
 
-  public void updateRole(RoleInfo role) throws KettleException;
+  public void updateRole(IRole role) throws KettleException;
 
   public void deleteUsers(List<UserInfo> users) throws KettleException;
   
-  public void deleteRoles(List<RoleInfo> roles) throws KettleException;
+  public void deleteRoles(List<IRole> roles) throws KettleException;
 
   public void deleteRole(String name) throws KettleException;
   
   public List<String> getAllUsers() throws KettleException;
   
   public List<String> getAllRoles() throws KettleException;
-
-  public List<String> getAllUsersInRole(String role) throws KettleException;
-
-  public List<String> getRolesForUser(String userName) throws KettleException;
-  
-  public void setActionPermissions(String rolename, EnumSet<ActionPermission> permissions) throws KettleException;
-
 }

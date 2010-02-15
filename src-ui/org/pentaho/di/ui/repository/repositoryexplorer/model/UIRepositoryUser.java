@@ -18,6 +18,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.util.Set;
 
+import org.pentaho.di.repository.IRole;
 import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
@@ -73,11 +74,11 @@ public class UIRepositoryUser extends XulEventSourceAdapter {
     rui.clearRoles();
   }
 
-  public void setRoles(Set<RoleInfo> roles) {
+  public void setRoles(Set<IRole> roles) {
     rui.setRoles(roles);
   }
 
-  public Set<RoleInfo> getRoles() {
+  public Set<IRole> getRoles() {
     return rui.getRoles();
   }
   

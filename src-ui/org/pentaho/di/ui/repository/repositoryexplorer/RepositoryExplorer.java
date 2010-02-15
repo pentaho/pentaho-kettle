@@ -17,7 +17,9 @@
 package org.pentaho.di.ui.repository.repositoryexplorer;
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.ResourceBundle;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
@@ -26,21 +28,26 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
+import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ISecurityController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.PartitionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.PermissionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SlavesController;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
+import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
@@ -57,7 +64,9 @@ public class RepositoryExplorer {
 
   private BrowseController browseController = new BrowseController();
 
-  private SecurityController securityController = new SecurityController();
+  private static Class<?> securityControllerClass;
+  
+  private static ISecurityController securityController ;
 
   private ConnectionsController connectionsController = new ConnectionsController();
 
@@ -90,10 +99,13 @@ public class RepositoryExplorer {
 
   // private Repository repository;
 
-  public RepositoryExplorer(final Repository rep, RepositoryExplorerCallback callback,
-      VariableSpace variableSpace) {
-    
+  public RepositoryExplorer(Directory rd, final Repository rep, RepositorySecurityProvider securityProvider, RepositoryExplorerCallback callback,
+        VariableSpace variableSpace) {
     // repositoryDirectory = rd;
+    // If there is not security controller class instantiated and use the default one which is SecurityController
+    if(getSecurityControllerClass() == null) {
+      setSecurityControllerClass(SecurityController.class);
+    }
     /// repository = rep;
     try {
       container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
@@ -147,10 +159,11 @@ public class RepositoryExplorer {
       boolean aclEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsAcls();
       loadAclOverlay(aclEnabled);
 
-      container.addEventHandler(securityController);
+      container.addEventHandler((AbstractXulEventHandler) securityController);
       if (securityEnabled) {
         securityController.setBindingFactory(bf);
-        securityController.setRepositoryUserInterface(rep.getSecurityProvider());
+        securityController.setRepositoryUserInterface(securityProvider);
+        securityController.setRepository(rep);
         securityController.setMessages(resourceBundle);
       }
 
@@ -158,7 +171,7 @@ public class RepositoryExplorer {
       container.addEventHandler(permissionsController);
       if (aclsEnabled && securityEnabled) {
         permissionsController.setBindingFactory(bf);
-        permissionsController.setRepositoryUserInterface(rep.getSecurityProvider());
+        permissionsController.setRepositoryUserInterface(securityProvider);
         permissionsController.setMessages(resourceBundle);
       }
       container.invokeLater(new Runnable() {
@@ -173,6 +186,12 @@ public class RepositoryExplorer {
         }
       });
 
+      List<XulOverlay> theXulOverlays = SpoonPluginManager.getInstance().getOverlaysforContainer("action-based-security"); //$NON-NLS-1$
+
+      for (XulOverlay overlay : theXulOverlays) {
+        this.container.loadOverlay(overlay.getOverlayUri());
+      }
+      
       try {
         runner.initialize();
       } catch (XulException e) {
@@ -237,6 +256,23 @@ public class RepositoryExplorer {
 
   public void setRepositoryDirectory(Directory repositoryDirectory) {
     this.repositoryDirectory = repositoryDirectory;
+  }
+
+  public static void setSecurityControllerClass(Class<?> clz) {
+    securityControllerClass = clz;
+    try {
+      securityController = (ISecurityController) securityControllerClass.newInstance();
+    } catch (InstantiationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  public static Class<?> getSecurityControllerClass() {
+    return securityControllerClass;
   }
 
 }

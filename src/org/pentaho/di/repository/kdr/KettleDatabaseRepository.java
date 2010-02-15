@@ -54,6 +54,7 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryClusterSchemaDelegate;
@@ -1707,38 +1708,33 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	}
 
 	public List<ObjectRevision> getRevisions(RepositoryElementLocationInterface element) throws KettleException {
-		return null; // NOT IMPLEMENTED
+    throw new UnsupportedOperationException();
 	}
 	
 	public void undeleteObject(RepositoryElementLocationInterface element) throws KettleException {
-		// NOT IMPLEMENTED
+    throw new UnsupportedOperationException();
 	}
 
 	public RepositoryVersionRegistry getVersionRegistry() throws KettleException {
-		// NOT IMPLEMENTED
-		return null;
-	}
+    throw new UnsupportedOperationException();
+  }
 
   public ObjectAcl getAcl(RepositoryElementLocationInterface element) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   public void setAcl(ObjectId id, ObjectAcl aclObject) throws KettleException {
-    // TODO Auto-generated method stub
-    
+    throw new UnsupportedOperationException();
   }
 
   public List<ObjectRevision> getRevisions(ObjectId id) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    throw new UnsupportedOperationException();
+   }
 
   public ObjectAcl getAcl(ObjectId id) throws KettleException {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException();
   }
-
+  
   public List<RepositoryObject> getJobAndTransformationObjects(ObjectId id_directory, boolean includeDeleted)
       throws KettleException {
     // TODO not the most efficient impl; also, no sorting is done

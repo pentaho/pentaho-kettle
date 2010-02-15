@@ -34,10 +34,10 @@ public class UserInfo {
 	private boolean enabled; // Enabled: yes or no
 
 	private ProfileMeta profile; // user profile information
-	private Set<RoleInfo> roles;
+	private Set<IRole> roles;
 	
   public UserInfo(String login, String password, String username, String description, boolean enabled,
-      Set<RoleInfo> roles) {
+      Set<IRole> roles) {
     this(login, password, username, description, enabled);
     this.roles = roles;
   }	
@@ -48,7 +48,7 @@ public class UserInfo {
 		this.username = username;
 		this.description = description;
 		this.enabled = enabled;
-    this.roles = new HashSet<RoleInfo>();
+    this.roles = new HashSet<IRole>();
 	}
 	public UserInfo(String login, String password, String username,
 			String description, boolean enabled, ProfileMeta profile) {
@@ -68,7 +68,7 @@ public class UserInfo {
 		this.description = null;
 		this.enabled = true;
 		this.profile = null;
-		this.roles = new HashSet<RoleInfo>();
+		this.roles = new HashSet<IRole>();
 	}
 
 	public void setLogin(String login) {
@@ -221,11 +221,11 @@ public class UserInfo {
 		return profile.supportsLocking();
 	}
 
-	public boolean addRole(RoleInfo role) {
+	public boolean addRole(IRole role) {
 		return this.roles.add(role);
 	}
 
-	public boolean removeRole(RoleInfo role) {
+	public boolean removeRole(IRole role) {
 		return this.roles.remove(role);
 	}
 
@@ -233,11 +233,11 @@ public class UserInfo {
 		this.roles.clear();
 	}
 
-	public void setRoles(Set<RoleInfo> roles) {
+	public void setRoles(Set<IRole> roles) {
 		this.roles = roles;
 	}
 
-	public Set<RoleInfo> getRoles() {
+	public Set<IRole> getRoles() {
 		return this.roles;
 	}
 }

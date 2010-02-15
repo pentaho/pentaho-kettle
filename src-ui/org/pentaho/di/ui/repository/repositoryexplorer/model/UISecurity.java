@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.ActionPermission;
 import org.pentaho.di.repository.RepositoryUserInterface;
-import org.pentaho.di.repository.RoleInfo;
+import org.pentaho.di.repository.IRole;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ObjectRecipient.Type;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
@@ -18,12 +17,12 @@ public class UISecurity  extends XulEventSourceAdapter{
 	
 	public static enum Mode {ADD, EDIT, EDIT_MEMBER};
 	private Type selectedDeck;
-	private UIRepositoryUser selectedUser;
-	private UIRepositoryRole selectedRole;
+	protected UIRepositoryUser selectedUser;
+	protected UIRepositoryRole selectedRole;
 	private int selectedUserIndex;
   private int selectedRoleIndex;
-	private List<UIRepositoryUser> userList;
-	private List<UIRepositoryRole> roleList;
+	protected List<UIRepositoryUser> userList;
+	protected List<UIRepositoryRole> roleList;
 	
 	public UISecurity() {
 		userList = new ArrayList<UIRepositoryUser>();		
@@ -37,7 +36,7 @@ public class UISecurity  extends XulEventSourceAdapter{
 					userList.add(new UIRepositoryUser(user));
 				}
 				this.firePropertyChange("userList", null, userList); //$NON-NLS-1$
-				for(RoleInfo role:rui.getRoles()) {
+				for(IRole role:rui.getRoles()) {
 					roleList.add(new UIRepositoryRole(role));
 					
 				}
@@ -189,19 +188,13 @@ public class UISecurity  extends XulEventSourceAdapter{
     this.firePropertyChange("selectedRole", null, selectedRole); //$NON-NLS-1$
   } 
 
-  public void addRoleActionPermission(ActionPermission permission) {
-    selectedRole.addActionPermission(permission);
-  }
-  public void removeRoleActionPermission(ActionPermission permission) {
-    selectedRole.removeActionPermission(permission);
-  }
 	private void removeUserFromSelectedRole(String userName) {
     selectedRole.getUsers().remove(findUserInSelectedRole(userName));
 	}
 
-	private RoleInfo findRoleInSelectedUser(String roleName) {
-	   Set<RoleInfo> roles = selectedUser.getRoles();
-	   for(RoleInfo role:roles) {
+	private IRole findRoleInSelectedUser(String roleName) {
+	   Set<IRole> roles = selectedUser.getRoles();
+	   for(IRole role:roles) {
 	     if(role.getName().equals(roleName)) {
 	       return role;
 	     }
@@ -237,7 +230,7 @@ public class UISecurity  extends XulEventSourceAdapter{
     return this.roleList.get(index);
   }
 
-  private int getIndexOfRole(UIRepositoryRole rr) {
+  protected int getIndexOfRole(UIRepositoryRole rr) {
     for(int i=0;i<this.roleList.size();i++) {
       UIRepositoryRole role  = this.roleList.get(i);
       if(rr.getName().equals(role.getName())) {
@@ -246,4 +239,5 @@ public class UISecurity  extends XulEventSourceAdapter{
     }
     return -1;
   }
+	
 }
