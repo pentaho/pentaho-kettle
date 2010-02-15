@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -534,11 +535,17 @@ public class SlaveServer
 
     public void addCredentials(HttpClient client)
     {
+      if (StringUtils.isEmpty(webAppName)) {
         client.getState().setCredentials
               (
                 new AuthScope(environmentSubstitute(hostname), Const.toInt(environmentSubstitute(port), 80), "Kettle"), //$NON-NLS-1$
                 new UsernamePasswordCredentials(environmentSubstitute(username), environmentSubstitute(password))
               );
+      } else {        
+        Credentials creds = new UsernamePasswordCredentials(environmentSubstitute(username), environmentSubstitute(password));
+        client.getState().setCredentials(AuthScope.ANY, creds);
+        client.getParams().setAuthenticationPreemptive(true);      
+      }
     }
 
     /**
