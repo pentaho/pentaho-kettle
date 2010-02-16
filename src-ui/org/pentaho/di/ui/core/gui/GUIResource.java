@@ -205,6 +205,10 @@ public class GUIResource
 
 	private Image imageEditOptionButton;
 	
+	private Image imageEditSmall;
+	
+	private Image imageExploreSolutionSmall;
+	
 	private Image imageColor;
 	
 	private Image imageNoteSmall;
@@ -480,6 +484,9 @@ public class GUIResource
 		    disposeImage(imageColor);
 			disposeImage(imageEditOptionButton);
 			disposeImage(imageResetOptionButton);
+			
+      disposeImage(imageEditSmall);
+      disposeImage(imageExploreSolutionSmall);			
 
 			disposeImage(imageShowLog);
 			disposeImage(imageShowGrid);
@@ -664,7 +671,10 @@ public class GUIResource
 		imageVariable = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Variable_image")); // , "ui/images/variable.png"
 		imageEditOptionButton = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("EditOption_image")); // , "ui/images/edit_option.png"
 		imageResetOptionButton = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ResetOption_image")); // , "ui/images/reset_option.png"
-
+				
+    imageEditSmall = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("EditSmall_image")); // , "ui/images/Edit.png"
+    imageExploreSolutionSmall = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ExploreSolutionSmall_image")); // , "ui/images/exploreSolution.png"
+		
 		imageShowLog = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowLog_image")); // , "ui/images/show-log.png"
 		imageShowGrid = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowGrid_image")); // , "ui/images/show-grid.png"
 		imageShowHistory = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ShowHistory_image")); // , "ui/images/show-history.png"
@@ -1386,6 +1396,18 @@ public class GUIResource
 	{
 		return imageResetOptionButton;
 	}
+	
+  public Image getImageEditSmall()
+	{
+	  return imageEditSmall;
+	}
+
+	public Image getImageExploreSolutionSmall()
+	{
+	  return imageExploreSolutionSmall;
+	}
+
+	
 
 	/**
 	 * @return the imageArrow

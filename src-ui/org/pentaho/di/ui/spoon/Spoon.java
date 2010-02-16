@@ -1414,9 +1414,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		view = new CTabItem(tabFolder, SWT.NONE);
 		view.setControl(new Composite(tabFolder, SWT.NONE));
 		view.setText(STRING_SPOON_MAIN_TREE);
+		view.setImage(GUIResource.getInstance().getImageExploreSolutionSmall());		
+		
 		design = new CTabItem(tabFolder, SWT.NONE);
     design.setText(STRING_SPOON_CORE_OBJECTS_TREE);
     design.setControl(new Composite(tabFolder, SWT.NONE));
+    design.setImage(GUIResource.getInstance().getImageEditSmall());
 
 		lastControl = tabWrapper;
 
