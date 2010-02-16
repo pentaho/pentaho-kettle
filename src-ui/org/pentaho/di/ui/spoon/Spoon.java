@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -3106,15 +3107,40 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void openFile(boolean importfile) {
 		if (rep == null || importfile) // Load from XML
 		{
-			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-			dialog.setFilterExtensions(Const.STRING_TRANS_AND_JOB_FILTER_EXT);
-			dialog.setFilterNames(Const.getTransformationAndJobFilterNames());
-			setFilterPath(dialog);
-			String fname = dialog.open();
-			if (fname != null) {
-				lastDirOpened = dialog.getFilterPath();
-				openFile(fname, importfile);
-			}
+		  FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+      
+		  
+      LinkedHashSet<String> extensions = new LinkedHashSet<String>();
+      LinkedHashSet<String> extensionNames = new LinkedHashSet<String>();
+      StringBuffer allExtensions = new StringBuffer();
+      for(FileListener l : fileListeners){
+        for(String ext : l.getSupportedExtensions()){
+          extensions.add("*."+ext);
+          allExtensions.append("*.").append(ext).append(";");
+        }
+        for(String name : l.getFileTypeDisplayNames(Locale.getDefault())){
+          extensionNames.add(name);
+        }
+      }
+      extensions.add("*");
+      extensionNames.add(BaseMessages.getString(PKG, "Spoon.Dialog.OpenFile.AllFiles"));
+
+      String[] exts = new String[extensions.size() + 1];
+      exts[0] = allExtensions.toString();
+      System.arraycopy(extensions.toArray(new String[extensions.size()]), 0, exts, 1, extensions.size());
+      
+      String[] extNames = new String[extensionNames.size() + 1];
+      extNames[0] = BaseMessages.getString(PKG, "Spoon.Dialog.OpenFile.AllTypes");
+      System.arraycopy(extensionNames.toArray(new String[extensionNames.size()]), 0, extNames, 1, extensionNames.size());
+      
+      dialog.setFilterExtensions(exts);
+      
+      setFilterPath(dialog);
+      String fname = dialog.open();
+      if (fname != null) {
+        lastDirOpened = dialog.getFilterPath();
+        openFile(fname, importfile);
+      }
 		} else {
 			SelectObjectDialog sod = new SelectObjectDialog(shell, rep);
 			if (sod.open() != null) {
@@ -3409,45 +3435,61 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
 	public void openFile(String fname, boolean importfile) {
-		// Open the XML and see what's in there.
-		// We expect a single <transformation> or <job> root at this time...
-		try {
+	// Open the XML and see what's in there.
+    // We expect a single <transformation> or <job> root at this time...
 
-			boolean loaded = false;
-			FileListener listener = null;
-			// match by extension first
-			int idx = fname.lastIndexOf('.');
-			if (idx != -1) {
-				String extension = fname.substring(idx + 1);
-				listener = fileExtensionMap.get(extension);
-			}
-			// otherwise try by looking at the root node
-			Document document = XMLHandler.loadXMLFile(fname);
-			Node root = document.getDocumentElement();
-			if (listener == null) {
-				listener = fileNodeMap.get(root.getNodeName());
-			}
 
-			// You got to have a file name!
-			//
-			if (!Const.isEmpty(fname)) {
+    boolean loaded = false;
+    FileListener listener = null;
+    Node root = null;
+    // match by extension first
+    int idx = fname.lastIndexOf('.');
+    if (idx != -1) {
+      for(FileListener li : fileListeners){
+        if(li.accepts(fname)){
+          listener = li;
+          break;
+        }
+      }
+    }
+    
+    // Attempt to find a root XML node name. Fails gracefully for non-XML file types.
+    try{
+      Document document = XMLHandler.loadXMLFile(fname);
+      root = document.getDocumentElement();
+    } catch(KettleXMLException e){
+      if (log.isDetailed()){
+        log.logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.File.Xml.Parse.Error"));
+      }
+    }
+    
+    // otherwise try by looking at the root node if we were able to parse file as XML
+    if (listener == null && root != null) {
+      for(FileListener li : fileListeners){
+        if(li.acceptsXml(root.getNodeName())){
+          listener = li;
+          break;
+        }
+      }
+    }
 
-				if (listener != null) {
-					loaded = listener.open(root, fname, importfile);
-				}
-				if (!loaded) {
-					// Give error back
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-					mb.setMessage(BaseMessages.getString(PKG, "Spoon.UnknownFileType.Message", fname));
-					mb.setText(BaseMessages.getString(PKG, "Spoon.UnknownFileType.Title"));
-					mb.open();
-				} else {
-					applyVariables(); // set variables in the newly loaded
-					// transformation(s) and job(s).
-				}
+		// You got to have a file name!
+		//
+		if (!Const.isEmpty(fname)) {
+
+			if (listener != null) {
+				loaded = listener.open(root, fname, importfile);
 			}
-		} catch (KettleException e) {
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Message") + fname, e);
+			if (!loaded) {
+				// Give error back
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+				mb.setMessage(BaseMessages.getString(PKG, "Spoon.UnknownFileType.Message", fname));
+				mb.setText(BaseMessages.getString(PKG, "Spoon.UnknownFileType.Title"));
+				mb.open();
+			} else {
+				applyVariables(); // set variables in the newly loaded
+				// transformation(s) and job(s).
+			}
 		}
 	}
 
