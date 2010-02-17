@@ -248,6 +248,7 @@ public class TableView extends Composite
 			tablecolumn[i+1]=new TableColumn(table, allignment);
 			tablecolumn[i+1].setResizable(true);
 			if (columns[i].getName()!=null) tablecolumn[i+1].setText(columns[i].getName());
+			if (columns[i].getToolTip()!=null) tablecolumn[i+1].setToolTipText((columns[i].getToolTip()));
 			ValueMetaInterface valueMeta = columns[i].getValueMeta();
 			if (valueMeta!=null && valueMeta.isNumeric())
 			{
