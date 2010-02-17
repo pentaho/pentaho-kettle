@@ -332,7 +332,11 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     // Nick's fix below -------
     Control toolbarControl = (Control) toolbar.getManagedObject();
     
-    toolbarControl.setLayoutData(new FormData());
+    FormData toolbarFd = new FormData();
+    toolbarFd.left = new FormAttachment(0, 0);
+    toolbarFd.right = new FormAttachment(100, 0);
+    
+    toolbarControl.setLayoutData(toolbarFd);
     toolbarControl.setParent(this);
     // ------------------------
 

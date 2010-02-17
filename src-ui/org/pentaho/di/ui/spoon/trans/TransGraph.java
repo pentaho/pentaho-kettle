@@ -397,7 +397,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     // Nick's fix below -------
     Control toolbarControl = (Control) toolbar.getManagedObject();
     
-    toolbarControl.setLayoutData(new FormData());
+    FormData toolbarFd = new FormData();
+    toolbarFd.left = new FormAttachment(0, 0);
+    toolbarFd.right = new FormAttachment(100, 0);
+    
+    toolbarControl.setLayoutData(toolbarFd);
     toolbarControl.setParent(this);
     // ------------------------
     
@@ -1526,6 +1530,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       swtToolbar.pack();
       
       // Hack alert : more XUL limitations...
+      // TODO: no longer a limitation use toolbaritem
       //
       ToolItem sep = new ToolItem(swtToolbar, SWT.SEPARATOR);
 
