@@ -11,6 +11,7 @@ import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ProfileMeta.Permission;
@@ -20,7 +21,7 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryProfileDe
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
 
 public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecurityProvider implements
-    RepositorySecurityProvider {
+    RepositorySecurityProvider, RepositorySecurityManager {
 
   private RepositoryCapabilities capabilities;
 
@@ -57,18 +58,6 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     return capabilities.isReadOnly() || (userInfo.isReadOnly() && !userInfo.isAdministrator());
   }
 
-  public boolean supportsUsers() {
-    return capabilities.supportsUsers();
-  }
-
-  public boolean supportsRevisions() {
-    return capabilities.supportsRevisions();
-  }
-
-  public boolean supportsMetadata() {
-    return capabilities.supportsMetadata();
-  }
-
   public boolean isLockingPossible() {
     return capabilities.supportsLocking()
         && (userInfo != null && (userInfo.supportsLocking() || userInfo.isAdministrator()));
@@ -94,10 +83,6 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
 
   public UserInfo loadUserInfo(String login) throws KettleException {
     return userDelegate.loadUserInfo(new UserInfo(), login);
-  }
-
-  public UserInfo loadUserInfo(String login, String password) throws KettleException {
-    return userDelegate.loadUserInfo(new UserInfo(), login, password);
   }
 
   public void saveUserInfo(UserInfo userInfo) throws KettleException {
@@ -222,16 +207,6 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
 
   // PermissionMeta
 
-  /**
-   * Load a permission from the repository
-   * 
-   * @param id_permission The id of the permission to load
-   * @throws KettleException
-   */
-  public Permission loadPermission(ObjectId id_permission) throws KettleException {
-    return permissionDelegate.loadPermissionMeta(id_permission);
-  }
-
   public synchronized void delUser(ObjectId id_user) throws KettleException {
     String sql = "DELETE FROM " + repository.quoteTable(KettleDatabaseRepository.TABLE_R_USER) + " WHERE "
         + repository.quote(KettleDatabaseRepository.FIELD_USER_ID_USER) + " = " + id_user;
@@ -241,13 +216,6 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   public synchronized void delProfile(ObjectId id_profile) throws KettleException {
     String sql = "DELETE FROM " + repository.quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE) + " WHERE "
         + repository.quote(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE) + " = " + id_profile;
-    repository.execStatement(sql);
-  }
-
-  public synchronized void delProfilePermissions(ObjectId id_profile) throws KettleException {
-    String sql = "DELETE FROM " + repository.quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE_PERMISSION)
-        + " WHERE " + repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE) + " = "
-        + id_profile;
     repository.execStatement(sql);
   }
 
@@ -264,13 +232,6 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     String loginField = repository.quote(KettleDatabaseRepository.FIELD_USER_LOGIN);
     return connectionDelegate.getStrings("SELECT " + loginField + " FROM "
         + repository.quoteTable(KettleDatabaseRepository.TABLE_R_USER) + " ORDER BY " + loginField);
-  }
-
-  public ObjectId[] getPermissionIDs(ObjectId id_profile) throws KettleException {
-    return connectionDelegate.getIDs("SELECT "
-        + repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION) + " FROM "
-        + repository.quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE_PERMISSION) + " WHERE "
-        + repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE) + " = " + id_profile);
   }
 
   public synchronized String[] getProfiles() throws KettleException {

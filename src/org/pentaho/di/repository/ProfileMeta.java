@@ -82,6 +82,13 @@ public class ProfileMeta
 	
 	private List<Permission> permissions; // List of permissions in this profile...
 
+	public ProfileMeta(ProfileMeta copyFrom) {
+	  this.profileId = copyFrom.profileId;
+	  this.name = copyFrom.name;
+	  this.description = copyFrom.description;
+	  this.permissions = new ArrayList<Permission>(copyFrom.permissions);
+	}
+	
 	public ProfileMeta(String name, String description)
 	{
 		this.name = name;

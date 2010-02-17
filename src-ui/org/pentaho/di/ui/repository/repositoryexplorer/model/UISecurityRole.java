@@ -5,12 +5,10 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.IRole;
-import org.pentaho.di.repository.RepositoryUserInterface;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.util.AbstractModelList;
@@ -207,10 +205,10 @@ public class UISecurityRole extends XulEventSourceAdapter {
     fireUserUnassignmentPropertyChange ();
   }
 
-  public IRole getRole(RepositoryUserInterface rui) {
+  public IRole getRole(RepositorySecurityManager rsm) {
     IRole roleInfo = null;
     try {
-      roleInfo = rui.constructRole();
+      roleInfo = rsm.constructRole();
     } catch (KettleException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

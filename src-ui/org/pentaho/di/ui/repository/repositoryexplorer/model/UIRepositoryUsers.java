@@ -18,7 +18,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.util.List;
 
-import org.pentaho.di.repository.RepositoryUserInterface;
+import org.pentaho.di.repository.RepositorySecurityManager;
 
 
 public class UIRepositoryUsers extends AbstractModelNode<UIRepositoryUser>{
@@ -31,13 +31,13 @@ public class UIRepositoryUsers extends AbstractModelNode<UIRepositoryUser>{
     super(users);
   }
 
-  public UIRepositoryUsers(RepositoryUserInterface rui){
+  public UIRepositoryUsers(RepositorySecurityManager rsm) {
 
     String[] logins; 
     try {
-      logins = rui.getUserLogins();
+      logins = rsm.getUserLogins();
       for (String login : logins) {
-        this.add(new UIRepositoryUser(rui.loadUserInfo(login)));
+        this.add(new UIRepositoryUser(rsm.loadUserInfo(login)));
       }
     } catch (Exception e) {
       // TODO: handle exception; can't get users???

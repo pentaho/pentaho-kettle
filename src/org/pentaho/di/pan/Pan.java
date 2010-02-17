@@ -66,7 +66,6 @@ public class Pan
 	    }
 
 		RepositoryMeta repinfo  = null;
-		UserInfo       userinfo = null;
 		Trans          trans    = null;
 
 		// The options: 
@@ -211,8 +210,8 @@ public class Pan
 						// Define and connect to the repository...
 						if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
 						
-						rep = RepositoryLoader.createRepository(repinfo, userinfo);
-						rep.connect();
+						rep = RepositoryLoader.createRepository(repinfo);
+						rep.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
 						
 						RepositoryDirectory directory = rep.loadRepositoryDirectoryTree(); // Default = root
 						
@@ -226,68 +225,57 @@ public class Pan
 						{
 							// Check username, password
 							if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.CheckSuppliedUserPass"));
-							
-							userinfo = rep.getSecurityProvider().loadUserInfo(optionUsername.toString(), optionPassword.toString());
-							if (!rep.getSecurityProvider().supportsUsers() || userinfo.getObjectId()!=null)
+
+							// Load a transformation
+							if (!Const.isEmpty(optionTransname))
 							{
-								// Load a transformation
-								if (!Const.isEmpty(optionTransname))
+								if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.LoadTransInfo"));
+								
+								transMeta = rep.loadTransformation(optionTransname.toString(), directory, null, true, null); // reads last version
+								if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.AllocateTrans"));
+								
+								trans = new Trans(transMeta);
+								trans.setRepository(rep);
+							}
+							else
+							// List the transformations in the repository
+							if ("Y".equalsIgnoreCase(optionListtrans.toString()))
+							{
+								if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.GettingListTransDirectory",""+directory));
+								
+								String transnames[] = rep.getTransformationNames(directory.getObjectId(), false);
+								for (int i=0;i<transnames.length;i++)
 								{
-									if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.LoadTransInfo"));
-									
-									transMeta = rep.loadTransformation(optionTransname.toString(), directory, null, true, null); // reads last version
-									if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.AllocateTrans"));
-									
-									trans = new Trans(transMeta);
-									trans.setRepository(rep);
-								}
-								else
-								// List the transformations in the repository
-								if ("Y".equalsIgnoreCase(optionListtrans.toString()))
-								{
-									if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.GettingListTransDirectory",""+directory));
-									
-									String transnames[] = rep.getTransformationNames(directory.getObjectId(), false);
-									for (int i=0;i<transnames.length;i++)
-									{
-										System.out.println(transnames[i]);
-									}
-								}
-								else
-								// List the directories in the repository
-								if ("Y".equalsIgnoreCase(optionListdir.toString()))
-								{
-									String dirnames[] = rep.getDirectoryNames(directory.getObjectId());
-									for (int i=0;i<dirnames.length;i++)
-									{
-										System.out.println(dirnames[i]);
-									}
-								}
-                                else
-                                // Export the repository
-                                if (!Const.isEmpty(optionExprep))
-                                {
-                                    System.out.println(BaseMessages.getString(PKG, "Pan.Log.ExportingObjectsRepToFile",""+optionExprep));
-                                    
-                                    new RepositoryExporter(rep).exportAllObjects(null, optionExprep.toString(), directory,"all");
-                                    System.out.println(BaseMessages.getString(PKG, "Pan.Log.FinishedExportObjectsRepToFile",""+optionExprep));
-                                }
-								else
-								{
-									System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoTransNameSupplied"));
+									System.out.println(transnames[i]);
 								}
 							}
 							else
+							// List the directories in the repository
+							if ("Y".equalsIgnoreCase(optionListdir.toString()))
 							{
-								System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotVerifyUserPass"));
-								userinfo=null;
-								repinfo=null;
+								String dirnames[] = rep.getDirectoryNames(directory.getObjectId());
+								for (int i=0;i<dirnames.length;i++)
+								{
+									System.out.println(dirnames[i]);
+								}
+							}
+                              else
+                              // Export the repository
+                              if (!Const.isEmpty(optionExprep))
+                              {
+                                  System.out.println(BaseMessages.getString(PKG, "Pan.Log.ExportingObjectsRepToFile",""+optionExprep));
+                                  
+                                  new RepositoryExporter(rep).exportAllObjects(null, optionExprep.toString(), directory,"all");
+                                  System.out.println(BaseMessages.getString(PKG, "Pan.Log.FinishedExportObjectsRepToFile",""+optionExprep));
+                              }
+							else
+							{
+								System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoTransNameSupplied"));
 							}
 						}
 						else
 						{
 							System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotFindSpecifiedDirectory",""+optionDirname));
-							userinfo=null;
 							repinfo=null;
 						}
 					}

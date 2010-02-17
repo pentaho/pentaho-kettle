@@ -629,35 +629,29 @@ public class TransExecutionConfiguration implements Cloneable
         Node repNode = XMLHandler.getSubNode(trecNode, "repository");
         if (repNode!=null)
         {
-            String repositoryName = XMLHandler.getTagValue(repNode, "name");
-            String username = XMLHandler.getTagValue(repNode, "login");
-            String password = Encr.decryptPassword(XMLHandler.getTagValue(repNode, "password"));
-            
-            // Verify that the repository exists on the slave server...
-            //
-            RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
-            try {
-            	repositoriesMeta.readData();
-            } catch(Exception e) {
-            	throw new KettleException("Unable to get a list of repositories to locate repository '"+repositoryName+"'");
-            }
+          String repositoryName = XMLHandler.getTagValue(repNode, "name");
+          String username = XMLHandler.getTagValue(repNode, "login");
+          String password = Encr.decryptPassword(XMLHandler.getTagValue(repNode, "password"));
+          
+          // Verify that the repository exists on the slave server...
+          //
+          RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
+          try {
+          	repositoriesMeta.readData();
+          } catch(Exception e) {
+          	throw new KettleException("Unable to get a list of repositories to locate repository '"+repositoryName+"'");
+          }
         	RepositoryMeta repositoryMeta = repositoriesMeta.findRepository(repositoryName);
         	if (repositoryMeta==null)
         	{
         		throw new KettleException("I couldn't find the repository with name '"+repositoryName+"'");
         	}
-    		Repository rep = RepositoryLoader.createRepository(repositoryMeta, null);
-	    	try {
-	    		rep.connect();
-	    	} catch(Exception e) {
-				throw new KettleException("Unable to connect to the repository with name '"+repositoryName+"'");
-			}
-			UserInfo userInfo = rep.getSecurityProvider().loadUserInfo(username, password);
-			if (userInfo.getObjectId()==null)
-			{
-				rep.disconnect();
-				throw new KettleException("Unable to verify username '"+username+"' credentials for the repository with name '"+repositoryName+"'");
-			}
+      		Repository rep = RepositoryLoader.createRepository(repositoryMeta);
+  	    	try {
+  	    		rep.connect(username, password);
+  	    	} catch(Exception e) {
+  	    	  throw new KettleException("Unable to connect to the repository with name '"+repositoryName+"'");
+  	    	}
         }
     }
 

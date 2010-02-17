@@ -23,7 +23,7 @@ public class StringObjectId implements ObjectId, Comparable<StringObjectId> {
 		  return false;
 		}
 		
-		StringObjectId objectId = (StringObjectId) obj;
+		ObjectId objectId = (ObjectId) obj;
 		
 		return id.equalsIgnoreCase(objectId.getId());
 	}

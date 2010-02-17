@@ -448,7 +448,7 @@ public class KettleDatabaseRepositoryBase {
 
 	
 	protected KettleDatabaseRepositoryMeta		repositoryMeta;
-	public    UserInfo			userInfo;
+
 	protected RepositoryDirectory importBaseDirectory;
 
 	protected LogChannelInterface log;
@@ -467,15 +467,6 @@ public class KettleDatabaseRepositoryBase {
 	
 	public void setRepositoryMeta(KettleDatabaseRepositoryMeta repositoryMeta) {
 		this.repositoryMeta = repositoryMeta;
-	}
-
-	public UserInfo getUserInfo()
-	{
-		return userInfo;
-	}
-	
-	public void setUserinfo(UserInfo userinfo) {
-		this.userInfo = userinfo;
 	}
 
 	public String getName()

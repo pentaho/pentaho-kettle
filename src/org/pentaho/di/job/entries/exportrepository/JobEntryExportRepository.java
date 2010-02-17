@@ -54,7 +54,6 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryExporter;
 import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.UserInfo;
 import org.w3c.dom.Node;
 
 
@@ -109,7 +108,6 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 	RepositoriesMeta repsinfo=null;
 	Repository repository=null;
 	RepositoryMeta repinfo  = null;
-	UserInfo       userinfo = null;
 	
 	
 	int NrErrors=0;
@@ -635,7 +633,6 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 				this.repository=null;
 			}
 			if(this.repinfo!=null) this.repinfo=null;
-			if(this.userinfo!=null) this.userinfo=null;
 			if(this.repsinfo!=null) 
 			{
 				this.repsinfo.clear();
@@ -760,29 +757,14 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepSystem"));
 		}
 		
-		this.repository = RepositoryLoader.createRepository(this.repinfo, this.userinfo);
+		this.repository = RepositoryLoader.createRepository(this.repinfo);
 		
 		try {
-			this.repository.connect();
+			this.repository.connect(realusername, realpassword);
 		} catch(Exception e) {
 			logError(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectRep"));
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectRep"), e);
 		}
-		
-		// Check username, password
-		// Just for Job entry security
-		// We don't need it at all to export
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobExportRepository.Log.CheckSuppliedUserPass"));
-		this.userinfo = this.repository.getSecurityProvider().loadUserInfo(realusername, realpassword);
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobExportRepository.Log.CheckingUser",userinfo.getUsername()));
-		
-		if (this.userinfo.getObjectId()==null)
-		{
-			logError(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotVerifyUserPass"));
-			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotVerifyUserPass"));
-		}
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobExportRepository.Log.SuppliedUserPassVerified"));
-		
 	}
 	private void addFileToResultFilenames(String fileaddentry, LogChannelInterface log, Result result, Job parentJob)
 	{	

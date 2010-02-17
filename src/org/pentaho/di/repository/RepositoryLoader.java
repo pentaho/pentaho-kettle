@@ -159,10 +159,10 @@ public class RepositoryLoader {
 		return cl;
 	}
 
-	public static Repository createRepository(RepositoryMeta repositoryMeta, UserInfo userInfo) throws KettleException {
+	public static Repository createRepository(RepositoryMeta repositoryMeta) throws KettleException {
     	RepositoryLoader loader = RepositoryLoader.getInstance();
     	Repository repository = loader.createRepositoryObject(repositoryMeta.getId());
-    	repository.init(repositoryMeta, userInfo);
+    	repository.init(repositoryMeta);
     	return repository;
     }
 

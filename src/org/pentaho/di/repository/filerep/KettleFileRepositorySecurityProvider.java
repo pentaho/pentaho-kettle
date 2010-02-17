@@ -29,9 +29,6 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
 		return null;
 	}
 
-	public void setUserInfo(UserInfo userInfo) {
-	}
-	
 	public RepositoryMeta getRepositoryMeta() {
 		return repositoryMeta;
 	}
@@ -96,21 +93,9 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
 	public boolean isReadOnly() {
 		return capabilities.isReadOnly();
 	}
-
-	public boolean supportsUsers() {
-		return capabilities.supportsUsers();
-	}
-	
-	public boolean supportsRevisions() {
-		return capabilities.supportsRevisions();
-	}
 	
 	public boolean isLockingPossible() {
 		return capabilities.supportsLocking();
-	}
-	
-	public boolean supportsMetadata() {
-		return capabilities.supportsMetadata();
 	}
 	
 	public boolean allowsVersionComments() {

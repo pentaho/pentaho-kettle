@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.RepositoryUserInterface;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.IRole;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ObjectRecipient.Type;
@@ -28,17 +28,16 @@ public class UISecurity  extends XulEventSourceAdapter{
 		userList = new ArrayList<UIRepositoryUser>();		
 		roleList = new ArrayList<UIRepositoryRole>();		
 	}
-	public UISecurity(RepositoryUserInterface rui) {
+	public UISecurity(RepositorySecurityManager rsm) {
 		this();
 		try  {
-			if(rui != null && rui.getUsers() != null) {
-				for(UserInfo user:rui.getUsers()) {
+			if(rsm != null && rsm.getUsers() != null) {
+				for(UserInfo user : rsm.getUsers()) {
 					userList.add(new UIRepositoryUser(user));
 				}
 				this.firePropertyChange("userList", null, userList); //$NON-NLS-1$
-				for(IRole role:rui.getRoles()) {
+				for(IRole role : rsm.getRoles()) {
 					roleList.add(new UIRepositoryRole(role));
-					
 				}
 				this.firePropertyChange("roleList", null, roleList); //$NON-NLS-1$
 			}

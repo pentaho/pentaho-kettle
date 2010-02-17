@@ -43,7 +43,12 @@ public interface Repository {
    * @return The security provider for this repository.
    */
   public RepositorySecurityProvider getSecurityProvider();
-    
+
+  /**
+   * @return The security manager for this repository.
+   */
+  public RepositorySecurityManager getSecurityManager();
+
   /**
    * @return the logging channel of this repository
    */
@@ -52,10 +57,12 @@ public interface Repository {
   /**
    * Connect to the repository.  Make sure you don't connect more than once to the same repository with this repository object. 
    * 
+   * @param username the username of the user connecting to the repository.
+   * @param password the password of the user connecting to the repository.
    * @throws KettleSecurityException in case the supplied user or password is incorrect.
    * @throws KettleException in case there is a general unexpected error OR if we're already connected to the repository.
    */
-  public void connect() throws KettleException, KettleSecurityException;
+  public void connect(String username, String password) throws KettleException, KettleSecurityException;
   
   /**
    * Disconnect from the repository.
@@ -67,7 +74,7 @@ public interface Repository {
     
     /** Initialize the repository with the repository metadata and user information.
      * */
-    public void init(RepositoryMeta repositoryMeta, UserInfo userInfo);
+    public void init(RepositoryMeta repositoryMeta);
     
   // Common methods...
 

@@ -87,6 +87,7 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryPluginMeta;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.UserInfo;
@@ -206,7 +207,6 @@ public class RepositoryExplorerDialog extends Dialog
 	private LogChannelInterface log;
 	private PropsUI props;
 	private Repository     rep;
-	private UserInfo       userinfo;
 	
 	private String debug;
     
@@ -231,17 +231,17 @@ public class RepositoryExplorerDialog extends Dialog
 	private RepositoryMeta	repositoryMeta;
 	private RepositoryCapabilities	capabilities;
 	private boolean	readonly;
-	private RepositorySecurityProvider	securityProvider;
+	private RepositorySecurityProvider securityProvider;
+	private RepositorySecurityManager securityManager;
 	private boolean	includeDeleted;
 	private Map<String, RepositoryObject>	objectMap;
 
-	private RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, VariableSpace variableSpace)
+	private RepositoryExplorerDialog(Shell par, int style, Repository rep, VariableSpace variableSpace)
 	{
 		super(par, style);
 		this.props=PropsUI.getInstance();
 		this.rep=rep;
 		this.log=rep.getLog();
-		this.userinfo=ui;
 		this.variableSpace = variableSpace;
 
         sortColumn = 0;
@@ -253,14 +253,15 @@ public class RepositoryExplorerDialog extends Dialog
         capabilities = repositoryMeta.getRepositoryCapabilities();
         
         securityProvider = rep.getSecurityProvider();
+        securityManager = rep.getSecurityManager();
         readonly = securityProvider.isReadOnly();
         
         includeDeleted = false;
 	}
     
-	public RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, RepositoryExplorerCallback callback, VariableSpace variableSpace)
+	public RepositoryExplorerDialog(Shell par, int style, Repository rep, RepositoryExplorerCallback callback, VariableSpace variableSpace)
 	{
-		this(par, style, rep, ui, variableSpace);
+		this(par, style, rep, variableSpace);
 		this.callback = callback;
 	}
 	
@@ -1391,6 +1392,8 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
+		  UserInfo userinfo = securityProvider.getUserInfo();
+		  
 			wTree.removeAll();
 			objectMap.clear();
 			
@@ -1467,29 +1470,29 @@ public class RepositoryExplorerDialog extends Dialog
             }
     
 			// The transformations...				
-			if (!capabilities.supportsUsers() || userinfo.useTransformations())
+      if (!capabilities.supportsUsers() || userinfo.useTransformations())
 			{
-				TreeItem tiTrans = new TreeItem(tiTree, SWT.NONE); 
-				tiTrans.setImage(GUIResource.getInstance().getImageTransGraph());
-				tiTrans.setText(STRING_TRANSFORMATIONS);
-				
-				TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
-				newCat.setImage(GUIResource.getInstance().getImageLogoSmall());
-	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
-				RepositoryDirectoryUI.getTreeWithNames(newCat, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, true, false, directoryTree, null, null);
-			}
+			  TreeItem tiTrans = new TreeItem(tiTree, SWT.NONE); 
+			  tiTrans.setImage(GUIResource.getInstance().getImageTransGraph());
+			  tiTrans.setText(STRING_TRANSFORMATIONS);
 			
+			  TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
+			  newCat.setImage(GUIResource.getInstance().getImageLogoSmall());
+			  Color dircolor = GUIResource.getInstance().getColorDirectory();
+			  RepositoryDirectoryUI.getTreeWithNames(newCat, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, true, false, directoryTree, null, null);
+			}
+
 			// The Jobs...				
 			if (!capabilities.supportsUsers() || userinfo.useJobs())
 			{
-				TreeItem tiJob = new TreeItem(tiTree, SWT.NONE); 
-				tiJob.setImage(GUIResource.getInstance().getImageJobGraph());
-				tiJob.setText(STRING_JOBS);
-	
-				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
-				newJob.setImage(GUIResource.getInstance().getImageLogoSmall());
-	    		Color dircolor = GUIResource.getInstance().getColorDirectory();
-				RepositoryDirectoryUI.getTreeWithNames(newJob, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, false, true, directoryTree, null, null);
+			  TreeItem tiJob = new TreeItem(tiTree, SWT.NONE); 
+			  tiJob.setImage(GUIResource.getInstance().getImageJobGraph());
+			  tiJob.setText(STRING_JOBS);
+
+			  TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
+			  newJob.setImage(GUIResource.getInstance().getImageLogoSmall());
+        Color dircolor = GUIResource.getInstance().getColorDirectory();
+			  RepositoryDirectoryUI.getTreeWithNames(newJob, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, false, true, directoryTree, null, null);
 			}
 	
 			//
@@ -1501,7 +1504,7 @@ public class RepositoryExplorerDialog extends Dialog
 				tiUser.setText(STRING_USERS);
 	            if (!readonly) TreeItemAccelerator.addDoubleClick(tiUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { newUser(); } });
 				
-				String users[] = securityProvider.getUserLogins();
+				String users[] = securityManager.getUserLogins();
 				for (int i=0;i<users.length;i++)
 				{
 					if (userinfo.isAdministrator() || userinfo.getLogin().equalsIgnoreCase(users[i]))
@@ -1515,7 +1518,7 @@ public class RepositoryExplorerDialog extends Dialog
 						    newUser.setText(users[i]);
 	                        if (!readonly) TreeItemAccelerator.addDoubleClick(newUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { editUser(treeItem.getText()); } });
 						}
-					}
+				  }
 				}
 		
 				//
@@ -1523,20 +1526,20 @@ public class RepositoryExplorerDialog extends Dialog
 				//
 				if (userinfo.isAdministrator())
 				{
-					TreeItem tiProf = new TreeItem(tiTree, SWT.NONE);
-					tiProf.setImage(GUIResource.getInstance().getImageBol());
-					tiProf.setText(STRING_PROFILES);
-	                TreeItemAccelerator.addDoubleClick(tiProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { newProfile(); } });
-	
-					String prof[] = securityProvider.getProfiles();
-					for (int i=0;i<prof.length;i++)
-					{
-						TreeItem newProf = new TreeItem(tiProf, SWT.NONE);
-						newProf.setImage(GUIResource.getInstance().getImageProfil());
-						newProf.setText(prof[i]);
-	                    TreeItemAccelerator.addDoubleClick(newProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { editProfile(treeItem.getText()); } });
-					}
-				}
+				  TreeItem tiProf = new TreeItem(tiTree, SWT.NONE);
+				  tiProf.setImage(GUIResource.getInstance().getImageBol());
+				  tiProf.setText(STRING_PROFILES);
+                  TreeItemAccelerator.addDoubleClick(tiProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { newProfile(); } });
+
+          String prof[] = securityManager.getProfiles();
+				  for (int i=0;i<prof.length;i++)
+				  {
+					  TreeItem newProf = new TreeItem(tiProf, SWT.NONE);
+					  newProf.setImage(GUIResource.getInstance().getImageProfil());
+					  newProf.setText(prof[i]);
+                    TreeItemAccelerator.addDoubleClick(newProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { editProfile(treeItem.getText()); } });
+				  }
+			  }
 			}
 
             // Always expand the top level entry...
@@ -2085,14 +2088,14 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			UserInfo uinfo = securityProvider.loadUserInfo(login); // Get UserInfo from repository...
-			UserDialog ud = new UserDialog(shell, SWT.NONE, rep.getSecurityProvider(), uinfo);
+			UserInfo uinfo = securityManager.loadUserInfo(login); // Get UserInfo from repository...
+			UserDialog ud = new UserDialog(shell, SWT.NONE, rep, uinfo);
 			UserInfo ui = ud.open();
 			if (!readonly)
 			{
 				if (ui!=null)
 				{
-					securityProvider.saveUserInfo(ui);
+					securityManager.saveUserInfo(ui);
 			 	}
 			}
 			else
@@ -2113,7 +2116,7 @@ public class RepositoryExplorerDialog extends Dialog
 
 	public void newUser()
 	{
-		UserDialog ud = new UserDialog(shell, SWT.NONE, rep.getSecurityProvider(), new UserInfo());
+		UserDialog ud = new UserDialog(shell, SWT.NONE, rep, new UserInfo());
 		UserInfo ui = ud.open();
 		if (ui!=null)
 		{
@@ -2144,10 +2147,10 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			ObjectId idUser = securityProvider.getUserID(login);
+			ObjectId idUser = securityManager.getUserID(login);
 			if (idUser!=null)
 			{
-				securityProvider.delUser(idUser);
+			  securityManager.delUser(idUser);
 			}
 		}
 		catch(KettleException e)
@@ -2235,11 +2238,11 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				ObjectId id = securityProvider.getUserID(name);
+				ObjectId id = securityManager.getUserID(name);
 				if (id!=null)
 				{
 					// System.out.println("Renaming user ["+name+"] with ID = "+id);
-					securityProvider.renameUser(id, newname);
+				  securityManager.renameUser(id, newname);
 					retval=true;
 				}
 				else
@@ -2338,10 +2341,10 @@ public class RepositoryExplorerDialog extends Dialog
             }
 			if (!name.equals(newname))
 			{
-				ObjectId id = securityProvider.getProfileID(name);
+				ObjectId id = securityManager.getProfileID(name);
 				if (id!=null)
 				{
-					securityProvider.renameProfile(id, newname);
+					securityManager.renameProfile(id, newname);
 					retval=true;
 				}
 				else
@@ -2646,8 +2649,8 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			ObjectId idProfile = securityProvider.getProfileID(profilename);
-			ProfileMeta profinfo = securityProvider.loadProfileMeta(idProfile);
+			ObjectId idProfile = securityManager.getProfileID(profilename);
+			ProfileMeta profinfo = securityManager.loadProfileMeta(idProfile);
 			
 			// System.out.println("editProfile, nrPermissions = "+profinfo.nrPermissions());
 	
@@ -2655,7 +2658,7 @@ public class RepositoryExplorerDialog extends Dialog
 			String name = pd.open();
 			if (name!=null)
 			{
-				securityProvider.saveProfile(profinfo);
+			  securityManager.saveProfile(profinfo);
 			}
 				
 			if(!profilename.equalsIgnoreCase(name)) refreshTree();
@@ -2676,10 +2679,10 @@ public class RepositoryExplorerDialog extends Dialog
 			if (name!=null)
 			{
 				// See if this user already exists...
-				ObjectId idProfile = securityProvider.getProfileID(name);
+				ObjectId idProfile = securityManager.getProfileID(name);
 				if (idProfile==null)
 				{
-					securityProvider.saveProfile(profinfo);
+				  securityManager.saveProfile(profinfo);
 				}
 				else
 				{
@@ -2704,10 +2707,10 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			ObjectId idProfile = securityProvider.getProfileID(profilename);
+			ObjectId idProfile = securityManager.getProfileID(profilename);
 			if (idProfile!=null)
 			{
-				securityProvider.delProfile(idProfile);
+			  securityManager.delProfile(idProfile);
 			}
 	
 			refreshTree();

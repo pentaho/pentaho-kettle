@@ -30,7 +30,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectAcl;
 import org.pentaho.di.repository.ObjectPermission;
-import org.pentaho.di.repository.RepositoryUserInterface;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
@@ -128,7 +128,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   
   List<UIRepositoryObject> repoObject = new ArrayList<UIRepositoryObject>();
 
-  private RepositoryUserInterface rui;
+  private RepositorySecurityManager rsm;
   private BrowseController browseController;
   ObjectAcl acl;
   TYPE returnType;
@@ -477,12 +477,12 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     return repoObject;
   }
 
-  public RepositoryUserInterface getRepositoryUserInterface() {
-    return rui;
+  public RepositorySecurityManager getRepositorySecurityManager() {
+    return rsm;
   }
 
-  public void setRepositoryUserInterface(RepositoryUserInterface rui) {
-    this.rui = rui;
+  public void setRepositorySecurityManager(RepositorySecurityManager rsm) {
+    this.rsm = rsm;
   }
 
   public void setBindingFactory(BindingFactory bf) {
@@ -532,7 +532,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   public void showManageAclsDialog() throws Exception {
     try {
-      manageAclsModel.setAclsList(rui.getAllUsers(), rui.getAllRoles());
+      manageAclsModel.setAclsList(rsm.getAllUsers(), rsm.getAllRoles());
     } catch (KettleException ke) {
       messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$

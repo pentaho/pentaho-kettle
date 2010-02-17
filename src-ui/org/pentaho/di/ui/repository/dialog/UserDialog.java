@@ -39,7 +39,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ProfileMeta;
-import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -68,15 +69,17 @@ public class UserDialog extends Dialog
 	
 	private boolean    newUser = false;
 
-	private RepositorySecurityProvider	securityProvider;
+	private RepositorySecurityManager	securityManager;
+	private Repository  repository;
    
 	/**
      * This dialog grabs a UserMeta structure, valid for the specified repository.
      */
-	public UserDialog(Shell parent, int style, RepositorySecurityProvider securityProvider, UserInfo userInfo)
+	public UserDialog(Shell parent, int style, Repository repository, UserInfo userInfo)
 	{
 		super(parent, style);
-		this.securityProvider = securityProvider;
+		this.securityManager = repository.getSecurityManager();
+		this.repository = repository;
 		this.userinfo=userInfo;
 
 		this.props=PropsUI.getInstance();
@@ -209,7 +212,7 @@ public class UserDialog extends Dialog
         
         // If the repository user is not an administrator, changing the users' profile is not allowed...
         //
-        if (!securityProvider.getUserInfo().isAdministrator() || userinfo.isAdministrator())
+        if (!repository.getUserInfo().isAdministrator() || userinfo.isAdministrator())
         {
             wlProfile.setEnabled(false);
             wProfile.setEnabled(false);
@@ -327,7 +330,7 @@ public class UserDialog extends Dialog
 			
 		    if ( isNewUser() )
 		    {
-		    	ObjectId id = securityProvider.getUserID(login);
+		    	ObjectId id = securityManager.getUserID(login);
 		    	if ( id != null )
 		    	{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -346,11 +349,11 @@ public class UserDialog extends Dialog
 			userinfo.setDescription(wDescription.getText());
 			String profname = wProfile.getText();
 			
-			ObjectId idProfile = securityProvider.getProfileID(profname);
-			ProfileMeta profinfo = securityProvider.loadProfileMeta(idProfile);
+			ObjectId idProfile = securityManager.getProfileID(profname);
+			ProfileMeta profinfo = securityManager.loadProfileMeta(idProfile);
 			userinfo.setProfile( profinfo);
             
-			securityProvider.saveUserInfo(userinfo);
+			securityManager.saveUserInfo(userinfo);
 	
 			dispose();
 		}
@@ -368,7 +371,7 @@ public class UserDialog extends Dialog
 		try
 		{
 			wProfile.removeAll();
-			String prof[] = securityProvider.getProfiles();
+			String prof[] = securityManager.getProfiles();
 			for (int i=0;i<prof.length;i++)
 			{
 				wProfile.add(prof[i]);

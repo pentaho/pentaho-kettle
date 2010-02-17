@@ -35,7 +35,6 @@ import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.UserInfo;
 import org.w3c.dom.Node;
 
 
@@ -478,18 +477,12 @@ public class JobExecutionConfiguration implements Cloneable
         	{
         		throw new KettleException("I couldn't find the repository with name '"+repositoryName+"'");
         	}
-    		Repository rep = RepositoryLoader.createRepository(repositoryMeta, null);
+    		Repository rep = RepositoryLoader.createRepository(repositoryMeta);
     		
 			try {
-				rep.connect();
+				rep.connect(username, password);
 			} catch(Exception e) {
 				throw new KettleException("Unable to connect to the repository with name '"+repositoryName+"'");
-			}
-			UserInfo userInfo = rep.getSecurityProvider().loadUserInfo(username, password);
-			if (userInfo.getObjectId()==null)
-			{
-				rep.disconnect();
-				throw new KettleException("Unable to verify username '"+username+"' credentials for the repository with name '"+repositoryName+"'");
 			}
 			
 			// Confirmed access:

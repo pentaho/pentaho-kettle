@@ -383,7 +383,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
             try
 			{
 				System.out.println("Allocating repository..."); //$NON-NLS-1$
-				KettleDatabaseRepository rep = (KettleDatabaseRepository) RepositoryLoader.createRepository(repositoryMeta, null);
+				KettleDatabaseRepository rep = (KettleDatabaseRepository) RepositoryLoader.createRepository(repositoryMeta);
 				
 				System.out.println("Connecting to database for repository creation..."); //$NON-NLS-1$
                 rep.connectionDelegate.connect(true, true);
@@ -423,21 +423,9 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 						{
 							try
 							{
-								// OK, what's the admin password?
-								//
-								UserInfo ui = rep.getSecurityProvider().loadUserInfo("admin"); //$NON-NLS-1$
-								
-								if (pwd.equalsIgnoreCase( ui.getPassword() ) )
-								{
-									goAhead=true;
-								}
-								else
-								{
-									MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-									mb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UpgradePasswordNotCorrect.Message")); //$NON-NLS-1$
-									mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UpgradePasswordNotCorrect.Title")); //$NON-NLS-1$
-									mb.open();
-								}
+							  // authenticate as admin before upgrade
+							  rep.connect("admin", pwd);
+							  goAhead=true;
 							}
 							catch(KettleException e)
 							{
@@ -503,8 +491,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 		
 		try
 		{
-			KettleDatabaseRepository rep = (KettleDatabaseRepository) RepositoryLoader.createRepository(repinfo, null);
-            rep.connect();
+			KettleDatabaseRepository rep = (KettleDatabaseRepository) RepositoryLoader.createRepository(repinfo);
+			
             
 			MessageBox qmb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
 			qmb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ConfirmRemovalOfRepository.Message")); //$NON-NLS-1$
@@ -519,44 +507,35 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 				{
 					try
 					{
-						// OK, what's the admin password?
-						//
-						UserInfo ui = rep.getSecurityProvider().loadUserInfo("admin"); //$NON-NLS-1$
-						
-						if (pwd.equalsIgnoreCase( ui.getPassword() ) )
-						{		
-							try
-							{
-								rep.dropRepositorySchema();
-								
-								MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-								mb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Message")); //$NON-NLS-1$
-								mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Title")); //$NON-NLS-1$
-								mb.open();
-							}
-							catch(KettleDatabaseException dbe)
-							{
-								MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-								mb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Message")+Const.CR+dbe.getMessage()); //$NON-NLS-1$
-								mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Title")); //$NON-NLS-1$
-								mb.open();
-							}
+						// Connect as admin user
+						rep.connect("admin", pwd);
+						try
+						{
+							rep.dropRepositorySchema();
+							
+							MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+							mb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Message")); //$NON-NLS-1$
+							mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.RemovedRepositoryTables.Title")); //$NON-NLS-1$
+							mb.open();
 						}
-						else
+						catch(KettleDatabaseException dbe)
 						{
 							MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-							mb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToRemoveRepositoryPwdIncorrect.Message")); //$NON-NLS-1$
-							mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToRemoveRepositoryPwdIncorrect.Title")); //$NON-NLS-1$
+							mb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Message")+Const.CR+dbe.getMessage()); //$NON-NLS-1$
+							mb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToRemoveRepository.Title")); //$NON-NLS-1$
 							mb.open();
 						}
 					}
 					catch(KettleException e)
 					{
 						new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+					} 
+					finally 
+					{
+					  rep.disconnect();
 					}
 				}
 			}
-			rep.disconnect();
 		}
 		catch(KettleException ke)
 		{

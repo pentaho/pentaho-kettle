@@ -25,7 +25,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IRole;
 import org.pentaho.di.repository.ObjectRecipient;
-import org.pentaho.di.repository.RepositoryUserInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ObjectRecipient.Type;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
@@ -51,7 +52,6 @@ import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.util.XulDialogCallback;
-import org.pentaho.di.repository.Repository;
 
 /**
  *
@@ -127,7 +127,7 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
   private XulButton unassignUserFromRoleButton;
 
-  private RepositoryUserInterface rui;
+  private RepositorySecurityManager rsm;
   
   protected Repository repository;
   
@@ -186,7 +186,7 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
 
   protected void createModel() {
-    security = new UISecurity(rui);
+    security = new UISecurity(rsm);
   }
 
   protected void createBindings() {
@@ -524,12 +524,12 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
     return "iSecurityController"; //$NON-NLS-1$
   }
 
-  public RepositoryUserInterface getRepositoryUserInterface() {
-    return rui;
+  public RepositorySecurityManager getRepositorySecurityManager() {
+    return rsm;
   }
 
-  public void setRepositoryUserInterface(RepositoryUserInterface rui) {
-    this.rui = rui;
+  public void setRepositorySecurityManager(RepositorySecurityManager rsm) {
+    this.rsm = rsm;
   }
 
   public void assignUsersToRole() {
@@ -550,9 +550,9 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
   public void showAddUserDialog() throws Exception {
     try {
-      if (rui != null && rui.getRoles() != null) {
+      if (rsm != null && rsm.getRoles() != null) {
         securityUser.clear();
-        securityUser.setAvailableRoles(convertToUIRoleModel(rui.getRoles()));
+        securityUser.setAvailableRoles(convertToUIRoleModel(rsm.getRoles()));
       }
       securityUser.setMode(Mode.ADD);
       userDialog.setTitle(messages.getString("AddUserDialog.Title"));//$NON-NLS-1$
@@ -580,9 +580,9 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
    * @throws Exception
    */
   private void addUser() throws Exception {
-    if (rui != null) {
+    if (rsm != null) {
       try {
-        rui.saveUserInfo(securityUser.getUserInfo());
+        rsm.saveUserInfo(securityUser.getUserInfo());
         security.addUser(new UIRepositoryUser(securityUser.getUserInfo()));
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
@@ -596,9 +596,9 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
   }
 
   public void showEditUserDialog() throws Exception {
-    if (rui != null && rui.getRoles() != null) {
+    if (rsm != null && rsm.getRoles() != null) {
       securityUser.clear();
-      securityUser.setUser(security.getSelectedUser(), convertToUIRoleModel(rui.getRoles()));
+      securityUser.setUser(security.getSelectedUser(), convertToUIRoleModel(rsm.getRoles()));
       securityUser.setMode(Mode.EDIT);
       userDialog.setTitle(messages.getString("EditUserDialog.Title"));//$NON-NLS-1$
       userDialog.show();
@@ -612,9 +612,9 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
    */
 
   private void updateUser() throws Exception {
-    if (rui != null) {
+    if (rsm != null) {
       try {
-        rui.updateUser(securityUser.getUserInfo());
+        rsm.updateUser(securityUser.getUserInfo());
         security.updateUser(new UIRepositoryUser(securityUser.getUserInfo()));
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
@@ -629,9 +629,9 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
   public void showAddRoleDialog() throws Exception {
     try {
-      if (rui != null && rui.getUsers() != null) {
+      if (rsm != null && rsm.getUsers() != null) {
         securityRole.clear();
-        securityRole.setAvailableUsers(convertToUIUserModel(rui.getUsers()));
+        securityRole.setAvailableUsers(convertToUIUserModel(rsm.getUsers()));
       }
       roleDialog.setTitle(messages.getString("AddRoleDialog.Title"));//$NON-NLS-1$
       roleDialog.show();
@@ -646,9 +646,9 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
   }
 
   public void showAddUserToRoleDialog() throws Exception {
-    if (rui != null && rui.getUsers() != null) {
+    if (rsm != null && rsm.getUsers() != null) {
       securityRole.clear();
-      securityRole.setRole(security.getSelectedRole(), convertToUIUserModel(rui.getUsers()));
+      securityRole.setRole(security.getSelectedRole(), convertToUIUserModel(rsm.getUsers()));
       securityRole.setMode(Mode.EDIT_MEMBER);
     }
     roleDialog.setTitle(messages.getString("AddUserToRoleDialog.Title"));//$NON-NLS-1$
@@ -656,9 +656,9 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
   }
 
   public void showAddRoleToUserDialog() throws Exception {
-    if (rui != null && rui.getRoles() != null) {
+    if (rsm != null && rsm.getRoles() != null) {
       securityUser.clear();
-      securityUser.setUser(security.getSelectedUser(), convertToUIRoleModel(rui.getRoles()));
+      securityUser.setUser(security.getSelectedUser(), convertToUIRoleModel(rsm.getRoles()));
       securityUser.setMode(Mode.EDIT_MEMBER);
       userDialog.setTitle(messages.getString("AddRoleToUserDialog.Title"));//$NON-NLS-1$
       userDialog.show();
@@ -667,12 +667,12 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
   public void removeRolesFromUser() throws Exception {
     security.removeRolesFromSelectedUser(userDetailTable.getSelectedItems());
-    rui.updateUser(security.getSelectedUser().getUserInfo());
+    rsm.updateUser(security.getSelectedUser().getUserInfo());
   }
 
   public void removeUsersFromRole() throws Exception {
     security.removeUsersFromSelectedRole(roleDetailTable.getSelectedItems());
-    rui.updateRole(security.getSelectedRole().getRole());
+    rsm.updateRole(security.getSelectedRole().getRole());
   }
 
   /**
@@ -682,10 +682,10 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
    */
 
   private void addRole() throws Exception {
-    if (rui != null) {
+    if (rsm != null) {
       try {
-        IRole role = securityRole.getRole(rui);
-        rui.createRole(role);
+        IRole role = securityRole.getRole(rsm);
+        rsm.createRole(role);
         security.addRole(new UIRepositoryRole(role));
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
@@ -705,10 +705,10 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
    */
 
   private void updateRole() throws Exception {
-    if (rui != null) {
+    if (rsm != null) {
       try {
-        IRole role = securityRole.getRole(rui);
-        rui.updateRole(role);
+        IRole role = securityRole.getRole(rsm);
+        rsm.updateRole(role);
         security.updateRole(new UIRepositoryRole(role));
         roleDetailTable.update();
         roleDialog.hide();
@@ -737,10 +737,10 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
       public void onClose(XulComponent sender, Status returnCode, Object retVal) {
         if (returnCode == Status.ACCEPT) {
-          if (rui != null) {
+          if (rsm != null) {
             if (security != null && security.getSelectedRole() != null) {
               try {
-                rui.deleteRole(security.getSelectedRole().getName());
+                rsm.deleteRole(security.getSelectedRole().getName());
                 security.removeRole(security.getSelectedRole().getName());
               } catch (KettleException ke) {
                 messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
@@ -771,9 +771,9 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
   }
 
   public void showEditRoleDialog() throws Exception {
-    if (rui != null && rui.getUsers() != null) {
+    if (rsm != null && rsm.getUsers() != null) {
       securityRole.clear();
-      securityRole.setRole(security.getSelectedRole(), convertToUIUserModel(rui.getUsers()));
+      securityRole.setRole(security.getSelectedRole(), convertToUIUserModel(rsm.getUsers()));
       securityRole.setMode(Mode.EDIT);
       roleDialog.setTitle(messages.getString("EditRoleDialog.Title"));//$NON-NLS-1$
       roleDialog.show();
@@ -794,10 +794,10 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
       public void onClose(XulComponent sender, Status returnCode, Object retVal) {
         if (returnCode == Status.ACCEPT) {
-          if (rui != null) {
+          if (rsm != null) {
             if (security != null && security.getSelectedUser() != null) {
               try {
-                rui.delUser(security.getSelectedUser().getName());
+                rsm.delUser(security.getSelectedUser().getName());
                 security.removeUser(security.getSelectedUser().getName());
               } catch (KettleException ke) {
                 messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$

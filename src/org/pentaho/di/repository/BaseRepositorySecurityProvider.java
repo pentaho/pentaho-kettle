@@ -17,13 +17,11 @@ public class BaseRepositorySecurityProvider {
 	}
 	
 	public UserInfo getUserInfo() {
-		return userInfo;
+	  // return a copy of the user info, so that external editing cannot effect the database repo behavior
+	  // this allows the user info to act as immutable.
+		return userInfo != null ? new UserInfo(userInfo) : null;
 	}
 
-	public void setUserInfo(UserInfo userInfo) {
-		this.userInfo = userInfo;
-	}
-	
 	/**
 	 * @return the repositoryMeta
 	 */

@@ -112,11 +112,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		super();
 	}
 	
-    /** Initialize the repository with the repository metadata and user information.
-     * */
-    public void init(RepositoryMeta repositoryMeta, UserInfo userInfo) {
+  /**
+   * Initialize the repository with the repository metadata and user information.
+   */
+  public void init(RepositoryMeta repositoryMeta) {
 		this.repositoryMeta = (KettleDatabaseRepositoryMeta)repositoryMeta;
-		this.userInfo = userInfo;
 		this.log = new LogChannel(this);
 		init();
 	}
@@ -141,10 +141,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		this.notePadDelegate = new KettleDatabaseRepositoryNotePadDelegate(this);
 		this.stepDelegate = new KettleDatabaseRepositoryStepDelegate(this);
 		this.jobEntryDelegate = new KettleDatabaseRepositoryJobEntryDelegate(this);
-		
 		this.creationHelper = new KettleDatabaseRepositoryCreationHelper(this);
 		
-		this.securityProvider = new KettleDatabaseRepositorySecurityProvider(this, repositoryMeta, userInfo);
 	}
 	
     /** 
@@ -160,8 +158,17 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	 * @throws KettleSecurityException in case the supplied user or password is not valid
 	 * @throws KettleException in case there is a general unexpected error or if we're already connected
 	 */
-	public void connect() throws KettleException {
-		connectionDelegate.connect();
+	public void connect(String username, String password) throws KettleException {
+	  // first disconnect if already connected
+	  connectionDelegate.connect();
+		try {
+		  UserInfo userinfo = userDelegate.loadUserInfo(new UserInfo(), username, password);
+		  securityProvider = new KettleDatabaseRepositorySecurityProvider(this, repositoryMeta, userinfo);
+		} catch (KettleDatabaseException e) {
+		  // if we fail to log in, disconnect and then rethrow the exception
+		  connectionDelegate.disconnect();
+		  throw e;
+		}
 	}
 
 	public synchronized void commit() throws KettleException {
@@ -170,6 +177,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
 	public synchronized void rollback() {
 		connectionDelegate.rollback();
+	}
+	
+	public UserInfo getUserInfo() {
+	  return securityProvider.getUserInfo();
 	}
 
 	/**
@@ -511,7 +522,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
         table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_ID_REPOSITORY_LOG, ValueMetaInterface.TYPE_INTEGER), id);
         table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_REP_VERSION, ValueMetaInterface.TYPE_STRING), getVersion());
         table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_DATE, ValueMetaInterface.TYPE_DATE), new Date());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_USER, ValueMetaInterface.TYPE_STRING), userInfo!=null?userInfo.getLogin():"admin");
+        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_LOG_USER, ValueMetaInterface.TYPE_STRING), getUserInfo() !=null ? getUserInfo().getLogin():"admin");
         table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_REPOSITORY_LOG_OPERATION_DESC, ValueMetaInterface.TYPE_STRING), description);
 
         connectionDelegate.insertTableRow(KettleDatabaseRepository.TABLE_R_REPOSITORY_LOG, table);
@@ -1390,13 +1401,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	}
 
 	/**
-	 * @param userinfo the UserInfo object to set
-	 */
-	public void setUserInfo(UserInfo userinfo) {
-		this.userInfo = userinfo;
-	}
-
-	/**
      * Create or upgrade repository tables & fields, populate lookup tables, ...
      * 
      * @param monitor The progress monitor to use, or null if no monitor is present.
@@ -1707,6 +1711,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return securityProvider;
 	}
 
+	 public KettleDatabaseRepositorySecurityProvider getSecurityManager() {
+	    return securityProvider;
+	  }
+
+	
 	public List<ObjectRevision> getRevisions(RepositoryElementLocationInterface element) throws KettleException {
     throw new UnsupportedOperationException();
 	}

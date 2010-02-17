@@ -40,7 +40,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.version.BuildVersion;
@@ -62,7 +61,6 @@ public class Kitchen
 	    }
 
 		RepositoryMeta repinfo  = null;
-		UserInfo       userinfo = null;
 		Job            job      = null;
 		
 		StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel;
@@ -187,8 +185,8 @@ public class Kitchen
 						// Define and connect to the repository...
 						if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Alocate&ConnectRep"));
 						 
-						repository = RepositoryLoader.createRepository(repinfo, userinfo);
-						repository.connect();
+						repository = RepositoryLoader.createRepository(repinfo);
+						repository.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
 
 						RepositoryDirectory directory = repository.loadRepositoryDirectoryTree(); // Default = root
 						
@@ -203,55 +201,43 @@ public class Kitchen
 							// Check username, password
 							if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.CheckUserPass"));
 							
-							userinfo = repository.getSecurityProvider().loadUserInfo(optionUsername.toString(), optionPassword.toString());
-							if (!repository.getSecurityProvider().supportsUsers() || userinfo.getObjectId()!=null)
+							// Load a job
+							if (!Const.isEmpty(optionJobname))
 							{
-							    // Load a job
-								if (!Const.isEmpty(optionJobname))
+								if(log.isDebug())log.logDebug(STRING_KITCHEN,BaseMessages.getString(PKG, "Kitchen.Log.LoadingJobInfo"));
+								
+								jobMeta =  repository.loadJob(optionJobname.toString(), directory, null, null); // reads last version
+								if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateJob"));
+								
+								job = new Job(repository, jobMeta);
+							}
+							else
+							// List the jobs in the repository
+							if ("Y".equalsIgnoreCase(optionListjobs.toString()))
+							{
+								if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.GettingLostJobsInDirectory",""+directory));
+								
+								String jobnames[] = repository.getJobNames(directory.getObjectId(), false);
+								for (int i=0;i<jobnames.length;i++)
 								{
-									if(log.isDebug())log.logDebug(STRING_KITCHEN,BaseMessages.getString(PKG, "Kitchen.Log.LoadingJobInfo"));
-									
-									jobMeta =  repository.loadJob(optionJobname.toString(), directory, null, null); // reads last version
-									if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateJob"));
-									
-									job = new Job(repository, jobMeta);
-								}
-								else
-								// List the jobs in the repository
-								if ("Y".equalsIgnoreCase(optionListjobs.toString()))
-								{
-									if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.GettingLostJobsInDirectory",""+directory));
-									
-									String jobnames[] = repository.getJobNames(directory.getObjectId(), false);
-									for (int i=0;i<jobnames.length;i++)
-									{
-										System.out.println(jobnames[i]);
-									}
-								}
-								else
-								// List the directories in the repository
-								if ("Y".equalsIgnoreCase(optionListdir.toString()))
-								{
-									String dirnames[] = repository.getDirectoryNames(directory.getObjectId());
-									for (int i=0;i<dirnames.length;i++)
-									{
-										System.out.println(dirnames[i]);
-									}
+									System.out.println(jobnames[i]);
 								}
 							}
 							else
+							// List the directories in the repository
+							if ("Y".equalsIgnoreCase(optionListdir.toString()))
 							{
-								System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotVerifyUserPass"));
-								
-								userinfo=null;
-								repinfo=null;
+								String dirnames[] = repository.getDirectoryNames(directory.getObjectId());
+								for (int i=0;i<dirnames.length;i++)
+								{
+									System.out.println(dirnames[i]);
+								}
 							}
 						}
 						else
 						{
 							System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotFindSuppliedDirectory",optionDirname+""));
 							
-							userinfo=null;
 							repinfo=null;
 						}
 					}

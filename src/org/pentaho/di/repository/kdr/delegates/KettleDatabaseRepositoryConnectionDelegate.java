@@ -1644,5 +1644,21 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		database.insertRow();
 		database.closeInsert();
 	}
+	
+	// security related calls
+  
+	public ObjectId[] getPermissionIDs(ObjectId id_profile) throws KettleException {
+    return getIDs("SELECT "
+        + repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION) + " FROM "
+        + repository.quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE_PERMISSION) + " WHERE "
+        + repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE) + " = " + id_profile);
+  }
 
+  public synchronized void delProfilePermissions(ObjectId id_profile) throws KettleException {
+    String sql = "DELETE FROM " + repository.quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE_PERMISSION)
+        + " WHERE " + repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE) + " = "
+        + id_profile;
+    repository.execStatement(sql);
+  }
+	
 }

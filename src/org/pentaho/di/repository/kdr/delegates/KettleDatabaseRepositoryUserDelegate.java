@@ -9,6 +9,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -49,7 +50,7 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 					userInfo.setEnabled( r.getBoolean("ENABLED", false) );
 					
 					long id_profile  = r.getInteger("ID_PROFILE", 0);
-					userInfo.setProfile( repository.getSecurityProvider().loadProfileMeta(new LongObjectId(id_profile)) );
+					userInfo.setProfile(repository.profileDelegate.loadProfileMeta(new ProfileMeta(), new LongObjectId(id_profile)));					
 					
 					return userInfo;
 				}
@@ -88,9 +89,6 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 		{
             throw new KettleDatabaseException(BaseMessages.getString(PKG, "UserInfo.Error.IncorrectPasswortLogin"));
 		}
-		
-		repository.setUserInfo(userInfo);
-		
 		return userInfo;
 	}
 	

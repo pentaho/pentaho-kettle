@@ -3,8 +3,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import java.util.List;
 
 import org.pentaho.di.repository.IRole;
-import org.pentaho.di.repository.RepositoryUserInterface;
-import org.pentaho.di.repository.RoleInfo;
+import org.pentaho.di.repository.RepositorySecurityManager;
 
 public class UIRepositoryRoles extends AbstractModelNode<UIRepositoryRole> {
   
@@ -15,11 +14,11 @@ public class UIRepositoryRoles extends AbstractModelNode<UIRepositoryRole> {
       super(roles);
     }
 
-    public UIRepositoryRoles(RepositoryUserInterface rui){
+    public UIRepositoryRoles(RepositorySecurityManager rsm) {
 
       List<IRole> roleList; 
       try {
-        roleList = rui.getRoles();
+        roleList = rsm.getRoles();
         for (IRole role : roleList) {
         this.add(new UIRepositoryRole(role));
         }

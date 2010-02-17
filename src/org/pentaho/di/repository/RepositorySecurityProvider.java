@@ -11,16 +11,8 @@ import org.pentaho.di.core.exception.KettleSecurityException;
  * @author matt
  *
  */
-public interface RepositorySecurityProvider extends RepositoryUserInterface {
+public interface RepositorySecurityProvider {
 
-	/**
-	 * Set the user information on this security provider.  If the repository doesn't support users, it's OK to set this to null.
-	 * In that case, if the user is not null, the user information is ignored. 
-	 * 
-	 * @param userInfo The user information to set.
-	 */
-	public void setUserInfo(UserInfo userInfo);
-	
 	/**
 	 * @return the user information set on the security provider
 	 */
@@ -38,22 +30,6 @@ public interface RepositorySecurityProvider extends RepositoryUserInterface {
 	 * @return true if the repository or the user is read only
 	 */
 	public boolean isReadOnly();
-	
-	/**
-	 * @return true if the repository supports user authentication/security
-	 */
-	public boolean supportsUsers();
-
-	/**
-	 * @return true if this repository supports revisions: check in/out, etc.
-	 * Note that this also takes into account the user settings.
-	 */
-	public boolean supportsRevisions();
-	
-	/**
-	 * @return true if the repository supports storing metadata like names, descriptions, ... outside of the object definitions (XML)
-	 */
-	public boolean supportsMetadata();
 	
 	/**
 	 * @return true if this repository supports file locking and if the user is allowed to lock a file

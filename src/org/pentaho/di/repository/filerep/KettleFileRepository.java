@@ -37,6 +37,7 @@ import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.StringObjectId;
@@ -65,11 +66,11 @@ public class KettleFileRepository implements Repository {
 	
 	private LogChannelInterface log;
 
-	public void connect() throws KettleException {}
+	public void connect(String username, String password) throws KettleException {}
 
 	public void disconnect() {}
 
-	public void init(RepositoryMeta repositoryMeta, UserInfo userInfo) {
+	public void init(RepositoryMeta repositoryMeta) {
 		this.repositoryMeta = (KettleFileRepositoryMeta) repositoryMeta;
 		this.securityProvider = new KettleFileRepositorySecurityProvider(repositoryMeta);
 		this.log = new LogChannel(this);
@@ -86,6 +87,11 @@ public class KettleFileRepository implements Repository {
 	public RepositorySecurityProvider getSecurityProvider() {
 		return securityProvider;
 	}
+
+  public RepositorySecurityManager getSecurityManager() {
+    return null;
+  }
+
 	
 	private String calcDirectoryName(RepositoryDirectory dir) {
 		StringBuilder directory = new StringBuilder();
@@ -355,14 +361,14 @@ public class KettleFileRepository implements Repository {
 
 	private ObjectId getObjectId(RepositoryDirectory repositoryDirectory, String name, String extension) throws KettleException {
 		try {
-			String filename = calcFilename(repositoryDirectory, name, EXT_JOB);
+			String filename = calcFilename(repositoryDirectory, name, extension);
 			if (!KettleVFS.getFileObject(filename).exists()) {
 				return null;
 			}
 			
 			// The ID is the filename relative to the base directory, including the file extension
 			//
-			return new StringObjectId( calcObjectId(repositoryDirectory, name, EXT_JOB) );
+			return new StringObjectId( calcObjectId(repositoryDirectory, name, extension) );
 		} catch (Exception e) {
 			throw new KettleException("Error finding ID for directory ["+repositoryDirectory+"] and name ["+name+"]", e);
 		}
@@ -1025,7 +1031,6 @@ public class KettleFileRepository implements Repository {
 	public void renameUser(ObjectId id_user, String newname) throws KettleException {}
 	public void saveProfile(ProfileMeta profileMeta) throws KettleException {}
 	public void saveUserInfo(UserInfo userInfo) throws KettleException {}
-	public void setUserInfo(UserInfo userinfo) {}
 	
 	// Not used...
 	public int countNrJobEntryAttributes(ObjectId id_jobentry, String code) throws KettleException { return 0; }

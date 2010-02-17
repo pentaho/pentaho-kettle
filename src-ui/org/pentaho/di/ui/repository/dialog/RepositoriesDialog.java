@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IRole;
@@ -133,9 +132,7 @@ public class RepositoriesDialog implements XulEventHandler {
 
   private RepositoriesMeta input;
 
-  private RepositoryMeta repinfo;
-
-  private UserInfo userinfo;
+  private Repository repository;
 
   private String prefRepositoryName;
 
@@ -159,8 +156,7 @@ public class RepositoriesDialog implements XulEventHandler {
 
     props = PropsUI.getInstance();
     input = new RepositoriesMeta();
-    repinfo = null;
-    userinfo = null;
+    repository = null;
     cancelled = false;
 
     try {
@@ -168,6 +164,10 @@ public class RepositoriesDialog implements XulEventHandler {
     } catch (Exception e) {
       new ErrorDialog(shell, "Error", "Unexpected error reading repository definitions", e); //$NON-NLS-1$ //$NON-NLS-2$
     }
+  }
+  
+  public Repository getConnectedRepository() {
+    return repository;
   }
 
   public void setRepositoryName(String repname) {
@@ -423,7 +423,7 @@ public class RepositoriesDialog implements XulEventHandler {
       if (!display.readAndDispatch())
         display.sleep();
     }
-    return repinfo != null;
+    return repository != null;
   }
 
   public void newRepository() {
@@ -594,12 +594,12 @@ public class RepositoriesDialog implements XulEventHandler {
   }
 
   private void norep() {
-    repinfo = null;
+    repository = null;
     dispose();
   }
 
   private void cancel() {
-    repinfo = null;
+    repository = null;
     cancelled = true;
     dispose();
   }
@@ -609,25 +609,13 @@ public class RepositoriesDialog implements XulEventHandler {
       int idx = wRepository.getSelectionIndex();
 
       if (idx >= 0) {
-        repinfo = input.getRepository(idx);
-        Repository rep = null;
+        RepositoryMeta repinfo = input.getRepository(idx);
         try {
           // OK, now try the username and password
           //
-          rep = RepositoryLoader.getInstance().createRepositoryObject(repinfo.getId());
-          userinfo = new UserInfo(wUsername.getText());
-          userinfo.setPassword(wPassword.getText());
-
-          if (!repinfo.getRepositoryCapabilities().managesUsers()) {
-            // TODO find out where do to get appropriate permissions from
-            //
-            ProfileMeta adminProfile = new ProfileMeta("Administrator", "Administrator"); //$NON-NLS-1$//$NON-NLS-2$
-            adminProfile.addPermission(Permission.ADMIN);
-            userinfo.setProfile(adminProfile);
-          }
-
-          rep.init(repinfo, userinfo);
-          rep.connect();
+          repository = RepositoryLoader.getInstance().createRepositoryObject(repinfo.getId());
+          repository.init(repinfo);
+          repository.connect(wUsername.getText(), wPassword.getText());
         } catch (KettleException ke) {
           new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title"), //$NON-NLS-1$
               BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1") + Const.CR + ke.getSuperMessage(), //$NON-NLS-1$
@@ -641,22 +629,9 @@ public class RepositoriesDialog implements XulEventHandler {
           return;
         }
 
-        try {
-          if (repinfo.getRepositoryCapabilities().managesUsers()) {
-            userinfo = rep.getSecurityProvider().loadUserInfo(wUsername.getText(), wPassword.getText());
-          }
-          props.setLastRepository(repinfo.getName());
-          props.setLastRepositoryLogin(wUsername.getText());
-        } catch (KettleException e) {
-          userinfo = null;
-          repinfo = null;
+        props.setLastRepository(repinfo.getName());
+        props.setLastRepositoryLogin(wUsername.getText());
 
-          if (!(e instanceof KettleDatabaseException)) {
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-          }
-        } finally {
-          rep.disconnect();
-        }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
         mb.setMessage(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.PleaseSelectARepsitory.Message")); //$NON-NLS-1$
@@ -673,19 +648,15 @@ public class RepositoriesDialog implements XulEventHandler {
       new ErrorDialog(shell, "Error", "Unexpected error writing repository definitions to file", e); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    RepositoryCapabilities capabilities = repinfo==null ? null : repinfo.getRepositoryCapabilities();
+    RepositoryCapabilities capabilities = repository == null ? null : repository.getRepositoryMeta().getRepositoryCapabilities();
 
     if (capabilities!=null && !capabilities.supportsUsers()) {
       dispose(); // no users support : go right ahead
       return;
     }
 
-    if (userinfo == null) {
-      MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-      mb.setMessage(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.IncorrectUserPassword.Message")); //$NON-NLS-1$
-      mb.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.IncorrectUserPassword.Title")); //$NON-NLS-1$
-      mb.open();
-    } else if (userinfo.getProfile() != null) {
+    UserInfo userinfo = repository.getUserInfo();
+    if (userinfo.getProfile() != null) {
       boolean ok = true;
       // Check the permissions of the user
       String mess = ""; //$NON-NLS-1$
@@ -720,19 +691,11 @@ public class RepositoriesDialog implements XulEventHandler {
         mb.setMessage(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.NoPermissions.Message") + mess); //$NON-NLS-1$
         mb.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.NoPermissions.Title")); //$NON-NLS-1$
         mb.open();
-
-        userinfo = null;
-        repinfo = null;
-      } else {
-        dispose();
+        return;
       }
-    } else {
-      // TODO  Current app will not work without profile. For now giving all users admin access
-      ProfileMeta adminProfile = new ProfileMeta("Administrator", "Administrator"); //$NON-NLS-1$//$NON-NLS-2$
-      adminProfile.addPermission(Permission.ADMIN);
-      userinfo.setProfile(adminProfile);
-      dispose();
     }
+    
+    dispose();
   }
 
   public void fillRepositories() {
@@ -743,14 +706,6 @@ public class RepositoriesDialog implements XulEventHandler {
       if (name != null)
         wRepository.add(name);
     }
-  }
-
-  public RepositoryMeta getRepositoryMeta() {
-    return repinfo;
-  }
-
-  public UserInfo getUser() {
-    return userinfo;
   }
 
   public boolean isCancelled() {

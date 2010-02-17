@@ -37,11 +37,11 @@ public class KettleDatabaseRepositoryProfileDelegate extends KettleDatabaseRepos
 				profileMeta.setName(r.getString("NAME", null));
 				profileMeta.setDescription(r.getString("DESCRIPTION", null));
 
-				ObjectId pid[] = repository.getSecurityProvider().getPermissionIDs(id_profile);
+				ObjectId pid[] = repository.connectionDelegate.getPermissionIDs(id_profile);
 				profileMeta.removeAllPermissions();
 
 				for (int i = 0; i < pid.length; i++) {
-					Permission pi = repository.getSecurityProvider().loadPermission(pid[i]);
+					Permission pi = repository.permissionDelegate.loadPermissionMeta(pid[i]);
 					if (pi != null) {
 						profileMeta.addPermission(pi);
 					}
@@ -81,7 +81,7 @@ public class KettleDatabaseRepositoryProfileDelegate extends KettleDatabaseRepos
 
 				// Then save profile_permission relationships
 				//
-				repository.getSecurityProvider().delProfilePermissions(profileMeta.getObjectId());
+				repository.connectionDelegate.delProfilePermissions(profileMeta.getObjectId());
 
 				// Save permission-profile relations
 				//

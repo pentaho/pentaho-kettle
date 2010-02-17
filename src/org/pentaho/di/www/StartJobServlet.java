@@ -83,7 +83,7 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
           // We might need to re-connect to the database
           //
           if (job.getRep() != null && !job.getRep().isConnected()) {
-            job.getRep().connect();
+            job.getRep().connect(job.getRep().getUserInfo().getLogin(), job.getRep().getUserInfo().getPassword());
           }
 
           // Create a new job object to start from a sane state. Then replace

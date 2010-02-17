@@ -36,6 +36,22 @@ public class UserInfo {
 	private ProfileMeta profile; // user profile information
 	private Set<IRole> roles;
 	
+	/**
+	 * copy constructor
+	 * 
+	 * @param copyFrom
+	 */
+	public UserInfo(UserInfo copyFrom) {
+	  this.id = copyFrom.id;
+	  this.login = copyFrom.login;
+	  this.password = copyFrom.password;
+	  this.username = copyFrom.username;
+	  this.description = copyFrom.description;
+	  this.enabled = copyFrom.enabled;
+	  this.profile = copyFrom.profile != null ? new ProfileMeta(copyFrom.profile) : null;
+	  this.roles = copyFrom.roles != null ? new HashSet<IRole>(copyFrom.roles) : null;
+	}
+	
   public UserInfo(String login, String password, String username, String description, boolean enabled,
       Set<IRole> roles) {
     this(login, password, username, description, enabled);

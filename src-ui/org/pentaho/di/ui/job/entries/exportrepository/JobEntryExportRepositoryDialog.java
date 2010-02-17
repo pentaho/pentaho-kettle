@@ -1156,7 +1156,6 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		boolean retval=false;
 		RepositoriesMeta reps_info =null;
 		RepositoryMeta rep_info  = null;
-		UserInfo       user_info = null;
 		Repository repos		= null;
 		
 		try
@@ -1176,31 +1175,20 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				return false;
 			}
 			
-			repos = RepositoryLoader.createRepository(rep_info, user_info);
+			repos = RepositoryLoader.createRepository(rep_info);
 			try {
-				repos.connect();
+				repos.connect(jobMeta.environmentSubstitute(wUserName.getText()),jobMeta.environmentSubstitute(wPassword.getText()));
 			} catch(Exception e) {
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);
 				return false;
-			}	
-			// Check username, password
-			user_info = repos.getSecurityProvider().loadUserInfo(jobMeta.environmentSubstitute(wUserName.getText()),jobMeta.environmentSubstitute(wPassword.getText()));
-				
-			if (user_info.getObjectId()!=null)
-			{
-				repos.disconnect();
-				repos=null;
-				
-				if(displaySuccess)
-					displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Connected.Title.Ok"),
-							BaseMessages.getString(PKG, "JobExportRepository.Connected.OK",wRepositoryname.getText()),false);
-			}else
-			{
-					displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Connected.Title.Bad"),
-							BaseMessages.getString(PKG, "JobExportRepository.CanNotVerifyUser",wUserName.getText(),wRepositoryname.getText()),true);
-					return false;
 			}
-
+			
+			repos.disconnect();
+			repos=null;
+				
+			if(displaySuccess)
+				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Connected.Title.Ok"),
+						BaseMessages.getString(PKG, "JobExportRepository.Connected.OK",wRepositoryname.getText()),false);
 			// We are connected
 			retval=true;
 
@@ -1216,7 +1204,6 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				repos=null;
 			}
 			if(rep_info!=null) rep_info=null;
-			if(user_info!=null) user_info=null;
 			reps_info.clear();
 		}
 		return retval;
@@ -1290,7 +1277,6 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	{
 		RepositoriesMeta reps_info =null;
 		RepositoryMeta rep_info  = null;
-		UserInfo       user_info = null;
 		Repository repos		= null;
 		try{
 			reps_info = new RepositoriesMeta();
@@ -1303,9 +1289,9 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRep"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
 			}
 			
-			repos = RepositoryLoader.createRepository(rep_info, user_info);
+			repos = RepositoryLoader.createRepository(rep_info);
 			try{
-				repos.connect();
+				repos.connect(jobMeta.environmentSubstitute(wUserName.getText()),jobMeta.environmentSubstitute(wPassword.getText()));
 			} catch(Exception e) {
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnect"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotConnectMsg",wRepositoryname.getText()),true);				
 			}
@@ -1329,7 +1315,6 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				repos=null;
 			}
 			if(rep_info!=null) rep_info=null;
-			if(user_info!=null) user_info=null;
 			reps_info.clear();
 		}
 	}

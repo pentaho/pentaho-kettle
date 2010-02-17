@@ -533,7 +533,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public Spoon(Display d, Repository rep) {
 		this.log = new LogChannel(APP_NAME);
-		this.rep = rep;
+		setRepository(rep);
 
 		if (d != null) {
 			display = d;
@@ -1330,15 +1330,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			rd.setRepositoryName(lastUsedFile.getRepositoryName());
 			if (rd.open()) {
 				// Close the previous connection...
-				if (rep != null)
+				if (rep != null) {
 					rep.disconnect();
-				try {
-					rep = RepositoryLoader.createRepository(rd.getRepositoryMeta(), rd.getUser());
-					rep.connect();
-				} catch (KettleException ke) {
-					rep = null;
-					new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.UnableConnectRepository.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.UnableConnectRepository.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-				}
+			  }
+				setRepository(rd.getConnectedRepository());
 			} else {
 				cancelled = true;
 			}
@@ -2877,9 +2872,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			RepositoryDirectory directoryTree = null;
 
 			try {
-				rep = RepositoryLoader.createRepository(rd.getRepositoryMeta(), rd.getUser());
-				capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-				rep.connect();
+			  setRepository(rd.getConnectedRepository());
 				directoryTree = rep.loadRepositoryDirectoryTree();
 			} catch (KettleException ke) {
 				rep = null;
@@ -2985,7 +2978,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				}
 			};
 
-			RepositoryExplorerDialog erd = new RepositoryExplorerDialog(shell, SWT.NONE, rep, rep.getUserInfo(), cb, Variables.getADefaultVariableSpace());
+			RepositoryExplorerDialog erd = new RepositoryExplorerDialog(shell, SWT.NONE, rep, cb, Variables.getADefaultVariableSpace());
 			erd.open();
 
 		}
@@ -3012,7 +3005,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         if(getRegistery().getRegisteredSecurityProvider() != null) {
           setSecurityProvider(getRegistery().createSecurityProvider(rep, rep.getRepositoryMeta(), rep.getUserInfo()));
         }
-        RepositoryExplorer explorer = new RepositoryExplorer(root, rep, getSecurityProvider(), cb, Variables.getADefaultVariableSpace());
+        RepositoryExplorer explorer = new RepositoryExplorer(root, rep, cb, Variables.getADefaultVariableSpace());
         explorer.show();
       } catch (KettleSecurityException e) {
         e.printStackTrace();
@@ -3063,12 +3056,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void editRepositoryUser() {
 		if (rep != null) {
 			UserInfo userinfo = rep.getUserInfo();
-			UserDialog ud = new UserDialog(shell, SWT.NONE, rep.getSecurityProvider(), userinfo);
+			UserDialog ud = new UserDialog(shell, SWT.NONE, rep, userinfo);
 			UserInfo ui = ud.open();
 			if (rep.getSecurityProvider().isReadOnly()) {
 				if (ui != null) {
 					try {
-						rep.getSecurityProvider().saveUserInfo(ui);
+						rep.getSecurityManager().saveUserInfo(ui);
 					} catch (KettleException e) {
 						MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
 
@@ -3860,7 +3853,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						// created and or modified...
 						if (meta.getCreatedDate() == null) {
 							meta.setCreatedDate(new Date());
-							if (rep.getSecurityProvider().supportsUsers()) {
+							if (capabilities.supportsUsers()) {
 								meta.setCreatedUser(rep.getUserInfo().getLogin());
 							}
 						}
@@ -3868,7 +3861,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						// Keep info on who & when this transformation was
 						// changed...
 						meta.setModifiedDate(new Date());
-						if (rep.getSecurityProvider().supportsUsers()) {
+						if (capabilities.supportsUsers()) {
 							meta.setModifiedUser(rep.getUserInfo().getLogin());
 						}
 
@@ -5721,31 +5714,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	// Added this method to avoid code pasting... SEMINOLE-69
-	private boolean openRepositoryDialog(RepositoriesDialog rd, RepositoryMeta repositoryMeta, UserInfo userinfo) {
+	private boolean openRepositoryDialog(RepositoriesDialog rd, RepositoryMeta repositoryMeta) {
 		if (rd.open()) {
-			repositoryMeta = rd.getRepositoryMeta();
-
-			userinfo = rd.getUser();
-
-			String repName = repositoryMeta.getName();
-			RepositoriesMeta repsinfo = new RepositoriesMeta();
-			try {
-				repsinfo.readData();
-				repositoryMeta = repsinfo.findRepository(repName);
-				if (repositoryMeta != null) {
-					// Define and connect to the repository...
-					//
-					setRepository(RepositoryLoader.createRepository(repositoryMeta, userinfo));
-					return true;
-				} else {
-					log.logError(BaseMessages.getString(PKG, "Spoon.Log.NoRepositoryRrovided"));// "No repository provided, can't load transformation."
-				}
-			} catch (Exception e) {
-				log.logError(BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined"));// "No repositories defined on this system."
-			}
-
-			return false;
-
+			Repository repository = rd.getConnectedRepository();
+			setRepository(repository);
+      return true;
 		} else {
 			// Exit point: user pressed CANCEL!
 			if (rd.isCancelled()) {
@@ -5762,6 +5735,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		StringBuffer optionRepname = getCommandLineOption(options, "rep").getArgument();
 		StringBuffer optionFilename = getCommandLineOption(options, "file").getArgument();
+    StringBuffer optionUsername = getCommandLineOption(options, "user").getArgument();
+    StringBuffer optionPassword = getCommandLineOption(options, "pass").getArgument();
+		
 		Permission perms[] = new Permission[] { Permission.TRANSFORMATION, Permission.JOB };
 
 		if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && props.showRepositoriesDialogAtStartup()) {
@@ -5771,7 +5747,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			splash.hide();
 			RepositoriesDialog rd = new RepositoriesDialog(display, BaseMessages.getString(PKG, "Spoon.Application.Name"), perms);// "Spoon"
 
-			return openRepositoryDialog(rd, repositoryMeta, userinfo);
+			return openRepositoryDialog(rd, repositoryMeta);
 		} else if (!Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename)) {
 			RepositoriesMeta repsinfo = new RepositoriesMeta();
 			try {
@@ -5779,7 +5755,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				repositoryMeta = repsinfo.findRepository(optionRepname.toString());
 				if (repositoryMeta != null) {
 					// Define and connect to the repository...
-					setRepository(RepositoryLoader.createRepository(repositoryMeta, userinfo));
+					Repository repo = RepositoryLoader.createRepository(repositoryMeta);
+					repo.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
+					setRepository(repo);
 				} else {
 					String msg = BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined");
 					log.logError(msg);// "No repositories defined on this system."
@@ -5789,7 +5767,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					mb.open();
 					RepositoriesDialog rd = new RepositoriesDialog(display, BaseMessages.getString(PKG, "Spoon.Application.Name"), perms);// "Spoon"
 
-					return openRepositoryDialog(rd, repositoryMeta, userinfo);
+					return openRepositoryDialog(rd, repositoryMeta);
 				}
 			} catch (Exception e) {
 				// Eat the exception but log it...
@@ -5800,6 +5778,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	public void handleStartOptions(CommandLineOption[] options) {
+
+	  // note that at this point the rep object is populated by previous calls 
 
 		StringBuffer optionRepname = getCommandLineOption(options, "rep").getArgument();
 		StringBuffer optionFilename = getCommandLineOption(options, "file").getArgument();
@@ -5814,59 +5794,47 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename)) {
 				if (!Const.isEmpty(optionRepname)) {
 					if (rep != null) {
-						rep.connect(); // "Spoon"
 
 						if (Const.isEmpty(optionDirname)) {
 							optionDirname = new StringBuffer(RepositoryDirectory.DIRECTORY_SEPARATOR);
 						}
 
-						// Check username, password
-						rep.getSecurityProvider().setUserInfo(rep.getSecurityProvider().loadUserInfo(optionUsername.toString(), optionPassword.toString()));
-
-						if (rep.getUserInfo().getObjectId() != null) {
-							// Options /file, /job and /trans are mutually
-							// exclusive
-							int t = (Const.isEmpty(optionFilename) ? 0 : 1) + (Const.isEmpty(optionJobname) ? 0 : 1) + (Const.isEmpty(optionTransname) ? 0 : 1);
-							if (t > 1) {
-								log.logError(BaseMessages.getString(PKG, "Spoon.Log.MutuallyExcusive")); // "More then one mutually exclusive options /file, /job and /trans are specified."
-							} else if (t == 1) {
-								if (!Const.isEmpty(optionFilename)) {
-									openFile(optionFilename.toString(), false);
+						// Options /file, /job and /trans are mutually
+						// exclusive
+						int t = (Const.isEmpty(optionFilename) ? 0 : 1) + (Const.isEmpty(optionJobname) ? 0 : 1) + (Const.isEmpty(optionTransname) ? 0 : 1);
+						if (t > 1) {
+							log.logError(BaseMessages.getString(PKG, "Spoon.Log.MutuallyExcusive")); // "More then one mutually exclusive options /file, /job and /trans are specified."
+						} else if (t == 1) {
+							if (!Const.isEmpty(optionFilename)) {
+								openFile(optionFilename.toString(), false);
+							} else {
+								// OK, if we have a specified job or
+								// transformation, try to load it...
+								// If not, keep the repository logged
+								// in.
+								RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(optionDirname.toString());
+								if (repdir == null) {
+									log.logError(BaseMessages.getString(PKG, "Spoon.Log.UnableFindDirectory", optionDirname.toString())); // "Can't find directory ["+dirname+"] in the repository."
 								} else {
-									// OK, if we have a specified job or
-									// transformation, try to load it...
-									// If not, keep the repository logged
-									// in.
-									RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(optionDirname.toString());
-									if (repdir == null) {
-										log.logError(BaseMessages.getString(PKG, "Spoon.Log.UnableFindDirectory", optionDirname.toString())); // "Can't find directory ["+dirname+"] in the repository."
+									if (!Const.isEmpty(optionTransname)) {
+										TransMeta transMeta = rep.loadTransformation(optionTransname.toString(), repdir, null, true, null); // reads
+										// last
+										// version
+										transMeta.clearChanged();
+										transMeta.setInternalKettleVariables();
+										addTransGraph(transMeta);
 									} else {
-										if (!Const.isEmpty(optionTransname)) {
-											TransMeta transMeta = rep.loadTransformation(optionTransname.toString(), repdir, null, true, null); // reads
-											// last
-											// version
-											transMeta.setFilename(optionRepname.toString());
-											transMeta.clearChanged();
-											transMeta.setInternalKettleVariables();
-											addTransGraph(transMeta);
-										} else {
-											// Try to load a specified job
-											// if any
-											JobMeta jobMeta = rep.loadJob(optionJobname.toString(), repdir, null, null); // reads
-											// last
-											// version
-											jobMeta.setFilename(optionRepname.toString());
-											jobMeta.clearChanged();
-											jobMeta.setInternalKettleVariables();
-											delegates.jobs.addJobGraph(jobMeta);
-										}
+										// Try to load a specified job
+										// if any
+										JobMeta jobMeta = rep.loadJob(optionJobname.toString(), repdir, null, null); // reads
+										// last
+										// version
+										jobMeta.clearChanged();
+										jobMeta.setInternalKettleVariables();
+										delegates.jobs.addJobGraph(jobMeta);
 									}
 								}
 							}
-						} else {
-							log.logError(BaseMessages.getString(PKG, "Spoon.Log.UnableVerifyUser"));// "Can't verify username and password."
-							rep.disconnect();
-							rep = null;
 						}
 					} else {
 						log.logError(BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined"));// "No repositories defined on this system."
@@ -5876,16 +5844,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				}
 			} else // Normal operations, nothing on the commandline...
 			{
-				// Can we connect to the repository?
-				if (rep != null && rep.getUserInfo() != null) {
-					try {
-						rep.connect();
-					} catch (Exception e) {
-						log.logError("Unable to connect to repository [" + rep.getName() + "]", e);
-						setRepository(null);
-					}
-				}
-
 				if (props.openLastFile()) {
 					if (log.isDetailed())
 						log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.TryingOpenLastUsedFile"));// "Trying to open the last file used."
@@ -6622,6 +6580,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public void setRepository(Repository rep) {
 		this.rep = rep;
+		if (rep != null) {
+		  this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+		}
 	}
 
 	public void addMenuListener(String id, Object listener, String methodName) {

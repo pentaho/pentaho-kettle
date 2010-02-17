@@ -60,7 +60,7 @@ public class ExplorerHarness {
     userInfo = new UserInfo("admin", "admin", "Administrator", "The system administrator", true, adminProfile);
     
     repository = new KettleDatabaseRepository();
-    repository.init(repositoryMeta, userInfo);
+    repository.init(repositoryMeta);
     
     RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
 
@@ -75,10 +75,10 @@ public class ExplorerHarness {
 
     
     try {
-      repository.connect();
+      repository.connect(userInfo.getLogin(), userInfo.getPassword());
       Directory root = repository.loadRepositoryDirectoryTree();
       RepositoryExplorer.setSecurityControllerClass(SecurityController.class);
-      RepositoryExplorer explorer = new RepositoryExplorer(root, repository, repository.getSecurityProvider(), cb, null);
+      RepositoryExplorer explorer = new RepositoryExplorer(root, repository, cb, null);
       //Directory root = repository.loadRepositoryDirectoryTree();
       explorer.show();
     } catch (KettleSecurityException e) {

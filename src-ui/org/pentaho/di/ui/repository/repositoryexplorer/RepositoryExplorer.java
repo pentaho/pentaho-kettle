@@ -23,12 +23,10 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
@@ -99,7 +97,7 @@ public class RepositoryExplorer {
 
   // private Repository repository;
 
-  public RepositoryExplorer(Directory rd, final Repository rep, RepositorySecurityProvider securityProvider, RepositoryExplorerCallback callback,
+  public RepositoryExplorer(Directory rd, final Repository rep, RepositoryExplorerCallback callback,
         VariableSpace variableSpace) {
     // repositoryDirectory = rd;
     // If there is not security controller class instantiated and use the default one which is SecurityController
@@ -162,7 +160,7 @@ public class RepositoryExplorer {
       container.addEventHandler((AbstractXulEventHandler) securityController);
       if (securityEnabled) {
         securityController.setBindingFactory(bf);
-        securityController.setRepositoryUserInterface(securityProvider);
+        securityController.setRepositorySecurityManager(rep.getSecurityManager());
         securityController.setRepository(rep);
         securityController.setMessages(resourceBundle);
       }
@@ -171,7 +169,7 @@ public class RepositoryExplorer {
       container.addEventHandler(permissionsController);
       if (aclsEnabled && securityEnabled) {
         permissionsController.setBindingFactory(bf);
-        permissionsController.setRepositoryUserInterface(securityProvider);
+        permissionsController.setRepositorySecurityManager(rep.getSecurityManager());
         permissionsController.setMessages(resourceBundle);
       }
       container.invokeLater(new Runnable() {
