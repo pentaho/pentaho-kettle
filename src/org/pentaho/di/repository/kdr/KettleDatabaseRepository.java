@@ -180,7 +180,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	}
 	
 	public UserInfo getUserInfo() {
-	  return securityProvider.getUserInfo();
+	  if (securityProvider != null) {
+	    return securityProvider.getUserInfo();
+	  } else {
+	    return null;
+	  }
 	}
 
 	/**
