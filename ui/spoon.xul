@@ -26,8 +26,8 @@
   
   
   <menupopup id="new-file-popup">
-    <menuitem label="${Spoon.Menubar.File.NewJob}" command="spoon.newJobFile()" image="${SpoonIcon_image}" />
-    <menuitem id="menubar-new-trans" label="${Spoon.Menubar.File.NewTrans}" command="spoon.newTransFile()" image="${ChefIcon_image}"/>
+    <menuitem label="${Spoon.Menubar.File.NewJob}" command="spoon.newJobFile()" image="${ChefIcon_image}"/>
+    <menuitem id="menubar-new-trans" label="${Spoon.Menubar.File.NewTrans}" command="spoon.newTransFile()" image="${SpoonIcon_image}"/>
     <menuseparator />
     <menuitem label="${Spoon.Menubar.File.NewDatabaseConn}" command="spoon.newConnection()" image="${CNC_image}"/>
     <menuitem label="${Spoon.Menubar.File.NewSlave}" command="spoon.newSlaveServer()" image="${Slave_image}"/>
