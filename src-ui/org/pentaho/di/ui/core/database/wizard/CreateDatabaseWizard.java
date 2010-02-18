@@ -57,30 +57,22 @@ public class CreateDatabaseWizard {
         DatabaseMeta newDBInfo = new DatabaseMeta();
         
         final CreateDatabaseWizardPage1 page1 = new CreateDatabaseWizardPage1("1", props, newDBInfo, databases);
-        page1.createControl(shell);
         
         final  CreateDatabaseWizardPageInformix pageifx = new CreateDatabaseWizardPageInformix("ifx", props, newDBInfo);
-        pageifx.createControl(shell);
         
         final  CreateDatabaseWizardPageJDBC pagejdbc = new CreateDatabaseWizardPageJDBC("jdbc", props, newDBInfo);
-        pagejdbc.createControl(shell);
         
         final  CreateDatabaseWizardPageOCI pageoci = new CreateDatabaseWizardPageOCI("oci", props, newDBInfo);
-        pageoci.createControl(shell);
         
         final CreateDatabaseWizardPageODBC pageodbc = new CreateDatabaseWizardPageODBC("odbc", props, newDBInfo);
-        pageodbc.createControl(shell);
         
         final CreateDatabaseWizardPageOracle pageoracle = new CreateDatabaseWizardPageOracle("oracle", props, newDBInfo);
         
         final CreateDatabaseWizardPageSAPR3 pageSAPR3 = new CreateDatabaseWizardPageSAPR3("SAPR3", props, newDBInfo);
-        pageSAPR3.createControl(shell);
         
         final CreateDatabaseWizardPageGeneric pageGeneric = new CreateDatabaseWizardPageGeneric("generic", props, newDBInfo);
-        pageGeneric.createControl(shell);
         
         final CreateDatabaseWizardPage2 page2 = new CreateDatabaseWizardPage2("2", props, newDBInfo);
-        page2.createControl(shell);
 
     	wizardFinished=false; // set to false for safety only
     	
