@@ -5,12 +5,12 @@ import java.util.List;
 import org.pentaho.di.repository.IRole;
 import org.pentaho.di.repository.RepositorySecurityManager;
 
-public class UIRepositoryRoles extends AbstractModelNode<UIRepositoryRole> {
+public class UIRepositoryRoles extends AbstractModelNode<IUIRole> {
   
     public UIRepositoryRoles(){
     }
     
-    public UIRepositoryRoles(List<UIRepositoryRole> roles){
+    public UIRepositoryRoles(List<IUIRole> roles){
       super(roles);
     }
 
@@ -20,7 +20,7 @@ public class UIRepositoryRoles extends AbstractModelNode<UIRepositoryRole> {
       try {
         roleList = rsm.getRoles();
         for (IRole role : roleList) {
-        this.add(new UIRepositoryRole(role));
+        this.add(UIObjectRegistery.getInstance().constructUIRepositoryRole(role));
         }
       } catch (Exception e) {
         // TODO: handle exception; can't get users???

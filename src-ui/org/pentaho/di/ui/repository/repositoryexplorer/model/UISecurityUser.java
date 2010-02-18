@@ -5,8 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.repository.IRole;
-import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
@@ -15,17 +13,17 @@ import org.pentaho.ui.xul.util.AbstractModelList;
 public class UISecurityUser extends XulEventSourceAdapter{
 
   private Mode mode;
-  private AbstractModelList<UIRepositoryRole> availableRoles;
-  private AbstractModelList<UIRepositoryRole> assignedRoles;
-  private List<UIRepositoryRole> availableSelectedRoles = new ArrayList<UIRepositoryRole>();
-  private List<UIRepositoryRole> assignedSelectedRoles = new ArrayList<UIRepositoryRole>();  
+  private AbstractModelList<IUIRole> availableRoles;
+  private AbstractModelList<IUIRole> assignedRoles;
+  private List<IUIRole> availableSelectedRoles = new ArrayList<IUIRole>();
+  private List<IUIRole> assignedSelectedRoles = new ArrayList<IUIRole>();  
   private boolean roleAssignmentPossible;
   private boolean roleUnassignmentPossible;
   private String name;
   private String description;
   private String password;
   public UISecurityUser() {
-    availableRoles = new AbstractModelList<UIRepositoryRole>();
+    availableRoles = new AbstractModelList<IUIRole>();
     availableRoles.addPropertyChangeListener("children", new PropertyChangeListener() { //$NON-NLS-1$
       
       public void propertyChange(PropertyChangeEvent evt) {
@@ -33,7 +31,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
       }
     });
     
-    assignedRoles = new AbstractModelList<UIRepositoryRole>();
+    assignedRoles = new AbstractModelList<IUIRole>();
     assignedRoles.addPropertyChangeListener("children", new PropertyChangeListener() { //$NON-NLS-1$
       
       public void propertyChange(PropertyChangeEvent evt) {
@@ -46,20 +44,20 @@ public class UISecurityUser extends XulEventSourceAdapter{
     
   }
 
-  public void setUser(UIRepositoryUser user, List<UIRepositoryRole> roles) {
+  public void setUser(UIRepositoryUser user, List<IUIRole> roles) throws Exception{
     setAvailableRoles(roles);
     setDescription(user.getDescription());
     setName(user.getName());
     // Show empty password on the client site
     setPassword("");//$NON-NLS-1$
-    for(IRole role:user.getRoles()) {
+    for(IUIRole role:user.getRoles()) {
       removeFromAvailableRoles(role.getName());
-      addToSelectedRoles(new UIRepositoryRole(role));
+      addToSelectedRoles(UIObjectRegistery.getInstance().constructUIRepositoryRole(role.getRole()));
     }
     
   }
  
-  public List<UIRepositoryRole> getAvailableSelectedRoles() {
+  public List<IUIRole> getAvailableSelectedRoles() {
     return availableSelectedRoles;
   }
 
@@ -76,7 +74,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
     fireRoleAssignmentPropertyChange();
   }
 
-  public List<UIRepositoryRole> getAssignedSelectedRoles() {
+  public List<IUIRole> getAssignedSelectedRoles() {
     return assignedSelectedRoles;
   }
 
@@ -104,22 +102,22 @@ public class UISecurityUser extends XulEventSourceAdapter{
     this.mode = mode;
     this.firePropertyChange("mode", null, mode); //$NON-NLS-1$
   }
-  public List<UIRepositoryRole> getAvailableRoles() {
+  public List<IUIRole> getAvailableRoles() {
     return availableRoles;
   }
-  public void setAvailableRoles(List<UIRepositoryRole> availableRoles) {
-    List<UIRepositoryRole> previousValue = getPreviousAvailableRoles();
+  public void setAvailableRoles(List<IUIRole> availableRoles) {
+    List<IUIRole> previousValue = getPreviousAvailableRoles();
     this.availableRoles.clear();
     if(availableRoles != null) {
       this.availableRoles.addAll(availableRoles);
     }
     this.firePropertyChange("availableRoles", previousValue, this.availableRoles); //$NON-NLS-1$
   }
-  public List<UIRepositoryRole> getAssignedRoles() {
+  public List<IUIRole> getAssignedRoles() {
     return assignedRoles;
   }
-  public void setAssignedRoles(List<UIRepositoryRole> selectedRoles) {
-    List<UIRepositoryRole> previousValue = getPreviousSelectedRoles();
+  public void setAssignedRoles(List<IUIRole> selectedRoles) {
+    List<IUIRole> previousValue = getPreviousSelectedRoles();
     this.assignedRoles.clear();
     if(selectedRoles != null) {
       this.assignedRoles.addAll(selectedRoles);
@@ -215,14 +213,14 @@ public class UISecurityUser extends XulEventSourceAdapter{
     userInfo.setName(name);
     userInfo.setUsername(name);
     userInfo.setPassword(password);
-    for (UIRepositoryRole role : getAssignedRoles()) {
+    for (IUIRole role : getAssignedRoles()) {
       userInfo.addRole(role.getRole());
     }
     return userInfo;
   }
 
-  private void addToSelectedRoles(UIRepositoryRole roleToAdd) {
-    List<UIRepositoryRole> previousValue = getPreviousSelectedRoles();
+  private void addToSelectedRoles(IUIRole roleToAdd) {
+    List<IUIRole> previousValue = getPreviousSelectedRoles();
     assignedRoles.add(roleToAdd);
     this.firePropertyChange("assignedRoles", previousValue, assignedRoles); //$NON-NLS-1$
     if(assignedRoles.size() == 1) {
@@ -232,7 +230,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
   }
 
   private void addToAvailableRoles(UIRepositoryRole roleToAdd) {
-    List<UIRepositoryRole> previousValue = getPreviousAvailableRoles();
+    List<IUIRole> previousValue = getPreviousAvailableRoles();
     availableRoles.add(roleToAdd);
     if(availableRoles.size() == 1) {
       setRoleAssignmentPossible(true);      
@@ -241,7 +239,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
     fireRoleAssignmentPropertyChange();
   }
   private void removeFromAvailableRoles(String roleName) {
-    List<UIRepositoryRole> previousValue = getPreviousAvailableRoles();
+    List<IUIRole> previousValue = getPreviousAvailableRoles();
     availableRoles.remove(getAvailableRole(roleName));
     if(availableRoles.size() == 0) {
       setRoleAssignmentPossible(false);      
@@ -251,7 +249,7 @@ public class UISecurityUser extends XulEventSourceAdapter{
   }
 
   private void removeFromSelectedRoles(String roleName) {
-    List<UIRepositoryRole> previousValue = getPreviousSelectedRoles();
+    List<IUIRole> previousValue = getPreviousSelectedRoles();
     assignedRoles.remove(getSelectedRole(roleName));
     if(assignedRoles.size() == 0) {
       setRoleUnassignmentPossible(false);      
@@ -274,8 +272,8 @@ public class UISecurityUser extends XulEventSourceAdapter{
     }
   }
   
-  private UIRepositoryRole getSelectedRole(String name) {
-    for (UIRepositoryRole role : assignedRoles) {
+  private IUIRole getSelectedRole(String name) {
+    for (IUIRole role : assignedRoles) {
       if (role.getName().equals(name)) {
         return role;
       }
@@ -283,8 +281,8 @@ public class UISecurityUser extends XulEventSourceAdapter{
     return null;
   }
   
-  private UIRepositoryRole getAvailableRole(String name) {
-    for (UIRepositoryRole role : availableRoles) {
+  private IUIRole getAvailableRole(String name) {
+    for (IUIRole role : availableRoles) {
       if (role.getName().equals(name)) {
         return role;
       }
@@ -292,17 +290,17 @@ public class UISecurityUser extends XulEventSourceAdapter{
     return null;
   }
   
-  private List<UIRepositoryRole> getPreviousAvailableRoles() {
-    List<UIRepositoryRole> previousValue = new ArrayList<UIRepositoryRole>();
-    for (UIRepositoryRole ru : availableRoles) {
+  private List<IUIRole> getPreviousAvailableRoles() {
+    List<IUIRole> previousValue = new ArrayList<IUIRole>();
+    for (IUIRole ru : availableRoles) {
       previousValue.add(ru);
     }
     return previousValue;
   }
 
-  private List<UIRepositoryRole> getPreviousSelectedRoles() {
-    List<UIRepositoryRole> previousValue = new ArrayList<UIRepositoryRole>();
-    for (UIRepositoryRole ru : assignedRoles) {
+  private List<IUIRole> getPreviousSelectedRoles() {
+    List<IUIRole> previousValue = new ArrayList<IUIRole>();
+    for (IUIRole ru : assignedRoles) {
       previousValue.add(ru);
     }
     return previousValue;

@@ -34,6 +34,7 @@ import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
+import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
@@ -136,7 +137,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   public PermissionsController() {
   }
 
-  public void init() {
+  public void init()  throws ControllerInitializationException {
     try {
       confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$ 
       messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$ 
@@ -144,7 +145,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
       manageAclsModel = new UIRepositoryObjectAclModel(viewAclsModel);
       browseController.addContextChangeListener(this);
     } catch (Exception e) {
-
+      throw new ControllerInitializationException(e);
     }
     createBindings();
   }

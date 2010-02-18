@@ -18,8 +18,10 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -29,7 +31,11 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.ObjectRecipient.Type;
+import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
+import org.pentaho.di.ui.repository.repositoryexplorer.UIObjectCreationException;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.IUIRole;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistery;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryRole;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryUser;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity;
@@ -37,7 +43,6 @@ import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurityRole;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurityUser;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
 import org.pentaho.ui.xul.XulComponent;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -170,15 +175,15 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
   public SecurityController() {
   }
 
-  public void init() {
-    createModel();
-    securityRole = new UISecurityRole();
-    securityUser = new UISecurityUser();
+  public void init() throws ControllerInitializationException{
     try {
+      createModel();
+      securityRole = new UISecurityRole();
+      securityUser = new UISecurityUser();
       confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
       messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
-    } catch (XulException xe) {
-
+    } catch (Exception e) {
+      throw new ControllerInitializationException(e);
     }
     if (bf != null) {
       createBindings();
@@ -186,8 +191,8 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
   }
 
 
-  protected void createModel() {
-    security = new UISecurity(rsm);
+  protected void createModel() throws Exception{
+      security = new UISecurity(rsm);
   }
 
   protected void createBindings() {
@@ -373,14 +378,7 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
             @Override
             public List<UIRepositoryUser> sourceToTarget(UIRepositoryRole rr) {
-              List<UIRepositoryUser> rusers = new ArrayList<UIRepositoryUser>();
-              if (rr != null && rr.getUsers() != null) {
-                List<UserInfo> users = new ArrayList<UserInfo>(rr.getUsers());
-                for (UserInfo user : users) {
-                  rusers.add(new UIRepositoryUser(user));
-                }
-              }
-              return rusers;
+              return new ArrayList<UIRepositoryUser>(rr.getUsers());
             }
 
             @Override
@@ -391,22 +389,15 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
           });
       userDetailBinding = bf.createBinding(security, "selectedUser", userDetailTable, "elements",//$NON-NLS-1$ //$NON-NLS-2$
-          new BindingConvertor<UIRepositoryUser, List<UIRepositoryRole>>() {
+          new BindingConvertor<UIRepositoryUser, List<IUIRole>>() {
 
             @Override
-            public List<UIRepositoryRole> sourceToTarget(UIRepositoryUser ru) {
-              List<UIRepositoryRole> rroles = new ArrayList<UIRepositoryRole>();
-              if (ru != null && ru.getRoles() != null) {
-                List<IRole> roles = new ArrayList<IRole>(ru.getRoles());
-                for (IRole role : roles) {
-                  rroles.add(new UIRepositoryRole(role));
-                }
-              }
-              return rroles;
+            public List<IUIRole> sourceToTarget(UIRepositoryUser ru) {
+                return new ArrayList<IUIRole>(ru.getRoles());
             }
 
             @Override
-            public UIRepositoryUser targetToSource(List<UIRepositoryRole> arg0) {
+            public UIRepositoryUser targetToSource(List<IUIRole> arg0) {
               // TODO Auto-generated method stub
               return null;
             }
@@ -584,8 +575,14 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
   private void updateUser() throws Exception {
     if (rsm != null) {
       try {
-        rsm.updateUser(securityUser.getUserInfo());
-        security.updateUser(new UIRepositoryUser(securityUser.getUserInfo()));
+        UIRepositoryUser uiUser = security.getSelectedUser();
+        Set<IUIRole> previousRoleList = new HashSet<IUIRole>();
+        previousRoleList.addAll(uiUser.getRoles());
+        uiUser.setDescription(securityUser.getDescription());
+        uiUser.setPassword(securityUser.getPassword());
+        uiUser.setRoles(new HashSet<IUIRole>(securityUser.getAssignedRoles()));
+        rsm.updateUser(uiUser.getUserInfo());
+        security.updateUser(uiUser, previousRoleList);
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
         messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
@@ -656,7 +653,7 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
       try {
         IRole role = securityRole.getRole(rsm);
         rsm.createRole(role);
-        security.addRole(new UIRepositoryRole(role));
+        security.addRole(UIObjectRegistery.getInstance().constructUIRepositoryRole(role));
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
         messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
@@ -677,10 +674,13 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
   private void updateRole() throws Exception {
     if (rsm != null) {
       try {
-        IRole role = securityRole.getRole(rsm);
-        rsm.updateRole(role);
-        security.updateRole(new UIRepositoryRole(role));
-        roleDetailTable.update();
+        IUIRole uiRole = security.getSelectedRole();
+        Set<UIRepositoryUser> previousUserList = new HashSet<UIRepositoryUser>();
+        previousUserList.addAll(uiRole.getUsers());
+        uiRole.setDescription(securityRole.getDescription());
+        uiRole.setUsers(new HashSet<UIRepositoryUser>(securityRole.getAssignedUsers()));
+        rsm.updateRole(uiRole.getRole());
+        security.updateRole(uiRole, previousUserList);
         roleDialog.hide();
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
@@ -832,10 +832,10 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
     }
   }
 
-  private List<UIRepositoryRole> convertToUIRoleModel(List<IRole> roles) {
-    List<UIRepositoryRole> rroles = new ArrayList<UIRepositoryRole>();
+  private List<IUIRole> convertToUIRoleModel(List<IRole> roles) throws UIObjectCreationException {
+    List<IUIRole> rroles = new ArrayList<IUIRole>();
     for (IRole role : roles) {
-      rroles.add(new UIRepositoryRole(role));
+      rroles.add(UIObjectRegistery.getInstance().constructUIRepositoryRole(role));
     }
     return rroles;
   }

@@ -23,10 +23,13 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
@@ -36,7 +39,9 @@ import org.pentaho.di.ui.repository.repositoryexplorer.controllers.PartitionsCon
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.PermissionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SlavesController;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistery;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryRole;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -94,14 +99,20 @@ public class RepositoryExplorer {
     
   };  
 
-  public RepositoryExplorer(final Repository rep, RepositoryExplorerCallback callback,
-        VariableSpace variableSpace) {
+  // private Repository repository;
+  public RepositoryExplorer(Directory rd, final Repository rep, RepositorySecurityManager securityManager, RepositoryExplorerCallback callback,
+      VariableSpace variableSpace) {
+
 
     // If there is not security controller class instantiated and use the default one which is SecurityController
     if(getSecurityControllerClass() == null) {
       setSecurityControllerClass(SecurityController.class);
     }
-
+    // If repository role class is not set, Set it with the default one
+    if(UIObjectRegistery.getInstance().getRegisteredUIRepositoryRoleClass() == null) {
+      UIObjectRegistery.getInstance().registerUIRepositoryRoleClass(UIRepositoryRole.class);
+    }
+    /// repository = rep;
     try {
       container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
       final XulRunner runner = new SwtXulRunner();
@@ -157,7 +168,7 @@ public class RepositoryExplorer {
       container.addEventHandler((AbstractXulEventHandler) securityController);
       if (securityEnabled) {
         securityController.setBindingFactory(bf);
-        securityController.setRepositorySecurityManager(rep.getSecurityManager());
+        securityController.setRepositorySecurityManager(securityManager);
         securityController.setRepository(rep);
         securityController.setMessages(resourceBundle);
       }
@@ -166,7 +177,7 @@ public class RepositoryExplorer {
       container.addEventHandler(permissionsController);
       if (aclsEnabled && securityEnabled) {
         permissionsController.setBindingFactory(bf);
-        permissionsController.setRepositorySecurityManager(rep.getSecurityManager());
+        permissionsController.setRepositorySecurityManager(securityManager);
         permissionsController.setMessages(resourceBundle);
       }
       container.invokeLater(new Runnable() {
@@ -190,9 +201,9 @@ public class RepositoryExplorer {
       try {
         runner.initialize();
       } catch (XulException e) {
+        SpoonFactory.getInstance().messageBox(e.getLocalizedMessage(), "Service Initialization Failed", false, Const.ERROR);          
         log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);//$NON-NLS-1$
       }
-
     } catch (XulException e) {
      log.error(resourceBundle.getString("RepositoryExplorer.ErrorLoadingXulApplication"), e);//$NON-NLS-1$
     }

@@ -83,13 +83,13 @@ public class UISecurityRole extends XulEventSourceAdapter {
     return this;
   }
 
-  public void setRole(UIRepositoryRole role,List<UIRepositoryUser> users) {
+  public void setRole(IUIRole role,List<UIRepositoryUser> users) {
     setAvailableUsers(users);
     setDescription(role.getDescription());
     setName(role.getName());
-    for (UserInfo user : role.getUsers()) {
-      removeFromAvailableUsers(user.getLogin());
-      addToAssignedUsers(new UIRepositoryUser(user));
+    for (UIRepositoryUser user : role.getUsers()) {
+      removeFromAvailableUsers(user.getName());
+      addToAssignedUsers(user);
     }
   }
 
