@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>WebServicesMovieListingAsHTTP</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <trans_status>0</trans_status>
+    <directory>&#47;</directory>
+    <parameters>
+    </parameters>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <rejected/>
+      <connection/>
+      <table/>
+      <step_performance_table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      <size_limit_lines/>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>10000</size_rowset>
+    <sleep_time_empty>50</sleep_time_empty>
+    <sleep_time_full>50</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>50000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+        <partitionschema>
+          <name>MySQL EC2 Schema</name>
+          <partition>            <id>P2</id>
+          </partition>          <partition>            <id>P3</id>
+          </partition>          <partition>            <id>P4</id>
+          </partition>          <partition>            <id>P5</id>
+          </partition>          <dynamic>N</dynamic>
+          <partitions_per_slave/>
+        </partitionschema>
+        <partitionschema>
+          <name>Partitioning schema</name>
+          <partition>            <id>PartDB1</id>
+          </partition>          <partition>            <id>PartDB2</id>
+          </partition>          <partition>            <id>PartDB3</id>
+          </partition>          <partition>            <id>PartDB4</id>
+          </partition>          <partition>            <id>PartDB5</id>
+          </partition>          <dynamic>N</dynamic>
+          <partitions_per_slave/>
+        </partitionschema>
+    </partitionschemas>
+    <slaveservers>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080 master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>server8080</name><hostname>127.0.0.1</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>server8090</name><hostname>127.0.0.1</hostname><port>8090</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>server9000</name><hostname>127.0.0.1</hostname><port>9000</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_2</name><hostname>domU-12-31-33-00-01-F1.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_4</name><hostname>domU-12-31-33-00-02-55.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_3</name><hostname>domU-12-31-33-00-03-FB.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_MASTER_1</name><hostname>domU-12-31-33-00-03-9C.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_5</name><hostname>domU-12-31-33-00-03-EA.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>Localhost 8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_1</name><hostname>dfjqsjfmkdsjfm.qsdfqsdf.Qdsfdsqdf.dsqf.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>sam 8080</name><hostname>127.0.0.1</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>sam 8081 slave</name><hostname>127.0.0.1</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>sam 8082 slave</name><hostname>127.0.0.1</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>Warmath</name><hostname>liveinalpharetta.com</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>Mike ETL Server</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>Wayne ETL Server</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+    </slaveservers>
+    <clusterschemas>
+        <clusterschema>
+          <name>EC2</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>100000</sockets_buffer_size>
+          <sockets_flush_interval>0</sockets_flush_interval>
+          <sockets_compressed>Y</sockets_compressed>
+          <dynamic>N</dynamic>
+          <slaveservers>
+            <name>EC_MASTER_1</name>
+            <name>EC_SLAVE_2</name>
+            <name>EC_SLAVE_3</name>
+            <name>EC_SLAVE_4</name>
+            <name>EC_SLAVE_5</name>
+          </slaveservers>
+        </clusterschema>
+        <clusterschema>
+          <name>Sam</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>2000</sockets_buffer_size>
+          <sockets_flush_interval>5000</sockets_flush_interval>
+          <sockets_compressed>Y</sockets_compressed>
+          <dynamic>N</dynamic>
+          <slaveservers>
+            <name>sam 8080</name>
+            <name>sam 8081 slave</name>
+            <name>sam 8082 slave</name>
+          </slaveservers>
+        </clusterschema>
+    </clusterschemas>
+  <modified_user>-</modified_user>
+  <modified_date>2009&#47;08&#47;12 14:13:54.531</modified_date>
+  </info>
+  <notepads>
+    <notepad>
+      <note>Read in the SOAP request</note>
+      <xloc>29</xloc>
+      <yloc>82</yloc>
+      <width>139</width>
+      <heigth>22</heigth>
+    </notepad>
+    <notepad>
+      <note>Concat mutilpe rows 
+to one row</note>
+      <xloc>163</xloc>
+      <yloc>203</yloc>
+      <width>118</width>
+      <heigth>35</heigth>
+    </notepad>
+    <notepad>
+      <note>Define the SOAP action</note>
+      <xloc>290</xloc>
+      <yloc>80</yloc>
+      <width>126</width>
+      <heigth>22</heigth>
+    </notepad>
+    <notepad>
+      <note>Send the SOAP request together with
+the SOAPAction (in the HTTP header)</note>
+      <xloc>394</xloc>
+      <yloc>208</yloc>
+      <width>199</width>
+      <heigth>35</heigth>
+    </notepad>
+    <notepad>
+      <note>Write out the result into a text file as XML</note>
+      <xloc>530</xloc>
+      <yloc>79</yloc>
+      <width>210</width>
+      <heigth>22</heigth>
+    </notepad>
+    <notepad>
+      <note>Example to replace a Webservice call by a HTTP call to have flexible headers etc. (works since PDI 3.2.3)
+see also http:&#47;&#47;jira.pentaho.com&#47;browse&#47;PDI-2729</note>
+      <xloc>28</xloc>
+      <yloc>11</yloc>
+      <width>530</width>
+      <heigth>35</heigth>
+    </notepad>
+    <notepad>
+      <note>Instead of the Text file output step you can analyze this
+with the Get Data from XML step</note>
+      <xloc>652</xloc>
+      <yloc>127</yloc>
+      <width>283</width>
+      <heigth>35</heigth>
+    </notepad>
+  </notepads>
+  <order>
+  <hop> <from>Fixed file input &quot;SOAPRequest&quot;</from><to>Group by</to><enabled>Y</enabled> </hop>  <hop> <from>SOAPAction</from><to>HTTP Post</to><enabled>Y</enabled> </hop>  <hop> <from>Group by</from><to>SOAPAction</to><enabled>Y</enabled> </hop>  <hop> <from>HTTP Post</from><to>Text file output</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Fixed file input &quot;SOAPRequest&quot;</name>
+    <type>FixedInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <filename>${Internal.Transformation.Filename.Directory}&#47;files&#47;WebServicesMovieListingAsHTTP_SOAPRequest.xml</filename>
+    <line_width>1000</line_width>
+    <header>N</header>
+    <buffer_size>50000</buffer_size>
+    <lazy_conversion>N</lazy_conversion>
+    <line_feed>Y</line_feed>
+    <parallel>N</parallel>
+    <file_type>NONE</file_type>
+    <encoding/>
+    <add_to_result_filenames>N</add_to_result_filenames>
+    <fields>
+      <field>
+        <name>ws_lines</name>
+        <type>String</type>
+        <format>null</format>
+        <trim_type>none</trim_type>
+        <currency>null</currency>
+        <decimal>null</decimal>
+        <group>null</group>
+        <width>1000</width>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>79</xloc>
+      <yloc>133</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Group by</name>
+    <type>GroupBy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+      <all_rows>N</all_rows>
+      <ignore_aggregate>N</ignore_aggregate>
+      <field_ignore/>
+      <directory>%%java.io.tmpdir%%</directory>
+      <prefix>grp</prefix>
+      <add_linenr>N</add_linenr>
+      <linenr_fieldname/>
+      <give_back_row>N</give_back_row>
+      <group>
+      </group>
+      <fields>
+        <field>
+          <aggregate>ws_request</aggregate>
+          <subject>ws_lines</subject>
+          <type>CONCAT_STRING</type>
+          <valuefield> </valuefield>
+        </field>
+      </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>200</xloc>
+      <yloc>133</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>HTTP Post</name>
+    <type>HTTPPOST</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <postafile>N</postafile>
+    <encoding>UTF-8</encoding>
+    <url>http:&#47;&#47;www.ignyte.com&#47;webservices&#47;ignyte.whatsshowing.webservice&#47;moviefunctions.asmx</url>
+    <urlInField>N</urlInField>
+    <urlField/>
+    <requestEntity>ws_request</requestEntity>
+    <lookup>
+      <arg>
+        <name>SOAPAction</name>
+        <parameter>SOAPAction</parameter>
+        </arg>
+      </lookup>
+    <result>
+      <name>ws_result</name>
+      </result>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>475</xloc>
+      <yloc>133</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>SOAPAction</name>
+    <type>Constant</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>SOAPAction</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>http:&#47;&#47;www.ignyte.com&#47;whatsshowing&#47;GetTheatersAndMovies</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>341</xloc>
+      <yloc>133</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Text file output</name>
+    <type>TextFileOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <separator>;</separator>
+    <enclosure>&quot;</enclosure>
+    <enclosure_forced>N</enclosure_forced>
+    <header>N</header>
+    <footer>N</footer>
+    <format>DOS</format>
+    <compression>None</compression>
+    <encoding/>
+    <endedLine/>
+    <fileNameInField>N</fileNameInField>
+    <fileNameField/>
+    <file>
+      <name>${Internal.Transformation.Filename.Directory}&#47;output&#47;WebServicesMovieListingSOAPResult</name>
+      <is_command>N</is_command>
+      <do_not_open_new_file_init>N</do_not_open_new_file_init>
+      <extention>xml</extention>
+      <append>N</append>
+      <split>N</split>
+      <haspartno>N</haspartno>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
+      <add_to_result_filenames>Y</add_to_result_filenames>
+      <pad>N</pad>
+      <fast_dump>N</fast_dump>
+      <splitevery>0</splitevery>
+    </file>
+    <fields>
+      <field>
+        <name>ws_result</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>601</xloc>
+      <yloc>133</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
+</transformation>
