@@ -100,7 +100,7 @@ public class RepositoryExplorer {
   };  
 
   // private Repository repository;
-  public RepositoryExplorer(Directory rd, final Repository rep, RepositorySecurityManager securityManager, RepositoryExplorerCallback callback,
+  public RepositoryExplorer(final Repository rep, RepositorySecurityManager securityManager, RepositoryExplorerCallback callback,
       VariableSpace variableSpace) {
 
 

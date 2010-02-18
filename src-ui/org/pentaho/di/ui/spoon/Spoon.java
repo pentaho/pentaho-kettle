@@ -3004,7 +3004,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         if(SecurityManagerRegistery.getInstance().getRegisteredSecurityManager() != null) {
           securityManager = SecurityManagerRegistery.getInstance().createSecurityManager(rep, rep.getRepositoryMeta(), rep.getUserInfo());
         }
-        RepositoryExplorer explorer = new RepositoryExplorer(root, rep, getSecurityManager(), cb, Variables.getADefaultVariableSpace());
+        RepositoryExplorer explorer = new RepositoryExplorer(rep, getSecurityManager(), cb, Variables.getADefaultVariableSpace());
         explorer.show();
       } catch (SecurityManagerCreationException securityException) {
         securityException.printStackTrace();
