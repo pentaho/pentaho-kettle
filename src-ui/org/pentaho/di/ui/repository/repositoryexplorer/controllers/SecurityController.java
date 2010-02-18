@@ -43,6 +43,7 @@ import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulConfirmBox;
+import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -126,7 +127,7 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
   private XulButton assignUserToRoleButton;
 
   private XulButton unassignUserFromRoleButton;
-
+  
   private RepositorySecurityManager rsm;
   
   protected Repository repository;
@@ -235,27 +236,12 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
       @Override
       public Object[] sourceToTarget(List<UIRepositoryRole> roles) {
-        if (roles != null) {
-          Object[] retVal = new Object[roles.size()];
-          int i = 0;
-          for (UIRepositoryRole role : roles) {
-            retVal[i++] = role;
-          }
-          return retVal;
-        }
-        return null;
+        return roles == null ? null : roles.toArray();
       }
 
       @Override
       public List<UIRepositoryRole> targetToSource(Object[] roles) {
-        if (roles != null) {
-          List<UIRepositoryRole> retVal = new ArrayList<UIRepositoryRole>();
-          for (int i = 0; i < roles.length; i++) {
-            retVal.add((UIRepositoryRole) roles[i]);
-          }
-          return retVal;
-        }
-        return null;
+        return roles == null ? null : Arrays.<UIRepositoryRole>asList((UIRepositoryRole[])roles);
       }
 
     };
@@ -265,27 +251,12 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
       @Override
       public Object[] sourceToTarget(List<UIRepositoryUser> users) {
-        if (users != null) {
-          Object[] retVal = new Object[users.size()];
-          int i = 0;
-          for (UIRepositoryUser user : users) {
-            retVal[i++] = user;
-          }
-          return retVal;
-        }
-        return null;
+        return users == null ? null : users.toArray();
       }
 
       @Override
       public List<UIRepositoryUser> targetToSource(Object[] users) {
-        if (users != null) {
-          List<UIRepositoryUser> retVal = new ArrayList<UIRepositoryUser>();
-          for (int i = 0; i < users.length; i++) {
-            retVal.add((UIRepositoryUser) users[i]);
-          }
-          return retVal;
-        }
-        return null;
+        return users == null ? null : Arrays.<UIRepositoryUser>asList((UIRepositoryUser[])users);
       }
 
     };
@@ -307,7 +278,6 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
       @Override
       public Integer targetToSource(Boolean value) {
-        // TODO Auto-generated method stub
         return null;
       }
     };

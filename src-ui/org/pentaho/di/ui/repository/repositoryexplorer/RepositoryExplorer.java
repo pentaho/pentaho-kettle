@@ -84,7 +84,6 @@ public class RepositoryExplorer {
 
     @Override
     public Enumeration<String> getKeys() {
-      // TODO Auto-generated method stub
       return null;
     }
 
@@ -95,16 +94,14 @@ public class RepositoryExplorer {
     
   };  
 
-  // private Repository repository;
-
-  public RepositoryExplorer(Directory rd, final Repository rep, RepositoryExplorerCallback callback,
+  public RepositoryExplorer(final Repository rep, RepositoryExplorerCallback callback,
         VariableSpace variableSpace) {
-    // repositoryDirectory = rd;
+
     // If there is not security controller class instantiated and use the default one which is SecurityController
     if(getSecurityControllerClass() == null) {
       setSecurityControllerClass(SecurityController.class);
     }
-    /// repository = rep;
+
     try {
       container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
       final XulRunner runner = new SwtXulRunner();
