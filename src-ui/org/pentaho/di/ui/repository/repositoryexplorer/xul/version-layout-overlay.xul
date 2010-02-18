@@ -16,20 +16,27 @@
 								</tabs>
 								<tabpanels flex="1">
 									<tabpanel id="history-tab">
-										<tree id="revision-table" flex="1" hidecolumnpicker="true"
-											enableColumnDrag="true" context="revisionContextMenu" treeLines="false">
-											<treecols>
-												<treecol id="revision-label-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Label}"
-													pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
-												<treecol id="revision-date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.DateCreated}"
-													pen:binding="formatCreationDate" context="revisionContextMenu" />
-												<treecol id="revision-comment-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Comment}"
-													pen:binding="comment" />
-												<treecol id="revision-user-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.User}"
-													pen:binding="login" />
-											</treecols>
-											<treechildren />
-										</tree>
+										<deck id="history-deck" flex="1">
+											<vbox id="no-history-box" flex="1">
+												<label value="${HistoryTab.NoHistory}"/> 
+											</vbox>
+											<vbox id="history-box" flex="1">
+												<tree id="revision-table" flex="1" hidecolumnpicker="true"
+													enableColumnDrag="true" context="revisionContextMenu" treeLines="false">
+													<treecols>
+														<treecol id="revision-label-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Label}"
+															pen:binding="name" pen:childrenbinding="children" context="revisionContextMenu" />
+														<treecol id="revision-date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.DateCreated}"
+															pen:binding="formatCreationDate" context="revisionContextMenu" />
+														<treecol id="revision-comment-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.Comment}"
+															pen:binding="comment" />
+														<treecol id="revision-user-col" flex="1" label="${RepositoryExplorerDialog.Tab.VersionHistory.Column.User}"
+															pen:binding="login" />
+													</treecols>
+													<treechildren />
+												</tree>
+											</vbox>
+										</deck>
 								    </tabpanel>	
 									<tabpanel id="acl-tab">
 										<deck id="acl-deck">

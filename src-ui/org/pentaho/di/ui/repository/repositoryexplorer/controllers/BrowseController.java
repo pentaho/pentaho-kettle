@@ -39,6 +39,7 @@ import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulPromptBox;
+import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -60,12 +61,18 @@ public class BrowseController extends AbstractXulEventHandler {
   private XulTree fileTable;
 
   private XulTree revisionTable;
+  
+  private XulDeck historyDeck;
 
   private UIRepositoryDirectory repositoryDirectory;
 
   private RepositoryExplorerCallback callback;
 
   private ContextChangeListenerCollection contextChangeListeners;
+
+  private static final int NO_HISTORY = 0;
+
+  private static final int HISTORY = 1;
 
   BindingFactory bf;
 
@@ -143,6 +150,7 @@ public class BrowseController extends AbstractXulEventHandler {
 
   private void createRevisionBindings() {
     revisionTable = (XulTree) document.getElementById("revision-table"); //$NON-NLS-1$
+    historyDeck = (XulDeck) document.getElementById("history-deck");//$NON-NLS-1$ 
 
     bf.setBindingType(Binding.Type.ONE_WAY);
     Binding revisionTreeBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-table",    //$NON-NLS-1$ //$NON-NLS-2$
@@ -169,6 +177,10 @@ public class BrowseController extends AbstractXulEventHandler {
     Binding revisionBinding = null;
 
     bf.setBindingType(Binding.Type.ONE_WAY);
+    bf.createBinding(folderTree, "selectedItems", this, "noHistoryDeck"); //$NON-NLS-1$  //$NON-NLS-2$
+    
+    
+    bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
     revisionBinding = bf.createBinding(this, "repositoryObjects", revisionTable, "elements", //$NON-NLS-1$ //$NON-NLS-2$
         new BindingConvertor<List<UIRepositoryObject>, UIRepositoryObjectRevisions>() {
@@ -183,6 +195,7 @@ public class BrowseController extends AbstractXulEventHandler {
               return null;
             }
             if (ro.get(0) instanceof UIRepositoryDirectory) {
+              historyDeck.setSelectedIndex(NO_HISTORY);
               return null;
             }
             try {
@@ -195,6 +208,7 @@ public class BrowseController extends AbstractXulEventHandler {
               // how do we handle exceptions in a binding? dialog here? 
               // TODO: handle exception
             }
+            historyDeck.setSelectedIndex(HISTORY);
             return revisions;
           }
 
@@ -214,6 +228,12 @@ public class BrowseController extends AbstractXulEventHandler {
       e.printStackTrace();
     }
 
+  }
+  
+  public <T> void setNoHistoryDeck(Collection<T> items){
+    if (historyDeck != null){
+      historyDeck.setSelectedIndex(NO_HISTORY);
+    }
   }
 
   public void setBindingFactory(BindingFactory bf) {

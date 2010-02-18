@@ -98,15 +98,6 @@
 													pen:binding="type" />
 												<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}"
 													pen:binding="formatModifiedDate" />
-		<!-- 
-												<treecol id="size-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Size}" />
-		
-												<treecol id="desc-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Description}"
-													pen:binding="description" />
-												<treecol id="lock-msg-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.LockMessage}"
-													pen:binding="lockMessage" />
-		-->											
-		
 											</treecols>
 											<treechildren />
 										</tree>
