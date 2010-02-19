@@ -2240,7 +2240,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 				{
 	                ObjectId permissionID = permissions.get(userPerms[i].getCode());
 	                
-	                if (log.isDetailed()) log.logDetailed("Permission id for '"+userCodes[i]+"' = "+permissionID);
+	                if (log.isDetailed()) log.logDetailed("Permission id for '"+userPerms[i].getCode()+"' = "+permissionID);
 	
 					RowMetaAndData lookup = null;
 	                if (upgrade) 
