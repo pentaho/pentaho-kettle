@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window id="trans-graph-window" title="Transformation" orient="vertical"
+  height="600" width="800"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:pen="http://www.pentaho.org/2008/xul" 
+  onload="">
+
+
+  <dialog id="trans-graph-changed-warning-dialog" buttonlabelaccept="${Spoon.Message.Warning.Yes}" buttonlabelextra1="${Spoon.Message.Warning.No}" buttonlabelcancel="${Spoon.Message.Warning.Cancel}" buttons="accept, extra1, cancel" buttonalign="right" title="${Spoon.Dialog.PromptSave.Title}" 
+  		ondialogcancel="changedWarningController.setResultCancel()" ondialogextra1="changedWarningController.setResultNo()" ondialogaccept="changedWarningController.setResultYes()"
+		xmlns:pen="http://www.pentaho.org/2008/xul" height="180" width="320">
+       <vbox>
+        <label id="changed-warning-dialog-message" value="${Spoon.Dialog.PromptToSave.Message}"/>
+      </vbox>
+  </dialog>  
+</window>  
