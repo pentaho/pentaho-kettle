@@ -51,6 +51,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
@@ -115,6 +116,12 @@ public class RepositoryExplorer {
     /// repository = rep;
     try {
       container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
+      
+      // Load functionality from plugins
+      for(XulOverlay over : SpoonPluginManager.getInstance().getOverlaysforContainer("repository-explorer")) { //$NON-NLS-1$
+        container.loadOverlay(over.getOverlayUri());
+      }
+      
       final XulRunner runner = new SwtXulRunner();
       runner.addContainer(container);
 
@@ -180,6 +187,12 @@ public class RepositoryExplorer {
         permissionsController.setRepositorySecurityManager(securityManager);
         permissionsController.setMessages(resourceBundle);
       }
+      
+      // Load handlers from plugin
+      for(XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("repository-explorer")){ //$NON-NLS-1$
+        container.addEventHandler(handler);
+      }
+      
       container.invokeLater(new Runnable() {
         public void run() {
           try {

@@ -16,10 +16,10 @@
 		ondialogaccept="mainController.closeDialog()">
 	
 		<menupopup id="folderContextMenu">
-			<menuitem label="${RepositoryExplorerDialog.ContextMenu.NewFolder}" command="browseController.createFolder()"/>
-			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Open}" />
-			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameFolder()"/>
-			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteFolder()"/>
+			<menuitem id="folder-context-create" label="${RepositoryExplorerDialog.ContextMenu.NewFolder}" command="browseController.createFolder()"/>
+			<menuitem id="folder-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" />
+			<menuitem id="folder-context-rename" label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameFolder()"/>
+			<menuitem id="folder-context-delete" label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteFolder()"/>
 		</menupopup>
 	
 		<menupopup id="revisionContextMenu">
@@ -28,9 +28,9 @@
 		</menupopup>
 	
 		<menupopup id="fileContextMenu">
-			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
-			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameContent()"/>
-			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteContent()"/>
+			<menuitem id="file-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
+			<menuitem id="file-context-rename" label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameContent()"/>
+			<menuitem id="file-context-delete" label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteContent()"/>
 		</menupopup>
 	
 		<tabbox id="repositoryExplorerTabs" flex="1">
@@ -64,7 +64,7 @@
 										<label id="spacer-label" flex="1" />
 										<button id="folder-expand-all" image="images/ExpandAll.png" onclick="browseController.expandAllFolders()"
 											context="folderContextMenu" />
-										<button id="folder-expand-all" image="images/CollapseAll.png"  onclick="browseController.collapseAllFolders()" />
+										<button id="folder-collapse-all" image="images/CollapseAll.png"  onclick="browseController.collapseAllFolders()" />
 									</hbox>
 		
 									<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" 
