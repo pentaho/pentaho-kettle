@@ -233,7 +233,7 @@
     <menuseparator />
     <menuitem id="database-inst-sql-edit" label="${Spoon.Menu.Popup.CONNECTIONS.SQLEditor}" command="spoon.sqlConnection()" />
     <menuitem id="database-inst-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCache}" />
-    <menuitem id="database-inst-share" label="${Spoon.Menu.Popup.CONNECTIONS.Share}" />
+    <menuitem id="database-inst-share" label="${Spoon.Menu.Popup.CONNECTIONS.Share}" command="spoon.shareObject('database-inst-share')" />
     <menuitem id="database-inst-explore" label="${Spoon.Menu.Popup.CONNECTIONS.Explore}" command="spoon.exploreDB()" />
   </menupopup>
 
@@ -241,7 +241,7 @@
     <menuitem id="step-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editStep()" />
     <menuitem id="step-inst-duplicate" label="${Spoon.Menu.Popup.STEPS.Duplicate}" command="spoon.dupeStep()" />
     <menuitem id="step-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delStep()" />
-    <menuitem id="step-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" />
+    <menuitem id="step-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" command="spoon.shareObject('step-inst-share')" />
   </menupopup>
 
   <menupopup id="job-entry-copy-inst">
@@ -258,20 +258,20 @@
   <menupopup id="partition-schema-inst">
     <menuitem id="partition-schema-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editPartitionSchema()" />
     <menuitem id="partition-schema-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delPartitionSchema()" />
-    <menuitem id="partition-schema-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" />
+    <menuitem id="partition-schema-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" command="spoon.shareObject('partition-schema-inst-share')" />
   </menupopup>
 
   <menupopup id="cluster-schema-inst">
     <menuitem id="cluster-schema-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editClusterSchema()" />
     <menuitem id="cluster-schema-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delClusterSchema()" />
-    <menuitem id="cluster-schema-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" />
+    <menuitem id="cluster-schema-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" command="spoon.shareObject('cluster-schema-inst-share')" />
     <menuitem id="cluster-schema-inst-monitor" label="${Spoon.Menu.Popup.CLUSTERS.Monitor}" command="spoon.monitorClusterSchema()" />
   </menupopup>
 
   <menupopup id="slave-server-inst">
     <menuitem id="slave-server-inst-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editSlaveServer()" />
     <menuitem id="slave-server-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delSlaveServer()" />
-    <menuitem id="slave-server-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" />
+    <menuitem id="slave-server-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" command="spoon.shareObject('slave-server-inst-share')" />
     <menuitem id="slave-server-inst-monitor" label="${Spoon.Menu.Popup.SLAVE_SERVER.Monitor}" command="spoon.addSpoonSlave()" />
   </menupopup>
 
