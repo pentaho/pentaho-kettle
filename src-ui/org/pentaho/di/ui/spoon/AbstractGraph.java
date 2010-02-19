@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
 
 /**
@@ -86,7 +87,7 @@ public abstract class AbstractGraph extends Composite {
   }
   
   protected void setZoomLabel() {
-    zoomLabel.setText(Integer.toString(Math.round(magnification * 100)) + "%");
+    zoomLabel.setText(Integer.toString(Math.round(magnification * 100)) + "%"); //$NON-NLS-1$
   }
   
   public void redraw() {
@@ -132,5 +133,33 @@ public abstract class AbstractGraph extends Composite {
   public boolean forceFocus() {
     return canvas.forceFocus();
   }
+  
+  /**
+   * Gets the ChangedWarning for the given TabItemInterface class. This should be overridden by a given
+   * TabItemInterface class to support the changed warning dialog.
+   *  
+   * @return ChangedWarningInterface The class that provides the dialog and return value
+   */
+  public ChangedWarningInterface getChangedWarning() {
+    return null;
+  }
+  
+  /**
+   * Show the ChangedWarning and return the users selection
+   * 
+   * @return int Value of SWT.YES, SWT.NO, SWT.CANCEL
+   */
+  public int showChangedWarning() throws KettleException{
+    ChangedWarningInterface changedWarning = getChangedWarning();
 
+    if(changedWarning != null) {
+      try {
+        return changedWarning.show();
+      } catch (Exception e) {
+        throw new KettleException(e);
+      }
+    }
+    
+    return 0;
+  }
 }

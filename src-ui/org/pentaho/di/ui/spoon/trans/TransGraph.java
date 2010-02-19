@@ -140,7 +140,9 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
+import org.pentaho.di.ui.spoon.AbstractChangedWarningDialog;
 import org.pentaho.di.ui.spoon.AbstractGraph;
+import org.pentaho.di.ui.spoon.ChangedWarningInterface;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
@@ -2803,16 +2805,32 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transMeta.addUndo(obj, null, pos, prev, curr, TransMeta.TYPE_UNDO_POSITION, nextAlso);
     spoon.setUndoMenu(transMeta);
   }
+  
+  public ChangedWarningInterface getChangedWarning() {
+    ChangedWarningInterface retVal = new AbstractChangedWarningDialog() {
 
-  /*
-   * Shows a 'model has changed' warning if required
-   * @return true if nothing has changed or the changes are rejected by the user.
-   */
-  public int showChangedWarning() {
-    MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING);
-    mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Message", spoon.makeTabName(transMeta, true)));//"This model has changed.  Do you want to save it?" //$NON-NLS-1$
-    mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Title")); //$NON-NLS-1$
-    return mb.open();
+      @Override
+      public String getSpoonPluginManagerContainerNamespace() {
+        return "trans-graph-changed-warning-dialog"; //$NON-NLS-1$
+      }
+
+      @Override
+      public String getXulDialogId() {
+        return "trans-graph-changed-warning-dialog"; //$NON-NLS-1$
+      }
+
+      @Override
+      public String getXulResource() {
+       return "ui/trans-graph.xul"; //$NON-NLS-1$
+      }
+      
+      @Override
+      public XulSpoonResourceBundle getXulResourceBundle() {
+        return new XulSpoonResourceBundle();
+      }
+    };
+    
+    return retVal;
   }
 
   public boolean applyChanges() throws KettleException {

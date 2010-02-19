@@ -935,4 +935,9 @@ public class SpoonSlave extends Composite implements TabItemInterface
             }
         }
     }
+
+    @Override
+    public ChangedWarningInterface getChangedWarning() {
+      return null;  
+    }
 }

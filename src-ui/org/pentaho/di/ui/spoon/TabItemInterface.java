@@ -25,8 +25,9 @@ public interface TabItemInterface
     public boolean canBeClosed();
     public boolean canHandleSave();
     public Object getManagedObject();
-    public boolean hasContentChanged();    
-    public int showChangedWarning();
+    public boolean hasContentChanged();
+    public ChangedWarningInterface getChangedWarning();
+    public int showChangedWarning() throws KettleException;
     public boolean applyChanges() throws KettleException;
     public EngineMetaInterface getMeta();
     public void setControlStates();

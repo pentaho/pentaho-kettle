@@ -309,4 +309,9 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
   public void setControlStates() {
     
   }
+
+  @Override
+  public ChangedWarningInterface getChangedWarning() {
+        return null;
+  }
 }

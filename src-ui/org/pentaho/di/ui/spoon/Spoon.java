@@ -2950,15 +2950,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
       }
 
-      refreshTree();
-      setShellText();
-    } else {
-      // Not cancelled? --> Clear repository...
-      if (!rd.isCancelled()) {
-        closeRepository();
-      }
-    }
-  }
+			refreshTree();
+			setShellText();
+			SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CONNECTED);
+		} else {
+			// Not cancelled? --> Clear repository...
+			if (!rd.isCancelled()) {
+				closeRepository();
+			}
+		}
+	}
 
   public void exploreRepository() {
     if (rep != null) {
@@ -3083,12 +3084,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
 
-  public void closeRepository() {
-    if (rep != null)
-      rep.disconnect();
-    rep = null;
-    setShellText();
-  }
+	public void closeRepository() {
+		if (rep != null)
+			rep.disconnect();
+		rep = null;
+		setShellText();
+		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
+	}
 
   public void openFile() {
     openFile(false);
@@ -5092,6 +5094,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     ((XulMenuitem) doc.getElementById("repository-edit-user")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
 
+    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
+    
     // What steps & plugins to show?
     refreshCoreObjects();
   }
@@ -6579,12 +6583,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     return rep;
   }
 
-  public void setRepository(Repository rep) {
-    this.rep = rep;
-    if (rep != null) {
-      this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-    }
-  }
+	public void setRepository(Repository rep) {
+		this.rep = rep;
+		
+		try {
+  		if (rep != null) {
+  		  this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+  		  if(SecurityManagerRegistery.getInstance().getRegisteredSecurityManager() != null) {
+          securityManager = SecurityManagerRegistery.getInstance().createSecurityManager(rep, rep.getRepositoryMeta(), rep.getUserInfo());
+        }
+  		}
+		} catch (Exception e) {
+		  getLog().logDebug(e.getMessage());
+		}
+		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
+	}
 
   public void addMenuListener(String id, Object listener, String methodName) {
     menuListeners.add(new Object[] { id, listener, methodName });
