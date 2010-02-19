@@ -510,6 +510,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   public void showManageAclsDialog() throws Exception {
     try {
+      manageAclsModel.clear();
       manageAclsModel.setAclsList(rsm.getAllUsers(), rsm.getAllRoles());
     } catch (KettleException ke) {
       messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
@@ -524,7 +525,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   }
 
   public void closeManageAclsDialog() throws Exception {
-    manageAclsModel.clear();
     manageAclsDialog.hide();
   }
 
