@@ -35,7 +35,6 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   private UIRepositoryDirectories kidDirectoryCache = null;
   private UIRepositoryObjects kidElementCache = null;
   private boolean expanded = false;
-  private UIRepositoryObjectAcls acls;
   
   public UIRepositoryDirectory() {
     super();
@@ -250,20 +249,4 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     firePropertyChange("expanded", null, this.expanded); //$NON-NLS-1$
   }
   
-  public void readAcls(UIRepositoryObjectAcls acls) throws AccessDeniedException{
-    try {
-      acls.setObjectAcl(getRepository().getAcl(getObjectId()));
-    } catch(KettleException ke) {
-      throw new AccessDeniedException(ke);
-    }
-  }
-
-  public void setAcls(UIRepositoryObjectAcls security) throws AccessDeniedException{
-    this.acls = security;
-    try {
-      getRepository().setAcl(getObjectId(), acls.getObjectAcl());
-    } catch (KettleException e) {
-      throw new AccessDeniedException(e);
-    }
-  }
 }

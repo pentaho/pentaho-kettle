@@ -358,74 +358,53 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
     bf.setBindingType(Binding.Type.ONE_WAY);
 
+    
+    BindingConvertor securityBindingConverter = new BindingConvertor<List<UIRepositoryObject>, List<UIRepositoryObjectAcl>>() {
+      @Override
+      public List<UIRepositoryObjectAcl> sourceToTarget(List<UIRepositoryObject> ro) {
+        if (ro == null) {
+          return null;
+        }
+        if (ro.size() <= 0) {
+          return null;
+        }
+        setSelectedRepositoryObject(ro);
+        viewAclsModel.setRemoveEnabled(false);
+        uncheckAllPermissionBox();
+        UIRepositoryObject repoObject = (UIRepositoryObject) ro.get(0);
+        try {
+          repoObject.readAcls(viewAclsModel);
+          fileFolderLabel.setValue(repoObject.getName());
+          bf.setBindingType(Binding.Type.ONE_WAY);
+          bf.createBinding(viewAclsModel, "acls", userRoleList, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+        } catch (AccessDeniedException ade) {
+          messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+          messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+          messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+              "PermissionsController.UnableToGetAcls", repoObject.getName(), ade.getLocalizedMessage()));//$NON-NLS-1$
+          
+          messageBox.open();
+        } catch (Exception e) {
+          messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
+          messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+          messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+              "PermissionsController.UnableToGetAcls", repoObject.getName(), e.getLocalizedMessage())); //$NON-NLS-1$
+          messageBox.open();
+        }
+
+        aclDeck.setSelectedIndex(ACL);
+        return viewAclsModel.getAcls();
+      }
+
+      @Override
+      public List<UIRepositoryObject> targetToSource(List<UIRepositoryObjectAcl> elements) {
+        return null;
+      }
+    };
+    
     // Binding between the selected repository objects and the user role list for acls
-    securityBinding = bf.createBinding(getBrowseController(), "repositoryObjects", userRoleList, "elements",//$NON-NLS-1$ //$NON-NLS-2$
-        new BindingConvertor<List<UIRepositoryObject>, List<UIRepositoryObjectAcl>>() {
-          @Override
-          public List<UIRepositoryObjectAcl> sourceToTarget(List<UIRepositoryObject> ro) {
-            if (ro == null) {
-              return null;
-            }
-            if (ro.size() <= 0) {
-              return null;
-            }
-            setSelectedRepositoryObject(ro);
-            viewAclsModel.setRemoveEnabled(false);
-            uncheckAllPermissionBox();
-            if (ro.get(0) instanceof UIRepositoryDirectory) {
-              UIRepositoryDirectory rd = (UIRepositoryDirectory) ro.get(0);
-              try {
-                rd.readAcls(viewAclsModel);
-                fileFolderLabel.setValue(rd.getName());
-                bf.setBindingType(Binding.Type.ONE_WAY);
-                bf.createBinding(viewAclsModel, "acls", userRoleList, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
-              } catch (AccessDeniedException ade) {
-                messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-                messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-                messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
-                    "PermissionsController.UnableToGetAcls", rd.getName(), ade.getLocalizedMessage()));//$NON-NLS-1$
-                
-                messageBox.open();
-              } catch (Exception e) {
-                messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-                messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-                messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
-                    "PermissionsController.UnableToGetAcls", rd.getName(), e.getLocalizedMessage())); //$NON-NLS-1$
-                messageBox.open();
-              }
-
-            } else if (ro.get(0) instanceof UIRepositoryContent) {
-              UIRepositoryContent rc = (UIRepositoryContent) ro.get(0);
-              try {
-                fileFolderLabel.setValue(rc.getName());
-                rc.readAcls(viewAclsModel);
-                bf.setBindingType(Binding.Type.ONE_WAY);
-                bf.createBinding(viewAclsModel, "acls", userRoleList, "elements");//$NON-NLS-1$ //$NON-NLS-2$
-              } catch (AccessDeniedException ade) {
-                messageBox.setTitle("Error");//$NON-NLS-1$
-                messageBox.setAcceptLabel("Ok");//$NON-NLS-1$
-                messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
-                    "PermissionsController.UnableToGetAcls", rc.getName(), ade.getLocalizedMessage()));//$NON-NLS-1$
-                messageBox.open();
-              } catch (Exception e) {
-                messageBox.setTitle("Error");//$NON-NLS-1$
-                messageBox.setAcceptLabel("Ok");//$NON-NLS-1$
-                messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
-                    "PermissionsController.UnableToGetAcls", rc.getName(), e.getLocalizedMessage()));//$NON-NLS-1$
-                messageBox.open();
-              }
-            }
-            aclDeck.setSelectedIndex(ACL);
-            return viewAclsModel.getAcls();
-          }
-
-          @Override
-          public List<UIRepositoryObject> targetToSource(List<UIRepositoryObjectAcl> elements) {
-            return null;
-          }
-        });
-    
-    
+    securityBinding = bf.createBinding(getBrowseController(), "repositoryObjects", userRoleList, "elements", securityBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    securityBinding = bf.createBinding(getBrowseController(), "repositoryDirectories", userRoleList, "elements", securityBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
     
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
 
@@ -447,8 +426,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     bf.setBindingType(Binding.Type.ONE_WAY);
     // Binding when the user select from the list
     bf.createBinding(userRoleList, "selectedItem", this, "recipientChanged"); //$NON-NLS-1$  //$NON-NLS-2$
-    // Binding the selected folder or folder to the ACL Deck
-    bf.createBinding(getBrowseController(), "repositoryDirectories", this, "switchAclDeck"); //$NON-NLS-1$  //$NON-NLS-2$
     // Setting the default Deck to show no permission
     aclDeck.setSelectedIndex(NO_ACL);
     try {
@@ -668,12 +645,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   public void confirmRemoveAcl() throws Exception {
     manageAclsDialog.hide();
-  }
-
-  public void setSwitchAclDeck(List<UIRepositoryDirectory> dirList) {
-    if (dirList != null && dirList.size() > 0) {
-      aclDeck.setSelectedIndex(NO_ACL);
-    }
   }
 
   /*

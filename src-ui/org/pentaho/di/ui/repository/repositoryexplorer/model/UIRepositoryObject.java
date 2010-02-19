@@ -19,10 +19,12 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import java.util.Comparator;
 import java.util.Date;
 
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElement;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 
 public abstract class UIRepositoryObject extends XulEventSourceAdapter {
@@ -126,6 +128,23 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   }
   
   public abstract int getCategory();
+  
+  public void readAcls(UIRepositoryObjectAcls acls) throws AccessDeniedException{
+    try {
+      acls.setObjectAcl(getRepository().getAcl(getObjectId()));
+    } catch(KettleException ke) {
+      throw new AccessDeniedException(ke);
+    }
+  }
+
+  public void setAcls(UIRepositoryObjectAcls security) throws AccessDeniedException{
+    try {
+      getRepository().setAcl(getObjectId(), security.getObjectAcl());
+    } catch (KettleException e) {
+      throw new AccessDeniedException(e);
+    }
+  }
+
 
 
 }
