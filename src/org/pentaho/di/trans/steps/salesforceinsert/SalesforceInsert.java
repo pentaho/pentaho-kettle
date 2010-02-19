@@ -112,7 +112,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 				data.fieldnrs[i] = getInputRowMeta().indexOfValue(meta.getUpdateStream()[i]);
 				if (data.fieldnrs[i] < 0)
 				{
-					throw new KettleException("Field [" + meta.getUpdateStream()[i]+ "] couldn't be found in the input stream!");
+					throw new KettleException(BaseMessages.getString(PKG, "SalesforceInsert.CanNotFindField", meta.getUpdateStream()[i]));
 				}
 			 }
 		}
@@ -133,7 +133,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 	{
 		try {			
 
-			if (log.isDetailed()) logDetailed("Called writeToSalesForce with " + data.iBufferPos + " out of " + meta.getBatchSizeInt());
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInsert.WriteToSalesforce", data.iBufferPos, meta.getBatchSizeInt()));
 			
 			// if there is room in the buffer
 			if ( data.iBufferPos < meta.getBatchSizeInt()) {
@@ -156,11 +156,11 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 			}
 			
 			if ( data.iBufferPos >= meta.getBatchSizeInt()) {
-				if (log.isDetailed()) logDetailed("Calling flush buffer from writeToSalesForce");
+				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInsert.CallingFlushBuffer"));
 				flushBuffers();
 			}
 		} catch (Exception e) {
-			throw new KettleException("\nFailed in writeToSalesForce: "+ e.getMessage());	
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInsert.Error", e.getMessage()));	
 		}
 	}
 	
@@ -174,7 +174,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 				if (data.saveResult[j].isSuccess()) {
 					// Row was inserted
 					String id=data.saveResult[j].getId();
-					if (log.isDetailed()) logDetailed("Row was inserted with id: " + id);
+					if (log.isDebug()) logDebug("Row was inserted with id: " + id);
 
 					// write out the row with the SalesForce ID
 					Object[] newRow = RowDataUtil.resizeArray(data.outputBuffer[j], data.outputRowMeta.size());
@@ -204,31 +204,24 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 					if (getStepMeta().isDoingErrorHandling())
 					{
 				         sendToErrorRow = true;
-				         errorMessage = null;
+				         errorMessage = "";
 				         for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
 								// get the next error
 								com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];
-								errorMessage = errorMessage 
-										+ ": Errors were found on item "
-										+ new Integer(j).toString()
-										+ " Error code is: "
-										+ err.getStatusCode().toString()
-										+ " Error message: " + err.getMessage();
+								errorMessage+= BaseMessages.getString(PKG, "SalesforceInsert.Error.FlushBuffer", 
+										new Integer(j), err.getStatusCode(), err.getMessage());
 						}
 					}
 					else 
 					{
-						if(log.isDetailed()) logDetailed("Found error from SalesForce and raising the exception"); 
+						if(log.isDebug()) logDebug("Found error from SalesForce and raising the exception"); 
 						//for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
 						
 						// Only show the first error
 						//
 							com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[0];
-							throw new KettleException("Errors were found on item "
-									+ new Integer(j).toString()
-									+ " Error code is: "
-									+ err.getStatusCode().toString()
-									+ " Error message: " + err.getMessage());
+							throw new KettleException(BaseMessages.getString(PKG, "SalesforceInsert.Error.FlushBuffer", 
+									new Integer(j), err.getStatusCode(), err.getMessage()));
 							
 						// } // for error messages
 					}

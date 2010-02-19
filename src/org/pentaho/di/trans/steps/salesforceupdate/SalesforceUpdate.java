@@ -200,16 +200,12 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 					if (getStepMeta().isDoingErrorHandling())
 					{
 				         sendToErrorRow = true;
-				         errorMessage = null;
+				         errorMessage = "";
 				         for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
 								// get the next error
-								com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];
-								errorMessage = errorMessage 
-										+ ": Errors were found on item "
-										+ new Integer(j).toString()
-										+ " Error code is: "
-										+ err.getStatusCode().toString()
-										+ " Error message: " + err.getMessage();
+								com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];								
+								errorMessage+= BaseMessages.getString(PKG, "SalesforceUpdate.Error.FlushBuffer", 
+										new Integer(j), err.getStatusCode(), err.getMessage());
 						}
 					}
 					else 
@@ -220,18 +216,15 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 						// Only send the first error
 						//
 							com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[0];
-							throw new KettleException("Errors were found on item "
-									+ new Integer(j).toString()
-									+ " Error code is: "
-									+ err.getStatusCode().toString()
-									+ " Error message: " + err.getMessage());
+							throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpdate.Error.FlushBuffer", 
+											new Integer(j), err.getStatusCode(), err.getMessage()));
 							
 						// } // for error messages
 					}
 					
 					if (sendToErrorRow) {
 						   // Simply add this row to the error row
-						if(log.isDetailed()) logDetailed("Passing row to error step");
+						if(log.isDebug()) logDebug("Passing row to error step");
 						   putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceUpdate001");
 						}
 				} 

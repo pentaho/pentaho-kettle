@@ -141,7 +141,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 					
 				    if (checkFeedback(getLinesInput()))
 				    {
-				    	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceDelete.log.LineRow",""+ getLinesInput()));
+				    	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceDelete.log.LineRow",String.valueOf(getLinesInput())));
 				    }
 
 				} else {
@@ -154,39 +154,32 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 					if (getStepMeta().isDoingErrorHandling())
 					{
 				         sendToErrorRow = true;
-				         errorMessage = null;
+				         errorMessage = "";
 				         for (int i = 0; i < data.deleteResult[j].getErrors().length; i++) {
 								// get the next error
 								com.sforce.soap.partner.Error err = data.deleteResult[j].getErrors()[i];
-								errorMessage = errorMessage 
-										+ ": Errors were found on item "
-										+ new Integer(j).toString()
-										+ " Error code is: "
-										+ err.getStatusCode().toString()
-										+ " Error message: " + err.getMessage();
+								errorMessage+= BaseMessages.getString(PKG, "SalesforceDelete.Error.FlushBuffer", 
+										new Integer(j), err.getStatusCode(), err.getMessage());
 						}
 					}
 					else 
 					{
-						if(log.isDetailed()) logDetailed("Found error from SalesForce and raising the exception");
+						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceDelete.Found.Error"));
 						
 						// for (int i = 0; i < data.deleteResult[j].getErrors().length; i++) {
 						//	Just throw the first error...
 						///
 						
 							com.sforce.soap.partner.Error err = data.deleteResult[j].getErrors()[0];
-							throw new KettleException("Errors were found on item "
-									+ new Integer(j).toString()
-									+ " Error code is: "
-									+ err.getStatusCode().toString()
-									+ " Error message: " + err.getMessage());
+							throw new KettleException(BaseMessages.getString(PKG, "SalesforceDelete.Error.FlushBuffer", 
+									new Integer(j), err.getStatusCode(), err.getMessage()));
 							
 						// } // for error messages
 					}
 					
 					if (sendToErrorRow) {
 						   // Simply add this row to the error row
-						if(log.isDetailed()) logDetailed("Passing row to error step");
+						if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceDelete.PassingRowToErrorStep"));
 						   putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceDelete001");
 						}
 				} 
@@ -199,7 +192,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 			data.iBufferPos = 0;
 			
 		} catch (Exception e) {
-			throw new KettleException("\nFailed to upsert object, error message was: \n"+ e.getMessage());
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceDelete.FailedToDeleted", e.getMessage()));
 		} finally {
 			if(data.deleteResult!=null) data.deleteResult=null;
 		}
