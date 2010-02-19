@@ -48,7 +48,6 @@ import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulConfirmBox;
-import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -241,12 +240,27 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
       @Override
       public Object[] sourceToTarget(List<UIRepositoryRole> roles) {
-        return roles == null ? null : roles.toArray();
+        if (roles != null) {
+          Object[] retVal = new Object[roles.size()];
+          int i = 0;
+          for (UIRepositoryRole role : roles) {
+            retVal[i++] = role;
+          }
+          return retVal;
+        }
+        return null;
       }
 
       @Override
       public List<UIRepositoryRole> targetToSource(Object[] roles) {
-        return roles == null ? null : Arrays.<UIRepositoryRole>asList((UIRepositoryRole[])roles);
+        if (roles != null) {
+          List<UIRepositoryRole> retVal = new ArrayList<UIRepositoryRole>();
+          for (int i = 0; i < roles.length; i++) {
+            retVal.add((UIRepositoryRole) roles[i]);
+          }
+          return retVal;
+        }
+        return null;
       }
 
     };
@@ -256,16 +270,32 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
 
       @Override
       public Object[] sourceToTarget(List<UIRepositoryUser> users) {
-        return users == null ? null : users.toArray();
+        if (users != null) {
+          Object[] retVal = new Object[users.size()];
+          int i = 0;
+          for (UIRepositoryUser user : users) {
+            retVal[i++] = user;
+          }
+          return retVal;
+        }
+        return null;
       }
 
       @Override
       public List<UIRepositoryUser> targetToSource(Object[] users) {
-        return users == null ? null : Arrays.<UIRepositoryUser>asList((UIRepositoryUser[])users);
+        if (users != null) {
+          List<UIRepositoryUser> retVal = new ArrayList<UIRepositoryUser>();
+          for (int i = 0; i < users.length; i++) {
+            retVal.add((UIRepositoryUser) users[i]);
+          }
+          return retVal;
+        }
+        return null;
       }
 
     };
 
+    
     bf.createBinding(securityUser, "availableSelectedRoles", availableRoles, "selectedItems", arrayToListRoleConverter);//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(securityUser, "assignedSelectedRoles", assignedRoles, "selectedItems", arrayToListRoleConverter);//$NON-NLS-1$ //$NON-NLS-2$
 
