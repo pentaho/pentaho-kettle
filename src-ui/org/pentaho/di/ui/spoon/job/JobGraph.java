@@ -119,7 +119,9 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
+import org.pentaho.di.ui.spoon.AbstractChangedWarningDialog;
 import org.pentaho.di.ui.spoon.AbstractGraph;
+import org.pentaho.di.ui.spoon.ChangedWarningInterface;
 import org.pentaho.di.ui.spoon.JobPainter;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -2656,12 +2658,32 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
   public boolean hasContentChanged() {
     return jobMeta.hasChanged();
   }
+  
+  public ChangedWarningInterface getChangedWarning() {
+    ChangedWarningInterface retVal = new AbstractChangedWarningDialog() {
 
-  public int showChangedWarning() {
-    MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING);
-    mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.FileChangedSaveFirst.Message", spoon.delegates.tabs.makeTabName(jobMeta, true)));//"This model has changed.  Do you want to save it?"
-    mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.FileChangedSaveFirst.Title"));
-    return mb.open();
+      @Override
+      public String getSpoonPluginManagerContainerNamespace() {
+        return "job-graph-changed-warning-dialog"; //$NON-NLS-1$
+      }
+
+      @Override
+      public String getXulDialogId() {
+        return "changed-warning-dialog"; //$NON-NLS-1$
+      }
+
+      @Override
+      public String getXulResource() {
+       return "ui/change-warning-dialog.xul"; //$NON-NLS-1$
+      }
+      
+      @Override
+      public XulSpoonResourceBundle getXulResourceBundle() {
+        return new XulSpoonResourceBundle();
+      }
+    };
+    
+    return retVal;
   }
 
   public static int showChangedWarning(Shell shell, String name) {
