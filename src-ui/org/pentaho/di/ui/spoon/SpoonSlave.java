@@ -87,7 +87,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 
 	public static final long UPDATE_TIME_VIEW = 30000L; // 30s
     
-    public static final String STRING_SLAVE_LOG_TREE_NAME = "SLAVE_LOG : ";
+	public static final String STRING_SLAVE_LOG_TREE_NAME = "SLAVE_LOG : ";
 
 	private Shell shell;
 	private Display display;
@@ -936,7 +936,6 @@ public class SpoonSlave extends Composite implements TabItemInterface
         }
     }
 
-    @Override
     public ChangedWarningInterface getChangedWarning() {
       return null;  
     }

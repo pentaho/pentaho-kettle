@@ -80,7 +80,7 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
     return str;
   }
 
-  public UIRepositoryObjectRevisions getRevisions() throws Exception{
+  public UIRepositoryObjectRevisions getRevisions() throws KettleException {
     if (revisions != null){
       return revisions;
     }

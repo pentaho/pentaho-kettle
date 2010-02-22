@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListenerCollection;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
@@ -119,12 +120,12 @@ public class BrowseController extends AbstractXulEventHandler {
             }
             try {
               listOfObjects = rd.get(0).getRepositoryObjects();
-              bf.setBindingType(Binding.Type.ONE_WAY);
-              bf.createBinding(listOfObjects, "children", fileTable, "elements");  //$NON-NLS-1$  //$NON-NLS-2$
-            } catch (Exception e) {
-              // how do we handle exceptions in a binding? dialog here? 
-              // TODO: handle exception
+            } catch (KettleException e) {
+              // convert to runtime exception so it bubbles up through the UI
+              throw new RuntimeException(e);
             }
+            bf.setBindingType(Binding.Type.ONE_WAY);
+            bf.createBinding(listOfObjects, "children", fileTable, "elements");  //$NON-NLS-1$  //$NON-NLS-2$
             return listOfObjects;
           }
 
@@ -138,8 +139,8 @@ public class BrowseController extends AbstractXulEventHandler {
       // Fires the population of the repository tree of folders. 
       directoryBinding.fireSourceChanged();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      e.printStackTrace();
+      // convert to runtime exception so it bubbles up through the UI
+      throw new RuntimeException(e);
     }
 
     if (repositoryDirectory.isRevisionsSupported()) {
@@ -204,9 +205,9 @@ public class BrowseController extends AbstractXulEventHandler {
               bf.setBindingType(Binding.Type.ONE_WAY);
               bf.createBinding(revisions, "children", revisionTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            } catch (Exception e) {
-              // how do we handle exceptions in a binding? dialog here? 
-              // TODO: handle exception
+            } catch (KettleException e) {
+              // convert to runtime exception so it bubbles up through the UI
+              throw new RuntimeException(e);
             }
             historyDeck.setSelectedIndex(HISTORY);
             return revisions;
@@ -224,8 +225,8 @@ public class BrowseController extends AbstractXulEventHandler {
       buttonBinding.fireSourceChanged();
       revisionBinding.fireSourceChanged();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      e.printStackTrace();
+      // convert to runtime exception so it bubbles up through the UI
+      throw new RuntimeException(e);
     }
 
   }
@@ -370,7 +371,8 @@ public class BrowseController extends AbstractXulEventHandler {
         try {
           object.setName(value);
         } catch (Exception e) {
-          e.printStackTrace();
+          // convert to runtime exception so it bubbles up through the UI
+          throw new RuntimeException(e);
         }
         System.out.println("Component: " + component.getName());
         System.out.println("Status: " + status.name());
@@ -438,9 +440,9 @@ public class BrowseController extends AbstractXulEventHandler {
         event.setAccepted(false);
       }
     } catch (Exception e) {
-      // TODO: Better error handling
-      e.printStackTrace();
       event.setAccepted(false);
+      // convert to runtime exception so it bubbles up through the UI
+      throw new RuntimeException(e);
     }
   }
 

@@ -101,8 +101,8 @@ public class SlavesController extends AbstractXulEventHandler {
           }
       });
     } catch (Exception e) {
-      //TODO: Better error handling
-      System.err.println(e.getMessage());
+      // convert to runtime exception so it bubbles up through the UI
+      throw new RuntimeException(e);
     }
     refreshSlaves();
   }
@@ -119,8 +119,8 @@ public class SlavesController extends AbstractXulEventHandler {
           slaveList.add(new UISlave(slave));
         }
       } catch (KettleException e) {
-        // TODO: Better error handling
-        System.err.println(e.getMessage());
+        // convert to runtime exception so it bubbles up through the UI
+        throw new RuntimeException(e);
       }
     }
   }

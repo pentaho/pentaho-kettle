@@ -497,8 +497,8 @@ public class SecurityController extends AbstractXulEventHandler implements ISecu
       bf.createBinding(securityUser, "mode", userPassword, "disabled", anotherModeBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(securityUser, "mode", userDescription, "disabled", anotherModeBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      e.printStackTrace();
+      // convert to runtime exception so it bubbles up through the UI
+      throw new RuntimeException(e);
     }
     changeToRoleDeck();
   }

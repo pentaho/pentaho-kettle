@@ -79,13 +79,6 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
 
     dialog = (XulDialog) document.getElementById("repository-explorer-dialog");//$NON-NLS-1$
     // acceptButton = (XulButton) document.getElementById("repository-explorer-dialog_accept");
-
-    try {
-      // Fires the population of the repository tree of folders. 
-    } catch (Exception e) {
-      System.out.println(e.getMessage()); e.printStackTrace();
-    }
-    
   }
   
   public void setRepository(Repository rep) {

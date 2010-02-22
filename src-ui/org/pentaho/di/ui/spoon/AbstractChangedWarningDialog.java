@@ -76,7 +76,6 @@ public abstract class AbstractChangedWarningDialog extends AbstractXulEventHandl
     cwDialog.hide();      
   }
   
-  @Override
   public int show() throws Exception {
     runXulChangedWarningDialog();
     

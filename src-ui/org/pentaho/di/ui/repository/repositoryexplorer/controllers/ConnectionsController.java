@@ -115,7 +115,8 @@ public class ConnectionsController extends AbstractXulEventHandler {
         });
       }
     } catch (Exception ex) {
-      System.err.println(ex.getMessage());
+      // convert to runtime exception so it bubbles up through the UI
+      throw new RuntimeException(ex);
     }
     refreshConnectionList();
   }
@@ -148,7 +149,8 @@ public class ConnectionsController extends AbstractXulEventHandler {
         }
       }
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      // convert to runtime exception so it bubbles up through the UI
+      throw new RuntimeException(e);
     }
   }
 
@@ -167,7 +169,8 @@ public class ConnectionsController extends AbstractXulEventHandler {
         dbConns.add(new UIDatabaseConnection(dbMeta));
       }
     } catch (KettleException e) {
-        System.err.println(e.getMessage());
+      // convert to runtime exception so it bubbles up through the UI
+      throw new RuntimeException(e);
     }
   }
   

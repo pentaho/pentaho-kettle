@@ -30,6 +30,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityManager;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
@@ -42,6 +43,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SlavesControl
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistery;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryRole;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -102,7 +104,7 @@ public class RepositoryExplorer {
 
   // private Repository repository;
   public RepositoryExplorer(final Repository rep, RepositorySecurityManager securityManager, RepositoryExplorerCallback callback,
-      VariableSpace variableSpace) {
+      VariableSpace variableSpace) throws XulException {
 
 
     // If there is not security controller class instantiated and use the default one which is SecurityController
@@ -113,112 +115,108 @@ public class RepositoryExplorer {
     if(UIObjectRegistery.getInstance().getRegisteredUIRepositoryRoleClass() == null) {
       UIObjectRegistery.getInstance().registerUIRepositoryRoleClass(UIRepositoryRole.class);
     }
-    /// repository = rep;
-    try {
-      container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
-      
-      // Load functionality from plugins
-      for(XulOverlay over : SpoonPluginManager.getInstance().getOverlaysforContainer("repository-explorer")) { //$NON-NLS-1$
-        container.loadOverlay(over.getOverlayUri());
-      }
-      
-      final XulRunner runner = new SwtXulRunner();
-      runner.addContainer(container);
 
-      BindingFactory bf = new DefaultBindingFactory();
-      bf.setDocument(container.getDocumentRoot());
+    container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
+    
+    // Load functionality from plugins
+    for(XulOverlay over : SpoonPluginManager.getInstance().getOverlaysforContainer("repository-explorer")) { //$NON-NLS-1$
+      container.loadOverlay(over.getOverlayUri());
+    }
+    
+    final XulRunner runner = new SwtXulRunner();
+    runner.addContainer(container);
 
-      mainController.setRepository(rep);
-      mainController.setBindingFactory(bf);
-      container.addEventHandler(mainController);
+    BindingFactory bf = new DefaultBindingFactory();
+    bf.setDocument(container.getDocumentRoot());
 
-      boolean versionsEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions();
-      loadVersionOverlay(versionsEnabled);
-      browseController.setBindingFactory(bf);
-      container.addEventHandler(browseController);
-      browseController.setMessages(resourceBundle);
-      browseController.setCallback(callback);
+    mainController.setRepository(rep);
+    mainController.setBindingFactory(bf);
+    container.addEventHandler(mainController);
 
+    boolean versionsEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions();
+    loadVersionOverlay(versionsEnabled);
+    browseController.setBindingFactory(bf);
+    container.addEventHandler(browseController);
+    browseController.setMessages(resourceBundle);
+    browseController.setCallback(callback);
+
+    permissionsController.setBindingFactory(bf);
+    permissionsController.setBrowseController(browseController);
+    permissionsController.setMessages(resourceBundle);
+    container.addEventHandler(permissionsController);
+    permissionsController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
+
+    connectionsController.setRepository(rep);
+    connectionsController.setMessages(resourceBundle);
+    connectionsController.setBindingFactory(bf);
+    container.addEventHandler(connectionsController);
+
+    slavesController.setRepository(rep);
+    slavesController.setBindingFactory(bf);
+    slavesController.setMessages(resourceBundle);
+    container.addEventHandler(slavesController);
+
+    partitionsController.setRepository(rep);
+    partitionsController.setVariableSpace(variableSpace);
+    partitionsController.setBindingFactory(bf);
+    partitionsController.setMessages(resourceBundle);
+    container.addEventHandler(partitionsController);
+
+    clustersController.setRepository(rep);
+    clustersController.setBindingFactory(bf);
+    clustersController.setMessages(resourceBundle);
+    container.addEventHandler(clustersController);
+
+    boolean securityEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().managesUsers();
+    loadSecurityOverlay(securityEnabled);
+
+    boolean aclEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsAcls();
+    loadAclOverlay(aclEnabled);
+
+    container.addEventHandler((AbstractXulEventHandler) securityController);
+    if (securityEnabled) {
+      securityController.setBindingFactory(bf);
+      securityController.setRepositorySecurityManager(securityManager);
+      securityController.setRepository(rep);
+      securityController.setMessages(resourceBundle);
+    }
+
+    boolean aclsEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsAcls();
+    container.addEventHandler(permissionsController);
+    if (aclsEnabled && securityEnabled) {
       permissionsController.setBindingFactory(bf);
-      permissionsController.setBrowseController(browseController);
+      permissionsController.setRepositorySecurityManager(securityManager);
       permissionsController.setMessages(resourceBundle);
-      container.addEventHandler(permissionsController);
-      permissionsController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
-
-      connectionsController.setRepository(rep);
-      connectionsController.setMessages(resourceBundle);
-      connectionsController.setBindingFactory(bf);
-      container.addEventHandler(connectionsController);
-
-      slavesController.setRepository(rep);
-      slavesController.setBindingFactory(bf);
-      slavesController.setMessages(resourceBundle);
-      container.addEventHandler(slavesController);
-
-      partitionsController.setRepository(rep);
-      partitionsController.setVariableSpace(variableSpace);
-      partitionsController.setBindingFactory(bf);
-      partitionsController.setMessages(resourceBundle);
-      container.addEventHandler(partitionsController);
-
-      clustersController.setRepository(rep);
-      clustersController.setBindingFactory(bf);
-      clustersController.setMessages(resourceBundle);
-      container.addEventHandler(clustersController);
-
-      boolean securityEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().managesUsers();
-      loadSecurityOverlay(securityEnabled);
-
-      boolean aclEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsAcls();
-      loadAclOverlay(aclEnabled);
-
-      container.addEventHandler((AbstractXulEventHandler) securityController);
-      if (securityEnabled) {
-        securityController.setBindingFactory(bf);
-        securityController.setRepositorySecurityManager(securityManager);
-        securityController.setRepository(rep);
-        securityController.setMessages(resourceBundle);
-      }
-
-      boolean aclsEnabled = rep.getRepositoryMeta().getRepositoryCapabilities().supportsAcls();
-      container.addEventHandler(permissionsController);
-      if (aclsEnabled && securityEnabled) {
-        permissionsController.setBindingFactory(bf);
-        permissionsController.setRepositorySecurityManager(securityManager);
-        permissionsController.setMessages(resourceBundle);
-      }
-      
-      // Load handlers from plugin
-      for(XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("repository-explorer")){ //$NON-NLS-1$
-        container.addEventHandler(handler);
-      }
-      
-      container.invokeLater(new Runnable() {
-        public void run() {
-          try {
-            repositoryDirectory = rep.loadRepositoryDirectoryTree();
-            browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
-            browseController.init();
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
+    }
+    
+    // Load handlers from plugin
+    for(XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("repository-explorer")){ //$NON-NLS-1$
+      container.addEventHandler(handler);
+    }
+    
+    container.invokeLater(new Runnable() {
+      public void run() {
+        try {
+          repositoryDirectory = rep.loadRepositoryDirectoryTree();
+          browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
+          browseController.init();
+        } catch (Throwable e) {
+          new ErrorDialog(((Spoon)SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class, "Spoon.Error"), e.getMessage(), e); //$NON-NLS-1$
         }
-      });
-
-      List<XulOverlay> theXulOverlays = SpoonPluginManager.getInstance().getOverlaysforContainer("action-based-security"); //$NON-NLS-1$
-
-      for (XulOverlay overlay : theXulOverlays) {
-        this.container.loadOverlay(overlay.getOverlayUri());
       }
-      
-      try {
-        runner.initialize();
-      } catch (XulException e) {
-        SpoonFactory.getInstance().messageBox(e.getLocalizedMessage(), "Service Initialization Failed", false, Const.ERROR);          
-        log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);//$NON-NLS-1$
-      }
+    });
+
+    List<XulOverlay> theXulOverlays = SpoonPluginManager.getInstance().getOverlaysforContainer("action-based-security"); //$NON-NLS-1$
+
+    for (XulOverlay overlay : theXulOverlays) {
+      this.container.loadOverlay(overlay.getOverlayUri());
+    }
+    
+    try {
+      runner.initialize();
     } catch (XulException e) {
-     log.error(resourceBundle.getString("RepositoryExplorer.ErrorLoadingXulApplication"), e);//$NON-NLS-1$
+      log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);//$NON-NLS-1$
+      new ErrorDialog(((Spoon)SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class, "Spoon.Error"), e.getMessage(), e); //$NON-NLS-1$
     }
   }
 

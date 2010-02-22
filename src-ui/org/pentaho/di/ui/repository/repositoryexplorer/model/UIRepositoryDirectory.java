@@ -74,7 +74,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
 
   // TODO: Abstract working model; should throw RepositoryException
   // TODO: We will need a way to reset this cache when a directory or element changes
-  public UIRepositoryObjects getRepositoryObjects()throws Exception {
+  public UIRepositoryObjects getRepositoryObjects() throws KettleException {
     // We've been here before.. use the cache
     if (kidElementCache != null){
       return kidElementCache;

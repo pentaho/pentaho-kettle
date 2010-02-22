@@ -29,6 +29,7 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
+import org.pentaho.ui.xul.XulException;
 
 public class ExplorerHarness {
 
@@ -79,6 +80,8 @@ public class ExplorerHarness {
       RepositoryExplorer.setSecurityControllerClass(SecurityController.class);
       RepositoryExplorer explorer = new RepositoryExplorer(repository, repository.getSecurityManager(), cb, null);
       explorer.show();
+    } catch (XulException e) {
+      e.printStackTrace();
     } catch (KettleSecurityException e) {
       e.printStackTrace();
     } catch (KettleException e) {

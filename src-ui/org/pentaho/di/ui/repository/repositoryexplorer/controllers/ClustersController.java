@@ -96,8 +96,8 @@ public class ClustersController extends AbstractXulEventHandler {
             }
         });
     } catch (Exception e) {
-      //TODO: Better error handling
-      System.err.println(e.getMessage());
+      // convert to runtime exception so it bubbles up through the UI
+      throw new RuntimeException(e);
     }
     refreshClusters();
   }
@@ -235,8 +235,8 @@ public class ClustersController extends AbstractXulEventHandler {
           clusterList.add(new UICluster(cluster));
         }
       } catch (KettleException e) {
-        // TODO: Better error handling
-        System.err.println(e.getMessage());
+        // convert to runtime exception so it bubbles up through the UI
+        throw new RuntimeException(e);
       }
     }
   }

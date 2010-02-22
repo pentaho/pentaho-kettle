@@ -433,8 +433,8 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
         securityBinding.fireSourceChanged();
       }
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      e.printStackTrace();
+      // convert to runtime exception so it bubbles up through the UI
+      throw new RuntimeException(e);
     }
   }
 
