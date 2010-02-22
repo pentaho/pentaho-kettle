@@ -293,6 +293,7 @@ public class Database implements VariableSpace
             }
             else
             {
+              initializeVariablesFrom(null);
     			connectUsingClass(databaseMeta.getDriverClass(), partitionId );
     			if(log.isDetailed()) log.logDetailed(toString(), "Connected to database.");
                 
