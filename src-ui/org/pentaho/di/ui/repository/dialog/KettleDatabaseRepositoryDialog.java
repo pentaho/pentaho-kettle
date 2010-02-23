@@ -424,6 +424,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 							try
 							{
 							  // authenticate as admin before upgrade
+							  // disconnect before connecting, we connected above already
+							  rep.disconnect();
 							  rep.connect("admin", pwd);
 							  goAhead=true;
 							}

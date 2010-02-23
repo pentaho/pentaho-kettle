@@ -33,7 +33,6 @@ public class UserInfo {
 	private String description; // Description
 	private boolean enabled; // Enabled: yes or no
 
-	private ProfileMeta profile; // user profile information
 	private Set<IRole> roles;
 	
 	/**
@@ -48,7 +47,6 @@ public class UserInfo {
 	  this.username = copyFrom.username;
 	  this.description = copyFrom.description;
 	  this.enabled = copyFrom.enabled;
-	  this.profile = copyFrom.profile != null ? new ProfileMeta(copyFrom.profile) : null;
 	  this.roles = copyFrom.roles != null ? new HashSet<IRole>(copyFrom.roles) : null;
 	}
 	
@@ -66,11 +64,6 @@ public class UserInfo {
 		this.enabled = enabled;
     this.roles = new HashSet<IRole>();
 	}
-	public UserInfo(String login, String password, String username,
-			String description, boolean enabled, ProfileMeta profile) {
-		this(login, password, username, description, enabled);
-		this.profile = profile;
-	}
 
 	public UserInfo(String login) {
 		this();
@@ -83,7 +76,6 @@ public class UserInfo {
 		this.username = null;
 		this.description = null;
 		this.enabled = true;
-		this.profile = null;
 		this.roles = new HashSet<IRole>();
 	}
 
@@ -131,64 +123,12 @@ public class UserInfo {
 		this.enabled = enabled;
 	}
 
-	public void setProfile(ProfileMeta profile) {
-		this.profile = profile;
-	}
-
-	public ProfileMeta getProfile() {
-		return profile;
-	}
-
 	public ObjectId getObjectId() {
 		return id;
 	}
 
 	public void setObjectId(ObjectId id) {
 		this.id = id;
-	}
-
-	// Helper functions...
-
-	public boolean isReadOnly() {
-		if (profile == null)
-			return true;
-		return profile.isReadonly();
-	}
-
-	public boolean isAdministrator() {
-		if (profile == null)
-			return false;
-		return profile.isAdministrator();
-	}
-
-	public boolean useTransformations() {
-		if (profile == null)
-			return false;
-		return profile.useTransformations();
-	}
-
-	public boolean useJobs() {
-		if (profile == null)
-			return false;
-		return profile.useJobs();
-	}
-
-	public boolean useSchemas() {
-		if (profile == null)
-			return false;
-		return profile.useSchemas();
-	}
-
-	public boolean useDatabases() {
-		if (profile == null)
-			return false;
-		return profile.useDatabases();
-	}
-
-	public boolean exploreDatabases() {
-		if (profile == null)
-			return false;
-		return profile.exploreDatabases();
 	}
 
 	/**
@@ -229,12 +169,6 @@ public class UserInfo {
 	 */
 	public void setName(String name) {
 		this.login = name;
-	}
-
-	public boolean supportsLocking() {
-		if (profile == null)
-			return false;
-		return profile.supportsLocking();
 	}
 
 	public boolean addRole(IRole role) {

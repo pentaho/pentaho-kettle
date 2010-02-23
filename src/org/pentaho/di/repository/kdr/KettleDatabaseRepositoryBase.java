@@ -271,28 +271,13 @@ public class KettleDatabaseRepositoryBase {
 	public static final String FIELD_JOB_NOTE_ID_JOB = "ID_JOB";
 	public static final String FIELD_JOB_NOTE_ID_NOTE = "ID_NOTE";
 	
-	public static final String TABLE_R_PROFILE                = "R_PROFILE";
-	public static final String FIELD_PROFILE_ID_PROFILE = "ID_PROFILE";
-	public static final String FIELD_PROFILE_NAME = "NAME";
-	public static final String FIELD_PROFILE_DESCRIPTION = "DESCRIPTION";
-
 	public static final String TABLE_R_USER                   = "R_USER";
 	public static final String FIELD_USER_ID_USER = "ID_USER";
-	public static final String FIELD_USER_ID_PROFILE = "ID_PROFILE";
 	public static final String FIELD_USER_LOGIN = "LOGIN";
 	public static final String FIELD_USER_PASSWORD = "PASSWORD";
 	public static final String FIELD_USER_NAME = "NAME";
 	public static final String FIELD_USER_DESCRIPTION = "DESCRIPTION";
 	public static final String FIELD_USER_ENABLED = "ENABLED";
-
-	public static final String TABLE_R_PERMISSION             = "R_PERMISSION";
-	public static final String FIELD_PERMISSION_ID_PERMISSION = "ID_PERMISSION";
-	public static final String FIELD_PERMISSION_CODE = "CODE";
-	public static final String FIELD_PERMISSION_DESCRIPTION = "DESCRIPTION";
-
-	public static final String TABLE_R_PROFILE_PERMISSION     = "R_PROFILE_PERMISSION";
-	public static final String FIELD_PROFILE_PERMISSION_ID_PROFILE = "ID_PROFILE";
-	public static final String FIELD_PROFILE_PERMISSION_ID_PERMISSION = "ID_PERMISSION";
 
 	public static final String TABLE_R_STEP_DATABASE          = "R_STEP_DATABASE";
 	public static final String FIELD_STEP_DATABASE_ID_TRANSFORMATION = "ID_TRANSFORMATION";
@@ -395,9 +380,6 @@ public class KettleDatabaseRepositoryBase {
     		, TABLE_R_NOTE
     		, TABLE_R_PARTITION
     		, TABLE_R_PARTITION_SCHEMA
-    		, TABLE_R_PERMISSION
-    		, TABLE_R_PROFILE
-    		, TABLE_R_PROFILE_PERMISSION
     		, TABLE_R_REPOSITORY_LOG
     		, TABLE_R_SLAVE
     		, TABLE_R_STEP

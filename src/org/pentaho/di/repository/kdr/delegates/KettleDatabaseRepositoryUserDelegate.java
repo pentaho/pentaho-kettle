@@ -9,7 +9,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -48,10 +47,6 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 					userInfo.setUsername( r.getString("NAME", null) );
 					userInfo.setDescription( r.getString("DESCRIPTION", null) );
 					userInfo.setEnabled( r.getBoolean("ENABLED", false) );
-					
-					long id_profile  = r.getInteger("ID_PROFILE", 0);
-					userInfo.setProfile(repository.profileDelegate.loadProfileMeta(new ProfileMeta(), new LongObjectId(id_profile)));					
-					
 					return userInfo;
 				}
 				else
@@ -134,8 +129,6 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 		r.addValue( new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), userInfo.getUsername() );
 		r.addValue( new ValueMeta("DESCRIPTION", ValueMetaInterface.TYPE_STRING), userInfo.getDescription() );
 		r.addValue( new ValueMeta("ENABLED", ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(userInfo.isEnabled()) );
-		r.addValue( new ValueMeta("ID_PROFILE", ValueMetaInterface.TYPE_INTEGER), userInfo.getProfile().getObjectId() );
-
 		return r;
 	}
 

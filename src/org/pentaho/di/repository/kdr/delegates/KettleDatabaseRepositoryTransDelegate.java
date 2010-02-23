@@ -108,7 +108,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 			// Before saving the job, see if it's not locked by someone else...
 			//
 			UserInfo userInfo = repository.getUserInfo();
-			if (!userInfo.isAdministrator()) {
+			if (!"admin".equals(userInfo.getLogin())) {
 				ObjectId objectId = getTransformationID(transMeta.getName(), transMeta.getRepositoryDirectory().getObjectId());
 				if (objectId!=null) {
 					RepositoryLock lock = getTransformationLock(objectId);

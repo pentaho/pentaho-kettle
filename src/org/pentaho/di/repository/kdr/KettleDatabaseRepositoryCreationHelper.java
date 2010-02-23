@@ -22,7 +22,6 @@ import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
@@ -1858,96 +1857,6 @@ public class KettleDatabaseRepositoryCreationHelper {
 
 		//////////////////////////////////////////////////////////////////////////////////
 		//
-		// R_PROFILE
-		//
-		
-		// Keep a mapping between a profile name and it's ObjectId in the repository
-		//
-		Map<String, ObjectId> profiles = new Hashtable<String, ObjectId>();
-		
-		// Create table...
-        
-		boolean ok_profile = true;
-		tablename = KettleDatabaseRepository.TABLE_R_PROFILE;
-		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
-		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table = new RowMeta();
-		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE, false);
-
-		create = false;
-		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
-		{
-			create = sql.toUpperCase().indexOf("CREATE TABLE")>=0;
-        	statements.add(sql);
-        	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
-				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
-        	}
-		}
-		else
-		{
-            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
-		}
-
-		if (ok_profile)
-		{
-			//
-			// Populate with data...
-			//
-			code = new String[] { "Administrator", "User", "Read-only" };
-			desc = new String[] { "Administrator profile, manage users", "Normal user, all tools", "Read-only users" };
-
-			if (!dryrun) {
-				database.prepareInsert(table, null, tablename);
-			}
-
-			for (int i = 0; i < code.length; i++)
-			{
-                RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE)+" FROM " + schemaTable + " WHERE "
-                		+ repository.quote(KettleDatabaseRepository.FIELD_PROFILE_NAME) + " = '" + code[i] + "'");
-				if (lookup == null)
-				{
-					ObjectId nextid = new LongObjectId(i+1);
-					if (!create) nextid = repository.connectionDelegate.getNextProfileID();
-
-					RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), nextid);
-                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
-                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
-
-                    if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
-		            	statements.add(sql);	
-                    } else {
-						database.setValuesInsert(tableData);
-						database.insertRow();
-	                    if (log.isDetailed()) log.logDetailed("Inserted new row into table "+schemaTable+" : "+table);
-                    }
-                    profiles.put(code[i], nextid);
-				}
-			}
-
-            try
-            {
-                if (!dryrun) {
-                	database.closeInsert();
-                }
-                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
-            }
-            catch(KettleException dbe)
-            {
-                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
-            }
-		}
-		if (monitor!=null) monitor.worked(1);
-
-		//////////////////////////////////////////////////////////////////////////////////
-		//
 		// R_USER
 		//
 		
@@ -1963,7 +1872,6 @@ public class KettleDatabaseRepositoryCreationHelper {
 		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
 		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
@@ -2012,12 +1920,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 					ObjectId nextid = new LongObjectId(i+1);
 					if (!create) nextid = repository.connectionDelegate.getNextUserID();
 					String password = Encr.encryptPassword(pass[i]);
-                    
-                    ObjectId profileID = profiles.get( prof[i] );
-                    
+                                        
 					RowMetaAndData tableData = new RowMetaAndData();
                     tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), nextid);
-                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER), profileID);
                     tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_LOGIN, ValueMetaInterface.TYPE_STRING), user[i]);
                     tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING), password);
                     tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING), code[i]);
@@ -2047,240 +1952,6 @@ public class KettleDatabaseRepositoryCreationHelper {
                 throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
             }
 		}
-		if (monitor!=null) monitor.worked(1);
-
-		//////////////////////////////////////////////////////////////////////////////////
-		//
-		// R_PERMISSION
-		//
-		// Create table...
-        Map<String, ObjectId> permissions = new Hashtable<String, ObjectId>();
-		boolean ok_permission = true;
-		table = new RowMeta();
-		tablename = KettleDatabaseRepository.TABLE_R_PERMISSION;
-		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
-		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_CODE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
-		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
-		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION, false);
-
-		create = false;
-		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
-		{
-			create = sql.toUpperCase().indexOf("CREATE TABLE")>=0;
-        	statements.add(sql);
-        	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
-				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
-        	}
-		}
-		else
-		{
-            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
-		}
-
-		if (ok_permission)
-		{
-			//
-			// Populate with data...
-			//
-			Permission[] perms = Permission.values();
-			code = new String[perms.length];
-			desc = new String[perms.length];
-			for (int i=0;i<perms.length;i++) {
-				code[i] = perms[i].getCode();
-				desc[i] = perms[i].getCode();
-			}
-
-			if (!dryrun) {
-				database.prepareInsert(table, null, tablename);
-			}
-
-			for (int i = 1; i < code.length; i++)
-			{
-                RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION)+" FROM " + schemaTable + " WHERE " 
-                		+ repository.quote(KettleDatabaseRepository.FIELD_PERMISSION_CODE) + " = '" + code[i] + "'");
-				if (lookup == null)
-				{
-					ObjectId nextid = new LongObjectId(i);
-					if (!create) nextid = repository.connectionDelegate.getNextPermissionID();
-
-                    RowMetaAndData tableData = new RowMetaAndData();
-                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER), nextid);
-                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_CODE, ValueMetaInterface.TYPE_STRING), code[i]);
-                    tableData.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_PERMISSION_DESCRIPTION, ValueMetaInterface.TYPE_STRING), desc[i]);
-
-                    if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, tableData.getRowMeta(), tableData.getData(), null);
-		            	statements.add(sql);	
-                    } else {
-						database.setValuesInsert(tableData);
-						database.insertRow();
-	                    if (log.isDetailed()) log.logDetailed("Inserted new row into table "+schemaTable+" : "+table);
-                    }
-                    permissions.put(code[i], nextid);
-				}
-			}
-
-            try
-            {
-                if (!dryrun) {
-                	database.closeInsert();
-                }
-                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
-            }
-            catch(KettleException dbe)
-            {
-                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
-            }
-		}
-		if (monitor!=null) monitor.worked(1);
-
-		//////////////////////////////////////////////////////////////////////////////////
-		//
-		// R_PROFILE_PERMISSION
-		//
-		// Create table...
-		boolean ok_profile_permission = true;
-		table = new RowMeta();
-		tablename = KettleDatabaseRepository.TABLE_R_PROFILE_PERMISSION;
-		schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
-		if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-		sql = database.getDDL(schemaTable, table, null, false, null, false);
-
-		create = false;
-		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
-		{
-			create = sql.toUpperCase().indexOf("CREATE TABLE")>=0;
-        	statements.add(sql);
-        	if (!dryrun) {
-	            if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
-				database.execStatements(sql);
-	            if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
-        	}
-			try
-			{
-				indexname = "IDX_" + schemaTable.substring(2) + "_PK";
-				keyfield = new String[] { KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE, KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION, };
-				if (!database.checkIndexExists(schemaTable, keyfield))
-				{
-					sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
-		        	statements.add(sql);
-		        	if (!dryrun) {	
-	                    if (log.isDetailed()) log.logDetailed("executing SQL statements: "+Const.CR+sql);
-						database.execStatements(sql);
-	                    if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
-		        	}
-				}
-			}
-			catch(KettleException kdbe)
-			{
-				// Ignore this one: index is not properly detected, it already exists...
-			}
-		}
-		else
-		{
-            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
-		}
-
-		if (ok_profile_permission)
-		{
-			if (!dryrun) {
-				database.prepareInsert(table, null, tablename);
-			}
-			
-			String[] userCodes = new String[] { "Administrator", "User", "Read-only", };
-			Permission[] userPermissions[] = new Permission[][] {
-					// The administrator profile can do it all...  It mostly need the ADMIN permission
-					//
-					new Permission[] { 
-		            		Permission.ADMIN,
-		            		Permission.TRANSFORMATION,
-		            		Permission.JOB,
-		            		Permission.SCHEMA,
-		            		Permission.DATABASE,
-		            		Permission.EXPLORE_DATABASE,
-		            		Permission.LOCK_FILE,
-							},
-					// A normal user do it all too, doesn't have administration rights: can't manage users, can't unlock files from another user, etc.   
-					// 
-					new Permission[] { 
-		            		Permission.TRANSFORMATION,
-		            		Permission.JOB,
-		            		Permission.SCHEMA,
-		            		Permission.DATABASE,
-		            		Permission.EXPLORE_DATABASE,
-		            		Permission.LOCK_FILE,
-				            },
-					// A read-only user can do a lot too.  However, it can't save, rename, delete files, create directories, etc   
-					// 
-					new Permission[] { 
-		            		Permission.READ_ONLY,
-		            		Permission.TRANSFORMATION,
-		            		Permission.JOB,
-		            		Permission.SCHEMA,
-		            		Permission.DATABASE,
-		            		Permission.EXPLORE_DATABASE,
-				            },
-				};
-			
-			for (int x=0;x<userCodes.length;x++) {
-	            ObjectId profileID = profiles.get(userCodes[x]);
-				
-	            if (log.isDetailed()) log.logDetailed(userCodes[x]+" profile id = "+profileID);
-	            
-	            Permission userPerms[] = userPermissions[x];
-	            
-				for (int i=0;i < userPerms.length ; i++)
-				{
-	                ObjectId permissionID = permissions.get(userPerms[i].getCode());
-	                
-	                if (log.isDetailed()) log.logDetailed("Permission id for '"+userPerms[i].getCode()+"' = "+permissionID);
-	
-					RowMetaAndData lookup = null;
-	                if (upgrade) 
-	                {
-	                    String lookupSQL = "SELECT "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+
-	                                   " FROM " + schemaTable + 
-	                                   " WHERE "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+"=" + profileID + " AND +"+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+"=" + permissionID;
-	                    if (log.isDetailed()) log.logDetailed("Executing SQL: "+lookupSQL);
-	                    lookup = database.getOneRow(lookupSQL);
-	                }
-					if (lookup == null) // if the combination is not yet there, insert...
-					{
-	                    String insertSQL="INSERT INTO "+schemaTable+"("+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE)+", "+repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION)+")"
-	                    			+" VALUES("+profileID+","+permissionID+")";
-	                    statements.add(insertSQL);
-	                    if (!dryrun) {
-	                    	database.execStatement(insertSQL);
-	                    }
-	                    if (log.isDetailed()) log.logDetailed("insertSQL = ["+insertSQL+"]");
-					}
-					else
-					{
-	                    if (log.isDetailed()) log.logDetailed("Found id_profile="+profileID+", id_permission="+permissionID);
-					}
-				}
-			}
-
-            try
-            {
-                if (!dryrun) {
-                	database.closeInsert();
-                }
-                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
-            }
-            catch(KettleException dbe)
-            {
-                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
-            }
-		}
-        
 		if (monitor!=null) monitor.worked(1);
 		if (monitor!=null) monitor.done();
         

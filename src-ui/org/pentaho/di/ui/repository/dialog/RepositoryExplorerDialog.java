@@ -76,7 +76,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -177,7 +176,6 @@ public class RepositoryExplorerDialog extends Dialog
 	public  static final String STRING_TRANSFORMATIONS = BaseMessages.getString(PKG, "RepositoryExplorerDialog.Tree.String.Transformations"); //$NON-NLS-1$
 	public  static final String STRING_JOBS            = BaseMessages.getString(PKG, "RepositoryExplorerDialog.Tree.String.Jobs"); //$NON-NLS-1$
 	private static final String STRING_USERS           = BaseMessages.getString(PKG, "RepositoryExplorerDialog.Tree.String.Users"); //$NON-NLS-1$
-	private static final String STRING_PROFILES        = BaseMessages.getString(PKG, "RepositoryExplorerDialog.Tree.String.Profiles"); //$NON-NLS-1$
 	
 	private static final int    ITEM_CATEGORY_NONE                        =  0;
 	private static final int    ITEM_CATEGORY_ROOT                        =  1;
@@ -191,8 +189,6 @@ public class RepositoryExplorerDialog extends Dialog
 	private static final int    ITEM_CATEGORY_JOB_DIRECTORY               =  9;
 	private static final int    ITEM_CATEGORY_USERS_ROOT                  = 10;
 	private static final int    ITEM_CATEGORY_USER                        = 11;
-	private static final int    ITEM_CATEGORY_PROFILES_ROOT               = 12;
-	private static final int    ITEM_CATEGORY_PROFILE                     = 13;
     private static final int    ITEM_CATEGORY_PARTITIONS_ROOT             = 14;
     private static final int    ITEM_CATEGORY_PARTITION                   = 15;
     private static final int    ITEM_CATEGORY_SLAVES_ROOT                 = 16;
@@ -1276,45 +1272,6 @@ public class RepositoryExplorerDialog extends Dialog
 				}
 				break;
 				
-			case ITEM_CATEGORY_PROFILES_ROOT               :
-				{
-					MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
-					miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.ProfilesRoot.New")); //$NON-NLS-1$
-					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newProfile(); } };
-					miNew.addSelectionListener( lsNew );
-					miNew.setEnabled(!readonly);
-				}
-				break;
-				
-			case ITEM_CATEGORY_PROFILE                     :
-				{
-					// New profile
-					MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
-					miNew.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Profiles.New")); //$NON-NLS-1$
-					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newProfile(); } };
-					miNew.addSelectionListener( lsNew );
-					miNew.setEnabled(!readonly);
-					// Edit profile info
-					MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
-					miEdit.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.ProfilesRoot.Edit")); //$NON-NLS-1$
-					SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editProfile(item); } };
-					miEdit.addSelectionListener( lsEdit );
-					miEdit.setEnabled(!readonly);
-					// Rename profile
-					MenuItem miRen = new MenuItem(mTree, SWT.PUSH); 
-					miRen.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.ProfilesRoot.Rename")); //$NON-NLS-1$
-					SelectionAdapter lsRen = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { renameProfile(); } };
-					miRen.addSelectionListener( lsRen );
-					miRen.setEnabled(!readonly);
-					// Delete profile info
-					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
-					miDel.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.ProfilesRoot.Delete")); //$NON-NLS-1$
-					SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delProfile(item); } };
-					miDel.addSelectionListener( lsDel );
-					miDel.setEnabled(!readonly);
-				}
-				break;
-				
 			default: 
 				mTree = null;
 			}
@@ -1373,10 +1330,6 @@ public class RepositoryExplorerDialog extends Dialog
 				renameUser();
 				break;
 				
-			case ITEM_CATEGORY_PROFILE:
-				renameProfile();
-				break;
-			
 			default: break;
 			}
 		}
@@ -1470,30 +1423,23 @@ public class RepositoryExplorerDialog extends Dialog
             }
     
 			// The transformations...				
-      if (!capabilities.supportsUsers() || userinfo.useTransformations())
-			{
-			  TreeItem tiTrans = new TreeItem(tiTree, SWT.NONE); 
-			  tiTrans.setImage(GUIResource.getInstance().getImageTransGraph());
-			  tiTrans.setText(STRING_TRANSFORMATIONS);
-			
-			  TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
-			  newCat.setImage(GUIResource.getInstance().getImageLogoSmall());
-			  Color dircolor = GUIResource.getInstance().getColorDirectory();
-			  RepositoryDirectoryUI.getTreeWithNames(newCat, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, true, false, directoryTree, null, null);
-			}
+		  TreeItem tiTrans = new TreeItem(tiTree, SWT.NONE); 
+		  tiTrans.setImage(GUIResource.getInstance().getImageTransGraph());
+		  tiTrans.setText(STRING_TRANSFORMATIONS);
+		
+		  TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
+		  newCat.setImage(GUIResource.getInstance().getImageLogoSmall());
+		  Color dircolor = GUIResource.getInstance().getColorDirectory();
+		  RepositoryDirectoryUI.getTreeWithNames(newCat, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, true, false, directoryTree, null, null);
 
 			// The Jobs...				
-			if (!capabilities.supportsUsers() || userinfo.useJobs())
-			{
-			  TreeItem tiJob = new TreeItem(tiTree, SWT.NONE); 
-			  tiJob.setImage(GUIResource.getInstance().getImageJobGraph());
-			  tiJob.setText(STRING_JOBS);
+		  TreeItem tiJob = new TreeItem(tiTree, SWT.NONE); 
+		  tiJob.setImage(GUIResource.getInstance().getImageJobGraph());
+		  tiJob.setText(STRING_JOBS);
 
-			  TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
-			  newJob.setImage(GUIResource.getInstance().getImageLogoSmall());
-        Color dircolor = GUIResource.getInstance().getColorDirectory();
-			  RepositoryDirectoryUI.getTreeWithNames(newJob, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, false, true, directoryTree, null, null);
-			}
+		  TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
+		  newJob.setImage(GUIResource.getInstance().getImageLogoSmall());
+		  RepositoryDirectoryUI.getTreeWithNames(newJob, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, false, true, directoryTree, null, null);
 	
 			//
 			// Add the users or only yourself
@@ -1507,39 +1453,16 @@ public class RepositoryExplorerDialog extends Dialog
 				String users[] = securityManager.getUserLogins();
 				for (int i=0;i<users.length;i++)
 				{
-					if (userinfo.isAdministrator() || userinfo.getLogin().equalsIgnoreCase(users[i]))
+					if ( users[i] != null )
 					{
-						if ( users[i] != null )
-						{
-							// If users[i] is null TreeWidget will throw exceptions.
-							// The solution is to verify on saving a user.
-						    TreeItem newUser = new TreeItem(tiUser, SWT.NONE);
-						    newUser.setImage(GUIResource.getInstance().getImageUser());
-						    newUser.setText(users[i]);
-	                        if (!readonly) TreeItemAccelerator.addDoubleClick(newUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { editUser(treeItem.getText()); } });
-						}
-				  }
+						// If users[i] is null TreeWidget will throw exceptions.
+						// The solution is to verify on saving a user.
+					    TreeItem newUser = new TreeItem(tiUser, SWT.NONE);
+					    newUser.setImage(GUIResource.getInstance().getImageUser());
+					    newUser.setText(users[i]);
+                        if (!readonly) TreeItemAccelerator.addDoubleClick(newUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { editUser(treeItem.getText()); } });
+					}
 				}
-		
-				//
-				// Add the profiles if you're admin...
-				//
-				if (userinfo.isAdministrator())
-				{
-				  TreeItem tiProf = new TreeItem(tiTree, SWT.NONE);
-				  tiProf.setImage(GUIResource.getInstance().getImageBol());
-				  tiProf.setText(STRING_PROFILES);
-                  TreeItemAccelerator.addDoubleClick(tiProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { newProfile(); } });
-
-          String prof[] = securityManager.getProfiles();
-				  for (int i=0;i<prof.length;i++)
-				  {
-					  TreeItem newProf = new TreeItem(tiProf, SWT.NONE);
-					  newProf.setImage(GUIResource.getInstance().getImageProfil());
-					  newProf.setText(prof[i]);
-                    TreeItemAccelerator.addDoubleClick(newProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { editProfile(treeItem.getText()); } });
-				  }
-			  }
 			}
 
             // Always expand the top level entry...
@@ -2261,109 +2184,6 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		return retval;
 	}
-	
-	public boolean renameProfile()
-	{
-		boolean retval=false;
-		final TreeItem ti = wTree.getSelection()[0];
-		
-		if (ti.getItemCount()==0)
-		{
-			final String name = ti.getText();
-			TreeEditor editor = new TreeEditor(wTree);
-			editor.setItem(ti);
-			final Text text = new Text(wTree, SWT.NONE);
-			props.setLook(text);
-			text.setText(name);
-			text.addFocusListener(new FocusAdapter() 
-				{
-					public void focusLost(FocusEvent arg0) 
-					{
-                        // Focus is lost: apply changes
-                        String newname = text.getText();
-                        if (renameProfile(name, newname)) 
-                        {
-                            ti.setText(newname);
-                        }
-                        text.dispose();
-					}
-				}
-			);
-			text.addKeyListener(new KeyAdapter() 
-				{
-					public void keyPressed(KeyEvent e) 
-					{
-						// ESC --> Don't change tree item...
-						if (e.keyCode   == SWT.ESC)   
-						{ 
-							text.dispose(); 
-						};
-						// ENTER --> Save changes...
-						if (e.character == SWT.CR )
-						{
-							String newname = text.getText();
-							if (renameProfile(name, newname)) 
-							{
-								ti.setText(newname);
-							}
-							text.dispose();
-						}
-					}
-				}
-			);
-
-			editor.horizontalAlignment = SWT.LEFT;
-			editor.grabHorizontal = true;
-			editor.grabVertical   = true;
-			editor.minimumWidth   =   50;
-
-			text.selectAll();
-			text.setFocus();
-			
-			editor.layout();
-			editor.setEditor(text);
-		}
-		return retval;
-	}
-	
-	
-
-	
-	public boolean renameProfile(String name, String newname)
-	{
-		boolean retval=false;
-		
-		try
-		{
-            if (Const.isEmpty(newname))
-            {
-                throw new KettleException(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty"));
-            }
-			if (!name.equals(newname))
-			{
-				ObjectId id = securityManager.getProfileID(name);
-				if (id!=null)
-				{
-					securityManager.renameProfile(id, newname);
-					retval=true;
-				}
-				else
-				{
-					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Rename.ErrorFinding.Title")); //$NON-NLS-1$
-					mb.open();
-				}
-			}
-		}
-		catch(KettleException e)
-		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Rename.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		}
-		
-		return retval;
-	}
-
 
 	public void editDatabase(String databasename)
 	{
@@ -2645,82 +2465,6 @@ public class RepositoryExplorerDialog extends Dialog
 		return retval;
 	}
 
-	public void editProfile(String profilename)
-	{
-		try
-		{
-			ObjectId idProfile = securityManager.getProfileID(profilename);
-			ProfileMeta profinfo = securityManager.loadProfileMeta(idProfile);
-			
-			// System.out.println("editProfile, nrPermissions = "+profinfo.nrPermissions());
-	
-			ProfileDialog pd = new ProfileDialog(shell, SWT.NONE, profinfo);
-			String name = pd.open();
-			if (name!=null)
-			{
-			  securityManager.saveProfile(profinfo);
-			}
-				
-			if(!profilename.equalsIgnoreCase(name)) refreshTree();
-		}
-		catch(KettleException e)
-		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Edit.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-	}
-
-	public void newProfile()
-	{
-		try
-		{
-			ProfileMeta profinfo = new ProfileMeta();
-			ProfileDialog pd = new ProfileDialog(shell, SWT.NONE, profinfo);
-			String name = pd.open();
-			if (name!=null)
-			{
-				// See if this user already exists...
-				ObjectId idProfile = securityManager.getProfileID(name);
-				if (idProfile==null)
-				{
-				  securityManager.saveProfile(profinfo);
-				}
-				else
-				{
-					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Create.AlreadyExists.Message")); //$NON-NLS-1$
-					mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Create.AlreadyExists.Title")); //$NON-NLS-1$
-					mb.open();
-				}
-					
-				// Refresh tree...
-				refreshTree();
-			} 
-		}
-		catch(KettleException e)
-		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-
-	}
-
-	public void delProfile(String profilename)
-	{
-		try
-		{
-			ObjectId idProfile = securityManager.getProfileID(profilename);
-			if (idProfile!=null)
-			{
-			  securityManager.delProfile(idProfile);
-			}
-	
-			refreshTree();
-		}
-		catch(KettleException e)
-		{
-			new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Delete.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Profile.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-	}
-	
 	public void createDirectory(TreeItem ti, RepositoryDirectory repdir)
 	{
 		EnterStringDialog esd = new EnterStringDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Default"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -2967,7 +2711,6 @@ public class RepositoryExplorerDialog extends Dialog
 		if (level==1)
 		{
 			     if (item.equals(STRING_USERS))           cat = ITEM_CATEGORY_USERS_ROOT;
-			else if (item.equals(STRING_PROFILES))        cat = ITEM_CATEGORY_PROFILES_ROOT;
             else if (item.equals(STRING_DATABASES))       cat = ITEM_CATEGORY_DATABASES_ROOT;
             else if (item.equals(STRING_PARTITIONS))      cat = ITEM_CATEGORY_PARTITIONS_ROOT;
             else if (item.equals(STRING_SLAVES))          cat = ITEM_CATEGORY_SLAVES_ROOT;
@@ -2979,7 +2722,6 @@ public class RepositoryExplorerDialog extends Dialog
 		if (level>=2)
 		{
 			     if (parent.equals(STRING_USERS)) cat = ITEM_CATEGORY_USER;
-			else if (parent.equals(STRING_PROFILES)) cat = ITEM_CATEGORY_PROFILE;
             else if (parent.equals(STRING_DATABASES)) cat = ITEM_CATEGORY_DATABASE;
             else if (parent.equals(STRING_PARTITIONS)) cat = ITEM_CATEGORY_PARTITION;
             else if (parent.equals(STRING_SLAVES)) cat = ITEM_CATEGORY_SLAVE;

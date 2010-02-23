@@ -46,7 +46,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IRole;
-import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
@@ -55,7 +54,6 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryPluginMeta;
 import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -140,15 +138,12 @@ public class RepositoriesDialog implements XulEventHandler {
 
   private String toolName;
 
-  private Permission[] toolsPermissions;
-
   private XulToolbar toolbar;
 
   private ToolBar swtToolBar;
 
-  public RepositoriesDialog(Display disp, String toolName, Permission... permissions) {
+  public RepositoriesDialog(Display disp, String toolName) {
     display = disp;
-    toolsPermissions = permissions;
     this.toolName = toolName;
 
     shell = new Shell(disp, SWT.DIALOG_TRIM | SWT.MAX | SWT.MIN | SWT.RESIZE);
@@ -650,51 +645,6 @@ public class RepositoriesDialog implements XulEventHandler {
 
     RepositoryCapabilities capabilities = repository == null ? null : repository.getRepositoryMeta().getRepositoryCapabilities();
 
-    if (capabilities!=null && !capabilities.supportsUsers()) {
-      dispose(); // no users support : go right ahead
-      return;
-    }
-
-    UserInfo userinfo = repository.getUserInfo();
-    if (userinfo.getProfile() != null) {
-      boolean ok = true;
-      // Check the permissions of the user
-      String mess = ""; //$NON-NLS-1$
-      for (int i = 0; i < toolsPermissions.length; i++) {
-        switch (toolsPermissions[i]) {
-          case TRANSFORMATION:
-            ok = ok && userinfo.useTransformations();
-            mess += mess.length() > 0 ? ", " : ""; //$NON-NLS-1$//$NON-NLS-2$
-            mess += "Spoon"; //$NON-NLS-1$
-            break;
-          case SCHEMA:
-            ok = ok && userinfo.useSchemas();
-            mess += mess.length() > 0 ? ", " : ""; //$NON-NLS-1$ //$NON-NLS-2$
-            mess += "Menu"; //$NON-NLS-1$
-            break;
-          case JOB:
-            ok = ok && userinfo.useJobs();
-            mess += mess.length() > 0 ? ", " : ""; //$NON-NLS-1$ //$NON-NLS-2$
-            mess += "Chef"; //$NON-NLS-1$
-            break;
-          default:
-            break;
-        }
-      }
-
-      // Sorry, you can't use all these tools...
-      if (!ok) {
-        int idx = mess.lastIndexOf(',');
-        if (idx > 0)
-          mess = mess.substring(0, idx) + "and" + mess.substring(idx + 1); //$NON-NLS-1$
-        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-        mb.setMessage(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.NoPermissions.Message") + mess); //$NON-NLS-1$
-        mb.setText(BaseMessages.getString(PKG, "RepositoriesDialog.Dialog.NoPermissions.Title")); //$NON-NLS-1$
-        mb.open();
-        return;
-      }
-    }
-    
     dispose();
   }
 

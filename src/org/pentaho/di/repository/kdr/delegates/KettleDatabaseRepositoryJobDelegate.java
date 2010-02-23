@@ -67,7 +67,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			// Before saving the job, see if it's not locked by someone else...
 			//
 			UserInfo userInfo = repository.getUserInfo();
-			if (!userInfo.isAdministrator()) {
+			if (!"admin".equals(userInfo.getLogin())) {
 				ObjectId objectId = getJobID(jobMeta.getName(), jobMeta.getRepositoryDirectory().getObjectId());
 				if (objectId!=null) {
 					RepositoryLock lock = getJobLock(objectId);

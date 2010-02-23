@@ -20,10 +20,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.repository.Directory;
-import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
@@ -54,11 +52,8 @@ public class ExplorerHarness {
     connection.setUsername("sa");    
     
     repositoryMeta.setConnection(connection);
-    
-    ProfileMeta adminProfile = new ProfileMeta("admin", "Administrator");
-    adminProfile.addPermission(Permission.ADMIN);
-    
-    userInfo = new UserInfo("admin", "admin", "Administrator", "The system administrator", true, adminProfile);
+        
+    userInfo = new UserInfo("admin", "admin", "Administrator", "The system administrator", true);
     
     repository = new KettleDatabaseRepository();
     repository.init(repositoryMeta);

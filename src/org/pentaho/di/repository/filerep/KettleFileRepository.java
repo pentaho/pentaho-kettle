@@ -28,7 +28,6 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectAcl;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
-import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
@@ -42,7 +41,6 @@ import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
@@ -1013,23 +1011,15 @@ public class KettleFileRepository implements Repository {
 	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, long value) throws KettleException {}
 	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, int nr, String code, double value) throws KettleException {}
 	public void saveStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, double value) throws KettleException {}
-	public void delProfile(ObjectId id_profile) throws KettleException { }
 	public void delUser(ObjectId id_user) throws KettleException { }
-	public ObjectId[] getPermissionIDs(ObjectId id_profile) throws KettleException { return new ObjectId[] {}; }
-	public ObjectId getProfileID(String profilename) throws KettleException { return null; }
-	public String[] getProfiles() throws KettleException { return null; }
 	public ObjectId getUserID(String login) throws KettleException { return null; }
 	public ObjectId[] getUserIDs() throws KettleException { return new ObjectId[] {}; }
 	public UserInfo getUserInfo() { return null; }
 	public String[] getUserLogins() throws KettleException { return new String[] {}; }
 
-	public Permission loadPermissionMeta(ObjectId id_permission) throws KettleException { return null; }
-	public ProfileMeta loadProfileMeta(ObjectId id_profile) throws KettleException { return null; }
 	public UserInfo loadUserInfo(String login) throws KettleException { return null; }
 	public UserInfo loadUserInfo(String login, String password) throws KettleException { return null; }
-	public void renameProfile(ObjectId id_profile, String newname) throws KettleException {}
 	public void renameUser(ObjectId id_user, String newname) throws KettleException {}
-	public void saveProfile(ProfileMeta profileMeta) throws KettleException {}
 	public void saveUserInfo(UserInfo userInfo) throws KettleException {}
 	
 	// Not used...

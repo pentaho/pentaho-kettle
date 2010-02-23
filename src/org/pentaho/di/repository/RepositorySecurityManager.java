@@ -1,10 +1,8 @@
 package org.pentaho.di.repository;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.ProfileMeta.Permission;
 
 /**
  * This interface defines any security management related
@@ -12,22 +10,6 @@ import org.pentaho.di.repository.ProfileMeta.Permission;
  *  
  */
 public interface RepositorySecurityManager {
-
-  public void saveProfile(ProfileMeta profileMeta) throws KettleException;
-
-  public ProfileMeta loadProfileMeta(ObjectId id_profile) throws KettleException;
-
-//  public Permission loadPermission(ObjectId id_permission) throws KettleException;
-
-//  public ObjectId[] getPermissionIDs(ObjectId id_profile) throws KettleException;
-
-  public String[] getProfiles() throws KettleException;
-
-  public ObjectId getProfileID(String profilename) throws KettleException;
-
-  public void renameProfile(ObjectId id_profile, String newname) throws KettleException;
-
-  public void delProfile(ObjectId id_profile) throws KettleException;
 
   public List<UserInfo> getUsers() throws KettleException;
 

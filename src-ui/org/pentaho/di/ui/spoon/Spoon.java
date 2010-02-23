@@ -178,7 +178,6 @@ import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.SecurityManagerCreationException;
 import org.pentaho.di.repository.SecurityManagerRegistery;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.repository.ProfileMeta.Permission;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
@@ -1325,7 +1324,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (lastUsedFile.isSourceRepository() && (rep == null || !rep.getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))) {
       // Ask for a username password to get the required repository access
       //
-      RepositoriesDialog rd = new RepositoriesDialog(display, BaseMessages.getString(PKG, "Spoon.Application.Name"), Permission.TRANSFORMATION); // RepositoriesDialog.ToolName="Spoon"
+      RepositoriesDialog rd = new RepositoriesDialog(display, BaseMessages.getString(PKG, "Spoon.Application.Name")); // RepositoriesDialog.ToolName="Spoon"
       rd.setRepositoryName(lastUsedFile.getRepositoryName());
       if (rd.open()) {
         // Close the previous connection...
@@ -2859,7 +2858,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void openRepository() {
-    RepositoriesDialog rd = new RepositoriesDialog(display, APP_NAME, Permission.TRANSFORMATION);
+    RepositoriesDialog rd = new RepositoriesDialog(display, APP_NAME);
     rd.getShell().setImage(GUIResource.getInstance().getImageSpoon());
     if (rd.open()) {
       // Close previous repository...
@@ -2950,16 +2949,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
       }
 
-			refreshTree();
-			setShellText();
-			SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CONNECTED);
-		} else {
-			// Not cancelled? --> Clear repository...
-			if (!rd.isCancelled()) {
-				closeRepository();
-			}
-		}
-	}
+      refreshTree();
+      setShellText();
+    } else {
+      // Not cancelled? --> Clear repository...
+      if (!rd.isCancelled()) {
+        closeRepository();
+      }
+    }
+  }
 
   public void exploreRepository() {
     if (rep != null) {
@@ -3051,42 +3049,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
 
-  public void editRepositoryUser() {
-    if (rep != null) {
-      UserInfo userinfo = rep.getUserInfo();
-      UserDialog ud = new UserDialog(shell, SWT.NONE, rep, userinfo);
-      UserInfo ui = ud.open();
-      if (rep.getSecurityProvider().isReadOnly()) {
-        if (ui != null) {
-          try {
-            rep.getSecurityManager().saveUserInfo(ui);
-          } catch (KettleException e) {
-            MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-
-            // Sorry, I was unable to change this user in the
-            // repository:
-            //
-            mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.UnableChangeUser.Message") + Const.CR + e.getMessage());
-            mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.UnableChangeUser.Title"));// "Edit user"
-            mb.open();
-          }
-        }
-      } else {
-        MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-        mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.NotAllowedChangeUser.Message"));// "Sorry, you are not allowed to change this user."
-        mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.NotAllowedChangeUser.Title"));
-        mb.open();
-      }
-    }
+  public void closeRepository() {
+    if (rep != null)
+      rep.disconnect();
+    rep = null;
+    setShellText();
   }
-
-	public void closeRepository() {
-		if (rep != null)
-			rep.disconnect();
-		rep = null;
-		setShellText();
-		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
-	}
 
   public void openFile() {
     openFile(false);
@@ -5087,11 +5055,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     ((XulMenuitem) doc.getElementById("repository-disconnect")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("repository-explore-experimental")).setDisabled(!enableRepositoryMenu);
-    ((XulMenuitem) doc.getElementById("repository-edit-user")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
 
-    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
-    
     // What steps & plugins to show?
     refreshCoreObjects();
   }
@@ -5739,14 +5704,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     StringBuffer optionUsername = getCommandLineOption(options, "user").getArgument();
     StringBuffer optionPassword = getCommandLineOption(options, "pass").getArgument();
     
-    Permission perms[] = new Permission[] { Permission.TRANSFORMATION, Permission.JOB };
-
     if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && props.showRepositoriesDialogAtStartup()) {
       if (log.isBasic())
         log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.AskingForRepository"));// "Asking for repository"
 
       splash.hide();
-      RepositoriesDialog rd = new RepositoriesDialog(display, BaseMessages.getString(PKG, "Spoon.Application.Name"), perms);// "Spoon"
+      RepositoriesDialog rd = new RepositoriesDialog(display, BaseMessages.getString(PKG, "Spoon.Application.Name"));// "Spoon"
 
       return openRepositoryDialog(rd, repositoryMeta);
     } else if (!Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename)) {
@@ -5766,7 +5729,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           mb.setMessage(BaseMessages.getString(PKG, "Spoon.Error.Repository.NotFound", optionRepname.toString()));
           mb.setText(BaseMessages.getString(PKG, "Spoon.Error.Repository.NotFound.Title"));
           mb.open();
-          RepositoriesDialog rd = new RepositoriesDialog(display, BaseMessages.getString(PKG, "Spoon.Application.Name"), perms);// "Spoon"
+          RepositoriesDialog rd = new RepositoriesDialog(display, BaseMessages.getString(PKG, "Spoon.Application.Name"));// "Spoon"
 
           return openRepositoryDialog(rd, repositoryMeta);
         }
@@ -6579,21 +6542,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     return rep;
   }
 
-	public void setRepository(Repository rep) {
-		this.rep = rep;
-		
-		try {
-  		if (rep != null) {
-  		  this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-  		  if(SecurityManagerRegistery.getInstance().getRegisteredSecurityManager() != null) {
-          securityManager = SecurityManagerRegistery.getInstance().createSecurityManager(rep, rep.getRepositoryMeta(), rep.getUserInfo());
-        }
-  		}
-		} catch (Exception e) {
-		  getLog().logDebug(e.getMessage());
-		}
-		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
-	}
+  public void setRepository(Repository rep) {
+    this.rep = rep;
+    if (rep != null) {
+      this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+    }
+  }
 
   public void addMenuListener(String id, Object listener, String methodName) {
     menuListeners.add(new Object[] { id, listener, methodName });

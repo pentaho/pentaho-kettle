@@ -6,14 +6,12 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.repository.IRole;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.repository.ProfileMeta.Permission;
 
 public class KettleFileRepositorySecurityProvider implements RepositorySecurityProvider {
 
@@ -109,20 +107,8 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
 	// The file repository does not support users
 	//
 	
-	public void delProfile(ObjectId id_profile) throws KettleException {
-	   throw new UnsupportedOperationException();
-	}
 	public void delUser(ObjectId id_user) throws KettleException {
 	   throw new UnsupportedOperationException();
-	}
-	public ObjectId[] getPermissionIDs(ObjectId id_profile) throws KettleException {
-	  throw new UnsupportedOperationException();
-	  }
-	public ObjectId getProfileID(String profilename) throws KettleException {
-	  throw new UnsupportedOperationException();
-	}
-	public String[] getProfiles() throws KettleException {
-	  throw new UnsupportedOperationException();
 	}
 	public ObjectId getUserID(String login) throws KettleException {
 	  throw new UnsupportedOperationException();
@@ -133,24 +119,13 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
 	public String[] getUserLogins() throws KettleException {
 	   throw new UnsupportedOperationException();
 	}
-	public Permission loadPermission(ObjectId id_permission) throws KettleException {
-	  throw new UnsupportedOperationException();
-	}
-	public ProfileMeta loadProfileMeta(ObjectId id_profile) throws KettleException {
-	  throw new UnsupportedOperationException(); }
 	public UserInfo loadUserInfo(String login) throws KettleException {
 	  throw new UnsupportedOperationException();
 	}
 	public UserInfo loadUserInfo(String login, String password) throws KettleException {
 	  throw new UnsupportedOperationException();
 	}
-	public void renameProfile(ObjectId id_profile, String newname) throws KettleException {
-	   throw new UnsupportedOperationException();
-	}
 	public void renameUser(ObjectId id_user, String newname) throws KettleException {
-	   throw new UnsupportedOperationException();
-	}
-	public void saveProfile(ProfileMeta profileMeta) throws KettleException {
 	   throw new UnsupportedOperationException();
 	}
 	public void saveUserInfo(UserInfo userInfo) throws KettleException {

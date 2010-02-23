@@ -66,8 +66,6 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryJobDelega
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryJobEntryDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryNotePadDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryPartitionSchemaDelegate;
-import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryPermissionDelegate;
-import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryProfileDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositorySlaveServerDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryStepDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryTransDelegate;
@@ -98,9 +96,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	public KettleDatabaseRepositoryPartitionSchemaDelegate partitionSchemaDelegate;
 	public KettleDatabaseRepositoryDirectoryDelegate directoryDelegate;
 	public KettleDatabaseRepositoryConnectionDelegate connectionDelegate;
-	public KettleDatabaseRepositoryProfileDelegate profileDelegate;
 	public KettleDatabaseRepositoryUserDelegate userDelegate;
-	public KettleDatabaseRepositoryPermissionDelegate permissionDelegate;
 	public KettleDatabaseRepositoryConditionDelegate conditionDelegate;
 	public KettleDatabaseRepositoryValueDelegate valueDelegate;
 	public KettleDatabaseRepositoryNotePadDelegate notePadDelegate;
@@ -133,9 +129,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		this.partitionSchemaDelegate = new KettleDatabaseRepositoryPartitionSchemaDelegate(this);
 		this.directoryDelegate = new KettleDatabaseRepositoryDirectoryDelegate(this);
 		this.connectionDelegate = new KettleDatabaseRepositoryConnectionDelegate(this, repositoryMeta.getConnection());
-		this.profileDelegate = new KettleDatabaseRepositoryProfileDelegate(this);
 		this.userDelegate = new KettleDatabaseRepositoryUserDelegate(this);
-		this.permissionDelegate = new KettleDatabaseRepositoryPermissionDelegate(this);
 		this.conditionDelegate = new KettleDatabaseRepositoryConditionDelegate(this);
 		this.valueDelegate = new KettleDatabaseRepositoryValueDelegate(this);
 		this.notePadDelegate = new KettleDatabaseRepositoryNotePadDelegate(this);

@@ -137,14 +137,6 @@ public class SelectObjectDialog extends Dialog
         sortColumn = 0;
         ascending = false;
         
-        // Security enhancements: don't show transformations if the user can't see it.
-        //
-        this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-        if (capabilities.supportsUsers()) {
-	        this.showTrans = showTransformations && rep.getUserInfo().useTransformations();
-	        this.showJobs = showJobs && rep.getUserInfo().useJobs();
-        }
-        
 	}
 	
 	public String open()

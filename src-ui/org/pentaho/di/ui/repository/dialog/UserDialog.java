@@ -17,7 +17,6 @@
 
 package org.pentaho.di.ui.repository.dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -38,7 +37,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ProfileMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.UserInfo;
@@ -56,11 +54,6 @@ public class UserDialog extends Dialog
 	private Shell     shell;
 	private Label     wlLogin, wlPassword, wlUsername, wlDescription;
 	private Text      wLogin, wPassword, wUsername, wDescription;
-
-	private Label        wlProfile;
-	private Button       wnProfile, weProfile, wdProfile;
-	private CCombo       wProfile;
-	private FormData     fdlProfile, fdProfile, fdnProfile, fdeProfile, fddProfile;
 	
 	private Button    wOK, wCancel;
 	
@@ -171,56 +164,6 @@ public class UserDialog extends Dialog
 		fdDescription.top  = new FormAttachment(wUsername, margin);
 		wDescription.setLayoutData(fdDescription);
 
-		// Profile selector
-		wlProfile=new Label(shell, SWT.RIGHT);
-		wlProfile.setText(BaseMessages.getString(PKG, "UserDialog.Label.Profile")); //$NON-NLS-1$
- 		props.setLook(wlProfile);
-		fdlProfile=new FormData();
-		fdlProfile.left = new FormAttachment(0, 0);
-		fdlProfile.right= new FormAttachment(middle, -margin);
-		fdlProfile.top  = new FormAttachment(wDescription, margin);
-		wlProfile.setLayoutData(fdlProfile);
-	
-		// Add the Profile buttons :
-		wnProfile = new Button(shell, SWT.PUSH);  wnProfile.setText(BaseMessages.getString(PKG, "System.Button.New")); //$NON-NLS-1$
-		weProfile = new Button(shell, SWT.PUSH);  weProfile.setText(BaseMessages.getString(PKG, "System.Button.Edit")); //$NON-NLS-1$
-		wdProfile = new Button(shell, SWT.PUSH);  wdProfile.setText(BaseMessages.getString(PKG, "System.Button.Delete")); //$NON-NLS-1$
-
-		// Button positions...
-		fddProfile = new FormData();		
-		fddProfile.right= new FormAttachment(100, 0);
-		fddProfile.top  = new FormAttachment(wDescription, margin);
-		wdProfile.setLayoutData(fddProfile);
-
-		fdeProfile = new FormData();		
-		fdeProfile.right= new FormAttachment(wdProfile, -margin);
-		fdeProfile.top  = new FormAttachment(wDescription, margin);
-		weProfile.setLayoutData(fdeProfile);
-
-		fdnProfile = new FormData();		
-		fdnProfile.right= new FormAttachment(weProfile, -margin);
-		fdnProfile.top  = new FormAttachment(wDescription, margin);
-		wnProfile.setLayoutData(fdnProfile);
-
-		wProfile=new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
- 		props.setLook(wProfile);
-		fdProfile=new FormData();
-		fdProfile.left = new FormAttachment(middle, 0);
-		fdProfile.right= new FormAttachment(wnProfile, -margin);
-		fdProfile.top  = new FormAttachment(wDescription, margin);
-		wProfile.setLayoutData(fdProfile);
-        
-        // If the repository user is not an administrator, changing the users' profile is not allowed...
-        //
-        if (!repository.getUserInfo().isAdministrator() || userinfo.isAdministrator())
-        {
-            wlProfile.setEnabled(false);
-            wProfile.setEnabled(false);
-            wnProfile.setEnabled(false);
-            weProfile.setEnabled(false);
-            wdProfile.setEnabled(false);
-        }
-
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
@@ -231,11 +174,11 @@ public class UserDialog extends Dialog
 		FormData fdCancel    = new FormData();
 
 		fdOK.left    = new FormAttachment(45, 0); 
-		fdOK.top  = new FormAttachment(wProfile, 30);
+		fdOK.top  = new FormAttachment(wDescription, 30);
 		wOK.setLayoutData(fdOK);
 
 		fdCancel.left    = new FormAttachment(wOK, margin); 
-		fdCancel.top     = new FormAttachment(wProfile, 30);
+		fdCancel.top     = new FormAttachment(wDescription, 30);
 		wCancel.setLayoutData(fdCancel);
 		
 		// Add listeners
@@ -299,10 +242,6 @@ public class UserDialog extends Dialog
 		if (userinfo.getDescription()!=null) wDescription.setText(userinfo.getDescription());
 		//WANTED: Add enabled option from UserInfo here!!!!
 
-		// Add profiles to Combo box...
-		fillProfiles();
-		
-		if (userinfo.getProfile()!=null) wProfile.setText( userinfo.getProfile().getName() );
 	}
 
 	private void cancel()
@@ -347,12 +286,6 @@ public class UserDialog extends Dialog
 			userinfo.setPassword(wPassword.getText());
 			userinfo.setUsername(wUsername.getText());
 			userinfo.setDescription(wDescription.getText());
-			String profname = wProfile.getText();
-			
-			ObjectId idProfile = securityManager.getProfileID(profname);
-			ProfileMeta profinfo = securityManager.loadProfileMeta(idProfile);
-			userinfo.setProfile( profinfo);
-            
 			securityManager.saveUserInfo(userinfo);
 	
 			dispose();
@@ -363,26 +296,6 @@ public class UserDialog extends Dialog
 			mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.UnexpectedError.Message")+e.getMessage()); //$NON-NLS-1$
 			mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.UnexpectedError.Title")); //$NON-NLS-1$
 			mb.open(); 
-		}
-	}
-	
-	public void fillProfiles()
-	{
-		try
-		{
-			wProfile.removeAll();
-			String prof[] = securityManager.getProfiles();
-			for (int i=0;i<prof.length;i++)
-			{
-				wProfile.add(prof[i]);
-			}
-		}
-		catch(KettleException e)
-		{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "UserDialog.Dialog.ErrorRetrievingProfiles.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "UserDialog.Dialog.ErrorRetrievingProfiles.Title")); //$NON-NLS-1$
-			mb.open();
 		}
 	}
 	

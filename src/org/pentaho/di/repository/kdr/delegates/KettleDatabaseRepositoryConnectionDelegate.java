@@ -1197,18 +1197,6 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		return getNextID(quoteTable(KettleDatabaseRepository.TABLE_R_USER), quote(KettleDatabaseRepository.FIELD_USER_ID_USER));
 	}
 
-	public synchronized ObjectId getNextProfileID() throws KettleException
-	{
-		return getNextID(quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE), quote(KettleDatabaseRepository.FIELD_PROFILE_ID_PROFILE));
-	}
-
-	public synchronized ObjectId getNextPermissionID() throws KettleException
-	{
-		return getNextID(quoteTable(KettleDatabaseRepository.TABLE_R_PERMISSION), quote(KettleDatabaseRepository.FIELD_PERMISSION_ID_PERMISSION));
-	}
-
-
-    
     public synchronized void clearNextIDCounters()
     {
         Counters.getInstance().clear();
@@ -1644,21 +1632,5 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		database.insertRow();
 		database.closeInsert();
 	}
-	
-	// security related calls
-  
-	public ObjectId[] getPermissionIDs(ObjectId id_profile) throws KettleException {
-    return getIDs("SELECT "
-        + repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PERMISSION) + " FROM "
-        + repository.quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE_PERMISSION) + " WHERE "
-        + repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE) + " = " + id_profile);
-  }
-
-  public synchronized void delProfilePermissions(ObjectId id_profile) throws KettleException {
-    String sql = "DELETE FROM " + repository.quoteTable(KettleDatabaseRepository.TABLE_R_PROFILE_PERMISSION)
-        + " WHERE " + repository.quote(KettleDatabaseRepository.FIELD_PROFILE_PERMISSION_ID_PROFILE) + " = "
-        + id_profile;
-    repository.execStatement(sql);
-  }
 	
 }
