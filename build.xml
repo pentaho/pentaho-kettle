@@ -812,6 +812,7 @@
 
 		  	<test todir="${junit}" name="org.pentaho.di.cluster.MasterSlaveTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.cluster.PartitioningTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.www.CarteTest" haltonerror="false" />
 		</junit>
 	</target>
 	
