@@ -412,7 +412,7 @@ public class SalesforceConnection {
 	  try {
 		  return getBinding().upsert(upsertField, sfBuffer);
 	  }catch(Exception e) {
-		  throw new KettleException("Erreur while doing upsert operation!", e);
+		  throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorUpsert"), e);
 	  }
   }
   public SaveResult[] insert(SObject[] sfBuffer) throws KettleException
@@ -420,7 +420,7 @@ public class SalesforceConnection {
 	  try {
 		  return getBinding().create(sfBuffer);
 	  }catch(Exception e) {
-		  throw new KettleException("Erreur while doing insert operation!", e);
+		  throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorInsert"), e);
 	  }
   }
   public SaveResult[] update(SObject[] sfBuffer) throws KettleException
@@ -428,7 +428,7 @@ public class SalesforceConnection {
 	  try {
 		  return getBinding().update(sfBuffer);
 	  }catch(Exception e) {
-		  throw new KettleException("Erreur while doing update operation!", e);
+		  throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorUpdate"), e);
 	  }
   }
   public DeleteResult[] delete(String[] id) throws KettleException
@@ -436,7 +436,7 @@ public class SalesforceConnection {
 	  try {
 		  return getBinding().delete(id);
 	  }catch(Exception e) {
-		  throw new KettleException("Erreur while doing delete operation!", e);
+		  throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorDelete"), e);
 	  }
   }
   public String toString()

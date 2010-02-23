@@ -165,8 +165,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 	}
 	
 	private void flushBuffers() throws KettleException
-	{
-		
+	{	
 		try {
 			// create the object(s) by sending the array to the web service
 			data.saveResult = data.connection.insert(data.sfBuffer);
@@ -174,7 +173,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 				if (data.saveResult[j].isSuccess()) {
 					// Row was inserted
 					String id=data.saveResult[j].getId();
-					if (log.isDebug()) logDebug("Row was inserted with id: " + id);
+					if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceInsert.RowInserted", id));
 
 					// write out the row with the SalesForce ID
 					Object[] newRow = RowDataUtil.resizeArray(data.outputBuffer[j], data.outputRowMeta.size());
@@ -183,7 +182,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 						int newIndex = getInputRowMeta().size();
 						newRow[newIndex++] = id;
 					}
-					if (log.isDetailed()) logDetailed("The new row has an id value of : " + newRow[0]);
+					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInsert.NewRow", newRow[0]));
 					
 					//putRow(data.outputRowMeta, data.outputRowMeta.cloneRow(newRow));  // copy row to output rowset(s);
 					putRow(data.outputRowMeta, newRow);  // copy row to output rowset(s);
@@ -191,7 +190,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 					
 				    if (checkFeedback(getLinesInput()))
 				    {
-				    	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInsert.log.LineRow",""+ getLinesInput()));
+				    	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInsert.log.LineRow", getLinesInput()));
 				    }
 
 				} else {
@@ -214,7 +213,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 					}
 					else 
 					{
-						if(log.isDebug()) logDebug("Found error from SalesForce and raising the exception"); 
+						if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceInsert.ErrorFound")); 
 						//for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
 						
 						// Only show the first error
@@ -228,9 +227,9 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 					
 					if (sendToErrorRow) {
 						   // Simply add this row to the error row
-						if(log.isDetailed()) logDetailed("Passing row to error step");
+						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInsert.PassingRowToErrorStep"));
 						   putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceInsert001");
-						}
+					}
 				} 
 				
 			} 
@@ -241,7 +240,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 			data.iBufferPos = 0;
 			
 		} catch (Exception e) {
-			throw new KettleException("\nFailed to upsert object, error message was: \n"+ e.getMessage());
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInsert.FailedToInsertObject", e.getMessage()));
 		} finally{
 			if(data.saveResult!=null) data.saveResult=null;
 		}

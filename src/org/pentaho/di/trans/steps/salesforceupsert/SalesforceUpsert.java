@@ -112,7 +112,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 				data.fieldnrs[i] = getInputRowMeta().indexOfValue(meta.getUpdateStream()[i]);
 				if (data.fieldnrs[i] < 0)
 				{
-					throw new KettleException("Field [" + meta.getUpdateStream()[i]+ "] couldn't be found in the input stream!");
+					throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsert.FieldNotFound", meta.getUpdateStream()[i]));
 				}
 			 }
 		}
@@ -133,7 +133,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 	{
 		try {			
 
-			if (log.isDetailed()) logDetailed("Called writeToSalesForce with " + data.iBufferPos + " out of " + meta.getBatchSizeInt());
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.CalledWrite", data.iBufferPos, meta.getBatchSizeInt()));
 			
 			// if there is room in the buffer
 			if ( data.iBufferPos < meta.getBatchSizeInt()) {
@@ -160,7 +160,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 				flushBuffers();
 			}
 		} catch (Exception e) {
-			throw new KettleException("\nFailed in writeToSalesForce: "+ e.getMessage());	
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsert.FailedInWrite", e.getMessage()));	
 		}
 	}
 	
@@ -174,9 +174,9 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 				if (data.upsertResult[j].isSuccess()) {
 					String id=data.upsertResult[j].getId();
 					if(data.upsertResult[j].isCreated()) {
-						if (log.isDetailed()) logDetailed("An account was create with an id of: " + id);
+						if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.ObjectCreated", id));
 					}else {
-						if (log.isDetailed()) logDetailed("Account with id of: " + id + " was updated");
+						if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.ObjectUpdated", id));
 					}
 					// write out the row with the SalesForce ID
 					Object[] newRow = RowDataUtil.resizeArray(data.outputBuffer[j], data.outputRowMeta.size());
@@ -185,7 +185,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 						int newIndex = getInputRowMeta().size();
 						newRow[newIndex++] = id;
 					}
-					if (log.isDetailed()) logDetailed("The new row has an id value of : " + newRow[0]);
+					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.NewRow", newRow[0]));
 					
 					//putRow(data.outputRowMeta, data.outputRowMeta.cloneRow(newRow));  // copy row to output rowset(s);
 					putRow(data.outputRowMeta, newRow);  // copy row to output rowset(s);
@@ -216,7 +216,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 					}
 					else 
 					{
-						if(log.isDetailed()) logDetailed("Found error from SalesForce and raising the exception"); 
+						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.ErrorFound")); 
 						// for (int i = 0; i < data.upsertResult[j].getErrors().length; i++) {
 							
 						// Only throw the first error
@@ -230,7 +230,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 					
 					if (sendToErrorRow) {
 						   // Simply add this row to the error row
-						if(log.isDebug()) logDebug("Passing row to error step");
+						if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceUpsert.PassingRowToErrorStep"));
 						   putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceUpsert001");
 						}
 				} 
@@ -243,7 +243,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 			data.iBufferPos = 0;
 			
 		} catch (Exception e) {
-			throw new KettleException("\nFailed to upsert object, error message was: \n"+ e.getMessage());
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsert.FailedUpsert", e.getMessage()));
 		} finally {
 			if(data.upsertResult!=null) data.upsertResult=null;
 		}
