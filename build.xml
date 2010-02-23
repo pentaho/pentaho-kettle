@@ -799,7 +799,7 @@
 				<fileset dir="${lib}" includes="kettle-db.jar"/>
 				<fileset dir="${lib}" includes="kettle-engine.jar"/>
 	    		<fileset dir="${lib}" includes="kettle-ui-swt.jar"/>
-				<!-- fileset dir="test/libext/" includes="junit.jar"/ -->
+				<fileset dir="test/libext/" includes="jetty-servlet-tester-*.jar"/>
 	    		<pathelement path="${testClasses}"/>
 
 				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
