@@ -177,6 +177,8 @@ import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.SecurityManagerRegistery;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
+import org.pentaho.di.repository.filerep.KettleFileRepositorySecurityProvider;
+import org.pentaho.di.repository.kdr.KettleDatabaseRepositorySecurityProvider;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
@@ -3030,6 +3032,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       
       public void onError(Throwable t) {
         closeRepository();
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages
+            .getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+        
       }
       
       public void onCancel() {
@@ -3093,9 +3098,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       try {
         Directory root = rep.loadRepositoryDirectoryTree();
-        if (SecurityManagerRegistery.getInstance().getRegisteredSecurityManager() != null) {
-          securityManager = SecurityManagerRegistery.getInstance().createSecurityManager(rep, rep.getRepositoryMeta(),
-              rep.getUserInfo());
+        // Create the security manager if it is not File or Database Security Provider
+        if (!(rep.getSecurityProvider() instanceof KettleFileRepositorySecurityProvider) && 
+          !(rep.getSecurityProvider() instanceof KettleDatabaseRepositorySecurityProvider)) {  
+          if (SecurityManagerRegistery.getInstance().getRegisteredSecurityManager() != null) {
+            securityManager = SecurityManagerRegistery.getInstance().createSecurityManager(rep, rep.getRepositoryMeta(),
+                rep.getUserInfo());
+          }
         }
         RepositoryExplorer explorer = new RepositoryExplorer(rep, getSecurityManager(), cb, Variables
             .getADefaultVariableSpace());
