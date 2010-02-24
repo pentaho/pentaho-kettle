@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.farragostreamingloader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -30,6 +31,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -63,8 +65,6 @@ public class FarragoStreamingLoader
 
     private FarragoStreamingLoaderData data;
 
-    private int rowCount;
-
     public FarragoStreamingLoader(
         StepMeta stepMeta,
         StepDataInterface stepDataInterface,
@@ -75,13 +75,12 @@ public class FarragoStreamingLoader
         super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
     }
 
+    // When user want to stop it, it will execute logic here.
     public void stopRunning(StepMetaInterface smi, StepDataInterface sdi)
         throws KettleException
     {
         meta = (FarragoStreamingLoaderMeta) smi;
         data = (FarragoStreamingLoaderData) sdi;
-
-        System.out.println("Loader is stopping");
 
         if (data.objOut != null) {
 
@@ -116,7 +115,7 @@ public class FarragoStreamingLoader
 
         meta = (FarragoStreamingLoaderMeta) smi;
         data = (FarragoStreamingLoaderData) sdi;
-        List<Object> header = new ArrayList<Object>();
+
         try {
 
             Object[] r = getRow(); // Get row from input rowset & set row
@@ -136,73 +135,23 @@ public class FarragoStreamingLoader
                 return false;
             }
 
-            if (rowCount > 50000) {
-
-                rowCount = 0;
-                if (data.objOut != null) {
-
-                    data.objOut.close();
-                    if (data.client != null) {
-
-                        data.client.close();
-
-                    }
-                }
-                // data.sqlRunner.join();
-
-                if (log.isDebug())
-                    logDebug("Preparing sql statements: " + Const.CR
-                        + meta.getSql_statement());
-
-                String sql = meta.getSql_statement();
-                PreparedStatement ps = data.db.prepareSQL(sql);
-
-                if (log.isDebug())
-                    logDebug("Executing sql statements...");
-
-                data.sqlRunner = new SqlRunner(data, ps);
-                data.sqlRunner.start();
-
-                if (log.isDebug())
-                    logDebug("Remote rows is up now...");
-
-                if (log.isDebug())
-                    logDebug("Sleeping for 1second");
-                Thread.sleep(1000);
-
-                if (log.isDebug())
-                    logDebug("Initialize local socket connection...");
-                if (log.isDebug())
-                    logDebug("Parameters for socket: Host: " + meta.getHost()
-                        + " Port: " + meta.getPort());
-                data.client = new Socket(
-                    meta.getHost(),
-                    Integer.valueOf(meta.getPort()));
-
-                data.objOut = new ObjectOutputStream(
-                    data.client.getOutputStream());
-
-                if (log.isDebug())
-                    logDebug("Local socket connection is ready");
-
-                data.objOut.writeObject(header);
-
-            }
-
             if (first) {
 
                 first = false;
 
                 data.keynrs = new int[meta.getFieldStreamForKeys().length
                     + meta.getFieldStreamForFields().length];
-                data.format = new int[data.keynrs.length];
+                data.format = new String[data.keynrs.length];
 
                 for (int i = 0; i < meta.getFieldStreamForKeys().length; i++) {
 
                     data.keynrs[i] = getInputRowMeta().indexOfValue(
                         meta.getFieldStreamForKeys()[i]);
+                    
                     data.format[i] = getInputRowMeta().getValueMeta(
-                        data.keynrs[i]).getLength();
+                        data.keynrs[i]).getTypeDesc().toUpperCase();
+
+                    
                 }
                 int tmp_cnt = meta.getFieldStreamForKeys().length;
                 for (int i = 0; i < meta.getFieldStreamForFields().length; i++)
@@ -210,67 +159,25 @@ public class FarragoStreamingLoader
 
                     data.keynrs[tmp_cnt + i] = getInputRowMeta().indexOfValue(
                         meta.getFieldStreamForFields()[i]);
+                   
                     data.format[tmp_cnt + i] = getInputRowMeta().getValueMeta(
-                        data.keynrs[i]).getLength();
+                        data.keynrs[i]).getTypeDesc().toUpperCase();
+
                 }
                 if (isDetailed())
                     logDetailed(data.format.toString());
 
                 // Create head format object.
-                // TODO: I think we need to re-sign data structure for header.
 
+                List<Object> header = new ArrayList<Object>();
                 header.add("1"); // version
-                List<Integer> format = new ArrayList<Integer>();
+                List<String> format = new ArrayList<String>();
                 for (int i = 0; i < data.format.length; i++) {
-
-                    format.add((Integer) data.format[i]);
+                    format.add(data.format[i]);
                 }
                 header.add(format);
 
                 data.objOut.writeObject(header);
-
-            }
-
-            if (first) {
-
-                first = false;
-
-                data.keynrs = new int[meta.getFieldStreamForKeys().length
-                    + meta.getFieldStreamForFields().length];
-                data.format = new int[data.keynrs.length];
-
-                for (int i = 0; i < meta.getFieldStreamForKeys().length; i++) {
-
-                    data.keynrs[i] = getInputRowMeta().indexOfValue(
-                        meta.getFieldStreamForKeys()[i]);
-                    data.format[i] = getInputRowMeta().getValueMeta(
-                        data.keynrs[i]).getLength();
-                }
-                int tmp_cnt = meta.getFieldStreamForKeys().length;
-                for (int i = 0; i < meta.getFieldStreamForFields().length; i++)
-                {
-
-                    data.keynrs[tmp_cnt + i] = getInputRowMeta().indexOfValue(
-                        meta.getFieldStreamForFields()[i]);
-                    data.format[tmp_cnt + i] = getInputRowMeta().getValueMeta(
-                        data.keynrs[i]).getLength();
-                }
-                if (log.isDebug())
-                    logDebug(data.format.toString());
-
-                // Create head format object.
-                // TODO: I think we need to re-sign data structure for header.
-
-                header.add("1"); // version
-                List<Integer> format = new ArrayList<Integer>();
-                for (int i = 0; i < data.format.length; i++) {
-
-                    format.add((Integer) data.format[i]);
-                }
-                header.add(format);
-
-                data.objOut.writeObject(header);
-
             }
 
             List<Object> entity = new ArrayList<Object>();
@@ -306,8 +213,10 @@ public class FarragoStreamingLoader
                         Date date = valueMeta.getDate(valueData);
 
                         if (log.isRowLevel())
-                            logRowlevel(date.toString());
-                        entity.add(date);
+                            logRowlevel(XMLHandler.date2string(date) + ":"
+                                + valueMeta.getLength());
+                        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+                        entity.add(sqlDate);
                         break;
                     case ValueMetaInterface.TYPE_BOOLEAN:
 
@@ -322,9 +231,8 @@ public class FarragoStreamingLoader
             }
 
             data.objOut.writeObject(entity);
+            data.objOut.reset();
             data.objOut.flush();
-            entity = null;
-            rowCount++;
 
             return true;
         } catch (Exception e) {
@@ -334,7 +242,6 @@ public class FarragoStreamingLoader
             setErrors(1);
             stopAll();
             setOutputDone(); // signal end to receiver(s)
-            rowCount = 0;
             return false;
         }
     }
@@ -393,15 +300,46 @@ public class FarragoStreamingLoader
                 if (log.isDebug())
                     logDebug("Parameters for socket: Host: " + meta.getHost()
                         + " Port: " + meta.getPort());
-                data.client = new Socket(
-                    meta.getHost(),
-                    Integer.valueOf(meta.getPort()));
+                int try_cnt = 0;
+                // Add a check whether remote rows is up.
+                // If it is not up, it will sleep 5 second and then try to
+                // connect.
+                // Totally, we will try 5 times.
+                while (true) {
 
-                data.objOut = new ObjectOutputStream(
-                    data.client.getOutputStream());
+                    try {
 
-                if (log.isDebug())
-                    logDebug("Local socket connection is ready");
+                        data.client = new Socket(
+                            meta.getHost(),
+                            Integer.valueOf(meta.getPort()));
+                        data.objOut = new ObjectOutputStream(
+                            data.client.getOutputStream());
+
+                        if (log.isDebug())
+                            logDebug("Local socket connection is ready");                        
+
+                        break;
+
+                    } catch (SocketException se) {
+
+                        if (try_cnt < 5) {
+
+                            logBasic("Local socket connection is not ready, so try to connect in 5 second");
+                            Thread.sleep(5000);
+                            data.client = null;
+                            try_cnt++;
+                        } else {
+
+                            throw new KettleException(
+                                "Fatal Error: Remote_rows UDX can't be connected! Please check...");
+                        }
+
+                    } catch (Exception ex) {
+
+                        throw ex;
+                    }
+
+                }
 
             } catch (NumberFormatException e) {
                 // TODO Auto-generated catch block
