@@ -22,6 +22,8 @@ public class SlaveServerConfig {
 	
 	private boolean joining;
 	
+	private int objectTimeoutMinutes;
+
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
 	}
@@ -54,6 +56,7 @@ public class SlaveServerConfig {
         }
 
         XMLHandler.addTagValue("joining", joining);
+        XMLHandler.addTagValue("object_timeout_minutes", objectTimeoutMinutes);
 
         xml.append(XMLHandler.closeTag(XML_TAG));
 
@@ -77,6 +80,7 @@ public class SlaveServerConfig {
 			checkNetworkInterfaceSetting(slaveNode, slaveServer);					
 		}
 		joining = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "joining"));
+		objectTimeoutMinutes = Const.toInt(XMLHandler.getTagValue(node, "object_timeout_minutes"), 0);
 	}
 
 	private void checkNetworkInterfaceSetting(Node slaveNode, SlaveServer slaveServer) {
@@ -166,5 +170,18 @@ public class SlaveServerConfig {
 	public void setJoining(boolean joining) {
 		this.joining = joining;
 	}
-	
+
+	/**
+	 * @return the objectTimeoutMinutes
+	 */
+	public int getObjectTimeoutMinutes() {
+		return objectTimeoutMinutes;
+	}
+
+	/**
+	 * @param objectTimeoutMinutes the objectTimeoutMinutes to set
+	 */
+	public void setObjectTimeoutMinutes(int objectTimeoutMinutes) {
+		this.objectTimeoutMinutes = objectTimeoutMinutes;
+	}
 }

@@ -15,6 +15,9 @@ package org.pentaho.di.www;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
@@ -27,6 +30,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
@@ -43,13 +47,13 @@ public class Carte
 	private WebServer webServer;
 	private SlaveServerConfig config;
 
-	public Carte(SlaveServerConfig config) throws Exception {
+	public Carte(final SlaveServerConfig config) throws Exception {
 		this.config = config;
 
 		boolean allOK=true;
 		
-        TransformationMap transformationMap = new TransformationMap();
-        JobMap jobMap = new JobMap();
+        final TransformationMap transformationMap = new TransformationMap();
+        final JobMap jobMap = new JobMap();
         List<SlaveServerDetection> detections = Collections.synchronizedList(new ArrayList<SlaveServerDetection>());
         SocketRepository socketRepository = new SocketRepository();
         
@@ -92,6 +96,71 @@ public class Carte
 	        		allOK=false;
 	        	}
 	        }
+        }
+        
+        // If we need to time out finished or idle objects, we should create a timer in the background to clean
+        //
+        if (config.getObjectTimeoutMinutes()>0) {
+
+        	LogWriter.getInstance().logBasic("Carte", "Installing timer to purge stale objects after "+config.getObjectTimeoutMinutes()+" minutes.");
+        	
+    		Timer timer = new Timer();
+
+    		final AtomicBoolean busy = new AtomicBoolean(false);
+    		TimerTask timerTask = new TimerTask() {
+    			public void run() {
+    				if (!busy.get()) {
+    					busy.set(true);
+
+    					try {
+	    					// Check all transformations...
+	    					//
+	    					for (String transformationName : transformationMap.getTransformationNames()) {
+	    						Trans trans = transformationMap.getTransformation(transformationName);
+	    						
+	    						// See if the transformation is finished or stopped.
+	    						//
+	    						if (trans!=null && (trans.isFinished() || trans.isStopped()) && trans.getLogDate()!=null) {
+	    							// check the last log time
+	    							//
+	    							int diffInMinutes = (int)Math.floor( (System.currentTimeMillis() - trans.getLogDate().getTime())/60000 );
+	    							if (diffInMinutes>=config.getObjectTimeoutMinutes()) {
+	    								// Let's remove this from the transformation map...
+	    								//
+	    								transformationMap.removeTransformation(transformationName);
+	    							}
+	    						}
+	    					}
+	    					
+	    					// And the jobs...
+	    					//
+	    					for (String jobName : jobMap.getJobNames()) {
+	    						Job job = jobMap.getJob(jobName);
+	    						
+	    						// See if the job is finished or stopped.
+	    						//
+	    						if (job!=null && (job.isFinished() || job.isStopped()) && job.getLogDate()!=null) {
+	    							// check the last log time
+	    							//
+	    							int diffInMinutes = (int)Math.floor( (System.currentTimeMillis() - job.getLogDate().getTime())/60000 );
+	    							if (diffInMinutes>=config.getObjectTimeoutMinutes()) {
+	    								// Let's remove this from the job map...
+	    								//
+	    								jobMap.removeJob(jobName);
+	    							}
+	    						}
+	    					}
+	    					
+    					} finally {
+    						busy.set(false);
+    					}
+    				}
+    			}
+    		};
+
+    		// Search for stale objects every minute:
+    		//
+    		timer.schedule(timerTask, 60000, 60000);
         }
         
         if (allOK) {
