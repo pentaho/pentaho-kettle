@@ -64,7 +64,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 		this.input = (KettleFileRepositoryMeta) repositoryMeta;
 		// this.repositories = repositoriesMeta;
 		
-		shell = new Shell(display, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
+		shell = new Shell(parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
 		shell.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.Main.Title")); //$NON-NLS-1$
 	}
 

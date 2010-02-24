@@ -63,7 +63,11 @@ public class EnterSelectionDialog extends Dialog
 	private Listener lsOK, lsCancel;
 
 	private Shell  shell;
-	private SelectionAdapter lsDef;
+	public Shell getShell() {
+    return shell;
+  }
+
+  private SelectionAdapter lsDef;
 	
 	private String choices[];
 	private String selection;

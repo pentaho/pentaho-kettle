@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+  <!--  ###############################################################################   -->
+  <!--     REPOSITORY LOGIN DIALOG: Dialog to login to the repository                     -->
+  <!--  ###############################################################################   -->    
+    <dialog id="repository-login-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
+		ondialogaccept="repositoryLoginController.login()"
+		ondialogcancel="repositoryLoginController.closeRepositoryLoginDialog()" 
+		buttons="accept, cancel" buttonalign="right" title="${RepositoryLoginDialog.Title}" 
+		height="330" width="320"
+		xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+		xmlns:pen="http://www.pentaho.org/2008/xul" 
+		onload="repositoryLoginController.init()" padding="10" spacing="3">
+		<hbox>
+			<label value="${RepositoryLoginDialog.RepositoryLabel}"/>
+			<label id="spacer-label" flex="1" />
+			<button id="repository-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="repositoryLoginController.editRepository()" disabled="true"/>
+			<button id="repository-add" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="repositoryLoginController.newRepository()"/>
+			<button id="repository-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="repositoryLoginController.deleteRepository()" disabled="true"/>
+		</hbox>
+       	<listbox id="available-repository-list" pen:binding="name" disabled="false" flex="1"/>
+		<label value="${RepositoryLoginDialog.UserName}" />
+		<textbox id="user-name" multiline="false"/>
+		<label value="${RepositoryLoginDialog.Password}"/>
+		<textbox id="user-password" type="password" multiline="false"/>
+		<checkbox id="show-login-dialog-at-startup" command="repositoryLoginController.updateShowDialogAtStartup()" label="${RepositoryLoginDialog.ShowDialogAtStartup}" checked="false"/>			
+  </dialog>
