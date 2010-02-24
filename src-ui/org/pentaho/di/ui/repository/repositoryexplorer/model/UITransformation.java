@@ -58,7 +58,7 @@ public class UITransformation extends UIRepositoryContent {
   public void restoreVersion(UIRepositoryObjectRevision revision) throws KettleException {
     if((getRepository() != null) && getRepository() instanceof VersionRepository) {
       VersionRepository vr = (VersionRepository)getRepository();
-      vr.restoreTransformation(this.getObjectId(), revision.getName());
+      vr.restoreTransformation(this.getObjectId(), revision.getName(), null);
     }
   }
 

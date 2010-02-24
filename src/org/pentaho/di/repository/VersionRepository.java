@@ -11,7 +11,7 @@ public interface VersionRepository {
    * @param revision revision to restore
    * @throws KettleException
    */
-  public void restoreJob(ObjectId id_job, String revision) throws KettleException;
+  public void restoreJob(ObjectId id_job, String revision, String versionComment) throws KettleException;
   
   /**
    * Restore a transformation from the given revision. The state of the specified revision becomes
@@ -20,5 +20,5 @@ public interface VersionRepository {
    * @param revision revision to restore
    * @throws KettleException
    */
-  public void restoreTransformation(ObjectId id_transformation, String revision) throws KettleException;
+  public void restoreTransformation(ObjectId id_transformation, String revision, String versionComment) throws KettleException;
 }
