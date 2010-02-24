@@ -19,6 +19,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.VersionRepository;
 
 public class UITransformation extends UIRepositoryContent {
 
@@ -31,7 +32,7 @@ public class UITransformation extends UIRepositoryContent {
 
   @Override
   public String getImage() {
-    return "images/transformation.png";
+    return "images/transformation.png"; //$NON-NLS-1$
   }
 
   @Override
@@ -51,6 +52,13 @@ public class UITransformation extends UIRepositoryContent {
     if(newParentDir != null) {
       rep.renameTransformation(obj.getObjectId(), newParentDir.getDirectory(), null);
       newParentDir.refresh();
+    }
+  }
+  
+  public void restoreVersion(UIRepositoryObjectRevision revision) throws KettleException {
+    if((getRepository() != null) && getRepository() instanceof VersionRepository) {
+      VersionRepository vr = (VersionRepository)getRepository();
+      vr.restoreTransformation(this.getObjectId(), revision.getName());
     }
   }
 

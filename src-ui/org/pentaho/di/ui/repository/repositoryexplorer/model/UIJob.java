@@ -19,6 +19,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.VersionRepository;
 
 public class UIJob extends UIRepositoryContent {
 
@@ -31,7 +32,7 @@ public class UIJob extends UIRepositoryContent {
 
   @Override
   public String getImage() {
-    return "images/job.png";
+    return "images/job.png"; //$NON-NLS-1$
   }
 
   @Override
@@ -52,6 +53,13 @@ public class UIJob extends UIRepositoryContent {
       rep.renameJob(obj.getObjectId(), newParentDir.getDirectory(), null);
       newParentDir.refresh();
     }
-  }  
+  }
+  
+  public void restoreVersion(UIRepositoryObjectRevision revision) throws KettleException {
+    if((getRepository() != null) && getRepository() instanceof VersionRepository) {
+      VersionRepository vr = (VersionRepository)getRepository();
+      vr.restoreJob(this.getObjectId(), revision.getName());
+    }
+  }
 
 }

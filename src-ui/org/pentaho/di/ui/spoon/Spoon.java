@@ -104,6 +104,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ObjectUsageCount;
+import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SourceToTargetMapping;
@@ -2994,6 +2995,20 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
               RepositoryDirectory repdir = element.getRepositoryDirectory();
               loadObjectFromRepository(objname, objectType, repdir, revision);
             }
+            return false; // do not close explorer
+          }
+          
+          public boolean restoreRevision(RepositoryElementLocationInterface element, String revision) {
+            try {
+              TransMeta transInfo = rep.loadTransformation(element.getName(), element.getRepositoryDirectory(), null, true, revision);
+              rep.save(transInfo, "Restore", null);
+            } catch (Exception e) {
+              MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+              mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Message") + element.getName() + Const.CR + e.getMessage());// "Error opening : "
+              mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"));
+              mb.open();
+            }
+            
             return false; // do not close explorer
           }
       };

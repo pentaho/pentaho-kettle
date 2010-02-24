@@ -29,7 +29,7 @@ import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 
-public class UIRepositoryContent extends UIRepositoryObject implements RepositoryElementLocationInterface{
+public abstract class UIRepositoryContent extends UIRepositoryObject implements RepositoryElementLocationInterface{
 
   private RepositoryContent rc;
   private UIRepositoryObjectRevisions revisions;
@@ -148,4 +148,6 @@ public class UIRepositoryContent extends UIRepositoryObject implements Repositor
   public int getCategory() {
     return 20;
   }
+  
+  public abstract void restoreVersion(UIRepositoryObjectRevision revision) throws KettleException;
 }

@@ -316,6 +316,20 @@ public class BrowseController extends AbstractXulEventHandler {
       }
     }
   }
+  
+  public void restoreRevision() {
+    try {
+      Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
+      UIRepositoryContent contentToRestore = content.iterator().next();
+      
+      Collection<UIRepositoryObjectRevision> versions = revisionTable.getSelectedItems();
+      UIRepositoryObjectRevision versionToRestore = versions.iterator().next();
+      
+      contentToRestore.restoreVersion(versionToRestore);
+    } catch (KettleException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   private String newName = null;
 

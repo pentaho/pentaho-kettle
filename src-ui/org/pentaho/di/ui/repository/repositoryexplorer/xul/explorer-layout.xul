@@ -23,7 +23,8 @@
 		</menupopup>
 	
 		<menupopup id="revisionContextMenu">
-			<menuitem label="Open" command="browseController.openRevision()"/>
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openRevision()"/>
+			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Restore}" command="browseController.restoreRevision()"/>
 			<!-- <menuitem label="Delete" /> -->
 		</menupopup>
 	
