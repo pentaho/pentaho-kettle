@@ -26,6 +26,8 @@ public class SlaveServerConfig {
 	
 	private int maxLogTimeoutMinutes;
 	
+	private int objectTimeoutMinutes;
+	
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
 	}
@@ -60,6 +62,7 @@ public class SlaveServerConfig {
         XMLHandler.addTagValue("joining", joining);
         XMLHandler.addTagValue("max_log_lines", maxLogLines);
         XMLHandler.addTagValue("max_log_timeout_minutes", maxLogTimeoutMinutes);
+        XMLHandler.addTagValue("object_timeout_minutes", objectTimeoutMinutes);
 
         xml.append(XMLHandler.closeTag(XML_TAG));
 
@@ -83,8 +86,9 @@ public class SlaveServerConfig {
 			checkNetworkInterfaceSetting(log, slaveNode, slaveServer);					
 		}
 		joining = "Y".equalsIgnoreCase(XMLHandler.getTagValue(node, "joining"));
-		maxLogLines = Integer.parseInt(XMLHandler.getTagValue(node, "max_log_lines"), 0);
-		maxLogTimeoutMinutes = Integer.parseInt(XMLHandler.getTagValue(node, "max_log_timeout_minutes"), 0);
+		maxLogLines = Const.toInt(XMLHandler.getTagValue(node, "max_log_lines"), 0);
+		maxLogTimeoutMinutes = Const.toInt(XMLHandler.getTagValue(node, "max_log_timeout_minutes"), 0);
+		objectTimeoutMinutes = Const.toInt(XMLHandler.getTagValue(node, "object_timeout_minutes"), 0);
 	}
 
 	private void checkNetworkInterfaceSetting(LogChannelInterface log, Node slaveNode, SlaveServer slaveServer) {
@@ -201,6 +205,20 @@ public class SlaveServerConfig {
 	 */
 	public void setMaxLogTimeoutMinutes(int maxLogTimeoutMinutes) {
 		this.maxLogTimeoutMinutes = maxLogTimeoutMinutes;
+	}
+
+	/**
+	 * @return the objectTimeoutMinutes
+	 */
+	public int getObjectTimeoutMinutes() {
+		return objectTimeoutMinutes;
+	}
+
+	/**
+	 * @param objectTimeoutMinutes the objectTimeoutMinutes to set
+	 */
+	public void setObjectTimeoutMinutes(int objectTimeoutMinutes) {
+		this.objectTimeoutMinutes = objectTimeoutMinutes;
 	}
 
 }
