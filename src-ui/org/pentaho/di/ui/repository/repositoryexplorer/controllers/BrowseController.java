@@ -347,7 +347,6 @@ public class BrowseController extends AbstractXulEventHandler {
       });
 
       commitPrompt.open();
-      
     } catch (Exception e) {
       throw new RuntimeException(new KettleException(e));
     }

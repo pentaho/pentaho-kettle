@@ -59,6 +59,8 @@ public class UIJob extends UIRepositoryContent {
     if((getRepository() != null) && getRepository() instanceof VersionRepository) {
       VersionRepository vr = (VersionRepository)getRepository();
       vr.restoreJob(this.getObjectId(), revision.getName(), commitMessage);
+      refreshRevisions();
+      uiParent.fireCollectionChanged();
     }
   }
 

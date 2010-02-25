@@ -94,6 +94,11 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
     }
     return revisions;
   }
+  
+  protected void refreshRevisions() throws KettleException {
+    revisions = null;
+    getRevisions();
+  }
 
   // TODO: Remove references to the Kettle object RepositoryDirectory
   public RepositoryDirectory getRepositoryDirectory() {
