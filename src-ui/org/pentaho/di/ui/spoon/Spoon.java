@@ -104,7 +104,6 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ObjectUsageCount;
-import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SourceToTargetMapping;
@@ -1410,8 +1409,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   private static final String STRING_SPOON_MAIN_TREE = BaseMessages.getString(PKG, "Spoon.MainTree.Label");
 
-  private static final String STRING_SPOON_CORE_OBJECTS_TREE = BaseMessages.getString(PKG,
-      "Spoon.CoreObjectsTree.Label");
+  private static final String STRING_SPOON_CORE_OBJECTS_TREE = BaseMessages.getString(PKG, "Spoon.CoreObjectsTree.Label");
 
   public static final String XML_TAG_TRANSFORMATION_STEPS = "transformation-steps";
 
@@ -1636,8 +1634,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     // stepHistoryChanged=true;
 
-    selectionLabel.setText(tree ? BaseMessages.getString(PKG, "Spoon.Explorer") : BaseMessages.getString(PKG,
-        "Spoon.Steps"));
+    selectionLabel.setText(tree ? BaseMessages.getString(PKG, "Spoon.Explorer") : BaseMessages.getString(PKG, "Spoon.Steps"));
   }
 
   public void addCoreObjectsTree() {
@@ -2247,8 +2244,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     // show the shell...
     //
-    EnterSelectionDialog dialog = new EnterSelectionDialog(shell, databaseNames, BaseMessages.getString(PKG,
-        "Spoon.ExploreDB.SelectDB.Title"), BaseMessages.getString(PKG, "Spoon.ExploreDB.SelectDB.Message"));
+    EnterSelectionDialog dialog = new EnterSelectionDialog(shell, databaseNames, BaseMessages.getString(PKG,"Spoon.ExploreDB.SelectDB.Title"), BaseMessages.getString(PKG, "Spoon.ExploreDB.SelectDB.Message"));
     String name = dialog.open();
     if (name != null) {
       selectionObject = DatabaseMeta.findDatabase(databases, name);
@@ -2898,9 +2894,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       boolean distributes = false;
 
       if (props.showCopyOrDistributeWarning()) {
-        MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "System.Warning"),// "Warning!"
-            null, BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Message", fr.getName(), Integer
-                .toString(nrNextSteps)), MessageDialog.WARNING, new String[] {
+        MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "System.Warning"), null, BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Message", fr.getName(), Integer.toString(nrNextSteps)), MessageDialog.WARNING, new String[] {
                 BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Copy"),
                 BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Distribute") },// "Copy
             // Distribute
@@ -3291,8 +3285,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       mb.setText(BaseMessages.getString(PKG, "ExportCmdLine.JobOrTransformationMissing.Title"));
       mb.open();
     } else {
-      ShowBrowserDialog sbd = new ShowBrowserDialog(shell, BaseMessages.getString(PKG,
-          "ExportCmdLine.CommandLine.Title"), cmdFile);
+      ShowBrowserDialog sbd = new ShowBrowserDialog(shell, BaseMessages.getString(PKG,"ExportCmdLine.CommandLine.Title"), cmdFile);
       sbd.open();
     }
   }
@@ -3931,8 +3924,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
               if (tspd.open()) {
                 saved = true;
                 if (!props.getSaveConfirmation()) {
-                  MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG,
-                      "Spoon.Message.Warning.SaveOK"), // "Save OK!"
+                  MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG,"Spoon.Message.Warning.SaveOK"), // "Save OK!"
                       null, BaseMessages.getString(PKG, "Spoon.Message.Warning.TransformationWasStored"),// "This transformation was stored in repository"
                       MessageDialog.QUESTION, new String[] { BaseMessages.getString(PKG, "Spoon.Message.Warning.OK") },// "OK!"
                       0, BaseMessages.getString(PKG, "Spoon.Message.Warning.NotShowThisMessage"),// "Don't show this message again."
@@ -4978,23 +4970,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             ch = fis.read();
           }
 
-          ShowBrowserDialog sbd = new ShowBrowserDialog(shell, BaseMessages.getString(PKG,
-              "Spoon.Dialog.ErrorHelpText.Title"), content.toString());// "Error help text"
+          ShowBrowserDialog sbd = new ShowBrowserDialog(shell, BaseMessages.getString(PKG,"Spoon.Dialog.ErrorHelpText.Title"), content.toString());// "Error help text"
           sbd.open();
         } catch (Exception ex) {
-          new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorShowingHelpText.Title"), BaseMessages
-              .getString(PKG, "Spoon.Dialog.ErrorShowingHelpText.Message"), ex);// "Error showing help text"
+          new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorShowingHelpText.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorShowingHelpText.Message"), ex);// "Error showing help text"
         }
       } else {
-        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.UnableCreateNewStep.Title"), BaseMessages
-            .getString(PKG, "Spoon.Dialog.UnableCreateNewStep.Message"), e);// "Error creating step"
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.UnableCreateNewStep.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.UnableCreateNewStep.Message"), e);// "Error creating step"
         // "I was unable to create a new step"
       }
       return null;
     } catch (Throwable e) {
       if (!shell.isDisposed())
-        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorCreatingStep.Title"), BaseMessages
-            .getString(PKG, "Spoon.Dialog.UnableCreateNewStep.Message"), e);// "Error creating step"
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorCreatingStep.Title"), BaseMessages .getString(PKG, "Spoon.Dialog.UnableCreateNewStep.Message"), e);// "Error creating step"
       return null;
     }
 
@@ -5569,8 +5557,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // Display all the rows...
       PreviewRowsDialog prd = new PreviewRowsDialog(shell, Variables.getADefaultVariableSpace(), SWT.NONE, "-",
           rowMeta, rows);
-      prd.setTitleMessage(BaseMessages.getString(PKG, "Spoon.Dialog.ImpactAnalyses.Title"), BaseMessages.getString(PKG,
-          "Spoon.Dialog.ImpactAnalyses.Message"));// "Impact analyses"
+      prd.setTitleMessage(BaseMessages.getString(PKG, "Spoon.Dialog.ImpactAnalyses.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ImpactAnalyses.Message"));// "Impact analyses"
       // "Result of analyses:"
       prd.open();
     } else {
@@ -5589,8 +5576,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     try {
       GUIResource.getInstance().toClipboard(cliptext);
     } catch (Throwable e) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ExceptionCopyToClipboard.Title"), BaseMessages
-          .getString(PKG, "Spoon.Dialog.ExceptionCopyToClipboard.Message"), e);
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ExceptionCopyToClipboard.Title"), BaseMessages .getString(PKG, "Spoon.Dialog.ExceptionCopyToClipboard.Message"), e);
     }
   }
 
@@ -5621,8 +5607,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       refreshGraph();
       refreshTree();
     } catch (KettleException e) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorPastingTransformation.Title"), BaseMessages
-          .getString(PKG, "Spoon.Dialog.ErrorPastingTransformation.Message"), e);
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorPastingTransformation.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorPastingTransformation.Message"), e);
     }
   }
 
@@ -6258,8 +6243,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       }
     }
 
-    EnterSelectionDialog dialog = new EnterSelectionDialog(shell, options, "Partioning method",
-        "Select the partitioning method");
+    EnterSelectionDialog dialog = new EnterSelectionDialog(shell, options, "Partioning method", "Select the partitioning method");
     String methodDescription = dialog.open(idx);
     if (methodDescription != null) {
       String method = StepPartitioningMeta.methodCodes[StepPartitioningMeta.PARTITIONING_METHOD_NONE];
