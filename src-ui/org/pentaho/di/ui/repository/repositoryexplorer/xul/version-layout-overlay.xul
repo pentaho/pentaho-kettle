@@ -5,6 +5,7 @@
 		<hbox>
 			<label id="revision-label" value="Version History:" />
 			<label id="spacer-label" flex="1" />
+			<button id="revision-restore" image="images/restore.png" onclick="browseController.restoreRevision()"/>
 			<button id="revision-open" image="images/open.png" onclick="browseController.openRevision()"/>
 			<!-- <button id="revision-remove" image="images/Remove.png"  />  -->
 		</hbox>
