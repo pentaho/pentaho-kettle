@@ -23,7 +23,6 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -51,11 +50,13 @@ import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
+import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
+import org.pentaho.ui.xul.swt.custom.DialogConstant;
 
 /**
  *
@@ -100,7 +101,18 @@ public class RepositoryExplorer {
       return BaseMessages.getString(CLZ, key);
     }
     
-  };  
+  };
+  
+  public static XulPromptBox promptCommitComment(org.pentaho.ui.xul.dom.Document document, ResourceBundle messages, String defaultMessage) throws XulException {
+    XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
+    
+    prompt.setTitle(messages.getString("RepositoryExplorer.CommitTitle"));//$NON-NLS-1$
+    prompt.setButtons(new DialogConstant[] { DialogConstant.OK, DialogConstant.CANCEL });
+
+    prompt.setMessage(messages.getString("RepositoryExplorer.CommitLabel"));//$NON-NLS-1$
+    prompt.setValue(defaultMessage == null ? messages.getString("RepositoryExplorer.DefaultCommitMessage") : defaultMessage); //$NON-NLS-1$
+    return prompt;
+  }
 
   // private Repository repository;
   public RepositoryExplorer(final Repository rep, RepositorySecurityManager securityManager, RepositoryExplorerCallback callback,

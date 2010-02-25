@@ -55,10 +55,10 @@ public class UIJob extends UIRepositoryContent {
     }
   }
   
-  public void restoreVersion(UIRepositoryObjectRevision revision) throws KettleException {
+  public void restoreVersion(UIRepositoryObjectRevision revision, String commitMessage) throws KettleException {
     if((getRepository() != null) && getRepository() instanceof VersionRepository) {
       VersionRepository vr = (VersionRepository)getRepository();
-      vr.restoreJob(this.getObjectId(), revision.getName(), null);
+      vr.restoreJob(this.getObjectId(), revision.getName(), commitMessage);
     }
   }
 

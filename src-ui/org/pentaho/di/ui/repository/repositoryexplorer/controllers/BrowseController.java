@@ -24,6 +24,7 @@ import java.util.ResourceBundle;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListenerCollection;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener.TYPE;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIJob;
@@ -320,14 +321,35 @@ public class BrowseController extends AbstractXulEventHandler {
   public void restoreRevision() {
     try {
       Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
-      UIRepositoryContent contentToRestore = content.iterator().next();
+      final UIRepositoryContent contentToRestore = content.iterator().next();
       
       Collection<UIRepositoryObjectRevision> versions = revisionTable.getSelectedItems();
-      UIRepositoryObjectRevision versionToRestore = versions.iterator().next();
+      final UIRepositoryObjectRevision versionToRestore = versions.iterator().next();
       
-      contentToRestore.restoreVersion(versionToRestore);
-    } catch (KettleException e) {
-      throw new RuntimeException(e);
+      XulPromptBox commitPrompt = RepositoryExplorer.promptCommitComment(document, messages, null);
+      
+      commitPrompt.addDialogCallback(new XulDialogCallback<String>() {
+        public void onClose(XulComponent component, Status status, String value) {
+
+          if(!status.equals(Status.CANCEL)) {
+            try {
+              contentToRestore.restoreVersion(versionToRestore, value);
+            } catch (Exception e) {
+              // convert to runtime exception so it bubbles up through the UI
+              throw new RuntimeException(e);
+            }
+          }
+        }
+
+        public void onError(XulComponent component, Throwable err) {
+          throw new RuntimeException(err);
+        }
+      });
+
+      commitPrompt.open();
+      
+    } catch (Exception e) {
+      throw new RuntimeException(new KettleException(e));
     }
   }
 

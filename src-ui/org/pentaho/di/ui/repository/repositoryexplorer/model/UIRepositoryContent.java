@@ -149,5 +149,5 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
     return 20;
   }
   
-  public abstract void restoreVersion(UIRepositoryObjectRevision revision) throws KettleException;
+  public abstract void restoreVersion(UIRepositoryObjectRevision revision, String commitMessage) throws KettleException;
 }
