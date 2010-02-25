@@ -33,8 +33,8 @@ import org.pentaho.di.repository.ObjectPermission;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
-import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
@@ -139,7 +139,23 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   public void init()  throws ControllerInitializationException {
     try {
-      confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$ 
+      confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
+      confirmBox.setTitle(messages.getString("PermissionsController.RemoveAclWarning")); //$NON-NLS-1$
+      confirmBox.setMessage(messages.getString("PermissionsController.RemoveAclWarningText")); //$NON-NLS-1$
+      confirmBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+      confirmBox.setCancelLabel(messages.getString("Dialog.Cancel")); //$NON-NLS-1$
+      confirmBox.addDialogCallback(new XulDialogCallback(){
+
+        public void onClose(XulComponent sender, Status returnCode, Object retVal) {
+           if(returnCode == Status.ACCEPT){
+             viewAclsModel.removeSelectedAcls();
+           } 
+        }
+        public void onError(XulComponent sender, Throwable t) {
+          
+        }
+      });
+
       messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$ 
       viewAclsModel = new UIRepositoryObjectAcls();
       manageAclsModel = new UIRepositoryObjectAclModel(viewAclsModel);
@@ -425,6 +441,23 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     bf.createBinding(viewAclsModel, "removeEnabled", modifyCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
     bf.setBindingType(Binding.Type.ONE_WAY);
     // Binding when the user select from the list
+
+    bf.createBinding(viewAclsModel, "selectedAclList", this, "aclState", //$NON-NLS-1$  //$NON-NLS-2$
+        new BindingConvertor<List<UIRepositoryObjectAcl>, UIRepositoryObjectAcl>() {
+
+          @Override
+          public UIRepositoryObjectAcl sourceToTarget(List<UIRepositoryObjectAcl> value) {
+            if (value!=null && value.size()>0){
+              return value.get(0);
+            }
+            return null;
+          }
+
+          @Override
+          public List<UIRepositoryObjectAcl> targetToSource(UIRepositoryObjectAcl value) {
+            return null;
+          }
+    });
     bf.createBinding(userRoleList, "selectedItem", this, "recipientChanged"); //$NON-NLS-1$  //$NON-NLS-2$
     // Setting the default Deck to show no permission
     aclDeck.setSelectedIndex(NO_ACL);
@@ -546,21 +579,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
    */
   @SuppressWarnings("unchecked")
   public void removeAcl() throws Exception {
-    confirmBox.setTitle(messages.getString("PermissionsController.RemoveAclWarning")); //$NON-NLS-1$
-    confirmBox.setMessage(messages.getString("PermissionsController.RemoveAclWarningText")); //$NON-NLS-1$
-    confirmBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
-    confirmBox.setCancelLabel(messages.getString("Dialog.Cancel")); //$NON-NLS-1$
-    confirmBox.addDialogCallback(new XulDialogCallback(){
-
-      public void onClose(XulComponent sender, Status returnCode, Object retVal) {
-         if(returnCode == Status.ACCEPT){
-           viewAclsModel.removeSelectedAcls();
-         } 
-      }
-      public void onError(XulComponent sender, Throwable t) {
-        
-      }
-    });
     confirmBox.open();
   }
 
@@ -655,6 +673,9 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     List<UIRepositoryObjectAcl> acls = new ArrayList<UIRepositoryObjectAcl>();
     acls.add(acl);
     viewAclsModel.setSelectedAclList(acls);
+  }
+  
+  public void setAclState(UIRepositoryObjectAcl acl){
     uncheckAllPermissionBox();
     if (acl != null && acl.getPermissionSet() != null) {
       for (ObjectPermission permission : acl.getPermissionSet()) {
@@ -673,6 +694,8 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
           modifyCheckbox.setChecked(true);
         }
       }
+    }else{
+      uncheckAllPermissionBox();
     }
   }
 
@@ -748,12 +771,19 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   /*
    * If the user check or unchecks the inherit from parent checkbox, this method is called.
    */
-  public void updateInheritFromParentPermission() {
-    viewAclsModel.clear();
+  public void updateInheritFromParentPermission() throws Exception{
+    // viewAclsModel.clear();
     viewAclsModel.setEntriesInheriting(inheritParentPermissionCheckbox.isChecked());
+    if(inheritParentPermissionCheckbox.isChecked()){
+      UIRepositoryObject ro = repoObject.get(0);
+      ro.readAcls(viewAclsModel);
+    }
+    
+    /*
     if (inheritParentPermissionCheckbox.isChecked()) {
       uncheckAllPermissionBox();
     }
+    */
   }
 
   /*

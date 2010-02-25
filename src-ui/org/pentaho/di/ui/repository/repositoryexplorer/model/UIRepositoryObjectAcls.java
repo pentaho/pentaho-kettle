@@ -107,7 +107,12 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
   }
 
   public void removeSelectedAcls() {
-    removeAcls(getSelectedAclList());
+    // side effect deletes multiple acls when only one selected.
+    List<UIRepositoryObjectAcl> removalList = new ArrayList<UIRepositoryObjectAcl>();
+    for (UIRepositoryObjectAcl rem : getSelectedAclList()){
+      removalList.add(rem);
+    }
+    removeAcls(removalList);
   }
   public void updateAcl(UIRepositoryObjectAcl aclToUpdate) {
     List<ObjectAce> aces = obj.getAces();
