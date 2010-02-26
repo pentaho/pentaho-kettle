@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>pentaho.kettle</groupId>
-  <artifactId>kettle-core</artifactId>
-  <version>TRUNK-SNAPSHOT</version>
-  <description>Manually Created POM</description>
-</project>
