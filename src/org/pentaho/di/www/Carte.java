@@ -20,6 +20,7 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.log4j.Appender;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.JndiUtil;
@@ -128,7 +129,11 @@ public class Carte
 	    								// Let's remove this from the transformation map...
 	    								//
 	    								transformationMap.removeTransformation(transformationName);
-	    								transformationMap.removeAppender(transformationName);
+	    								Appender appender = transformationMap.getAppender(transformationName);
+	    								if (appender!=null) {
+	    									transformationMap.removeAppender(transformationName);
+	    									LogWriter.getInstance().removeAppender(appender);
+	    								}
 	    							}
 	    						}
 	    					}
@@ -148,7 +153,11 @@ public class Carte
 	    								// Let's remove this from the job map...
 	    								//
 	    								jobMap.removeJob(jobName);
-	    								jobMap.removeAppender(jobName);
+	    								Appender appender = jobMap.getAppender(jobName);
+	    								if (appender!=null) {
+	    									jobMap.removeAppender(jobName);
+	    									LogWriter.getInstance().removeAppender(appender);
+	    								}
 	    							}
 	    						}
 	    					}
