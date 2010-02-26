@@ -1,0 +1,113 @@
+<!--===========================================================================
+  This build file handles publishing the kettle jars to a remote maven or 
+  local ivy repository.
+  
+  This build file uses subfloor.xml file as the default build
+  process and should only override the tasks that need to differ from
+  the common build file.
+  
+  See subfloor.xml for more details
+============================================================================-->
+<project name="Publish Kettle Jars" basedir="." default="help" 
+  xmlns:ivy="antlib:org.apache.ivy.ant" >
+  
+  <description>
+    This build file is used to create the Agile BI project
+    and works with the subfloor.xml file.
+  </description>
+
+  <property file="publish.properties"
+            description="Properties customized for your particular project belong in this file." />
+	
+  <property name="kettle.libdist.dir"
+            value="${basedir}/../lib"
+            description="Directory that hosts Jar files required to compile project source.  (IVY will populate this directory with required jars)" />
+
+  <property name="kettle.ivydist.dir"
+            value="${basedir}/../ivydist"
+            description="Directory that hosts Jar files required to compile project source.  (IVY will populate this directory with required jars)" />
+
+	
+  <property name="kettle.module.list"
+            value="kettle-core, kettle-db, kettle-engine, kettle-ui-swt"
+            description="The list of kettle modules" />
+
+  <!-- Import the common_build.xml file which contains all the default tasks -->  
+  <import file="subfloor.xml"/>
+
+  <target name="help">
+    <echo>
+      To publish Kettle's jars to your local ivy repository, type:
+        ant -f build-res/publish.xml publish-local
+      To publish Kettle's jars to a remote maven repository, type:
+        ant -f build-res/publish.xml publish
+      To clean out the ivydist directory, type:
+    	ant -f build-res/publish.xml clean
+    </echo>
+  </target>
+  
+  
+    <!--=======================================================================
+      publish-local
+      
+      Publishes the jar files for Kettle to the user's local repository
+      for download by other projects currently being executed on the user's
+      system.
+      ====================================================================-->
+  <target name="publish-local" depends="install-antcontrib">
+    <for list="${kettle.module.list}" param="module" trim="true">
+      <sequential>
+        <antcall target="publish-local-task">
+          <param name="ivy.artifact.id" value="@{module}" />
+        </antcall>
+      </sequential>
+    </for>
+  </target>
+  	
+  <target name="publish-local-task" depends="install-ivy">
+    <ivy:resolve file="${ivy.artifact.ivyfilename}" />
+    <ivy:publish resolver="local" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
+      <artifacts pattern="${kettle.libdist.dir}/[artifact].[ext]" />
+    </ivy:publish>
+  </target>
+	
+    <!--=======================================================================
+      publish
+  
+      Publishes the jar files for Kettle to a Maven2 repository.
+      ====================================================================-->
+  <target name="publish" depends="install-antcontrib">
+    <for list="${kettle.module.list}" param="module" trim="true">
+      <sequential>
+        <antcall target="publish-task">
+          <param name="ivy.artifact.id" value="@{module}" />
+        </antcall>
+      </sequential>
+    </for>
+  </target>
+	
+  <target name="publish-task" depends="install-ivy">
+    <ivy:resolve file="${ivy.artifact.ivyfilename}" />
+    <ivy:makepom ivyfile="${ivy.artifact.ivyfilename}" pomfile="${kettle.ivydist.dir}/pom-${ivy.artifact.id}.xml">
+      <mapping conf="default" scope="compile" />
+      <mapping conf="runtime" scope="runtime" />
+    </ivy:makepom>
+  	<ivy:deliver conf="*(public)" deliverpattern="${kettle.ivydist.dir}/ivy-${ivy.artifact.id}.xml" />
+  	
+    <antcall target="maven-publish-dependencies">
+      <param name="publish.groupId" value="${ivy.artifact.group}" />
+      <param name="publish.artifactId" value="${ivy.artifact.id}" />
+      <param name="publish.version" value="${project.revision}" />
+      <param name="publish.file" value="${kettle.ivydist.dir}/ivy-${ivy.artifact.id}.xml" />
+    </antcall>
+  	
+    <antcall target="maven-publish-artifact">
+      <param name="publish.pomFile" value="${kettle.ivydist.dir}/pom-${ivy.artifact.id}.xml" />
+      <param name="publish.file" value="${kettle.libdist.dir}/${ivy.artifact.id}.jar" />
+    </antcall>
+  </target>
+	
+  <target name="clean">
+  	<delete dir="${kettle.ivydist.dir}"/>
+  </target>
+</project>
