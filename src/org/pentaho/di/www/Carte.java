@@ -133,6 +133,7 @@ public class Carte
 	    								// Let's remove this from the transformation map...
 	    								//
 	    								transformationMap.removeTransformation(transformationName);
+    									transformationMap.deallocateServerSocketPorts(transformationName);
 	    							}
 	    						}
 	    					}
