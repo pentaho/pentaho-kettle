@@ -3022,6 +3022,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
         refreshTree();
         setShellText();
+        SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CONNECTED);
       }
       
       public void onError(Throwable t) {
@@ -3155,6 +3156,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       rep.disconnect();
     rep = null;
     setShellText();
+    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
   }
 
   public void openFile() {
@@ -5144,6 +5146,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     ((XulMenuitem) doc.getElementById("repository-explore-experimental")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
 
+		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
+
     // What steps & plugins to show?
     refreshCoreObjects();
   }
@@ -6681,9 +6685,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void setRepository(Repository rep) {
     this.rep = rep;
-    if (rep != null) {
-      this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-    }
+		
+		try {
+  		if (rep != null) {
+  		  this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+  		  if(SecurityManagerRegistery.getInstance().getRegisteredSecurityManager() != null) {
+          securityManager = SecurityManagerRegistery.getInstance().createSecurityManager(rep, rep.getRepositoryMeta(), rep.getUserInfo());
+        }
+  		}
+		} catch (Exception e) {
+		  getLog().logDebug(e.getMessage());
+		}
+    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
   }
 
   public void addMenuListener(String id, Object listener, String methodName) {
