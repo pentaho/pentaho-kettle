@@ -130,8 +130,12 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   public abstract int getCategory();
   
   public void readAcls(UIRepositoryObjectAcls acls) throws AccessDeniedException{
+    this.readAcls(acls, false);
+  }
+
+  public void readAcls(UIRepositoryObjectAcls acls, boolean forceParentInheriting) throws AccessDeniedException{
     try {
-      acls.setObjectAcl(getRepository().getAcl(getObjectId()));
+      acls.setObjectAcl(getRepository().getAcl(getObjectId(), forceParentInheriting));
     } catch(KettleException ke) {
       throw new AccessDeniedException(ke);
     }

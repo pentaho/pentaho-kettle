@@ -776,7 +776,8 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     viewAclsModel.setEntriesInheriting(inheritParentPermissionCheckbox.isChecked());
     if(inheritParentPermissionCheckbox.isChecked()){
       UIRepositoryObject ro = repoObject.get(0);
-      ro.readAcls(viewAclsModel);
+      // force inherit to true to get effective ACLs before apply...
+      ro.readAcls(viewAclsModel, true);
     }
     
     /*

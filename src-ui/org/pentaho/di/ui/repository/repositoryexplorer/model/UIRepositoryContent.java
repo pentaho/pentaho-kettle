@@ -135,7 +135,7 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
 
   public void readAcls(UIRepositoryObjectAcls acls) throws AccessDeniedException{
     try {
-      acls.setObjectAcl(getRepository().getAcl(getObjectId()));
+      acls.setObjectAcl(getRepository().getAcl(getObjectId(), false));
     } catch(KettleException ke) {
       throw new AccessDeniedException(ke);
     }

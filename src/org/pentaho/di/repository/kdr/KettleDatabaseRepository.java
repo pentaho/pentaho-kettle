@@ -1738,7 +1738,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     throw new UnsupportedOperationException();
    }
 
-  public ObjectAcl getAcl(ObjectId id) throws KettleException {
+  public ObjectAcl getAcl(ObjectId id, boolean forceParentInheriting) throws KettleException {
     throw new UnsupportedOperationException();
   }
   

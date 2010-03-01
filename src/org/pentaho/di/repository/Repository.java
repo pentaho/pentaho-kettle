@@ -498,11 +498,12 @@ public interface Repository {
    * Get the Permissions of a repository object.
    * 
    * @param Object Id of the repository object
+   * @param forceParentInheriting retrieve the effective ACLs as if 'inherit from parent' were true
    * 
    * @return The permissions.
    * @throws KettleException in case something goes horribly wrong
    */
-  public ObjectAcl getAcl(ObjectId id) throws KettleException;
+  public ObjectAcl getAcl(ObjectId id, boolean forceParentInheriting) throws KettleException;
 
   /**
    * Set the Permissions of a repository element.

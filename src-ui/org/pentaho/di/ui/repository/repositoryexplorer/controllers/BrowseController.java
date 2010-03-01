@@ -276,11 +276,23 @@ public class BrowseController extends AbstractXulEventHandler {
   }
 
   public void openContent() {
-    Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
-    UIRepositoryContent contentToOpen = content.iterator().next();
-    if (callback != null) {
-      if (callback.open(contentToOpen, null)) {
-        //TODO: fire request to close dialog
+    Collection<UIRepositoryObject> content = fileTable.getSelectedItems();
+    openContent(content.toArray());
+  }
+  
+  public void openContent(Object[] items){
+    if ((items != null) && (items.length > 0)) {
+      for (Object o : items) {
+        if (o instanceof UIRepositoryDirectory) {
+          ((UIRepositoryDirectory) o).toggleExpanded();
+          List<Object> selectedFolder = new ArrayList<Object>();
+          selectedFolder.add(o);
+          folderTree.setSelectedItems(selectedFolder);
+        }else if ((callback != null) && (o instanceof UIRepositoryContent)) {
+          if (callback.open((UIRepositoryContent)o, null)) {
+            //TODO: fire request to close dialog
+          }
+        }
       }
     }
   }
@@ -482,19 +494,7 @@ public class BrowseController extends AbstractXulEventHandler {
   }
 
   public void onDoubleClick(Object[] selectedItems) {
-    if ((selectedItems != null) && (selectedItems.length > 0)) {
-      for (Object o : selectedItems) {
-        if (o instanceof UIRepositoryDirectory) {
-          ((UIRepositoryDirectory) o).toggleExpanded();
-          List<Object> selectedFolder = new ArrayList<Object>();
-          selectedFolder.add(o);
-          folderTree.setSelectedItems(selectedFolder);
-        } else if ((o instanceof UIJob) || (o instanceof UITransformation)) {
-          openContent();
-          return;
-        }
-      }
-    }
+    openContent(selectedItems);
   }
 
   public List<UIRepositoryDirectory> getSelectedFolderItems() {

@@ -1093,7 +1093,7 @@ public class KettleFileRepository implements Repository {
     throw new UnsupportedOperationException();
   }
 
-  public ObjectAcl getAcl(ObjectId id) throws KettleException {
+  public ObjectAcl getAcl(ObjectId id, boolean forceParentInheriting) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
