@@ -307,6 +307,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     	for (int i=0;i<groupField.length;i++) {
     		ValueMetaInterface valueMeta = r.searchValueMeta(groupField[i]);
     		if (valueMeta!=null) {
+    			valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
     			fields.addValueMeta(valueMeta);
     		}
     	}
