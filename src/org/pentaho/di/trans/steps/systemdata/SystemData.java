@@ -694,6 +694,15 @@ public class SystemData extends BaseStep implements StepInterface
 				}
 				row[index] =value;
 				break;
+			case SystemDataMeta.TYPE_SYSTEM_INFO_PREVIOUS_RESULT_LOG_TEXT:
+				previousResult = getTransMeta().getPreviousResult();
+				String errorReason=null;
+				if(previousResult!=null)
+				{
+					errorReason=	previousResult.getLogText();
+				}
+				row[index] =errorReason;
+				break;
 
 			default: break;
 			}

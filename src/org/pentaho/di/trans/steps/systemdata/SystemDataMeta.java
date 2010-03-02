@@ -149,6 +149,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
     public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED     =  92;
     public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES     =  93;
     public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED     =  94;
+    public final static int TYPE_SYSTEM_INFO_PREVIOUS_RESULT_LOG_TEXT  =  95;
 
     public static final SystemDataMetaFunction functions[] = new SystemDataMetaFunction[] {
             null,
@@ -262,7 +263,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED   , "previous result is stopped",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultIsStopped")),
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES   , "previous result nr files",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrFiles")),
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED   , "previous result nr files retrieved",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrFilesRetrieved")),    
-            
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED   , "previous result nr files retrieved",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultLogText")), 
     };
     
 	private String fieldName[];
@@ -464,6 +465,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			case TYPE_SYSTEM_INFO_HOSTNAME:
 			case TYPE_SYSTEM_INFO_IP_ADDRESS:
             case TYPE_SYSTEM_INFO_KETTLE_VERSION:
+            case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_LOG_TEXT:	
 				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
 				break;
 			case TYPE_SYSTEM_INFO_COPYNR:
