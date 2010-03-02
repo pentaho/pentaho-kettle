@@ -108,11 +108,10 @@ public class LAFMessageHandler extends GlobalMessages {
     protected String calculateString(String packageName, String key, Object[] parameters)
     {
         String string=null;        
-        if (replaceWith != null) {
+        if (replaceWith!=null) {
         	string = internalCalc(replacePackage(packageName),replaceSysBundle,key, parameters);
             if (string!=null) return string;            
         }
-       
         string = internalCalc(packageName,SYSTEM_BUNDLE_PACKAGE, key, parameters);
         if (string != null) return string;
         

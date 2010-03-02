@@ -23,13 +23,14 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -156,7 +157,7 @@ public class ConstantTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("constanttest1");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create a row generator step...
@@ -165,7 +166,7 @@ public class ConstantTest extends TestCase
         RowGeneratorMeta rm = new RowGeneratorMeta();
         
         // Set the information of the row generator.                
-        String rowGeneratorPid = steploader.getStepPluginID(rm);
+        String rowGeneratorPid = registry.getPluginId(StepPluginType.getInstance(), rm);
         StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid, rowGeneratorStepname, (StepMetaInterface)rm);
         transMeta.addStep(rowGeneratorStep);
         
@@ -268,7 +269,7 @@ public class ConstantTest extends TestCase
         cnst1.setDecimal(decimal1);
         cnst1.setCurrency(currency);
 
-        String addSeqPid1 = steploader.getStepPluginID(cnst1);
+        String addSeqPid1 = registry.getPluginId(StepPluginType.getInstance(), cnst1);
         StepMeta addSeqStep1 = new StepMeta(addSeqPid1, constStepname1, (StepMetaInterface)cnst1);
         transMeta.addStep(addSeqStep1);                              
 

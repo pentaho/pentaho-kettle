@@ -44,7 +44,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -105,7 +104,7 @@ public class SelectObjectDialog extends Dialog
 
 	private RepositoryDirectory	directoryTree;
 
-	private RepositoryCapabilities	capabilities;
+	// private RepositoryCapabilities	capabilities;
 
 	private boolean	includeDeleted;
 

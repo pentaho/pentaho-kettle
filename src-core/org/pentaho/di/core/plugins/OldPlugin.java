@@ -13,7 +13,7 @@
 package org.pentaho.di.core.plugins;
 
 
-public class Plugin<E>
+public class OldPlugin<E>
 {
 	public static final String NAME = "name"; //$NON-NLS-1$
 
@@ -74,7 +74,7 @@ public class Plugin<E>
 	private ClassLoader classLoader;
 	
 
-	public Plugin(int type, E id, String description, String tooltip, String directory,
+	public OldPlugin(int type, E id, String description, String tooltip, String directory,
 			String jarfiles[], String icon_filename, String classname)
 	{
 		this.type = type;

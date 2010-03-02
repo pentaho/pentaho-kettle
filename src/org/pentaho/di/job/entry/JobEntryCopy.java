@@ -21,11 +21,12 @@ import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
-import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
@@ -95,17 +96,18 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		try
 		{
 			String stype = XMLHandler.getTagValue(entrynode, "type");
-
-			JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithID(stype);
+			PluginRegistry registry = PluginRegistry.getInstance();
+			PluginInterface jobPlugin = registry.findPluginWithId(JobEntryPluginType.getInstance(), stype);
 			if (jobPlugin == null)
 				throw new KettleStepLoaderException("No valid step/plugin specified (jobPlugin=null) for " + stype);
 
 			// Get an empty JobEntry of the appropriate class...
-			entry = JobEntryLoader.getInstance().getJobEntryClass(jobPlugin);
+			entry = (JobEntryInterface) registry.loadClass(jobPlugin);
 			if (entry != null)
 			{
 				// System.out.println("New JobEntryInterface built of type:
 				// "+entry.getTypeDesc());
+				entry.setTypeId(jobPlugin.getIds()[0]);
 				entry.loadXML(entrynode, databases, slaveServers, rep);
 
 				// Handle GUI information: nr & location?
@@ -193,7 +195,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		{
 			if (entry.getConfigId()==null)
 		    {
-				entry.setConfigId( JobEntryLoader.getInstance().getJobEntryID(entry) );
+				entry.setConfigId( PluginRegistry.getInstance().getPluginId(JobEntryPluginType.getInstance(), entry) );
 		    }
 		}
 	}
@@ -209,7 +211,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	 */
 	public String getTypeDesc()
 	{
-		JobPlugin plugin = JobEntryLoader.getInstance().findJobPluginWithID(entry.getTypeId());
+		PluginInterface plugin = PluginRegistry.getInstance().findPluginWithId(JobEntryPluginType.getInstance(), entry.getTypeId());
 		return plugin.getDescription();
 	}
 

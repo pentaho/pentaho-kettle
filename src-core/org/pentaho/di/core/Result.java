@@ -61,6 +61,8 @@ public class Result implements Cloneable
     
     private String logChannelId;
 	
+    private String logText;
+    
 	public Result()
 	{
 		nrErrors=0L;
@@ -369,6 +371,7 @@ public class Result implements Cloneable
         nrLinesDeleted=0;
         nrErrors=0;
         nrFilesRetrieved=0;
+        logText=null;
     }
 
     /**
@@ -387,7 +390,7 @@ public class Result implements Cloneable
         nrErrors+=res.getNrErrors();
         nrFilesRetrieved+=res.getNrFilesRetrieved();
         resultFiles.putAll(res.getResultFiles());
-        rows.addAll(res.getRows());
+        rows.addAll(res.getRows());        
     }
     
     /**
@@ -419,6 +422,7 @@ public class Result implements Cloneable
         xml.append(XMLHandler.addTagValue("exit_status", exitStatus));
         xml.append(XMLHandler.addTagValue("is_stopped", stopped));
         xml.append(XMLHandler.addTagValue("log_channel_id", logChannelId));
+        xml.append(XMLHandler.addTagValue("log_text", logText));
                 
         // Export the result files
         //
@@ -473,6 +477,7 @@ public class Result implements Cloneable
         stopped = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "is_stopped" ));
 
     	logChannelId = XMLHandler.getTagValue(node, "log_channel_id");
+    	logText = XMLHandler.getTagValue(node, "log_text");
 
     	// Now read back the result files...
     	//
@@ -582,5 +587,19 @@ public class Result implements Cloneable
 	}
 	public void increaseErrors(long incr) {
 		nrErrors+=incr;
+	}
+
+	/**
+	 * @return the logText
+	 */
+	public String getLogText() {
+		return logText;
+	}
+
+	/**
+	 * @param logText the logText to set
+	 */
+	public void setLogText(String logText) {
+		this.logText = logText;
 	}
 }

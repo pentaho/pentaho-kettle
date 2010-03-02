@@ -517,7 +517,6 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter {
     return -1;
   }
 
-  @SuppressWarnings("unchecked")
   private void fireUnassignPropertyChangeEvent(Type type) {
     if (type == Type.USER) {
       if (isUnAssignmentPossible(type)) {
@@ -534,7 +533,6 @@ public class UIRepositoryObjectAclModel extends XulEventSourceAdapter {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void fireAssignPropertyChangeEvent(Type type) {
     if (type == Type.USER) {
       if (isAssignmentPossible(type)) {

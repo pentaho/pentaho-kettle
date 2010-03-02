@@ -52,9 +52,10 @@ import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
@@ -1517,7 +1518,7 @@ public class JobDialog extends Dialog
     {
         try
         {
-            String id = JobEntryLoader.getInstance().getJobEntryID(jobEntryInterface);
+            String id = PluginRegistry.getInstance().getPluginId(JobEntryPluginType.getInstance(), jobEntryInterface);
             if (id!=null)
             {
                 shell.setImage((Image) GUIResource.getInstance().getImagesJobentries().get(id));

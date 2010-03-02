@@ -96,6 +96,9 @@ import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -105,8 +108,6 @@ import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
@@ -589,10 +590,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               TableInputMeta tii = new TableInputMeta();
               tii.setDatabaseMeta(transMeta.findDatabase(connectionName));
 
-              StepLoader steploader = StepLoader.getInstance();
-              String stepID = steploader.getStepPluginID(tii);
-              StepPlugin stepPlugin = steploader.findStepPluginWithID(stepID);
-              String stepName = transMeta.getAlternativeStepname(stepPlugin.getDescription());
+              PluginRegistry registry = PluginRegistry.getInstance();
+              String stepID = registry.getPluginId(StepPluginType.getInstance(), tii);
+              PluginInterface stepPlugin = registry.findPluginWithId(StepPluginType.getInstance(), stepID);
+              String stepName = transMeta.getAlternativeStepname(stepPlugin.getName());
               stepMeta = new StepMeta(stepID, stepName, tii);
               if (spoon.editStep(transMeta, stepMeta) != null) {
                 transMeta.addStep(stepMeta);
@@ -1290,7 +1291,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 	
     private void addCandidateAsHop(int mouseX, int mouseY) {
 
-    	boolean forward = startHopStep!=null || true;
+    	boolean forward = startHopStep!=null;
     	
     	StepMeta fromStep = candidate.getFromStep();
     	StepMeta toStep = candidate.getToStep();

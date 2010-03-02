@@ -69,11 +69,12 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -1226,7 +1227,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
     private boolean test()
     {
-        StepLoader stepLoader = StepLoader.getInstance();
+        PluginRegistry registry = PluginRegistry.getInstance();
         String scriptStepName = wStepname.getText();
 
         // Create a step with the information in this dialog
@@ -1320,10 +1321,10 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                         genMeta.getValue()[i] = string;
                     }
                 }
-                StepMeta genStep = new StepMeta(stepLoader.getStepPluginID(genMeta), "## TEST DATA ##", genMeta);
+                StepMeta genStep = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), genMeta), "## TEST DATA ##", genMeta);
                 genStep.setLocation(50, 50);
 
-                StepMeta scriptStep = new StepMeta(stepLoader.getStepPluginID(scriptMeta), Const.NVL(scriptStepName, "## SCRIPT ##"), scriptMeta);
+                StepMeta scriptStep = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), scriptMeta), Const.NVL(scriptStepName, "## SCRIPT ##"), scriptMeta);
                 scriptStepName = scriptStep.getName();
                 scriptStep.setLocation(150, 50);
 

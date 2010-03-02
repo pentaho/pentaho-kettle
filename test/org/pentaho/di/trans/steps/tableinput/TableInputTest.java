@@ -27,6 +27,8 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -34,7 +36,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -42,7 +43,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
-import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
 
 /**
@@ -314,7 +314,7 @@ public class TableInputTest extends TestCase
             createTables(database);
             createData(database);
 
-            StepLoader steploader = StepLoader.getInstance();            
+            PluginRegistry registry = PluginRegistry.getInstance();            
 
             // 
             // create an injector step...
@@ -324,7 +324,7 @@ public class TableInputTest extends TestCase
             
             // Set the information of the injector.
                     
-            String injectorPid = steploader.getStepPluginID(im);
+            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -341,7 +341,7 @@ public class TableInputTest extends TestCase
             selectSQL+="FROM " + source_table + " WHERE CODE = ? ORDER BY ID, CODE;";
             tii.setSQL(selectSQL);
 
-            String fromstepid = steploader.getStepPluginID(tii);
+            String fromstepid = registry.getPluginId(StepPluginType.getInstance(), tii);
             StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
             fromstep.setDescription("Reads information from table [" + source_table + "] on database [" + dbInfo + "]");
             transMeta.addStep(fromstep);

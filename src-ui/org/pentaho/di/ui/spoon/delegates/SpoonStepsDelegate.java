@@ -22,6 +22,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.plugins.PartitionerPluginType;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -226,7 +228,6 @@ public class SpoonStepsDelegate extends SpoonDelegate
 	public StepDialogInterface getStepEntryDialog(StepMetaInterface stepMeta, TransMeta transMeta,
 			String stepName) throws KettleException
 	{
-
 		String dialogClassName = stepMeta.getDialogClassName();
 
 		Class<?> dialogClass;
@@ -256,14 +257,15 @@ public class SpoonStepsDelegate extends SpoonDelegate
 
 	}
 
-	public StepDialogInterface getPartitionerDialog(Object stepMeta, 
-				StepPartitioningMeta partitioningMeta, TransMeta transMeta) throws KettleException
+	public StepDialogInterface getPartitionerDialog(StepMeta stepMeta, StepPartitioningMeta partitioningMeta, TransMeta transMeta) throws KettleException
 	{
+		PluginRegistry registry = PluginRegistry.getInstance();
+		registry.getPluginId(PartitionerPluginType.getInstance(), partitioningMeta.getPartitioner());
 
 		String dialogClassName = partitioningMeta.getPartitioner().getDialogClassName();
 
 		Class<?> dialogClass;
-		Class<?>[] paramClasses = new Class[] { Shell.class, Object.class, StepPartitioningMeta.class, TransMeta.class };
+		Class<?>[] paramClasses = new Class[] { Shell.class, StepMeta.class, StepPartitioningMeta.class, TransMeta.class };
 		Object[] paramArgs = new Object[] { spoon.getShell(), stepMeta, partitioningMeta, transMeta };
 		Constructor<?> dialogConstructor;
 		try

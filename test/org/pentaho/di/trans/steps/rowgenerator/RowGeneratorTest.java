@@ -23,13 +23,14 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -141,7 +142,7 @@ public class RowGeneratorTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("row generatortest");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create a row generator step...
@@ -150,7 +151,7 @@ public class RowGeneratorTest extends TestCase
         RowGeneratorMeta rm = new RowGeneratorMeta();
         
         // Set the information of the row generator.                
-        String rowGeneratorPid = steploader.getStepPluginID(rm);
+        String rowGeneratorPid = registry.getPluginId(StepPluginType.getInstance(), rm);
         StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid, rowGeneratorStepname, (StepMetaInterface)rm);
         transMeta.addStep(rowGeneratorStep);
         
@@ -182,7 +183,7 @@ public class RowGeneratorTest extends TestCase
         String dummyStepname = "dummy step";            
         DummyTransMeta dm = new DummyTransMeta();
 
-        String dummyPid = steploader.getStepPluginID(dm);
+        String dummyPid = registry.getPluginId(StepPluginType.getInstance(), dm);
         StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
         transMeta.addStep(dummyStep);                              
 

@@ -70,6 +70,10 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.plugins.PluginClassType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -81,11 +85,9 @@ import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementLocation;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
-import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.repository.RepositoryPluginMeta;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.RepositoryVersionRegistry;
@@ -1345,7 +1347,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-		  UserInfo userinfo = securityProvider.getUserInfo();
+		  // UserInfo userinfo = securityProvider.getUserInfo();
 		  
 			wTree.removeAll();
 			objectMap.clear();
@@ -2982,9 +2984,9 @@ public class RepositoryExplorerDialog extends Dialog
 			public String getName() { return name; }
 		};
 		
-		RepositoryPluginMeta pluginMeta = RepositoryLoader.getInstance().findPluginMeta( repository.getRepositoryMeta().getId() );
-		ClassLoader classLoader = RepositoryLoader.getInstance().getClassLoader(pluginMeta);
-		Class<?> dialogClass = classLoader.loadClass(pluginMeta.getVersionBrowserClassName());
+		PluginRegistry registry = PluginRegistry.getInstance();
+		PluginInterface plugin = registry.getPlugin(RepositoryPluginType.getInstance(), repository.getRepositoryMeta().getId());
+		Class<?> dialogClass = registry.getClass(plugin, PluginClassType.RepositoryVersionBrowserClassType);
 		Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, Repository.class, RepositoryElementLocationInterface.class);
 		return (RepositoryRevisionBrowserDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repository, element, });
 	}

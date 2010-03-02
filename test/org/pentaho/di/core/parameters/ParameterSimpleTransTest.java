@@ -23,13 +23,14 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -262,7 +263,7 @@ public class ParameterSimpleTransTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("parameter_simple_trans1");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create a get variables step...
@@ -271,7 +272,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = steploader.getStepPluginID(gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -306,7 +307,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = steploader.getStepPluginID(dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         
@@ -352,7 +353,7 @@ public class ParameterSimpleTransTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("parameter_simple_trans2");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create a get variables step...
@@ -361,7 +362,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = steploader.getStepPluginID(gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -396,7 +397,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = steploader.getStepPluginID(dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         
@@ -442,7 +443,7 @@ public class ParameterSimpleTransTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("parameter_simple_trans3");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create a get variables step...
@@ -451,7 +452,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = steploader.getStepPluginID(gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -486,7 +487,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = steploader.getStepPluginID(dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         
@@ -532,7 +533,7 @@ public class ParameterSimpleTransTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("parameter_simple_trans4");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create a get variables step...
@@ -541,7 +542,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = steploader.getStepPluginID(gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -576,7 +577,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = steploader.getStepPluginID(dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         
@@ -625,7 +626,7 @@ public class ParameterSimpleTransTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("parameter_simple_trans4");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create a get variables step...
@@ -634,7 +635,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = steploader.getStepPluginID(gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -669,7 +670,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = steploader.getStepPluginID(dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         
@@ -718,7 +719,7 @@ public class ParameterSimpleTransTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("parameter_simple_trans4");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create a get variables step...
@@ -727,7 +728,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = steploader.getStepPluginID(gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -762,7 +763,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = steploader.getStepPluginID(dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         

@@ -15,7 +15,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.Plugin;
+import org.pentaho.di.core.plugins.OldPlugin;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -31,7 +31,7 @@ import org.pentaho.di.i18n.LanguageChoice;
  * @author Matt
  * 
  */
-public class JobPlugin extends Plugin<String>
+public class JobPlugin extends OldPlugin<String>
 {
 	private static Class<?> PKG = JobPlugin.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 

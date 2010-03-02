@@ -26,7 +26,6 @@ import org.pentaho.di.repository.RepositoryContent;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
-import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 
 public class UIRepositoryDirectory extends UIRepositoryObject {
 

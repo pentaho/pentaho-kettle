@@ -12,6 +12,8 @@
 */
 package org.pentaho.di.trans;
 
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -21,19 +23,19 @@ public class TransPreviewFactory
 {
     public static final TransMeta generatePreviewTransformation(VariableSpace parent, StepMetaInterface oneMeta, String oneStepname)
     {
-        StepLoader stepLoader = StepLoader.getInstance();
+        PluginRegistry registry = PluginRegistry.getInstance();
 
         TransMeta previewMeta = new TransMeta(parent);
         previewMeta.setName(parent==null ? "Preview transformation" : parent.toString());
         
         // At it to the first step.
-        StepMeta one = new StepMeta(stepLoader.getStepPluginID(oneMeta), oneStepname, oneMeta);
+        StepMeta one = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), oneMeta), oneStepname, oneMeta);
         one.setLocation(50,50);
         one.setDraw(true);
         previewMeta.addStep(one);
         
         DummyTransMeta twoMeta = new DummyTransMeta();
-        StepMeta two = new StepMeta(stepLoader.getStepPluginID(twoMeta), "dummy", twoMeta); //$NON-NLS-1$
+        StepMeta two = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), twoMeta), "dummy", twoMeta); //$NON-NLS-1$
         two.setLocation(250,50);
         two.setDraw(true);
         previewMeta.addStep(two);

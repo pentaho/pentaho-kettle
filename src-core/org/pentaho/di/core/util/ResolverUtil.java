@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
@@ -35,8 +36,13 @@ import org.pentaho.di.core.logging.LogChannelInterface;
  */
 public class ResolverUtil<T>
 {
-	private static LogChannelInterface log = new LogChannel("ResolverUtil"); 
+	private static LogChannelInterface log = new LogChannel("Plugin resolver utility"); 
 
+	@Override
+	public String toString() {
+		return "Plugin resolver utility";
+	}
+	
 	public static interface Test
 	{
 
@@ -91,7 +97,6 @@ public class ResolverUtil<T>
 
 	public static class AnnotatedWith implements Test
 	{
-
 		private Class<? extends Annotation> annotation;
 
 		public AnnotatedWith(Class<? extends Annotation> annotation)
@@ -171,8 +176,10 @@ public class ResolverUtil<T>
 
 	public void find(Test[] test, String... packageNames)
 	{
-		if (packageNames == null)
-			return;
+		if (packageNames == null) {
+			findInPackage("/", test);
+		}
+			
 		for (String pkg : packageNames)
 		{
 			findInPackage(pkg, test);
@@ -309,8 +316,7 @@ public class ResolverUtil<T>
 			{
 				if (log.isDebug())
 				{
-					log.logDebug("Checking to see if class " + externalName
-							+ " matches criteria [" + test + "]");
+					log.logDebug("Checking to see if class " + externalName + " matches criteria [" + test + "]");
 				}
 				if (test.matches(type))
 				{
@@ -321,5 +327,17 @@ public class ResolverUtil<T>
 		{
 			log.logDetailed("Could not examine class \\\'" + fqn + "\\\' due to a " + t.getClass().getName() + " with message: " + t.getMessage());
 		}
+	}
+
+	public void findAnnotatedInPackages(Class<? extends Annotation> annotation) {
+
+		String allPackages="org.pentaho,plugin"; // TODO: move to kettle config somewhere.
+		
+		String extraPackages = System.getProperty(Const.KETTLE_PLUGIN_PACKAGES);
+		if (!Const.isEmpty(extraPackages)) {
+			allPackages+=","+extraPackages;
+		}
+
+		findAnnotated(annotation, allPackages != null ? allPackages.split(",") : new String[] {});
 	}
 }

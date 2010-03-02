@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -193,6 +194,35 @@ public class XMLHandler
 			}
 		}
 		return count;
+	}
+
+	
+	/**
+	 * Get nodes with a certain tag one level down
+	 * 
+	 * @param n The node to look in
+	 * @param tag The tags to count
+	 * @return The list of nodes found with the specified tag
+	 */
+	public static final List<Node> getNodes(Node n, String tag)
+	{
+		NodeList children;
+		Node childnode;
+		
+		List<Node> nodes = new ArrayList<Node>();
+		
+		if (n==null) return nodes;
+		
+		children=n.getChildNodes();
+		for (int i=0;i<children.getLength();i++)
+		{
+			childnode=children.item(i);
+			if (childnode.getNodeName().equalsIgnoreCase(tag))  // <file>
+			{
+				nodes.add(childnode);
+			}
+		}
+		return nodes;
 	}
 
 

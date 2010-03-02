@@ -5,18 +5,34 @@
     <description/>
     <extended_description/>
     <trans_version/>
+    <trans_type>Normal</trans_type>
     <directory>&#47;</directory>
+    <parameters>
+    </parameters>
     <log>
-      <read/>
-      <write/>
-      <input/>
-      <output/>
-      <update/>
-      <rejected/>
-      <connection/>
-      <table/>
-      <use_batchid>N</use_batchid>
-      <use_logfield>N</use_logfield>
+<trans-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>N</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<perf-log-table><connection/>
+<schema/>
+<table/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>SEQ_NR</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>INPUT_BUFFER_ROWS</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>OUTPUT_BUFFER_ROWS</name></field></perf-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
+<step-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
     </log>
     <maxdate>
       <connection/>
@@ -33,6 +49,8 @@
     <feedback_size>5000</feedback_size>
     <using_thread_priorities>Y</using_thread_priorities>
     <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
     <dependencies>
     </dependencies>
     <partitionschemas>
@@ -53,19 +71,32 @@ If you want these descriptions in your local language, just change the Row Gener
       <yloc>29</yloc>
       <width>715</width>
       <heigth>64</heigth>
+      <fontname/>
+      <fontsize>-1</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>N</drawshadow>
     </notepad>
   </notepads>
   <order>
-  <hop> <from>40000 days: 100+ years</from><to>Days_since</to><enabled>Y</enabled> </hop>  <hop> <from>Days_since</from><to>Calc Date</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc Gen</from><to>DayOfWeekDesc Norm</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc Norm</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc Gen</from><to>MonthDesc Norm</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc</from><to>MonthDesc</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc Norm</from><to>MonthDesc</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc</from><to>Select values</to><enabled>Y</enabled> </hop>  <hop> <from>Select values</from><to>Table output</to><enabled>N</enabled> </hop>  <hop> <from>Calc Date</from><to>Quarter</to><enabled>Y</enabled> </hop>  <hop> <from>Quarter</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>10000 days: 25 years</from><to>Days_since</to><enabled>Y</enabled> </hop>  <hop> <from>Days_since</from><to>Calc Date</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc</from><to>MonthDesc</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc</from><to>Select values</to><enabled>Y</enabled> </hop>  <hop> <from>Select values</from><to>Table output</to><enabled>N</enabled> </hop>  <hop> <from>Calc Date</from><to>Quarter</to><enabled>Y</enabled> </hop>  <hop> <from>Quarter</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>  <hop> <from>Days of week</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>  <hop> <from>Months</from><to>MonthDesc</to><enabled>Y</enabled> </hop>  </order>
   <step>
-    <name>40000 days: 100+ years</name>
+    <name>10000 days: 25 years</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>
@@ -76,14 +107,14 @@ If you want these descriptions in your local language, just change the Row Gener
         <currency/>
         <decimal/>
         <group/>
-        <nullif>19500101</nullif>
+        <nullif>19900101</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
-      </fields>
-    <limit>40000</limit>
+      </field>
+    </fields>
+    <limit>10000</limit>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>126</xloc>
       <yloc>131</yloc>
       <draw>Y</draw>
@@ -98,7 +129,6 @@ If you want these descriptions in your local language, just change the Row Gener
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
        <calculation><field_name>one</field_name>
@@ -110,6 +140,10 @@ If you want these descriptions in your local language, just change the Row Gener
 <value_length>1</value_length>
 <value_precision>0</value_precision>
 <remove>Y</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>four</field_name>
 <calc_type>CONSTANT</calc_type>
@@ -120,6 +154,10 @@ If you want these descriptions in your local language, just change the Row Gener
 <value_length>1</value_length>
 <value_precision>0</value_precision>
 <remove>Y</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>Date</field_name>
 <calc_type>ADD_DAYS</calc_type>
@@ -130,6 +168,10 @@ If you want these descriptions in your local language, just change the Row Gener
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
+<conversion_mask/>
+<decimal_symbol/>
+<grouping_symbol/>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>Year</field_name>
 <calc_type>YEAR_OF_DATE</calc_type>
@@ -140,6 +182,10 @@ If you want these descriptions in your local language, just change the Row Gener
 <value_length>4</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>Month</field_name>
 <calc_type>MONTH_OF_DATE</calc_type>
@@ -150,6 +196,10 @@ If you want these descriptions in your local language, just change the Row Gener
 <value_length>2</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>DayOfYear</field_name>
 <calc_type>DAY_OF_YEAR</calc_type>
@@ -160,6 +210,10 @@ If you want these descriptions in your local language, just change the Row Gener
 <value_length>3</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>DayOfMonth</field_name>
 <calc_type>DAY_OF_MONTH</calc_type>
@@ -170,6 +224,10 @@ If you want these descriptions in your local language, just change the Row Gener
 <value_length>2</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>DayOfWeek</field_name>
 <calc_type>DAY_OF_WEEK</calc_type>
@@ -180,6 +238,10 @@ If you want these descriptions in your local language, just change the Row Gener
 <value_length>1</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>WeekOfYear</field_name>
 <calc_type>WEEK_OF_YEAR</calc_type>
@@ -190,6 +252,10 @@ If you want these descriptions in your local language, just change the Row Gener
 <value_length>2</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
        <calculation><field_name>date_tk</field_name>
 <calc_type>ADD</calc_type>
@@ -200,9 +266,13 @@ If you want these descriptions in your local language, just change the Row Gener
 <value_length>1</value_length>
 <value_precision>0</value_precision>
 <remove>N</remove>
+<conversion_mask>0</conversion_mask>
+<decimal_symbol>.</decimal_symbol>
+<grouping_symbol>,</grouping_symbol>
+<currency_symbol/>
 </calculation>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>412</xloc>
       <yloc>131</yloc>
       <draw>Y</draw>
@@ -217,10 +287,9 @@ If you want these descriptions in your local language, just change the Row Gener
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
-    <from>DayOfWeekDesc Norm</from>
+    <from>Days of week</from>
     <input_sorted>N</input_sorted>
     <preserve_memory>N</preserve_memory>
     <sorted_list>N</sorted_list>
@@ -228,361 +297,25 @@ If you want these descriptions in your local language, just change the Row Gener
     <lookup>
       <key>
         <name>DayOfWeek</name>
-        <field>DayNr</field>
+        <field>DayOfWeek</field>
       </key>
       <value>
-        <name>DayDesc</name>
+        <name>DayOfWeekDesc</name>
         <rename>DayOfWeekDesc</rename>
         <default/>
         <type>String</type>
       </value>
       <value>
-        <name>DayDescShort</name>
+        <name>DayOfWeekShortDesc</name>
         <rename>DayOfWeekShortDesc</rename>
         <default/>
         <type>String</type>
       </value>
     </lookup>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>698</xloc>
       <yloc>131</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>DayOfWeekDesc Gen</name>
-    <type>RowGenerator</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-    <fields>
-      <field>
-        <name>DayNr1</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>2</nullif>
-        <length>1</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDesc1</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>Monday</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDescShort1</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>MON</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayNr2</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>3</nullif>
-        <length>1</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDesc2</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>Tuesday</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDescShort2</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>TUE</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayNr3</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>4</nullif>
-        <length>1</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDesc3</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>Wednesday</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDescShort3</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>WED</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayNr4</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>5</nullif>
-        <length>1</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDesc4</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>Thursday</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDescShort4</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>THU</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayNr5</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>6</nullif>
-        <length>1</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDesc5</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>Friday</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDescShort5</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>FRI</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayNr6</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>7</nullif>
-        <length>1</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDesc6</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>Saturday</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDescShort6</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>SAT</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayNr7</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>1</nullif>
-        <length>1</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDesc7</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>Sunday</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>DayDescShort7</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>SUN</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      </fields>
-    <limit>1</limit>
-     <cluster_schema/>
-    <GUI>
-      <xloc>698</xloc>
-      <yloc>345</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>DayOfWeekDesc Norm</name>
-    <type>Normaliser</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-   <typefield>typefield</typefield>
-    <fields>      <field>        <name>DayNr1</name>
-        <value>1</value>
-        <norm>DayNr</norm>
-        </field>      <field>        <name>DayDesc1</name>
-        <value>1</value>
-        <norm>DayDesc</norm>
-        </field>      <field>        <name>DayDescShort1</name>
-        <value>1</value>
-        <norm>DayDescShort</norm>
-        </field>      <field>        <name>DayNr2</name>
-        <value>2</value>
-        <norm>DayNr</norm>
-        </field>      <field>        <name>DayDesc2</name>
-        <value>2</value>
-        <norm>DayDesc</norm>
-        </field>      <field>        <name>DayDescShort2</name>
-        <value>2</value>
-        <norm>DayDescShort</norm>
-        </field>      <field>        <name>DayNr3</name>
-        <value>3</value>
-        <norm>DayNr</norm>
-        </field>      <field>        <name>DayDesc3</name>
-        <value>3</value>
-        <norm>DayDesc</norm>
-        </field>      <field>        <name>DayDescShort3</name>
-        <value>3</value>
-        <norm>DayDescShort</norm>
-        </field>      <field>        <name>DayNr4</name>
-        <value>4</value>
-        <norm>DayNr</norm>
-        </field>      <field>        <name>DayDesc4</name>
-        <value>4</value>
-        <norm>DayDesc</norm>
-        </field>      <field>        <name>DayDescShort4</name>
-        <value>4</value>
-        <norm>DayDescShort</norm>
-        </field>      <field>        <name>DayNr5</name>
-        <value>5</value>
-        <norm>DayNr</norm>
-        </field>      <field>        <name>DayDesc5</name>
-        <value>5</value>
-        <norm>DayDesc</norm>
-        </field>      <field>        <name>DayDescShort5</name>
-        <value>5</value>
-        <norm>DayDescShort</norm>
-        </field>      <field>        <name>DayNr6</name>
-        <value>6</value>
-        <norm>DayNr</norm>
-        </field>      <field>        <name>DayDesc6</name>
-        <value>6</value>
-        <norm>DayDesc</norm>
-        </field>      <field>        <name>DayDescShort6</name>
-        <value>6</value>
-        <norm>DayDescShort</norm>
-        </field>      <field>        <name>DayNr7</name>
-        <value>7</value>
-        <norm>DayNr</norm>
-        </field>      <field>        <name>DayDesc7</name>
-        <value>7</value>
-        <norm>DayDesc</norm>
-        </field>      <field>        <name>DayDescShort7</name>
-        <value>7</value>
-        <norm>DayDescShort</norm>
-        </field>      </fields>     <cluster_schema/>
-    <GUI>
-      <xloc>698</xloc>
-      <yloc>237</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -595,7 +328,6 @@ If you want these descriptions in your local language, just change the Row Gener
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
       <valuename>Days_since</valuename>
@@ -609,7 +341,7 @@ If you want these descriptions in your local language, just change the Row Gener
       <increment_by>1</increment_by>
       <max_value>10000000</max_value>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>269</xloc>
       <yloc>131</yloc>
       <draw>Y</draw>
@@ -624,10 +356,9 @@ If you want these descriptions in your local language, just change the Row Gener
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
-    <from>MonthDesc Norm</from>
+    <from>Months</from>
     <input_sorted>N</input_sorted>
     <preserve_memory>N</preserve_memory>
     <sorted_list>N</sorted_list>
@@ -635,7 +366,7 @@ If you want these descriptions in your local language, just change the Row Gener
     <lookup>
       <key>
         <name>Month</name>
-        <field>MonthNr</field>
+        <field>Month</field>
       </key>
       <value>
         <name>MonthDesc</name>
@@ -644,14 +375,14 @@ If you want these descriptions in your local language, just change the Row Gener
         <type>String</type>
       </value>
       <value>
-        <name>MonthDescShort</name>
+        <name>MonthShortDesc</name>
         <rename>MonthShortDesc</rename>
         <default/>
         <type>String</type>
       </value>
     </lookup>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>841</xloc>
       <yloc>131</yloc>
       <draw>Y</draw>
@@ -659,379 +390,72 @@ If you want these descriptions in your local language, just change the Row Gener
     </step>
 
   <step>
-    <name>MonthDesc Gen</name>
-    <type>RowGenerator</type>
+    <name>Quarter</name>
+    <type>ValueMapper</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
+    <field_to_use>month</field_to_use>
+    <target_field>quarter</target_field>
+    <non_match_default/>
     <fields>
       <field>
-        <name>desc1</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>January</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
+        <source_value>1</source_value>
+        <target_value>1</target_value>
+      </field>
       <field>
-        <name>short1</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>JAN</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
+        <source_value>2</source_value>
+        <target_value>1</target_value>
+      </field>
       <field>
-        <name>desc2</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>February</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
+        <source_value>3</source_value>
+        <target_value>1</target_value>
+      </field>
       <field>
-        <name>short2</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>FEB</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
+        <source_value>4</source_value>
+        <target_value>2</target_value>
+      </field>
       <field>
-        <name>desc3</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>March</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
+        <source_value>5</source_value>
+        <target_value>2</target_value>
+      </field>
       <field>
-        <name>short3</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>MAR</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
+        <source_value>6</source_value>
+        <target_value>2</target_value>
+      </field>
       <field>
-        <name>desc4</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>April</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
+        <source_value>7</source_value>
+        <target_value>3</target_value>
+      </field>
       <field>
-        <name>short4</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>APR</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
+        <source_value>8</source_value>
+        <target_value>3</target_value>
+      </field>
       <field>
-        <name>desc5</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>May</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
+        <source_value>9</source_value>
+        <target_value>3</target_value>
+      </field>
       <field>
-        <name>short5</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>MAY</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
+        <source_value>10</source_value>
+        <target_value>4</target_value>
+      </field>
       <field>
-        <name>desc6</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>June</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
+        <source_value>11</source_value>
+        <target_value>4</target_value>
+      </field>
       <field>
-        <name>short6</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>JUN</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>desc7</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>July</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>short7</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>JUL</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>desc8</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>August</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>short8</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>AUG</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>desc9</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>September</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>short9</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>SEP</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>desc10</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>October</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>short10</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>OCT</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>desc11</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>November</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>short11</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>NOV</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>desc12</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>December</nullif>
-        <length>30</length>
-        <precision>0</precision>
-        </field>
-      <field>
-        <name>short12</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>DEC</nullif>
-        <length>3</length>
-        <precision>0</precision>
-        </field>
-      </fields>
-    <limit>1</limit>
+        <source_value>12</source_value>
+        <target_value>4</target_value>
+      </field>
+    </fields>
      <cluster_schema/>
-    <GUI>
-      <xloc>841</xloc>
-      <yloc>341</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>MonthDesc Norm</name>
-    <type>Normaliser</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-   <typefield>MonthNr</typefield>
-    <fields>      <field>        <name>desc1</name>
-        <value>1</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc2</name>
-        <value>2</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc3</name>
-        <value>3</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc4</name>
-        <value>4</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc5</name>
-        <value>5</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc6</name>
-        <value>6</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc7</name>
-        <value>7</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc8</name>
-        <value>8</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc9</name>
-        <value>9</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc10</name>
-        <value>10</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc11</name>
-        <value>11</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>desc12</name>
-        <value>12</value>
-        <norm>MonthDesc</norm>
-        </field>      <field>        <name>short1</name>
-        <value>1</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short2</name>
-        <value>2</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short3</name>
-        <value>3</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short4</name>
-        <value>4</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short5</name>
-        <value>5</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short6</name>
-        <value>6</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short7</name>
-        <value>7</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short8</name>
-        <value>8</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short9</name>
-        <value>9</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short10</name>
-        <value>10</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short11</name>
-        <value>11</value>
-        <norm>MonthDescShort</norm>
-        </field>      <field>        <name>short12</name>
-        <value>12</value>
-        <norm>MonthDescShort</norm>
-        </field>      </fields>     <cluster_schema/>
-    <GUI>
-      <xloc>841</xloc>
-      <yloc>235</yloc>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>555</xloc>
+      <yloc>131</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -1044,7 +468,6 @@ If you want these descriptions in your local language, just change the Row Gener
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <fields>      <field>        <name>date_tk</name>
@@ -1099,8 +522,9 @@ If you want these descriptions in your local language, just change the Row Gener
         <rename>quarter</rename>
         <length>-2</length>
         <precision>-2</precision>
-      </field>    </fields>     <cluster_schema/>
-    <GUI>
+      </field>        <select_unspecified>N</select_unspecified>
+    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>984</xloc>
       <yloc>131</yloc>
       <draw>Y</draw>
@@ -1115,7 +539,6 @@ If you want these descriptions in your local language, just change the Row Gener
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
     <connection/>
@@ -1125,6 +548,7 @@ If you want these descriptions in your local language, just change the Row Gener
     <truncate>Y</truncate>
     <ignore_errors>N</ignore_errors>
     <use_batch>Y</use_batch>
+    <specify_fields>N</specify_fields>
     <partitioning_enabled>N</partitioning_enabled>
     <partitioning_field/>
     <partitioning_daily>N</partitioning_daily>
@@ -1134,8 +558,10 @@ If you want these descriptions in your local language, just change the Row Gener
     <tablename_in_table>Y</tablename_in_table>
     <return_keys>N</return_keys>
     <return_field/>
+    <fields>
+    </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>1127</xloc>
       <yloc>131</yloc>
       <draw>Y</draw>
@@ -1143,76 +569,131 @@ If you want these descriptions in your local language, just change the Row Gener
     </step>
 
   <step>
-    <name>Quarter</name>
-    <type>ValueMapper</type>
+    <name>Days of week</name>
+    <type>DataGrid</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
-           <field_name/>
            <schema_name/>
            </partitioning>
-    <field_to_use>month</field_to_use>
-    <target_field>quarter</target_field>
     <fields>
       <field>
-        <source_value>1</source_value>
-        <target_value>1</target_value>
-        </field>
+        <name>DayOfWeek</name>
+        <type>Integer</type>
+        <format>0</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>1</length>
+        <precision>-1</precision>
+      </field>
       <field>
-        <source_value>2</source_value>
-        <target_value>1</target_value>
-        </field>
+        <name>DayOfWeekDesc</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>30</length>
+        <precision>-1</precision>
+      </field>
       <field>
-        <source_value>3</source_value>
-        <target_value>1</target_value>
-        </field>
-      <field>
-        <source_value>4</source_value>
-        <target_value>2</target_value>
-        </field>
-      <field>
-        <source_value>5</source_value>
-        <target_value>2</target_value>
-        </field>
-      <field>
-        <source_value>6</source_value>
-        <target_value>2</target_value>
-        </field>
-      <field>
-        <source_value>7</source_value>
-        <target_value>3</target_value>
-        </field>
-      <field>
-        <source_value>8</source_value>
-        <target_value>3</target_value>
-        </field>
-      <field>
-        <source_value>9</source_value>
-        <target_value>3</target_value>
-        </field>
-      <field>
-        <source_value>10</source_value>
-        <target_value>4</target_value>
-        </field>
-      <field>
-        <source_value>11</source_value>
-        <target_value>4</target_value>
-        </field>
-      <field>
-        <source_value>12</source_value>
-        <target_value>4</target_value>
-        </field>
-      </fields>
+        <name>DayOfWeekShortDesc</name>
+        <type/>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>3</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <data>
+      <line> <item>1</item><item>Monday</item><item>MON</item> </line>
+      <line> <item>2</item><item>Tuesday</item><item>TUE</item> </line>
+      <line> <item>3</item><item>Wednesday</item><item>WED</item> </line>
+      <line> <item>4</item><item>Thursday</item><item>THU</item> </line>
+      <line> <item>5</item><item>Friday</item><item>FRI</item> </line>
+      <line> <item>6</item><item>Saturday</item><item>SAT</item> </line>
+      <line> <item>7</item><item>Sunday</item><item>SUN</item> </line>
+    </data>
      <cluster_schema/>
-    <GUI>
-      <xloc>555</xloc>
-      <yloc>131</yloc>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>640</xloc>
+      <yloc>272</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Months</name>
+    <type>DataGrid</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>Month</name>
+        <type>Integer</type>
+        <format>0</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>MonthDesc</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>30</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>MonthShortDesc</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>3</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <data>
+      <line> <item>1</item><item>January</item><item>JAN</item> </line>
+      <line> <item>2</item><item>February</item><item>FEB</item> </line>
+      <line> <item>3</item><item>March</item><item>MAR</item> </line>
+      <line> <item>4</item><item>April</item><item>APR</item> </line>
+      <line> <item>5</item><item>May</item><item>MAY</item> </line>
+      <line> <item>6</item><item>June</item><item>JUN</item> </line>
+      <line> <item>7</item><item>July</item><item>JUL</item> </line>
+      <line> <item>8</item><item>August</item><item>AUG</item> </line>
+      <line> <item>9</item><item>September</item><item>SEP</item> </line>
+      <line> <item>10</item><item>October</item><item>OCT</item> </line>
+      <line> <item>11</item><item>November</item><item>NOV</item> </line>
+      <line> <item>12</item><item>December</item><item>DEC</item> </line>
+    </data>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>800</xloc>
+      <yloc>272</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step_error_handling>
   </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
 </transformation>

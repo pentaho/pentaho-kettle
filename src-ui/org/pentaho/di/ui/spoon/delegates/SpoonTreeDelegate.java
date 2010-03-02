@@ -27,13 +27,14 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
-import org.pentaho.di.job.JobEntryLoader;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -86,7 +87,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					{
 						if (path[1].equals(Spoon.STRING_TRANS_BASE))
 						{
-							object = new TreeSelection(path[1], StepPlugin.class);
+							object = new TreeSelection(path[1], PluginInterface.class);
 						}
 					}
 					if (path[0].equals(Spoon.STRING_TRANSFORMATIONS)) // Transformation title
@@ -198,7 +199,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				case 2: // Job entries
 					if (spoon.showJob)
 					{
-						JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithDescription(path[1]);
+						PluginInterface jobPlugin = PluginRegistry.getInstance().findPluginWithName(JobEntryPluginType.getInstance(), path[1]);
 						if (jobPlugin != null)
 						{
 							object = new TreeSelection(path[1], jobPlugin);
@@ -210,7 +211,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					if (spoon.showTrans)
 					{
 						// Steps
-						object = new TreeSelection(path[1], StepLoader.getInstance().findStepPluginWithDescription(path[1]));
+						object = new TreeSelection(path[1], PluginRegistry.getInstance().findPluginWithName(StepPluginType.getInstance(), path[1]));
 					}
 					break;
 				default:
@@ -253,7 +254,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				// JobMeta jobMeta = spoon.getActiveJob();
 				
 				if (object instanceof StepMeta ||
-					object instanceof StepPlugin ||
+					object instanceof PluginInterface ||
 					( object instanceof DatabaseMeta && transMeta!=null) ||
 					object instanceof TransHopMeta || 
 					object instanceof JobEntryCopy ||
@@ -290,11 +291,15 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					StepMeta stepMeta = (StepMeta) object;
 					type = DragAndDropContainer.TYPE_STEP;
 					data = stepMeta.getName(); // name of the step.
-				} else if (object instanceof StepPlugin)
+				} else if (object instanceof PluginInterface)
 				{
-					StepPlugin stepPlugin = (StepPlugin) object;
-					type = DragAndDropContainer.TYPE_BASE_STEP_TYPE;
-					data = stepPlugin.getDescription(); // Step type description
+					PluginInterface stepPlugin = (PluginInterface) object;
+					if (stepPlugin.getPluginType().equals(StepPluginType.getInstance())) {
+						type = DragAndDropContainer.TYPE_BASE_STEP_TYPE;
+					} else {
+						type = DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
+					}
+					data = stepPlugin.getName(); // Step type name
 				} else if (object instanceof DatabaseMeta)
 				{
 					DatabaseMeta databaseMeta = (DatabaseMeta) object;

@@ -31,6 +31,9 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.core.plugins.PluginClassType;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -38,7 +41,6 @@ import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
@@ -60,7 +62,7 @@ public class Kitchen
 	        if (a[i].length()>0) args.add(a[i]);
 	    }
 
-		RepositoryMeta repinfo  = null;
+		RepositoryMeta repositoryMeta  = null;
 		Job            job      = null;
 		
 		StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel;
@@ -179,13 +181,15 @@ public class Kitchen
 					}
 
 					if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.FindingRep",""+optionRepname));
-					repinfo = repsinfo.findRepository(optionRepname.toString());
-					if (repinfo!=null)
+					repositoryMeta = repsinfo.findRepository(optionRepname.toString());
+					if (repositoryMeta!=null)
 					{
 						// Define and connect to the repository...
 						if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Alocate&ConnectRep"));
-						 
-						repository = RepositoryLoader.createRepository(repinfo);
+						
+						repository = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+						repository.init(repositoryMeta);
+						
 						repository.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
 
 						RepositoryDirectory directory = repository.loadRepositoryDirectoryTree(); // Default = root
@@ -238,7 +242,7 @@ public class Kitchen
 						{
 							System.out.println(BaseMessages.getString(PKG, "Kitchen.Error.CanNotFindSuppliedDirectory",optionDirname+""));
 							
-							repinfo=null;
+							repositoryMeta=null;
 						}
 					}
 					else

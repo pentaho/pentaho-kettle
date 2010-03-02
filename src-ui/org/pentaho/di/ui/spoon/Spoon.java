@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -83,7 +81,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Sash;
@@ -134,7 +131,15 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PartitionerPluginType;
+import org.pentaho.di.core.plugins.PluginClassType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.reflection.StringSearchResult;
+import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -147,11 +152,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryCategory;
-import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -167,14 +169,12 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
-import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.SecurityManagerRegistery;
-import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.repository.filerep.KettleFileRepositorySecurityProvider;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositorySecurityProvider;
@@ -186,14 +186,10 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
-import org.pentaho.di.trans.Partitioner;
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -256,7 +252,6 @@ import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulMenuseparator;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
-import org.pentaho.ui.xul.containers.XulMenubar;
 import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -406,7 +401,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   private JobExecutionConfiguration jobExecutionConfiguration;
 
-  private Menu spoonMenu; // Connections,
+  // private Menu spoonMenu; // Connections,
 
   private int coreObjectsState = STATE_CORE_OBJECTS_NONE;
 
@@ -448,11 +443,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   private BindingFactory bf;
 
-  private XulMenubar menuBar;
+  // private XulMenubar menuBar;
 
   private XulToolbar mainToolbar;
 
-  private XulVbox canvas;
+  // private XulVbox canvas;
 
   private SwtDeck deck;
 
@@ -638,9 +633,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       bf = new DefaultBindingFactory();
       bf.setDocument(mainSpoonContainer.getDocumentRoot());
       mainSpoonContainer.addEventHandler(this);
-      menuBar = (XulMenubar) mainSpoonContainer.getDocumentRoot().getElementById("spoon-menubar");
+      /*menuBar = (XulMenubar)*/ mainSpoonContainer.getDocumentRoot().getElementById("spoon-menubar");
       mainToolbar = (XulToolbar) mainSpoonContainer.getDocumentRoot().getElementById("main-toolbar");
-      canvas = (XulVbox) mainSpoonContainer.getDocumentRoot().getElementById("trans-job-canvas");
+      /*canvas = (XulVbox) */ mainSpoonContainer.getDocumentRoot().getElementById("trans-job-canvas");
       deck = (SwtDeck) mainSpoonContainer.getDocumentRoot().getElementById("canvas-deck");
 
       final Composite tempSashComposite = new Composite(shell, SWT.None);
@@ -1702,17 +1697,20 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           String name = item.getText();
           String tip = coreStepToolTipMap.get(name);
           if (tip != null) {
-            StepPlugin plugin = StepLoader.getInstance().findStepPluginWithDescription(name);
-            Image image = GUIResource.getInstance().getImagesSteps().get(plugin.getID()[0]);
+            PluginInterface plugin = PluginRegistry.getInstance().findPluginWithName(StepPluginType.getInstance(), name);
+            Image image = GUIResource.getInstance().getImagesSteps().get(plugin.getIds()[0]);
+            if (image==null) {
+            	toolTip.hide();
+            }
             toolTip.setImage(image);
             toolTip.setText(name + Const.CR + Const.CR + tip);
             toolTip.show(new org.eclipse.swt.graphics.Point(move.x + 10, move.y + 10));
           }
           tip = coreJobToolTipMap.get(name);
           if (tip != null) {
-            JobPlugin plugin = JobEntryLoader.getInstance().findJobEntriesWithDescription(name);
+            PluginInterface plugin = PluginRegistry.getInstance().findPluginWithName(JobEntryPluginType.getInstance(), name);
             if (plugin != null) {
-              Image image = GUIResource.getInstance().getImagesJobentries().get(plugin.getID());
+              Image image = GUIResource.getInstance().getImagesJobentries().get(plugin.getIds()[0]);
               toolTip.setImage(image);
               toolTip.setText(name + Const.CR + Const.CR + tip);
               toolTip.show(new org.eclipse.swt.graphics.Point(move.x + 10, move.y + 10));
@@ -1784,42 +1782,42 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // TRANSFORMATIONS
       // ////////////////////////////////////////////////////////////////////////////////////////////////
 
-      final String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
-
-      StepLoader steploader = StepLoader.getInstance();
-      StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
-
-      final String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale);
-
+      PluginRegistry registry = PluginRegistry.getInstance();
+      
+      final List<PluginInterface> basesteps = registry.getPlugins(StepPluginType.getInstance());
+      final List<String> basecat = registry.getCategories(StepPluginType.getInstance());
+      
       // Sort these base steps by category and then by step name in the
       // given locale
       //
-      Arrays.sort(basesteps, new Comparator<StepPlugin>() {
+      /*
+      Collections.sort(basesteps, new Comparator<PluginInterface>() {
 
-        public int compare(StepPlugin one, StepPlugin two) {
-          int idxOne = Const.indexOfString(one.getCategory(locale), basecat);
-          int idxTwo = Const.indexOfString(two.getCategory(locale), basecat);
+        public int compare(PluginInterface one, PluginInterface two) {
+          int idxOne = Const.indexOfString(one.getCategory(), StepCategory.CATEGORIES_IN_ORDER);
+          int idxTwo = Const.indexOfString(two.getCategory(), StepCategory.CATEGORIES_IN_ORDER);
           if (idxOne == idxTwo) {
-            String nameOne = one.getDescription(locale);
-            String nameTwo = two.getDescription(locale);
+            String nameOne = one.getDescription();
+            String nameTwo = two.getDescription();
             return nameOne.compareTo(nameTwo);
           } else {
             return idxOne - idxTwo;
           }
         }
       });
+      */
 
-      for (int i = 0; i < basecat.length; i++) {
+      for (int i = 0; i < basecat.size(); i++) {
         TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
-        item.setText(basecat[i]);
+        item.setText(basecat.get(i));
         item.setImage(GUIResource.getInstance().getImageArrow());
 
-        for (int j = 0; j < basesteps.length; j++) {
-          if (basesteps[j].getCategory(locale).equalsIgnoreCase(basecat[i])) {
-            final Image stepimg = (Image) GUIResource.getInstance().getImagesStepsSmall().get(basesteps[j].getID()[0]);
-            String pluginName = basesteps[j].getDescription(locale);
-            String pluginDescription = basesteps[j].getTooltip(locale);
-            boolean isPlugin = basesteps[j].isPlugin();
+        for (int j = 0; j < basesteps.size(); j++) {
+          if (basesteps.get(j).getCategory().equalsIgnoreCase(basecat.get(i))) {
+            final Image stepimg = (Image) GUIResource.getInstance().getImagesStepsSmall().get(basesteps.get(j).getIds()[0]);
+            String pluginName = basesteps.get(j).getName();
+            String pluginDescription = basesteps.get(j).getDescription();
+            // boolean isPlugin = basesteps.get(j).isNativePlugin();
 
             if (!filterMatch(pluginName) && !filterMatch(pluginDescription))
               continue;
@@ -1833,8 +1831,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 System.out.println("Tree item Listener fired");
               }
             });
-            if (isPlugin)
-              stepItem.setFont(GUIResource.getInstance().getFontBold());
+            // if (isPlugin) stepItem.setFont(GUIResource.getInstance().getFontBold());
 
             coreStepToolTipMap.put(pluginName, pluginDescription);
             // addExpandBarItemLine(composite, stepimg, pluginName,
@@ -1850,27 +1847,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       List<ObjectUsageCount> pluginHistory = props.getPluginHistory();
 
-      for (int i = 0; i < pluginHistory.size() && i < 10; i++) // top 10
-      // maximum,
-      // the
-      // rest
-      // is
-      // not
-      // interesting
-      // anyway
-      // --
-      // for
-      // GUI
-      // performance
-      // reasons
-      {
+      // The top 10 at most, the rest is not interesting anyway
+      // 
+      for (int i = 0; i < pluginHistory.size() && i < 10; i++) {
         ObjectUsageCount usage = pluginHistory.get(i);
-        StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(usage.getObjectName());
+        PluginInterface stepPlugin = PluginRegistry.getInstance().findPluginWithId(StepPluginType.getInstance(), usage.getObjectName());
         if (stepPlugin != null) {
-          final Image stepimg = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getID()[0]);
-          String pluginName = Const.NVL(stepPlugin.getDescription(locale), "");
-          String pluginDescription = Const.NVL(stepPlugin.getTooltip(locale), "");
-          boolean isPlugin = stepPlugin.isPlugin();
+          final Image stepimg = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getIds()[0]);
+          String pluginName = Const.NVL(stepPlugin.getDescription(), "");
+          String pluginDescription = Const.NVL(stepPlugin.getDescription(), "");
+          // boolean isPlugin = stepPlugin.isNativePlugin();
 
           if (!filterMatch(pluginName) && !filterMatch(pluginDescription))
             continue;
@@ -1884,11 +1870,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
               System.out.println("Tree item Listener fired");
             }
           });
-          if (isPlugin)
-            stepItem.setFont(GUIResource.getInstance().getFontBold());
+          // if (isPlugin) stepItem.setFont(GUIResource.getInstance().getFontBold());
 
-          coreStepToolTipMap.put(stepPlugin.getDescription(locale), pluginDescription + " (" + usage.getNrUses() + ")");
-
+          coreStepToolTipMap.put(stepPlugin.getDescription(), pluginDescription + " (" + usage.getNrUses() + ")");
         }
       }
     }
@@ -1900,51 +1884,29 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // JOBS
       // ////////////////////////////////////////////////////////////////////////////////////////////////
 
-      final String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
-
-      JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
-      JobPlugin baseJobEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
-
-      final String baseCategories[] = jobEntryLoader.getCategories(JobPlugin.TYPE_ALL, locale);
-
-      // Sort these base job entries by category and then by step name in
-      // the given locale
-      //
-      Arrays.sort(baseJobEntries, new Comparator<JobPlugin>() {
-
-        public int compare(JobPlugin one, JobPlugin two) {
-          int idxOne = Const.indexOfString(one.getCategory(locale), baseCategories);
-          int idxTwo = Const.indexOfString(two.getCategory(locale), baseCategories);
-          if (idxOne == idxTwo) {
-            String nameOne = one.getDescription(locale);
-            String nameTwo = two.getDescription(locale);
-            return nameOne.compareTo(nameTwo);
-          } else {
-            return idxOne - idxTwo;
-          }
-        }
-      });
-
+      PluginRegistry registry = PluginRegistry.getInstance();
+      List<PluginInterface> baseJobEntries = registry.getPlugins(JobEntryPluginType.getInstance());
+      List<String> baseCategories = registry.getCategories(JobEntryPluginType.getInstance());
+      
       TreeItem generalItem = null;
 
-      for (int i = 0; i < baseCategories.length; i++) {
+      for (int i = 0; i < baseCategories.size(); i++) {
         TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
-        item.setText(baseCategories[i]);
+        item.setText(baseCategories.get(i));
         item.setImage(GUIResource.getInstance().getImageArrow());
 
-        if (baseCategories[i].equalsIgnoreCase(JobEntryCategory.STANDARD_CATEGORIES[JobEntryCategory.CATEGORY_GENERAL])) {
+        if (baseCategories.get(i).equalsIgnoreCase(JobEntryPluginType.GENERAL_CATEGORY)) {
           generalItem = item;
         }
 
-        for (int j = 0; j < baseJobEntries.length; j++) {
-          if (!baseJobEntries[j].getID().equals("SPECIAL")) {
+        for (int j = 0; j < baseJobEntries.size(); j++) {
+          if (!baseJobEntries.get(j).getIds()[0].equals("SPECIAL")) {
 
-            if (baseJobEntries[j].getCategory(locale).equalsIgnoreCase(baseCategories[i])) {
+            if (baseJobEntries.get(j).getCategory().equalsIgnoreCase(baseCategories.get(i))) {
               final Image jobEntryImage = (Image) GUIResource.getInstance().getImagesJobentriesSmall().get(
-                  baseJobEntries[j].getID());
-              String pluginName = Const.NVL(baseJobEntries[j].getDescription(locale), "");
-              String pluginDescription = Const.NVL(baseJobEntries[j].getTooltip(locale), "");
-              boolean isPlugin = baseJobEntries[j].isPlugin();
+                  baseJobEntries.get(j).getIds()[0]);
+              String pluginName = Const.NVL(baseJobEntries.get(j).getName(), "");
+              String pluginDescription = Const.NVL(baseJobEntries.get(j).getDescription(), "");
 
               if (!filterMatch(pluginName) && !filterMatch(pluginDescription))
                 continue;
@@ -1958,8 +1920,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                   System.out.println("Tree item Listener fired");
                 }
               });
-              if (isPlugin)
-                stepItem.setFont(GUIResource.getInstance().getFontBold());
+              // if (isPlugin) stepItem.setFont(GUIResource.getInstance().getFontBold());
 
               coreJobToolTipMap.put(pluginName, pluginDescription);
             }
@@ -2414,7 +2375,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         spoonMenu = (XulMenupopup) menuMap.get("trans-inst");
       } else if (selection instanceof JobMeta) {
         spoonMenu = (XulMenupopup) menuMap.get("job-inst");
-      } else if (selection instanceof StepPlugin) {
+      } else if (selection instanceof PluginInterface) {
         spoonMenu = (XulMenupopup) menuMap.get("step-plugin");
       } else if (selection instanceof DatabaseMeta) {
         spoonMenu = (XulMenupopup) menuMap.get("database-inst");
@@ -2489,7 +2450,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         TransGraph.editProperties((TransMeta) selection, this, rep, true);
       if (selection instanceof JobMeta)
         JobGraph.editProperties((JobMeta) selection, this, rep, true);
-      if (selection instanceof StepPlugin)
+      if (selection instanceof PluginInterface)
         newStep(getActiveTransformation());
       if (selection instanceof DatabaseMeta)
         delegates.db.editConnection((DatabaseMeta) selection);
@@ -4310,13 +4271,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
    * Show a dialog containing information on the different step plugins.
    */
   public void helpShowStepPlugins() {
-    List<Object[]> pluginInformation = StepLoader.getInstance().getPluginInformation();
-    RowMetaInterface pluginInformationRowMeta = StepPlugin.getPluginInformationRowMeta();
-
-    PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, pluginInformationRowMeta,
-        pluginInformation);
-    dialog.setTitleMessage(BaseMessages.getString(PKG, "Spoon.Dialog.StepPluginList.Title"), BaseMessages.getString(
-        PKG, "Spoon.Dialog.StepPluginList.Message"));
+	RowBuffer rowBuffer = PluginRegistry.getInstance().getPluginInformation(StepPluginType.getInstance());
+    PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, rowBuffer.getRowMeta(), rowBuffer.getBuffer());
+    dialog.setTitleMessage(BaseMessages.getString(PKG, "Spoon.Dialog.StepPluginList.Title"), 
+    		BaseMessages.getString( PKG, "Spoon.Dialog.StepPluginList.Message"));
     dialog.open();
   }
 
@@ -4324,13 +4282,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
    * Show a dialog containing information on the different job entry plugins.
    */
   public void helpShowJobEntryPlugins() {
-    List<Object[]> pluginInformation = JobEntryLoader.getInstance().getPluginInformation();
-    RowMetaInterface pluginInformationRowMeta = StepPlugin.getPluginInformationRowMeta();
-
-    PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, pluginInformationRowMeta,
-        pluginInformation);
-    dialog.setTitleMessage(BaseMessages.getString(PKG, "Spoon.Dialog.StepPluginList.Title"), BaseMessages.getString(
-        PKG, "Spoon.Dialog.StepPluginList.Message"));
+	RowBuffer rowBuffer = PluginRegistry.getInstance().getPluginInformation(JobEntryPluginType.getInstance());
+    PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, rowBuffer.getRowMeta(), rowBuffer.getBuffer());
+    dialog.setTitleMessage(BaseMessages.getString(PKG, "Spoon.Dialog.JobEntryPluginList.Title"), 
+    		BaseMessages.getString(PKG, "Spoon.Dialog.JobEntryPluginList.Message"));
     dialog.open();
   }
 
@@ -4557,10 +4512,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             // Put the steps below it.
             for (int i = 0; i < transMeta.nrSteps(); i++) {
               StepMeta stepMeta = transMeta.getStep(i);
-              StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(stepMeta.getStepID());
+              PluginInterface stepPlugin = PluginRegistry.getInstance().findPluginWithId(StepPluginType.getInstance(), stepMeta.getStepID());
 
-              if (!filterMatch(stepMeta.getName()) && !filterMatch(stepMeta.getDescription()))
+              if (!filterMatch(stepMeta.getName()) && !filterMatch(stepMeta.getName())) {
                 continue;
+              }
 
               TreeItem tiStep = new TreeItem(tiStepTitle, SWT.NONE);
               tiStep.setText(stepMeta.getName());
@@ -4568,7 +4524,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 tiStep.setFont(guiResource.getFontBold());
               if (!stepMeta.isDrawn())
                 tiStep.setForeground(guiResource.getColorDarkGray());
-              Image stepIcon = guiResource.getImagesStepsSmall().get(stepPlugin.getID()[0]);
+              Image stepIcon = guiResource.getImagesStepsSmall().get(stepPlugin.getIds()[0]);
               if (stepIcon == null)
                 stepIcon = guiResource.getImageBol();
               tiStep.setImage(stepIcon);
@@ -4900,15 +4856,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       name = newname;
     }
 
-    StepLoader steploader = StepLoader.getInstance();
-    StepPlugin stepPlugin = null;
-
-    String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
+    PluginRegistry registry = PluginRegistry.getInstance();
+    PluginInterface stepPlugin = null;
 
     try {
-      stepPlugin = steploader.findStepPluginWithDescription(description, locale);
+      stepPlugin = registry.findPluginWithName(StepPluginType.getInstance(), description);
       if (stepPlugin != null) {
-        StepMetaInterface info = steploader.getStepClass(stepPlugin);
+        StepMetaInterface info = (StepMetaInterface) registry.loadClass(stepPlugin);
 
         info.setDefault();
 
@@ -4918,7 +4872,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             name = dialog.open();
           }
         }
-        inf = new StepMeta(stepPlugin.getID()[0], name, info);
+        inf = new StepMeta(stepPlugin.getIds()[0], name, info);
 
         if (name != null) // OK pressed in the dialog: we have a
         // step-name
@@ -4948,7 +4902,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           }
 
           // Also store it in the pluginHistory list...
-          props.increasePluginHistory(stepPlugin.getID()[0]);
+          props.increasePluginHistory(stepPlugin.getIds()[0]);
           // stepHistoryChanged = true;
 
           refreshTree();
@@ -5058,7 +5012,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     boolean enableMetaMenu = getActiveMeta() != null;
     boolean enableRepositoryMenu = rep != null;
 
-    boolean enableLastPreviewMenu = false;
+    // boolean enableLastPreviewMenu = false;
     boolean disablePreviewButton = false;
 
     TabItemInterface currentTab = getActiveTabitem();
@@ -5069,8 +5023,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     TransGraph transGraph = getActiveTransGraph();
     if (transGraph != null) {
-      TransDebugMeta lastTransDebugMeta = transGraph.getLastTransDebugMeta();
-      enableLastPreviewMenu = !(lastTransDebugMeta == null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty());
+      // TransDebugMeta lastTransDebugMeta = transGraph.getLastTransDebugMeta();
+      // enableLastPreviewMenu = !(lastTransDebugMeta == null || lastTransDebugMeta.getStepDebugMetaMap().isEmpty());
 
       disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
     }
@@ -5777,7 +5731,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void selectRep(Splash splash, CommandLineOption[] options) {
     RepositoryMeta repositoryMeta = null;
-    UserInfo userinfo = null;
+    // UserInfo userinfo = null;
 
     StringBuffer optionRepname = getCommandLineOption(options, "rep").getArgument();
     StringBuffer optionFilename = getCommandLineOption(options, "file").getArgument();
@@ -5813,9 +5767,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         repositoryMeta = repsinfo.findRepository(optionRepname.toString());
         if (repositoryMeta != null) {
           // Define and connect to the repository...
-          Repository repo = RepositoryLoader.createRepository(repositoryMeta);
-          repo.connect(optionUsername != null ? optionUsername.toString() : null,
-              optionPassword != null ? optionPassword.toString() : null);
+          Repository repo = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+          repo.init(repositoryMeta);
+		  repo.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
           setRepository(repo);
         } else {
           String msg = BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined");
@@ -5858,8 +5812,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     StringBuffer optionDirname = getCommandLineOption(options, "dir").getArgument();
     StringBuffer optionTransname = getCommandLineOption(options, "trans").getArgument();
     StringBuffer optionJobname = getCommandLineOption(options, "job").getArgument();
-    StringBuffer optionUsername = getCommandLineOption(options, "user").getArgument();
-    StringBuffer optionPassword = getCommandLineOption(options, "pass").getArgument();
+    // StringBuffer optionUsername = getCommandLineOption(options, "user").getArgument();
+    // StringBuffer optionPassword = getCommandLineOption(options, "pass").getArgument();
 
     try {
       // Read kettle transformation specified on command-line?
@@ -6224,19 +6178,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     StepMeta before = (StepMeta) stepMeta.clone();
 
-    Set<Entry<String, Partitioner>> plugins = StepLoader.getPartitionerList().entrySet();
+    PluginRegistry registry = PluginRegistry.getInstance();
+    List<PluginInterface> plugins = registry.getPlugins(PartitionerPluginType.getInstance());
+    
     String options[] = new String[StepPartitioningMeta.methodDescriptions.length + plugins.size()];
     String codes[] = new String[StepPartitioningMeta.methodDescriptions.length + plugins.size()];
     System.arraycopy(StepPartitioningMeta.methodDescriptions, 0, options, 0,
         StepPartitioningMeta.methodDescriptions.length);
     System.arraycopy(StepPartitioningMeta.methodCodes, 0, codes, 0, StepPartitioningMeta.methodCodes.length);
 
-    Iterator<Entry<String, Partitioner>> it = plugins.iterator();
+    Iterator<PluginInterface> it = plugins.iterator();
     int idx = 0;
     while (it.hasNext()) {
-      Partitioner entry = it.next().getValue();
+      PluginInterface entry = it.next();
       options[StepPartitioningMeta.methodDescriptions.length + idx] = entry.getDescription();
-      codes[StepPartitioningMeta.methodCodes.length + idx] = entry.getId();
+      codes[StepPartitioningMeta.methodCodes.length + idx] = entry.getIds()[0];
       idx++;
     }
 
@@ -6257,65 +6213,61 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
       }
 
-      int methodType = StepPartitioningMeta.getMethodType(method);
-      stepPartitioningMeta.setMethodType(methodType);
-      stepPartitioningMeta.setMethod(method);
-      switch (methodType) {
-        case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
-          break;
-        case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
-        case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
-
-          // Ask for a Partitioning Schema
-          String schemaNames[] = transMeta.getPartitionSchemasNames();
-          if (schemaNames.length == 0) {
-            MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-            box.setText("Create a partition schema");
-            box
-                .setMessage("You first need to create one or more partition schemas in the transformation settings dialog before you can select one!");
-            box.open();
-          } else {
-            // Set the partitioning schema too.
-            PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
-            idx = -1;
-            if (partitionSchema != null) {
-              idx = Const.indexOfString(partitionSchema.getName(), schemaNames);
-            }
-            EnterSelectionDialog askSchema = new EnterSelectionDialog(shell, schemaNames, "Select a partition schema",
-                "Select the partition schema to use:");
-            String schemaName = askSchema.open(idx);
-            if (schemaName != null) {
-              idx = Const.indexOfString(schemaName, schemaNames);
-              stepPartitioningMeta.setPartitionSchema(transMeta.getPartitionSchemas().get(idx));
-            }
-          }
-
-          if (methodType == StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL) {
-            // ask for a fieldname
-
-            StepDialogInterface partitionerDialog = null;
-            try {
-              partitionerDialog = delegates.steps.getPartitionerDialog(stepMeta.getStepMetaInterface(),
-                  stepPartitioningMeta, transMeta);
-              /* String result = */partitionerDialog.open();
-            } catch (Exception e) {
-              e.printStackTrace();
-            }
-
-            // EnterStringDialog stringDialog = new
-            // EnterStringDialog(shell,
-            // Const.NVL(stepPartitioningMeta.getFieldName(), ""),
-            // "Fieldname", "Enter a field name to partition on");
-            // String fieldName = stringDialog.open();
-            // stepPartitioningMeta.setFieldName(fieldName);
-          }
-          break;
+      try {
+	      int methodType = StepPartitioningMeta.getMethodType(method);
+	      stepPartitioningMeta.setMethodType(methodType);
+	      stepPartitioningMeta.setMethod(method);
+	      switch (methodType) {
+	        case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
+	          break;
+	        case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
+	        case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
+	
+	          // Ask for a Partitioning Schema
+	          String schemaNames[] = transMeta.getPartitionSchemasNames();
+	          if (schemaNames.length == 0) {
+	            MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+	            box.setText("Create a partition schema");
+	            box.setMessage("You first need to create one or more partition schemas in the transformation settings dialog before you can select one!");
+	            box.open();
+	          } else {
+	            // Set the partitioning schema too.
+	            PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
+	            idx = -1;
+	            if (partitionSchema != null) {
+	              idx = Const.indexOfString(partitionSchema.getName(), schemaNames);
+	            }
+	            EnterSelectionDialog askSchema = new EnterSelectionDialog(shell, schemaNames, "Select a partition schema",
+	                "Select the partition schema to use:");
+	            String schemaName = askSchema.open(idx);
+	            if (schemaName != null) {
+	              idx = Const.indexOfString(schemaName, schemaNames);
+	              stepPartitioningMeta.setPartitionSchema(transMeta.getPartitionSchemas().get(idx));
+	            }
+	          }
+	
+	          if (methodType == StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL) {
+	            // ask for a fieldname
+	
+	            StepDialogInterface partitionerDialog = null;
+	            try {
+	              partitionerDialog = delegates.steps.getPartitionerDialog(stepMeta, stepPartitioningMeta, transMeta);
+	              partitionerDialog.open();
+	            } catch (Exception e) {
+	              new ErrorDialog(shell, "Error", "There was an unexpected error while editing the partitioning method specifics:", e);
+	            }
+	          }
+	          break;
+	      }
+	      StepMeta after = (StepMeta) stepMeta.clone();
+	      addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { after }, new int[] { transMeta
+	          .indexOfStep(stepMeta) });
+	
+	      refreshGraph();	    
+      } catch(Exception e) {
+    	new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.ErrorEditingStepPartitioning.Title"), 
+    			BaseMessages.getString(PKG, "Spoon.ErrorEditingStepPartitioning.Message"), e);
       }
-      StepMeta after = (StepMeta) stepMeta.clone();
-      addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { after }, new int[] { transMeta
-          .indexOfStep(stepMeta) });
-
-      refreshGraph();
     }
   }
 

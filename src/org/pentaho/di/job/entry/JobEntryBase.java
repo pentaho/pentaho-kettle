@@ -27,14 +27,15 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
@@ -120,7 +121,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   public String getTypeDesc()
   {
-	  JobPlugin plugin = JobEntryLoader.getInstance().findJobPluginWithID(configId);
+	  PluginInterface plugin = PluginRegistry.getInstance().findPluginWithId(JobEntryPluginType.getInstance(), configId);
 	  return plugin.getDescription();
   }
 

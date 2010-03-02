@@ -31,15 +31,16 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.core.plugins.PluginClassType;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryExporter;
-import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.version.BuildVersion;
@@ -65,7 +66,7 @@ public class Pan
             }
 	    }
 
-		RepositoryMeta repinfo  = null;
+		RepositoryMeta repositoryMeta  = null;
 		Trans          trans    = null;
 
 		// The options: 
@@ -204,13 +205,15 @@ public class Pan
 					
 					if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.FindingRep",""+optionRepname));
 					
-					repinfo = repsinfo.findRepository(optionRepname.toString());
-					if (repinfo!=null)
+					repositoryMeta = repsinfo.findRepository(optionRepname.toString());
+					if (repositoryMeta!=null)
 					{
 						// Define and connect to the repository...
 						if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
 						
-						rep = RepositoryLoader.createRepository(repinfo);
+						rep = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+						rep.init(repositoryMeta);
+						
 						rep.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
 						
 						RepositoryDirectory directory = rep.loadRepositoryDirectoryTree(); // Default = root
@@ -276,7 +279,7 @@ public class Pan
 						else
 						{
 							System.out.println(BaseMessages.getString(PKG, "Pan.Error.CanNotFindSpecifiedDirectory",""+optionDirname));
-							repinfo=null;
+							repositoryMeta=null;
 						}
 					}
 					else

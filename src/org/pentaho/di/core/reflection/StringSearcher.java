@@ -20,8 +20,9 @@ import java.util.Map;
 
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.trans.StepLoader;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 
 
 public class StringSearcher
@@ -31,8 +32,8 @@ public class StringSearcher
 	private static final String[] JAVA_PACKAGES = new String[] { "java.util", };
 
 	
-	private static String[] stepPluginPackages;
-	private static String[] jobEntryPluginPackages;
+	private static List<String> stepPluginPackages;
+	private static List<String> jobEntryPluginPackages;
 	
     public static final void findMetaData(Object object, int level, List<StringSearchResult> stringList, Object parentObject, Object grandParentObject)
     {
@@ -40,13 +41,15 @@ public class StringSearcher
         
         if (level>5) return;
         
+        PluginRegistry registry = PluginRegistry.getInstance();
+        
         if (stepPluginPackages==null) 
         {
-        	stepPluginPackages = StepLoader.getInstance().getPluginPackages();  
+        	stepPluginPackages = registry.getPluginPackages(StepPluginType.getInstance());  
         }
         if (jobEntryPluginPackages==null) 
         {
-        	jobEntryPluginPackages = JobEntryLoader.getInstance().getPluginPackages();  
+        	jobEntryPluginPackages = registry.getPluginPackages(JobEntryPluginType.getInstance());  
         }
         
         Class<? extends Object> baseClass = object.getClass();
@@ -73,13 +76,13 @@ public class StringSearcher
             		sanctionedPackage=true;
             	}
             }
-            for (int x=0;x<stepPluginPackages.length && !sanctionedPackage;x++)
+            for (int x=0;x<stepPluginPackages.size() && !sanctionedPackage;x++)
             {
-            	if (field.toString().indexOf(stepPluginPackages[x])>=0) sanctionedPackage=true;
+            	if (field.toString().indexOf(stepPluginPackages.get(x))>=0) sanctionedPackage=true;
             }
-            for (int x=0;x<jobEntryPluginPackages.length && !sanctionedPackage;x++)
+            for (int x=0;x<jobEntryPluginPackages.size() && !sanctionedPackage;x++)
             {
-            	if (field.toString().indexOf(jobEntryPluginPackages[x])>=0) sanctionedPackage=true;
+            	if (field.toString().indexOf(jobEntryPluginPackages.get(x))>=0) sanctionedPackage=true;
             }
             if ( !sanctionedPackage ) processThisOne=false; // Stay in the sanctioned code-base.
             

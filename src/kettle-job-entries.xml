@@ -1,465 +1,465 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jobs>
+<job-entries>
 
     <!-- NOTE i18n arguments are : i18n package and key separated by colon (:)
     --> 
 
     <!-- Configured via Job annotation 
 	
-	<job id="TRANS">
+	<job-entry id="TRANS">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Trans.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.trans.JobEntryTrans</class-name>
+		<classname>org.pentaho.di.job.entries.trans.JobEntryTrans</classname>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Trans.Tooltip</tooltip>
-		<image-uri>ui/images/TRN.png</image-uri>
-	</job>
+		<iconfile>ui/images/TRN.png</iconfile>
+	</job-entry>
 	 -->
 	
-	<job id="JOB">
+	<job-entry id="JOB">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Job.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.job.JobEntryJob</class-name>
+		<classname>org.pentaho.di.job.entries.job.JobEntryJob</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Job.Tooltip</tooltip>
-		<image-uri>ui/images/JOB.png</image-uri>
-	</job>
+		<iconfile>ui/images/JOB.png</iconfile>
+	</job-entry>
 	
-	<job id="SHELL">
+	<job-entry id="SHELL">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Shell.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.shell.JobEntryShell</class-name>
+		<classname>org.pentaho.di.job.entries.shell.JobEntryShell</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Shell.Tooltip</tooltip>
-		<image-uri>ui/images/SHL.png</image-uri>
-	</job>
+		<iconfile>ui/images/SHL.png</iconfile>
+	</job-entry>
 	
-	<job id="MAIL">
+	<job-entry id="MAIL">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Mail.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.mail.JobEntryMail</class-name>
+		<classname>org.pentaho.di.job.entries.mail.JobEntryMail</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Mail</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Mail.Tooltip</tooltip>
-		<image-uri>ui/images/MAIL.png</image-uri>
-	</job>
+		<iconfile>ui/images/MAIL.png</iconfile>
+	</job-entry>
 	
-	<job id="SQL">
+	<job-entry id="SQL">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.SQL.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.sql.JobEntrySQL</class-name>
+		<classname>org.pentaho.di.job.entries.sql.JobEntrySQL</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SQL.Tooltip</tooltip>
-		<image-uri>ui/images/SQL.png</image-uri>
-	</job>
+		<iconfile>ui/images/SQL.png</iconfile>
+	</job-entry>
 	
-	<job id="FTP">
+	<job-entry id="FTP">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.FTP.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.ftp.JobEntryFTP</class-name>
+		<classname>org.pentaho.di.job.entries.ftp.JobEntryFTP</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FTP.Tooltip</tooltip>
-		<image-uri>ui/images/FTP.png</image-uri>
-	</job>
+		<iconfile>ui/images/FTP.png</iconfile>
+	</job-entry>
 	
-	<job id="TABLE_EXISTS">
+	<job-entry id="TABLE_EXISTS">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.TableExists.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.tableexists.JobEntryTableExists</class-name>
+		<classname>org.pentaho.di.job.entries.tableexists.JobEntryTableExists</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.TableExists.Tooltip</tooltip>
-		<image-uri>ui/images/TEX.png</image-uri>
-	</job>
+		<iconfile>ui/images/TEX.png</iconfile>
+	</job-entry>
 	
-	<job id="FILE_EXISTS">
+	<job-entry id="FILE_EXISTS">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.FileExists.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.fileexists.JobEntryFileExists</class-name>
+		<classname>org.pentaho.di.job.entries.fileexists.JobEntryFileExists</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FileExists.Tooltip</tooltip>
-		<image-uri>ui/images/FEX.png</image-uri>
-	</job>
+		<iconfile>ui/images/FEX.png</iconfile>
+	</job-entry>
 	
-	<job id="EVAL">
+	<job-entry id="EVAL">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Evaluation.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.eval.JobEntryEval</class-name>
+		<classname>org.pentaho.di.job.entries.eval.JobEntryEval</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Evaluation.Tooltip</tooltip>
-		<image-uri>ui/images/RES.png</image-uri>
-	</job>
+		<iconfile>ui/images/RES.png</iconfile>
+	</job-entry>
 	
-	<job id="SPECIAL">
+	<job-entry id="SPECIAL">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Special.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.special.JobEntrySpecial</class-name>
+		<classname>org.pentaho.di.job.entries.special.JobEntrySpecial</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Special.Tooltip</tooltip>
-		<image-uri></image-uri>
-	</job>
+		<iconfile></iconfile>
+	</job-entry>
 	
-	<job id="SFTP">
+	<job-entry id="SFTP">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.SFTP.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.sftp.JobEntrySFTP</class-name>
+		<classname>org.pentaho.di.job.entries.sftp.JobEntrySFTP</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SFTP.Tooltip</tooltip>
-		<image-uri>ui/images/SFT.png</image-uri>
-	</job>
+		<iconfile>ui/images/SFT.png</iconfile>
+	</job-entry>
 	
-	<job id="HTTP">
+	<job-entry id="HTTP">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.HTTP.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.http.JobEntryHTTP</class-name>
+		<classname>org.pentaho.di.job.entries.http.JobEntryHTTP</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.HTTP.Tooltip</tooltip>
-		<image-uri>ui/images/WEB.png</image-uri>
-	</job>
+		<iconfile>ui/images/WEB.png</iconfile>
+	</job-entry>
 	
-	<job id="CREATE_FILE">
+	<job-entry id="CREATE_FILE">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.CreateFile.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.createfile.JobEntryCreateFile</class-name>
+		<classname>org.pentaho.di.job.entries.createfile.JobEntryCreateFile</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CreateFile.Tooltip</tooltip>
-		<image-uri>ui/images/CFJ.png</image-uri>
-	</job>
+		<iconfile>ui/images/CFJ.png</iconfile>
+	</job-entry>
 	
-	<job id="DELETE_FILE">
+	<job-entry id="DELETE_FILE">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFile.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.deletefile.JobEntryDeleteFile</class-name>
+		<classname>org.pentaho.di.job.entries.deletefile.JobEntryDeleteFile</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFile.Tooltip</tooltip>
-		<image-uri>ui/images/DFJ.png</image-uri>
-	</job>
+		<iconfile>ui/images/DFJ.png</iconfile>
+	</job-entry>
 	
-	<job id="WAIT_FOR_FILE">
+	<job-entry id="WAIT_FOR_FILE">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.WaitForFile.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.waitforfile.JobEntryWaitForFile</class-name>
+		<classname>org.pentaho.di.job.entries.waitforfile.JobEntryWaitForFile</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WaitForFile.Tooltip</tooltip>
-		<image-uri>ui/images/WFF.png</image-uri>
-	</job>
+		<iconfile>ui/images/WFF.png</iconfile>
+	</job-entry>
 	
-	<job id="SFTPPUT">
+	<job-entry id="SFTPPUT">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.SFTPPut.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.sftpput.JobEntrySFTPPUT</class-name>
+		<classname>org.pentaho.di.job.entries.sftpput.JobEntrySFTPPUT</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SFTPPut.Tooltip</tooltip>
-		<image-uri>ui/images/SFP.png</image-uri>
-	</job>
+		<iconfile>ui/images/SFP.png</iconfile>
+	</job-entry>
 	
-	<job id="FILE_COMPARE">
+	<job-entry id="FILE_COMPARE">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.FileCompare.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.filecompare.JobEntryFileCompare</class-name>
+		<classname>org.pentaho.di.job.entries.filecompare.JobEntryFileCompare</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FileCompare.Tooltip</tooltip>
-		<image-uri>ui/images/BFC.png</image-uri>
-	</job>
+		<iconfile>ui/images/BFC.png</iconfile>
+	</job-entry>
 	
-	<job id="MYSQL_BULK_LOAD">
+	<job-entry id="MYSQL_BULK_LOAD">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.MysqlBulkLoad.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.mysqlbulkload.JobEntryMysqlBulkLoad</class-name>
+		<classname>org.pentaho.di.job.entries.mysqlbulkload.JobEntryMysqlBulkLoad</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.BulkLoading</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MysqlBulkLoad.Tooltip</tooltip>
-		<image-uri>ui/images/MBL.png</image-uri>
-	</job>
+		<iconfile>ui/images/MBL.png</iconfile>
+	</job-entry>
 	
-	<job id="MSGBOX_INFO">
+	<job-entry id="MSGBOX_INFO">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.MsgBoxInfo.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.msgboxinfo.JobEntryMsgBoxInfo</class-name>
+		<classname>org.pentaho.di.job.entries.msgboxinfo.JobEntryMsgBoxInfo</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MsgBoxInfo.Tooltip</tooltip>
-		<image-uri>ui/images/INF.png</image-uri>
-	</job>
+		<iconfile>ui/images/INF.png</iconfile>
+	</job-entry>
 	
-	<job id="DELAY">
+	<job-entry id="DELAY">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Delay.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.delay.JobEntryDelay</class-name>
+		<classname>org.pentaho.di.job.entries.delay.JobEntryDelay</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Delay.Tooltip</tooltip>
-		<image-uri>ui/images/DLT.png</image-uri>
-	</job>
+		<iconfile>ui/images/DLT.png</iconfile>
+	</job-entry>
 	
-	<job id="ZIP_FILE">
+	<job-entry id="ZIP_FILE">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.ZipFile.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.zipfile.JobEntryZipFile</class-name>
+		<classname>org.pentaho.di.job.entries.zipfile.JobEntryZipFile</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.ZipFile.Tooltip</tooltip>
-		<image-uri>ui/images/ZIP.png</image-uri>
-	</job>
+		<iconfile>ui/images/ZIP.png</iconfile>
+	</job-entry>
 	
-	<job id="XSLT">
+	<job-entry id="XSLT">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.XSLT.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.xslt.JobEntryXSLT</class-name>
+		<classname>org.pentaho.di.job.entries.xslt.JobEntryXSLT</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.XML</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.XSLT.Tooltip</tooltip>
-		<image-uri>ui/images/XSLT.png</image-uri>
-	</job>
+		<iconfile>ui/images/XSLT.png</iconfile>
+	</job-entry>
 	
-	<job id="MYSQL_BULK_FILE">
+	<job-entry id="MYSQL_BULK_FILE">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.MysqlBulkFile.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.mysqlbulkfile.JobEntryMysqlBulkFile</class-name>
+		<classname>org.pentaho.di.job.entries.mysqlbulkfile.JobEntryMysqlBulkFile</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.BulkLoading</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MysqlBulkFile.Tooltip</tooltip>
-		<image-uri>ui/images/MBF.png</image-uri>
-	</job>
+		<iconfile>ui/images/MBF.png</iconfile>
+	</job-entry>
 	
-	<job id="ABORT">
+	<job-entry id="ABORT">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Abort.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.abort.JobEntryAbort</class-name>
+		<classname>org.pentaho.di.job.entries.abort.JobEntryAbort</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Abort.Tooltip</tooltip>
-		<image-uri>ui/images/ABR.png</image-uri>
-	</job>
+		<iconfile>ui/images/ABR.png</iconfile>
+	</job-entry>
 	
-	<job id="GET_POP">
+	<job-entry id="GET_POP">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.GetPOP.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.getpop.JobEntryGetPOP</class-name>
+		<classname>org.pentaho.di.job.entries.getpop.JobEntryGetPOP</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Mail</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.GetPOP.Tooltip</tooltip>
-		<image-uri>ui/images/GETPOP.png</image-uri>
-	</job>
+		<iconfile>ui/images/GETPOP.png</iconfile>
+	</job-entry>
 	
-	<job id="PING">
+	<job-entry id="PING">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Ping.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.ping.JobEntryPing</class-name>
+		<classname>org.pentaho.di.job.entries.ping.JobEntryPing</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Ping.Tooltip</tooltip>
-		<image-uri>ui/images/PNG.png</image-uri>
-	</job>
+		<iconfile>ui/images/PNG.png</iconfile>
+	</job-entry>
 	
-	<job id="DELETE_FILES">
+	<job-entry id="DELETE_FILES">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFiles.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.deletefiles.JobEntryDeleteFiles</class-name>
+		<classname>org.pentaho.di.job.entries.deletefiles.JobEntryDeleteFiles</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFiles.Tooltip</tooltip>
-		<image-uri>ui/images/DFS.png</image-uri>
-	</job>
+		<iconfile>ui/images/DFS.png</iconfile>
+	</job-entry>
 	
-	<job id="SUCCESS">
+	<job-entry id="SUCCESS">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Success.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.success.JobEntrySuccess</class-name>
+		<classname>org.pentaho.di.job.entries.success.JobEntrySuccess</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Success.Tooltip</tooltip>
-		<image-uri>ui/images/SUC.png</image-uri>
-	</job>
+		<iconfile>ui/images/SUC.png</iconfile>
+	</job-entry>
 	
-	<job id="XSD_VALIDATOR">
+	<job-entry id="XSD_VALIDATOR">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.XSDValidator.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.xsdvalidator.JobEntryXSDValidator</class-name>
+		<classname>org.pentaho.di.job.entries.xsdvalidator.JobEntryXSDValidator</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.XML</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.XSDValidator.Tooltip</tooltip>
-		<image-uri>ui/images/XSD.png</image-uri>
-	</job>
+		<iconfile>ui/images/XSD.png</iconfile>
+	</job-entry>
 	
-	<job id="WRITE_TO_LOG">
+	<job-entry id="WRITE_TO_LOG">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.WriteToLog.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.writetolog.JobEntryWriteToLog</class-name>
+		<classname>org.pentaho.di.job.entries.writetolog.JobEntryWriteToLog</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WriteToLog.Tooltip</tooltip>
-		<image-uri>ui/images/WTL.png</image-uri>
-	</job>
+		<iconfile>ui/images/WTL.png</iconfile>
+	</job-entry>
 	
-	<job id="COPY_FILES">
+	<job-entry id="COPY_FILES">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.CopyFiles.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.copyfiles.JobEntryCopyFiles</class-name>
+		<classname>org.pentaho.di.job.entries.copyfiles.JobEntryCopyFiles</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CopyFiles.Tooltip</tooltip>
-		<image-uri>ui/images/CPY.png</image-uri>
-	</job>
+		<iconfile>ui/images/CPY.png</iconfile>
+	</job-entry>
 	
-	<job id="DTD_VALIDATOR">
+	<job-entry id="DTD_VALIDATOR">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.DTDValidator.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.dtdvalidator.JobEntryDTDValidator</class-name>
+		<classname>org.pentaho.di.job.entries.dtdvalidator.JobEntryDTDValidator</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.XML</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DTDValidator.Tooltip</tooltip>
-		<image-uri>ui/images/DTD.png</image-uri>
-	</job>
+		<iconfile>ui/images/DTD.png</iconfile>
+	</job-entry>
 	
-	<job id="FTP_PUT">
+	<job-entry id="FTP_PUT">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.FTPPUT.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT</class-name>
+		<classname>org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FTPPUT.Tooltip</tooltip>
-		<image-uri>ui/images/PFP.png</image-uri>
-	</job>
+		<iconfile>ui/images/PFP.png</iconfile>
+	</job-entry>
 
-	<job id="UNZIP">
+	<job-entry id="UNZIP">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.UnZip.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.unzip.JobEntryUnZip</class-name>
+		<classname>org.pentaho.di.job.entries.unzip.JobEntryUnZip</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.UnZip.Tooltip</tooltip>
-		<image-uri>ui/images/UZP.png</image-uri>
-	</job>
+		<iconfile>ui/images/UZP.png</iconfile>
+	</job-entry>
 	
-	<job id="CREATE_FOLDER">
+	<job-entry id="CREATE_FOLDER">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.CreateFolder.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.createfolder.JobEntryCreateFolder</class-name>
+		<classname>org.pentaho.di.job.entries.createfolder.JobEntryCreateFolder</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CreateFolder.Tooltip</tooltip>
-		<image-uri>ui/images/CRF.png</image-uri>
-	</job>
+		<iconfile>ui/images/CRF.png</iconfile>
+	</job-entry>
 	
-	<job id="FOLDER_IS_EMPTY">
+	<job-entry id="FOLDER_IS_EMPTY">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.FolderIsEmpty.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.folderisempty.JobEntryFolderIsEmpty</class-name>
+		<classname>org.pentaho.di.job.entries.folderisempty.JobEntryFolderIsEmpty</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FolderIsEmpty.Tooltip</tooltip>
-		<image-uri>ui/images/EFO.png</image-uri>
-	</job>
+		<iconfile>ui/images/EFO.png</iconfile>
+	</job-entry>
 
-	<job id="FILES_EXIST">
+	<job-entry id="FILES_EXIST">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.FilesExist.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.filesexist.JobEntryFilesExist</class-name>
+		<classname>org.pentaho.di.job.entries.filesexist.JobEntryFilesExist</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FilesExist.Tooltip</tooltip>
-		<image-uri>ui/images/LFE.png</image-uri>
-	</job>
+		<iconfile>ui/images/LFE.png</iconfile>
+	</job-entry>
 	
-	<job id="FOLDERS_COMPARE">
+	<job-entry id="FOLDERS_COMPARE">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.FoldersCompare.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.folderscompare.JobEntryFoldersCompare</class-name>
+		<classname>org.pentaho.di.job.entries.folderscompare.JobEntryFoldersCompare</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FoldersCompare.Tooltip</tooltip>
-		<image-uri>ui/images/FCP.png</image-uri>
-	</job>
+		<iconfile>ui/images/FCP.png</iconfile>
+	</job-entry>
 	
-	<job id="ADD_RESULT_FILENAMES">
+	<job-entry id="ADD_RESULT_FILENAMES">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.AddResultFilenames.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.addresultfilenames.JobEntryAddResultFilenames</class-name>
+		<classname>org.pentaho.di.job.entries.addresultfilenames.JobEntryAddResultFilenames</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.AddResultFilenames.Tooltip</tooltip>
-		<image-uri>ui/images/AFN.png</image-uri>
-	</job>
+		<iconfile>ui/images/AFN.png</iconfile>
+	</job-entry>
 	
-	<job id="DELETE_RESULT_FILENAMES">
+	<job-entry id="DELETE_RESULT_FILENAMES">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.DeleteResultFilenames.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.deleteresultfilenames.JobEntryDeleteResultFilenames</class-name>
+		<classname>org.pentaho.di.job.entries.deleteresultfilenames.JobEntryDeleteResultFilenames</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DeleteResultFilenames.Tooltip</tooltip>
-		<image-uri>ui/images/DFN.png</image-uri>
-	</job>
+		<iconfile>ui/images/DFN.png</iconfile>
+	</job-entry>
 	
-	<job id="MSSQL_BULK_LOAD">
+	<job-entry id="MSSQL_BULK_LOAD">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.MssqlBulkLoad.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.mssqlbulkload.JobEntryMssqlBulkLoad</class-name>
+		<classname>org.pentaho.di.job.entries.mssqlbulkload.JobEntryMssqlBulkLoad</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.BulkLoading</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MssqlBulkLoad.Tooltip</tooltip>
-		<image-uri>ui/images/MBL.png</image-uri>
-	</job>
+		<iconfile>ui/images/MBL.png</iconfile>
+	</job-entry>
 	
-	<job id="MOVE_FILES">
+	<job-entry id="MOVE_FILES">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.MoveFiles.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.movefiles.JobEntryMoveFiles</class-name>
+		<classname>org.pentaho.di.job.entries.movefiles.JobEntryMoveFiles</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MoveFiles.Tooltip</tooltip>
-		<image-uri>ui/images/MVF.png</image-uri>
-	</job>
+		<iconfile>ui/images/MVF.png</iconfile>
+	</job-entry>
 	
-	<job id="COPY_MOVE_RESULT_FILENAMES">
+	<job-entry id="COPY_MOVE_RESULT_FILENAMES">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.CopyMoveResultFilenames.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.copymoveresultfilenames.JobEntryCopyMoveResultFilenames</class-name>
+		<classname>org.pentaho.di.job.entries.copymoveresultfilenames.JobEntryCopyMoveResultFilenames</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CopyMoveResultFilenames.Tooltip</tooltip>
-		<image-uri>ui/images/CMR.png</image-uri>
-	</job>
-		<job id="JobCategory.Category.XML_WELL_FORMED">
+		<iconfile>ui/images/CMR.png</iconfile>
+	</job-entry>
+		<job-entry id="JobCategory.Category.XML_WELL_FORMED">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.XMLWellFormed.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.xmlwellformed.JobEntryXMLWellFormed</class-name>
+		<classname>org.pentaho.di.job.entries.xmlwellformed.JobEntryXMLWellFormed</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.XML</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.XMLWellFormed.Tooltip</tooltip>
-		<image-uri>ui/images/XFC.png</image-uri>
-	</job>
-	<job id="SSH2_GET">
+		<iconfile>ui/images/XFC.png</iconfile>
+	</job-entry>
+	<job-entry id="SSH2_GET">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.SSH2GET.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.ssh2get.JobEntrySSH2GET</class-name>
+		<classname>org.pentaho.di.job.entries.ssh2get.JobEntrySSH2GET</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SSH2GET.Tooltip</tooltip>
-		<image-uri>ui/images/SHG.png</image-uri>
-	</job>
-	<job id="SSH2_PUT">
+		<iconfile>ui/images/SHG.png</iconfile>
+	</job-entry>
+	<job-entry id="SSH2_PUT">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.SSH2PUT.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.ssh2put.JobEntrySSH2PUT</class-name>
+		<classname>org.pentaho.di.job.entries.ssh2put.JobEntrySSH2PUT</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SSH2PUT.Tooltip</tooltip>
-		<image-uri>ui/images/SHP.png</image-uri>
-	</job>
-		<job id="FTP_DELETE">
+		<iconfile>ui/images/SHP.png</iconfile>
+	</job-entry>
+		<job-entry id="FTP_DELETE">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.FTPDELETE.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.ftpdelete.JobEntryFTPDelete</class-name>
+		<classname>org.pentaho.di.job.entries.ftpdelete.JobEntryFTPDelete</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FTPDELETE.Tooltip</tooltip>
-		<image-uri>ui/images/FTPD.png</image-uri>
-	</job>
+		<iconfile>ui/images/FTPD.png</iconfile>
+	</job-entry>
 	
-		<job id="DELETE_FOLDERS">
+		<job-entry id="DELETE_FOLDERS">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFolders.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.deletefolders.JobEntryDeleteFolders</class-name>
+		<classname>org.pentaho.di.job.entries.deletefolders.JobEntryDeleteFolders</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DeleteFolders.Tooltip</tooltip>
-		<image-uri>ui/images/DSF.png</image-uri>
-	</job>
-	<job id="COLUMNS_EXIST">
+		<iconfile>ui/images/DSF.png</iconfile>
+	</job-entry>
+	<job-entry id="COLUMNS_EXIST">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.ColumnsExist.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.columnsexist.JobEntryColumnsExist</class-name>
+		<classname>org.pentaho.di.job.entries.columnsexist.JobEntryColumnsExist</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.ColumnsExist.Tooltip</tooltip>
-		<image-uri>ui/images/CEX.png</image-uri>
-	</job>
-	<job id="EXPORT_REPOSITORY">
+		<iconfile>ui/images/CEX.png</iconfile>
+	</job-entry>
+	<job-entry id="EXPORT_REPOSITORY">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.ExportRepository.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository</class-name>
+		<classname>org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Repository</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.ExportRepository.Tooltip</tooltip>
-		<image-uri>ui/images/EREP.png</image-uri>
-	</job>
-		<job id="CONNECTED_TO_REPOSITORY">
+		<iconfile>ui/images/EREP.png</iconfile>
+	</job-entry>
+		<job-entry id="CONNECTED_TO_REPOSITORY">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.ConnectedToRepository.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.connectedtorepository.JobEntryConnectedToRepository</class-name>
+		<classname>org.pentaho.di.job.entries.connectedtorepository.JobEntryConnectedToRepository</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Repository</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.ConnectedToRepository.Tooltip</tooltip>
-		<image-uri>ui/images/CREP.png</image-uri>
-	</job>
-		<job id="TRUNCATE_TABLES">
+		<iconfile>ui/images/CREP.png</iconfile>
+	</job-entry>
+		<job-entry id="TRUNCATE_TABLES">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.TruncateTables.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.truncatetables.JobEntryTruncateTables</class-name>
+		<classname>org.pentaho.di.job.entries.truncatetables.JobEntryTruncateTables</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.TruncateTables.Tooltip</tooltip>
-		<image-uri>ui/images/TRT.png</image-uri>
-	</job>
-		<job id="SET_VARIABLES">
+		<iconfile>ui/images/TRT.png</iconfile>
+	</job-entry>
+		<job-entry id="SET_VARIABLES">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.SetVariables.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.setvariables.JobEntrySetVariables</class-name>
+		<classname>org.pentaho.di.job.entries.setvariables.JobEntrySetVariables</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SetVariables.Tooltip</tooltip>
-		<image-uri>ui/images/SVA.png</image-uri>
-	</job>
-		<job id="MS_ACCESS_BULK_LOAD">
+		<iconfile>ui/images/SVA.png</iconfile>
+	</job-entry>
+		<job-entry id="MS_ACCESS_BULK_LOAD">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.MSAccessBulkLoad.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.msaccessbulkload.JobEntryMSAccessBulkLoad</class-name>
+		<classname>org.pentaho.di.job.entries.msaccessbulkload.JobEntryMSAccessBulkLoad</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.BulkLoading</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MSAccessBulkLoad.Tooltip</tooltip>
-		<image-uri>ui/images/MBL.png</image-uri>
-	</job>
-	<job id="WAIT_FOR_SQL">
+		<iconfile>ui/images/MBL.png</iconfile>
+	</job-entry>
+	<job-entry id="WAIT_FOR_SQL">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.WaitForSQL.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQL</class-name>
+		<classname>org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQL</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WaitForSQL.Tooltip</tooltip>
-		<image-uri>ui/images/WSQL.png</image-uri>
-	</job>
-		<job id="EVAL_TABLE_CONTENT">
+		<iconfile>ui/images/WSQL.png</iconfile>
+	</job-entry>
+		<job-entry id="EVAL_TABLE_CONTENT">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.EvalTableContent.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.evaluatetablecontent.JobEntryEvalTableContent</class-name>
+		<classname>org.pentaho.di.job.entries.evaluatetablecontent.JobEntryEvalTableContent</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.EvalTableContent.Tooltip</tooltip>
-		<image-uri>ui/images/ETC.png</image-uri>
-	</job>
-		<job id="SIMPLE_EVAL">
+		<iconfile>ui/images/ETC.png</iconfile>
+	</job-entry>
+		<job-entry id="SIMPLE_EVAL">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.SimpleEval.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.simpleeval.JobEntrySimpleEval</class-name>
+		<classname>org.pentaho.di.job.entries.simpleeval.JobEntrySimpleEval</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SimpleEval.Tooltip</tooltip>
-		<image-uri>ui/images/SEV.png</image-uri>
-	</job>
-	<job id="SNMP_TRAP">
+		<iconfile>ui/images/SEV.png</iconfile>
+	</job-entry>
+	<job-entry id="SNMP_TRAP">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.SNMPTrap.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.snmptrap.JobEntrySNMPTrap</class-name>
+		<classname>org.pentaho.di.job.entries.snmptrap.JobEntrySNMPTrap</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SNMPTrap.Tooltip</tooltip>
-		<image-uri>ui/images/SNMP.png</image-uri>
-	</job>
-		<job id="JobCategory.Category.Mail_VALIDATOR">
+		<iconfile>ui/images/SNMP.png</iconfile>
+	</job-entry>
+		<job-entry id="JobCategory.Category.Mail_VALIDATOR">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.MailValidator.TypeDesc</description>
-		<class-name>org.pentaho.di.job.entries.mailvalidator.JobEntryMailValidator</class-name>
+		<classname>org.pentaho.di.job.entries.mailvalidator.JobEntryMailValidator</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Mail</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MailValidator.Tooltip</tooltip>
-		<image-uri>ui/images/MAV.png</image-uri>
-	</job>
-</jobs>
+		<iconfile>ui/images/MAV.png</iconfile>
+	</job-entry>
+</job-entries>

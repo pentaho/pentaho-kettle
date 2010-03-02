@@ -162,7 +162,9 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
             spoon.getDisplay().syncExec(new Runnable() {
 
               public void run() {
-                displayHistoryData(logTables.get(index), index, rowList.get(index));
+            	  if (!Const.isEmpty(rowList)) {
+            		  displayHistoryData(logTables.get(index), index, rowList.get(index));
+            	  }
               }
             });
           }

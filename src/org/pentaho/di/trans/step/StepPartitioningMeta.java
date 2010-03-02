@@ -16,13 +16,15 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.plugins.KettlePluginException;
+import org.pentaho.di.core.plugins.PartitionerPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.Partitioner;
-import org.pentaho.di.trans.StepLoader;
 import org.w3c.dom.Node;
 
 
@@ -57,8 +59,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
      * @param method
      * @param partitionSchema
      */
-    public StepPartitioningMeta(String method, PartitionSchema partitionSchema)
-    {
+    public StepPartitioningMeta(String method, PartitionSchema partitionSchema) throws KettlePluginException {
     	setMethod( method );
         this.partitionSchema = partitionSchema;
         hasChanged = false;
@@ -66,11 +67,15 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     
     public StepPartitioningMeta clone()
     {
-       StepPartitioningMeta stepPartitioningMeta = new StepPartitioningMeta(method, partitionSchema!=null ? (PartitionSchema) partitionSchema.clone() : null);
-       stepPartitioningMeta.partitionSchemaName = partitionSchemaName;
-       stepPartitioningMeta.setMethodType(methodType);
-       stepPartitioningMeta.setPartitioner(partitioner == null? null : partitioner.clone());
-       return stepPartitioningMeta;
+    	try {
+	       StepPartitioningMeta stepPartitioningMeta = new StepPartitioningMeta(method, partitionSchema!=null ? (PartitionSchema) partitionSchema.clone() : null);
+	       stepPartitioningMeta.partitionSchemaName = partitionSchemaName;
+	       stepPartitioningMeta.setMethodType(methodType);
+	       stepPartitioningMeta.setPartitioner(partitioner == null? null : partitioner.clone());
+	       return stepPartitioningMeta;
+    	} catch(KettlePluginException e) {
+    		throw new RuntimeException("Unable to load partitioning plugin", e);
+    	}
     }
     
     /**
@@ -114,8 +119,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     /**
      * @param method the partitioning method to set
      */
-    public void setMethod(String method)
-    {
+    public void setMethod(String method) throws KettlePluginException {
     	if( !method.equals(this.method) )
     	{
             this.method = method;
@@ -140,7 +144,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         return xml.toString();
     }
     
-    public StepPartitioningMeta(Node partitioningMethodNode) throws KettleXMLException
+    public StepPartitioningMeta(Node partitioningMethodNode) throws KettleException
     {
     	this();
     	setMethod( getMethod( XMLHandler.getTagValue(partitioningMethodNode, "method") ) );
@@ -149,9 +153,6 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         if( partitioner != null ) 
         {
         	partitioner.loadXML(partitioningMethodNode);
-        }
-        if (methodType!=PARTITIONING_METHOD_NONE && Const.isEmpty(partitionSchemaName)) {
-        	throw new RuntimeException("bohoo!");
         }
     }
     
@@ -185,25 +186,33 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     	return method;
     }
 
-    public static final String getMethod(String description)
+    public static final String getMethod(String name)
     {
-    	if (Const.isEmpty(description)) return methodCodes[PARTITIONING_METHOD_NONE];
+    	if (Const.isEmpty(name)) return methodCodes[PARTITIONING_METHOD_NONE];
     	
         for (int i=0;i<methodDescriptions.length;i++)
         {
-            if (methodDescriptions[i].equalsIgnoreCase(description)){
+            if (methodDescriptions[i].equalsIgnoreCase(name)){
             	return methodCodes[i];
             }
         }
         
         for (int i=0;i<methodCodes.length;i++)
         {
-            if (methodCodes[i].equalsIgnoreCase(description)) return methodCodes[i];
+            if (methodCodes[i].equalsIgnoreCase(name)) return methodCodes[i];
         }
         
-        if( StepLoader.getPartitioner( description ) != null ) {
-        	return description;
+        PluginRegistry registry = PluginRegistry.getInstance();
+        PluginInterface plugin = registry.findPluginWithName(PartitionerPluginType.getInstance(), name);
+        if( plugin != null ) {
+        	return name;
         }
+        plugin = registry.findPluginWithId(PartitionerPluginType.getInstance(), name);
+        if( plugin != null ) {
+        	return name;
+        }
+
+        
         return methodCodes[PARTITIONING_METHOD_NONE];
     }
 
@@ -221,7 +230,8 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
             if (methodCodes[i].equalsIgnoreCase(description)) return i;
         }
         
-        if( StepLoader.getPartitioner( description ) != null ) {
+        PluginInterface plugin = PluginRegistry.getInstance().findPluginWithId(PartitionerPluginType.getInstance(), description );
+        if(  plugin != null ) {
         	return PARTITIONING_METHOD_SPECIAL;
         }
         return PARTITIONING_METHOD_NONE;
@@ -282,11 +292,14 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         }
     }
 
-    public void createPartitioner( String method ) {
+    public void createPartitioner( String method ) throws KettlePluginException {
     	methodType = getMethodType(method);
         switch ( methodType ) {
         case PARTITIONING_METHOD_SPECIAL: {
-        	partitioner = StepLoader.getPartitioner( method ).getInstance();
+        	PluginRegistry registry = PluginRegistry.getInstance();
+        	PluginInterface plugin = registry.findPluginWithId(PartitionerPluginType.getInstance(), method);
+        	partitioner = (Partitioner) registry.loadClass(plugin);
+        	partitioner.setId(plugin.getIds()[0]);
         	break;
         }
         case PARTITIONING_METHOD_NONE:

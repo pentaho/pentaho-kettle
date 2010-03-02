@@ -28,6 +28,8 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -35,7 +37,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -402,7 +403,7 @@ public class TableOutputTest extends TestCase
             database.connect();
             createTable(database, target_table, createSourceRowMetaInterface1());
 
-            StepLoader steploader = StepLoader.getInstance();            
+            PluginRegistry registry = PluginRegistry.getInstance();            
 
             // 
             // create an injector step...
@@ -411,7 +412,7 @@ public class TableOutputTest extends TestCase
             InjectorMeta im = new InjectorMeta();
             
             // Set the information of the injector.                   
-            String injectorPid = steploader.getStepPluginID(im);
+            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -423,7 +424,7 @@ public class TableOutputTest extends TestCase
             tom.setDatabaseMeta(transMeta.findDatabase("db"));
             tom.setTablename(target_table);
 
-            String fromid = steploader.getStepPluginID(tom);
+            String fromid = registry.getPluginId(StepPluginType.getInstance(), tom);
             StepMeta fromstep = new StepMeta(fromid, outputname, (StepMetaInterface)tom);
             fromstep.setDescription("write data to table [" + target_table + "] on database [" + dbInfo + "]");
             transMeta.addStep(fromstep);
@@ -492,7 +493,7 @@ public class TableOutputTest extends TestCase
             createTable(database, target_table1, createSourceRowMetaInterface1());
             createTable(database, target_table2, createSourceRowMetaInterface1());
 
-            StepLoader steploader = StepLoader.getInstance();            
+            PluginRegistry registry = PluginRegistry.getInstance();            
 
             // 
             // create an injector step...
@@ -501,7 +502,7 @@ public class TableOutputTest extends TestCase
             InjectorMeta im = new InjectorMeta();
             
             // Set the information of the injector.                   
-            String injectorPid = steploader.getStepPluginID(im);
+            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -515,7 +516,7 @@ public class TableOutputTest extends TestCase
             tom.setTableNameField("TABLE");
             tom.setTableNameInTable(false);
 
-            String fromid = steploader.getStepPluginID(tom);
+            String fromid = registry.getPluginId(StepPluginType.getInstance(), tom);
             StepMeta fromstep = new StepMeta(fromid, outputname, (StepMetaInterface)tom);
             fromstep.setDescription("write data to tables on database [" + dbInfo + "]");
             transMeta.addStep(fromstep);
@@ -587,7 +588,7 @@ public class TableOutputTest extends TestCase
             // Add "ts" timestamp field to target_table with a default value of NOW()
             database.execStatement("ALTER TABLE " + target_table3 + " ADD COLUMN ts TIMESTAMP DEFAULT NOW() ");
             
-            StepLoader steploader = StepLoader.getInstance();            
+            PluginRegistry registry = PluginRegistry.getInstance();            
 
             // 
             // create an injector step...
@@ -596,7 +597,7 @@ public class TableOutputTest extends TestCase
             InjectorMeta im = new InjectorMeta();
             
             // Set the information of the injector.                   
-            String injectorPid = steploader.getStepPluginID(im);
+            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -610,7 +611,7 @@ public class TableOutputTest extends TestCase
             tom.setTruncateTable(true);
             tom.setUseBatchUpdate(true);
 
-            String fromid = steploader.getStepPluginID(tom);
+            String fromid = registry.getPluginId(StepPluginType.getInstance(), tom);
             StepMeta fromstep = new StepMeta(fromid, outputname, (StepMetaInterface)tom);
             fromstep.setDescription("write data to table [" + target_table3 + "] on database [" + dbInfo + "]");
             transMeta.addStep(fromstep);

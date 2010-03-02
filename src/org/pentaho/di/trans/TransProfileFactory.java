@@ -17,6 +17,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -53,7 +55,7 @@ public class TransProfileFactory
 	
     public TransMeta generateTransformation(LoggingObjectInterface parentLoggingInterface) throws KettleException
     {
-        StepLoader stepLoader = StepLoader.getInstance();
+        PluginRegistry registry = PluginRegistry.getInstance();
         
         // Get the list of fields from the table...
         //
@@ -71,7 +73,7 @@ public class TransProfileFactory
         TableInputMeta readMeta = new TableInputMeta();
         readMeta.setSQL("SELECT * FROM "+schemaTable);
         readMeta.setDatabaseMeta(databaseMeta);
-        StepMeta read = new StepMeta(stepLoader.getStepPluginID(readMeta), "Read data", readMeta);
+        StepMeta read = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), readMeta), "Read data", readMeta);
         read.setLocation(50,50);
         read.setDraw(true);
         transMeta.addStep(read);
@@ -170,7 +172,7 @@ public class TransProfileFactory
 	        	}
         	}
         }
-        StepMeta calc = new StepMeta(stepLoader.getStepPluginID(statsMeta), "Calc", statsMeta); //$NON-NLS-1$
+        StepMeta calc = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), statsMeta), "Calc", statsMeta); //$NON-NLS-1$
         calc.setLocation(250,50);
         calc.setDraw(true);
         transMeta.addStep(calc);
@@ -179,7 +181,7 @@ public class TransProfileFactory
         transMeta.addTransHop(hop);
         
         DummyTransMeta dummyMeta = new DummyTransMeta();
-        StepMeta result = new StepMeta(stepLoader.getStepPluginID(dummyMeta), RESULT_STEP_NAME, dummyMeta); //$NON-NLS-1$
+        StepMeta result = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), dummyMeta), RESULT_STEP_NAME, dummyMeta); //$NON-NLS-1$
         result.setLocation(450,50);
         result.setDraw(true);
         transMeta.addStep(result);

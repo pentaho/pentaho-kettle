@@ -8,12 +8,15 @@ import java.util.ResourceBundle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginClassType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeInterface;
+import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.RepositoryPluginMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
@@ -60,11 +63,14 @@ public class RepositoriesHelper {
     }
   }
   public void newRepository() {
-    List<RepositoryPluginMeta> pluginMetaList = RepositoryLoader.getInstance().getPluginMetaList();
-    String[] names = new String[pluginMetaList.size()];
+	PluginRegistry registry = PluginRegistry.getInstance();
+	PluginTypeInterface pluginType = RepositoryPluginType.getInstance();
+	List<PluginInterface> plugins = registry.getPlugins(pluginType);
+	
+	String[] names = new String[plugins.size()];
     for (int i = 0; i < names.length; i++) {
-      RepositoryPluginMeta meta = pluginMetaList.get(i);
-      names[i] = meta.getName() + " : " + meta.getDescription(); //$NON-NLS-1$
+      PluginInterface plugin = plugins.get(i);
+      names[i] = plugin.getName() + " : " + plugin.getDescription(); //$NON-NLS-1$
     }
 
     // TODO: make this a bit fancier!
@@ -73,14 +79,14 @@ public class RepositoriesHelper {
     String choice = selectRepositoryType.open();
     if (choice != null) {
       int index = selectRepositoryType.getSelectionNr();
-      RepositoryPluginMeta pluginMeta = pluginMetaList.get(index);
-      String id = pluginMeta.getId();
+      PluginInterface plugin = plugins.get(index);
+      String id = plugin.getIds()[0];
 
       try {
         // With this ID we can create a new Repository object...
         //
-        RepositoryMeta repositoryMeta = RepositoryLoader.createRepositoryMeta(id);
-        RepositoryDialogInterface dialog = getRepositoryDialog(pluginMeta, repositoryMeta, input, this.shell);
+        RepositoryMeta repositoryMeta = (RepositoryMeta)PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), id, PluginClassType.MetaClassType);
+        RepositoryDialogInterface dialog = getRepositoryDialog(plugin, repositoryMeta, input, this.shell);
         RepositoryMeta meta = dialog.open();
         if (meta != null) {
           input.addRepository(meta);
@@ -99,15 +105,15 @@ public class RepositoriesHelper {
 
   public void editRepository() {
     try {
-        RepositoryPluginMeta pluginMeta = null; 
+        PluginInterface plugin = null; 
         RepositoryMeta ri = input.searchRepository(model.getSelectedRepository().getName());
         if (ri != null) {
-          pluginMeta = RepositoryLoader.getInstance().findPluginMeta(ri.getId());
-          if (pluginMeta == null) {
+          plugin = PluginRegistry.getInstance().getPlugin(RepositoryPluginType.getInstance(), ri.getId());
+          if (plugin == null) {
             throw new KettleException("Unable to find repository plugin for id [" + ri.getId() + "]"); //$NON-NLS-1$ //$NON-NLS-2$
           }
         }
-          RepositoryDialogInterface dd = getRepositoryDialog(pluginMeta, ri, input, this.shell);
+          RepositoryDialogInterface dd = getRepositoryDialog(plugin, ri, input, this.shell);
           if (dd.open() != null) {
             fillRepositories();
             int idx = input.indexOfRepository(ri);
@@ -153,9 +159,8 @@ public class RepositoriesHelper {
       }
       
   }
-  protected RepositoryDialogInterface getRepositoryDialog(RepositoryPluginMeta pluginMeta, RepositoryMeta repositoryMeta, RepositoriesMeta input2, Shell shell) throws Exception {
-    ClassLoader classLoader = RepositoryLoader.getInstance().getClassLoader(pluginMeta);
-    Class<?> dialogClass = classLoader.loadClass(pluginMeta.getDialogClassName());
+  protected RepositoryDialogInterface getRepositoryDialog(PluginInterface plugin, RepositoryMeta repositoryMeta, RepositoriesMeta input2, Shell shell) throws Exception {
+    Class<?> dialogClass = PluginRegistry.getInstance().getClass(plugin, PluginClassType.DialogClassType);
     Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, RepositoryMeta.class, RepositoriesMeta.class);
     return (RepositoryDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repositoryMeta, input, });
   }
@@ -203,11 +208,11 @@ public class RepositoriesHelper {
   }
   
   public void loginToRepository() throws KettleException {
-      RepositoryMeta repinfo = input.getRepository(model.getRepositoryIndex(model.getSelectedRepository()));
-      repository = RepositoryLoader.getInstance().createRepositoryObject(repinfo.getId());
-      repository.init(repinfo);
+      RepositoryMeta repositoryMeta = input.getRepository(model.getRepositoryIndex(model.getSelectedRepository()));
+      repository = (Repository)PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta.getId(), PluginClassType.MainClassType);
+      repository.init(repositoryMeta);
       repository.connect(model.getUsername(), model.getPassword());
-      props.setLastRepository(repinfo.getName());
+      props.setLastRepository(repositoryMeta.getName());
       props.setLastRepositoryLogin(model.getUsername());
   }
   

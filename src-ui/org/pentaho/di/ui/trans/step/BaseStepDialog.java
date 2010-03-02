@@ -50,6 +50,8 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -57,7 +59,6 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepInterface;
@@ -144,7 +145,7 @@ public class BaseStepDialog extends Dialog {
 
   public void setShellImage(Shell shell, StepMetaInterface stepMetaInterface) {
     try {
-      String id = StepLoader.getInstance().getStepPluginID(stepMetaInterface);
+      String id = PluginRegistry.getInstance().getPluginId(StepPluginType.getInstance(), stepMetaInterface);
       if (id != null) {
         shell.setImage(GUIResource.getInstance().getImagesSteps().get(id));
       }

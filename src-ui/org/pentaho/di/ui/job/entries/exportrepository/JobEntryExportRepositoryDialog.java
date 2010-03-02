@@ -50,6 +50,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.plugins.PluginClassType;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -59,9 +62,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -1154,28 +1155,30 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	private boolean repConnect(boolean displaySuccess)
 	{
 		boolean retval=false;
-		RepositoriesMeta reps_info =null;
-		RepositoryMeta rep_info  = null;
+		RepositoriesMeta repositoriesMeta =null;
+		RepositoryMeta repositoryMeta  = null;
 		Repository repos		= null;
 		
 		try
 		{
-			reps_info = new RepositoriesMeta();
+			repositoriesMeta = new RepositoriesMeta();
 			try {
-				reps_info.readData();
+				repositoriesMeta.readData();
 			} catch(Exception e) {
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefined"),BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepsDefinedMsg"),true);
 			}
-			rep_info = reps_info.findRepository( jobMeta.environmentSubstitute(wRepositoryname.getText()));
+			repositoryMeta = repositoriesMeta.findRepository( jobMeta.environmentSubstitute(wRepositoryname.getText()));
 	
-			if (rep_info==null)
+			if (repositoryMeta==null)
 			{
 				// Can not find repository
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRep"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
 				return false;
 			}
 			
-			repos = RepositoryLoader.createRepository(rep_info);
+			repos = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+			repos.init(repositoryMeta);
+			
 			try {
 				repos.connect(jobMeta.environmentSubstitute(wUserName.getText()),jobMeta.environmentSubstitute(wPassword.getText()));
 			} catch(Exception e) {
@@ -1203,8 +1206,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				repos.disconnect();
 				repos=null;
 			}
-			if(rep_info!=null) rep_info=null;
-			reps_info.clear();
+			if(repositoryMeta!=null) repositoryMeta=null;
+			repositoriesMeta.clear();
 		}
 		return retval;
 	}
@@ -1275,21 +1278,24 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	}
 	private void displaydirectoryList()
 	{
-		RepositoriesMeta reps_info =null;
-		RepositoryMeta rep_info  = null;
+		RepositoriesMeta repositoriesMeta =null;
+		RepositoryMeta repositoryMeta  = null;
 		Repository repos		= null;
-		try{
-			reps_info = new RepositoriesMeta();
-			reps_info.readData();
-			rep_info = reps_info.findRepository( jobMeta.environmentSubstitute(wRepositoryname.getText()));
+		
+		try {
+			repositoriesMeta = new RepositoriesMeta();
+			repositoriesMeta.readData();
+			repositoryMeta = repositoriesMeta.findRepository( jobMeta.environmentSubstitute(wRepositoryname.getText()));
 	
-			if (rep_info==null)
+			if (repositoryMeta==null)
 			{
 				// Can not find repository
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRep"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
 			}
+
+			repos = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+			repos.init(repositoryMeta);
 			
-			repos = RepositoryLoader.createRepository(rep_info);
 			try{
 				repos.connect(jobMeta.environmentSubstitute(wUserName.getText()),jobMeta.environmentSubstitute(wPassword.getText()));
 			} catch(Exception e) {
@@ -1314,8 +1320,8 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				repos.disconnect();
 				repos=null;
 			}
-			if(rep_info!=null) rep_info=null;
-			reps_info.clear();
+			if(repositoryMeta!=null) repositoryMeta=null;
+			repositoriesMeta.clear();
 		}
 	}
 }

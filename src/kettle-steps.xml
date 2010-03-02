@@ -11,1107 +11,1107 @@
 	
 	  <step id="RowGenerator"> 
 	    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GenerateRows</description>
-		<class-name>org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GenerateRows</tooltip> 
-		<image-uri>ui/images/GEN.png</image-uri> 
+		<iconfile>ui/images/GEN.png</iconfile> 
 	  </step>
 	-->
 	<step id="Dummy">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Dummy</description>
-		<class-name>org.pentaho.di.trans.steps.dummytrans.DummyTransMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.dummytrans.DummyTransMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Dummy</tooltip>
-		<image-uri>ui/images/DUM.png</image-uri>
+		<iconfile>ui/images/DUM.png</iconfile>
 	</step>
 
 	<step id="Append">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Append</description>
-		<class-name>org.pentaho.di.trans.steps.append.AppendMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.append.AppendMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Append</tooltip>
-		<image-uri>ui/images/APP.png</image-uri>
+		<iconfile>ui/images/APP.png</iconfile>
 	</step>
 
 	<step id="TableInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TableInput</description>
-		<class-name>org.pentaho.di.trans.steps.tableinput.TableInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.tableinput.TableInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TableInput</tooltip>
-		<image-uri>ui/images/TIP.png</image-uri>
+		<iconfile>ui/images/TIP.png</iconfile>
 	</step>
 
 	<step id="SocketReader">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SocketReader</description>
-		<class-name>org.pentaho.di.trans.steps.socketreader.SocketReaderMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.socketreader.SocketReaderMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Inline</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SocketReader</tooltip>
-		<image-uri>ui/images/SKR.png</image-uri>
+		<iconfile>ui/images/SKR.png</iconfile>
 	</step>
 
 	<step id="SocketWriter">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SocketWriter</description>
-		<class-name>org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Inline</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SocketWriter</tooltip>
-		<image-uri>ui/images/SKW.png</image-uri>
+		<iconfile>ui/images/SKW.png</iconfile>
 	</step>
 
 	<step id="SelectValues">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SelectValues</description>
-		<class-name>org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SelectValues</tooltip>
-		<image-uri>ui/images/SEL.png</image-uri>
+		<iconfile>ui/images/SEL.png</iconfile>
 	</step>
 
 	<step id="TextFileInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TextFileInput</description>
-		<class-name>org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TextInputFile</tooltip>
-		<image-uri>ui/images/TFI.png</image-uri>
+		<iconfile>ui/images/TFI.png</iconfile>
 	</step>
 
 	<step id="Calculator">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Caculator</description>
-		<class-name>org.pentaho.di.trans.steps.calculator.CalculatorMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.calculator.CalculatorMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Calculator</tooltip>
 		Database join
-		<image-uri>ui/images/CLC.png</image-uri>
+		<iconfile>ui/images/CLC.png</iconfile>
 	</step>
 
 	<step id="Constant">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AddConstants</description>
-		<class-name>org.pentaho.di.trans.steps.constant.ConstantMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.constant.ConstantMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Addconstants</tooltip>
-		<image-uri>ui/images/CST.png</image-uri>
+		<iconfile>ui/images/CST.png</iconfile>
 	</step>
 
 	<step id="Abort">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Abort</description>
-		<class-name>org.pentaho.di.trans.steps.abort.AbortMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.abort.AbortMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Abort</tooltip>
-		<image-uri>ui/images/ABR.png</image-uri>
+		<iconfile>ui/images/ABR.png</iconfile>
 	</step>
 
 	<step id="Sequence">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AddSequence</description>
-		<class-name>org.pentaho.di.trans.steps.addsequence.AddSequenceMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.addsequence.AddSequenceMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Addsequence</tooltip>
-		<image-uri>ui/images/SEQ.png</image-uri>
+		<iconfile>ui/images/SEQ.png</iconfile>
 	</step>
 
 	<step id="TableOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Output</description>
-		<class-name>org.pentaho.di.trans.steps.tableoutput.TableOutputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.tableoutput.TableOutputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TableOutput</tooltip>
-		<image-uri>ui/images/TOP.png</image-uri>
+		<iconfile>ui/images/TOP.png</iconfile>
 	</step>
 
 	<step id="InfobrightOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.InfobrightOutput</description>
-		<class-name>org.pentaho.di.trans.steps.infobrightoutput.InfobrightLoaderMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.infobrightoutput.InfobrightLoaderMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.InfobrightOutput</tooltip>
-		<image-uri>ui/images/IBL.png</image-uri>
+		<iconfile>ui/images/IBL.png</iconfile>
 	</step>
 
 	<step id="SortRows">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SortRows</description>
-		<class-name>org.pentaho.di.trans.steps.sort.SortRowsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.sort.SortRowsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Sortrows</tooltip>
-		<image-uri>ui/images/SRT.png</image-uri>
+		<iconfile>ui/images/SRT.png</iconfile>
 	</step>
 
 	<step id="OraBulkLoader">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.OraBulkLoader</description>
-		<class-name>org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.OraBulkLoader</tooltip>
-		<image-uri>ui/images/BulkIn.png</image-uri>
+		<iconfile>ui/images/BulkIn.png</iconfile>
 	</step>
 
 	<step id="Injector">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Injector</description>
-		<class-name>org.pentaho.di.trans.steps.injector.InjectorMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.injector.InjectorMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Inline</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Injector</tooltip>
-		<image-uri>ui/images/INJ.png</image-uri>
+		<iconfile>ui/images/INJ.png</iconfile>
 	</step>
 
 	<step id="FilterRows">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FilterRows</description>
-		<class-name>org.pentaho.di.trans.steps.filterrows.FilterRowsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.filterrows.FilterRowsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FilterRows</tooltip>
-		<image-uri>ui/images/FLT.png</image-uri>
+		<iconfile>ui/images/FLT.png</iconfile>
 	</step>
 
 	<step id="JavaFilter">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.JavaFilter</description>
-		<class-name>org.pentaho.di.trans.steps.javafilter.JavaFilterMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.javafilter.JavaFilterMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JavaFilter</tooltip>
-		<image-uri>ui/images/JLT.png</image-uri>
+		<iconfile>ui/images/JLT.png</iconfile>
 	</step>
 
 	<step id="TextFileOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TextFileOutput</description>
-		<class-name>org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TextOutputFile</tooltip>
-		<image-uri>ui/images/TFO.png</image-uri>
+		<iconfile>ui/images/TFO.png</iconfile>
 	</step>
 
 	<step id="SystemInfo">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetSystemInfo</description>
-		<class-name>org.pentaho.di.trans.steps.systemdata.SystemDataMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.systemdata.SystemDataMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetSystemInfo</tooltip>
-		<image-uri>ui/images/SYS.png</image-uri>
+		<iconfile>ui/images/SYS.png</iconfile>
 	</step>
 
 	<step id="StreamLookup">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.StreamLookup</description>
-		<class-name>org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Streamlookup</tooltip>
-		<image-uri>ui/images/SLU.png</image-uri>
+		<iconfile>ui/images/SLU.png</iconfile>
 	</step>
 
 	<step id="Unique">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.UniqueRows</description>
-		<class-name>org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Uniquerows</tooltip>
-		<image-uri>ui/images/UNQ.png</image-uri>
+		<iconfile>ui/images/UNQ.png</iconfile>
 	</step>
 
 	<step id="DBLookup">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DatabaseLookup</description>
-		<class-name>org.pentaho.di.trans.steps.databaselookup.DatabaseLookupMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.databaselookup.DatabaseLookupMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Databaselookup</tooltip>
-		<image-uri>ui/images/DLU.png</image-uri>
+		<iconfile>ui/images/DLU.png</iconfile>
 	</step>
 
 	<step id="DBJoin">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DatabaseJoin</description>
-		<class-name>org.pentaho.di.trans.steps.databasejoin.DatabaseJoinMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.databasejoin.DatabaseJoinMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Databasejoin</tooltip>
-		<image-uri>ui/images/DBJ.png</image-uri>
+		<iconfile>ui/images/DBJ.png</iconfile>
 	</step>
 
 	<step id="DimensionLookup">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DimensionUpdate</description>
-		<class-name>org.pentaho.di.trans.steps.dimensionlookup.DimensionLookupMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.dimensionlookup.DimensionLookupMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.DataWarehouse</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Dimensionupdate</tooltip>
-		<image-uri>ui/images/DIM.png</image-uri>
+		<iconfile>ui/images/DIM.png</iconfile>
 	</step>
 
 	<step id="ExcelInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ExcelInput</description>
-		<class-name>org.pentaho.di.trans.steps.excelinput.ExcelInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.excelinput.ExcelInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ExcelInput</tooltip>
-		<image-uri>ui/images/XLI.png</image-uri>
+		<iconfile>ui/images/XLI.png</iconfile>
 	</step>
 
 	<step id="CombinationLookup">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CombinationUpdate</description>
-		<class-name>org.pentaho.di.trans.steps.combinationlookup.CombinationLookupMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.combinationlookup.CombinationLookupMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.DataWarehouse</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CombinationUpdate</tooltip>
-		<image-uri>ui/images/CMB.png</image-uri>
+		<iconfile>ui/images/CMB.png</iconfile>
 	</step>
 
 	<step id="ScriptValueMod,ScriptValue">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.JavaScriptMod</description>
-		<class-name>org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod</class-name>
+		<classname>org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JavaScriptValueMod</tooltip>
-		<image-uri>ui/images/SCR_mod.png</image-uri>
+		<iconfile>ui/images/SCR_mod.png</iconfile>
 	</step>
 
 	<step id="JoinRows">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.JoinRows</description>
-		<class-name>org.pentaho.di.trans.steps.joinrows.JoinRowsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.joinrows.JoinRowsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JoinRows</tooltip>
-		<image-uri>ui/images/JRW.png</image-uri>
+		<iconfile>ui/images/JRW.png</iconfile>
 	</step>
 
 	<step id="Update">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Update</description>
-		<class-name>org.pentaho.di.trans.steps.update.UpdateMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.update.UpdateMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Update</tooltip>
-		<image-uri>ui/images/UPD.png</image-uri>
+		<iconfile>ui/images/UPD.png</iconfile>
 	</step>
 
 	<step id="InsertUpdate">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.InsertOrUpdate</description>
-		<class-name>org.pentaho.di.trans.steps.insertupdate.InsertUpdateMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.insertupdate.InsertUpdateMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.InsertOrUpdate</tooltip>
-		<image-uri>ui/images/INU.png</image-uri>
+		<iconfile>ui/images/INU.png</iconfile>
 	</step>
 
 	<step id="Delete">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Delete</description>
-		<class-name>org.pentaho.di.trans.steps.delete.DeleteMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.delete.DeleteMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Delete</tooltip>
-		<image-uri>ui/images/Delete.png</image-uri>
+		<iconfile>ui/images/Delete.png</iconfile>
 	</step>
 
 	<step id="MappingInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MappingInput</description>
-		<class-name>org.pentaho.di.trans.steps.mappinginput.MappingInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.mappinginput.MappingInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Mapping</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MappingInputSpecification</tooltip>
-		<image-uri>ui/images/MPI.png</image-uri>
+		<iconfile>ui/images/MPI.png</iconfile>
 	</step>
 
 	<step id="Mapping">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MappingSubTransformation</description>
-		<class-name>org.pentaho.di.trans.steps.mapping.MappingMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.mapping.MappingMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Mapping</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MappingSubTransformation</tooltip>
-		<image-uri>ui/images/MAP.png</image-uri>
+		<iconfile>ui/images/MAP.png</iconfile>
 	</step>
 
 	<step id="MappingOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MappingOutput</description>
-		<class-name>org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Mapping</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MappingOutputSpecification</tooltip>
-		<image-uri>ui/images/MPO.png</image-uri>
+		<iconfile>ui/images/MPO.png</iconfile>
 	</step>
 
 	<step id="SetVariable">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SetVariable</description>
-		<class-name>org.pentaho.di.trans.steps.setvariable.SetVariableMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.setvariable.SetVariableMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SetVariable</tooltip>
-		<image-uri>ui/images/SVA.png</image-uri>
+		<iconfile>ui/images/SVA.png</iconfile>
 	</step>
 
 	<step id="GetVariable">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetVariable</description>
-		<class-name>org.pentaho.di.trans.steps.getvariable.GetVariableMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.getvariable.GetVariableMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetVariable</tooltip>
-		<image-uri>ui/images/GVA.png</image-uri>
+		<iconfile>ui/images/GVA.png</iconfile>
 	</step>
 
 	<step id="NullIf">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.NullIf</description>
-		<class-name>org.pentaho.di.trans.steps.nullif.NullIfMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.nullif.NullIfMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Nullif</tooltip>
-		<image-uri>ui/images/NUI.png</image-uri>
+		<iconfile>ui/images/NUI.png</iconfile>
 	</step>
 
 	<step id="ExecSQL">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ExcuteSQL</description>
-		<class-name>org.pentaho.di.trans.steps.sql.ExecSQLMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.sql.ExecSQLMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ExecuteSQL</tooltip>
-		<image-uri>ui/images/SQL.png</image-uri>
+		<iconfile>ui/images/SQL.png</iconfile>
 	</step>
 
 	<step id="RowsFromResult">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetRows</description>
-		<class-name>org.pentaho.di.trans.steps.rowsfromresult.RowsFromResultMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.rowsfromresult.RowsFromResultMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetRowsFromResult</tooltip>
-		<image-uri>ui/images/FCH.png</image-uri>
+		<iconfile>ui/images/FCH.png</iconfile>
 	</step>
 
 	<step id="RowsToResult">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CopyRows</description>
-		<class-name>org.pentaho.di.trans.steps.rowstoresult.RowsToResultMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.rowstoresult.RowsToResultMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CopyRowsToResult</tooltip>
-		<image-uri>ui/images/TCH.png</image-uri>
+		<iconfile>ui/images/TCH.png</iconfile>
 	</step>
 
 	<step id="BlockingStep">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.BlockingStep</description>
-		<class-name>org.pentaho.di.trans.steps.blockingstep.BlockingStepMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.blockingstep.BlockingStepMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.BlockingStep</tooltip>
-		<image-uri>ui/images/BLK.png</image-uri>
+		<iconfile>ui/images/BLK.png</iconfile>
 	</step>
 
 	<step id="HTTP">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.HTTP</description>
-		<class-name>org.pentaho.di.trans.steps.http.HTTPMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.http.HTTPMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.HTTP</tooltip>
-		<image-uri>ui/images/WEB.png</image-uri>
+		<iconfile>ui/images/WEB.png</iconfile>
 	</step>
 
 	<step id="MergeRows">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MergeRows</description>
-		<class-name>org.pentaho.di.trans.steps.mergerows.MergeRowsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.mergerows.MergeRowsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MergeRows</tooltip>
-		<image-uri>ui/images/MRG.png</image-uri>
+		<iconfile>ui/images/MRG.png</iconfile>
 	</step>
 
 	<step id="GetFileNames">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetFileNames</description>
-		<class-name>org.pentaho.di.trans.steps.getfilenames.GetFileNamesMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.getfilenames.GetFileNamesMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetFileNames</tooltip>
-		<image-uri>ui/images/GFN.png</image-uri>
+		<iconfile>ui/images/GFN.png</iconfile>
 	</step>
 
 	<step id="FilesFromResult">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FilesFromResult</description>
-		<class-name>org.pentaho.di.trans.steps.filesfromresult.FilesFromResultMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.filesfromresult.FilesFromResultMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FilesFromResult</tooltip>
-		<image-uri>ui/images/FFR.png</image-uri>
+		<iconfile>ui/images/FFR.png</iconfile>
 	</step>
 
 	<step id="FilesToResult">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FilesToResult</description>
-		<class-name>org.pentaho.di.trans.steps.filestoresult.FilesToResultMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.filestoresult.FilesToResultMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Job</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FilesToResult</tooltip>
-		<image-uri>ui/images/FTR.png</image-uri>
+		<iconfile>ui/images/FTR.png</iconfile>
 	</step>
 
 	<step id="GroupBy">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GroupBy</description>
-		<class-name>org.pentaho.di.trans.steps.groupby.GroupByMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.groupby.GroupByMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Groupby</tooltip>
-		<image-uri>ui/images/GRP.png</image-uri>
+		<iconfile>ui/images/GRP.png</iconfile>
 	</step>
 
 	<step id="MemoryGroupBy">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MemoryGroupBy</description>
-		<class-name>org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MemoryGroupby</tooltip>
-		<image-uri>ui/images/GRP.png</image-uri>
+		<iconfile>ui/images/GRP.png</iconfile>
 	</step>
 
 	<step id="AnalyticQuery">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AnalyticQuery</description>
-		<class-name>org.pentaho.di.trans.steps.analyticquery.AnalyticQueryMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.analyticquery.AnalyticQueryMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AnalyticQuery</tooltip>
-		<image-uri>ui/images/AQI.png</image-uri>
+		<iconfile>ui/images/AQI.png</iconfile>
 	</step>
 
 	<step id="MergeJoin">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MergeJoin</description>
-		<class-name>org.pentaho.di.trans.steps.mergejoin.MergeJoinMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.mergejoin.MergeJoinMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MergeJoin</tooltip>
-		<image-uri>ui/images/MJOIN.png</image-uri>
+		<iconfile>ui/images/MJOIN.png</iconfile>
 	</step>
 
 	<step id="SortedMerge">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SortedMerge</description>
-		<class-name>org.pentaho.di.trans.steps.sortedmerge.SortedMergeMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.sortedmerge.SortedMergeMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SortedMerge</tooltip>
-		<image-uri>ui/images/SMG.png</image-uri>
+		<iconfile>ui/images/SMG.png</iconfile>
 	</step>
 
 	<step id="XMLInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XMLInput</description>
-		<class-name>org.pentaho.di.trans.steps.xmlinput.XMLInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.xmlinput.XMLInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XMLInput</tooltip>
-		<image-uri>ui/images/XIN.png</image-uri>
+		<iconfile>ui/images/XIN.png</iconfile>
 	</step>
 
 	<step id="XMLInputSax">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XMLInputSax</description>
-		<class-name>org.pentaho.di.trans.steps.xmlinputsax.XMLInputSaxMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.xmlinputsax.XMLInputSaxMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XMLInputSax</tooltip>
-		<image-uri>ui/images/XIS.png</image-uri>
+		<iconfile>ui/images/XIS.png</iconfile>
 	</step>
 
 	<step id="XMLOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XMLOutput</description>
-		<class-name>org.pentaho.di.trans.steps.xmloutput.XMLOutputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.xmloutput.XMLOutputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XMLOutput</tooltip>
-		<image-uri>ui/images/XOU.png</image-uri>
+		<iconfile>ui/images/XOU.png</iconfile>
 	</step>
 
 	<step id="ExcelOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ExcelOutput</description>
-		<class-name>org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ExcelOutput</tooltip>
-		<image-uri>ui/images/XLO.png</image-uri>
+		<iconfile>ui/images/XLO.png</iconfile>
 	</step>
 
 	<step id="DBProc">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CallDBProcedure</description>
-		<class-name>org.pentaho.di.trans.steps.dbproc.DBProcMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.dbproc.DBProcMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CallDBProcedure</tooltip>
-		<image-uri>ui/images/PRC.png</image-uri>
+		<iconfile>ui/images/PRC.png</iconfile>
 	</step>
 
 	<step id="Denormaliser">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RowDenormaliser</description>
-		<class-name>org.pentaho.di.trans.steps.denormaliser.DenormaliserMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.denormaliser.DenormaliserMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RowsDenormalises</tooltip>
-		<image-uri>ui/images/UNP.png</image-uri>
+		<iconfile>ui/images/UNP.png</iconfile>
 	</step>
 
 	<step id="Normaliser">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RowNormaliser</description>
-		<class-name>org.pentaho.di.trans.steps.normaliser.NormaliserMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.normaliser.NormaliserMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RowNormaliser</tooltip>
-		<image-uri>ui/images/NRM.png</image-uri>
+		<iconfile>ui/images/NRM.png</iconfile>
 	</step>
 
 	<step id="Flattener,Flatterner">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RowFalttener</description>
-		<class-name>org.pentaho.di.trans.steps.flattener.FlattenerMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.flattener.FlattenerMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Rowflattener</tooltip>
-		<image-uri>ui/images/FLA.png</image-uri>
+		<iconfile>ui/images/FLA.png</iconfile>
 	</step>
 
 	<step id="XBaseInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XBaseInput</description>
-		<class-name>org.pentaho.di.trans.steps.xbaseinput.XBaseInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.xbaseinput.XBaseInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XBaseinput</tooltip>
-		<image-uri>ui/images/XBI.png</image-uri>
+		<iconfile>ui/images/XBI.png</iconfile>
 	</step>
 
 	<step id="AccessOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AccessOutput</description>
-		<class-name>org.pentaho.di.trans.steps.accessoutput.AccessOutputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.accessoutput.AccessOutputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AccessOutput</tooltip>
-		<image-uri>ui/images/ACO.png</image-uri>
+		<iconfile>ui/images/ACO.png</iconfile>
 	</step>
 
 	<step id="RegexEval">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RegexEval</description>
-		<class-name>org.pentaho.di.trans.steps.regexeval.RegexEvalMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.regexeval.RegexEvalMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RegexEval</tooltip>
-		<image-uri>ui/images/RGE.png</image-uri>
+		<iconfile>ui/images/RGE.png</iconfile>
 	</step>
 
 	<step id="AccessInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AccessInput</description>
-		<class-name>org.pentaho.di.trans.steps.accessinput.AccessInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.accessinput.AccessInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AccessInput</tooltip>
-		<image-uri>ui/images/ACI.png</image-uri>
+		<iconfile>ui/images/ACI.png</iconfile>
 	</step>
 
 	<step id="AddXML">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AddXML</description>
-		<class-name>org.pentaho.di.trans.steps.addxml.AddXMLMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.addxml.AddXMLMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AddXML</tooltip>
-		<image-uri>ui/images/XIN.png</image-uri>
+		<iconfile>ui/images/XIN.png</iconfile>
 	</step>
 
 	<step id="AggregateRows">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AggregateRows</description>
-		<class-name>org.pentaho.di.trans.steps.aggregaterows.AggregateRowsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.aggregaterows.AggregateRowsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AggregateRows</tooltip>
-		<image-uri>ui/images/AGG.png</image-uri>
+		<iconfile>ui/images/AGG.png</iconfile>
 	</step>
 
 	<step id="MondrianInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MondrianInput</description>
-		<class-name>org.pentaho.di.trans.steps.mondrianinput.MondrianInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.mondrianinput.MondrianInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MondrianInput</tooltip>
-		<image-uri>ui/images/MON.png</image-uri>
+		<iconfile>ui/images/MON.png</iconfile>
 	</step>
 
 	<step id="GetFilesRowsCount">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetFilesRowsCount</description>
-		<class-name>org.pentaho.di.trans.steps.getfilesrowscount.GetFilesRowsCountMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.getfilesrowscount.GetFilesRowsCountMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetFilesRowsCount</tooltip>
-		<image-uri>ui/images/FRC.png</image-uri>
+		<iconfile>ui/images/FRC.png</iconfile>
 	</step>
 
 	<step id="LDAPInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.LDAPInput</description>
-		<class-name>org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LDAPInput</tooltip>
-		<image-uri>ui/images/LIP.png</image-uri>
+		<iconfile>ui/images/LIP.png</iconfile>
 	</step>
 
 	<step id="getXMLData">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetXMLData</description>
-		<class-name>org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetXMLData</tooltip>
-		<image-uri>ui/images/GXD.png</image-uri>
+		<iconfile>ui/images/GXD.png</iconfile>
 	</step>
 
 	<step id="XSDValidator">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XSDValidator</description>
-		<class-name>org.pentaho.di.trans.steps.xsdvalidator.XsdValidatorMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.xsdvalidator.XsdValidatorMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Validation</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XSDValidator</tooltip>
-		<image-uri>ui/images/XSD.png</image-uri>
+		<iconfile>ui/images/XSD.png</iconfile>
 	</step>
 
 	<step id="XSLT">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XSLT</description>
-		<class-name>org.pentaho.di.trans.steps.xslt.XsltMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.xslt.XsltMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XSLT</tooltip>
-		<image-uri>ui/images/XSLT.png</image-uri>
+		<iconfile>ui/images/XSLT.png</iconfile>
 	</step>
 
 	<step id="Validator">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Validator</description>
-		<class-name>org.pentaho.di.trans.steps.validator.ValidatorMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.validator.ValidatorMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Validation</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Validator</tooltip>
-		<image-uri>ui/images/VLD.png</image-uri>
+		<iconfile>ui/images/VLD.png</iconfile>
 	</step>
 
 	<step id="SQLFileOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SQLFileOutput</description>
-		<class-name>org.pentaho.di.trans.steps.sqlfileoutput.SQLFileOutputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.sqlfileoutput.SQLFileOutputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SQLFileOutput</tooltip>
-		<image-uri>ui/images/SFO.png</image-uri>
+		<iconfile>ui/images/SFO.png</iconfile>
 	</step>
 
 	<step id="SplitFieldToRows3">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SplitFieldToRows3</description>
-		<class-name>org.pentaho.di.trans.steps.splitfieldtorows.SplitFieldToRowsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.splitfieldtorows.SplitFieldToRowsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SplitFieldToRows3</tooltip>
-		<image-uri>ui/images/SFtR.png</image-uri>
+		<iconfile>ui/images/SFtR.png</iconfile>
 	</step>
 
 	<step id="PropertyInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PropertyInput</description>
-		<class-name>org.pentaho.di.trans.steps.propertyinput.PropertyInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.propertyinput.PropertyInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PropertyInput</tooltip>
-		<image-uri>ui/images/PFI.png</image-uri>
+		<iconfile>ui/images/PFI.png</iconfile>
 	</step>
 
 	<step id="GPBulkLoader">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GPBulkLoader</description>
-		<class-name>org.pentaho.di.trans.steps.gpbulkloader.GPBulkLoaderMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.gpbulkloader.GPBulkLoaderMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GPBulkLoader</tooltip>
-		<image-uri>ui/images/GBL.png</image-uri>
+		<iconfile>ui/images/GBL.png</iconfile>
 	</step>
 
 	<step id="PGBulkLoader">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PGBulkLoader</description>
-		<class-name>org.pentaho.di.trans.steps.pgbulkloader.PGBulkLoaderMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.pgbulkloader.PGBulkLoaderMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PGBulkLoader</tooltip>
-		<image-uri>ui/images/PGBL.png</image-uri>
+		<iconfile>ui/images/PGBL.png</iconfile>
 	</step>
 
 	<step id="LDIFInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.LDIFInput</description>
-		<class-name>org.pentaho.di.trans.steps.ldifinput.LDIFInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.ldifinput.LDIFInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LDIFInput</tooltip>
-		<image-uri>ui/images/LDI.png</image-uri>
+		<iconfile>ui/images/LDI.png</iconfile>
 	</step>
 
 	<step id="PropertyOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PropertyOutput</description>
-		<class-name>org.pentaho.di.trans.steps.propertyoutput.PropertyOutputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.propertyoutput.PropertyOutputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PropertyOutput</tooltip>
-		<image-uri>ui/images/PFO.png</image-uri>
+		<iconfile>ui/images/PFO.png</iconfile>
 	</step>
 
 	<step id="SwitchCase">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SwitchCase</description>
-		<class-name>org.pentaho.di.trans.steps.switchcase.SwitchCaseMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.switchcase.SwitchCaseMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SwitchCase</tooltip>
-		<image-uri>ui/images/SWC.png</image-uri>
+		<iconfile>ui/images/SWC.png</iconfile>
 	</step>
 
 	<step id="XMLJoin">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XMLJoin</description>
-		<class-name>org.pentaho.di.trans.steps.xmljoin.XMLJoinMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.xmljoin.XMLJoinMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XMLJoin</tooltip>
-		<image-uri>ui/images/XJN.png</image-uri>
+		<iconfile>ui/images/XJN.png</iconfile>
 	</step>
 
 	<step id="StepMetastructure">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.StepMetastructure</description>
-		<class-name>org.pentaho.di.trans.steps.stepmeta.StepMetastructureMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.stepmeta.StepMetastructureMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.StepMetastructure</tooltip>
-		<image-uri>ui/images/STMD.png</image-uri>
+		<iconfile>ui/images/STMD.png</iconfile>
 	</step>
 
 	<step id="TableExists">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TableExists</description>
-		<class-name>org.pentaho.di.trans.steps.tableexists.TableExistsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.tableexists.TableExistsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TableExists</tooltip>
-		<image-uri>ui/images/TEX.png</image-uri>
+		<iconfile>ui/images/TEX.png</iconfile>
 	</step>
 
 	<step id="ColumnExists">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ColumnExists</description>
-		<class-name>org.pentaho.di.trans.steps.columnexists.ColumnExistsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.columnexists.ColumnExistsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ColumnExists</tooltip>
-		<image-uri>ui/images/CEX.png</image-uri>
+		<iconfile>ui/images/CEX.png</iconfile>
 	</step>
 
 	<step id="FileExists">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FileExists</description>
-		<class-name>org.pentaho.di.trans.steps.fileexists.FileExistsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.fileexists.FileExistsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FileExists</tooltip>
-		<image-uri>ui/images/FEX.png</image-uri>
+		<iconfile>ui/images/FEX.png</iconfile>
 	</step>
 
 	<step id="CloneRow">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CloneRow</description>
-		<class-name>org.pentaho.di.trans.steps.clonerow.CloneRowMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.clonerow.CloneRowMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CloneRow</tooltip>
-		<image-uri>ui/images/CLR.png</image-uri>
+		<iconfile>ui/images/CLR.png</iconfile>
 	</step>
 
 	<step id="Delay">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Delay</description>
-		<class-name>org.pentaho.di.trans.steps.delay.DelayMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.delay.DelayMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Delay</tooltip>
-		<image-uri>ui/images/DLT.png</image-uri>
+		<iconfile>ui/images/DLT.png</iconfile>
 	</step>
 
 	<step id="CheckSum">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CheckSum</description>
-		<class-name>org.pentaho.di.trans.steps.checksum.CheckSumMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.checksum.CheckSumMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CheckSum</tooltip>
-		<image-uri>ui/images/CSM.png</image-uri>
+		<iconfile>ui/images/CSM.png</iconfile>
 	</step>
 
 	<step id="RandomValue">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RandomValue</description>
-		<class-name>org.pentaho.di.trans.steps.randomvalue.RandomValueMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.randomvalue.RandomValueMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RandomValue</tooltip>
-		<image-uri>ui/images/RVA.png</image-uri>
+		<iconfile>ui/images/RVA.png</iconfile>
 	</step>
 
 	<step id="GetSubFolders">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetSubFolders</description>
-		<class-name>org.pentaho.di.trans.steps.getsubfolders.GetSubFoldersMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.getsubfolders.GetSubFoldersMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetSubFolders</tooltip>
-		<image-uri>ui/images/LSF.png</image-uri>
+		<iconfile>ui/images/LSF.png</iconfile>
 	</step>
 
 	<step id="MonetDBBulkLoader">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MonetDBBulkLoader</description>
-		<class-name>org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MonetDBBulkLoader</tooltip>
-		<image-uri>ui/images/OBL.png</image-uri>
+		<iconfile>ui/images/OBL.png</iconfile>
 	</step>
 
 	<step id="MailValidator">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MailValidator</description>
-		<class-name>org.pentaho.di.trans.steps.mailvalidator.MailValidatorMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.mailvalidator.MailValidatorMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Validation</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MailValidator</tooltip>
-		<image-uri>ui/images/MAV.png</image-uri>
+		<iconfile>ui/images/MAV.png</iconfile>
 	</step>
 
 	<step id="Mail">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Mail</description>
-		<class-name>org.pentaho.di.trans.steps.mail.MailMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.mail.MailMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Mail</tooltip>
-		<image-uri>ui/images/MAIL.png</image-uri>
+		<iconfile>ui/images/MAIL.png</iconfile>
 	</step>
 
 	<step id="CreditCardValidator">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CreditCardValidator</description>
-		<class-name>org.pentaho.di.trans.steps.creditcardvalidator.CreditCardValidatorMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.creditcardvalidator.CreditCardValidatorMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Validation</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CreditCardValidator</tooltip>
-		<image-uri>ui/images/CCV.png</image-uri>
+		<iconfile>ui/images/CCV.png</iconfile>
 	</step>
 
 	<step id="ProcessFiles">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ProcessFiles</description>
-		<class-name>org.pentaho.di.trans.steps.processfiles.ProcessFilesMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.processfiles.ProcessFilesMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ProcessFiles</tooltip>
-		<image-uri>ui/images/PPF.png</image-uri>
+		<iconfile>ui/images/PPF.png</iconfile>
 	</step>
 
 	<step id="DetectLastRow">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DetectLastRow</description>
-		<class-name>org.pentaho.di.trans.steps.detectlastrow.DetectLastRowMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.detectlastrow.DetectLastRowMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.DetectLastRow</tooltip>
-		<image-uri>ui/images/DLR.png</image-uri>
+		<iconfile>ui/images/DLR.png</iconfile>
 	</step>
 
 	<step id="DetectEmptyStream">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DetectEmptyStream</description>
-		<class-name>org.pentaho.di.trans.steps.detectemptystream.DetectEmptyStreamMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.detectemptystream.DetectEmptyStreamMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.DetectEmptyStream</tooltip>
-		<image-uri>ui/images/EMS.png</image-uri>
+		<iconfile>ui/images/EMS.png</iconfile>
 	</step>
 
 	<step id="WriteToLog">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.WriteToLog</description>
-		<class-name>org.pentaho.di.trans.steps.writetolog.WriteToLogMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.writetolog.WriteToLogMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.WriteToLog</tooltip>
-		<image-uri>ui/images/WTL.png</image-uri>
+		<iconfile>ui/images/WTL.png</iconfile>
 	</step>
 
 	<step id="SampleRows">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SampleRows</description>
-		<class-name>org.pentaho.di.trans.steps.samplerows.SampleRowsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.samplerows.SampleRowsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SampleRows</tooltip>
-		<image-uri>ui/images/SR.png</image-uri>
+		<iconfile>ui/images/SR.png</iconfile>
 	</step>
 
 	<step id="GetPreviousRowField">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetPreviousRowField</description>
-		<class-name>org.pentaho.di.trans.steps.getpreviousrowfield.GetPreviousRowFieldMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.getpreviousrowfield.GetPreviousRowFieldMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetPreviousRowField</tooltip>
-		<image-uri>ui/images/PRV.png</image-uri>
+		<iconfile>ui/images/PRV.png</iconfile>
 	</step>
 
 	<step id="ExecSQLRow">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ExecSQLRow</description>
-		<class-name>org.pentaho.di.trans.steps.execsqlrow.ExecSQLRowMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.execsqlrow.ExecSQLRowMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ExecSQLRow</tooltip>
-		<image-uri>ui/images/SQLR.png</image-uri>
+		<iconfile>ui/images/SQLR.png</iconfile>
 	</step>
 
 	<step id="DynamicSQLRow">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DynamicSQLRow</description>
-		<class-name>org.pentaho.di.trans.steps.dynamicsqlrow.DynamicSQLRowMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.dynamicsqlrow.DynamicSQLRowMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.DynamicSQLRow</tooltip>
-		<image-uri>ui/images/DSR.png</image-uri>
+		<iconfile>ui/images/DSR.png</iconfile>
 	</step>
 
 	<step id="NumberRange">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.NumberRange</description>
-		<class-name>org.pentaho.di.trans.steps.numberrange.NumberRangeMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.numberrange.NumberRangeMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.NumberRange</tooltip>
-		<image-uri>ui/images/NRI.png</image-uri>
+		<iconfile>ui/images/NRI.png</iconfile>
 	</step>
 
 	<step id="SynchronizeAfterMerge">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SynchronizeAfterMerge</description>
-		<class-name>org.pentaho.di.trans.steps.synchronizeaftermerge.SynchronizeAfterMergeMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.synchronizeaftermerge.SynchronizeAfterMergeMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SynchronizeAfterMerge</tooltip>
-		<image-uri>ui/images/SAM.png</image-uri>
+		<iconfile>ui/images/SAM.png</iconfile>
 	</step>
 
 	<step id="LucidDBBulkLoader">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.LucidDBBulkLoader</description>
-		<class-name>org.pentaho.di.trans.steps.luciddbbulkloader.LucidDBBulkLoaderMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.luciddbbulkloader.LucidDBBulkLoaderMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LucidDBBulkLoader</tooltip>
-		<image-uri>ui/images/OBL.png</image-uri>
+		<iconfile>ui/images/OBL.png</iconfile>
 	</step>
 
 	<step id="MySQLBulkLoader">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MySQLBulkLoader</description>
-		<class-name>org.pentaho.di.trans.steps.mysqlbulkloader.MySQLBulkLoaderMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.mysqlbulkloader.MySQLBulkLoaderMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MySQLBulkLoader</tooltip>
-		<image-uri>ui/images/OBL.png</image-uri>
+		<iconfile>ui/images/OBL.png</iconfile>
 	</step>
 
 	<step id="ReplaceString">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ReplaceString</description>
-		<class-name>org.pentaho.di.trans.steps.replacestring.ReplaceStringMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.replacestring.ReplaceStringMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ReplaceString</tooltip>
-		<image-uri>ui/images/RST.png</image-uri>
+		<iconfile>ui/images/RST.png</iconfile>
 	</step>
 
 	<step id="StringCut">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.StringCut</description>
-		<class-name>org.pentaho.di.trans.steps.stringcut.StringCutMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.stringcut.StringCutMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.StringCut</tooltip>
-		<image-uri>ui/images/SRC.png</image-uri>
+		<iconfile>ui/images/SRC.png</iconfile>
 	</step>
 
 	<step id="IfNull">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.IfNull</description>
-		<class-name>org.pentaho.di.trans.steps.ifnull.IfNullMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.ifnull.IfNullMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.IfNull</tooltip>
-		<image-uri>ui/images/IFN.png</image-uri>
+		<iconfile>ui/images/IFN.png</iconfile>
 	</step>
 
 	<step id="RssOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RssOutput</description>
-		<class-name>org.pentaho.di.trans.steps.rssoutput.RssOutputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.rssoutput.RssOutputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RssOutput</tooltip>
-		<image-uri>ui/images/RRO.png</image-uri>
+		<iconfile>ui/images/RRO.png</iconfile>
 	</step>
 
 	<step id="RssInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RssInput</description>
-		<class-name>org.pentaho.di.trans.steps.rssinput.RssInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.rssinput.RssInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RssInput</tooltip>
-		<image-uri>ui/images/RIN.png</image-uri>
+		<iconfile>ui/images/RIN.png</iconfile>
 	</step>
 
 	<step id="SalesforceInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceInput</description>
-		<class-name>org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceInput</tooltip>
-		<image-uri>ui/images/SFI.png</image-uri>
+		<iconfile>ui/images/SFI.png</iconfile>
 	</step>
 
 	<step id="Formula">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Formula</description>
-		<class-name>org.pentaho.di.trans.steps.formula.FormulaMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.formula.FormulaMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Formula</tooltip>
-		<image-uri>ui/images/FRM.png</image-uri>
+		<iconfile>ui/images/FRM.png</iconfile>
 	</step>
 
 	<step id="Janino">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Janino</description>
-		<class-name>org.pentaho.di.trans.steps.janino.JaninoMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.janino.JaninoMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Janino</tooltip>
-		<image-uri>ui/images/janino.png</image-uri>
+		<iconfile>ui/images/janino.png</iconfile>
 	</step>
 
 	<step id="ReservoirSampling">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ReservoirSampling</description>
-		<class-name>org.pentaho.di.trans.steps.reservoirsampling.ReservoirSamplingMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.reservoirsampling.ReservoirSamplingMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ReservoirSampling</tooltip>
-		<image-uri>ui/images/RS.png</image-uri>
+		<iconfile>ui/images/RS.png</iconfile>
 	</step>
 
 	<step id="UnivariateStats">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.UnivariateStats</description>
-		<class-name>org.pentaho.di.trans.steps.univariatestats.UnivariateStatsMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.univariatestats.UnivariateStatsMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.UnivariateStats</tooltip>
-		<image-uri>ui/images/US.png</image-uri>
+		<iconfile>ui/images/US.png</iconfile>
 	</step>
 
 	<step id="UniqueRowsByHashSet">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.UniqueRowsByHashSet</description>
-		<class-name>org.pentaho.di.trans.steps.uniquerowsbyhashset.UniqueRowsByHashSetMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.uniquerowsbyhashset.UniqueRowsByHashSetMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.UniqueRowsByHashSet</tooltip>
-		<image-uri>ui/images/URH.png</image-uri>
+		<iconfile>ui/images/URH.png</iconfile>
 	</step>
 
 	<step id="HTTPPOST">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.HTTPPOST</description>
-		<class-name>org.pentaho.di.trans.steps.httppost.HTTPPOSTMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.httppost.HTTPPOSTMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.HTTPPOST</tooltip>
-		<image-uri>ui/images/HTP.png</image-uri>
+		<iconfile>ui/images/HTP.png</iconfile>
 	</step>
 
 	<step id="SetValueConstant">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SetValueConstant</description>
-		<class-name>org.pentaho.di.trans.steps.setvalueconstant.SetValueConstantMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.setvalueconstant.SetValueConstantMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SetValueConstant</tooltip>
-		<image-uri>ui/images/SVC.png</image-uri>
+		<iconfile>ui/images/SVC.png</iconfile>
 	</step>
 
 	<step id="SetValueField">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SetValueField</description>
-		<class-name>org.pentaho.di.trans.steps.setvaluefield.SetValueFieldMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.setvaluefield.SetValueFieldMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SetValueField</tooltip>
-		<image-uri>ui/images/SVF.png</image-uri>
+		<iconfile>ui/images/SVF.png</iconfile>
 	</step>
 
 	<step id="ExecProcess">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ExecProcess</description>
-		<class-name>org.pentaho.di.trans.steps.execprocess.ExecProcessMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.execprocess.ExecProcessMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ExecProcess</tooltip>
-		<image-uri>ui/images/RPL.png</image-uri>
+		<iconfile>ui/images/RPL.png</iconfile>
 	</step>
 
 	<step id="WebServiceLookup">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.WebServiceLookup</description>
-		<class-name>org.pentaho.di.trans.steps.webservices.WebServiceMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.webservices.WebServiceMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.WebServiceLookup</tooltip>
-		<image-uri>ui/images/WSL.png</image-uri>
+		<iconfile>ui/images/WSL.png</iconfile>
 	</step>
 
 	<step id="CsvInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CsvInput</description>
-		<class-name>org.pentaho.di.trans.steps.csvinput.CsvInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.csvinput.CsvInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.CsvInput</tooltip>
-		<image-uri>ui/images/TFI.png</image-uri>
+		<iconfile>ui/images/TFI.png</iconfile>
 	</step>
 
 	<step id="ParallelGzipCsvInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ParallelGzipCsvInput</description>
-		<class-name>org.pentaho.di.trans.steps.parallelgzipcsv.ParGzipCsvInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.parallelgzipcsv.ParGzipCsvInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ParallelGzipCsvInput</tooltip>
-		<image-uri>ui/images/TFI.png</image-uri>
+		<iconfile>ui/images/TFI.png</iconfile>
 	</step>
 	
 	<step id="MailInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MailInput</description>
-		<class-name>org.pentaho.di.trans.steps.mailinput.MailInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.mailinput.MailInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MailInput</tooltip>
-		<image-uri>ui/images/GETPOP.png</image-uri>
+		<iconfile>ui/images/GETPOP.png</iconfile>
 	</step>
 	
 	<step id="GetTableNames">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetTableNames</description>
-		<class-name>org.pentaho.di.trans.steps.gettablenames.GetTableNamesMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.gettablenames.GetTableNamesMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetTableNames</tooltip>
-		<image-uri>ui/images/GTN.png</image-uri>
+		<iconfile>ui/images/GTN.png</iconfile>
 	</step>
 	
 	<step id="SalesforceUpsert">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceUpsert</description>
-		<class-name>org.pentaho.di.trans.steps.salesforceupsert.SalesforceUpsertMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.salesforceupsert.SalesforceUpsertMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceUpsert</tooltip>
-		<image-uri>ui/images/SFU.png</image-uri>
+		<iconfile>ui/images/SFU.png</iconfile>
 	</step>
 	
 	<step id="SalesforceInsert">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceInsert</description>
-		<class-name>org.pentaho.di.trans.steps.salesforceinsert.SalesforceInsertMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.salesforceinsert.SalesforceInsertMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceInsert</tooltip>
-		<image-uri>ui/images/FFO.png</image-uri>
+		<iconfile>ui/images/FFO.png</iconfile>
 	</step>
 	
 	<step id="SalesforceUpdate">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceUpdate</description>
-		<class-name>org.pentaho.di.trans.steps.salesforceupdate.SalesforceUpdateMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.salesforceupdate.SalesforceUpdateMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceUpdate</tooltip>
-		<image-uri>ui/images/SFUD.png</image-uri>
+		<iconfile>ui/images/SFUD.png</iconfile>
 	</step>
 	
 	<step id="SalesforceDelete">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SalesforceDelete</description>
-		<class-name>org.pentaho.di.trans.steps.salesforcedelete.SalesforceDeleteMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.salesforcedelete.SalesforceDeleteMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SalesforceDelete</tooltip>
-		<image-uri>ui/images/SFD.png</image-uri>
+		<iconfile>ui/images/SFD.png</iconfile>
 	</step>
 
     <step id="FarragoStreamingLoader">
     	<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FarragoStreamingLoader</description>
-        <class-name>org.pentaho.di.trans.steps.farragostreamingloader.FarragoStreamingLoaderMeta</class-name>
+        <classname>org.pentaho.di.trans.steps.farragostreamingloader.FarragoStreamingLoaderMeta</classname>
         <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
         <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FarragoStreamingLoader</tooltip>
-        <image-uri>ui/images/OBL.png</image-uri>
+        <iconfile>ui/images/OBL.png</iconfile>
     </step>
 
 	<step id="UserDefinedJavaClass">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.UserDefinedJavaClass</description>
-		<class-name>org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.UserDefinedJavaClass</tooltip>
-		<image-uri>ui/images/sScript.png</image-uri>
+		<iconfile>ui/images/sScript.png</iconfile>
 	</step>
 
 	<step id="DataGrid">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.DataGrid</description>
-		<class-name>org.pentaho.di.trans.steps.datagrid.DataGridMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.datagrid.DataGridMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.DataGrid</tooltip>
-		<image-uri>ui/images/GNR.png</image-uri>
+		<iconfile>ui/images/GNR.png</iconfile>
 	</step>
 
 	<step id="Script">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Script</description>
-		<class-name>org.pentaho.di.trans.steps.script.ScriptMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.script.ScriptMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Script</tooltip>
-		<image-uri>ui/images/SCR_mod.png</image-uri>
+		<iconfile>ui/images/SCR_mod.png</iconfile>
 	</step>
 	
 	<step id="TeraFast,TeraFastPlugin">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TeraFast</description>
-		<class-name>org.pentaho.di.trans.steps.terafast.TeraFastMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.terafast.TeraFastMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TeraFast</tooltip>
-		<image-uri>ui/images/BulkIn.png</image-uri>
+		<iconfile>ui/images/BulkIn.png</iconfile>
 	</step>
 
 	<step id="SapInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SapInput</description>
-		<class-name>org.pentaho.di.trans.steps.sapinput.SapInputMeta</class-name>
+		<classname>org.pentaho.di.trans.steps.sapinput.SapInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SapInput</tooltip>
-		<image-uri>ui/images/SIP.png</image-uri>
+		<iconfile>ui/images/SIP.png</iconfile>
 	</step>
 	
 </steps>

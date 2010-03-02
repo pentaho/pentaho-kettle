@@ -31,13 +31,13 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Job
+public @interface JobEntry
 {
 	String id();
 	
 	String name() default "";
 
-	String tooltip() default "";
+	String description() default "";
 
 	String image();
 

@@ -15,6 +15,7 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URLEncoder;
+import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -100,9 +101,10 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
 
       try {
         out.println("<table border=\"1\">");
-        out.print("<tr> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.TransName") + "</th> <th>"
-            + BaseMessages.getString(PKG, "GetStatusServlet.Status") + "</th> </tr>");
+        out.print("<tr> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.TransName") + "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Status") + "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.LastLogDate") + "</th> </tr>");
 
+        Arrays.sort(transNames);
+        
         for (int i = 0; i < transNames.length; i++) {
           String name = transNames[i];
           Trans trans = getTransformationMap().getTransformation(name);
@@ -111,13 +113,15 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
           out.print("<tr>");
           out.print("<td><a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(name, "UTF-8") + "\">" + name + "</a></td>");
           out.print("<td>" + status + "</td>");
+          out.print("<td>"+( trans.getLogDate()==null ? "-" : XMLHandler.date2string( trans.getLogDate() ))+"</td>");
           out.print("</tr>");
         }
         out.print("</table><p>");
 
         out.println("<table border=\"1\">");
-        out.print("<tr> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.JobName") + "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Status")
-            + "</th> </tr>");
+        out.print("<tr> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.JobName") + "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Status")+ "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.LastLogDate") + "</th> </tr>");
+
+        Arrays.sort(jobNames);
 
         for (int i = 0; i < jobNames.length; i++) {
           String name = jobNames[i];
@@ -127,6 +131,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
           out.print("<tr>");
           out.print("<td><a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(name, "UTF-8") + "\">" + name + "</a></td>");
           out.print("<td>" + status + "</td>");
+          out.print("<td>"+( job.getLogDate()==null ? "-" : XMLHandler.date2string( job.getLogDate() ))+"</td>");
           out.print("</tr>");
         }
         out.print("</table>");

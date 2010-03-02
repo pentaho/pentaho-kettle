@@ -34,15 +34,17 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entries.sql.JobEntrySQL;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -51,7 +53,6 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -92,19 +93,19 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 	public JobEntryCopy newJobEntry(JobMeta jobMeta, String type_desc, boolean openit)
 	{
-		JobEntryLoader jobLoader = JobEntryLoader.getInstance();
-		JobPlugin jobPlugin = null;
+		PluginRegistry registry = PluginRegistry.getInstance();
+		PluginInterface jobPlugin = null;
 
 		try
 		{
-			jobPlugin = jobLoader.findJobEntriesWithDescription(type_desc);
+			jobPlugin = PluginRegistry.getInstance().findPluginWithName(JobEntryPluginType.getInstance(), type_desc);
 			if (jobPlugin == null)
 			{
 				// Check if it's not START or DUMMY
 				if (JobMeta.STRING_SPECIAL_START.equals(type_desc)
 						|| JobMeta.STRING_SPECIAL_DUMMY.equals(type_desc))
 				{
-					jobPlugin = jobLoader.findJobEntriesWithID(JobMeta.STRING_SPECIAL);					
+					jobPlugin = registry.findPluginWithId(JobEntryPluginType.getInstance(), JobMeta.STRING_SPECIAL);					
 				}
 			}
 
@@ -124,7 +125,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				}
 
 				// Generate the appropriate class...
-				JobEntryInterface jei = jobLoader.getJobEntryClass(jobPlugin);
+				JobEntryInterface jei = (JobEntryInterface) registry.loadClass(jobPlugin);
 				jei.setName(entry_name);
 
 				if (jei.isSpecial())
@@ -201,7 +202,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 	public JobEntryDialogInterface getJobEntryDialog(JobEntryInterface jobEntryInterface, JobMeta jobMeta)
 	{
-
+		PluginRegistry registry = PluginRegistry.getInstance();
 		String dialogClassName = jobEntryInterface.getDialogClassName();
 		try
 		{
@@ -211,7 +212,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 			Object[] paramArgs = new Object[] { spoon.getShell(), jobEntryInterface, spoon.getRepository(), jobMeta };
 			Constructor<?> dialogConstructor;
 			
-			dialogClass = JobEntryLoader.getInstance().loadClassByID(jobEntryInterface.getTypeId(), dialogClassName);
+			PluginInterface plugin = registry.getPlugin(JobEntryPluginType.getInstance(), jobEntryInterface);
+			dialogClass = PluginRegistry.getInstance().getClass(plugin, dialogClassName);
 			dialogConstructor = dialogClass.getConstructor(paramClasses);
 			return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
 		} catch (Throwable t)
@@ -642,7 +644,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						tii.setDatabaseMeta(sourceDbInfo);
 						tii.setSQL("SELECT * FROM " + tables[i]); //$NON-NLS-1$ // It's already quoted!
 	
-						String fromstepid = StepLoader.getInstance().getStepPluginID(tii);
+						String fromstepid = PluginRegistry.getInstance().getPluginId(StepPluginType.getInstance(), tii);
 						StepMeta fromstep = new StepMeta(fromstepid, fromstepname, tii);
 						fromstep.setLocation(150, 100);
 						fromstep.setDraw(true);
@@ -660,7 +662,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						toi.setCommitSize(100);
 						toi.setTruncateTable(true);
 	
-						String tostepid = StepLoader.getInstance().getStepPluginID(toi);
+						String tostepid = PluginRegistry.getInstance().getPluginId(StepPluginType.getInstance(), toi);
 						StepMeta tostep = new StepMeta(tostepid, tostepname, toi);
 						tostep.setLocation(500, 100);
 						tostep.setDraw(true);

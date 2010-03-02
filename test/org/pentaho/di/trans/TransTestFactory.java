@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -40,21 +42,21 @@ public class TransTestFactory
 
 	public static TransMeta generateTestTransformation(VariableSpace parent, StepMetaInterface oneMeta, String oneStepname)
     {
-        StepLoader stepLoader = StepLoader.getInstance();
+        PluginRegistry registry = PluginRegistry.getInstance();
 
         TransMeta previewMeta = new TransMeta(parent);
         
         // First the injector step...
         //
         InjectorMeta zeroMeta = new InjectorMeta();
-        StepMeta zero = new StepMeta(stepLoader.getStepPluginID(zeroMeta), INJECTOR_STEPNAME, zeroMeta);
+        StepMeta zero = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), zeroMeta), INJECTOR_STEPNAME, zeroMeta);
         zero.setLocation(50,50);
         zero.setDraw(true);
         previewMeta.addStep(zero);
         
         // Then the middle step to test...
         //
-        StepMeta one = new StepMeta(stepLoader.getStepPluginID(oneMeta), oneStepname, oneMeta);
+        StepMeta one = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), oneMeta), oneStepname, oneMeta);
         one.setLocation(150,50);
         one.setDraw(true);
         previewMeta.addStep(one);
@@ -62,7 +64,7 @@ public class TransTestFactory
         // Then we add the dummy step to read the results from
         //
         DummyTransMeta twoMeta = new DummyTransMeta();
-        StepMeta two = new StepMeta(stepLoader.getStepPluginID(twoMeta), DUMMY_STEPNAME, twoMeta); //$NON-NLS-1$
+        StepMeta two = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), twoMeta), DUMMY_STEPNAME, twoMeta); //$NON-NLS-1$
         two.setLocation(250,50);
         two.setDraw(true);
         previewMeta.addStep(two);

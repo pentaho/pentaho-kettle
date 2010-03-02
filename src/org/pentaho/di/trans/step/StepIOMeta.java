@@ -150,7 +150,9 @@ public class StepIOMeta implements StepIOMetaInterface {
 		//
 		List<StreamInterface> list = new ArrayList<StreamInterface>();
 		for (StreamInterface stream : streams) {
-			if (stream.getStreamType().equals(StreamInterface.StreamType.INFO));
+			if (stream.getStreamType().equals(StreamInterface.StreamType.INFO)) {
+				list.add(stream);
+			}
 		}
 		
 		for (int i=0;i<infoSteps.length;i++) {

@@ -58,7 +58,6 @@
 	<classpathentry kind="lib" path="libext/commons/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/saxon8-xom.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
-	<classpathentry kind="lib" path="libext/spring/spring-core-2.5.6.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.3-603.jdbc3.jar"/>
 	<classpathentry kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry kind="lib" path="libext/kettle-version-checker-0.1.0.jar"/>
@@ -125,5 +124,8 @@
 	<classpathentry kind="lib" path="libext/junit-4.7.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="test/libext/jetty-servlet-tester-6.1.21.jar"/>
+	<classpathentry kind="lib" path="libext/web/jtwitter.jar"/>
+	<classpathentry kind="lib" path="libext/javassist.jar"/>
+	<classpathentry kind="lib" path="libext/spring/spring-core-2.5.6.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

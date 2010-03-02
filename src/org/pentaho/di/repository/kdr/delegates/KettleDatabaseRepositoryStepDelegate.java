@@ -11,6 +11,9 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -19,10 +22,9 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 
 public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseRepositoryBaseDelegate {
@@ -74,7 +76,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 	public StepMeta loadStepMeta( ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters, List<PartitionSchema> partitionSchemas) throws KettleException
 	{
         StepMeta stepMeta = new StepMeta();
-        StepLoader steploader = StepLoader.getInstance();
+        PluginRegistry registry = PluginRegistry.getInstance();
 
 		try
 		{
@@ -98,17 +100,16 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 				stepMeta.setDraw( r.getBoolean("GUI_DRAW", false) ); //$NON-NLS-1$
 				
 				// Generate the appropriate class...
-				StepPlugin sp = steploader.findStepPluginWithID(stepMeta.getStepID());
+				PluginInterface sp = registry.findPluginWithId(StepPluginType.getInstance(), stepMeta.getStepID());
                 if (sp!=null)
                 {
-                	stepMeta.setStepMetaInterface( steploader.getStepClass(sp) );
+                	stepMeta.setStepMetaInterface( (StepMetaInterface)registry.loadClass(sp) );
                 }
                 else
                 {
                     throw new KettleStepLoaderException(BaseMessages.getString(PKG, "StepMeta.Exception.UnableToLoadClass",stepMeta.getStepID()+Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
 
-				stepMeta.setStepMetaInterface( steploader.getStepClass(sp) );
 				if (stepMeta.getStepMetaInterface()!=null)
 				{
 					// Read the step info from the repository!

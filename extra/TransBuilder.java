@@ -10,8 +10,9 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -114,9 +115,9 @@ public class TransBuilder
             selectSQL+="FROM "+sourceTableName;
             tii.setSQL(selectSQL);
 
-            StepLoader steploader = StepLoader.getInstance();
+            PluginRegistry registry = PluginRegistry.getInstance();
 
-            String fromstepid = steploader.getStepPluginID(tii);
+            String fromstepid = registry.getPluginId(StepPluginType.getInstance(), tii);
             StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
             fromstep.setLocation(150, 100);
             fromstep.setDraw(true);
@@ -136,7 +137,7 @@ public class TransBuilder
             }
 
             String selstepname = "Rename field names";
-            String selstepid = steploader.getStepPluginID(svi);
+            String selstepid = registry.getPluginId(StepPluginType.getInstance(), svi);
             StepMeta selstep = new StepMeta(selstepid, selstepname, (StepMetaInterface) svi);
             selstep.setLocation(350, 100);
             selstep.setDraw(true);
@@ -160,7 +161,7 @@ public class TransBuilder
             toi.setCommitSize(200);
             toi.setTruncateTable(true);
 
-            String tostepid = steploader.getStepPluginID(toi);
+            String tostepid = registry.getPluginId(StepPluginType.getInstance(), toi);
             StepMeta tostep = new StepMeta(tostepid, tostepname, (StepMetaInterface) toi);
             tostep.setLocation(550, 100);
             tostep.setDraw(true);

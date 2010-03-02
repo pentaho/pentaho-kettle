@@ -8,6 +8,8 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -15,7 +17,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -194,7 +195,7 @@ public class GetXMLDataTest extends TestCase {
 		TransMeta transMeta = new TransMeta();
 		transMeta.setName("getxmldata1");
 
-		StepLoader steploader = StepLoader.getInstance();
+		PluginRegistry registry = PluginRegistry.getInstance();
 
 		// 
 		// create an injector step...
@@ -203,7 +204,7 @@ public class GetXMLDataTest extends TestCase {
 		InjectorMeta im = new InjectorMeta();
 
 		// Set the information of the injector.
-		String injectorPid = steploader.getStepPluginID(im);
+		String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
 		StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
 		transMeta.addStep(injectorStep);
 
@@ -213,7 +214,7 @@ public class GetXMLDataTest extends TestCase {
 		String getXMLDataName = "get xml data step";
 		GetXMLDataMeta gxdm = new GetXMLDataMeta();
 
-		String getXMLDataPid = steploader.getStepPluginID(gxdm);
+		String getXMLDataPid = registry.getPluginId(StepPluginType.getInstance(), gxdm);
 		StepMeta getXMLDataStep = new StepMeta(getXMLDataPid, getXMLDataName,
 				gxdm);
 		transMeta.addStep(getXMLDataStep);
@@ -300,7 +301,7 @@ public class GetXMLDataTest extends TestCase {
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = steploader.getStepPluginID(dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
 

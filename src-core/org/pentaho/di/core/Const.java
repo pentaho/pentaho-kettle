@@ -131,37 +131,46 @@ public class Const
 	 *
 	public static final String IMAGE_DIRECTORY = "/ui/images/";
     */
-    
+
+	/**
+	 *  Public directory containing plugins
+	 */
+	public static final String PLUGIN_DIRECTORY_PUBLIC = "plugins";
+
+	/**
+	 *  Private directory containing plugins
+	 */
+	public static final String PLUGIN_DIRECTORY_PRIVATE = getKettleDirectory() + FILE_SEPARATOR + "plugins";
+
 	/**
 	 *  Public directory containing external steps plugins
 	 */
-	public static final String PLUGIN_STEPS_DIRECTORY_PUBLIC = "plugins" + FILE_SEPARATOR + "steps";
+	public static final String PLUGIN_STEPS_DIRECTORY_PUBLIC = PLUGIN_DIRECTORY_PUBLIC + FILE_SEPARATOR + "steps";
 
 	/**
 	 *  Private directory containing external steps plugins
 	 */
-	public static final String PLUGIN_STEPS_DIRECTORY_PRIVATE = getKettleDirectory() + FILE_SEPARATOR + "plugins" + FILE_SEPARATOR + "steps";
+	public static final String PLUGIN_STEPS_DIRECTORY_PRIVATE = PLUGIN_DIRECTORY_PRIVATE + FILE_SEPARATOR + "steps";
 
 	/**
 	 *  Public directory containing external job entries plugins
 	 */
-	public static final String PLUGIN_JOBENTRIES_DIRECTORY_PUBLIC = "plugins" + FILE_SEPARATOR + "jobentries";
+	public static final String PLUGIN_JOBENTRIES_DIRECTORY_PUBLIC = PLUGIN_DIRECTORY_PUBLIC + FILE_SEPARATOR + "jobentries";
 
 	/**
 	 *  Private directory containing external job entries plugins
 	 */
-	public static final String PLUGIN_JOBENTRIES_DIRECTORY_PRIVATE = getKettleDirectory() + FILE_SEPARATOR + "plugins" + FILE_SEPARATOR
-			+ "jobentries";
+	public static final String PLUGIN_JOBENTRIES_DIRECTORY_PRIVATE = PLUGIN_DIRECTORY_PRIVATE + FILE_SEPARATOR + "jobentries";
 
 	/**
 	 *  Public directory containing external repositories plugins
 	 */
-	public static final String PLUGIN_REPOSITORIES_DIRECTORY_PUBLIC = "plugins" + FILE_SEPARATOR + "repositories";
+	public static final String PLUGIN_REPOSITORIES_DIRECTORY_PUBLIC = PLUGIN_DIRECTORY_PUBLIC + FILE_SEPARATOR + "repositories";
 
 	/**
 	 *  Private directory containing external repositories plugins
 	 */
-	public static final String PLUGIN_REPOSITORIES_DIRECTORY_PRIVATE = getKettleDirectory() + FILE_SEPARATOR + "plugins" + FILE_SEPARATOR + "repositories";
+	public static final String PLUGIN_REPOSITORIES_DIRECTORY_PRIVATE = PLUGIN_DIRECTORY_PRIVATE + FILE_SEPARATOR + "repositories";
 	
 	
 	
@@ -545,6 +554,25 @@ public class Const
 	 */
 	public static final String	VERSION_COMMENT_EDIT_VERSION	= "Modification by user";
 
+	/**
+	 * The XML file that contains the list of native Kettle steps
+	 */
+	public static final String	XML_FILE_KETTLE_STEPS	= "kettle-steps.xml";
+
+	/**
+	 * The XML file that contains the list of native partition plugins
+	 */
+	public static final String	XML_FILE_KETTLE_PARTITION_PLUGINS	= "kettle-partition-plugins.xml";
+
+	/**
+	 * The XML file that contains the list of native Kettle job entries
+	 */
+	public static final String	XML_FILE_KETTLE_JOB_ENTRIES	= "kettle-job-entries.xml";
+
+	/**
+	 * The XML file that contains the list of native Kettle repository types (DB, File, etc)
+	 */
+	public static final String	XML_FILE_KETTLE_REPOSITORIES = "kettle-repositories.xml";
 
 
     private static String[] emptyPaddedSpacesStrings;
@@ -668,7 +696,7 @@ public class Const
 	 */
 	public static final boolean isSpace(char c)
 	{
-		return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+		return c == ' ' || c == '\t' || c == '\r' || c == '\n' || Character.isWhitespace(c);
 	}
 	
 	/**
@@ -1903,6 +1931,23 @@ public class Const
         }
         return numberFormats;
     }
+
+	/**
+	 * @return An array of all default conversion formats, to be used in dialogs etc.
+	 */
+	public static String[] getConversionFormats()
+	{
+		String dats[] = Const.getDateFormats();
+		String nums[] = Const.getNumberFormats();
+		int totsize = dats.length + nums.length;
+		String formats[] = new String[totsize];
+		for (int x = 0; x < dats.length; x++)
+			formats[x] = dats[x];
+		for (int x = 0; x < nums.length; x++)
+			formats[dats.length + x] = nums[x];
+
+		return formats;
+	}
 
     public static String[] getTransformationAndJobFilterNames()
     {

@@ -23,6 +23,8 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -30,7 +32,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -188,7 +189,7 @@ public class NullIfTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("nulliftest1");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create an injector step...
@@ -197,7 +198,7 @@ public class NullIfTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = steploader.getStepPluginID(im);
+        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -207,7 +208,7 @@ public class NullIfTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = steploader.getStepPluginID(dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
         transMeta.addStep(dummyStep1);                              
 
@@ -223,7 +224,7 @@ public class NullIfTest extends TestCase
         ni.setFieldName(new String[] {"field2", "field1"});
         ni.setFieldValue(new String[] {"1", "tst"});
 
-        String nullIfPid = steploader.getStepPluginID(ni);
+        String nullIfPid = registry.getPluginId(StepPluginType.getInstance(), ni);
         StepMeta nullIfStep = new StepMeta(nullIfPid, nullIfName, (StepMetaInterface)ni);
         transMeta.addStep(nullIfStep);                              
 
@@ -236,7 +237,7 @@ public class NullIfTest extends TestCase
         String dummyStepname2 = "dummy step 2";            
         DummyTransMeta dm2 = new DummyTransMeta();
 
-        String dummyPid2 = steploader.getStepPluginID(dm2);
+        String dummyPid2 = registry.getPluginId(StepPluginType.getInstance(), dm2);
         StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
         transMeta.addStep(dummyStep2);                              
 

@@ -23,12 +23,12 @@ import javax.imageio.ImageIO;
 import org.jfree.text.TextUtilities;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.job.JobPlugin;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.laf.BasePropertyHandler;
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.trans.step.StepMeta;
@@ -190,9 +190,9 @@ public class SwingGC implements GCInterface {
 	private Map<String, Image> loadStepImages() {
 		Map<String, Image> map = new HashMap<String, Image>();
 		
-		for (StepPlugin plugin : StepLoader.getInstance().getPluginList()) {
-			Image image = new javax.swing.ImageIcon(plugin.getIconFilename()).getImage();
-			for (String id : plugin.getID()) {
+		for (PluginInterface plugin: PluginRegistry.getInstance().getPlugins(StepPluginType.getInstance())) {
+			Image image = new javax.swing.ImageIcon(plugin.getImageFile()).getImage();
+			for (String id : plugin.getIds()) {
 				map.put(id, image);
 			}
 		}
@@ -203,9 +203,9 @@ public class SwingGC implements GCInterface {
 	private Map<String, Image> loadEntryImages() {
 		Map<String, Image> map = new HashMap<String, Image>();
 		
-		for (JobPlugin plugin : JobEntryLoader.getInstance().getPluginList()) {
-			Image image = new javax.swing.ImageIcon(plugin.getIconFilename()).getImage();
-			map.put(plugin.getID(), image);
+		for (PluginInterface plugin : PluginRegistry.getInstance().getPlugins(JobEntryPluginType.getInstance())) {
+			Image image = new javax.swing.ImageIcon(plugin.getImageFile()).getImage();
+			map.put(plugin.getIds()[0], image);
 		}
 		
 		return map;

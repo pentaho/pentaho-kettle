@@ -8,11 +8,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.plugins.KettlePluginException;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.repository.RepositoryLoader;
-import org.pentaho.di.trans.StepLoader;
 
 public class KettleEnvironment {
 
@@ -31,12 +30,8 @@ public class KettleEnvironment {
 			
 			JndiUtil.initJNDI();
 			
-			StepLoader.init();
-			
-			JobEntryLoader.init();
-			
-			RepositoryLoader.init();
-			
+			PluginRegistry.init();
+						
 			initialized = true;
 		}
 	}
@@ -103,5 +98,9 @@ public class KettleEnvironment {
 
 	public static boolean isInitialized() {
 		if (initialized==null) return false; else return true;
+	}
+	
+	public void loadPluginRegistry() throws KettlePluginException {
+		
 	}
 }

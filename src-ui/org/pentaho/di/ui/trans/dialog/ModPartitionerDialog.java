@@ -17,7 +17,10 @@
 
 package org.pentaho.di.ui.trans.dialog;
 
+import java.util.Arrays;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,15 +36,16 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.ModPartitioner;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ModPartitionerDialog extends BaseStepDialog implements StepDialogInterface
@@ -49,20 +53,20 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
     private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private StepPartitioningMeta partitioningMeta;
-	private StepMetaInterface stepMeta;
+	private StepMeta stepMeta;
 	private ModPartitioner partitioner;
 	private String fieldName;
 
 	private Label        wlFieldname;
-	private Text    	wFieldname;
+	private CCombo   	 wFieldname;
 	private FormData     fdlFieldname, fdFieldname;
 
-	public ModPartitionerDialog(Shell parent, Object in, StepPartitioningMeta partitioningMeta, TransMeta transMeta)
+	public ModPartitionerDialog(Shell parent, StepMeta stepMeta, StepPartitioningMeta partitioningMeta, TransMeta transMeta)
 	{
-		super(parent, (BaseStepMeta)in, transMeta, partitioningMeta.getPartitioner().getDescription() );
+		super(parent, (BaseStepMeta)stepMeta.getStepMetaInterface(), transMeta, partitioningMeta.getPartitioner().getDescription() );
+		this.stepMeta = stepMeta;
 		this.partitioningMeta = partitioningMeta;
 		partitioner = (ModPartitioner) partitioningMeta.getPartitioner();
-		stepMeta=(StepMetaInterface)in;
 		fieldName = partitioner.getFieldName();
 	}
 
@@ -73,7 +77,7 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
 		
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
 		props.setLook( shell );
-        setShellImage(shell, stepMeta);
+        setShellImage(shell, stepMeta.getStepMetaInterface());
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
@@ -103,7 +107,7 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
 		fdlFieldname.right= new FormAttachment(middle, -margin);
 		fdlFieldname.top  = new FormAttachment(0, margin);
 		wlFieldname.setLayoutData(fdlFieldname);
-		wFieldname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFieldname=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wFieldname.setText(fieldName == null ? "" : fieldName );
         props.setLook( wFieldname );
         wFieldname.addModifyListener(lsMod);
@@ -113,6 +117,17 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
         fdFieldname.right= new FormAttachment(100, 0);
         wFieldname.setLayoutData(fdFieldname);
 
+        try {
+	        RowMetaInterface inputFields = transMeta.getPrevStepFields(stepMeta);
+	        if (inputFields!=null) {
+	        	String[] fieldNames = inputFields.getFieldNames();
+	        	Arrays.sort( fieldNames );
+	        	wFieldname.setItems( fieldNames );
+	        }
+        } catch(Exception e) {
+        	new ErrorDialog(shell, "Error", "Error obtaining list of input fields:", e);
+        }
+        
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
@@ -139,6 +154,8 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
 		getData();
 		partitioningMeta.hasChanged(changed);
 	
+		setSize();
+		
 		shell.open();
 		while (!shell.isDisposed())
 		{
@@ -152,9 +169,7 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
 	 */
 	public void getData()
 	{
-	
-		wFieldname.setText(fieldName == null ? "" : fieldName );
-		
+		wFieldname.setText(fieldName == null ? "" : fieldName );		
 	}
 	
 	private void cancel()

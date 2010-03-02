@@ -577,7 +577,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
    * selected ok, it deletes selected acls from the list
    * @throws Exception
    */
-  @SuppressWarnings("unchecked")
   public void removeAcl() throws Exception {
     confirmBox.open();
   }

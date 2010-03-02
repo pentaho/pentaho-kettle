@@ -22,6 +22,8 @@ import java.util.Random;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -29,7 +31,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -168,7 +169,7 @@ public class SortRowsTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("sortrowstest");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create an injector step...
@@ -177,7 +178,7 @@ public class SortRowsTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = steploader.getStepPluginID(im);
+        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -196,7 +197,7 @@ public class SortRowsTest extends TestCase
         srm.setPrefix("SortRowsTest");
         srm.setDirectory(".");
 
-        String sortRowsStepPid = steploader.getStepPluginID(srm);
+        String sortRowsStepPid = registry.getPluginId(StepPluginType.getInstance(), srm);
         StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, (StepMetaInterface)srm);
         transMeta.addStep(sortRowsStep);            
 
@@ -209,7 +210,7 @@ public class SortRowsTest extends TestCase
         String dummyStepname = "dummy step";            
         DummyTransMeta dm = new DummyTransMeta();
 
-        String dummyPid = steploader.getStepPluginID(dm);
+        String dummyPid = registry.getPluginId(StepPluginType.getInstance(), dm);
         StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
         transMeta.addStep(dummyStep);                              
 
@@ -255,7 +256,7 @@ public class SortRowsTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("sortrowstest");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create an injector step...
@@ -264,7 +265,7 @@ public class SortRowsTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = steploader.getStepPluginID(im);
+        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -283,7 +284,7 @@ public class SortRowsTest extends TestCase
         srm.setPrefix("SortRowsTest");
         srm.setDirectory(".");
 
-        String sortRowsStepPid = steploader.getStepPluginID(srm);
+        String sortRowsStepPid = registry.getPluginId(StepPluginType.getInstance(), srm);
         StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, (StepMetaInterface)srm);
         transMeta.addStep(sortRowsStep);            
 
@@ -296,7 +297,7 @@ public class SortRowsTest extends TestCase
         String dummyStepname = "dummy step";            
         DummyTransMeta dm = new DummyTransMeta();
 
-        String dummyPid = steploader.getStepPluginID(dm);
+        String dummyPid = registry.getPluginId(StepPluginType.getInstance(), dm);
         StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
         transMeta.addStep(dummyStep);                              
 

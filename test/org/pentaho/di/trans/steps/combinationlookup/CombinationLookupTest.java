@@ -23,12 +23,13 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -228,7 +229,7 @@ public class CombinationLookupTest extends TestCase
             createTables(lookupDatabase);
             createData(lookupDatabase);
 
-            StepLoader steploader = StepLoader.getInstance();            
+            PluginRegistry registry = PluginRegistry.getInstance();            
 
             // 
             // create the source step...
@@ -241,7 +242,7 @@ public class CombinationLookupTest extends TestCase
             selectSQL+="FROM " + source_table + " ORDER BY ORDNO;";
             tii.setSQL(selectSQL);
 
-            String fromstepid = steploader.getStepPluginID(tii);
+            String fromstepid = registry.getPluginId(StepPluginType.getInstance(), tii);
             StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
             fromstep.setLocation(150, 100);
             fromstep.setDraw(true);
@@ -261,7 +262,7 @@ public class CombinationLookupTest extends TestCase
             clm.setTechKeyCreation(CombinationLookupMeta.CREATION_METHOD_TABLEMAX);
             clm.setDatabaseMeta(lookupDBInfo);
 
-            String lookupstepid = steploader.getStepPluginID(clm);
+            String lookupstepid = registry.getPluginId(StepPluginType.getInstance(), clm);
             StepMeta lookupstep = new StepMeta(lookupstepid, lookupstepname, (StepMetaInterface) clm);
             lookupstep.setDescription("Looks up information from table [lookup] on database [" + lookupDBInfo + "]");
             transMeta.addStep(lookupstep);                              

@@ -7,11 +7,12 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -106,11 +107,11 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 					{
 						String jet_code = rt.getString("CODE", null);
 
-						JobEntryLoader jobLoader = JobEntryLoader.getInstance();
-						JobPlugin jobPlugin = jobLoader.findJobEntriesWithID(jet_code);
+						PluginRegistry registry = PluginRegistry.getInstance();;
+						PluginInterface jobPlugin = registry.findPluginWithId(JobEntryPluginType.getInstance(), jet_code);
 						if (jobPlugin != null)
 						{
-							JobEntryInterface jobEntry = jobLoader.getJobEntryClass(jobPlugin);
+							JobEntryInterface jobEntry = (JobEntryInterface) registry.loadClass(jobPlugin);
 							jobEntryCopy.setEntry( jobEntry );
 
 							// Load the attributes for that jobentry

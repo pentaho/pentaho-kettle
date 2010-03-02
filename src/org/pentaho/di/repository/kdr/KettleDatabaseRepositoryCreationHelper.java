@@ -14,17 +14,17 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.StepPlugin;
 
 public class KettleDatabaseRepositoryCreationHelper {
 
@@ -33,7 +33,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 	private DatabaseMeta databaseMeta;
 	private Database database;
 	
-	private StepLoader stepLoader;
+	private PluginRegistry pluginRegistry;
 	
     public KettleDatabaseRepositoryCreationHelper(KettleDatabaseRepository repository) {
 		this.repository = repository;
@@ -41,7 +41,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		this.database = this.repository.getDatabase();
 
 		this.log = repository.getLog();
-		this.stepLoader = StepLoader.getInstance();
+		this.pluginRegistry = PluginRegistry.getInstance();
 	}
 
 	/**
@@ -1969,11 +1969,13 @@ public class KettleDatabaseRepositoryCreationHelper {
 		synchronized (repository) {
 			
 			// We should only do an update if something has changed...
-			for (int i = 0; i < stepLoader.nrStepsWithType(StepPlugin.TYPE_ALL); i++)
+			//
+			List<PluginInterface> plugins = pluginRegistry.getPlugins(StepPluginType.getInstance());
+			for (int i = 0; i < plugins.size(); i++)
 			{
-				StepPlugin sp = stepLoader.getStepWithType(StepPlugin.TYPE_ALL, i);
+				PluginInterface sp = plugins.get(i);
 				ObjectId id = null;
-				if (!create) id = repository.stepDelegate.getStepTypeID(sp.getID()[0]);
+				if (!create) id = repository.stepDelegate.getStepTypeID(sp.getIds()[0]);
 				if (id==null) // Not found, we need to add this one...
 				{
 					// We need to add this one ...
@@ -1982,9 +1984,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 	
 					RowMetaAndData table = new RowMetaAndData();
 					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE, ValueMetaInterface.TYPE_INTEGER), id);
-					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_CODE, ValueMetaInterface.TYPE_STRING), sp.getID()[0]);
-					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), sp.getDescription());
-					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING), sp.getTooltip());
+					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_CODE, ValueMetaInterface.TYPE_STRING), sp.getIds()[0]);
+					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), sp.getName());
+					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_TYPE_HELPTEXT, ValueMetaInterface.TYPE_STRING), sp.getDescription());
 	
 					if (dryrun) {
 		            	String sql = database.getSQLOutput(null, KettleDatabaseRepository.TABLE_R_STEP_TYPE, table.getRowMeta(), table.getData(), null);
@@ -2012,13 +2014,14 @@ public class KettleDatabaseRepositoryCreationHelper {
 		synchronized (repository) {
 				
 	        // We should only do an update if something has changed...
-	        JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
-	        JobPlugin[] jobPlugins = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
+	        PluginRegistry registry = PluginRegistry.getInstance();
+	        List<PluginInterface> jobPlugins = registry.getPlugins(JobEntryPluginType.getInstance());
 	        
-	        for (int i = 0; i < jobPlugins.length; i++)
+	        for (int i = 0; i < jobPlugins.size(); i++)
 	        {
-	            String type_desc = jobPlugins[i].getID();
-	            String type_desc_long = jobPlugins[i].getDescription();
+	        	PluginInterface jobPlugin = jobPlugins.get(i);
+	            String type_desc = jobPlugin.getIds()[0];
+	            String type_desc_long = jobPlugin.getName();
 	            ObjectId id = null;
 	            if (!create) id = repository.jobEntryDelegate.getJobEntryTypeID(type_desc);
 	            if (id == null) // Not found, we need to add this one...

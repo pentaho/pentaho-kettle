@@ -34,11 +34,12 @@ import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginClassType;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoriesMeta;
-import org.pentaho.di.repository.RepositoryLoader;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -383,7 +384,9 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
             try
 			{
 				System.out.println("Allocating repository..."); //$NON-NLS-1$
-				KettleDatabaseRepository rep = (KettleDatabaseRepository) RepositoryLoader.createRepository(repositoryMeta);
+				
+	    		KettleDatabaseRepository rep = (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+				rep.init(repositoryMeta);
 				
 				System.out.println("Connecting to database for repository creation..."); //$NON-NLS-1$
                 rep.connectionDelegate.connect(true, true);
@@ -488,14 +491,14 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 
 	private void drop()
 	{
-		KettleDatabaseRepositoryMeta repinfo = new KettleDatabaseRepositoryMeta();
-		getInfo(repinfo);
+		KettleDatabaseRepositoryMeta repositoryMeta = new KettleDatabaseRepositoryMeta();
+		getInfo(repositoryMeta);
 		
 		try
 		{
-			KettleDatabaseRepository rep = (KettleDatabaseRepository) RepositoryLoader.createRepository(repinfo);
+    		KettleDatabaseRepository rep = (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+    		rep.init(repositoryMeta);
 			
-            
 			MessageBox qmb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
 			qmb.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ConfirmRemovalOfRepository.Message")); //$NON-NLS-1$
 			qmb.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ConfirmRemovalOfRepository.Title")); //$NON-NLS-1$

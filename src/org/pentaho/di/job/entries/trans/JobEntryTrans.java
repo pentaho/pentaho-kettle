@@ -72,14 +72,14 @@ import org.w3c.dom.Node;
  * @author Matt Casters
  * @since 1-Oct-2003, rewritten on 18-June-2004
  */
-@org.pentaho.di.core.annotations.Job
+@org.pentaho.di.core.annotations.JobEntry
 (
-		image="ui/images/TRN.png",
 		id="TRANS",
 		name="JobEntry.Trans.TypeDesc",
-		tooltip="JobEntry.Trans.Tooltip",
-		categoryDescription="JobCategory.Category.General",
-		i18nPackageName="org.pentaho.di.job"
+		description="JobEntry.Trans.Tooltip",
+		categoryDescription="i18n:org.pentaho.di.job:JobCategory.Category.General",
+		image="ui/images/TRN.png",
+		i18nPackageName="org.pentaho.di.job.entry"
 )
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface
 {

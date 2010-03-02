@@ -14,7 +14,6 @@ package org.pentaho.di.i18n;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -132,7 +131,7 @@ public class GlobalMessages extends AbstractMessageHandler
     {
         return packageName + "." + BUNDLE_NAME;
     }
-    
+
     /**
      * Retrieve a resource bundle of the default or fail-over locale.
      * @param packageName The package to search in
@@ -141,17 +140,29 @@ public class GlobalMessages extends AbstractMessageHandler
      */
     public static ResourceBundle getBundle(String packageName) throws MissingResourceException
     {
+    	return getBundle(packageName, GlobalMessages.getInstance().getClass());
+    }
+    
+    /**
+     * Retrieve a resource bundle of the default or fail-over locale.
+     * @param packageName The package to search in
+     * @param resourceClass the class to use to resolve the bundle
+     * @return The resource bundle
+     * @throws MissingResourceException in case both resource bundles couldn't be found.
+     */
+    public static ResourceBundle getBundle(String packageName, Class<?> resourceClass) throws MissingResourceException
+    {
     	ResourceBundle bundle ;
     	try {
     		// First try to load the bundle in the default locale
     		//
-    		bundle = getBundle(LanguageChoice.getInstance().getDefaultLocale(), packageName);
+    		bundle = getBundle(LanguageChoice.getInstance().getDefaultLocale(), packageName, resourceClass);
     		return bundle;
     	} catch(MissingResourceException e) {
     		try {
     			// Now retry the fail-over locale (en_US etc)
     			//
-    			bundle = getBundle(LanguageChoice.getInstance().getFailoverLocale(), packageName);
+    			bundle = getBundle(LanguageChoice.getInstance().getFailoverLocale(), packageName, resourceClass);
     			return bundle;
     		} catch(MissingResourceException e2) {
     			// If nothing usable could be found throw an exception...
@@ -166,6 +177,11 @@ public class GlobalMessages extends AbstractMessageHandler
 
     public static ResourceBundle getBundle(Locale locale, String packageName) throws MissingResourceException
     {
+    	return getBundle(locale, packageName, GlobalMessages.getInstance().getClass());
+    }
+    
+    public static ResourceBundle getBundle(Locale locale, String packageName, Class<?> resourceClass) throws MissingResourceException
+    {
     	String filename = buildHashKey(locale, packageName);
     	filename = "/"+filename.replace('.', '/') + ".properties";
     	
@@ -174,43 +190,8 @@ public class GlobalMessages extends AbstractMessageHandler
     	    ResourceBundle bundle = locales.get(filename);
             if (bundle == null)
             {
-                InputStream inputStream = LanguageChoice.getInstance().getClass().getResourceAsStream(filename);
-                //
-                //  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                //  !!!!!!!!! TODO: ENABLE THIS PART AGAIN AFTER REFACTORING !!!!!!!!
-                //  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                //
-                // Try to ask the step loader instance to find the input stream for the specified filename
-                // This works for messages files stored in step plugin jars
-                //
-                if (inputStream==null) // Try in the step plugin list: look in the jars over there
-                {
-                	try {
-	                	Class<?> stepLoaderClass = Class.forName("org.pentaho.di.trans.StepLoader");
-	                	Method getInstanceMethod = stepLoaderClass.getMethod("getInstance", new Class[0]);
-	                	LoaderInputStreamProvider inputStreamProvider = (LoaderInputStreamProvider)getInstanceMethod.invoke(null, new Object[0]);
-	                    inputStream = inputStreamProvider.getInputStreamForFile(filename);
-                	}
-                	catch(Exception e) {
-                		// Eat exception, if we can grab a StepLoader instance, we're dealing with a core object instance not inside of Kettle.
-                	}
-                }
-                // Try to ask the job entry loader instance to find the input stream for the specified filename
-                // This works for messages files stored in job entry plugin jars
-                //
-                if (inputStream==null) // Try in the step plugin list: look in the jars over there
-                {
-                	try {
-	                	Class<?> stepLoaderClass = Class.forName("org.pentaho.di.job.JobEntryLoader");
-	                	Method getInstanceMethod = stepLoaderClass.getMethod("getInstance", new Class[0]);
-	                	LoaderInputStreamProvider inputStreamProvider = (LoaderInputStreamProvider)getInstanceMethod.invoke(null, new Object[0]);
-	                    inputStream = inputStreamProvider.getInputStreamForFile(filename);
-                	}
-                	catch(Exception e) {
-                		// Eat exception, if we can grab a JobEntryLoader instance, we're dealing with a core object instance not inside of Kettle or in Pan.
-                	}
-                }
-
+                InputStream inputStream = resourceClass.getResourceAsStream(filename);
+                
                 // Now get the bundle from the messages files input stream
                 //
             	if (inputStream!=null)
@@ -230,202 +211,17 @@ public class GlobalMessages extends AbstractMessageHandler
     		throw new MissingResourceException("Unable to find properties file ["+filename+"] : "+e.toString(), locale.toString(), packageName);
     	}
     }
-    
-    /**
-     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String)}
-     */
-    @Deprecated
-    public static String getSystemString(String key)
-    {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key);
-        }
-        catch (MissingResourceException e)
-        {
-            try
-            {
-                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key);
-            }
-            catch (MissingResourceException fe)
-            {
-                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
-                return '!' + key + '!';
-            }
-        }
 
-        /*
-        try
-        {
-            ResourceBundle bundle = getBundle(langChoice.getDefaultLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE));
-            return bundle.getString(key);
-        }
-        catch (MissingResourceException e)
-        {
-            // OK, try to find the key in the alternate failover locale
-            try
-            {
-                ResourceBundle bundle = getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE));
-                return bundle.getString(key);
-            }
-            catch (MissingResourceException fe)
-            {
-                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
-                return '!' + key + '!';
-            }
-        }
-        */
-    }
-    
-    /**
-     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String)}
-     */
-    @Deprecated
-    public static String getSystemString(String key, String param1)
-    {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1);
-        }
-        catch (MissingResourceException e)
-        {
-            try
-            {
-                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1);
-            }
-            catch (MissingResourceException fe)
-            {
-                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
-                return '!' + key + '!';
-            }
-        }
-    }
-
-    /**
-     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String, String)}
-     */
-    @Deprecated
-    public static String getSystemString(String key, String param1, String param2)
-    {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2);
-        }
-        catch (MissingResourceException e)
-        {
-            try
-            {
-                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2);
-            }
-            catch (MissingResourceException fe)
-            {
-                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
-                return '!' + key + '!';
-            }
-        }
-    }
-    
-    /**
-     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String, String, String)}
-     */
-    @Deprecated
-    public static String getSystemString(String key, String param1, String param2, String param3)
-    {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3);
-        }
-        catch (MissingResourceException e)
-        {
-            try
-            {
-                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3);
-            }
-            catch (MissingResourceException fe)
-            {
-                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
-                return '!' + key + '!';
-            }
-        }
-    }
-
-    /**
-     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String, String, String, String)}
-     */
-    @Deprecated
-    public static String getSystemString(String key, String param1, String param2, String param3, String param4)
-    {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4);
-        }
-        catch (MissingResourceException e)
-        {
-            try
-            {
-                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4);
-            }
-            catch (MissingResourceException fe)
-            {
-                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
-                return '!' + key + '!';
-            }
-        }
-    }
-
-    /**
-     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String, String, String, String, String)}
-     */
-    @Deprecated
-    public static String getSystemString(String key, String param1, String param2, String param3, String param4, String param5)
-    {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4, param5);
-        }
-        catch (MissingResourceException e)
-        {
-            try
-            {
-                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4, param5);
-            }
-            catch (MissingResourceException fe)
-            {
-                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
-                return '!' + key + '!';
-            }
-        }
-    }
-
-    /**
-     * @deprecated  As of build 4512, replaced by {@link #getInstance() and #getString(String, String, String, String, String, String, String)}
-     */
-    @Deprecated
-    public static String getSystemString(String key, String param1, String param2, String param3, String param4, String param5, String param6)
-    {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4, param5, param6);
-        }
-        catch (MissingResourceException e)
-        {
-            try
-            {
-                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4, param5, param6);
-            }
-            catch (MissingResourceException fe)
-            {
-                log.logError("Internationalisation/Translation error", Const.getStackTracker(e));
-                return '!' + key + '!';
-            }
-        }
-    }
-    
     protected String findString(String packageName, Locale locale, String key, Object[] parameters) throws MissingResourceException
     {
+    	return findString(packageName, locale, key, parameters, GlobalMessages.getInstance().getClass());
+    }
+
+    protected String findString(String packageName, Locale locale, String key, Object[] parameters, Class<?> resourceClass) throws MissingResourceException
+    {
         try
         {
-            ResourceBundle bundle = getBundle(locale, packageName + "." + BUNDLE_NAME);
+            ResourceBundle bundle = getBundle(locale, packageName + "." + BUNDLE_NAME, resourceClass);
             String unformattedString = bundle.getString(key);
             String string = MessageFormat.format(unformattedString, parameters);
             return string;
@@ -438,25 +234,30 @@ public class GlobalMessages extends AbstractMessageHandler
             throw new MissingResourceException(message, packageName, key);
         }
     }
-    
+
     protected String calculateString(String packageName, String key, Object[] parameters)
+    {
+    	return calculateString(packageName, key, parameters, GlobalMessages.getInstance().getClass());
+    }
+    
+    protected String calculateString(String packageName, String key, Object[] parameters, Class<?> resourceClass)
     {
         String string=null;
         
         // First try the standard locale, in the local package
-        try { string = findString(packageName, langChoice.getDefaultLocale(), key, parameters); } catch(MissingResourceException e) {};
+        try { string = findString(packageName, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
         if (string!=null) return string;
         
         // Then try to find it in the i18n package, in the system messages of the preferred language.
-        try { string = findString(SYSTEM_BUNDLE_PACKAGE, langChoice.getDefaultLocale(), key, parameters); } catch(MissingResourceException e) {};
+        try { string = findString(SYSTEM_BUNDLE_PACKAGE, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
         if (string!=null) return string;
         
         // Then try the failover locale, in the local package
-        try { string = findString(packageName, langChoice.getFailoverLocale(), key, parameters); } catch(MissingResourceException e) {};
+        try { string = findString(packageName, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
         if (string!=null) return string;
         
         // Then try to find it in the i18n package, in the system messages of the failover language.
-        try { string = findString(SYSTEM_BUNDLE_PACKAGE, langChoice.getFailoverLocale(), key, parameters); } catch(MissingResourceException e) {};
+        try { string = findString(SYSTEM_BUNDLE_PACKAGE, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
         if (string!=null) return string;
         
         string = "!"+key+"!";
@@ -482,46 +283,10 @@ public class GlobalMessages extends AbstractMessageHandler
     {
         return calculateString(packageName, key, parameters);
     }
-
-    @Deprecated
-    public String getString(String packageName, String key, String param1)
+    
+    public String getString(String packageName, String key, Class<?> resourceClass, String...parameters)
     {
-        Object[] parameters = new Object[] { param1 };
-        return calculateString(packageName, key, parameters);
+        return calculateString(packageName, key, parameters, resourceClass);
     }
 
-    @Deprecated
-    public String getString(String packageName, String key, String param1, String param2)
-    {
-        Object[] parameters = new Object[] { param1, param2 };
-        return calculateString(packageName, key, parameters);
-    }
-
-    @Deprecated
-    public String getString(String packageName, String key, String param1, String param2, String param3)
-    {
-        Object[] parameters = new Object[] { param1, param2, param3 };
-        return calculateString(packageName, key, parameters);
-    }
-    
-    @Deprecated
-    public String getString(String packageName, String key, String param1, String param2, String param3,String param4)
-    {
-        Object[] parameters = new Object[] { param1, param2, param3, param4 };
-        return calculateString(packageName, key, parameters);
-    }
-    
-    @Deprecated
-    public String getString(String packageName, String key, String param1, String param2, String param3, String param4, String param5)
-    {
-        Object[] parameters = new Object[] { param1, param2, param3, param4, param5 };
-        return calculateString(packageName, key, parameters);
-    }
-    
-    @Deprecated
-    public String getString(String packageName, String key, String param1, String param2, String param3,String param4,String param5,String param6)
-    {
-        Object[] parameters = new Object[] { param1, param2, param3, param4, param5, param6 };
-        return calculateString(packageName, key, parameters);
-    }
 }

@@ -15,6 +15,7 @@ package org.pentaho.di.ui.core.gui;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -39,11 +40,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.job.JobEntryLoader;
-import org.pentaho.di.job.JobPlugin;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.laf.BasePropertyHandler;
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.ImageUtil;
@@ -536,36 +537,34 @@ public class GUIResource
 		imagesSteps = new Hashtable<String, Image>();
 		imagesStepsSmall = new Hashtable<String, Image>();
 
-		// //
-		// // STEP IMAGES TO LOAD
-		// //
-		StepLoader steploader = StepLoader.getInstance();
-		StepPlugin steps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
-		for (int i = 0; i < steps.length; i++)
+		//
+		// STEP IMAGES TO LOAD
+		//
+		PluginRegistry registry = PluginRegistry.getInstance();
+		
+		List<PluginInterface> steps = registry.getPlugins(StepPluginType.getInstance());
+		for (int i = 0; i < steps.size(); i++)
 		{
 			Image image = null;
 			Image small_image = null;
 
-			if (steps[i].isNative())
-			{
-				String filename = steps[i].getIconFilename();
-				try
-				{
-					//InputStream stream = getClass().getResourceAsStream(filename);
-					image = ImageUtil.getImage(display, filename); // new Image(display, stream);
-				} catch (Exception e)
-				{
-					log.logError("Kettle", "Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : " + e.toString());
-					image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					GC gc = new GC(image);
-					gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
-					gc.dispose();
-				}
+			String filename = steps.get(i).getImageFile();
+			try {
+				Object object = registry.loadClass(steps.get(i));
+				image = ImageUtil.getImage(display, object.getClass(), filename);
+			} catch (Exception e) {
+				log.logError("Kettle", "Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : " + e.toString());
+				image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+				GC gc = new GC(image);
+				gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+				gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+				gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
+				gc.dispose();
+			}
+			/*
 			} else
 			{
-				String filename = steps[i].getIconFilename();
+				String filename = steps.get(i).getImageFile();
 				try
 				{
 					image = new Image(display, filename);
@@ -580,6 +579,7 @@ public class GUIResource
 					gc.dispose();
 				}
 			}
+			*/
 
 			// Calculate the smaller version of the image @ 16x16...
 			// Perhaps we should make this configurable?
@@ -594,8 +594,8 @@ public class GUIResource
 				gc.dispose();
 			}
 
-			imagesSteps.put(steps[i].getID()[0], image);
-			imagesStepsSmall.put(steps[i].getID()[0], small_image);
+			imagesSteps.put(steps.get(i).getIds()[0], image);
+			imagesStepsSmall.put(steps.get(i).getIds()[0], small_image);
 		}
 	}
 
@@ -797,62 +797,34 @@ public class GUIResource
 		// //
 		// // JOB ENTRY IMAGES TO LOAD
 		// //
-		JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
-		if (!jobEntryLoader.isInitialized())
-			return; // Running in Spoon I guess...
+		PluginRegistry registry = PluginRegistry.getInstance();
 
-		JobPlugin plugins[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
-		for (int i = 0; i < plugins.length; i++)
+		List<PluginInterface> plugins = registry.getPlugins(JobEntryPluginType.getInstance());
+		for (int i = 0; i < plugins.size(); i++)
 		{
-			if ("SPECIAL".equals(plugins[i].getID())) continue;
+			PluginInterface plugin = plugins.get(i);
+			
+			if ("SPECIAL".equals(plugin.getIds()[0])) {
+				continue;
+			}
 
 			Image image = null;
 			Image small_image = null;
 
-			if (plugins[i].isNative())
+			String filename = plugin.getImageFile();
+			try
 			{
-				String filename = plugins[i].getIconFilename();
-				try
-				{
-					image = ImageUtil.getImage(display, filename);
-				} catch (Exception e)
-				{
-					log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] for id ["+plugins[i].getID()+"] : " + e.toString());
-					image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					GC gc = new GC(image);
-					gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
-					gc.dispose();
-				}
-			} else
+				Object object = registry.loadClass(plugin);
+				image = ImageUtil.getImage(display, object.getClass(), filename);
+			} catch (Exception e)
 			{
-				String filename = plugins[i].getIconFilename();
-				try
-				{
-					image = new Image(display, filename);
-				} catch (Exception e)
-				{
-					try 
-					{
-						// Retry in package of the plugin class? (for plugins only)
-						//
-						int lastIndex = plugins[i].getClassname().lastIndexOf('.');
-						String directory = Const.replace(plugins[i].getClassname().substring(0,lastIndex), ".", Const.FILE_SEPARATOR);
-						String altFilename=directory+Const.FILE_SEPARATOR+filename;
-						image = ImageUtil.getImage(display, altFilename);
-					}
-					catch(Exception altE) 
-					{
-						log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] : for id ["+plugins[i].getID()+"] " + e.toString());
-						image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-						GC gc = new GC(image);
-						gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-						gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-						gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
-						gc.dispose();
-					}
-				}
+				log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] for id ["+plugin.getIds()[0]+"] : " + e.toString());
+				image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+				GC gc = new GC(image);
+				gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+				gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+				gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
+				gc.dispose();
 			}
 
 			// Calculate the smaller version of the image @ 16x16...
@@ -868,8 +840,8 @@ public class GUIResource
 				gc.dispose();
 			}
 
-			imagesJobentries.put(plugins[i].getID(), image);
-			imagesJobentriesSmall.put(plugins[i].getID(), small_image);
+			imagesJobentries.put(plugin.getIds()[0], image);
+			imagesJobentriesSmall.put(plugin.getIds()[0], small_image);
 		}
 	}
 

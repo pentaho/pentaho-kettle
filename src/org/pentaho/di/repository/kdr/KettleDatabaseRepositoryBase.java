@@ -2,7 +2,6 @@ package org.pentaho.di.repository.kdr;
 
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.UserInfo;
 
 public class KettleDatabaseRepositoryBase {
 

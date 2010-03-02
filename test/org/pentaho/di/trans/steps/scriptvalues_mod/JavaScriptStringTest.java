@@ -24,6 +24,8 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -32,7 +34,6 @@ import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
-import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -456,7 +457,7 @@ public class JavaScriptStringTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("test javascript trim");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create an injector step...
@@ -465,7 +466,7 @@ public class JavaScriptStringTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = steploader.getStepPluginID(im);
+        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);                       
 
@@ -493,7 +494,7 @@ public class JavaScriptStringTest extends TestCase
         svm.setReplace(new boolean[] { false, false, false, false, });
         svm.setCompatible(true);
 
-        String javaScriptStepPid = steploader.getStepPluginID(svm);
+        String javaScriptStepPid = registry.getPluginId(StepPluginType.getInstance(), svm);
         StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
         transMeta.addStep(javaScriptStep);            
 
@@ -506,7 +507,7 @@ public class JavaScriptStringTest extends TestCase
         String dummyStepname = "dummy step";            
         DummyTransMeta dm = new DummyTransMeta();
 
-        String dummyPid = steploader.getStepPluginID(dm);
+        String dummyPid = registry.getPluginId(StepPluginType.getInstance(), dm);
         StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
         transMeta.addStep(dummyStep);                              
 
@@ -564,7 +565,7 @@ public class JavaScriptStringTest extends TestCase
         TransMeta transMeta = new TransMeta();
         transMeta.setName("test javascript pad casing");
     	
-        StepLoader steploader = StepLoader.getInstance();            
+        PluginRegistry registry = PluginRegistry.getInstance();            
 
         // 
         // create an injector step...
@@ -573,7 +574,7 @@ public class JavaScriptStringTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = steploader.getStepPluginID(im);
+        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);                       
 
@@ -606,7 +607,7 @@ public class JavaScriptStringTest extends TestCase
         svm.setReplace(new boolean[] { false, false, false, false, false, false, false, });
         svm.setCompatible(true);
 
-        String javaScriptStepPid = steploader.getStepPluginID(svm);
+        String javaScriptStepPid = registry.getPluginId(StepPluginType.getInstance(), svm);
         StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
         transMeta.addStep(javaScriptStep);            
 
@@ -619,7 +620,7 @@ public class JavaScriptStringTest extends TestCase
         String dummyStepname = "dummy step";            
         DummyTransMeta dm = new DummyTransMeta();
 
-        String dummyPid = steploader.getStepPluginID(dm);
+        String dummyPid = registry.getPluginId(StepPluginType.getInstance(), dm);
         StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
         transMeta.addStep(dummyStep);                              
 

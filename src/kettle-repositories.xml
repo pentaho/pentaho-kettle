@@ -5,20 +5,22 @@
     --> 
 
 	<repository id="KettleDatabaseRepository">
-		<name>i18n:org.pentaho.di.repository:RepositoryType.Name.KettleDatabaseRepository</name>
-		<description>i18n:org.pentaho.di.repository:RepositoryType.Description.KettleDatabaseRepository</description>
-		<class-name>org.pentaho.di.repository.kdr.KettleDatabaseRepository</class-name>
-		<meta-class-name>org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta</meta-class-name>
-		<dialog-class-name>org.pentaho.di.ui.repository.dialog.KettleDatabaseRepositoryDialog</dialog-class-name>
+		<description>i18n:org.pentaho.di.repository:RepositoryType.Name.KettleDatabaseRepository</description>
+		<tooltip>i18n:org.pentaho.di.repository:RepositoryType.Description.KettleDatabaseRepository</tooltip>
+		<classname>org.pentaho.di.repository.kdr.KettleDatabaseRepository</classname>
+		<meta-classname>org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta</meta-classname>
+		<dialog-classname>org.pentaho.di.ui.repository.dialog.KettleDatabaseRepositoryDialog</dialog-classname>
+		<version-browser-classname/>
 	</repository>
 	
 	
 	<repository id="KettleFileRepository">
-		<name>i18n:org.pentaho.di.repository:RepositoryType.Name.KettleFileRepository</name>
-		<description>i18n:org.pentaho.di.repository:RepositoryType.Description.KettleFileRepository</description>
-		<class-name>org.pentaho.di.repository.filerep.KettleFileRepository</class-name>
-		<meta-class-name>org.pentaho.di.repository.filerep.KettleFileRepositoryMeta</meta-class-name>
-		<dialog-class-name>org.pentaho.di.ui.repository.dialog.KettleFileRepositoryDialog</dialog-class-name>
+		<description>i18n:org.pentaho.di.repository:RepositoryType.Name.KettleFileRepository</description>
+		<tooltip>i18n:org.pentaho.di.repository:RepositoryType.Description.KettleFileRepository</tooltip>
+		<classname>org.pentaho.di.repository.filerep.KettleFileRepository</classname>
+		<meta-classname>org.pentaho.di.repository.filerep.KettleFileRepositoryMeta</meta-classname>
+		<dialog-classname>org.pentaho.di.ui.repository.dialog.KettleFileRepositoryDialog</dialog-classname>
+		<version-browser-classname/>
 	</repository>
 	
 

@@ -78,6 +78,18 @@ public class ImageUtil
 		}
     }
     
+	public static Image getImage(Display display, Class<?> resourceClass, String filename) {
+		try {
+			return new Image(display, resourceClass.getResourceAsStream(filename));
+		} catch(Exception e) {
+			try {
+				return new Image(display, resourceClass.getResourceAsStream("/"+filename));
+			} catch(Exception e2) {
+				return getImage(display, filename);
+			}
+		}
+	}
+
     public static Image getImage(Display display,String location)
     {	
     	// TODO: find other instances of getImage (plugin, steps) and transition them to new model through an laf manager
@@ -152,4 +164,5 @@ public class ImageUtil
         }
         return null;
       }
+
 }

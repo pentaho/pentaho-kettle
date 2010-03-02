@@ -35,9 +35,11 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.JobLogTable;
+import org.pentaho.di.core.logging.Log4jBufferAppender;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogStatus;
@@ -480,7 +482,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         Thread.currentThread().setContextClassLoader(cl);
 		addErrors((int)result.getNrErrors());
 		
+		// Also capture the logging text after the execution...
+		//
+		Log4jBufferAppender appender = CentralLogStore.getAppender();
+		StringBuffer logTextBuffer = appender.getBuffer(cloneJei.getLogChannel().getLogChannelId(), true);
+		result.setLogText( logTextBuffer.toString() );
+		
         // Save this result as well...
+		//
         JobEntryResult jerAfter = new JobEntryResult(result, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
         jobEntryResults.add(jerAfter);

@@ -41,9 +41,11 @@ public @interface Step
 	String tooltip() default "";
 
 	String image();
-
-	@Deprecated
-	int category() default 0;
+	
+	/**
+	 * @return True if a separate class loader is needed every time this class is instantiated 
+	 */
+	boolean isSeparateClassLoaderNeeded() default false;
 	
 	String categoryDescription() default "";
 	

@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * An alternate way of defining repository plugins. Classes annotated with "RepositoryPLugin" are
  * automatically recognized and registered as a repository plugin.
  * 
- * Important: The XML definitions alienate annoated repository plugins and the two methods of definition are therefore
+ * Important: The XML definitions alienate annotated repository plugins and the two methods of definition are therefore
  * mutually exclusive.
  * 
  * @author Alex Silva

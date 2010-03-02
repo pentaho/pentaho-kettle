@@ -27,6 +27,9 @@ import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -40,8 +43,6 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.w3c.dom.Node;
@@ -123,7 +124,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	{
         if (stepMetaInterface!=null)
         {
-            this.stepid = StepLoader.getInstance().getStepPluginID(stepMetaInterface);
+            this.stepid = PluginRegistry.getInstance().getPluginId(StepPluginType.getInstance(), stepMetaInterface);
         }
 		this.stepname          = stepname;
 		setStepMetaInterface( stepMetaInterface );
@@ -217,19 +218,19 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	public StepMeta(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
 	{
         this();
-		StepLoader steploader = StepLoader.getInstance();
-
+        PluginRegistry registry = PluginRegistry.getInstance();
+        
 		try
 		{
 			stepname = XMLHandler.getTagValue(stepnode, "name"); //$NON-NLS-1$
 			stepid   = XMLHandler.getTagValue(stepnode, "type"); //$NON-NLS-1$
 	
 			// Create a new StepMetaInterface object...
-			StepPlugin sp = steploader.findStepPluginWithID(stepid);
+			PluginInterface sp = registry.findPluginWithId(StepPluginType.getInstance(), stepid);
             if (sp!=null)
             {
-                setStepMetaInterface( steploader.getStepClass(sp) );
-                stepid=sp.getID()[0]; // revert to the default in case we loaded an alternate version
+                setStepMetaInterface( (StepMetaInterface) registry.loadClass(sp) );
+                stepid=sp.getIds()[0]; // revert to the default in case we loaded an alternate version
             }
             else
             {

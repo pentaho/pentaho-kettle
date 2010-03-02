@@ -49,71 +49,13 @@ public interface MessageHandler extends Handler {
 	public String getString(String packageName, String key, String...parameters);
 
 	/**
-	 * get a key from the defined package bundle, by key
+	 * Get a string from the defined package bundle, by key and by a resource class 
+	 *  
 	 * @param packageName
 	 * @param key
-	 * @param param1
+	 * @param resourceClass
+	 * @param parameters
 	 * @return
 	 */
-	public String getString(String packageName, String key, String param1);
-
-	/**
-	 * get a key from the defined package bundle, by key
-	 * @param packageName
-	 * @param key
-	 * @param param1
-	 * @param param2
-	 * @return
-	 */
-	public String getString(String packageName, String key, String param1, String param2);
-
-	/**
-	 * get a key from the defined package bundle, by key
-	 * @param packageName
-	 * @param key
-	 * @param param1
-	 * @param param2
-	 * @param param3
-	 * @return
-	 */
-	public String getString(String packageName, String key, String param1, String param2, String param3);
-
-	/**
-	 * get a key from the defined package bundle, by key
-	 * @param packageName
-	 * @param key
-	 * @param param1
-	 * @param param2
-	 * @param param3
-	 * @param param4
-	 * @return
-	 */
-	public String getString(String packageName, String key, String param1, String param2, String param3, String param4);
-
-	/**
-	 * get a key from the defined package bundle, by key
-	 * @param packageName
-	 * @param key
-	 * @param param1
-	 * @param param2
-	 * @param param3
-	 * @param param4
-	 * @param param5
-	 * @return
-	 */
-	public String getString(String packageName, String key, String param1, String param2, String param3, String param4, String param5);
-
-	/**
-	 * get a key from the defined package bundle, by key
-	 * @param packageName
-	 * @param key
-	 * @param param1
-	 * @param param2
-	 * @param param3
-	 * @param param4
-	 * @param param5
-	 * @param param6
-	 * @return
-	 */
-	public String getString(String packageName, String key, String param1, String param2, String param3, String param4, String param5, String param6);
+	public String getString(String packageName, String key, Class<?> resourceClass, String...parameters);
 }

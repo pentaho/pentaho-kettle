@@ -63,7 +63,7 @@ public class UserDialog extends Dialog
 	private boolean    newUser = false;
 
 	private RepositorySecurityManager	securityManager;
-	private Repository  repository;
+	// private Repository  repository;
    
 	/**
      * This dialog grabs a UserMeta structure, valid for the specified repository.
@@ -72,7 +72,7 @@ public class UserDialog extends Dialog
 	{
 		super(parent, style);
 		this.securityManager = repository.getSecurityManager();
-		this.repository = repository;
+		// this.repository = repository;
 		this.userinfo=userInfo;
 
 		this.props=PropsUI.getInstance();
