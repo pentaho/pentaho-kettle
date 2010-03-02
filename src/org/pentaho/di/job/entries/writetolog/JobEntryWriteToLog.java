@@ -22,14 +22,20 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.w3c.dom.Node;
 
 
@@ -128,12 +134,67 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		}
 	}
 
+	private class LogWriterObject implements LoggingObjectInterface {
+
+		private LogChannelInterface log;
+		private LoggingObjectInterface	parent;
+		private String	subject;
+		
+		public LogWriterObject(String subject, LoggingObjectInterface parent) {
+			this.subject = subject;
+			this.parent = parent;
+			log = new LogChannel(this);
+		}
+		
+		public String getFilename() {
+			return null;
+		}
+
+		public String getLogChannelId() {
+			return log.getLogChannelId();
+		}
+
+		public String getObjectCopy() {
+			return null;
+		}
+
+		public ObjectId getObjectId() {
+			return null;
+		}
+
+		public String getObjectName() {
+			return subject;
+		}
+
+		public ObjectRevision getObjectRevision() {
+			return null;
+		}
+
+		public LoggingObjectType getObjectType() {
+			return LoggingObjectType.STEP;
+		}
+
+		public LoggingObjectInterface getParent() {
+			return parent;
+		}
+
+		public RepositoryDirectory getRepositoryDirectory() {
+			return null;
+		}
+		
+		public LogChannelInterface getLogChannel() {
+			return log;
+		}
+	}
 
 	/**
 	 * Output message to job log.
 	 */
 	public boolean evaluate(Result result)
 	{
+		LogWriterObject logWriterObject = new LogWriterObject(getRealLogSubject(), this);
+		LogChannelInterface logChannel = logWriterObject.getLogChannel();
+		
 		try
 		{
 			loglevel=loglevel+1;
@@ -142,38 +203,37 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 			{
 				// Output message to log
 				// Log level = ERREUR	
-				log.logError(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				logChannel.logError(getRealLogMessage()+ Const.CR);
 			}
 			else if (loglevel==LogWriter.LOG_LEVEL_MINIMAL)
 			{
 				// Output message to log
 				// Log level = MINIMAL	
-				log.logMinimal(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				logChannel.logMinimal(getRealLogMessage()+ Const.CR);
 			}
 			else if (loglevel==LogWriter.LOG_LEVEL_BASIC)
 			{
 				// Output message to log
 				// Log level = BASIC	
-				log.logBasic(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				logChannel.logBasic(getRealLogMessage()+ Const.CR);
 			}
 			else if (loglevel==LogWriter.LOG_LEVEL_DETAILED)
 			{
 				// Output message to log
 				// Log level = DETAILED	
-				log.logDetailed(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				logChannel.logDetailed(getRealLogMessage()+ Const.CR);
 			}
 			else if (loglevel==LogWriter.LOG_LEVEL_DEBUG)
 			{
 				// Output message to log
 				// Log level = DEBUG	
-				log.logDebug(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
-				
+				logChannel.logDebug(getRealLogMessage()+ Const.CR);
 			}
 			else if (loglevel==LogWriter.LOG_LEVEL_ROWLEVEL)
 			{
 				// Output message to log
 				// Log level = ROWLEVEL	
-				log.logRowlevel(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				logChannel.logRowlevel(getRealLogMessage()+ Const.CR);
 			}
 
 			return true;
@@ -217,10 +277,6 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		return false;
 	}
     
-   /* public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryWriteToLogDialog(shell,this);
-    }
-*/
 	public String getRealLogMessage()
 	{
 		return environmentSubstitute(Const.NVL(getLogMessage(), ""));
