@@ -97,17 +97,15 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		{
 			String stype = XMLHandler.getTagValue(entrynode, "type");
 			PluginRegistry registry = PluginRegistry.getInstance();
-			PluginInterface jobPlugin = registry.findPluginWithId(JobEntryPluginType.getInstance(), stype);
-			if (jobPlugin == null)
+			PluginInterface jobEntryPlugin = registry.findPluginWithId(JobEntryPluginType.getInstance(), stype);
+			if (jobEntryPlugin == null)
 				throw new KettleStepLoaderException("No valid step/plugin specified (jobPlugin=null) for " + stype);
 
 			// Get an empty JobEntry of the appropriate class...
-			entry = (JobEntryInterface) registry.loadClass(jobPlugin);
+			entry = (JobEntryInterface) registry.loadClass(jobEntryPlugin);
 			if (entry != null)
 			{
-				// System.out.println("New JobEntryInterface built of type:
-				// "+entry.getTypeDesc());
-				entry.setTypeId(jobPlugin.getIds()[0]);
+				entry.setPluginId(jobEntryPlugin.getIds()[0]);
 				entry.loadXML(entrynode, databases, slaveServers, rep);
 
 				// Handle GUI information: nr & location?
@@ -193,9 +191,9 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		entry = je;
 		if (entry!=null)
 		{
-			if (entry.getConfigId()==null)
+			if (entry.getPluginId()==null)
 		    {
-				entry.setConfigId( PluginRegistry.getInstance().getPluginId(JobEntryPluginType.getInstance(), entry) );
+				entry.setPluginId( PluginRegistry.getInstance().getPluginId(JobEntryPluginType.getInstance(), entry) );
 		    }
 		}
 	}
@@ -211,7 +209,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	 */
 	public String getTypeDesc()
 	{
-		PluginInterface plugin = PluginRegistry.getInstance().findPluginWithId(JobEntryPluginType.getInstance(), entry.getTypeId());
+		PluginInterface plugin = PluginRegistry.getInstance().findPluginWithId(JobEntryPluginType.getInstance(), entry.getPluginId());
 		return plugin.getDescription();
 	}
 

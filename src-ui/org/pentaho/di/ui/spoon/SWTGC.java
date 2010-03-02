@@ -261,7 +261,7 @@ public class SWTGC implements GCInterface {
 			          image = GUIResource.getInstance().getImageDummy();
 			        }
 			    } else {
-			        String configId = jobEntryCopy.getEntry().getConfigId();
+			        String configId = jobEntryCopy.getEntry().getPluginId();
 			        if (configId != null) {
 			          image = GUIResource.getInstance().getImagesJobentries().get(configId);
 			        }

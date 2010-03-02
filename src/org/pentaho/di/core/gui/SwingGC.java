@@ -450,7 +450,7 @@ public class SwingGC implements GCInterface {
 			          image = imageDummy;
 			        }
 			    } else {
-			        String configId = jobEntryCopy.getEntry().getConfigId();
+			        String configId = jobEntryCopy.getEntry().getPluginId();
 			        if (configId != null) {
 			          image = entryImages.get(configId);
 			        }

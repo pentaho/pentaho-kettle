@@ -529,7 +529,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
                 }
                 redraw();
                 spoon.refreshTree();
-                log.logBasic("DropTargetEvent", "DROP " + newjge.toString() + "!, type="+newjge.getEntry().getTypeId());
+                log.logBasic("DropTargetEvent", "DROP " + newjge.toString() + "!, type="+newjge.getEntry().getPluginId());
               } else {
                 log.logError("Unknown job entry dropped onto the canvas.");
               }

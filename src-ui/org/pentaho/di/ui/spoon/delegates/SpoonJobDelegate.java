@@ -126,6 +126,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 				// Generate the appropriate class...
 				JobEntryInterface jei = (JobEntryInterface) registry.loadClass(jobPlugin);
+				jei.setPluginId(jobPlugin.getIds()[0]);
 				jei.setName(entry_name);
 
 				if (jei.isSpecial())

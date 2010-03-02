@@ -178,7 +178,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 			// OK, the entry is saved.
 			// Get the entry type...
 			//
-			ObjectId id_jobentry_type = getJobEntryTypeID(entry.getTypeId());
+			ObjectId id_jobentry_type = getJobEntryTypeID(entry.getPluginId());
 
 			// Oops, not found: update the repository!
 			if (id_jobentry_type == null)
@@ -186,7 +186,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 				repository.updateJobEntryTypes();
 
 				// Try again!
-				id_jobentry_type = getJobEntryTypeID(entry.getTypeId());
+				id_jobentry_type = getJobEntryTypeID(entry.getPluginId());
 			}
 
 			// Save the entry copy..
@@ -302,7 +302,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 				long id_jobentry_type = r.getInteger("ID_JOBENTRY_TYPE", 0);
 				RowMetaAndData jetrow = getJobEntryType(new LongObjectId(id_jobentry_type) );
 				if (jetrow != null) {
-					jobEntryBase.setConfigId(jetrow.getString("CODE", null));
+					jobEntryBase.setPluginId(jetrow.getString("CODE", null));
 				}
 			}
 		} catch (KettleDatabaseException dbe) {

@@ -414,7 +414,11 @@ public class TransPainter extends BasePainter
         if (stepMeta.getClusterSchema()!=null)
         {
             String message = "C";
-            message+="x"+stepMeta.getClusterSchema().findNrSlaves();
+            if (stepMeta.getClusterSchema().isDynamic()) {
+            	message+="xN";
+            } else {
+            	message+="x"+stepMeta.getClusterSchema().findNrSlaves();
+            }
             
             gc.setBackground(EColor.BACKGROUND);
             gc.setForeground(EColor.BLACK);

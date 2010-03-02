@@ -32,7 +32,6 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransHopMeta;
@@ -197,17 +196,31 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				case 0:
 					break;
 				case 2: // Job entries
-					if (spoon.showJob)
-					{
-						PluginInterface jobPlugin = PluginRegistry.getInstance().findPluginWithName(JobEntryPluginType.getInstance(), path[1]);
-						if (jobPlugin != null)
-						{
-							object = new TreeSelection(path[1], jobPlugin);
-						} else
-						{
-							object = new TreeSelection(path[1], JobPlugin.class);
+					if (spoon.showJob) {
+						PluginRegistry registry = PluginRegistry.getInstance();
+						JobEntryPluginType pluginType = JobEntryPluginType.getInstance();
+						PluginInterface plugin = registry.findPluginWithName(pluginType, path[1]);
+						
+						// Retry for Start
+						//
+						if (plugin == null) {
+							if (path[1].equals(JobMeta.STRING_SPECIAL_START)) {
+								plugin = registry.findPluginWithId(pluginType, JobMeta.STRING_SPECIAL);
+							}							
+						}
+						// Retry for Dummy
+						//
+						if (plugin==null) {
+							if (path[1].equals(JobMeta.STRING_SPECIAL_DUMMY)) {
+								plugin = registry.findPluginWithId(pluginType, JobMeta.STRING_SPECIAL);
+							}	
+						}									
+
+						if (plugin!=null) {
+							object = new TreeSelection(path[1], plugin);
 						}
 					}
+					
 					if (spoon.showTrans)
 					{
 						// Steps
@@ -239,7 +252,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 		{
 			public void dragStart(DragSourceEvent event)
 			{
-			TreeSelection[] treeObjects = getTreeObjects(tree,selectionTree,coreObjectsTree);
+				TreeSelection[] treeObjects = getTreeObjects(tree,selectionTree,coreObjectsTree);
 				if (treeObjects.length == 0)
 				{
 					event.doit = false;
@@ -257,9 +270,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					object instanceof PluginInterface ||
 					( object instanceof DatabaseMeta && transMeta!=null) ||
 					object instanceof TransHopMeta || 
-					object instanceof JobEntryCopy ||
-					object instanceof JobPlugin ||
-					(object instanceof Class<?> && object.equals(JobPlugin.class)) 
+					object instanceof JobEntryCopy
 					)
 				{
 					event.doit = true;
@@ -284,7 +295,6 @@ public class SpoonTreeDelegate extends SpoonDelegate
 
 				TreeSelection treeObject = treeObjects[0];
 				Object object = treeObject.getSelection();
-				JobMeta jobMeta = spoon.getActiveJob();
 
 				if (object instanceof StepMeta)
 				{
@@ -293,13 +303,19 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					data = stepMeta.getName(); // name of the step.
 				} else if (object instanceof PluginInterface)
 				{
-					PluginInterface stepPlugin = (PluginInterface) object;
-					if (stepPlugin.getPluginType().equals(StepPluginType.getInstance())) {
+					PluginInterface plugin = (PluginInterface) object;
+					if (plugin.getPluginType().equals(StepPluginType.getInstance())) {
 						type = DragAndDropContainer.TYPE_BASE_STEP_TYPE;
+						data = plugin.getName(); // Step type name
 					} else {
 						type = DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
+						data = plugin.getName(); // job entry type name
+						if (treeObject.getItemText().equals(JobMeta.createStartEntry().getName())){
+							data = treeObject.getItemText();
+						} else if (treeObject.getItemText().equals(JobMeta.createDummyEntry().getName())) {
+							data = treeObject.getItemText();
+						}
 					}
-					data = stepPlugin.getName(); // Step type name
 				} else if (object instanceof DatabaseMeta)
 				{
 					DatabaseMeta databaseMeta = (DatabaseMeta) object;
@@ -315,28 +331,9 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					JobEntryCopy jobEntryCopy = (JobEntryCopy) object;
 					type = DragAndDropContainer.TYPE_JOB_ENTRY;
 					data = jobEntryCopy.getName(); // name of the job entry.
-				} else if (object instanceof JobPlugin)
+				} /*else if (object instanceof Class<?> && object.equals(JobPlugin.class))
 				{
-					JobPlugin jobPlugin = (JobPlugin) object;
-					type = DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
-					data = jobPlugin.getDescription(); // Step type
-				} else if (object instanceof Class<?> && object.equals(JobPlugin.class))
-				{
-					JobEntryCopy dummy = null;
-					if (jobMeta != null)
-						dummy = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_DUMMY, 0, true);
-					if (JobMeta.STRING_SPECIAL_DUMMY.equalsIgnoreCase(treeObject.getItemText())
-							&& dummy != null)
-					{
-						// if dummy already exists, add a copy
-						type = DragAndDropContainer.TYPE_JOB_ENTRY;
-						data = dummy.getName();
-					} else
-					{
-						type = DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
-						data = treeObject.getItemText();
-					}
-				} else
+				}*/ else
 				{
 					event.doit = false;
 					return; // ignore anything else you drag.

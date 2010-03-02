@@ -1787,26 +1787,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       final List<PluginInterface> basesteps = registry.getPlugins(StepPluginType.getInstance());
       final List<String> basecat = registry.getCategories(StepPluginType.getInstance());
       
-      // Sort these base steps by category and then by step name in the
-      // given locale
-      //
-      /*
-      Collections.sort(basesteps, new Comparator<PluginInterface>() {
-
-        public int compare(PluginInterface one, PluginInterface two) {
-          int idxOne = Const.indexOfString(one.getCategory(), StepCategory.CATEGORIES_IN_ORDER);
-          int idxTwo = Const.indexOfString(two.getCategory(), StepCategory.CATEGORIES_IN_ORDER);
-          if (idxOne == idxTwo) {
-            String nameOne = one.getDescription();
-            String nameTwo = two.getDescription();
-            return nameOne.compareTo(nameTwo);
-          } else {
-            return idxOne - idxTwo;
-          }
-        }
-      });
-      */
-
       for (int i = 0; i < basecat.size(); i++) {
         TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
         item.setText(basecat.get(i));
@@ -1817,7 +1797,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             final Image stepimg = (Image) GUIResource.getInstance().getImagesStepsSmall().get(basesteps.get(j).getIds()[0]);
             String pluginName = basesteps.get(j).getName();
             String pluginDescription = basesteps.get(j).getDescription();
-            // boolean isPlugin = basesteps.get(j).isNativePlugin();
 
             if (!filterMatch(pluginName) && !filterMatch(pluginDescription))
               continue;
@@ -1831,11 +1810,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 System.out.println("Tree item Listener fired");
               }
             });
-            // if (isPlugin) stepItem.setFont(GUIResource.getInstance().getFontBold());
 
             coreStepToolTipMap.put(pluginName, pluginDescription);
-            // addExpandBarItemLine(composite, stepimg, pluginName,
-            // pluginDescription, isPlugin, basesteps[j]);
           }
         }
       }
@@ -1856,7 +1832,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           final Image stepimg = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getIds()[0]);
           String pluginName = Const.NVL(stepPlugin.getDescription(), "");
           String pluginDescription = Const.NVL(stepPlugin.getDescription(), "");
-          // boolean isPlugin = stepPlugin.isNativePlugin();
 
           if (!filterMatch(pluginName) && !filterMatch(pluginDescription))
             continue;
@@ -4723,7 +4698,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
               } else if (jobEntry.isDummy()) {
                 tiJobEntry.setImage(GUIResource.getInstance().getImageDummy());
               } else {
-                String key = jobEntry.getEntry().getTypeId();
+                String key = jobEntry.getEntry().getPluginId();
                 Image image = GUIResource.getInstance().getImagesJobentriesSmall().get(key);
                 tiJobEntry.setImage(image);
               }

@@ -59,12 +59,10 @@ public interface JobEntryInterface
 	public String  getName();
 	public void    setName(String name);
 
-	// ConfigId and TypeId are the same, should be refactored out later.
+	// TypeId are the same, should be refactored out later.
 	//
-	public String  getConfigId();
-	public void    setConfigId(String configId);
-    public String  getTypeId();
-    public void    setTypeId(String typeId);
+	public String  getPluginId();
+	public void    setPluginId(String pluginId);
     
 	public String  getDescription();
 	public void    setDescription(String description);

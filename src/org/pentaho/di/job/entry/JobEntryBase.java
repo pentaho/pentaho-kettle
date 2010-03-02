@@ -414,12 +414,12 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 		return null;
 	}
 
-  public String getConfigId()
+  public String getPluginId()
   {
     return configId;
   }
 
-  public void setConfigId(String configId)
+  public void setPluginId(String configId)
   {
     this.configId = configId;
   }
@@ -428,14 +428,14 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * TODO: research the removal of configId in favor of typeId
    */
   public String getTypeId() {
-	  return getConfigId();
+	  return getPluginId();
   }
   
   /**
    * TODO: research the removal of configId in favor of typeId
    */
   public void setTypeId(String typeId) {
-	  setConfigId(typeId);
+	  setPluginId(typeId);
   }
 
   /**
