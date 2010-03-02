@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -121,7 +123,20 @@ public class SpoonPerspectiveManager {
     if(overlays != null){
       for(XulOverlay overlay : overlays){
         try {
-          domContainer.loadOverlay(overlay.getOverlayUri());
+          ResourceBundle res = null;
+          if(overlay.getResourceBundleUri() != null){
+            try{
+              res = ResourceBundle.getBundle(overlay.getResourceBundleUri());
+            } catch(MissingResourceException ignored){}
+          } else {
+            try{
+              res = ResourceBundle.getBundle(overlay.getOverlayUri().replace(".xul", ".properties"));
+            } catch(MissingResourceException ignored){}
+          }
+          if(res == null){
+            res = new XulSpoonResourceBundle(sp.getClass());
+          }
+          domContainer.loadOverlay(overlay.getOverlayUri(), res);
         } catch (XulException e) {
           e.printStackTrace();
         }
