@@ -12,6 +12,7 @@
  
 
 package org.pentaho.di.ui.core.dialog;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,10 +39,14 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.delegates.SpoonDBDelegate;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -83,13 +88,14 @@ public class EnterSelectionDialog extends Dialog
     private boolean fixed;
     private boolean quickSearch;
     
-	private ToolItem goSearch,wfilter;
+	private ToolItem goSearch,wfilter, addConnection;
 	private ToolItem wbRegex;
 	
 	private String filterString=null;
 	private Pattern pattern=null;
 	private Text searchText = null;
-    
+  private HasDatabasesInterface databasesInterface;
+	
     /**
      * @deprecated Use CT without <i>props</i> parameter
      */
@@ -123,6 +129,15 @@ public class EnterSelectionDialog extends Dialog
         fixed=false;
         quickSearch=true;
     }
+    
+    public EnterSelectionDialog(Shell parent, String choices[], String shellText, String message,  HasDatabasesInterface databasesInterface)
+    {
+      this(parent, choices, shellText, message);
+      this.databasesInterface = databasesInterface;
+    }
+    
+    
+    
 	
 	public void setViewOnly()
 	{
@@ -202,6 +217,21 @@ public class EnterSelectionDialog extends Dialog
 			      public void widgetSelected(SelectionEvent event) {
 			    	  updateFilter();
 			      }});
+			
+      addConnection = new ToolItem(treeTb,SWT.PUSH);
+      addConnection.setImage(GUIResource.getInstance().getImageAdd());
+      addConnection.setToolTipText(BaseMessages.getString(PKG, "Add.Datasource.Label"));
+        fd=new FormData();
+        fd.right = new FormAttachment(100, -margin);
+        fd.top  = new FormAttachment(0, margin);
+    treeTb.setLayoutData(fd);
+    
+    addConnection.addSelectionListener(new SelectionAdapter() {
+          public void widgetSelected(SelectionEvent event) {
+            addDataSource();
+          }});		
+    
+    
 			
 			 searchText.addSelectionListener(new SelectionAdapter() {
 				 public void widgetDefaultSelected(SelectionEvent e) { updateFilter(); } });
@@ -423,6 +453,27 @@ public class EnterSelectionDialog extends Dialog
 		}
 		refresh();
 	}
+    
+  protected void addDataSource() 
+  {
+    //Open the new datasource dialog and
+    //this.databasesInterface; Add a new database to it.
+    
+    Spoon theSpoon = Spoon.getInstance();
+    SpoonDBDelegate theDelegate = new SpoonDBDelegate(theSpoon);
+    theDelegate.newConnection(this.databasesInterface);
+    
+    ArrayList<DatabaseMeta> theDatabases = new ArrayList<DatabaseMeta>();
+    theDatabases.addAll(this.databasesInterface.getDatabases());
+
+    String[] theNames = new String[theDatabases.size()];
+    for (int i = 0; i < theDatabases.size(); i++) {
+      theNames[i] = theDatabases.get(i).getName();
+    }
+    this.choices = theNames;
+    
+    refresh();
+  }
 
     private void refresh()
 	{

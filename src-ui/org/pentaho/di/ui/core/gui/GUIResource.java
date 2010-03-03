@@ -49,8 +49,7 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.ImageUtil;
 
-/**
- * This is a singleton class that contains allocated Fonts, Colors, etc. All
+/*
  * colors etc. are allocated once and released once at the end of the program.
  * 
  * @author Matt
@@ -141,6 +140,8 @@ public class GUIResource
 	private Image imageDisabledHop;
 
 	private Image imageConnection;
+	
+	private Image imageAdd;
 	
 	private Image imageTable;
 	
@@ -417,6 +418,7 @@ public class GUIResource
 			imageHop.dispose();
 			imageDisabledHop.dispose();
 			imageConnection.dispose();
+			imageAdd.dispose();
 			imageTable.dispose();
 			imageSchema.dispose();
 			imageSynonym.dispose();
@@ -528,76 +530,76 @@ public class GUIResource
 			image.dispose();
 	}
 
-	/**
-	 * Load all step images from files.
-	 * 
-	 */
-	private void loadStepImages()
-	{
-		imagesSteps = new Hashtable<String, Image>();
-		imagesStepsSmall = new Hashtable<String, Image>();
+  /**
+   * Load all step images from files.
+   * 
+   */
+  private void loadStepImages()
+  {
+    imagesSteps = new Hashtable<String, Image>();
+    imagesStepsSmall = new Hashtable<String, Image>();
 
-		//
-		// STEP IMAGES TO LOAD
-		//
-		PluginRegistry registry = PluginRegistry.getInstance();
-		
-		List<PluginInterface> steps = registry.getPlugins(StepPluginType.getInstance());
-		for (int i = 0; i < steps.size(); i++)
-		{
-			Image image = null;
-			Image small_image = null;
+    //
+    // STEP IMAGES TO LOAD
+    //
+    PluginRegistry registry = PluginRegistry.getInstance();
+    
+    List<PluginInterface> steps = registry.getPlugins(StepPluginType.getInstance());
+    for (int i = 0; i < steps.size(); i++)
+    {
+      Image image = null;
+      Image small_image = null;
 
-			String filename = steps.get(i).getImageFile();
-			try {
-				Object object = registry.loadClass(steps.get(i));
-				image = ImageUtil.getImage(display, object.getClass(), filename);
-			} catch (Exception e) {
-				log.logError("Kettle", "Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : " + e.toString());
-				image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-				GC gc = new GC(image);
-				gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-				gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-				gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
-				gc.dispose();
-			}
-			/*
-			} else
-			{
-				String filename = steps.get(i).getImageFile();
-				try
-				{
-					image = new Image(display, filename);
-				} catch (Exception e)
-				{
-					log.logError("Kettle", "Unable to find required step image file [" + filename + " : " + e.toString());
-					image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					GC gc = new GC(image);
-					gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
-					gc.dispose();
-				}
-			}
-			*/
+      String filename = steps.get(i).getImageFile();
+      try {
+        Object object = registry.loadClass(steps.get(i));
+        image = ImageUtil.getImage(display, object.getClass(), filename);
+      } catch (Exception e) {
+        log.logError("Kettle", "Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : " + e.toString());
+        image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+        GC gc = new GC(image);
+        gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+        gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+        gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
+        gc.dispose();
+      }
+      /*
+      } else
+      {
+        String filename = steps.get(i).getImageFile();
+        try
+        {
+          image = new Image(display, filename);
+        } catch (Exception e)
+        {
+          log.logError("Kettle", "Unable to find required step image file [" + filename + " : " + e.toString());
+          image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+          GC gc = new GC(image);
+          gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+          gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+          gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
+          gc.dispose();
+        }
+      }
+      */
 
-			// Calculate the smaller version of the image @ 16x16...
-			// Perhaps we should make this configurable?
-			//
-			if (image != null)
-			{
-				int xsize = image.getBounds().width;
-				int ysize = image.getBounds().height;
-				small_image = new Image(display, 16, 16);
-				GC gc = new GC(small_image);
-				gc.drawImage(image, 0, 0, xsize, ysize, 0, 0, 16, 16);
-				gc.dispose();
-			}
+      // Calculate the smaller version of the image @ 16x16...
+      // Perhaps we should make this configurable?
+      //
+      if (image != null)
+      {
+        int xsize = image.getBounds().width;
+        int ysize = image.getBounds().height;
+        small_image = new Image(display, 16, 16);
+        GC gc = new GC(small_image);
+        gc.drawImage(image, 0, 0, xsize, ysize, 0, 0, 16, 16);
+        gc.dispose();
+      }
 
-			imagesSteps.put(steps.get(i).getIds()[0], image);
-			imagesStepsSmall.put(steps.get(i).getIds()[0], small_image);
-		}
-	}
+      imagesSteps.put(steps.get(i).getIds()[0], image);
+      imagesStepsSmall.put(steps.get(i).getIds()[0], small_image);
+    }
+  }
 
 	private void loadFonts()
 	{
@@ -639,6 +641,7 @@ public class GUIResource
 	{
 		imageHop = ImageUtil.getImageAsResource(display,BasePropertyHandler.getProperty("HOP_image")); // "ui/images/HOP.png"
 		imageConnection = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CNC_image")); // , "ui/images/CNC.png"
+		imageAdd = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Add_image")); // , "ui/images/Add.png"
 		
 		imageDisabledHop=ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
 				BasePropertyHandler.getProperty("Disabled_HOP_image")), new RGB(255, 255, 255));
@@ -785,65 +788,65 @@ public class GUIResource
 		    
 	}
 	
-	/**
-	 * Load all step images from files.
-	 * 
-	 */
-	private void loadJobEntryImages()
-	{
-		imagesJobentries = new Hashtable<String, Image>();
-		imagesJobentriesSmall = new Hashtable<String, Image>();
+  /**
+   * Load all step images from files.
+   * 
+   */
+  private void loadJobEntryImages()
+  {
+    imagesJobentries = new Hashtable<String, Image>();
+    imagesJobentriesSmall = new Hashtable<String, Image>();
 
-		// //
-		// // JOB ENTRY IMAGES TO LOAD
-		// //
-		PluginRegistry registry = PluginRegistry.getInstance();
+    // //
+    // // JOB ENTRY IMAGES TO LOAD
+    // //
+    PluginRegistry registry = PluginRegistry.getInstance();
 
-		List<PluginInterface> plugins = registry.getPlugins(JobEntryPluginType.getInstance());
-		for (int i = 0; i < plugins.size(); i++)
-		{
-			PluginInterface plugin = plugins.get(i);
-			
-			if ("SPECIAL".equals(plugin.getIds()[0])) {
-				continue;
-			}
+    List<PluginInterface> plugins = registry.getPlugins(JobEntryPluginType.getInstance());
+    for (int i = 0; i < plugins.size(); i++)
+    {
+      PluginInterface plugin = plugins.get(i);
+      
+      if ("SPECIAL".equals(plugin.getIds()[0])) {
+        continue;
+      }
 
-			Image image = null;
-			Image small_image = null;
+      Image image = null;
+      Image small_image = null;
 
-			String filename = plugin.getImageFile();
-			try
-			{
-				Object object = registry.loadClass(plugin);
-				image = ImageUtil.getImage(display, object.getClass(), filename);
-			} catch (Exception e)
-			{
-				log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] for id ["+plugin.getIds()[0]+"] : " + e.toString());
-				image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-				GC gc = new GC(image);
-				gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-				gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-				gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
-				gc.dispose();
-			}
+      String filename = plugin.getImageFile();
+      try
+      {
+        Object object = registry.loadClass(plugin);
+        image = ImageUtil.getImage(display, object.getClass(), filename);
+      } catch (Exception e)
+      {
+        log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] for id ["+plugin.getIds()[0]+"] : " + e.toString());
+        image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+        GC gc = new GC(image);
+        gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+        gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
+        gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
+        gc.dispose();
+      }
 
-			// Calculate the smaller version of the image @ 16x16...
-			// Perhaps we should make this configurable?
-			//
-			if (image != null)
-			{
-				int xsize = image.getBounds().width;
-				int ysize = image.getBounds().height;
-				small_image = new Image(display, 16, 16);
-				GC gc = new GC(small_image);
-				gc.drawImage(image, 0, 0, xsize, ysize, 0, 0, 16, 16);
-				gc.dispose();
-			}
+      // Calculate the smaller version of the image @ 16x16...
+      // Perhaps we should make this configurable?
+      //
+      if (image != null)
+      {
+        int xsize = image.getBounds().width;
+        int ysize = image.getBounds().height;
+        small_image = new Image(display, 16, 16);
+        GC gc = new GC(small_image);
+        gc.drawImage(image, 0, 0, xsize, ysize, 0, 0, 16, 16);
+        gc.dispose();
+      }
 
-			imagesJobentries.put(plugin.getIds()[0], image);
-			imagesJobentriesSmall.put(plugin.getIds()[0], small_image);
-		}
-	}
+      imagesJobentries.put(plugin.getIds()[0], image);
+      imagesJobentriesSmall.put(plugin.getIds()[0], small_image);
+    }
+  }
 
 	/**
 	 * @return Returns the colorBackground.
@@ -1060,6 +1063,11 @@ public class GUIResource
 	public Image getImageConnection()
 	{
 		return imageConnection;
+	}
+	
+	public Image getImageAdd()
+	{
+	  return imageAdd;
 	}
 	
 	/**
