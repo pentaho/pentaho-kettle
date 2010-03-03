@@ -59,8 +59,11 @@ public interface JobEntryInterface
 	public String  getName();
 	public void    setName(String name);
 
-	// TypeId are the same, should be refactored out later.
-	//
+	/**
+	   * @deprecated in favor of getPluginId()
+	   */
+	public String  getTypeId();
+	
 	public String  getPluginId();
 	public void    setPluginId(String pluginId);
     

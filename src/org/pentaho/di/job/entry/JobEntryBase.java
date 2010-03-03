@@ -425,14 +425,14 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   }
   
   /**
-   * TODO: research the removal of configId in favor of typeId
+   * @deprecated in favor of getPluginId()
    */
   public String getTypeId() {
 	  return getPluginId();
   }
   
   /**
-   * TODO: research the removal of configId in favor of typeId
+   * @deprecated in favor of setPluginId()
    */
   public void setTypeId(String typeId) {
 	  setPluginId(typeId);

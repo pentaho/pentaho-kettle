@@ -203,9 +203,9 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 	public synchronized ObjectId insertJobEntry(ObjectId id_job, JobEntryBase jobEntryBase) throws KettleException {
 		ObjectId id = repository.connectionDelegate.getNextJobEntryID();
 
-		ObjectId id_jobentry_type = getJobEntryTypeID(jobEntryBase.getTypeId());
+		ObjectId id_jobentry_type = getJobEntryTypeID(jobEntryBase.getPluginId());
 
-		log.logDebug("ID_JobEntry_type = " + id_jobentry_type + " for type = [" + jobEntryBase.getTypeId() + "]");
+		log.logDebug("ID_JobEntry_type = " + id_jobentry_type + " for type = [" + jobEntryBase.getPluginId() + "]");
 
 		RowMetaAndData table = new RowMetaAndData();
 
