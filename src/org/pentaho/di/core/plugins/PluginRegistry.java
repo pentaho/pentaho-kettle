@@ -388,7 +388,7 @@ public class PluginRegistry {
 		String className = pluginClass.getClass().getName();
 		for (PluginInterface plugin : getPlugins(pluginType)) {
 			for (String check : plugin.getClassMap().values()) {
-				if (check.equals(className)) {
+				if (check != null && check.equals(className)) {
 					return plugin.getIds()[0];
 				}
 			}
