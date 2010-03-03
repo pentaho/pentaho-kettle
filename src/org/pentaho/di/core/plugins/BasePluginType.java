@@ -259,6 +259,10 @@ abstract class BasePluginType {
             String classname = getTagOrAttribute(pluginNode, "classname"); //$NON-NLS-1$
             String errorHelpfile = getTagOrAttribute(pluginNode, "errorhelpfile"); //$NON-NLS-1$
 
+            String metaclassname = getTagOrAttribute(pluginNode, "metaclassname"); //$NON-NLS-1$
+            String dialogclassname = getTagOrAttribute(pluginNode, "dialogclassname"); //$NON-NLS-1$
+            String versionbrowserclassname = getTagOrAttribute(pluginNode, "versionbrowserclassname"); //$NON-NLS-1$
+            
             Node libsnode = XMLHandler.getSubNode(pluginNode, "libraries"); //$NON-NLS-1$
             int nrlibs = XMLHandler.countNodes(libsnode, "library"); //$NON-NLS-1$
 
@@ -286,8 +290,12 @@ abstract class BasePluginType {
             String iconFilename = (path == null) ? iconfile : path + Const.FILE_SEPARATOR + iconfile;
             String errorHelpFileFull = errorHelpfile;
             if (!Const.isEmpty(errorHelpfile)) errorHelpFileFull = (path == null) ? errorHelpfile : path+Const.FILE_SEPARATOR+errorHelpfile;
-    		Map<PluginClassType, String> classMap = new HashMap<PluginClassType, String>();
-    		classMap.put(PluginClassType.MainClassType, classname);
+            
+            Map<PluginClassType, String> classMap = new HashMap<PluginClassType, String>();
+            classMap.put(PluginClassType.MainClassType, classname);
+            classMap.put(PluginClassType.MetaClassType, metaclassname);
+            classMap.put(PluginClassType.DialogClassType, dialogclassname);
+            classMap.put(PluginClassType.RepositoryVersionBrowserClassType, versionbrowserclassname);
 
             PluginInterface pluginInterface = new Plugin(id.split(","), pluginType, category, description, tooltip, iconFilename, false, false, classMap, jarFiles, errorHelpFileFull);
             registry.registerPlugin(pluginType, pluginInterface);
