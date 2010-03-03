@@ -263,7 +263,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED   , "previous result is stopped",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultIsStopped")),
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES   , "previous result nr files",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrFiles")),
             new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED   , "previous result nr files retrieved",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultNrFilesRetrieved")),    
-            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED   , "previous result nr files retrieved",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultLogText")), 
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREVIOUS_RESULT_LOG_TEXT   , "previous result log text",    BaseMessages.getString(PKG, "SystemDataMeta.TypeDesc.PreviousResultLogText")), 
     };
     
 	private String fieldName[];
