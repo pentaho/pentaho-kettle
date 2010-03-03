@@ -2190,7 +2190,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void exploreDB() {
     final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-    delegates.db.exploreDB(databaseMeta);
+    delegates.db.exploreDB(databaseMeta, true);
   }
 
   public void editStep() {

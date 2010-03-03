@@ -203,35 +203,29 @@ public class EnterSelectionDialog extends Dialog
 			wbRegex = new ToolItem(treeTb, SWT.CHECK);
 			wbRegex.setImage(GUIResource.getInstance().getImageRegexSmall());
 			wbRegex.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.useRegEx.Tooltip"));
-			
-			
+						
 			goSearch = new ToolItem(treeTb,SWT.PUSH);
 		    goSearch.setImage(GUIResource.getInstance().getImageSearchSmall());
 		    goSearch.setToolTipText(BaseMessages.getString(PKG, "EnterSelectionDialog.refresh.Label"));
+
+	      goSearch.addSelectionListener(new SelectionAdapter() {
+          public void widgetSelected(SelectionEvent event) {
+            updateFilter();
+          }});		    
+		    
+	    addConnection = new ToolItem(treeTb,SWT.PUSH);
+	    addConnection.setImage(GUIResource.getInstance().getImageAdd());
+	    addConnection.setToolTipText(BaseMessages.getString(PKG, "Add.Datasource.Label"));
+	    
+	    addConnection.addSelectionListener(new SelectionAdapter() {
+	          public void widgetSelected(SelectionEvent event) {
+	            addDataSource();
+	          }});  
+		    
 	        FormData fd=new FormData();
 	        fd.right = new FormAttachment(100, -margin);
 	        fd.top  = new FormAttachment(0, margin);
 			treeTb.setLayoutData(fd);
-			
-			goSearch.addSelectionListener(new SelectionAdapter() {
-			      public void widgetSelected(SelectionEvent event) {
-			    	  updateFilter();
-			      }});
-			
-      addConnection = new ToolItem(treeTb,SWT.PUSH);
-      addConnection.setImage(GUIResource.getInstance().getImageAdd());
-      addConnection.setToolTipText(BaseMessages.getString(PKG, "Add.Datasource.Label"));
-        fd=new FormData();
-        fd.right = new FormAttachment(100, -margin);
-        fd.top  = new FormAttachment(0, margin);
-    treeTb.setLayoutData(fd);
-    
-    addConnection.addSelectionListener(new SelectionAdapter() {
-          public void widgetSelected(SelectionEvent event) {
-            addDataSource();
-          }});		
-    
-    
 			
 			 searchText.addSelectionListener(new SelectionAdapter() {
 				 public void widgetDefaultSelected(SelectionEvent e) { updateFilter(); } });
@@ -456,9 +450,6 @@ public class EnterSelectionDialog extends Dialog
     
   protected void addDataSource() 
   {
-    //Open the new datasource dialog and
-    //this.databasesInterface; Add a new database to it.
-    
     Spoon theSpoon = Spoon.getInstance();
     SpoonDBDelegate theDelegate = new SpoonDBDelegate(theSpoon);
     theDelegate.newConnection(this.databasesInterface);
@@ -471,7 +462,6 @@ public class EnterSelectionDialog extends Dialog
       theNames[i] = theDatabases.get(i).getName();
     }
     this.choices = theNames;
-    
     refresh();
   }
 
