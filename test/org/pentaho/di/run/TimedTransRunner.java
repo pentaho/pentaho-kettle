@@ -9,7 +9,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowListener;
@@ -47,7 +46,7 @@ public class TimedTransRunner
 
     public void init() throws KettleException
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
         LogWriter.getInstance(logLevel);
     }
     

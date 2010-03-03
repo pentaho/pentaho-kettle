@@ -21,6 +21,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -29,7 +30,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -287,7 +287,7 @@ public class JavaScriptSpecialTest extends TestCase
 	 */
     public void testLuhnCheck() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -391,7 +391,7 @@ public class JavaScriptSpecialTest extends TestCase
 	 */
     public void testTransStatus() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -496,7 +496,7 @@ public class JavaScriptSpecialTest extends TestCase
 	 */
     public void testJavaInterface() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...

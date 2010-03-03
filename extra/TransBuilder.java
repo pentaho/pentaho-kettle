@@ -12,7 +12,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -72,7 +71,8 @@ public class TransBuilder
      */
     public static final TransMeta buildCopyTable(String transformationName, String sourceDatabaseName, String sourceTableName, String[] sourceFields, String targetDatabaseName, String targetTableName, String[] targetFields) throws KettleException
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
+
         try
         {
             //

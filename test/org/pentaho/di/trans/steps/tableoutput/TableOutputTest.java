@@ -23,6 +23,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -34,7 +35,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -380,7 +380,8 @@ public class TableOutputTest extends TestCase
 	 */
     public void testTableOutputNormal() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
+
         try
         {
             //
@@ -469,7 +470,8 @@ public class TableOutputTest extends TestCase
 	 */
     public void testTableOutputJIRA897() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
+
         try
         {
             //
@@ -563,7 +565,8 @@ public class TableOutputTest extends TestCase
     {
     	int dataDelay = 100;  	// Delay in milliseconds between issuing records to output rows  
     	
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
+
         try
         {
             //

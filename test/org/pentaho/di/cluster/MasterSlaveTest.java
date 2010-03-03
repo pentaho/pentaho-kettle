@@ -11,7 +11,9 @@ import org.pentaho.di.trans.cluster.TransSplitter;
 
 public class MasterSlaveTest extends BaseCluster {
 	
-	public void testStartStopSlaveServers() throws KettleException {
+	public void testStartStopSlaveServers() throws Exception {
+		init();
+		
 		ClusterGenerator clusterGenerator = new ClusterGenerator();
 		try {
 			clusterGenerator.launchSlaveServers();

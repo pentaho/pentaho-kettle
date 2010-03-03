@@ -6,13 +6,13 @@ import java.util.ListIterator;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.util.EnvUtil;
 
 public abstract class TransformationTestCase extends TestCase
 {
@@ -20,13 +20,13 @@ public abstract class TransformationTestCase extends TestCase
     public TransformationTestCase() throws KettleException
     {
         super();
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
     }
 
     public TransformationTestCase(String name) throws KettleException
     {
         super(name);
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
     }
 
     public RowMetaInterface createRowMetaInterface(ValueMeta... valueMetas)

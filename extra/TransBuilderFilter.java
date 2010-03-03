@@ -5,7 +5,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -39,7 +38,8 @@ public class TransBuilderFilter
      */
     public static final TransMeta buildFilterSample(String transformationName) throws KettleException
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
+
         try
         {
             //

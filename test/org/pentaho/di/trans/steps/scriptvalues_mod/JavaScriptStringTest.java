@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -30,7 +31,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
@@ -449,7 +449,7 @@ public class JavaScriptStringTest extends TestCase
 	 */
     public void testStringsTrim() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -557,7 +557,7 @@ public class JavaScriptStringTest extends TestCase
 	 */
     public void testStringsPadCase() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -667,7 +667,7 @@ public class JavaScriptStringTest extends TestCase
     
     public void testStringsNum() throws Exception
     {
-    	EnvUtil.environmentInit();
+        KettleEnvironment.init();
     	Locale.setDefault(Locale.ENGLISH);
     	
         // 
@@ -717,7 +717,7 @@ public class JavaScriptStringTest extends TestCase
 	 */
     public void testIndexOf() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         // 
         // Create a javascript step

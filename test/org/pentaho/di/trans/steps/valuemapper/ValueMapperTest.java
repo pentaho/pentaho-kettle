@@ -21,6 +21,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -30,7 +31,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -361,7 +361,7 @@ public class ValueMapperTest extends TestCase
 	 */
     public void testValueMapper1() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -474,7 +474,7 @@ public class ValueMapperTest extends TestCase
 	 */
     public void testValueMapper2() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -587,7 +587,7 @@ public class ValueMapperTest extends TestCase
 	 */
     public void testValueMapper3() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -701,7 +701,7 @@ public class ValueMapperTest extends TestCase
 	 */
     public void testValueMapper4() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -816,7 +816,7 @@ public class ValueMapperTest extends TestCase
 	 */
     public void testValueMapper5() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -931,7 +931,7 @@ public class ValueMapperTest extends TestCase
 	 */
     public void testValueMapper6() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...

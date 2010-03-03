@@ -21,6 +21,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -29,7 +30,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -255,7 +255,7 @@ public class ParameterSimpleTransTest extends TestCase
 	 */
     public void testParameterSimpleTrans1() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -345,7 +345,7 @@ public class ParameterSimpleTransTest extends TestCase
 	 */
     public void testParameterSimpleTrans2() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -435,7 +435,7 @@ public class ParameterSimpleTransTest extends TestCase
 	 */
     public void testParameterSimpleTrans3() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -525,7 +525,7 @@ public class ParameterSimpleTransTest extends TestCase
 	 */
     public void testParameterSimpleTrans4() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -618,7 +618,7 @@ public class ParameterSimpleTransTest extends TestCase
 	 */
     public void testParameterSimpleTrans5() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -711,7 +711,7 @@ public class ParameterSimpleTransTest extends TestCase
 	 */
     public void testParameterSimpleTrans6() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...

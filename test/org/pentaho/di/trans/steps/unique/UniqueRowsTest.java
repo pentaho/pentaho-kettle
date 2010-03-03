@@ -21,6 +21,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -29,7 +30,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -231,7 +231,7 @@ public class UniqueRowsTest extends TestCase
 	
     public void testCaseSensitiveNoPreviousSort() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -306,7 +306,7 @@ public class UniqueRowsTest extends TestCase
 
     public void testCaseInsensitiveNoPreviousSort() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -381,7 +381,7 @@ public class UniqueRowsTest extends TestCase
     
     public void testSortCaseSensitiveUniqueCaseSensitive() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -473,7 +473,7 @@ public class UniqueRowsTest extends TestCase
     
     public void testSortCaseSensitiveUniqueCaseInsensitive() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -565,7 +565,7 @@ public class UniqueRowsTest extends TestCase
     
     public void testSortCaseInsensitiveUniqueCaseSensitive() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
@@ -657,7 +657,7 @@ public class UniqueRowsTest extends TestCase
     
     public void testSortCaseInsensitiveUniqueCaseInsensitive() throws Exception
     {
-        EnvUtil.environmentInit();
+        KettleEnvironment.init();
 
         //
         // Create a new transformation...
