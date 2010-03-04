@@ -1,15 +1,19 @@
 package org.pentaho.di.ui.spoon;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import org.pentaho.di.core.plugins.KettlePluginException;
-import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionStoreException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
 /**
  *  SpoonPluginManager is a singleton class which loads all SpoonPlugins from the 
  *  SPOON_HOME/plugins/spoon directory. 
@@ -35,25 +39,46 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 public class SpoonPluginManager {
   
   private static SpoonPluginManager instance = new SpoonPluginManager();
-  private List<SpoonPluginInterface> plugins = new ArrayList<SpoonPluginInterface>();
+  private List<SpoonPlugin> plugins = new ArrayList<SpoonPlugin>();
   private final String PLUGIN_FILE_NAME = "plugin.xml";
   
   private SpoonPluginManager(){
-    List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins(SpoonPluginType.class);
-    for(PluginInterface plug : plugins){
-      try {
-        loadPlugin((SpoonPluginInterface) PluginRegistry.getInstance().loadClass(plug));
-      } catch (KettlePluginException e) {
-        e.printStackTrace();
+    File dir = new File("plugins/spoon");
+    File[] dirChildren = dir.listFiles();
+    if(dirChildren == null || dirChildren.length == 0){
+      return;
+    }
+    final FileFilter pluginFileFilter = new FileFilter(){
+      public boolean accept(File f) {
+        return f.getName().equals(PLUGIN_FILE_NAME);
+      }
+    };
+    
+    for(int i=0; i< dirChildren.length; i++){
+      if(dirChildren[i].isDirectory()){
+        File pluginDir = dirChildren[i];
+        File[] pluginFiles = pluginDir.listFiles(pluginFileFilter);
+        if(pluginFiles != null && pluginFiles.length > 0){
+          loadPlugin(pluginFiles[0]);
+        }
       }
     }
   }
   
   @SuppressWarnings("unchecked")
-  private void loadPlugin(final SpoonPluginInterface sp){
-    plugins.add(sp);
-    if(sp.getPerspective() != null){
-      SpoonPerspectiveManager.getInstance().addPerspective(sp.getPerspective());
+  private void loadPlugin(final File pluginFile){
+    try {
+      ApplicationContext context = new FileSystemXmlApplicationContext(pluginFile.getPath());
+      Map beans = context.getBeansOfType(SpoonPlugin.class);
+      for (Object key : beans.keySet()) {
+        SpoonPlugin plg = (SpoonPlugin)beans.get(key);
+        plugins.add(plg);
+        if(plg.getPerspective() != null){
+          SpoonPerspectiveManager.getInstance().addPerspective(plg.getPerspective());
+        }
+      }
+    } catch (XmlBeanDefinitionStoreException e) {
+      e.printStackTrace();
     }
     
   }
@@ -72,7 +97,7 @@ public class SpoonPluginManager {
    * 
    * @return list of plugins
    */
-  public List<SpoonPluginInterface> getPlugins(){
+  public List<SpoonPlugin> getPlugins(){
     return Collections.unmodifiableList(plugins);
   }
   
@@ -85,7 +110,7 @@ public class SpoonPluginManager {
   public List<XulOverlay> getOverlaysforContainer(String category){
     List<XulOverlay> overlays = new ArrayList<XulOverlay>();
     
-    for(SpoonPluginInterface p : plugins){
+    for(SpoonPlugin p : plugins){
       if(p.getOverlays() == null){
         continue;
       }
@@ -107,7 +132,7 @@ public class SpoonPluginManager {
   public List<XulEventHandler> getEventHandlersforContainer(String category){
     List<XulEventHandler> handlers = new ArrayList<XulEventHandler>();
     
-    for(SpoonPluginInterface p : plugins){
+    for(SpoonPlugin p : plugins){
       if(p.getEventHandlers() == null){
         continue;
       }
@@ -126,7 +151,7 @@ public class SpoonPluginManager {
    * @param evt
    */
   public void notifyLifecycleListeners(SpoonLifeCycleEvent evt){
-    for(SpoonPluginInterface p : plugins){
+    for(SpoonPlugin p : plugins){
       SpoonLifecycleListener listener = p.getLifecycleListener();
       if(listener != null){
         listener.onEvent(evt);
