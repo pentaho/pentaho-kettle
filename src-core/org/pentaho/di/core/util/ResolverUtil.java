@@ -209,6 +209,7 @@ public class ResolverUtil<T>
 			try
 			{
 				URL eurl = urls.nextElement();
+				// System.out.println(eurl);
 				
 				// on windows, spaces in urls are not encoded for certain class loaders
 				String urlVal = eurl.toString();

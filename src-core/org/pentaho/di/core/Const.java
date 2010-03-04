@@ -172,6 +172,16 @@ public class Const
 	 */
 	public static final String PLUGIN_REPOSITORIES_DIRECTORY_PRIVATE = PLUGIN_DIRECTORY_PRIVATE + FILE_SEPARATOR + "repositories";
 	
+	/**
+	 *  Public directory containing external steps plugins
+	 */
+	public static final String PLUGIN_DATABASES_DIRECTORY_PUBLIC = PLUGIN_DIRECTORY_PUBLIC + FILE_SEPARATOR + "databases";
+
+	/**
+	 *  Private directory containing external steps plugins
+	 */
+	public static final String PLUGIN_DATABASES_DIRECTORY_PRIVATE = PLUGIN_DIRECTORY_PRIVATE + FILE_SEPARATOR + "databases";
+
 	
 	
 	/**
