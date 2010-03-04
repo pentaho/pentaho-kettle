@@ -628,7 +628,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		input.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()));
 		input.setExecutedEachInputRow(wEachRow.getSelection());
 		input.setVariableReplacementActive(wVariables.getSelection());
-
+		input.setSingleStatement(wSingleStatement.getSelection());
 		input.setInsertField(wInsertField.getText());
 		input.setUpdateField(wUpdateField.getText());
 		input.setDeleteField(wDeleteField.getText());
