@@ -34,6 +34,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.MSSQLServerDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -418,7 +419,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 						// User has specified a connection, We can continue ...
 						Database db = new Database(this, connection);
 						
-						if(db.getDatabaseMeta().getDatabaseType() != DatabaseMeta.TYPE_DATABASE_MSSQL)
+						if(!(db.getDatabaseMeta().getDatabaseInterface() instanceof MSSQLServerDatabaseMeta))
 						{
 							logError(BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.DbNotMSSQL",connection.getDatabaseName()));
 							return result;

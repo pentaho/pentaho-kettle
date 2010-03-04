@@ -468,9 +468,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
             data.lookupRowMeta.addValueMeta(inputRowMeta.getValueMeta(data.keynrs[i]));
             
             sql += " IS NULL AND ";
-            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_DB2 || 
-            	databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_VERTICA)
-            {
+            if (databaseMeta.requiresCastToVariousForIsNull()) {
                 sql += "CAST(? AS VARCHAR(256)) IS NULL";
             }
             else

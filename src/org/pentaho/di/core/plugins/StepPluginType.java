@@ -14,11 +14,10 @@ import java.util.Map;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.trans.KettleURLClassLoader;
 import org.pentaho.di.trans.step.StepInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -49,8 +48,6 @@ import org.w3c.dom.Node;
    i18nPackageClass = StepInterface.class)
 @PluginMainClassType(StepInterface.class)
 public class StepPluginType extends BasePluginType implements PluginTypeInterface {
-	private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
 	
 	private static StepPluginType stepPluginType;
 	
@@ -118,10 +115,8 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 	 */
 	protected void registerAnnotations() throws KettlePluginException {
 
-		ResolverUtil<PluginInterface> resolver = new ResolverUtil<PluginInterface>();
-		resolver.findAnnotatedInPackages(Step.class);
-		
-		for (Class<?> clazz : resolver.getClasses())
+		List<Class<?>> classes = getAnnotatedClasses(Step.class);
+		for (Class<?> clazz : classes)
 		{
 			Step step = clazz.getAnnotation(Step.class);
 			handleStepAnnotation(clazz, step, new ArrayList<String>(), true);
@@ -130,8 +125,6 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 
 	private void handleStepAnnotation(Class<?> clazz, Step step, List<String> libraries, boolean nativeStep) throws KettlePluginException {
 		
-		// saving old value for change the loglevel to BASIC to avoid i18n messages, see below
-		//
 		String[] ids = step.name(); 
 		
 		if (ids.length == 1 && Const.isEmpty(ids[0])) { 
@@ -157,20 +150,20 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 		//
 		
 
-    Map<Class, String> classMap = new HashMap<Class, String>();
-    classMap.put(StepInterface.class, clazz.getName());
-    
-    // Handle addition Plugin classes to be managed by the registry.
-    PluginClassTypes classTypesAnnotation = clazz.getAnnotation(PluginClassTypes.class);
-    if(classTypesAnnotation != null){
-      for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
-        Class classType = classTypesAnnotation.classTypes()[i];
-        Class implementationType = (classTypesAnnotation.implementationClass().length > i) ? classTypesAnnotation.implementationClass()[i] : null;
-        String className = implementationType.getName();
-        classMap.put(classType, className);
-      }
-    }
-		
+	    Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
+	    classMap.put(StepInterface.class, clazz.getName());
+	    
+	    // Handle addition Plugin classes to be managed by the registry.
+	    PluginClassTypes classTypesAnnotation = clazz.getAnnotation(PluginClassTypes.class);
+	    if(classTypesAnnotation != null){
+	      for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
+	        Class<?> classType = classTypesAnnotation.classTypes()[i];
+	        Class<?> implementationType = (classTypesAnnotation.implementationClass().length > i) ? classTypesAnnotation.implementationClass()[i] : null;
+	        String className = implementationType.getName();
+	        classMap.put(classType, className);
+	      }
+	    }
+			
 		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), StepInterface.class, category, name, description, step.image(), step.isSeparateClassLoaderNeeded(), nativeStep, classMap, libraries, null);
 		registry.registerPlugin(this.getClass(), stepPlugin);
 	}

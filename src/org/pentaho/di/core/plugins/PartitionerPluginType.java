@@ -13,10 +13,9 @@ import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.annotations.PartitionerPlugin;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Partitioner;
@@ -89,10 +88,8 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 	 */
 	protected void registerAnnotations() throws KettlePluginException {
 
-		ResolverUtil<PluginInterface> resolver = new ResolverUtil<PluginInterface>();
-		resolver.findAnnotatedInPackages(PartitionerPlugin.class);
-		
-		for (Class<?> clazz : resolver.getClasses())
+		List<Class<?>> classes = getAnnotatedClasses(PartitionerPlugin.class);
+		for (Class<?> clazz : classes)
 		{
 			PartitionerPlugin partitioner = clazz.getAnnotation(PartitionerPlugin.class);
 			handlePartitionerAnnotation(clazz, partitioner, new ArrayList<String>(), true);
@@ -127,8 +124,8 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 		// Register this step plugin...
 		//
 
-    Map<Class, String> classMap = new HashMap<Class, String>();
-    classMap.put(Partitioner.class, clazz.getName());
+		Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
+		classMap.put(Partitioner.class, clazz.getName());
 		
 		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), Partitioner.class, category, description, tooltip, null, false, nativeStep, classMap, libraries, null);
 		registry.registerPlugin(this.getClass(), stepPlugin);

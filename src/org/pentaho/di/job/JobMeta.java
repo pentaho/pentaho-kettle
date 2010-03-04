@@ -1853,8 +1853,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 					stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseName"))); //$NON-NLS-1$
 				if (meta.getUsername() != null)
 					stringList.add(new StringSearchResult(meta.getUsername(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseUsername"))); //$NON-NLS-1$
-				if (meta.getDatabaseTypeDesc() != null)
-					stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription"))); //$NON-NLS-1$
+				if (meta.getPluginId() != null)
+					stringList.add(new StringSearchResult(meta.getPluginId(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription"))); //$NON-NLS-1$
 				if (meta.getDatabasePortNumberString() != null)
 					stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabasePort"))); //$NON-NLS-1$
 			}

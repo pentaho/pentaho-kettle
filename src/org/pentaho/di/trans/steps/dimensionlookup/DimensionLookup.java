@@ -22,6 +22,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -768,7 +769,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             {
                 data.prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
             }
-            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL)
+            if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta)
             {
                 data.prepStatementLookup.setFetchSize(0); // Make sure to DISABLE Streaming Result sets
             }
@@ -815,7 +816,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             }
             else
             {
-                if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_INFORMIX) {
+            	if (databaseMeta.needsPlaceHolder()) {
                     sql+="0, "; // placeholder on informix!    
                 }
             }

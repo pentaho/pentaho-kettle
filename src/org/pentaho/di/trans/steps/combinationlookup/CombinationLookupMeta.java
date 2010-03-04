@@ -930,9 +930,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							if (!Const.isEmpty(keyLookup))
 							{
 								int nrfields = keyLookup.length;
-								if (nrfields>32 && databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_ORACLE)
-								{
-									nrfields=32;  // Oracle indexes are limited to 32 fields...
+								int maxFields = databaseMeta.getMaxColumnsInIndex();
+								if (maxFields>0 && nrfields>maxFields) {
+									nrfields=maxFields;  // For example, oracle indexes are limited to 32 fields...
 								}
 								idx_fields = new String[nrfields];
 								for (i=0;i<nrfields;i++) idx_fields[i] = keyLookup[i];

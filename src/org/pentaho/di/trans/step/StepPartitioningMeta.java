@@ -16,7 +16,7 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.KettlePluginException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;

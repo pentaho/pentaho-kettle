@@ -4759,7 +4759,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 if (meta.getHostname()!=null) stringList.add(new StringSearchResult(meta.getHostname(), meta, this, "Database hostname"));
                 if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, "Database name"));
                 if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, "Database Username"));
-                if (meta.getDatabaseTypeDesc()!=null) stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, "Database type description"));
+                if (meta.getPluginId()!=null) stringList.add(new StringSearchResult(meta.getPluginId(), meta, this, "Database type description"));
                 if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, "Database port"));
                 if (meta.getServername()!=null) stringList.add(new StringSearchResult(meta.getServername(), meta, this, "Database server")); 
                 if ( includePasswords )

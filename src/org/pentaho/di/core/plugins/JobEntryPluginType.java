@@ -14,15 +14,13 @@ import java.util.Map;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.JobEntry;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.trans.KettleURLClassLoader;
-import org.pentaho.di.trans.step.StepInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -117,10 +115,8 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 	 */
 	protected void registerAnnotations() throws KettlePluginException {
 
-		ResolverUtil<PluginInterface> resolver = new ResolverUtil<PluginInterface>();
-		resolver.findAnnotatedInPackages(JobEntry.class);
-		
-		for (Class<?> clazz : resolver.getClasses())
+		List<Class<?>> classes = getAnnotatedClasses(JobEntry.class);
+		for (Class<?> clazz : classes)
 		{
 			JobEntry jobEntry = clazz.getAnnotation(JobEntry.class);
 			handleJobEntryAnnotation(clazz, jobEntry, new ArrayList<String>(), true);
@@ -154,19 +150,19 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 		// Register this step plugin...
 		//
 
-    Map<Class, String> classMap = new HashMap<Class, String>();
-    
-    classMap.put(JobEntry.class, clazz.getName());
-    
-    PluginClassTypes classTypesAnnotation = clazz.getAnnotation(PluginClassTypes.class);
-    if(classTypesAnnotation != null){
-      for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
-        Class classType = classTypesAnnotation.classTypes()[i];
-        Class implementationType = (classTypesAnnotation.implementationClass().length > i) ? classTypesAnnotation.implementationClass()[i] : null;
-        String className = implementationType.getName();
-        classMap.put(classType, className);
-      }
-    }
+	    Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
+	    
+	    classMap.put(JobEntry.class, clazz.getName());
+	    
+	    PluginClassTypes classTypesAnnotation = clazz.getAnnotation(PluginClassTypes.class);
+	    if(classTypesAnnotation != null){
+	      for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
+	        Class<?> classType = classTypesAnnotation.classTypes()[i];
+	        Class<?> implementationType = (classTypesAnnotation.implementationClass().length > i) ? classTypesAnnotation.implementationClass()[i] : null;
+	        String className = implementationType.getName();
+	        classMap.put(classType, className);
+	      }
+	    }
 		
 		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), JobEntry.class, category, name, description, jobEntry.image(), false, nativeJobEntry, classMap, libraries, null);
 		registry.registerPlugin(this.getClass(), stepPlugin);

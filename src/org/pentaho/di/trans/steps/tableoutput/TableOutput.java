@@ -22,7 +22,6 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -549,10 +548,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 
                 // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
                 //
-                data.specialErrorHandling = getStepMeta().isDoingErrorHandling() && 
-	        		( meta.getDatabaseMeta().getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES || 
-	              	  meta.getDatabaseMeta().getDatabaseType() == DatabaseMeta.TYPE_DATABASE_GREENPLUM
-	              	);
+                data.specialErrorHandling = getStepMeta().isDoingErrorHandling() && meta.getDatabaseMeta().supportsErrorHandlingOnBatchUpdates();
                 
                 // Batch updates are not supported in case we are running with transactions in the transformation.
                 // It is also disabled when we return keys...

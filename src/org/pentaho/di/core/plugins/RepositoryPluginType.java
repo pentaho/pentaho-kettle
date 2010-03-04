@@ -14,13 +14,12 @@ import java.util.Map;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.RepositoryPlugin;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.trans.KettleURLClassLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -87,8 +86,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 			Node repsNode = XMLHandler.getSubNode(document, "repositories");
 			List<Node> repsNodes = XMLHandler.getNodes(repsNode, "repository");
 			for (Node repNode : repsNodes) {
-				PluginInterface plugin = registerPluginFromXmlResource(repNode, null, this.getClass());
-				
+				registerPluginFromXmlResource(repNode, null, this.getClass());
 			}			
 		} catch (KettleXMLException e) {
 			throw new KettlePluginException("Unable to read the kettle repositories XML config file: "+xmlFile, e);
@@ -100,10 +98,8 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 	 */
 	protected void registerAnnotations() throws KettlePluginException {
 
-		ResolverUtil<PluginInterface> resolver = new ResolverUtil<PluginInterface>();
-		resolver.findAnnotatedInPackages(RepositoryPlugin.class);
-		
-		for (Class<?> clazz : resolver.getClasses())
+		List<Class<?>> classes = getAnnotatedClasses(RepositoryPlugin.class);
+		for (Class<?> clazz : classes)
 		{
 			RepositoryPlugin repositoryPlugin = clazz.getAnnotation(RepositoryPlugin.class);
 			handleRepositoryPluginAnnotation(clazz, repositoryPlugin, new ArrayList<String>(), true);
@@ -138,16 +134,16 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 		//
 		//Map<PluginClassType, String> classMap = new HashMap<PluginClassType, String>();
 		
-    Map<Class, String> classMap = new HashMap<Class, String>();
-    classMap.put(Repository.class, clazz.getName());
-    classMap.put(RepositoryMeta.class, repositoryPlugin.metaClass());
-    
-    PluginClassTypes extraTypes = clazz.getAnnotation(PluginClassTypes.class);
-    if(extraTypes != null){
-      for(int i=0; i< extraTypes.classTypes().length; i++){
-        classMap.put(extraTypes.classTypes()[i], extraTypes.implementationClass()[i].getName());
-      }
-    }
+	    Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
+	    classMap.put(Repository.class, clazz.getName());
+	    classMap.put(RepositoryMeta.class, repositoryPlugin.metaClass());
+	    
+	    PluginClassTypes extraTypes = clazz.getAnnotation(PluginClassTypes.class);
+	    if(extraTypes != null){
+	      for(int i=0; i< extraTypes.classTypes().length; i++){
+	        classMap.put(extraTypes.classTypes()[i], extraTypes.implementationClass()[i].getName());
+	      }
+	    }
 		
 		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), Repository.class, category, name, description, null, false, nativeRepositoryType, classMap, libraries, null);
 		registry.registerPlugin(this.getClass(), stepPlugin);

@@ -157,8 +157,9 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
 			if (databaseMeta.getObjectId()==null)
 			{
 				// Insert new Note in repository
+				//
 				databaseMeta.setObjectId(insertDatabase(databaseMeta.getName(), 
-											DatabaseMeta.getDatabaseTypeCode(databaseMeta.getDatabaseType()), 
+											databaseMeta.getPluginId(), 
 											DatabaseMeta.getAccessTypeDesc(databaseMeta.getAccessType()), 
 											databaseMeta.getHostname(), 
 											databaseMeta.getDatabaseName(), 
@@ -176,7 +177,7 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
 				// Update the note...
 				updateDatabase(	databaseMeta.getObjectId(),
 						databaseMeta.getName(), 
-											DatabaseMeta.getDatabaseTypeCode(databaseMeta.getDatabaseType()), 
+											databaseMeta.getPluginId(), 
 											DatabaseMeta.getAccessTypeDesc(databaseMeta.getAccessType()), 
 											databaseMeta.getHostname(), 
 											databaseMeta.getDatabaseName(), 

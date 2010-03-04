@@ -5,11 +5,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.plugins.KettlePluginException;
+import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeInterface;
+import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -30,7 +36,15 @@ public class KettleEnvironment {
 			
 			JndiUtil.initJNDI();
 			
-			PluginRegistry.init();
+			PluginTypeInterface[] pluginTypes = new PluginTypeInterface[] {
+					StepPluginType.getInstance(), 			// Steps
+					PartitionerPluginType.getInstance(),    // Partitioners
+					JobEntryPluginType.getInstance(), 	    // Job entries
+					RepositoryPluginType.getInstance(), 	// Repository types
+					DatabasePluginType.getInstance(),       // Databases
+				};
+			
+			PluginRegistry.init(pluginTypes);
 						
 			initialized = true;
 		}
