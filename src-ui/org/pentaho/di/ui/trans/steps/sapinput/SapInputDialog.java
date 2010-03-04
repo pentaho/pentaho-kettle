@@ -29,6 +29,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -520,9 +521,10 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 				
 				wInput.clearAll(false);
 				wOutput.clearAll(false);
-
+				Cursor hourGlass = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
 				SAPConnection sc = SAPConnectionFactory.create();
 				try {
+					shell.setCursor(hourGlass);
 					sc.open(databaseMeta);
 					SAPFunctionSignature signature = sc.getFunctionSignature(function);
 					
@@ -578,6 +580,8 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 					throw new KettleException(e);
 				} finally {
 					sc.close();
+					shell.setCursor(null);
+					hourGlass.dispose();
 				}
 			}
 		}

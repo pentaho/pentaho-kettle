@@ -19,6 +19,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -200,7 +201,7 @@ public class SapFunctionBrowser extends Dialog
 	protected void ok() {
 		function = null;
 		int selectionIndex = wResult.getSelectionIndex();
-		if (selectionIndex>=0) {
+		if (selectionIndex>=0 && selectionIndex<functionList.size()) {
 			function = functionList.get(selectionIndex);
 		}
 		dispose();
@@ -232,33 +233,42 @@ public class SapFunctionBrowser extends Dialog
         {
             public void run()
             {
-            	if (Const.isEmpty(searchString)) {
-            		return;
+            	Cursor hourGlass = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+            
+            	try  {
+	            	shell.setCursor(hourGlass);
+	            	if (Const.isEmpty(searchString)) {
+	            		return;
+	            	}
+	            	wFunction.setText(searchString);
+	            	find(searchString);
+	            	
+	            	// Clear out everything, always leaves one row
+	            	//
+	            	wResult.clearAll(false);
+	            	
+	            	for (int i=0;i<functionList.size();i++) {
+	            		SAPFunction sapFunction = functionList.get(i);
+	            		TableItem item;
+	            		if (i==0) {
+	            			item = wResult.table.getItem(0);
+	            		} else {
+	            			item = new TableItem(wResult.table, SWT.NONE);		
+	            		}
+	            		int colnr=1;
+	            		item.setText(colnr++, Const.NVL(sapFunction.getName(), ""));
+	            		item.setText(colnr++, Const.NVL(sapFunction.getGroup(), ""));
+	            		item.setText(colnr++, Const.NVL(sapFunction.getApplication(), ""));
+	            		item.setText(colnr++, Const.NVL(sapFunction.getDescription(), ""));
+	            	}
+	            	wResult.setRowNums();
+	            	wResult.optWidth(true);
+	            }
+            	finally {
+	            	shell.setCursor(null);
+	            	hourGlass.dispose();
             	}
-            	wFunction.setText(searchString);
-            	find(searchString);
-            	
-            	// Clear out everything, always leaves one row
-            	//
-            	wResult.clearAll(false);
-            	
-            	for (int i=0;i<functionList.size();i++) {
-            		SAPFunction sapFunction = functionList.get(i);
-            		TableItem item;
-            		if (i==0) {
-            			item = wResult.table.getItem(0);
-            		} else {
-            			item = new TableItem(wResult.table, SWT.NONE);		
-            		}
-            		int colnr=1;
-            		item.setText(colnr++, Const.NVL(sapFunction.getName(), ""));
-            		item.setText(colnr++, Const.NVL(sapFunction.getGroup(), ""));
-            		item.setText(colnr++, Const.NVL(sapFunction.getApplication(), ""));
-            		item.setText(colnr++, Const.NVL(sapFunction.getDescription(), ""));
-            	}
-            	wResult.setRowNums();
-            	wResult.optWidth(true);
-            }
+            } 
         });
     }
 }

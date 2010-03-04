@@ -40,6 +40,10 @@ public class SAPConnectionMock implements SAPConnection {
 	public Collection<SAPFunction> getFunctions(String query) {
 		Collection<SAPFunction> sfc = new Vector<SAPFunction>();
 		for (SAPFunction sapFunction : this.sfc) {
+			// This emulates a longer wait time, showing a wait cursor to notify the user
+			//
+			try { Thread.sleep(250); } catch(InterruptedException e) {};
+
 			if (sapFunction.getName().contains(query)) {
 				sfc.add(sapFunction);
 			}
@@ -74,6 +78,12 @@ public class SAPConnectionMock implements SAPConnection {
 			sfs.addOutput(new SAPField("Field5", "", "output_single"));
 			sfs.addOutput(new SAPField("Field6", "", "output_single"));
 		}
+		
+		// Simulate a longer wait by sleeping a bit...
+		// This tests the wait cursor in the UI...
+		//
+		try { Thread.sleep(1500); } catch(InterruptedException e) {};
+
 		return sfs;
 	}
 
