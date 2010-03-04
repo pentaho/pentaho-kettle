@@ -1,24 +1,11 @@
 package org.pentaho.di.core.database;
 
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
+
+
+@DatabaseMetaPlugin( type="INFOBRIGHT", typeDescription="Infobright" )
 public class InfobrightDatabaseMeta extends MySQLDatabaseMeta implements DatabaseInterface {
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "INFOBRIGHT";
-	}
 
-	public String getDatabaseTypeDescLong()
-	{
-		return "Infobright";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_INFOBRIGHT;
-	}
-
+	// Only has a different ID to catch exceptions here and there.
 
 }

@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,46 +23,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  27-jul-2006
  */
+
+@DatabaseMetaPlugin( type="ORACLERDB", typeDescription="Oracle RDB" )
 public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	/**
-	 * Construct a new database connections.  Note that not all these parameters are not allways mandatory.
-	 * 
-	 * @param name The database name
-	 * @param access The type of database access
-	 * @param host The hostname or IP address
-	 * @param db The database name
-	 * @param port The port on which the database listens.
-	 * @param user The username
-	 * @param pass The password
-	 */
-	public OracleRDBDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public OracleRDBDatabaseMeta()
-	{
-	}
-
-	public String getDatabaseTypeDesc()
-	{
-		return "ORACLERDB";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "Oracle RDB";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_ORACLE_RDB;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };

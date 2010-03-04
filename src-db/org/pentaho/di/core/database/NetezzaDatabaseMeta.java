@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,55 +23,26 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Biswapesh
  * @since  16-oct-2006
  */
+
+@DatabaseMetaPlugin( type="NETEZZA", typeDescription="Netezza" )
 public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	public static final int MAX_CHAR_LEN = 32767;
 
 	/**
-	 * Construct a new database connection.
-	 * 
+	 * @return The extra option separator in database URL for this platform
 	 */
-	public NetezzaDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
+	public String getExtraOptionSeparator() 
 	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public NetezzaDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "NETEZZA";
+		return "&";
 	}
 
-	public String getDatabaseTypeDescLong()
-	{
-		return "Netezza";
-	}
-  
-  /**
-   * @return The extra option separator in database URL for this platform
-   */
-  public String getExtraOptionSeparator()
-  {
-      return "&";
-  }
-  
-  /**
-   * @return This indicator separates the normal URL from the options
-   */
-  public String getExtraOptionIndicator()
-  {
-      return "?";
-  }
-  
 	/**
-	 * @return Returns the databaseType.
+	 * @return This indicator separates the normal URL from the options
 	 */
-	public int getDatabaseType()
+	public String getExtraOptionIndicator() 
 	{
-		return DatabaseMeta.TYPE_DATABASE_NETEZZA;
+		return "?";
 	}
 		
 	public int[] getAccessTypeList()

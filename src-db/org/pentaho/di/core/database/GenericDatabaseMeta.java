@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,42 +23,13 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  11-mrt-2005
  */
+
+@DatabaseMetaPlugin( type="GENERIC", typeDescription="Generic database" )
 public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
     public static final String ATRRIBUTE_CUSTOM_URL          = "CUSTOM_URL"; 
     public static final String ATRRIBUTE_CUSTOM_DRIVER_CLASS = "CUSTOM_DRIVER_CLASS";
     
-	/**
-	 * Construct a new database connection.
-	 * 
-	 */
-	public GenericDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public GenericDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "GENERIC";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "Generic database";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_GENERIC;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -266,4 +238,13 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     {
         return new String[] {};
     }
+    
+	/**
+	 * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
+	 * 
+	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
+	 */
+	public boolean supportsPreparedStatementMetadataRetrieval() {
+		return false;
+	}
 }

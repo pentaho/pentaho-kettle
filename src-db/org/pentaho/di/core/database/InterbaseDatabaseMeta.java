@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,39 +23,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  10-jan-2006
  */
+
+@DatabaseMetaPlugin( type="INTERBASE", typeDescription="Borland Interbase" )
 public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	/**
-	 * Construct a new database connection.
-	 * 
-	 */
-	public InterbaseDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public InterbaseDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "INTERBASE";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "Borland Interbase";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_INTERBASE;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };

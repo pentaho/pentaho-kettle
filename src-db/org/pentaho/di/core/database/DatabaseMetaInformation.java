@@ -20,6 +20,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -42,14 +43,14 @@ public class DatabaseMetaInformation
 	private Schema[] schemas;
 	private String[] procedures;
 
-	private DatabaseMeta dbInfo;
+	private DatabaseMeta databaseMeta;
 	
 	/**
 	 * Create a new DatabaseMetaData object for the given database connection
 	 */
-	public DatabaseMetaInformation(DatabaseMeta dbInfo)
+	public DatabaseMetaInformation(DatabaseMeta databaseMeta)
 	{
-		this.dbInfo = dbInfo;
+		this.databaseMeta = databaseMeta;
 	}
 	
 	/**
@@ -73,7 +74,7 @@ public class DatabaseMetaInformation
 	 */
 	public DatabaseMeta getDbInfo()
 	{
-		return dbInfo;
+		return databaseMeta;
 	}
 	
 	/**
@@ -81,7 +82,7 @@ public class DatabaseMetaInformation
 	 */
 	public void setDbInfo(DatabaseMeta dbInfo)
 	{
-		this.dbInfo = dbInfo;
+		this.databaseMeta = dbInfo;
 	}
 	
 	/**
@@ -170,7 +171,7 @@ public class DatabaseMetaInformation
 			monitor.beginTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingInfoFromDb"), 8);
 		}
 
-		Database db = new Database(parentLoggingObject, dbInfo);	
+		Database db = new Database(parentLoggingObject, databaseMeta);	
 		
 		/*
 		ResultSet tableResultSet = null;
@@ -195,7 +196,7 @@ public class DatabaseMetaInformation
 
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingInfo"));
-			if (dbInfo.supportsCatalogs() && dbmd.supportsCatalogsInTableDefinitions())
+			if (databaseMeta.supportsCatalogs() && dbmd.supportsCatalogsInTableDefinitions())
 			{
 				ArrayList<Catalog> catalogList = new ArrayList<Catalog>();
 				ResultSet catalogResultSet = dbmd.getCatalogs();
@@ -258,15 +259,17 @@ public class DatabaseMetaInformation
 	
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingSchemaInfo"));
-			if (dbInfo.supportsSchemas() && dbmd.supportsSchemasInTableDefinitions())
+			if (databaseMeta.supportsSchemas() && dbmd.supportsSchemasInTableDefinitions())
 			{
 				ArrayList<Schema> schemaList = new ArrayList<Schema>();
 				try 
 				{
 					// Support schemas for MS SQL server due to PDI-1531
-					if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
+					//
+					String sql = databaseMeta.getSQLListOfSchemas();
+					if (!Const.isEmpty(sql)) {
 						Statement schemaStatement = db.getConnection().createStatement();
-						ResultSet schemaResultSet = schemaStatement.executeQuery("select name from sys.schemas");
+						ResultSet schemaResultSet = schemaStatement.executeQuery(sql);
 						while (schemaResultSet!=null && schemaResultSet.next())
 						{
 							String schemaName = schemaResultSet.getString("name");
@@ -329,37 +332,22 @@ public class DatabaseMetaInformation
 	
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingTables"));
-			if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
-				// Support schemas for MS SQL server due to PDI-1531
-				setTables(db.getTablenames(true));
-			} else {
-				setTables(db.getTablenames());
-			}
+			setTables(db.getTablenames(databaseMeta.supportsSchemas()));
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingViews"));
-			if (dbInfo.supportsViews())
+			if (databaseMeta.supportsViews())
 			{
-				if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
-					// Support schemas for MS SQL server due to PDI-1531
-					setViews(db.getViews(true));
-				} else {
-					setViews(db.getViews());
-				}
+				setViews(db.getViews(databaseMeta.supportsSchemas()));
 			}
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingSynonyms"));
-			if (dbInfo.supportsSynonyms())
+			if (databaseMeta.supportsSynonyms())
 			{
-				if (dbInfo.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
-					// Support schemas for MS SQL server due to PDI-1531
-					setSynonyms(db.getSynonyms(true));
-				} else {
-					setSynonyms(db.getSynonyms());
-				}
+				setSynonyms(db.getSynonyms(databaseMeta.supportsSchemas()));
 			}
 			if (monitor!=null) monitor.worked(1);
 			

@@ -13,6 +13,7 @@
 
 package org.pentaho.di.core.database;
 
+import java.sql.ResultSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -21,6 +22,11 @@ import java.util.Properties;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.repository.ObjectId;
 
@@ -187,35 +193,26 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	
 	private ObjectId objectId;
 
+	private String pluginId;
 
-	/**
-	 * Constructs a new database connections.  Note that not all these parameters are not allways mandatory.
-	 * 
-	 * @param name The database name
-	 * @param access The type of database access
-	 * @param host The hostname or IP address
-	 * @param db The database name
-	 * @param port The port on which the database listens.
-	 * @param user The username
-	 * @param pass The password
-	 */
-	public BaseDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-        this();
-		this.name = name;
-		this.accessType = DatabaseMeta.getAccessType(access);
-		this.hostname = host;
-		this.databaseName = db;
-		setDatabasePortNumberString(port);
-		this.username = user;
-		this.password = pass;
-		this.servername = null;
-	}
-	
 	public BaseDatabaseMeta()
 	{
         attributes = new Properties();
         changed = false;
+	}
+	
+	/**
+	 * @return plugin ID of this class
+	 */
+	public String getPluginId() {
+		return pluginId;
+	}
+	
+	/**
+	 * @param pluginId The plugin ID to set.
+	 */
+	public void setPluginId(String pluginId) {
+		this.pluginId = pluginId;
 	}
 
 	/**
@@ -298,21 +295,6 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		return getAttributes().getProperty(ATTRIBUTE_PORT_NUMBER, "-1");
 	}
 	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	abstract int getDatabaseType();
-	
-	/**
-	 * @return Returns the database type description (code).
-	 */
-	abstract String getDatabaseTypeDesc();
-
-	/**
-	 * @return Returns the database type long user description .
-	 */
-	abstract String getDatabaseTypeDescLong();
-
 	/**
 	 * @return Returns the hostname.
 	 */
@@ -1293,4 +1275,157 @@ public abstract class BaseDatabaseMeta implements Cloneable
     {
         attributes.setProperty(ATTRIBUTE_PREFERRED_SCHEMA_NAME, preferredSchemaName);
     }
+    
+    /**
+     * Verifies on the specified database connection if an index exists on the fields with the specified name.
+     * 
+     * @param database a connected database
+     * @param schemaName
+     * @param tableName
+     * @param idxFields
+     * @return true if the index exists, false if it doesn't.
+     * @throws KettleException
+     */
+	public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException {
+		
+        String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
+
+		boolean exists[] = new boolean[idx_fields.length];
+		for (int i=0;i<exists.length;i++) exists[i]=false;
+		
+		try
+		{
+			// Get a list of all the indexes for this table
+	        ResultSet indexList = null;
+	        try  
+	        {
+	        	indexList = database.getDatabaseMetaData().getIndexInfo(null,null,tablename,false,true);
+	        	while (indexList.next())
+	        	{
+	        		// String tablen  = indexList.getString("TABLE_NAME");
+	        		// String indexn  = indexList.getString("INDEX_NAME");
+	        		String column  = indexList.getString("COLUMN_NAME");
+	        		// int    pos     = indexList.getShort("ORDINAL_POSITION");
+	        		// int    type    = indexList.getShort("TYPE");
+	        		
+	        		int idx = Const.indexOfString(column, idx_fields);
+	        		if (idx>=0)
+	        		{
+	        			exists[idx]=true;
+	        		}
+	        	}
+	        }
+	        finally 
+	        {
+	            if ( indexList != null ) indexList.close();
+	        }
+			
+	        // See if all the fields are indexed...
+	        boolean all=true;
+	        for (int i=0;i<exists.length && all;i++) if (!exists[i]) all=false;
+	        
+			return all;
+		}
+		catch(Exception e)
+		{
+			throw new KettleDatabaseException("Unable to determine if indexes exists on table ["+tablename+"]", e);
+		}
+
+	}
+
+	/**
+	 * @return true if the database supports the NOMAXVALUE sequence option.
+	 * The default is false, AS/400 and DB2 support this. 
+	 */
+	public boolean supportsSequenceNoMaxValueOption() {
+		return false;
+	}
+
+	/**
+	 * @return true if we need to append the PRIMARY KEY block in the create table block after the fields, required for Caché.
+	 */
+	public boolean requiresCreateTablePrimaryKeyAppend() {
+		return false;
+	}
+
+	/**
+	 * @return true if the database requires you to cast a parameter to varchar before comparing to null.  Only required for DB2 and Vertica
+	 * 
+	 */
+	public boolean requiresCastToVariousForIsNull() {
+		return false;
+	}
+	
+	/**
+	 * @return Handles the special case of DB2 where the display size returned is twice the precision.
+	 * In that case, the length is the precision.
+	 * 
+	 */
+	public boolean isDisplaySizeTwiceThePrecision() {
+		return false;
+	}
+	
+	/**
+	 * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
+	 * 
+	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
+	 */
+	public boolean supportsPreparedStatementMetadataRetrieval() {
+		return true;
+	}
+
+	/**
+	 * @param tableName
+	 * @return true if the specified table is a system table
+	 */
+	public boolean isSystemTable(String tableName) {
+		return false;
+	}
+	
+	/**
+	 * @return true if the database supports newlines in a SQL statements.
+	 */
+	public boolean supportsNewLinesInSQL() {
+		return true;
+	}
+
+	/**
+	 * @return the SQL to retrieve the list of schemas or null if the JDBC metadata needs to be used.
+	 */
+	public String getSQLListOfSchemas() {
+		return null;
+	}
+	
+	/**
+	 * @return The maximum number of columns in a database, <=0 means: no known limit
+	 */
+	public int getMaxColumnsInIndex() {
+		return 0;
+	}
+	
+	/**
+	 * @return true if the database supports error handling (recovery of failure) while doing batch updates.
+	 */
+	public boolean supportsErrorHandlingOnBatchUpdates() {
+		return true;
+	}
+
+	/**
+	 * @return The short description (code) of the database type
+	 * @deprecated
+	 */
+	public String getDatabaseTypeDesc() {
+		PluginInterface plugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, getPluginId());
+		return plugin.getIds()[0];
+	}
+	
+	/**
+	 * @return The long description (user description) of the database type
+	 * @deprecated
+	 */
+	 public String getDatabaseTypeDescLong() {
+			PluginInterface plugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, getPluginId());
+			return plugin.getName();
+	 }
+
 }

@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 
@@ -23,43 +24,14 @@ import org.pentaho.di.core.util.EnvUtil;
  * @author Matt
  * @since  03-07-2005
  */
+
+@DatabaseMetaPlugin( type="SAPR3", typeDescription="SAP R/3 System" )
 public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
     public static final String ATTRIBUTE_SAP_LANGUAGE = "SAPLanguage";
     public static final String ATTRIBUTE_SAP_SYSTEM_NUMBER = "SAPSystemNumber";
     public static final String ATTRIBUTE_SAP_CLIENT = "SAPClient";
     
-	/**
-	 * Construct a new database connection.
-	 * 
-	 */
-	public SAPR3DatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public SAPR3DatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "SAPR3";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "SAP R/3 System";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_SAPR3;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_PLUGIN };

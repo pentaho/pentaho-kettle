@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 
 public class ConstDB {
 	/**
@@ -17,7 +18,7 @@ public class ConstDB {
 
 		for (DatabaseMeta db : databases)
 		{
-			if (db.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SAPR3) {
+			if (db.getDatabaseInterface() instanceof SAPR3DatabaseMeta) {
 				sap.add(db);
 			}
 		}

@@ -13,7 +13,12 @@
 
 package org.pentaho.di.core.database;
 
+import java.sql.ResultSet;
+
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,39 +27,15 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  11-mrt-2005
  */
+
+@DatabaseMetaPlugin( type="MSSQL", typeDescription="MS SQL Server" )
 public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public MSSQLServerDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
+	public boolean supportsCatalogs() 
 	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public MSSQLServerDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "MSSQL";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "MS SQL Server";
-	}
-	
-	public boolean supportsCatalogs() {
 		return false;
 	}
 	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_MSSQL;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -384,4 +365,82 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
     {
         return "http://jtds.sourceforge.net/faq.html#urlFormat";
     }
+    
+    /**
+     * Verifies on the specified database connection if an index exists on the fields with the specified name.
+     * 
+     * @param database a connected database
+     * @param schemaName
+     * @param tableName
+     * @param idxFields
+     * @return true if the index exists, false if it doesn't.
+     * @throws KettleException
+     */
+	public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException  {
+		
+        String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
+
+		boolean exists[] = new boolean[idx_fields.length];
+		for (int i=0;i<exists.length;i++) exists[i]=false;
+		
+		try
+		{
+			//
+			// Get the info from the data dictionary...
+			//
+			StringBuffer sql = new StringBuffer(128);
+			sql.append("select i.name table_name, c.name column_name ");
+			sql.append("from     sysindexes i, sysindexkeys k, syscolumns c ");
+			sql.append("where    i.name = '"+tablename+"' ");
+			sql.append("AND      i.id = k.id ");
+			sql.append("AND      i.id = c.id ");
+			sql.append("AND      k.colid = c.colid ");
+			
+			ResultSet res = null;
+			try 
+			{
+				res = database.openQuery(sql.toString());
+				if (res!=null)
+				{
+					Object[] row = database.getRow(res);
+					while (row!=null)
+					{
+						String column = database.getReturnRowMeta().getString(row, "column_name", "");
+						int idx = Const.indexOfString(column, idx_fields);
+						if (idx>=0) exists[idx]=true;
+						
+						row = database.getRow(res);
+					}							
+				}
+				else
+				{
+					return false;
+				}
+			}
+			finally
+			{
+				if ( res != null ) database.closeQuery(res);
+			}
+			
+	        // See if all the fields are indexed...
+	        boolean all=true;
+	        for (int i=0;i<exists.length && all;i++) if (!exists[i]) all=false;
+	        
+			return all;
+		}
+		catch(Exception e)
+		{
+			throw new KettleDatabaseException("Unable to determine if indexes exists on table ["+tablename+"]", e);
+		}
+	}
+
+	@Override
+	public String getSQLListOfSchemas() {
+		return "select name from sys.schemas";
+	}
+	
+	@Override
+	public boolean supportsSchemas() {
+		return true;
+	}
 }

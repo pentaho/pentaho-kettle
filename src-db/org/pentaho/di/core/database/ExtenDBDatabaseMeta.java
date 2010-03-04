@@ -13,6 +13,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -21,6 +22,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author amart
  * @since  11-Apr-2006
  */
+
+@DatabaseMetaPlugin( type="EXTENDB", typeDescription="ExtenDB" )
 public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
     private static final String [] RESERVED_WORDS =
@@ -32,40 +35,6 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         "TEMP", "TRAN", "UNSIGNED", "ZEROFILL"
     };
     
-    /**
-     * Construct a new database connection.
-     * 
-     */
-    public ExtenDBDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
-    {
-        super(name, access, host, db, ""+port, user, pass);
-    }
-
-    /**
-     * 
-     */
-    public ExtenDBDatabaseMeta()
-    {
-    }
-
-    public String getDatabaseTypeDesc()
-    {
-        return "EXTENDB";
-    }
-
-    public String getDatabaseTypeDescLong()
-    {
-        return "ExtenDB";
-    }
-    
-    /**
-     * @return Returns the databaseType
-     */
-    public int getDatabaseType()
-    {
-        return DatabaseMeta.TYPE_DATABASE_EXTENDB;
-    }
-
     /**
      * @see DatabaseInterface#getAccessTypeList()
      */

@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,36 +23,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  11-mrt-2005
  */
+
+@DatabaseMetaPlugin( type="MYSQL", typeDescription="MySQL" )
 public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public MySQLDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public MySQLDatabaseMeta()
-	{
-        super();
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "MYSQL";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "MySQL";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_MYSQL;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -415,6 +390,16 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     {
         return new String[] { "mysql-connector-java-3.1.14-bin.jar" };
     }
+    
+	/**
+	 * @param tableName
+	 * @return true if the specified table is a system table
+	 */
+	public boolean isSystemTable(String tableName) {
+		if ( tableName.startsWith("sys")) return true;
+		if ( tableName.equals("dtproperties")) return true;
+		return false;
+	}
 }
 
 

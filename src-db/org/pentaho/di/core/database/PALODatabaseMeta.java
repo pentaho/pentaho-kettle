@@ -13,6 +13,8 @@
 
 package org.pentaho.di.core.database;
 
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
+
 
 /**
  * Contains Database Connection information through static final members for a PALO database.
@@ -22,39 +24,10 @@ package org.pentaho.di.core.database;
  * @author Matt
  * @since  18-Sep-2007
  */
+
+@DatabaseMetaPlugin( type="PALO", typeDescription="Palo MOLAP Server" )
 public class PALODatabaseMeta extends GenericDatabaseMeta implements DatabaseInterface
 {
-	/**
-	 * Construct a new database connection.
-	 * 
-	 */
-	public PALODatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public PALODatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "PALO";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "Palo MOLAP Server";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_PALO;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_PLUGIN, };

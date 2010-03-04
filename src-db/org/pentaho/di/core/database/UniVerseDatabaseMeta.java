@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,41 +23,12 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  16-nov-2006
  */
+
+@DatabaseMetaPlugin( type="UNIVERSE", typeDescription="UniVerse database" )
 public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	private static final int MAX_VARCHAR_LENGTH = 65535;
-
-    /**
-	 * Construct a new database connection.
-	 * 
-	 */
-	public UniVerseDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
 	
-	public UniVerseDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "UNIVERSE";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "UniVerse database";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_UNIVERSE;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -273,4 +245,11 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     {
         return new String[] { "unijdbc.jar", "asjava.zip" };
     }
+    
+	/**
+	 * @return true if the database supports newlines in a SQL statements.
+	 */
+	public boolean supportsNewLinesInSQL() {
+		return true;
+	}
 }

@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -25,39 +26,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  26-jul-2006
  */
+
+@DatabaseMetaPlugin( type="TERADATA", typeDescription="Teradata" )
 public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {   
-	/**
-	 * Construct a new database connection.
-	 * 
-	 */
-	public TeradataDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public TeradataDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "TERADATA";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "Teradata";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_TERADATA;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -315,7 +287,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
         Map<String,String> map = super.getExtraOptions();
         
     	if (!Const.isEmpty(getDatabasePortNumberString())) {
-    		map.put(getDatabaseTypeDesc() + ".DBS_PORT", getDatabasePortNumberString());
+    		map.put(getPluginId() + ".DBS_PORT", getDatabasePortNumberString());
     	}
         
         return map;

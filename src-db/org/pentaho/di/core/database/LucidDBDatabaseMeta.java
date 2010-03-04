@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,37 +23,12 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  24-oct-2008
  */
+
+@DatabaseMetaPlugin( type="LucidDB", typeDescription="LucidDB" )
 public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
     private static final String UNUSED_DB_NAME = "DEFAULT";
     
-	public LucidDBDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, UNUSED_DB_NAME, port, user, pass);
-	}
-	
-	public LucidDBDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "LucidDB";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "LucidDB";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_LUCIDDB;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };

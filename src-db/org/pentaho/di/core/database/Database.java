@@ -1777,7 +1777,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                     
                     // System.out.println("Setting pstmt fetchsize to : "+fs);
                     {
-                        if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL && databaseMeta.isStreamingResults())
+                        if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta && databaseMeta.isStreamingResults())
                         {
                             pstmt.setFetchSize(Integer.MIN_VALUE);
                         }
@@ -1800,7 +1800,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				{
 					debug = "Set fetchsize";
                     int fs = Const.FETCH_SIZE<=sel_stmt.getMaxRows()?sel_stmt.getMaxRows():Const.FETCH_SIZE;
-                    if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL && databaseMeta.isStreamingResults())
+                    if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta && databaseMeta.isStreamingResults())
                     {
                         sel_stmt.setFetchSize(Integer.MIN_VALUE);
                     }
@@ -1822,7 +1822,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
             // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
             // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
             // 
-			rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL, lazyConversion);
+			rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta, lazyConversion);
 		}
 		catch(SQLException ex)
 		{
@@ -1845,8 +1845,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
     {
         return databaseMeta.isFetchSizeSupported() && 
             ( statement.getMaxRows()>0 || 
-              databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES || 
-              ( databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL && databaseMeta.isStreamingResults() ) 
+              databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta || 
+              ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta && databaseMeta.isStreamingResults() ) 
             );     
     }
     
@@ -1865,7 +1865,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			{
 				debug = "OQ Set fetchsize";
                 int fs = Const.FETCH_SIZE<=ps.getMaxRows()?ps.getMaxRows():Const.FETCH_SIZE;
-                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL && databaseMeta.isStreamingResults())
+                if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta && databaseMeta.isStreamingResults())
                 {
                     ps.setFetchSize(Integer.MIN_VALUE);
                 }
@@ -1888,9 +1888,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			// rowinfo = getRowInfo(res.getMetaData());
             
              // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
-            // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
+            // to get the length of a String field.  So, on MySQL, we ignore the length of Strings in result rows.
             // 
-            rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL, false);
+            rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta, false);
 		}
 		catch(SQLException ex)
 		{
@@ -2077,163 +2077,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
         String tablename = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 		if (!checkTableExists(tablename)) return false;
 		
-		if(log.isDebug()) log.logDebug("CheckIndexExists() tablename = "+tablename+" type = "+databaseMeta.getDatabaseTypeDesc());
+		if(log.isDebug()) log.logDebug("CheckIndexExists() tablename = "+tablename+" type = "+databaseMeta.getPluginId());
 		
-		boolean exists[] = new boolean[idx_fields.length];
-		for (int i=0;i<exists.length;i++) exists[i]=false;
-		try
-		{
-			switch(databaseMeta.getDatabaseType())
-			{
-			case DatabaseMeta.TYPE_DATABASE_MSSQL:
-				{
-					//
-					// Get the info from the data dictionary...
-					//
-					StringBuffer sql = new StringBuffer(128);
-					sql.append("select i.name table_name, c.name column_name ");
-					sql.append("from     sysindexes i, sysindexkeys k, syscolumns c ");
-					sql.append("where    i.name = '"+tablename+"' ");
-					sql.append("AND      i.id = k.id ");
-					sql.append("AND      i.id = c.id ");
-					sql.append("AND      k.colid = c.colid ");
-					
-					ResultSet res = null;
-					try 
-					{
-						res = openQuery(sql.toString());
-						if (res!=null)
-						{
-							Object[] row = getRow(res);
-							while (row!=null)
-							{
-								String column = rowMeta.getString(row, "column_name", "");
-								int idx = Const.indexOfString(column, idx_fields);
-								if (idx>=0) exists[idx]=true;
-								
-								row = getRow(res);
-							}							
-						}
-						else
-						{
-							return false;
-						}
-					}
-					finally
-					{
-						if ( res != null ) closeQuery(res);
-					}
-				}
-				break;
-				
-				
-			case DatabaseMeta.TYPE_DATABASE_ORACLE:
-				{
-					//
-					// Get the info from the data dictionary...
-					//
-					String sql = "SELECT * FROM USER_IND_COLUMNS WHERE TABLE_NAME = '"+tableName+"'";
-					ResultSet res = null;
-					try {
-						res = openQuery(sql);
-						if (res!=null)
-						{
-							Object[] row = getRow(res);
-							while (row!=null)
-							{
-								String column = rowMeta.getString(row, "COLUMN_NAME", "");
-								int idx = Const.indexOfString(column, idx_fields);
-								if (idx>=0) 
-								{
-									exists[idx]=true;
-								}
-								
-								row = getRow(res);
-							}
-							
-						}
-						else
-						{
-							return false;
-						}
-					}
-					finally
-					{
-						if ( res != null ) closeQuery(res);
-					}
-				}
-				break;
-				
-			case DatabaseMeta.TYPE_DATABASE_ACCESS:
-				{
-					// Get a list of all the indexes for this table
-			        ResultSet indexList = null;
-			        try 
-			        {
-			        	indexList = getDatabaseMetaData().getIndexInfo(null,null,tablename,false,true);
-			        	while (indexList.next())
-			        	{
-			        		// String tablen  = indexList.getString("TABLE_NAME");
-			        		// String indexn  = indexList.getString("INDEX_NAME");
-			        		String column  = indexList.getString("COLUMN_NAME");
-			        		// int    pos     = indexList.getShort("ORDINAL_POSITION");
-			        		// int    type    = indexList.getShort("TYPE");
-			        		
-			        		int idx = Const.indexOfString(column, idx_fields);
-			        		if (idx>=0)
-			        		{
-			        			exists[idx]=true;
-			        		}
-			        	}
-			        }
-			        finally 
-			        {
-			        	if ( indexList != null ) indexList.close();		   				
-				    }
-				}
-				break;
-
-			default:
-				{
-					// Get a list of all the indexes for this table
-			        ResultSet indexList = null;
-			        try  
-			        {
-			        	indexList = getDatabaseMetaData().getIndexInfo(null,null,tablename,false,true);
-			        	while (indexList.next())
-			        	{
-			        		// String tablen  = indexList.getString("TABLE_NAME");
-			        		// String indexn  = indexList.getString("INDEX_NAME");
-			        		String column  = indexList.getString("COLUMN_NAME");
-			        		// int    pos     = indexList.getShort("ORDINAL_POSITION");
-			        		// int    type    = indexList.getShort("TYPE");
-			        		
-			        		int idx = Const.indexOfString(column, idx_fields);
-			        		if (idx>=0)
-			        		{
-			        			exists[idx]=true;
-			        		}
-			        	}
-			        }
-			        finally 
-			        {
-			            if ( indexList != null ) indexList.close();
-			        }
-				}
-				break;
-			}
-			
-	        // See if all the fields are indexed...
-	        boolean all=true;
-	        for (int i=0;i<exists.length && all;i++) if (!exists[i]) all=false;
-	        
-			return all;
-		}
-		catch(Exception e)
-		{
-            log.logError(Const.getStackTracker(e));
-			throw new KettleDatabaseException("Unable to determine if indexes exists on table ["+tablename+"]", e);
-		}
+		return databaseMeta.getDatabaseInterface().checkIndexExists(this, schemaName, tableName, idx_fields);
 	}
 
     public String getCreateIndexStatement(String tablename, String indexname, String idx_fields[], boolean tk, boolean unique, boolean bitmap, boolean semi_colon)
@@ -2247,7 +2093,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		
 		cr_index += "CREATE ";
 	
-		if (unique || ( tk && databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SYBASE))
+		if (unique || ( tk && databaseMeta.getDatabaseInterface() instanceof SybaseDatabaseMeta))
 			cr_index += "UNIQUE ";
 		
 		if (bitmap && databaseMeta.supportsBitmapIndex()) 
@@ -2265,7 +2111,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		}
 		cr_index+=")"+Const.CR;
 		
-		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE &&
+		if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta &&
 			databaseMeta.getIndexTablespace()!=null && databaseMeta.getIndexTablespace().length()>0)
 		{
 			cr_index+="TABLESPACE "+databaseMeta.quoteField(databaseMeta.getIndexTablespace());
@@ -2307,10 +2153,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			cr_seq += "START WITH "+start_at+" "+Const.CR;
 			cr_seq += "INCREMENT BY "+increment_by+" "+Const.CR;
 			if (max_value != null) {
-				//"-1" means there is no maxvalue, must be handles different by DB2 / AS400
-				if ((databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_DB2 ||
-						databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_AS400 ) &&
-						max_value.trim().equals("-1")) {
+				// "-1" means there is no maxvalue, must be handles different by DB2 / AS400
+				//
+				if (databaseMeta.supportsSequenceNoMaxValueOption() && max_value.trim().equals("-1")) {
 					cr_seq += "NOMAXVALUE"+Const.CR;
 				} else {
 					// set the max value
@@ -2354,16 +2199,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		// If we discover other RDBMSs, we will create an interface for it.
 		// For now, we just try to get the field layout on the re-bound in the exception block below.
 		//
-		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE ||
-			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_H2 ||
-			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GENERIC ||
-			databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SYBASEIQ
-		  )
-		{
-			fields=getQueryFieldsFallback(sql, param, inform, data);
-		}
-		else
-		{
+		if (databaseMeta.supportsPreparedStatementMetadataRetrieval()) {
 			// On with the regular program.
 			//
 			
@@ -2392,6 +2228,13 @@ public class Database implements VariableSpace, LoggingObjectInterface
 					}
 				}
 			}
+		} else {
+			/*
+					databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SYBASEIQ
+				  )
+				{
+				*/
+					fields=getQueryFieldsFallback(sql, param, inform, data);
 		}
 		
 		// Store in cache!!
@@ -2414,19 +2257,15 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		{
 			if (inform==null 
 					// Hack for MSSQL jtds 1.2 when using xxx NOT IN yyy we have to use a prepared statement (see BugID 3214)
-					&& databaseMeta.getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_MSSQL
-					)
+					&& databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta )
 			{
 				sel_stmt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 				
 				if (databaseMeta.isFetchSizeSupported() && sel_stmt.getMaxRows()>=1)
 				{
-	                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
-	                {
+	                if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta) {
 	                    sel_stmt.setFetchSize(Integer.MIN_VALUE);
-	                }
-	                else
-	                {
+	                } else {
 	                    sel_stmt.setFetchSize(1);
 	                }
 				}
@@ -2600,7 +2439,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 }
                 
                 // If we're dealing with PostgreSQL and double precision types 
-                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES && type==java.sql.Types.DOUBLE && precision==16 && length==16)
+                if (databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta && type==java.sql.Types.DOUBLE && precision==16 && length==16)
                 {
                     precision=-1;
                     length=-1;
@@ -2608,7 +2447,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 
                 // MySQL: max resolution is double precision floating point (double)
                 // The (12,31) that is given back is not correct
-                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+                if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta)
                 {
                 	if (precision >= length) {
                         precision=-1;
@@ -2631,7 +2470,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 }
             }
             
-            if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
+            if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta)
             {
             	if (precision == 0 && length == 38 )
             	{
@@ -2647,14 +2486,14 @@ public class Database implements VariableSpace, LoggingObjectInterface
             break;
 
         case java.sql.Types.DATE:
-            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_TERADATA) {
+            if (databaseMeta.getDatabaseInterface() instanceof TeradataDatabaseMeta) {
             	precision = 1;
             }
         case java.sql.Types.TIME:
         case java.sql.Types.TIMESTAMP: 
             valtype=ValueMetaInterface.TYPE_DATE;
             // 
-            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL) {
+            if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta) {
                 String property = databaseMeta.getConnectionProperties().getProperty("yearIsDateType");
                 if (property != null && property.equalsIgnoreCase("false")
                 		&& rm.getColumnTypeName(index).equalsIgnoreCase("YEAR")) {
@@ -2677,14 +2516,13 @@ public class Database implements VariableSpace, LoggingObjectInterface
         case java.sql.Types.LONGVARBINARY:
             valtype=ValueMetaInterface.TYPE_BINARY;
             
-            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_DB2 &&
-                (2 * rm.getPrecision(index)) == rm.getColumnDisplaySize(index)) 
+            if (databaseMeta.isDisplaySizeTwiceThePrecision() && (2 * rm.getPrecision(index)) == rm.getColumnDisplaySize(index)) 
             {
                 // set the length for "CHAR(X) FOR BIT DATA"
                 length = rm.getPrecision(index);
             }
             else
-            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_ORACLE &&
+            if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta &&
                 ( type==java.sql.Types.VARBINARY || type==java.sql.Types.LONGVARBINARY )
                )
             {
@@ -2889,7 +2727,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                         }
                         break;
 					case ValueMetaInterface.TYPE_DATE      :
-						if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_NEOVIEW && val.getOriginalColumnType()==java.sql.Types.TIME)
+						if (databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta && val.getOriginalColumnType()==java.sql.Types.TIME)
 						{
 							// Neoview can not handle getDate / getTimestamp for a Time column
 							data[i] = rs.getTime(i+1); break;  // Time is a subclass of java.util.Date, the default date will be 1970-01-01
@@ -3326,7 +3164,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		// Technical keys
 		if (tk!=null)
 		{
-			if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_CACHE)
+			if (databaseMeta.requiresCreateTablePrimaryKeyAppend())
 			{
 				retval.append(", PRIMARY KEY (").append(tk).append(")").append(Const.CR);
 			}
@@ -3335,20 +3173,20 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		// Primary keys
 		if (pk!=null)
 		{
-			if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
+			if (databaseMeta.requiresCreateTablePrimaryKeyAppend())
 			{
 				retval.append(", PRIMARY KEY (").append(pk).append(")").append(Const.CR);
 			}
 		}
 		retval.append(")").append(Const.CR);
 		
-		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE &&
+		if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta &&
 				databaseMeta.getIndexTablespace()!=null && databaseMeta.getIndexTablespace().length()>0)
 		{
 			retval.append("TABLESPACE ").append(databaseMeta.getDataTablespace());
 		}
 
-		if (pk==null && tk==null && databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_NEOVIEW)
+		if (pk==null && tk==null && databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta)
 		{
 			retval.append("NO PARTITION"); // use this as a default when no pk/tk is there, otherwise you get an error 
 		}
@@ -3357,7 +3195,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		if (semicolon) retval.append(";");
 		
 		// TODO: All this custom database code shouldn't really be in Database.java.  It should be in the DB implementations.
-		if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_VERTICA)
+		//
+		if (databaseMeta.getDatabaseInterface() instanceof VerticaDatabaseMeta)
 		{
 		    retval.append(Const.CR).append("CREATE PROJECTION ").append(tableName).append("_unseg_super").append(Const.CR);
 		    
@@ -3872,17 +3711,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 
 	public boolean isSystemTable(String table_name)
 	{
-		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL)
-		{
-			if ( table_name.startsWith("sys")) return true;
-			if ( table_name.equals("dtproperties")) return true;
-		}
-		else
-		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GUPTA)
-		{
-			if ( table_name.startsWith("SYS")) return true;
-		}
-		return false;
+		return databaseMeta.isSystemTable(table_name);
 	}
 	
 	/** Reads the result of an SQL query into an ArrayList
@@ -3975,11 +3804,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	public List<Object[]> getFirstRows(String table_name, int limit, ProgressMonitorListener monitor) throws KettleDatabaseException
 	{
 		String sql = "SELECT";
-		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_NEOVIEW)
+		if (databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta)
 		{
 			sql+=" [FIRST " + limit +"]";
 		}
-		else if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SYBASEIQ)  // improve support Sybase IQ
+		else if (databaseMeta.getDatabaseInterface() instanceof SybaseIQDatabaseMeta)  // improve support Sybase IQ
 		{
 			sql+=" TOP " + limit +" ";
 		}
@@ -4761,9 +4590,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				case ValueMetaInterface.TYPE_STRING:
 					String string = valueMeta.getString(valueData);
 					if (string.contains("'")) {
-						switch(databaseMeta.getDatabaseType()) {
-						case DatabaseMeta.TYPE_DATABASE_MYSQL: string = string.replace("'", "\\'"); break;
-						default: string = string.replace("'", "''"); break;
+						if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta) {
+							string = string.replace("'", "\\'");
+						} else {
+							string = string.replace("'", "''"); break;
 						}
 					}
 					ins.append("'" + string + "'") ;
@@ -4772,14 +4602,12 @@ public class Database implements VariableSpace, LoggingObjectInterface
 					Date date = fields.getDate(r,i);
 					
 					if (Const.isEmpty(dateFormat))
-						switch(databaseMeta.getDatabaseType()) {
-						case DatabaseMeta.TYPE_DATABASE_ORACLE :
+						if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta) {
 							if (fieldDateFormatters[i]==null) {
 								fieldDateFormatters[i]=new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 							}
 							ins.append("TO_DATE('").append(fieldDateFormatters[i].format(date)).append("', 'YYYY/MM/DD HH24:MI:SS')");
-							break;
-						default: 
+						} else {
 							ins.append("'" +  fields.getString(r,i)+ "'") ;
 						}
 					else

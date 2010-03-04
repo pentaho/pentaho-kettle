@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,53 +23,24 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  11-mrt-2005
  */
+
+@DatabaseMetaPlugin( type="POSTGRESQL", typeDescription="PostgreSQL" )
 public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	/**
-	 * Construct a new database connection.
-	 * 
+	 * @return The extra option separator in database URL for this platform
 	 */
-	public PostgreSQLDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
+	public String getExtraOptionSeparator() 
 	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public PostgreSQLDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "POSTGRESQL";
+		return "&";
 	}
 
-	public String getDatabaseTypeDescLong()
-	{
-		return "PostgreSQL";
-	}
-  
-  /**
-   * @return The extra option separator in database URL for this platform
-   */
-  public String getExtraOptionSeparator()
-  {
-      return "&";
-  }
-  
-  /**
-   * @return This indicator separates the normal URL from the options
-   */
-  public String getExtraOptionIndicator()
-  {
-      return "?";
-  }
-  
 	/**
-	 * @return Returns the databaseType.
+	 * @return This indicator separates the normal URL from the options
 	 */
-	public int getDatabaseType()
+	public String getExtraOptionIndicator() 
 	{
-		return DatabaseMeta.TYPE_DATABASE_POSTGRES;
+		return "?";
 	}
 		
 	public int[] getAccessTypeList()
@@ -493,4 +465,12 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     {
         return new String[] { "postgresql-8.2-506.jdbc3.jar" };
     }
+    
+	/**
+	 * @return true if the database supports error handling (recovery of failure) while doing batch updates.
+	 */
+	public boolean supportsErrorHandlingOnBatchUpdates() {
+		return false;
+	}
+
 }

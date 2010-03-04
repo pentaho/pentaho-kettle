@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,9 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -71,7 +75,7 @@ public class DatabaseMeta
     }};
     
   private DatabaseInterface databaseInterface;
-  private static DatabaseInterface[] allDatabaseInterfaces;
+  private static Map<String, DatabaseInterface> allDatabaseInterfaces;
 	
   private VariableSpace variables = new Variables();
   
@@ -79,195 +83,233 @@ public class DatabaseMeta
 
 	/**
 	 * Indicates that the connections doesn't point to a type of database yet.
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_NONE        =  0;
 	
 	/**
 	 * Connection to a MySQL database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_MYSQL       =  1;
 
 	/**
 	 * Connection to an Oracle database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_ORACLE      =  2;
 
 	/**
 	 * Connection to an AS/400 (IBM iSeries) DB400 database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_AS400       =  3;
 
 	/**
 	 * Connection to an Microsoft Access database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_ACCESS      =  4;
 
 	/**
 	 * Connection to a Microsoft SQL Server database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_MSSQL       =  5;
 
 	/**
 	 * Connection to an IBM DB2 database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_DB2         =  6;
 
 	/**
 	 * Connection to a PostgreSQL database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_POSTGRES    =  7;
 
 	/**
 	 * Connection to an Intersystems Cache database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_CACHE       =  8;
 
 	/**
 	 * Connection to an IBM Informix database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_INFORMIX    =  9;
 
 	/**
 	 * Connection to a Sybase ASE database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_SYBASE      = 10;
 
 	/**
 	 * Connection to a Gupta SQLBase database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_GUPTA       = 11;
 
 	/**
 	 * Connection to a DBase III/IV/V database through JDBC
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_DBASE       = 12;
 
 	/**
 	 * Connection to a FireBird database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_FIREBIRD    = 13;
 
 	/**
 	 * Connection to a SAP DB database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_SAPDB       = 14;
 
 	/**
 	 * Connection to a Hypersonic java database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_HYPERSONIC  = 15;
 
 	/**
 	 * Connection to a generic database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_GENERIC     = 16;
 
     /**
      * Connection to an SAP R/3 system
+	 * @deprecated
      */
     public static final int TYPE_DATABASE_SAPR3       = 17;
     
     /**
      * Connection to an Ingress database
+	 * @deprecated
      */
     public static final int TYPE_DATABASE_INGRES      = 18;
 
     /**
      * Connection to a Borland Interbase database
+	 * @deprecated
      */
     public static final int TYPE_DATABASE_INTERBASE   = 19;
 
     /**
     * Connection to an ExtenDB database
+	 * @deprecated
     */
     public static final int TYPE_DATABASE_EXTENDB     = 20;
     
     /**
      * Connection to a Teradata database
+	 * @deprecated
      */
      public static final int TYPE_DATABASE_TERADATA   = 21;
      
      /**
       * Connection to an Oracle RDB database
+	 * @deprecated
       */
      public static final int TYPE_DATABASE_ORACLE_RDB = 22;
      
      /**
       * Connection to an H2 database
+	 * @deprecated
       */
      public static final int TYPE_DATABASE_H2         = 23;
      
  	/**
  	 * Connection to a Netezza database
+	 * @deprecated
  	 */
  	public static final int TYPE_DATABASE_NETEZZA     =  24;
 
     /**
      * Connection to an IBM UniVerse database
+	 * @deprecated
      */
     public static final int TYPE_DATABASE_UNIVERSE    =  25;
 
     /**
      * Connection to a SQLite database
+	 * @deprecated
      */
     public static final int TYPE_DATABASE_SQLITE      =  26;
 
     /**
      * Connection to an Apache Derby database
+	 * @deprecated
      */
     public static final int TYPE_DATABASE_DERBY       =  27;
     
     /**
      * Connection to a BMC Remedy Action Request System 
+	 * @deprecated
      */
     public static final int TYPE_DATABASE_REMEDY_AR_SYSTEM = 28;
 
     /**
      * Connection to a Palo MOLAP Server
+	 * @deprecated
      */
     public static final int TYPE_DATABASE_PALO = 29;
     
     /**
 	 * Connection to a SybaseIQ ASE database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_SYBASEIQ      = 30;
     
 	/**
 	 * Connection to a Greenplum database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_GREENPLUM    = 31;
 	
 	/**
 	 * Connection to a MonetDB database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_MONETDB     = 32;
 
 	/**
 	 * Connection to a KingbaseES database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_KINGBASEES  = 33;
 
 	/**
 	 * Connection to a Vertica database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_VERTICA     = 34;
 
 	/**
 	 * Connection to a Neoview database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_NEOVIEW     = 35;
 
 	/**
 	 * Connection to a LucidDB database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_LUCIDDB     = 36;
 	
 	/**
 	 * Connection to an Infobright database
+	 * @deprecated
 	 */
 	public static final int TYPE_DATABASE_INFOBRIGHT  = 37;
-	
 
+	
 	/**
 	 * Connect natively through JDBC thin driver to the database.
 	 */
@@ -372,12 +414,15 @@ public class DatabaseMeta
      */
     public void addOptions()
     {
-        String mySQL = new MySQLDatabaseMeta().getDatabaseTypeDesc();
+    	PluginInterface mySqlPlugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, new MySQLDatabaseMeta());
+    	PluginInterface infoBrightPlugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, new InfobrightDatabaseMeta());
+
+    	String mySQL = mySqlPlugin.getIds()[0];
         
         addExtraOption(mySQL, "defaultFetchSize", "500");
         addExtraOption(mySQL, "useCursorFetch", "true");
 
-        String infoBright = new InfobrightDatabaseMeta().getDatabaseTypeDesc();
+        String infoBright = infoBrightPlugin.getIds()[0];
 
         addExtraOption(infoBright, "characterEncoding", "UTF-8");
     }
@@ -415,22 +460,24 @@ public class DatabaseMeta
 	/**
 	 * Search for the right type of DatabaseInterface object and return it.
 	 * 
-	 * @param databaseType the type of DatabaseInterface to look for (description)
+	 * @param databaseType the type of DatabaseInterface to look for (id or description)
 	 * @return The requested DatabaseInterface
 	 * 
 	 * @throws KettleDatabaseException when the type could not be found or referenced.
 	 */
 	private static final DatabaseInterface findDatabaseInterface(String databaseTypeDesc) throws KettleDatabaseException
 	{
-		DatabaseInterface di[] = getDatabaseInterfaces();
-		for (int i=0;i<di.length;i++)
-		{
-			if (di[i].getDatabaseTypeDesc().equalsIgnoreCase(databaseTypeDesc) ||
-				di[i].getDatabaseTypeDescLong().equalsIgnoreCase(databaseTypeDesc)
-				) return di[i];
+		PluginRegistry registry = PluginRegistry.getInstance();
+		PluginInterface plugin = registry.getPlugin(DatabasePluginType.class, databaseTypeDesc);
+		if (plugin==null) {
+			plugin = registry.findPluginWithName(DatabasePluginType.class, databaseTypeDesc); 
 		}
 		
-		throw new KettleDatabaseException("database type ["+databaseTypeDesc+"] couldn't be found!");
+		if (plugin==null) {
+			throw new KettleDatabaseException("database type with plugin id ["+databaseTypeDesc+"] couldn't be found!");
+		}
+		
+		return getDatabaseInterfacesMap().get(plugin.getIds()[0]);
 	}
 
 
@@ -554,10 +601,17 @@ public class DatabaseMeta
 	 *     TYPE_DATABASE_...<p>
 	 * 
 	 * @return the database type
-	 */
 	public int getDatabaseType()
 	{
 		return databaseInterface.getDatabaseType();
+	}
+	 */
+	
+	/**
+	 * The plugin ID of the database interface
+	 */
+	public String getPluginId() {
+		return databaseInterface.getPluginId();
 	}
 	
 	/*
@@ -594,11 +648,13 @@ public class DatabaseMeta
 	/**
 	 * Returns a short description of the type of database.
 	 * @return A short description of the type of database.
+	 * @deprecated This is actually the plugin ID
 	 */
 	public String getDatabaseTypeDesc()
 	{
-		return databaseInterface.getDatabaseTypeDesc();
+		return getPluginId();
 	}
+	
 
 	/**
 	 * Gets you a short description of the type of database access.
@@ -951,7 +1007,7 @@ public class DatabaseMeta
                         
                         // Only add to the URL if it's the same database type code...
                         //
-                        if (databaseInterface.getDatabaseTypeDesc().equals(typeCode))
+                        if (databaseInterface.getPluginId().equals(typeCode))
                         {
                             if (first && url.indexOf(valueSeparator) == -1) { 
                               url.append(optionIndicator);
@@ -1000,7 +1056,7 @@ public class DatabaseMeta
                     
                     // Only add to the URL if it's the same database type code...
                     //
-                    if (databaseInterface.getDatabaseTypeDesc().equals(typeCode))
+                    if (databaseInterface.getPluginId().equals(typeCode))
                     {
                         if (value!=null && value.equals(EMPTY_OPTIONS_STRING)) value="";
                         properties.put(parameter, environmentSubstitute(Const.NVL(value, "")));
@@ -1126,6 +1182,7 @@ public class DatabaseMeta
 		return databaseInterface.getMaxTextFieldLength();
 	}
 	
+	/*
 	public final static int getDatabaseType(String dbTypeDesc)
 	{ 
 		// Backward compatibility...
@@ -1141,23 +1198,23 @@ public class DatabaseMeta
 			return TYPE_DATABASE_NONE;
 		}
 	}
+	*/
 
-    /**
+    /*
      * Get a string representing the unqiue database type code
      * @param dbtype the database type to get the code of
      * @return The database type code
      * @deprecated please use getDatabaseTypeCode()
-     */
     public final static String getDBTypeDesc(int dbtype)
     {
         return getDatabaseTypeCode(dbtype);
     }
+     */
     
-    /**
+    /*
      * Get a string representing the unqiue database type code
      * @param dbtype the database type to get the code of
      * @return The database type code
-     */
  	public final static String getDatabaseTypeCode(int dbtype)
 	{
 		// Find the DatabaseInterface for this type...
@@ -1172,12 +1229,12 @@ public class DatabaseMeta
 		
 		return null;
 	}
+     */
 
-    /**
+    /*
      * Get a description of the database type
      * @param dbtype the database type to get the description for
      * @return The database type description
-     */
      public final static String getDatabaseTypeDesc(int dbtype)
     {
         // Find the DatabaseInterface for this type...
@@ -1190,6 +1247,7 @@ public class DatabaseMeta
         
         return null;
     }
+     */
 
 	public final static int getAccessType(String dbaccess)
 	{ 
@@ -1233,46 +1291,50 @@ public class DatabaseMeta
 	
 	public final static String[] getDBTypeDescLongList()
 	{
-		DatabaseInterface[] di = getDatabaseInterfaces();
+		List<String> list = new ArrayList<String>();
 		
-		String[] retval = new String[di.length];
-		for (int i=0;i<di.length;i++)
-		{
-			retval[i] = di[i].getDatabaseTypeDescLong();
+		List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins(DatabasePluginType.class);
+		for (PluginInterface plugin : plugins) {
+			list.add( plugin.getName() );
 		}
 		
-		return retval;
+		return list.toArray(new String[list.size()]);
 	}
 
 	public final static String[] getDBTypeDescList()
 	{
-		DatabaseInterface[] di = getDatabaseInterfaces();
+		List<String> list = new ArrayList<String>();
 		
-		String[] retval = new String[di.length];
-		for (int i=0;i<di.length;i++)
-		{
-			retval[i] = di[i].getDatabaseTypeDesc();
+		List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins(DatabasePluginType.class);
+		for (PluginInterface plugin : plugins) {
+			list.add( plugin.getIds()[0] );
 		}
 		
-		return retval;
+		return list.toArray(new String[list.size()]);
 	}
 	
-	public static final DatabaseInterface[] getDatabaseInterfaces()
+	public static final DatabaseInterface[] getDatabaseInterfaces() {
+		List<DatabaseInterface> list = new ArrayList<DatabaseInterface>(allDatabaseInterfaces.values());
+		return list.toArray(new DatabaseInterface[list.size()]);
+	}
+	
+	public static final Map<String, DatabaseInterface> getDatabaseInterfacesMap()
 	{
-		if (allDatabaseInterfaces!=null) return allDatabaseInterfaces;
+		if (allDatabaseInterfaces!=null) {
+			return allDatabaseInterfaces;
+		}
 		
-		Class<?> ic[] = DatabaseInterface.implementingClasses;
-		allDatabaseInterfaces = new DatabaseInterface[ic.length];
-		for (int i=0;i<ic.length;i++)
-		{
-			try
-			{
-				Class.forName(ic[i].getName());
-				allDatabaseInterfaces[i] = (DatabaseInterface)ic[i].newInstance();
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Error creating class for : "+ic[i].getName(), e);
+		PluginRegistry registry = PluginRegistry.getInstance();
+		
+		List<PluginInterface> plugins = registry.getPlugins(DatabasePluginType.class);
+		allDatabaseInterfaces = new HashMap<String, DatabaseInterface>();
+		for (PluginInterface plugin : plugins) {
+			try {
+				DatabaseInterface databaseInterface = (DatabaseInterface)registry.loadClass(plugin);
+				databaseInterface.setPluginId(plugin.getIds()[0]);
+				allDatabaseInterfaces.put(plugin.getIds()[0], databaseInterface);
+			} catch(Exception e) {
+				throw new RuntimeException("Error creating class for: "+plugin, e);
 			}
 		}
 		return allDatabaseInterfaces;
@@ -1328,11 +1390,7 @@ public class DatabaseMeta
 	public String stripCR(StringBuffer sbsql)
 	{
 		// DB2 Can't handle \n in SQL Statements...
-		if (getDatabaseType() == DatabaseMeta.TYPE_DATABASE_DB2 ||
-			getDatabaseType() == DatabaseMeta.TYPE_DATABASE_CACHE ||
-            getDatabaseType() == DatabaseMeta.TYPE_DATABASE_UNIVERSE
-		   )
-		{
+		if (supportsNewLinesInSQL()) {
 			// Remove CR's
 			for (int i=sbsql.length()-1;i>=0;i--)
 			{
@@ -1401,7 +1459,7 @@ public class DatabaseMeta
 	{
         ArrayList<String> remarks = new ArrayList<String>();
         
-		if (getDatabaseType()==TYPE_DATABASE_NONE) 
+		if (getDatabaseInterface() == null) 
         {
             remarks.add("No database type was choosen");
         }
@@ -1411,7 +1469,7 @@ public class DatabaseMeta
             remarks.add("Please give this database connection a name");
         }
         
-        if (!isPartitioned() && getDatabaseType()!=TYPE_DATABASE_SAPR3 && getDatabaseType()!=TYPE_DATABASE_GENERIC)
+        if (!isPartitioned() && !(getDatabaseInterface() instanceof SAPR3DatabaseMeta || getDatabaseInterface() instanceof GenericDatabaseMeta))
         {
             if (getDatabaseName()==null || getDatabaseName().length()==0) 
             {
@@ -2470,5 +2528,46 @@ public class DatabaseMeta
 	public void setDescription(String description) {
 		// NOT USED
 	}
+	
+	public boolean supportsSequenceNoMaxValueOption() {
+		return databaseInterface.supportsSequenceNoMaxValueOption();
+	}
+
+	public boolean requiresCreateTablePrimaryKeyAppend() {
+		return databaseInterface.requiresCreateTablePrimaryKeyAppend();
+	}
+
+	public boolean requiresCastToVariousForIsNull() {
+		return databaseInterface.requiresCastToVariousForIsNull();
+	}
+
+	public boolean isDisplaySizeTwiceThePrecision() {
+		return databaseInterface.isDisplaySizeTwiceThePrecision();
+	}
+
+	public boolean supportsPreparedStatementMetadataRetrieval() {
+		return databaseInterface.supportsPreparedStatementMetadataRetrieval();
+	}
+
+	public boolean isSystemTable(String tableName) {
+		return databaseInterface.isSystemTable(tableName);
+	}
+
+	private boolean supportsNewLinesInSQL() {
+		return databaseInterface.supportsNewLinesInSQL();
+	}
+
+	public String getSQLListOfSchemas() {
+		return databaseInterface.getSQLListOfSchemas();
+	}
+
+	public int getMaxColumnsInIndex() {
+		return databaseInterface.getMaxColumnsInIndex();
+	}
+
+	public boolean supportsErrorHandlingOnBatchUpdates() {
+		return databaseInterface.supportsErrorHandlingOnBatchUpdates();
+	}
+
 
 }

@@ -2,6 +2,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -10,55 +11,26 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author jjchu
  * @since  21-03-2008
  */
+
+@DatabaseMetaPlugin( type="KINGBASEES", typeDescription="KingbaseES" )
 public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	/**
-	 * Construct a new database connection.
-	 * 
+	 * @return The extra option separator in database URL for this platform
 	 */
-	public KingbaseESDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
+	public String getExtraOptionSeparator() 
 	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public KingbaseESDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "KINGBASEES";
+		return "&";
 	}
 
-	public String getDatabaseTypeDescLong()
-	{
-		return "KingbaseES";
-	}
-  
-  /**
-   * @return The extra option separator in database URL for this platform
-   */
-  public String getExtraOptionSeparator()
-  {
-      return "&";
-  }
-  
-  /**
-   * @return This indicator separates the normal URL from the options
-   */
-  public String getExtraOptionIndicator()
-  {
-      return "?";
-  }
-  
 	/**
-	 * @return Returns the databaseType.
+	 * @return This indicator separates the normal URL from the options
 	 */
-	public int getDatabaseType()
+	public String getExtraOptionIndicator() 
 	{
-		return DatabaseMeta.TYPE_DATABASE_KINGBASEES;
+		return "?";
 	}
-		
+
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC };

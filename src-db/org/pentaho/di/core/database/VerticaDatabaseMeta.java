@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -24,39 +25,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  May-2008
  */
+
+@DatabaseMetaPlugin( type="VERTICA", typeDescription="Vertica" )
 public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	/**
-	 * Construct a new database connection.
-	 * 
-	 */
-	public VerticaDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public VerticaDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "VERTICA";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "Vertica";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_VERTICA;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -322,4 +294,12 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     	//TODO: This will change in Vertica 3.0
         return false;
     }
+    
+	/**
+	 * @return true if the database requires you to cast a parameter to varchar before comparing to null.  Only required for DB2 and Vertica
+	 * 
+	 */
+	public boolean requiresCastToVariousForIsNull() {
+		return true;
+	}
 }

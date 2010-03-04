@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,39 +23,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author fumigateAnt, liuhuaiyong <liuhuaiyong@gmail.com>
  * @since  18-09-2007
  */
+
+@DatabaseMetaPlugin( type="SYBASEIQ", typeDescription="SybaseIQ" )
 public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	/**
-	 * Construct a new database connection.
-	 * 
-	 */
-	public SybaseIQDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public SybaseIQDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "SYBASEIQ";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "SybaseIQ";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_SYBASEIQ;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -275,4 +247,14 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	{
 	    return "SELECT * FROM "+tableName+" WHERE 1=2";
 	}
+
+	/**
+	 * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
+	 * 
+	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
+	 */
+	public boolean supportsPreparedStatementMetadataRetrieval() {
+		return false;
+	}
+
 }

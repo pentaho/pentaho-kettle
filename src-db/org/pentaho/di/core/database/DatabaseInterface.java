@@ -27,63 +27,35 @@ import org.pentaho.di.repository.ObjectId;
  */
 public interface DatabaseInterface extends Cloneable
 {
-	public static final Class<?>[] implementingClasses =
-		{
-			MySQLDatabaseMeta.class,
-			OracleDatabaseMeta.class,
-			AS400DatabaseMeta.class,
-			MSAccessDatabaseMeta.class,
-			MSSQLServerDatabaseMeta.class,
-			DB2DatabaseMeta.class,
-			PostgreSQLDatabaseMeta.class,			
-			CacheDatabaseMeta.class,
-			InformixDatabaseMeta.class,
-			SybaseDatabaseMeta.class,
-			SybaseIQDatabaseMeta.class,
-			GuptaDatabaseMeta.class,
-			DbaseDatabaseMeta.class,
-			FirebirdDatabaseMeta.class,
-			SAPDBDatabaseMeta.class,
-			HypersonicDatabaseMeta.class,
-			GenericDatabaseMeta.class,
-            SAPR3DatabaseMeta.class,
-            IngresDatabaseMeta.class,
-            InterbaseDatabaseMeta.class,
-            ExtenDBDatabaseMeta.class,
-            TeradataDatabaseMeta.class,
-            OracleRDBDatabaseMeta.class,
-            H2DatabaseMeta.class,
-            NetezzaDatabaseMeta.class,
-            UniVerseDatabaseMeta.class,
-            SQLiteDatabaseMeta.class,
-            DerbyDatabaseMeta.class,
-            RemedyActionRequestSystemDatabaseMeta.class,
-            PALODatabaseMeta.class,
-            SybaseIQDatabaseMeta.class,
-            GreenplumDatabaseMeta.class,
-            MonetDBDatabaseMeta.class,
-            KingbaseESDatabaseMeta.class,
-            VerticaDatabaseMeta.class,
-            NeoviewDatabaseMeta.class,
-            LucidDBDatabaseMeta.class,
-            InfobrightDatabaseMeta.class,
-         };
+	/**
+	 * @return the plugin id of this database
+	 */
+	public String getPluginId();
 	
+	/**
+	 * @param pluginId set the plugin id of this plugin (after instantiation)
+	 */
+	public void setPluginId(String pluginId);
+	
+	/*
 	/**
 	 * 
 	 * @return The database type
 	 */
-	public int getDatabaseType();
+	// public int getDatabaseType();
 	
 	/**
 	 * @return The short description (code) of the database type
+	 * @deprecated
 	 */
 	public String getDatabaseTypeDesc();
 	
 	/**
 	 * @return The long description (user description) of the database type
+	 * @deprecated
 	 */
-	public String getDatabaseTypeDescLong();
+	 public String getDatabaseTypeDescLong();
+	
 	
 	/**
 	 * @return Returns the accessType.
@@ -776,5 +748,73 @@ public interface DatabaseInterface extends Cloneable
      * @param preferredSchemaName The preferred schema name of this database connection.
      */
     public void setPreferredSchemaName(String preferredSchemaName);
+
+    /**
+     * Verifies on the specified database connection if an index exists on the fields with the specified name.
+     * 
+     * @param database
+     * @param schemaName
+     * @param tableName
+     * @param idxFields
+     * @return
+     * @throws KettleDatabaseException
+     */
+	public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idxFields) throws KettleDatabaseException;
+
+	/**
+	 * @return true if the database supports sequences with a maximum value option.
+	 * The default is true.
+	 */
+	public boolean supportsSequenceNoMaxValueOption();
+
+	/**
+	 * @return true if we need to append the PRIMARY KEY block in the create table block after the fields, required for Caché.
+	 */
+	public boolean requiresCreateTablePrimaryKeyAppend();
+
+	/**
+	 * @return true if the database requires you to cast a parameter to varchar before comparing to null.
+	 * 
+	 */
+	public boolean requiresCastToVariousForIsNull();
+
+	/**
+	 * @return Handles the special case of DB2 where the display size returned is twice the precision.
+	 * In that case, the length is the precision.
+	 */
+	public boolean isDisplaySizeTwiceThePrecision();
+
+	/**
+	 * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
+	 * 
+	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
+	 */
+	public boolean supportsPreparedStatementMetadataRetrieval();
+
+	/**
+	 * @param tableName
+	 * @return true if the specified table is a system table
+	 */
+	public boolean isSystemTable(String tableName);
+
+	/**
+	 * @return true if the database supports newlines in a SQL statements.
+	 */
+	public boolean supportsNewLinesInSQL();
+
+	/**
+	 * @return the SQL to retrieve the list of schemas
+	 */
+	public String getSQLListOfSchemas();
+
+	/**
+	 * @return The maximum number of columns in a database, <=0 means: no known limit
+	 */
+	public int getMaxColumnsInIndex();
+
+	/**
+	 * @return true if the database supports error handling (recovery of failure) while doing batch updates.
+	 */
+	public boolean supportsErrorHandlingOnBatchUpdates();
 
 }

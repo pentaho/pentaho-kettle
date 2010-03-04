@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,46 +23,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  11-mrt-2005
  */
+
+@DatabaseMetaPlugin( type="DB2", typeDescription="IBM DB2" )
 public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	/**
-	 * Construct a new database connections.  Note that not all these parameters are not allways mandatory.
-	 * 
-	 * @param name The database name
-	 * @param access The type of database access
-	 * @param host The hostname or IP address
-	 * @param db The database name
-	 * @param port The port on which the database listens.
-	 * @param user The username
-	 * @param pass The password
-	 */
-	public DB2DatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public DB2DatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "DB2";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "IBM DB2";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_DB2;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -429,5 +394,38 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
     public String getExtraOptionIndicator()
     {
         return ":";
-    }       
+    }
+    
+	/**
+	 * @return true if the database supports the NOMAXVALUE sequence option.
+	 * The default is false, AS/400 and DB2 support this. 
+	 */
+	public boolean supportsSequenceNoMaxValueOption() {
+		return false;
+	}
+	
+	/**
+	 * @return true if the database requires you to cast a parameter to varchar before comparing to null.  Only required for DB2 and Vertica
+	 * 
+	 */
+	public boolean requiresCastToVariousForIsNull() {
+		return true;
+	}
+	
+	
+	/**
+	 * @return Handles the special case of DB2 where the display size returned is twice the precision.
+	 * In that case, the length is the precision.
+	 * 
+	 */
+	public boolean isDisplaySizeTwiceThePrecision() {
+		return true;
+	}
+	
+	/**
+	 * @return true if the database supports newlines in a SQL statements.
+	 */
+	public boolean supportsNewLinesInSQL() {
+		return false;
+	}
 }

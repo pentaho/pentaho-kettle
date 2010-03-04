@@ -13,8 +13,12 @@
 
 package org.pentaho.di.core.database;
 
+import java.sql.ResultSet;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -23,46 +27,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  11-mrt-2005
  */
+
+@DatabaseMetaPlugin( type="ORACLE", typeDescription="Oracle" )
 public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	/**
-	 * Construct a new database connections.  Note that not all these parameters are not allways mandatory.
-	 * 
-	 * @param name The database name
-	 * @param access The type of database access
-	 * @param host The hostname or IP address
-	 * @param db The database name
-	 * @param port The port on which the database listens.
-	 * @param user The username
-	 * @param pass The password
-	 */
-	public OracleDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public OracleDatabaseMeta()
-	{
-	}
-
-	public String getDatabaseTypeDesc()
-	{
-		return "ORACLE";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "Oracle";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_ORACLE;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_OCI, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -442,4 +410,89 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     {
         return new String[] { "ojdbc14.jar", "orai18n.jar" };
     }
+    
+    /**
+     * Verifies on the specified database connection if an index exists on the fields with the specified name.
+     * 
+     * @param database a connected database
+     * @param schemaName
+     * @param tableName
+     * @param idxFields
+     * @return true if the index exists, false if it doesn't.
+     * @throws KettleException
+     */
+	public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException  {
+		
+        String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
+
+		boolean exists[] = new boolean[idx_fields.length];
+		for (int i=0;i<exists.length;i++) exists[i]=false;
+		
+		try
+		{
+			//
+			// Get the info from the data dictionary...
+			//
+			String sql = "SELECT * FROM USER_IND_COLUMNS WHERE TABLE_NAME = '"+tableName+"'";
+			ResultSet res = null;
+			try {
+				res = database.openQuery(sql);
+				if (res!=null)
+				{
+					Object[] row = database.getRow(res);
+					while (row!=null)
+					{
+						String column = database.getReturnRowMeta().getString(row, "COLUMN_NAME", "");
+						int idx = Const.indexOfString(column, idx_fields);
+						if (idx>=0) 
+						{
+							exists[idx]=true;
+						}
+						
+						row = database.getRow(res);
+					}
+					
+				}
+				else
+				{
+					return false;
+				}
+			}
+			finally
+			{
+				if ( res != null ) database.closeQuery(res);
+			}
+			
+			// See if all the fields are indexed...
+	        boolean all=true;
+	        for (int i=0;i<exists.length && all;i++) if (!exists[i]) all=false;
+	        
+			return all;
+		}
+		catch(Exception e)
+		{
+			throw new KettleDatabaseException("Unable to determine if indexes exists on table ["+tablename+"]", e);
+		}
+	}
+
+	@Override
+	public boolean requiresCreateTablePrimaryKeyAppend() {
+		return true;
+	}
+	
+	/**
+	 * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
+	 * 
+	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
+	 */
+	public boolean supportsPreparedStatementMetadataRetrieval() {
+		return false;
+	}
+
+	/**
+	 * @return The maximum number of columns in a database, <=0 means: no known limit
+	 */
+	public int getMaxColumnsInIndex() {
+		return 32;
+	}
 }

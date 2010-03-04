@@ -13,6 +13,8 @@
 
 package org.pentaho.di.core.database;
 
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
+
 
 /**
  * Contains PostgreSQL specific information through static final members 
@@ -20,39 +22,10 @@ package org.pentaho.di.core.database;
  * @author Matt
  * @since  11-mrt-2005
  */
+
+@DatabaseMetaPlugin( type="GREENPLUM", typeDescription="Greenplum" )
 public class GreenplumDatabaseMeta extends PostgreSQLDatabaseMeta implements DatabaseInterface
 {
-	/**
-	 * Construct a new database connection.
-	 * 
-	 */
-	public GreenplumDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public GreenplumDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "GREENPLUM";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "Greenplum";
-	}
-  
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_GREENPLUM;
-	}
-		
 	@Override
 	public String[] getReservedWords() {
 		int extraWords = 1;

@@ -13,7 +13,12 @@
 
 package org.pentaho.di.core.database;
 
+import java.sql.ResultSet;
+
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,35 +27,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  11-mrt-2005
  */
+
+@DatabaseMetaPlugin( type="MSACCESS", typeDescription="MS Access" )
 public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public MSAccessDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public MSAccessDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "MSACCESS";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "MS Access";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_ACCESS;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_ODBC };
@@ -374,5 +354,63 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     public boolean supportsGetBlob()
     {
         return false;
-    }    
+    }
+    
+    /**
+     * Verifies on the specified database connection if an index exists on the fields with the specified name.
+     * 
+     * @param database a connected database
+     * @param schemaName
+     * @param tableName
+     * @param idxFields
+     * @return true if the index exists, false if it doesn't.
+     * @throws KettleException
+     */
+	public boolean checkIndexExists(Database database, String schemaName, String tableName, String[] idx_fields) throws KettleDatabaseException  {
+		
+        String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
+
+		boolean exists[] = new boolean[idx_fields.length];
+		for (int i=0;i<exists.length;i++) exists[i]=false;
+		
+		try
+		{
+			// Get a list of all the indexes for this table
+			//
+	        ResultSet indexList = null;
+	        try 
+	        {
+	        	indexList = database.getDatabaseMetaData().getIndexInfo(null,null,tablename,false,true);
+	        	while (indexList.next())
+	        	{
+	        		// String tablen  = indexList.getString("TABLE_NAME");
+	        		// String indexn  = indexList.getString("INDEX_NAME");
+	        		String column  = indexList.getString("COLUMN_NAME");
+	        		// int    pos     = indexList.getShort("ORDINAL_POSITION");
+	        		// int    type    = indexList.getShort("TYPE");
+	        		
+	        		int idx = Const.indexOfString(column, idx_fields);
+	        		if (idx>=0)
+	        		{
+	        			exists[idx]=true;
+	        		}
+	        	}
+	        }
+	        finally 
+	        {
+	        	if ( indexList != null ) indexList.close();		   				
+		    }
+
+	        // See if all the fields are indexed...
+	        boolean all=true;
+	        for (int i=0;i<exists.length && all;i++) if (!exists[i]) all=false;
+	        
+			return all;
+		}
+		catch(Exception e)
+		{
+			throw new KettleDatabaseException("Unable to determine if indexes exists on table ["+tablename+"]", e);
+		}
+	}
+
 }

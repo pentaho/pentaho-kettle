@@ -13,6 +13,8 @@
 
 package org.pentaho.di.core.database;
 
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
+
 
 /**
  * Contains Database Connection information through static final members for a BMW Remedy Action Request System.
@@ -21,39 +23,10 @@ package org.pentaho.di.core.database;
  * @author Matt
  * @since  11-Sep-2007
  */
+
+@DatabaseMetaPlugin( type="REMEDY-AR-SYSTEM", typeDescription="Remedy Action Request System" )
 public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta implements DatabaseInterface
 {
-	/**
-	 * Construct a new database connection.
-	 * 
-	 */
-	public RemedyActionRequestSystemDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public RemedyActionRequestSystemDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "REMEDY-AR-SYSTEM";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "Remedy Action Request System";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_REMEDY_AR_SYSTEM;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };

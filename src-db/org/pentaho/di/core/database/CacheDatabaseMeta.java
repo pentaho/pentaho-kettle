@@ -14,6 +14,7 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -22,46 +23,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  11-mrt-2005
  */
+
+@DatabaseMetaPlugin( type="CACHE", typeDescription="Intersystems Cache" )
 public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	/**
-	 * Construct a new database connections.  Note that not all these parameters are not allways mandatory.
-	 * 
-	 * @param name The database name
-	 * @param access The type of database access
-	 * @param host The hostname or IP address
-	 * @param db The database name
-	 * @param port The port on which the database listens.
-	 * @param user The username
-	 * @param pass The password
-	 */
-	public CacheDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
-	{
-		super(name, access, host, db, port, user, pass);
-	}
-	
-	public CacheDatabaseMeta()
-	{
-	}
-	
-	public String getDatabaseTypeDesc()
-	{
-		return "CACHE";
-	}
-
-	public String getDatabaseTypeDescLong()
-	{
-		return "Intersystems Cache";
-	}
-	
-	/**
-	 * @return Returns the databaseType.
-	 */
-	public int getDatabaseType()
-	{
-		return DatabaseMeta.TYPE_DATABASE_CACHE;
-	}
-		
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -224,4 +189,18 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     {
         return new String[] { "CacheDB.jar" };    
     }
+    
+	/**
+	 * @return true if we need to append the PRIMARY KEY block in the create table block after the fields, required for Caché.
+	 */
+	public boolean requiresCreateTablePrimaryKeyAppend() {
+		return true;
+	}
+
+	/**
+	 * @return true if the database supports newlines in a SQL statements.
+	 */
+	public boolean supportsNewLinesInSQL() {
+		return false;
+	}
 }
