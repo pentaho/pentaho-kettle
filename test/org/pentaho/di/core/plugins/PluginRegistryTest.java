@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
+import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 
 import junit.framework.TestCase;
 
@@ -31,21 +33,22 @@ public class PluginRegistryTest extends TestCase
 		
 		// Register a new plugin type...
 		//
-		PluginTypeInterface pluginType = StepPluginType.getInstance();
+		Class<? extends PluginTypeInterface> pluginType = StepPluginType.class;
 		registry.registerPluginType(pluginType);
 		
 		// See if we have a single plugin in here...
 		//
-		List<PluginTypeInterface> pluginTypes = registry.getPluginTypes();
+		List<Class<? extends PluginTypeInterface>> pluginTypes = registry.getPluginTypes();
 		assertEquals("One plugin type expected in the registry", 1, pluginTypes.size());
 				
 		// Register a single step plugin
 		//
-		Map<PluginClassType, String> classMap = new HashMap<PluginClassType, String>();
-		classMap.put(PluginClassType.MainClassType, "org.pentaho.di.trans.steps.tableinput.TableInputMeta");
+		Map<Class, String> classMap = new HashMap<Class, String>();
+		classMap.put(TableInputMeta.class, "org.pentaho.di.trans.steps.tableinput.TableInputMeta");
 		PluginInterface tableInputPlugin = new Plugin(
 					new String[] { TABLE_INPUT_PLUGIN_ID, }, 
 					pluginType, 
+					StepMetaInterface.class,
 					PLUGIN_INPUT_CATEGORY, 
 					TABLE_INPUT_PLUGIN_NAME, 
 					TABLE_INPUT_PLUGIN_DESCRIPTION, 
@@ -67,11 +70,12 @@ public class PluginRegistryTest extends TestCase
 		
 		// Register a second step plugin
 		//
-		classMap = new HashMap<PluginClassType, String>();
-		classMap.put(PluginClassType.MainClassType, "org.pentaho.di.trans.steps.tableoutput.TableOutputMeta");
+		classMap = new HashMap<Class, String>();
+		classMap.put(TableOutputMeta.class, "org.pentaho.di.trans.steps.tableoutput.TableOutputMeta");
 		PluginInterface tableOutputPlugin = new Plugin(
 					new String[] { TABLE_OUTPUT_PLUGIN_ID, }, 
 					pluginType, 
+					StepMetaInterface.class,
 					PLUGIN_OUTPUT_CATEGORY, 
 					TABLE_OUTPUT_PLUGIN_NAME, 
 					TABLE_OUTPUT_PLUGIN_DESCRIPTION, 
@@ -114,18 +118,18 @@ public class PluginRegistryTest extends TestCase
 		
 		// Now have a little bit of class loading fun: load the main class of the plugin
 		//
-		Object object = registry.loadClass(tableInputPlugin);
+		Object object = registry.loadClass(tableInputPlugin, TableInputMeta.class);
 		assertNotNull(object);
 		assertTrue(object instanceof TableInputMeta);
 
 		// The same but now explicitely asking for the main class
 		//
-		Object object2 = registry.loadClass(tableOutputPlugin, PluginClassType.MainClassType);
+		Object object2 = registry.loadClass(tableOutputPlugin, TableOutputMeta.class);
 		assertNotNull(object2);
 		assertTrue(object2 instanceof TableOutputMeta);
 
 		try {
-			registry.loadClass(tableInputPlugin, PluginClassType.RepositoryVersionBrowserClassType);
+			registry.loadClass(tableInputPlugin, RepositoryRevisionBrowserDialogInterface.class);
 			fail("A repository browser plugin class type can't be used when loading a step class");
 		} catch(Exception e) {
 			// OK!

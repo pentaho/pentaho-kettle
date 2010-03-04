@@ -28,7 +28,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.w3c.dom.Node;
 
-abstract class BasePluginType {
+public abstract class BasePluginType {
 	private static Class<?> PKG = BasePluginType.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	protected String id;
@@ -38,6 +38,8 @@ abstract class BasePluginType {
 	protected PluginRegistry registry;
 
 	protected LogChannel log;
+	
+	protected Map<Class, String> objectTypes = new HashMap<Class, String>();
 
 	public BasePluginType() {
 		this.pluginFolders = new ArrayList<PluginFolderInterface>();
@@ -56,6 +58,14 @@ abstract class BasePluginType {
 		this.name = name;
 	}
 	
+	public Map<Class, String> getAdditionalRuntimeObjectTypes(){
+	  return objectTypes;
+	}
+	
+	public void addObjectType(Class clz, String xmlNodeName){
+	  objectTypes.put(clz, xmlNodeName);
+	}
+	
 	@Override
 	public String toString() {
 		return name+"("+id+")";
@@ -71,10 +81,10 @@ abstract class BasePluginType {
 		registerXmlPlugins();
 	}
 	
-	abstract void registerNatives() throws KettlePluginException;
-	abstract void registerAnnotations() throws KettlePluginException;
-	abstract void registerPluginJars() throws KettlePluginException;
-	abstract void registerXmlPlugins() throws KettlePluginException;
+	protected abstract void registerNatives() throws KettlePluginException;
+	protected abstract void registerAnnotations() throws KettlePluginException;
+	protected abstract void registerPluginJars() throws KettlePluginException;
+	protected abstract void registerXmlPlugins() throws KettlePluginException;
 	
 	/**
 	 * @return the id
@@ -248,9 +258,10 @@ abstract class BasePluginType {
 		return list;
 	}
 
-    protected PluginInterface registerPluginFromXmlResource( Node pluginNode, String path, PluginTypeInterface pluginType) throws KettlePluginException {
+    protected PluginInterface registerPluginFromXmlResource( Node pluginNode, String path, Class<? extends PluginTypeInterface> pluginType) throws KettlePluginException {
         try
         {
+
         	String id = XMLHandler.getTagAttribute(pluginNode, "id"); //$NON-NLS-1$
             String description = getTagOrAttribute(pluginNode, "description"); //$NON-NLS-1$
             String iconfile = getTagOrAttribute(pluginNode, "iconfile"); //$NON-NLS-1$
@@ -258,10 +269,6 @@ abstract class BasePluginType {
             String category = getTagOrAttribute(pluginNode, "category"); //$NON-NLS-1$
             String classname = getTagOrAttribute(pluginNode, "classname"); //$NON-NLS-1$
             String errorHelpfile = getTagOrAttribute(pluginNode, "errorhelpfile"); //$NON-NLS-1$
-
-            String metaclassname = getTagOrAttribute(pluginNode, "metaclassname"); //$NON-NLS-1$
-            String dialogclassname = getTagOrAttribute(pluginNode, "dialogclassname"); //$NON-NLS-1$
-            String versionbrowserclassname = getTagOrAttribute(pluginNode, "versionbrowserclassname"); //$NON-NLS-1$
             
             Node libsnode = XMLHandler.getSubNode(pluginNode, "libraries"); //$NON-NLS-1$
             int nrlibs = XMLHandler.countNodes(libsnode, "library"); //$NON-NLS-1$
@@ -291,13 +298,35 @@ abstract class BasePluginType {
             String errorHelpFileFull = errorHelpfile;
             if (!Const.isEmpty(errorHelpfile)) errorHelpFileFull = (path == null) ? errorHelpfile : path+Const.FILE_SEPARATOR+errorHelpfile;
             
-            Map<PluginClassType, String> classMap = new HashMap<PluginClassType, String>();
-            classMap.put(PluginClassType.MainClassType, classname);
-            classMap.put(PluginClassType.MetaClassType, metaclassname);
-            classMap.put(PluginClassType.DialogClassType, dialogclassname);
-            classMap.put(PluginClassType.RepositoryVersionBrowserClassType, versionbrowserclassname);
-
-            PluginInterface pluginInterface = new Plugin(id.split(","), pluginType, category, description, tooltip, iconFilename, false, false, classMap, jarFiles, errorHelpFileFull);
+            Map<Class, String> classMap = new HashMap<Class, String>();
+            
+            PluginMainClassType mainClassTypesAnnotation = pluginType.getAnnotation(PluginMainClassType.class);
+            classMap.put(mainClassTypesAnnotation.value(), classname);
+            
+            // process annotated extra types
+            PluginClassTypes classTypesAnnotation = pluginType.getAnnotation(PluginClassTypes.class);
+            if(classTypesAnnotation != null){
+              for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
+                Class classType = classTypesAnnotation.classTypes()[i];
+                Class implementationType = (classTypesAnnotation.implementationClass().length > i) ? classTypesAnnotation.implementationClass()[i] : null;
+                String className = null;
+                if(implementationType != null){
+                  className = implementationType.getName();
+                } else {
+                  className = getTagOrAttribute(pluginNode, classTypesAnnotation.xmlNodeNames()[i]); //$NON-NLS-1$
+                }
+                classMap.put(classType, className);
+              }
+            }
+            
+            // process extra types added at runtime
+            Map<Class, String> objectMap = getAdditionalRuntimeObjectTypes();
+            for(Map.Entry<Class, String> entry : objectMap.entrySet()){
+              String clzName = getTagOrAttribute(pluginNode, entry.getValue()); //$NON-NLS-1$
+              classMap.put(entry.getKey(), clzName); 
+            }
+            
+            PluginInterface pluginInterface = new Plugin(id.split(","), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip, iconFilename, false, false, classMap, jarFiles, errorHelpFileFull);
             registry.registerPlugin(pluginType, pluginInterface);
             
             return pluginInterface;

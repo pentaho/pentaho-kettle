@@ -31,7 +31,6 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
-import org.pentaho.di.core.plugins.PluginClassType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.i18n.BaseMessages;
@@ -187,7 +186,7 @@ public class Kitchen
 						// Define and connect to the repository...
 						if(log.isDebug())log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Alocate&ConnectRep"));
 						
-						repository = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+						repository = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, Repository.class);
 						repository.init(repositoryMeta);
 						
 						repository.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);

@@ -260,7 +260,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 	public StepDialogInterface getPartitionerDialog(StepMeta stepMeta, StepPartitioningMeta partitioningMeta, TransMeta transMeta) throws KettleException
 	{
 		PluginRegistry registry = PluginRegistry.getInstance();
-		registry.getPluginId(PartitionerPluginType.getInstance(), partitioningMeta.getPartitioner());
+		registry.getPluginId(PartitionerPluginType.class, partitioningMeta.getPartitioner());
 
 		String dialogClassName = partitioningMeta.getPartitioner().getDialogClassName();
 

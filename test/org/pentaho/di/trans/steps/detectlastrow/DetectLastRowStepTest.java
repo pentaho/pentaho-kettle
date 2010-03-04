@@ -221,7 +221,7 @@ public class DetectLastRowStepTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
         transMeta.addStep(injectorStep);
 
@@ -231,7 +231,7 @@ public class DetectLastRowStepTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
         transMeta.addStep(dummyStep1);                              
 
@@ -246,7 +246,7 @@ public class DetectLastRowStepTest extends TestCase
         
         dlrm.setResultFieldName("result");
 
-        String detectLastRowStepPid = registry.getPluginId(StepPluginType.getInstance(), dlrm);
+        String detectLastRowStepPid = registry.getPluginId(StepPluginType.class, dlrm);
         StepMeta detectLastRowStep = new StepMeta(detectLastRowStepPid, delectLastRowStepname, dlrm);
         transMeta.addStep(detectLastRowStep);                              
 
@@ -259,7 +259,7 @@ public class DetectLastRowStepTest extends TestCase
         String dummyStepname2 = "dummy step 2";            
         DummyTransMeta dm2 = new DummyTransMeta();
 
-        String dummyPid2 = registry.getPluginId(StepPluginType.getInstance(), dm2);
+        String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
         StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, dm2);
         transMeta.addStep(dummyStep2);                              
 

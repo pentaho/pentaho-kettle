@@ -207,7 +207,7 @@ public class CsvInput2Test extends TestCase {
 		InjectorMeta im = new InjectorMeta();
 
 		// Set the information of the injector.
-		String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+		String injectorPid = registry.getPluginId(StepPluginType.class, im);
 		StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
 		transMeta.addStep(injectorStep);		
 		
@@ -217,7 +217,7 @@ public class CsvInput2Test extends TestCase {
 		String csvInputName = "csv input step";
 		CsvInputMeta cim = new CsvInputMeta();
 
-		String csvInputPid = registry.getPluginId(StepPluginType.getInstance(), cim);
+		String csvInputPid = registry.getPluginId(StepPluginType.class, cim);
 		StepMeta csvInputStep = new StepMeta(csvInputPid, csvInputName,
 				cim);
 		transMeta.addStep(csvInputStep);
@@ -281,7 +281,7 @@ public class CsvInput2Test extends TestCase {
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
 

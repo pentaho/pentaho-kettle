@@ -22,6 +22,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.KettleURLClassLoader;
+import org.pentaho.di.trans.step.StepInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -31,23 +32,24 @@ import org.w3c.dom.Node;
  * @author matt
  *
  */
+
+@PluginTypeCategoriesOrder(getNaturalCategoriesOrder={"BaseStep.Category.Input",
+    "JobCategory.Category.General"
+    ,"JobCategory.Category.Mail"
+    ,"JobCategory.Category.FileManagement"
+    ,"JobCategory.Category.Conditions"
+    ,"JobCategory.Category.Scripting"
+    ,"JobCategory.Category.BulkLoading"
+    ,"JobCategory.Category.XML"
+    ,"JobCategory.Category.Repository"
+    ,"JobCategory.Category.FileTransfer"
+    ,"JobCategory.Category.Experimental"},
+   i18nPackageClass = JobMeta.class)
+ @PluginMainClassType(JobEntryInterface.class)
 public class JobEntryPluginType extends BasePluginType implements PluginTypeInterface {
 	private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String GENERAL_CATEGORY = BaseMessages.getString(PKG, "JobCategory.Category.General");
-
-	public static final String[] CATEGORIES_IN_ORDER = new String[] {
-		GENERAL_CATEGORY,
-		BaseMessages.getString(PKG, "JobCategory.Category.Mail"),
-		BaseMessages.getString(PKG, "JobCategory.Category.FileManagement"),
-		BaseMessages.getString(PKG, "JobCategory.Category.Conditions"),
-		BaseMessages.getString(PKG, "JobCategory.Category.Scripting"),
-		BaseMessages.getString(PKG, "JobCategory.Category.BulkLoading"),
-		BaseMessages.getString(PKG, "JobCategory.Category.XML"),
-		BaseMessages.getString(PKG, "JobCategory.Category.Repository"),
-		BaseMessages.getString(PKG, "JobCategory.Category.FileTransfer"),
-		BaseMessages.getString(PKG, "JobCategory.Category.Experimental"),
-	};
+  public static final String GENERAL_CATEGORY = BaseMessages.getString(PKG, "JobCategory.Category.General");
 	
 	private static JobEntryPluginType pluginType;
 	
@@ -102,7 +104,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 			Node entriesNode = XMLHandler.getSubNode(document, "job-entries");
 			List<Node> entryNodes = XMLHandler.getNodes(entriesNode, "job-entry");
 			for (Node entryNode : entryNodes) {
-				registerPluginFromXmlResource(entryNode, null, this);
+				registerPluginFromXmlResource(entryNode, null, this.getClass());
 			}
 			
 		} catch (KettleXMLException e) {
@@ -151,11 +153,23 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 		
 		// Register this step plugin...
 		//
-		Map<PluginClassType, String> classMap = new HashMap<PluginClassType, String>();
-		classMap.put(PluginClassType.MainClassType, clazz.getName());
+
+    Map<Class, String> classMap = new HashMap<Class, String>();
+    
+    classMap.put(JobEntry.class, clazz.getName());
+    
+    PluginClassTypes classTypesAnnotation = clazz.getAnnotation(PluginClassTypes.class);
+    if(classTypesAnnotation != null){
+      for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
+        Class classType = classTypesAnnotation.classTypes()[i];
+        Class implementationType = (classTypesAnnotation.implementationClass().length > i) ? classTypesAnnotation.implementationClass()[i] : null;
+        String className = implementationType.getName();
+        classMap.put(classType, className);
+      }
+    }
 		
-		PluginInterface stepPlugin = new Plugin(ids, this, category, name, description, jobEntry.image(), false, nativeJobEntry, classMap, libraries, null);
-		registry.registerPlugin(this, stepPlugin);
+		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), JobEntry.class, category, name, description, jobEntry.image(), false, nativeJobEntry, classMap, libraries, null);
+		registry.registerPlugin(this.getClass(), stepPlugin);
 	}
 
 	/**
@@ -192,7 +206,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "plugin");
 
-						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this);
+						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass());
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...
 						//
@@ -201,9 +215,5 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 				}
 			}
 		}
-	}
-	
-	public String[] getNaturalCategoriesOrder() {
-		return CATEGORIES_IN_ORDER;
 	}
 }

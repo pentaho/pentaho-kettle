@@ -29,13 +29,13 @@ public class TransPreviewFactory
         previewMeta.setName(parent==null ? "Preview transformation" : parent.toString());
         
         // At it to the first step.
-        StepMeta one = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), oneMeta), oneStepname, oneMeta);
+        StepMeta one = new StepMeta(registry.getPluginId(StepPluginType.class, oneMeta), oneStepname, oneMeta);
         one.setLocation(50,50);
         one.setDraw(true);
         previewMeta.addStep(one);
         
         DummyTransMeta twoMeta = new DummyTransMeta();
-        StepMeta two = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), twoMeta), "dummy", twoMeta); //$NON-NLS-1$
+        StepMeta two = new StepMeta(registry.getPluginId(StepPluginType.class, twoMeta), "dummy", twoMeta); //$NON-NLS-1$
         two.setLocation(250,50);
         two.setDraw(true);
         previewMeta.addStep(two);

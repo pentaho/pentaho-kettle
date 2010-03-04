@@ -34,11 +34,11 @@ import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.PluginClassType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoriesMeta;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
@@ -385,7 +385,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 			{
 				System.out.println("Allocating repository..."); //$NON-NLS-1$
 				
-	    		KettleDatabaseRepository rep = (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+	    		KettleDatabaseRepository rep = (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, Repository.class);
 				rep.init(repositoryMeta);
 				
 				System.out.println("Connecting to database for repository creation..."); //$NON-NLS-1$
@@ -496,7 +496,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 		
 		try
 		{
-    		KettleDatabaseRepository rep = (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+    		KettleDatabaseRepository rep = (KettleDatabaseRepository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, Repository.class);
     		rep.init(repositoryMeta);
 			
 			MessageBox qmb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);

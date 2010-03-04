@@ -13,11 +13,13 @@ import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.annotations.PartitionerPlugin;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.trans.Partitioner;
 import org.pentaho.di.trans.step.StepInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -28,6 +30,7 @@ import org.w3c.dom.Node;
  * @author matt
  *
  */
+@PluginMainClassType(Partitioner.class)
 public class PartitionerPluginType extends BasePluginType implements PluginTypeInterface {
 	
 	private static PartitionerPluginType pluginType;
@@ -73,7 +76,7 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 			Node stepsNode = XMLHandler.getSubNode(document, "plugins");
 			List<Node> stepNodes = XMLHandler.getNodes(stepsNode, "plugin-partitioner");
 			for (Node stepNode : stepNodes) {
-				registerPluginFromXmlResource(stepNode, null, this);
+				registerPluginFromXmlResource(stepNode, null, this.getClass());
 			}
 			
 		} catch (KettleXMLException e) {
@@ -123,11 +126,12 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 		
 		// Register this step plugin...
 		//
-		Map<PluginClassType, String> classMap = new HashMap<PluginClassType, String>();
-		classMap.put(PluginClassType.MainClassType, clazz.getName());
+
+    Map<Class, String> classMap = new HashMap<Class, String>();
+    classMap.put(Partitioner.class, clazz.getName());
 		
-		PluginInterface stepPlugin = new Plugin(ids, this, category, description, tooltip, null, false, nativeStep, classMap, libraries, null);
-		registry.registerPlugin(this, stepPlugin);
+		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), Partitioner.class, category, description, tooltip, null, false, nativeStep, classMap, libraries, null);
+		registry.registerPlugin(this.getClass(), stepPlugin);
 	}
 
 	/**
@@ -164,7 +168,7 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "partitioner-plugin");
 						if (pluginNode!=null) {
-							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this);
+							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass());
 						}
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...
@@ -176,7 +180,4 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 		}
 	}
 	
-	public String[] getNaturalCategoriesOrder() {
-		return new String[] { };
-	}
 }

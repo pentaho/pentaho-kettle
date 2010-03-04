@@ -21,13 +21,14 @@ public class Plugin implements PluginInterface {
 	private String						name;
 	private String						description;
 	private String[]					ids;
-	private PluginTypeInterface			pluginType;
+	private Class<? extends PluginTypeInterface>			pluginType;
 	private String						imageFile;
 	private boolean						separateClassLoaderNeeded;
 	private boolean						nativePlugin;
-	private Map<PluginClassType, String>	classMap;
+	private Map<Class, String>	classMap;
 	private List<String>				libraries;
 	private String                      errorHelpFile;
+	private Class             mainType;
 
 	/**
 	 * @param ids
@@ -41,9 +42,10 @@ public class Plugin implements PluginInterface {
 	 * @param classMap
 	 * @param libraries
 	 */
-	public Plugin(String[] ids, PluginTypeInterface pluginType, String category, String name, String description, String imageFile, boolean seaerateClassLoaderNeeded, boolean nativePlugin, Map<PluginClassType, String> classMap, List<String> libraries, String errorHelpFile) {
+	public Plugin(String[] ids, Class<? extends PluginTypeInterface> pluginType, Class mainType, String category, String name, String description, String imageFile, boolean seaerateClassLoaderNeeded, boolean nativePlugin, Map<Class, String> classMap, List<String> libraries, String errorHelpFile) {
 		this.ids = ids;
 		this.pluginType = pluginType;
+		this.mainType = mainType;
 		this.category = category;
 		this.name = name;
 		this.description = description;
@@ -152,7 +154,7 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the pluginType
 	 */
-	public PluginTypeInterface getPluginType() {
+	public Class<? extends PluginTypeInterface> getPluginType() {
 		return pluginType;
 	}
 
@@ -160,7 +162,7 @@ public class Plugin implements PluginInterface {
 	 * @param pluginType
 	 *            the pluginType to set
 	 */
-	public void setPluginType(PluginTypeInterface pluginType) {
+	public void setPluginType(Class<? extends PluginTypeInterface> pluginType) {
 		this.pluginType = pluginType;
 	}
 
@@ -212,7 +214,7 @@ public class Plugin implements PluginInterface {
 	/**
 	 * @return the classMap
 	 */
-	public Map<PluginClassType, String> getClassMap() {
+	public Map<Class, String> getClassMap() {
 		return classMap;
 	}
 
@@ -220,7 +222,7 @@ public class Plugin implements PluginInterface {
 	 * @param classMap
 	 *            the classMap to set
 	 */
-	public void setClassMap(Map<PluginClassType, String> classMap) {
+	public void setClassMap(Map<Class, String> classMap) {
 		this.classMap = classMap;
 	}
 
@@ -251,6 +253,11 @@ public class Plugin implements PluginInterface {
 	public void setErrorHelpFile(String errorHelpFile) {
 		this.errorHelpFile = errorHelpFile;
 	}
+
+  public Class getMainType() {
+    return mainType;
+  }
+	
 	
 	
 }

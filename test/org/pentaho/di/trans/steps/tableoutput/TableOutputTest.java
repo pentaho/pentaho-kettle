@@ -413,7 +413,7 @@ public class TableOutputTest extends TestCase
             InjectorMeta im = new InjectorMeta();
             
             // Set the information of the injector.                   
-            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+            String injectorPid = registry.getPluginId(StepPluginType.class, im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -425,7 +425,7 @@ public class TableOutputTest extends TestCase
             tom.setDatabaseMeta(transMeta.findDatabase("db"));
             tom.setTablename(target_table);
 
-            String fromid = registry.getPluginId(StepPluginType.getInstance(), tom);
+            String fromid = registry.getPluginId(StepPluginType.class, tom);
             StepMeta fromstep = new StepMeta(fromid, outputname, (StepMetaInterface)tom);
             fromstep.setDescription("write data to table [" + target_table + "] on database [" + dbInfo + "]");
             transMeta.addStep(fromstep);
@@ -504,7 +504,7 @@ public class TableOutputTest extends TestCase
             InjectorMeta im = new InjectorMeta();
             
             // Set the information of the injector.                   
-            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+            String injectorPid = registry.getPluginId(StepPluginType.class, im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -518,7 +518,7 @@ public class TableOutputTest extends TestCase
             tom.setTableNameField("TABLE");
             tom.setTableNameInTable(false);
 
-            String fromid = registry.getPluginId(StepPluginType.getInstance(), tom);
+            String fromid = registry.getPluginId(StepPluginType.class, tom);
             StepMeta fromstep = new StepMeta(fromid, outputname, (StepMetaInterface)tom);
             fromstep.setDescription("write data to tables on database [" + dbInfo + "]");
             transMeta.addStep(fromstep);
@@ -600,7 +600,7 @@ public class TableOutputTest extends TestCase
             InjectorMeta im = new InjectorMeta();
             
             // Set the information of the injector.                   
-            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+            String injectorPid = registry.getPluginId(StepPluginType.class, im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -614,7 +614,7 @@ public class TableOutputTest extends TestCase
             tom.setTruncateTable(true);
             tom.setUseBatchUpdate(true);
 
-            String fromid = registry.getPluginId(StepPluginType.getInstance(), tom);
+            String fromid = registry.getPluginId(StepPluginType.class, tom);
             StepMeta fromstep = new StepMeta(fromid, outputname, (StepMetaInterface)tom);
             fromstep.setDescription("write data to table [" + target_table3 + "] on database [" + dbInfo + "]");
             transMeta.addStep(fromstep);

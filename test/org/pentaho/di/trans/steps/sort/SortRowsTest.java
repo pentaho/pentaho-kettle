@@ -178,7 +178,7 @@ public class SortRowsTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -197,7 +197,7 @@ public class SortRowsTest extends TestCase
         srm.setPrefix("SortRowsTest");
         srm.setDirectory(".");
 
-        String sortRowsStepPid = registry.getPluginId(StepPluginType.getInstance(), srm);
+        String sortRowsStepPid = registry.getPluginId(StepPluginType.class, srm);
         StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, (StepMetaInterface)srm);
         transMeta.addStep(sortRowsStep);            
 
@@ -210,7 +210,7 @@ public class SortRowsTest extends TestCase
         String dummyStepname = "dummy step";            
         DummyTransMeta dm = new DummyTransMeta();
 
-        String dummyPid = registry.getPluginId(StepPluginType.getInstance(), dm);
+        String dummyPid = registry.getPluginId(StepPluginType.class, dm);
         StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
         transMeta.addStep(dummyStep);                              
 
@@ -265,7 +265,7 @@ public class SortRowsTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -284,7 +284,7 @@ public class SortRowsTest extends TestCase
         srm.setPrefix("SortRowsTest");
         srm.setDirectory(".");
 
-        String sortRowsStepPid = registry.getPluginId(StepPluginType.getInstance(), srm);
+        String sortRowsStepPid = registry.getPluginId(StepPluginType.class, srm);
         StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, (StepMetaInterface)srm);
         transMeta.addStep(sortRowsStep);            
 
@@ -297,7 +297,7 @@ public class SortRowsTest extends TestCase
         String dummyStepname = "dummy step";            
         DummyTransMeta dm = new DummyTransMeta();
 
-        String dummyPid = registry.getPluginId(StepPluginType.getInstance(), dm);
+        String dummyPid = registry.getPluginId(StepPluginType.class, dm);
         StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
         transMeta.addStep(dummyStep);                              
 

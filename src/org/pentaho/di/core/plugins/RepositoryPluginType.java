@@ -19,6 +19,7 @@ import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.trans.KettleURLClassLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -29,8 +30,10 @@ import org.w3c.dom.Node;
  * @author matt
  *
  */
+@PluginMainClassType(Repository.class)
+@PluginClassTypes(classTypes = { RepositoryMeta.class }, xmlNodeNames = { "meta-classname" })
 public class RepositoryPluginType extends BasePluginType implements PluginTypeInterface {
-	
+
 	private static RepositoryPluginType pluginType;
 	
 	private RepositoryPluginType() {
@@ -84,20 +87,8 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 			Node repsNode = XMLHandler.getSubNode(document, "repositories");
 			List<Node> repsNodes = XMLHandler.getNodes(repsNode, "repository");
 			for (Node repNode : repsNodes) {
-				PluginInterface plugin = registerPluginFromXmlResource(repNode, null, this);
+				PluginInterface plugin = registerPluginFromXmlResource(repNode, null, this.getClass());
 				
-				String metaClassName = XMLHandler.getTagValue(repNode, "meta-classname");
-				if (!Const.isEmpty(metaClassName)) {
-					plugin.getClassMap().put(PluginClassType.MetaClassType, metaClassName);
-				}
-				String dialogClassName = XMLHandler.getTagValue(repNode, "dialog-classname");
-				if (!Const.isEmpty(dialogClassName)) {
-					plugin.getClassMap().put(PluginClassType.DialogClassType, dialogClassName);
-				}
-				String versionBrowserClassName = XMLHandler.getTagValue(repNode, "version-browser-classname");
-				if (!Const.isEmpty(versionBrowserClassName)) {
-					plugin.getClassMap().put(PluginClassType.DialogClassType, versionBrowserClassName);
-				}
 			}			
 		} catch (KettleXMLException e) {
 			throw new KettlePluginException("Unable to read the kettle repositories XML config file: "+xmlFile, e);
@@ -145,14 +136,21 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 		
 		// Register this step plugin...
 		//
-		Map<PluginClassType, String> classMap = new HashMap<PluginClassType, String>();
-		classMap.put(PluginClassType.MainClassType, clazz.getName());
-		classMap.put(PluginClassType.MetaClassType, repositoryPlugin.metaClass());
-		classMap.put(PluginClassType.DialogClassType, repositoryPlugin.dialogClass());
-		classMap.put(PluginClassType.RepositoryVersionBrowserClassType, repositoryPlugin.versionBrowserClass());
+		//Map<PluginClassType, String> classMap = new HashMap<PluginClassType, String>();
 		
-		PluginInterface stepPlugin = new Plugin(ids, this, category, name, description, null, false, nativeRepositoryType, classMap, libraries, null);
-		registry.registerPlugin(this, stepPlugin);
+    Map<Class, String> classMap = new HashMap<Class, String>();
+    classMap.put(Repository.class, clazz.getName());
+    classMap.put(RepositoryMeta.class, repositoryPlugin.metaClass());
+    
+    PluginClassTypes extraTypes = clazz.getAnnotation(PluginClassTypes.class);
+    if(extraTypes != null){
+      for(int i=0; i< extraTypes.classTypes().length; i++){
+        classMap.put(extraTypes.classTypes()[i], extraTypes.implementationClass()[i].getName());
+      }
+    }
+		
+		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), Repository.class, category, name, description, null, false, nativeRepositoryType, classMap, libraries, null);
+		registry.registerPlugin(this.getClass(), stepPlugin);
 	}
 
 	/**
@@ -189,7 +187,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "plugin");
 
-						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this);
+						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass());
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...
 						//
@@ -200,7 +198,4 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 		}
 	}
 	
-	public String[] getNaturalCategoriesOrder() {
-		return new String[] {};
-	}
 }

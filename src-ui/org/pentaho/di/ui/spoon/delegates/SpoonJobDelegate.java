@@ -98,14 +98,14 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 		try
 		{
-			jobPlugin = PluginRegistry.getInstance().findPluginWithName(JobEntryPluginType.getInstance(), type_desc);
+			jobPlugin = PluginRegistry.getInstance().findPluginWithName(JobEntryPluginType.class, type_desc);
 			if (jobPlugin == null)
 			{
 				// Check if it's not START or DUMMY
 				if (JobMeta.STRING_SPECIAL_START.equals(type_desc)
 						|| JobMeta.STRING_SPECIAL_DUMMY.equals(type_desc))
 				{
-					jobPlugin = registry.findPluginWithId(JobEntryPluginType.getInstance(), JobMeta.STRING_SPECIAL);					
+					jobPlugin = registry.findPluginWithId(JobEntryPluginType.class, JobMeta.STRING_SPECIAL);					
 				}
 			}
 
@@ -213,7 +213,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			Object[] paramArgs = new Object[] { spoon.getShell(), jobEntryInterface, spoon.getRepository(), jobMeta };
 			Constructor<?> dialogConstructor;
 			
-			PluginInterface plugin = registry.getPlugin(JobEntryPluginType.getInstance(), jobEntryInterface);
+			PluginInterface plugin = registry.getPlugin(JobEntryPluginType.class, jobEntryInterface);
 			dialogClass = PluginRegistry.getInstance().getClass(plugin, dialogClassName);
 			dialogConstructor = dialogClass.getConstructor(paramClasses);
 			return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
@@ -645,7 +645,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						tii.setDatabaseMeta(sourceDbInfo);
 						tii.setSQL("SELECT * FROM " + tables[i]); //$NON-NLS-1$ // It's already quoted!
 	
-						String fromstepid = PluginRegistry.getInstance().getPluginId(StepPluginType.getInstance(), tii);
+						String fromstepid = PluginRegistry.getInstance().getPluginId(StepPluginType.class, tii);
 						StepMeta fromstep = new StepMeta(fromstepid, fromstepname, tii);
 						fromstep.setLocation(150, 100);
 						fromstep.setDraw(true);
@@ -663,7 +663,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						toi.setCommitSize(100);
 						toi.setTruncateTable(true);
 	
-						String tostepid = PluginRegistry.getInstance().getPluginId(StepPluginType.getInstance(), toi);
+						String tostepid = PluginRegistry.getInstance().getPluginId(StepPluginType.class, toi);
 						StepMeta tostep = new StepMeta(tostepid, tostepname, toi);
 						tostep.setLocation(500, 100);
 						tostep.setDraw(true);

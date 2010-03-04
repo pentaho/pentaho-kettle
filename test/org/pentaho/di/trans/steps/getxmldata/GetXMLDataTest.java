@@ -204,7 +204,7 @@ public class GetXMLDataTest extends TestCase {
 		InjectorMeta im = new InjectorMeta();
 
 		// Set the information of the injector.
-		String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+		String injectorPid = registry.getPluginId(StepPluginType.class, im);
 		StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, im);
 		transMeta.addStep(injectorStep);
 
@@ -214,7 +214,7 @@ public class GetXMLDataTest extends TestCase {
 		String getXMLDataName = "get xml data step";
 		GetXMLDataMeta gxdm = new GetXMLDataMeta();
 
-		String getXMLDataPid = registry.getPluginId(StepPluginType.getInstance(), gxdm);
+		String getXMLDataPid = registry.getPluginId(StepPluginType.class, gxdm);
 		StepMeta getXMLDataStep = new StepMeta(getXMLDataPid, getXMLDataName,
 				gxdm);
 		transMeta.addStep(getXMLDataStep);
@@ -301,7 +301,7 @@ public class GetXMLDataTest extends TestCase {
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
 

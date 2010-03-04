@@ -133,7 +133,6 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PartitionerPluginType;
-import org.pentaho.di.core.plugins.PluginClassType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
@@ -221,7 +220,9 @@ import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.ILoginCallback;
 import org.pentaho.di.ui.repository.RepositoriesDialog;
 import org.pentaho.di.ui.repository.RepositorySecurityUI;
+import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryObjectReference;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
@@ -471,6 +472,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     try {
       // Bootstrap Kettle
       //
+
+      // The core plugin types don't know about UI classes. Add them in now before the PluginRegistry inits.
+      registerUIPluginObjectTypes();
+      
       KettleEnvironment.init();
 
       List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
@@ -586,8 +591,20 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     SpoonFactory.setSpoonInstance(this);
   }
+  
+  /**
+   * The core plugin types don't know about UI classes. This method adds those in before initialization.
+   * 
+   *  TODO: create a SpoonLifecycle listener that can notify interested parties of a pre-initialization
+   *  state so this can happen in those listeners.
+   */
+  private static void registerUIPluginObjectTypes(){
+    RepositoryPluginType.getInstance().addObjectType(RepositoryRevisionBrowserDialogInterface.class, "version-browser-classname");
+    RepositoryPluginType.getInstance().addObjectType(RepositoryDialogInterface.class, "dialog-classname");
+  }
 
   public void init(TransMeta ti) {
+    
     FormLayout layout = new FormLayout();
     layout.marginWidth = 0;
     layout.marginHeight = 0;
@@ -1697,7 +1714,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           String name = item.getText();
           String tip = coreStepToolTipMap.get(name);
           if (tip != null) {
-            PluginInterface plugin = PluginRegistry.getInstance().findPluginWithName(StepPluginType.getInstance(), name);
+            PluginInterface plugin = PluginRegistry.getInstance().findPluginWithName(StepPluginType.class, name);
             Image image = GUIResource.getInstance().getImagesSteps().get(plugin.getIds()[0]);
             if (image==null) {
             	toolTip.hide();
@@ -1708,7 +1725,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           }
           tip = coreJobToolTipMap.get(name);
           if (tip != null) {
-            PluginInterface plugin = PluginRegistry.getInstance().findPluginWithName(JobEntryPluginType.getInstance(), name);
+            PluginInterface plugin = PluginRegistry.getInstance().findPluginWithName(JobEntryPluginType.class, name);
             if (plugin != null) {
               Image image = GUIResource.getInstance().getImagesJobentries().get(plugin.getIds()[0]);
               toolTip.setImage(image);
@@ -1784,8 +1801,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       PluginRegistry registry = PluginRegistry.getInstance();
       
-      final List<PluginInterface> basesteps = registry.getPlugins(StepPluginType.getInstance());
-      final List<String> basecat = registry.getCategories(StepPluginType.getInstance());
+      final List<PluginInterface> basesteps = registry.getPlugins(StepPluginType.class);
+      final List<String> basecat = registry.getCategories(StepPluginType.class);
       
       for (int i = 0; i < basecat.size(); i++) {
         TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
@@ -1827,7 +1844,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // 
       for (int i = 0; i < pluginHistory.size() && i < 10; i++) {
         ObjectUsageCount usage = pluginHistory.get(i);
-        PluginInterface stepPlugin = PluginRegistry.getInstance().findPluginWithId(StepPluginType.getInstance(), usage.getObjectName());
+        PluginInterface stepPlugin = PluginRegistry.getInstance().findPluginWithId(StepPluginType.class, usage.getObjectName());
         if (stepPlugin != null) {
           final Image stepimg = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getIds()[0]);
           String pluginName = Const.NVL(stepPlugin.getDescription(), "");
@@ -1860,8 +1877,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // ////////////////////////////////////////////////////////////////////////////////////////////////
 
       PluginRegistry registry = PluginRegistry.getInstance();
-      List<PluginInterface> baseJobEntries = registry.getPlugins(JobEntryPluginType.getInstance());
-      List<String> baseCategories = registry.getCategories(JobEntryPluginType.getInstance());
+      List<PluginInterface> baseJobEntries = registry.getPlugins(JobEntryPluginType.class);
+      List<String> baseCategories = registry.getCategories(JobEntryPluginType.class);
       
       TreeItem generalItem = null;
 
@@ -4246,7 +4263,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
    * Show a dialog containing information on the different step plugins.
    */
   public void helpShowStepPlugins() {
-	RowBuffer rowBuffer = PluginRegistry.getInstance().getPluginInformation(StepPluginType.getInstance());
+	RowBuffer rowBuffer = PluginRegistry.getInstance().getPluginInformation(StepPluginType.class);
     PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, rowBuffer.getRowMeta(), rowBuffer.getBuffer());
     dialog.setTitleMessage(BaseMessages.getString(PKG, "Spoon.Dialog.StepPluginList.Title"), 
     		BaseMessages.getString( PKG, "Spoon.Dialog.StepPluginList.Message"));
@@ -4257,7 +4274,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
    * Show a dialog containing information on the different job entry plugins.
    */
   public void helpShowJobEntryPlugins() {
-	RowBuffer rowBuffer = PluginRegistry.getInstance().getPluginInformation(JobEntryPluginType.getInstance());
+	RowBuffer rowBuffer = PluginRegistry.getInstance().getPluginInformation(JobEntryPluginType.class);
     PreviewRowsDialog dialog = new PreviewRowsDialog(shell, null, SWT.NONE, null, rowBuffer.getRowMeta(), rowBuffer.getBuffer());
     dialog.setTitleMessage(BaseMessages.getString(PKG, "Spoon.Dialog.JobEntryPluginList.Title"), 
     		BaseMessages.getString(PKG, "Spoon.Dialog.JobEntryPluginList.Message"));
@@ -4487,7 +4504,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             // Put the steps below it.
             for (int i = 0; i < transMeta.nrSteps(); i++) {
               StepMeta stepMeta = transMeta.getStep(i);
-              PluginInterface stepPlugin = PluginRegistry.getInstance().findPluginWithId(StepPluginType.getInstance(), stepMeta.getStepID());
+              PluginInterface stepPlugin = PluginRegistry.getInstance().findPluginWithId(StepPluginType.class, stepMeta.getStepID());
 
               if (!filterMatch(stepMeta.getName()) && !filterMatch(stepMeta.getName())) {
                 continue;
@@ -4835,7 +4852,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     PluginInterface stepPlugin = null;
 
     try {
-      stepPlugin = registry.findPluginWithName(StepPluginType.getInstance(), description);
+      stepPlugin = registry.findPluginWithName(StepPluginType.class, description);
       if (stepPlugin != null) {
         StepMetaInterface info = (StepMetaInterface) registry.loadClass(stepPlugin);
 
@@ -5742,7 +5759,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         repositoryMeta = repsinfo.findRepository(optionRepname.toString());
         if (repositoryMeta != null) {
           // Define and connect to the repository...
-          Repository repo = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+          Repository repo = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, Repository.class);
           repo.init(repositoryMeta);
 		  repo.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
           setRepository(repo);
@@ -6154,7 +6171,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     StepMeta before = (StepMeta) stepMeta.clone();
 
     PluginRegistry registry = PluginRegistry.getInstance();
-    List<PluginInterface> plugins = registry.getPlugins(PartitionerPluginType.getInstance());
+    List<PluginInterface> plugins = registry.getPlugins(PartitionerPluginType.class);
     
     String options[] = new String[StepPartitioningMeta.methodDescriptions.length + plugins.size()];
     String codes[] = new String[StepPartitioningMeta.methodDescriptions.length + plugins.size()];

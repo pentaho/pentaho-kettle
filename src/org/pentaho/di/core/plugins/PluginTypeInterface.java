@@ -1,6 +1,7 @@
 package org.pentaho.di.core.plugins;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This interface describes a plugin type.<br>
@@ -12,6 +13,14 @@ import java.util.List;
  *
  */
 public interface PluginTypeInterface {
+  
+  /**
+   * Register an additional class  type to be managed by the plugin system.
+   * @param clz category class, ususally an interface
+   * @param xmlNodeName xml node to search for a class name
+   */
+  public void addObjectType(Class clz, String xmlNodeName);
+  
 	/**
 	 * @return The ID of this plugin type
 	 */
@@ -33,8 +42,4 @@ public interface PluginTypeInterface {
 	 */
 	public void searchPlugins() throws KettlePluginException;
 	
-	/**
-	 * @return The natural order in which the categories appear in the UI
-	 */
-	public String[] getNaturalCategoriesOrder();
 }

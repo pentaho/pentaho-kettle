@@ -145,7 +145,7 @@ public class BaseStepDialog extends Dialog {
 
   public void setShellImage(Shell shell, StepMetaInterface stepMetaInterface) {
     try {
-      String id = PluginRegistry.getInstance().getPluginId(StepPluginType.getInstance(), stepMetaInterface);
+      String id = PluginRegistry.getInstance().getPluginId(StepPluginType.class, stepMetaInterface);
       if (id != null) {
         shell.setImage(GUIResource.getInstance().getImagesSteps().get(id));
       }

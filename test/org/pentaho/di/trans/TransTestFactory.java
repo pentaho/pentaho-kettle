@@ -49,14 +49,14 @@ public class TransTestFactory
         // First the injector step...
         //
         InjectorMeta zeroMeta = new InjectorMeta();
-        StepMeta zero = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), zeroMeta), INJECTOR_STEPNAME, zeroMeta);
+        StepMeta zero = new StepMeta(registry.getPluginId(StepPluginType.class, zeroMeta), INJECTOR_STEPNAME, zeroMeta);
         zero.setLocation(50,50);
         zero.setDraw(true);
         previewMeta.addStep(zero);
         
         // Then the middle step to test...
         //
-        StepMeta one = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), oneMeta), oneStepname, oneMeta);
+        StepMeta one = new StepMeta(registry.getPluginId(StepPluginType.class, oneMeta), oneStepname, oneMeta);
         one.setLocation(150,50);
         one.setDraw(true);
         previewMeta.addStep(one);
@@ -64,7 +64,7 @@ public class TransTestFactory
         // Then we add the dummy step to read the results from
         //
         DummyTransMeta twoMeta = new DummyTransMeta();
-        StepMeta two = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), twoMeta), DUMMY_STEPNAME, twoMeta); //$NON-NLS-1$
+        StepMeta two = new StepMeta(registry.getPluginId(StepPluginType.class, twoMeta), DUMMY_STEPNAME, twoMeta); //$NON-NLS-1$
         two.setLocation(250,50);
         two.setDraw(true);
         previewMeta.addStep(two);

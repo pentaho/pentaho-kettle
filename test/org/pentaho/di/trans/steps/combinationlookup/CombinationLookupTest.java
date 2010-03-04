@@ -243,7 +243,7 @@ public class CombinationLookupTest extends TestCase
             selectSQL+="FROM " + source_table + " ORDER BY ORDNO;";
             tii.setSQL(selectSQL);
 
-            String fromstepid = registry.getPluginId(StepPluginType.getInstance(), tii);
+            String fromstepid = registry.getPluginId(StepPluginType.class, tii);
             StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
             fromstep.setLocation(150, 100);
             fromstep.setDraw(true);
@@ -263,7 +263,7 @@ public class CombinationLookupTest extends TestCase
             clm.setTechKeyCreation(CombinationLookupMeta.CREATION_METHOD_TABLEMAX);
             clm.setDatabaseMeta(lookupDBInfo);
 
-            String lookupstepid = registry.getPluginId(StepPluginType.getInstance(), clm);
+            String lookupstepid = registry.getPluginId(StepPluginType.class, clm);
             StepMeta lookupstep = new StepMeta(lookupstepid, lookupstepname, (StepMetaInterface) clm);
             lookupstep.setDescription("Looks up information from table [lookup] on database [" + lookupDBInfo + "]");
             transMeta.addStep(lookupstep);                              

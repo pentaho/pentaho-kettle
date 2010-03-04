@@ -1970,7 +1970,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 			
 			// We should only do an update if something has changed...
 			//
-			List<PluginInterface> plugins = pluginRegistry.getPlugins(StepPluginType.getInstance());
+			List<PluginInterface> plugins = pluginRegistry.getPlugins(StepPluginType.class);
 			for (int i = 0; i < plugins.size(); i++)
 			{
 				PluginInterface sp = plugins.get(i);
@@ -2015,7 +2015,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 				
 	        // We should only do an update if something has changed...
 	        PluginRegistry registry = PluginRegistry.getInstance();
-	        List<PluginInterface> jobPlugins = registry.getPlugins(JobEntryPluginType.getInstance());
+	        List<PluginInterface> jobPlugins = registry.getPlugins(JobEntryPluginType.class);
 	        
 	        for (int i = 0; i < jobPlugins.size(); i++)
 	        {

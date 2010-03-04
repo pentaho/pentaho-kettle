@@ -18,7 +18,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.KettleURLClassLoader;
 import org.pentaho.di.trans.step.StepInterface;
 import org.w3c.dom.Document;
@@ -30,28 +29,28 @@ import org.w3c.dom.Node;
  * @author matt
  *
  */
+@PluginTypeCategoriesOrder(getNaturalCategoriesOrder={"BaseStep.Category.Input",
+    "BaseStep.Category.Output"
+   ,"BaseStep.Category.Transform"
+   ,"BaseStep.Category.Utility"
+   ,"BaseStep.Category.Flow"
+   ,"BaseStep.Category.Scripting"
+   ,"BaseStep.Category.Lookup"
+   ,"BaseStep.Category.Joins"
+   ,"BaseStep.Category.DataWarehouse"
+   ,"BaseStep.Category.Validation"
+   ,"BaseStep.Category.Statistics"
+   ,"BaseStep.Category.Job"
+   ,"BaseStep.Category.Mapping"
+   ,"BaseStep.Category.Inline"
+   ,"BaseStep.Category.Experimental"
+   ,"BaseStep.Category.Deprecated"
+   ,"BaseStep.Category.Bulk"},
+   i18nPackageClass = StepInterface.class)
+@PluginMainClassType(StepInterface.class)
 public class StepPluginType extends BasePluginType implements PluginTypeInterface {
 	private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String[] CATEGORIES_IN_ORDER = new String[] {
-		BaseMessages.getString(PKG, "BaseStep.Category.Input"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Output"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Transform"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Utility"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Flow"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Scripting"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Lookup"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Joins"),
-		BaseMessages.getString(PKG, "BaseStep.Category.DataWarehouse"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Validation"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Statistics"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Job"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Mapping"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Inline"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Experimental"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Deprecated"),
-		BaseMessages.getString(PKG, "BaseStep.Category.Bulk"),
-		};
 	
 	private static StepPluginType stepPluginType;
 	
@@ -106,7 +105,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 			Node stepsNode = XMLHandler.getSubNode(document, "steps");
 			List<Node> stepNodes = XMLHandler.getNodes(stepsNode, "step");
 			for (Node stepNode : stepNodes) {
-				registerPluginFromXmlResource(stepNode, null, this);
+				registerPluginFromXmlResource(stepNode, null, this.getClass());
 			}
 			
 		} catch (KettleXMLException e) {
@@ -156,11 +155,24 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 		
 		// Register this step plugin...
 		//
-		Map<PluginClassType, String> classMap = new HashMap<PluginClassType, String>();
-		classMap.put(PluginClassType.MainClassType, clazz.getName());
 		
-		PluginInterface stepPlugin = new Plugin(ids, this, category, name, description, step.image(), step.isSeparateClassLoaderNeeded(), nativeStep, classMap, libraries, null);
-		registry.registerPlugin(this, stepPlugin);
+
+    Map<Class, String> classMap = new HashMap<Class, String>();
+    classMap.put(StepInterface.class, clazz.getName());
+    
+    // Handle addition Plugin classes to be managed by the registry.
+    PluginClassTypes classTypesAnnotation = clazz.getAnnotation(PluginClassTypes.class);
+    if(classTypesAnnotation != null){
+      for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
+        Class classType = classTypesAnnotation.classTypes()[i];
+        Class implementationType = (classTypesAnnotation.implementationClass().length > i) ? classTypesAnnotation.implementationClass()[i] : null;
+        String className = implementationType.getName();
+        classMap.put(classType, className);
+      }
+    }
+		
+		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), StepInterface.class, category, name, description, step.image(), step.isSeparateClassLoaderNeeded(), nativeStep, classMap, libraries, null);
+		registry.registerPlugin(this.getClass(), stepPlugin);
 	}
 
 	/**
@@ -197,7 +209,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "plugin");
 						if (pluginNode!=null) {
-							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this);
+							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass());
 						}
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...
@@ -209,7 +221,4 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 		}
 	}
 	
-	public String[] getNaturalCategoriesOrder() {
-		return CATEGORIES_IN_ORDER;
-	}
 }

@@ -202,7 +202,7 @@ public class AppendTest extends TestCase
         InjectorMeta im1 = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid1 = registry.getPluginId(StepPluginType.getInstance(), im1);
+        String injectorPid1 = registry.getPluginId(StepPluginType.class, im1);
         StepMeta injectorStep1 = new StepMeta(injectorPid1, injectorStepname1, (StepMetaInterface)im1);
         transMeta.addStep(injectorStep1);
 
@@ -213,7 +213,7 @@ public class AppendTest extends TestCase
         InjectorMeta im2 = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid2 = registry.getPluginId(StepPluginType.getInstance(), im2);
+        String injectorPid2 = registry.getPluginId(StepPluginType.class, im2);
         StepMeta injectorStep2 = new StepMeta(injectorPid2, injectorStepname2, (StepMetaInterface)im2);
         transMeta.addStep(injectorStep2);
                 
@@ -229,7 +229,7 @@ public class AppendTest extends TestCase
         //am.setHeadStepName("injector step 1");        
         //am.setTailStepName("injector step 2");        
 
-        String appendPid = registry.getPluginId(StepPluginType.getInstance(), am);
+        String appendPid = registry.getPluginId(StepPluginType.class, am);
         StepMeta append = new StepMeta(appendPid, appendName, (StepMetaInterface)am);
         transMeta.addStep(append);            
 
@@ -246,7 +246,7 @@ public class AppendTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
         transMeta.addStep(dummyStep1);                              
 

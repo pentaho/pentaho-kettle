@@ -70,7 +70,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.plugins.PluginClassType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
@@ -2985,8 +2984,8 @@ public class RepositoryExplorerDialog extends Dialog
 		};
 		
 		PluginRegistry registry = PluginRegistry.getInstance();
-		PluginInterface plugin = registry.getPlugin(RepositoryPluginType.getInstance(), repository.getRepositoryMeta().getId());
-		Class<?> dialogClass = registry.getClass(plugin, PluginClassType.RepositoryVersionBrowserClassType);
+		PluginInterface plugin = registry.getPlugin(RepositoryPluginType.class, repository.getRepositoryMeta().getId());
+		Class<? extends RepositoryRevisionBrowserDialogInterface> dialogClass = registry.getClass(plugin, RepositoryRevisionBrowserDialogInterface.class);
 		Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, Repository.class, RepositoryElementLocationInterface.class);
 		return (RepositoryRevisionBrowserDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repository, element, });
 	}

@@ -203,11 +203,11 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         }
         
         PluginRegistry registry = PluginRegistry.getInstance();
-        PluginInterface plugin = registry.findPluginWithName(PartitionerPluginType.getInstance(), name);
+        PluginInterface plugin = registry.findPluginWithName(PartitionerPluginType.class, name);
         if( plugin != null ) {
         	return name;
         }
-        plugin = registry.findPluginWithId(PartitionerPluginType.getInstance(), name);
+        plugin = registry.findPluginWithId(PartitionerPluginType.class, name);
         if( plugin != null ) {
         	return name;
         }
@@ -230,7 +230,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
             if (methodCodes[i].equalsIgnoreCase(description)) return i;
         }
         
-        PluginInterface plugin = PluginRegistry.getInstance().findPluginWithId(PartitionerPluginType.getInstance(), description );
+        PluginInterface plugin = PluginRegistry.getInstance().findPluginWithId(PartitionerPluginType.class, description );
         if(  plugin != null ) {
         	return PARTITIONING_METHOD_SPECIAL;
         }
@@ -297,7 +297,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         switch ( methodType ) {
         case PARTITIONING_METHOD_SPECIAL: {
         	PluginRegistry registry = PluginRegistry.getInstance();
-        	PluginInterface plugin = registry.findPluginWithId(PartitionerPluginType.getInstance(), method);
+        	PluginInterface plugin = registry.findPluginWithId(PartitionerPluginType.class, method);
         	partitioner = (Partitioner) registry.loadClass(plugin);
         	partitioner.setId(plugin.getIds()[0]);
         	break;

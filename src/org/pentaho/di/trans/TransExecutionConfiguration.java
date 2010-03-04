@@ -29,7 +29,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.plugins.PluginClassType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -647,7 +646,7 @@ public class TransExecutionConfiguration implements Cloneable
         	{
         		throw new KettleException("I couldn't find the repository with name '"+repositoryName+"'");
         	}
-      		Repository rep = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+      		Repository rep = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, Repository.class);
       		rep.init(repositoryMeta);
 			
   	    	try {

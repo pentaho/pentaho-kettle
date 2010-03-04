@@ -21,7 +21,12 @@ public interface PluginInterface {
 	/**
 	 * @return The type of plugin
 	 */
-	public PluginTypeInterface getPluginType();
+	public Class<? extends PluginTypeInterface> getPluginType();
+	
+	/**
+	 * @return The main class assigned to this Plugin. 
+	 */
+	public Class getMainType();
 	
 	/**
 	 * @return The libraries (jar file names) that are used by this plugin
@@ -61,7 +66,7 @@ public interface PluginInterface {
 	/**
 	 * @return All the possible class names that can be loaded with this plugin, split up by type.
 	 */
-	public Map<PluginClassType, String> getClassMap();
+	public Map<Class, String> getClassMap();
 
 	/**
 	 * @param id the plugin id to match

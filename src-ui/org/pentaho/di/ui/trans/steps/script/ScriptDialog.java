@@ -1059,14 +1059,14 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 				    	genMeta.getValue()[i] = string;
 				    }
 				}
-			    StepMeta genStep = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), genMeta), "## TEST DATA ##", genMeta);
+			    StepMeta genStep = new StepMeta(registry.getPluginId(StepPluginType.class, genMeta), "## TEST DATA ##", genMeta);
 			    genStep.setLocation(50, 50);
 			    			    
 			    // Now create a JavaScript step with the information in this dialog
 			    //
 			    ScriptMeta scriptMeta = new ScriptMeta();
 			    getInfo(scriptMeta);
-			    StepMeta scriptStep = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), scriptMeta), Const.NVL(scriptStepName, "## SCRIPT ##"), scriptMeta);
+			    StepMeta scriptStep = new StepMeta(registry.getPluginId(StepPluginType.class, scriptMeta), Const.NVL(scriptStepName, "## SCRIPT ##"), scriptMeta);
 			    scriptStepName = scriptStep.getName();
 			    scriptStep.setLocation(150, 50);
 			    

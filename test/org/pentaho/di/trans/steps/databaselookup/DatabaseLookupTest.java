@@ -359,7 +359,7 @@ public class DatabaseLookupTest
             
             // Set the information of the injector.
                     
-            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+            String injectorPid = registry.getPluginId(StepPluginType.class, im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -385,7 +385,7 @@ public class DatabaseLookupTest
             dbl.setReturnValueDefault(new String[] {"-1", "UNDEF"});
             dbl.setReturnValueNewName(new String[] {"RET_CODE", "RET_STRING"});
             
-            String lookupId = registry.getPluginId(StepPluginType.getInstance(), dbl);
+            String lookupId = registry.getPluginId(StepPluginType.class, dbl);
             StepMeta lookupStep = new StepMeta(lookupId, lookupName, (StepMetaInterface) dbl);
             lookupStep.setDescription("Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]");
             transMeta.addStep(lookupStep);
@@ -457,7 +457,7 @@ public class DatabaseLookupTest
             
             // Set the information of the injector.
                     
-            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+            String injectorPid = registry.getPluginId(StepPluginType.class, im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -484,7 +484,7 @@ public class DatabaseLookupTest
             dbl.setReturnValueDefault(new String[] {"-1", "UNDEF"});
             dbl.setReturnValueNewName(new String[] {"RET_CODE", "RET_STRING"});
             
-            String lookupId = registry.getPluginId(StepPluginType.getInstance(), dbl);
+            String lookupId = registry.getPluginId(StepPluginType.class, dbl);
             StepMeta lookupStep = new StepMeta(lookupId, lookupName, (StepMetaInterface) dbl);
             lookupStep.setDescription("Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]");
             transMeta.addStep(lookupStep);
@@ -557,7 +557,7 @@ public class DatabaseLookupTest
             
             // Set the information of the injector.
                     
-            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+            String injectorPid = registry.getPluginId(StepPluginType.class, im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -584,7 +584,7 @@ public class DatabaseLookupTest
             dbl.setReturnValueDefault(new String[] {"-1", "UNDEF"});
             dbl.setReturnValueNewName(new String[] {"RET_CODE", "RET_STRING"});
             
-            String lookupId = registry.getPluginId(StepPluginType.getInstance(), dbl);
+            String lookupId = registry.getPluginId(StepPluginType.class, dbl);
             StepMeta lookupStep = new StepMeta(lookupId, lookupName, (StepMetaInterface) dbl);
             lookupStep.setDescription("Reads information from table [" + lookup_table + "] on database [" + dbInfo + "]");
             transMeta.addStep(lookupStep);

@@ -73,7 +73,7 @@ public class TransProfileFactory
         TableInputMeta readMeta = new TableInputMeta();
         readMeta.setSQL("SELECT * FROM "+schemaTable);
         readMeta.setDatabaseMeta(databaseMeta);
-        StepMeta read = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), readMeta), "Read data", readMeta);
+        StepMeta read = new StepMeta(registry.getPluginId(StepPluginType.class, readMeta), "Read data", readMeta);
         read.setLocation(50,50);
         read.setDraw(true);
         transMeta.addStep(read);
@@ -172,7 +172,7 @@ public class TransProfileFactory
 	        	}
         	}
         }
-        StepMeta calc = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), statsMeta), "Calc", statsMeta); //$NON-NLS-1$
+        StepMeta calc = new StepMeta(registry.getPluginId(StepPluginType.class, statsMeta), "Calc", statsMeta); //$NON-NLS-1$
         calc.setLocation(250,50);
         calc.setDraw(true);
         transMeta.addStep(calc);
@@ -181,7 +181,7 @@ public class TransProfileFactory
         transMeta.addTransHop(hop);
         
         DummyTransMeta dummyMeta = new DummyTransMeta();
-        StepMeta result = new StepMeta(registry.getPluginId(StepPluginType.getInstance(), dummyMeta), RESULT_STEP_NAME, dummyMeta); //$NON-NLS-1$
+        StepMeta result = new StepMeta(registry.getPluginId(StepPluginType.class, dummyMeta), RESULT_STEP_NAME, dummyMeta); //$NON-NLS-1$
         result.setLocation(450,50);
         result.setDraw(true);
         transMeta.addStep(result);

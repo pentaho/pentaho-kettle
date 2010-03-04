@@ -151,7 +151,7 @@ public class RowGeneratorTest extends TestCase
         RowGeneratorMeta rm = new RowGeneratorMeta();
         
         // Set the information of the row generator.                
-        String rowGeneratorPid = registry.getPluginId(StepPluginType.getInstance(), rm);
+        String rowGeneratorPid = registry.getPluginId(StepPluginType.class, rm);
         StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid, rowGeneratorStepname, (StepMetaInterface)rm);
         transMeta.addStep(rowGeneratorStep);
         
@@ -183,7 +183,7 @@ public class RowGeneratorTest extends TestCase
         String dummyStepname = "dummy step";            
         DummyTransMeta dm = new DummyTransMeta();
 
-        String dummyPid = registry.getPluginId(StepPluginType.getInstance(), dm);
+        String dummyPid = registry.getPluginId(StepPluginType.class, dm);
         StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
         transMeta.addStep(dummyStep);                              
 

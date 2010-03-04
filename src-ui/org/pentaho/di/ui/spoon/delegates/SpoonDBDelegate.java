@@ -308,7 +308,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 
       PluginRegistry registry = PluginRegistry.getInstance();
 
-      String fromstepid = registry.getPluginId(StepPluginType.getInstance(), tii);
+      String fromstepid = registry.getPluginId(StepPluginType.class, tii);
       StepMeta fromstep = new StepMeta(fromstepid, fromstepname, tii);
       fromstep.setLocation(150, 100);
       fromstep.setDraw(true);
@@ -349,7 +349,7 @@ public class SpoonDBDelegate extends SpoonDelegate
         String selstepname = BaseMessages.getString(PKG, "Spoon.Message.Note.HandleReservedWords"); // "Handle
         // reserved
         // words";
-        String selstepid = registry.getPluginId(StepPluginType.getInstance(), svi);
+        String selstepid = registry.getPluginId(StepPluginType.class, svi);
         StepMeta selstep = new StepMeta(selstepid, selstepname, svi);
         selstep.setLocation(350, 100);
         selstep.setDraw(true);
@@ -378,7 +378,7 @@ public class SpoonDBDelegate extends SpoonDelegate
       toi.setCommitSize(200);
       toi.setTruncateTable(true);
 
-      String tostepid = registry.getPluginId(StepPluginType.getInstance(), toi);
+      String tostepid = registry.getPluginId(StepPluginType.class, toi);
       StepMeta tostep = new StepMeta(tostepid, tostepname, toi);
       tostep.setLocation(550, 100);
       tostep.setDraw(true);

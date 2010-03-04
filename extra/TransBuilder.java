@@ -117,7 +117,7 @@ public class TransBuilder
 
             PluginRegistry registry = PluginRegistry.getInstance();
 
-            String fromstepid = registry.getPluginId(StepPluginType.getInstance(), tii);
+            String fromstepid = registry.getPluginId(StepPluginType.class, tii);
             StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
             fromstep.setLocation(150, 100);
             fromstep.setDraw(true);
@@ -137,7 +137,7 @@ public class TransBuilder
             }
 
             String selstepname = "Rename field names";
-            String selstepid = registry.getPluginId(StepPluginType.getInstance(), svi);
+            String selstepid = registry.getPluginId(StepPluginType.class, svi);
             StepMeta selstep = new StepMeta(selstepid, selstepname, (StepMetaInterface) svi);
             selstep.setLocation(350, 100);
             selstep.setDraw(true);
@@ -161,7 +161,7 @@ public class TransBuilder
             toi.setCommitSize(200);
             toi.setTruncateTable(true);
 
-            String tostepid = registry.getPluginId(StepPluginType.getInstance(), toi);
+            String tostepid = registry.getPluginId(StepPluginType.class, toi);
             StepMeta tostep = new StepMeta(tostepid, tostepname, (StepMetaInterface) toi);
             tostep.setLocation(550, 100);
             tostep.setDraw(true);

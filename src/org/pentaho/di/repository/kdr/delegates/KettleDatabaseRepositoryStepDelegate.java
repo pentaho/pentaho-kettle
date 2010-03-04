@@ -100,7 +100,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 				stepMeta.setDraw( r.getBoolean("GUI_DRAW", false) ); //$NON-NLS-1$
 				
 				// Generate the appropriate class...
-				PluginInterface sp = registry.findPluginWithId(StepPluginType.getInstance(), stepMeta.getStepID());
+				PluginInterface sp = registry.findPluginWithId(StepPluginType.class, stepMeta.getStepID());
                 if (sp!=null)
                 {
                 	stepMeta.setStepMetaInterface( (StepMetaInterface)registry.loadClass(sp) );

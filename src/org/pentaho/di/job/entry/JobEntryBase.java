@@ -121,7 +121,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   public String getTypeDesc()
   {
-	  PluginInterface plugin = PluginRegistry.getInstance().findPluginWithId(JobEntryPluginType.getInstance(), configId);
+	  PluginInterface plugin = PluginRegistry.getInstance().findPluginWithId(JobEntryPluginType.class, configId);
 	  return plugin.getDescription();
   }
 

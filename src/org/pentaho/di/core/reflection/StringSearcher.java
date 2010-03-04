@@ -45,11 +45,11 @@ public class StringSearcher
         
         if (stepPluginPackages==null) 
         {
-        	stepPluginPackages = registry.getPluginPackages(StepPluginType.getInstance());  
+        	stepPluginPackages = registry.getPluginPackages(StepPluginType.class);  
         }
         if (jobEntryPluginPackages==null) 
         {
-        	jobEntryPluginPackages = registry.getPluginPackages(JobEntryPluginType.getInstance());  
+        	jobEntryPluginPackages = registry.getPluginPackages(JobEntryPluginType.class);  
         }
         
         Class<? extends Object> baseClass = object.getClass();

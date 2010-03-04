@@ -325,7 +325,7 @@ public class TableInputTest extends TestCase
             
             // Set the information of the injector.
                     
-            String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+            String injectorPid = registry.getPluginId(StepPluginType.class, im);
             StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
             transMeta.addStep(injectorStep);            
             
@@ -342,7 +342,7 @@ public class TableInputTest extends TestCase
             selectSQL+="FROM " + source_table + " WHERE CODE = ? ORDER BY ID, CODE;";
             tii.setSQL(selectSQL);
 
-            String fromstepid = registry.getPluginId(StepPluginType.getInstance(), tii);
+            String fromstepid = registry.getPluginId(StepPluginType.class, tii);
             StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
             fromstep.setDescription("Reads information from table [" + source_table + "] on database [" + dbInfo + "]");
             transMeta.addStep(fromstep);

@@ -378,7 +378,7 @@ public class ValueMapperTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -388,7 +388,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
         transMeta.addStep(dummyStep1);                              
 
@@ -406,7 +406,7 @@ public class ValueMapperTest extends TestCase
         vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghij"});
         vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", ""});
 
-        String valueMapperPid = registry.getPluginId(StepPluginType.getInstance(), vm);
+        String valueMapperPid = registry.getPluginId(StepPluginType.class, vm);
         StepMeta valueMapperStep = new StepMeta(valueMapperPid, valueMapperName, (StepMetaInterface)vm);
         transMeta.addStep(valueMapperStep);                              
 
@@ -419,7 +419,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname2 = "dummy step 2";            
         DummyTransMeta dm2 = new DummyTransMeta();
 
-        String dummyPid2 = registry.getPluginId(StepPluginType.getInstance(), dm2);
+        String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
         StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
         transMeta.addStep(dummyStep2);                              
 
@@ -491,7 +491,7 @@ public class ValueMapperTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -501,7 +501,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
         transMeta.addStep(dummyStep1);                              
 
@@ -519,7 +519,7 @@ public class ValueMapperTest extends TestCase
         vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghij"});
         vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", ""});
 
-        String valueMapperPid = registry.getPluginId(StepPluginType.getInstance(), vm);
+        String valueMapperPid = registry.getPluginId(StepPluginType.class, vm);
         StepMeta valueMapperStep = new StepMeta(valueMapperPid, valueMapperName, (StepMetaInterface)vm);
         transMeta.addStep(valueMapperStep);                              
 
@@ -532,7 +532,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname2 = "dummy step 2";            
         DummyTransMeta dm2 = new DummyTransMeta();
 
-        String dummyPid2 = registry.getPluginId(StepPluginType.getInstance(), dm2);
+        String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
         StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
         transMeta.addStep(dummyStep2);                              
 
@@ -604,7 +604,7 @@ public class ValueMapperTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -614,7 +614,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
         transMeta.addStep(dummyStep1);                              
 
@@ -632,7 +632,7 @@ public class ValueMapperTest extends TestCase
         vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghij", null});
         vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", "", "emptyField"});
 
-        String valueMapperPid = registry.getPluginId(StepPluginType.getInstance(), vm);
+        String valueMapperPid = registry.getPluginId(StepPluginType.class, vm);
         StepMeta valueMapperStep = new StepMeta(valueMapperPid, valueMapperName, (StepMetaInterface)vm);
         transMeta.addStep(valueMapperStep);                              
 
@@ -645,7 +645,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname2 = "dummy step 2";            
         DummyTransMeta dm2 = new DummyTransMeta();
 
-        String dummyPid2 = registry.getPluginId(StepPluginType.getInstance(), dm2);
+        String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
         StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
         transMeta.addStep(dummyStep2);                              
 
@@ -718,7 +718,7 @@ public class ValueMapperTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -728,7 +728,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
         transMeta.addStep(dummyStep1);                              
 
@@ -747,7 +747,7 @@ public class ValueMapperTest extends TestCase
         vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghij"});
         vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", ""});
 
-        String valueMapperPid = registry.getPluginId(StepPluginType.getInstance(), vm);
+        String valueMapperPid = registry.getPluginId(StepPluginType.class, vm);
         StepMeta valueMapperStep = new StepMeta(valueMapperPid, valueMapperName, (StepMetaInterface)vm);
         transMeta.addStep(valueMapperStep);                              
 
@@ -760,7 +760,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname2 = "dummy step 2";            
         DummyTransMeta dm2 = new DummyTransMeta();
 
-        String dummyPid2 = registry.getPluginId(StepPluginType.getInstance(), dm2);
+        String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
         StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
         transMeta.addStep(dummyStep2);                              
 
@@ -833,7 +833,7 @@ public class ValueMapperTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -843,7 +843,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
         transMeta.addStep(dummyStep1);                              
 
@@ -862,7 +862,7 @@ public class ValueMapperTest extends TestCase
         vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghij"});
         vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", ""});
 
-        String valueMapperPid = registry.getPluginId(StepPluginType.getInstance(), vm);
+        String valueMapperPid = registry.getPluginId(StepPluginType.class, vm);
         StepMeta valueMapperStep = new StepMeta(valueMapperPid, valueMapperName, (StepMetaInterface)vm);
         transMeta.addStep(valueMapperStep);                              
 
@@ -875,7 +875,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname2 = "dummy step 2";            
         DummyTransMeta dm2 = new DummyTransMeta();
 
-        String dummyPid2 = registry.getPluginId(StepPluginType.getInstance(), dm2);
+        String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
         StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
         transMeta.addStep(dummyStep2);                              
 
@@ -948,7 +948,7 @@ public class ValueMapperTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -958,7 +958,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
         transMeta.addStep(dummyStep1);                              
 
@@ -977,7 +977,7 @@ public class ValueMapperTest extends TestCase
         vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghijk", null});
         vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", "blah", "emptyField"});
 
-        String valueMapperPid = registry.getPluginId(StepPluginType.getInstance(), vm);
+        String valueMapperPid = registry.getPluginId(StepPluginType.class, vm);
         StepMeta valueMapperStep = new StepMeta(valueMapperPid, valueMapperName, (StepMetaInterface)vm);
         transMeta.addStep(valueMapperStep);                              
 
@@ -990,7 +990,7 @@ public class ValueMapperTest extends TestCase
         String dummyStepname2 = "dummy step 2";            
         DummyTransMeta dm2 = new DummyTransMeta();
 
-        String dummyPid2 = registry.getPluginId(StepPluginType.getInstance(), dm2);
+        String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
         StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
         transMeta.addStep(dummyStep2);                              
 

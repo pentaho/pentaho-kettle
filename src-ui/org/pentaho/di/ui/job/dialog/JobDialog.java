@@ -1518,7 +1518,7 @@ public class JobDialog extends Dialog
     {
         try
         {
-            String id = PluginRegistry.getInstance().getPluginId(JobEntryPluginType.getInstance(), jobEntryInterface);
+            String id = PluginRegistry.getInstance().getPluginId(JobEntryPluginType.class, jobEntryInterface);
             if (id!=null)
             {
                 shell.setImage((Image) GUIResource.getInstance().getImagesJobentries().get(id));

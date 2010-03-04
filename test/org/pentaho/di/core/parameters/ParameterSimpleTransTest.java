@@ -272,7 +272,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.class, gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -307,7 +307,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         
@@ -362,7 +362,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.class, gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -397,7 +397,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         
@@ -452,7 +452,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.class, gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -487,7 +487,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         
@@ -542,7 +542,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.class, gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -577,7 +577,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         
@@ -635,7 +635,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.class, gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -670,7 +670,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         
@@ -728,7 +728,7 @@ public class ParameterSimpleTransTest extends TestCase
         GetVariableMeta gvm = new GetVariableMeta();
         
         // Set the information of the get variables step.           
-        String getVariablesPid = registry.getPluginId(StepPluginType.getInstance(), gvm);
+        String getVariablesPid = registry.getPluginId(StepPluginType.class, gvm);
         StepMeta getVariablesStep = new StepMeta(getVariablesPid, getVariablesStepname, gvm);
         transMeta.addStep(getVariablesStep);
         
@@ -763,7 +763,7 @@ public class ParameterSimpleTransTest extends TestCase
 		String dummyStepname1 = "dummy step 1";
 		DummyTransMeta dm1 = new DummyTransMeta();
 
-		String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+		String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
 		StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, dm1);
 		transMeta.addStep(dummyStep1);
         

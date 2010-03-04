@@ -31,7 +31,6 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
-import org.pentaho.di.core.plugins.PluginClassType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -211,7 +210,7 @@ public class Pan
 						// Define and connect to the repository...
 						if(log.isDebug()) log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.Allocate&ConnectRep"));
 						
-						rep = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+						rep = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, Repository.class);
 						rep.init(repositoryMeta);
 						
 						rep.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);

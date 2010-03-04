@@ -37,7 +37,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.plugins.PluginClassType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.StringUtil;
@@ -759,7 +758,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.NoRepSystem"));
 		}
 		
-		this.repository = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), this.repositoryMeta, PluginClassType.MainClassType);
+		this.repository = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, this.repositoryMeta, Repository.class);
 		this.repository.init(repositoryMeta);
 		
 		try {

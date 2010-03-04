@@ -1,5 +1,10 @@
 package org.pentaho.di.ui.spoon;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Map;
 
@@ -13,35 +18,26 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
  * @author nbaker
  *
  */
-public interface SpoonPlugin {
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface SpoonPlugin {
+
+  String id();
   
-  /**
-   * Map of XulOverlays that will be applied on Spoon startup. These overlays can modify the look 
-   * of the main UI as well as any Xul-based ares in Spoon.
-   * 
-   * @return Map of XulOverlays
-   */
-  public Map<String, List<XulOverlay>>  getOverlays();
+  String name() default "";
+
+  String description() default "";
+
+  String image();
+
+  String version() default "";
   
-  /**
-   * Map of XulEventHandlers to be registered at Spoon startup. These Event Handlers can support UI
-   * added via the Overlays or replace default registered Event Handlers
-   *  
-   * @return Map of XulEventHandlers
-   */
-  public Map<String, List<XulEventHandler>>  getEventHandlers();
+  int category() default -1;
   
-  /**
-   * Provides an optional SpoonLifecycleListener to be notified of Spoon startup and shutdown.
-   * 
-   * @return optional SpoonLifecycleListener
-   */
-  public SpoonLifecycleListener getLifecycleListener();
+  String categoryDescription() default "";
   
-  /**
-   * Provides an optional SpoonPerspective.
-   * 
-   * @return optional SpoonPerspective
-   */
-  public SpoonPerspective getPerspective();
+  String i18nPackageName() default "";
+  
 }

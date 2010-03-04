@@ -190,7 +190,7 @@ public class SwingGC implements GCInterface {
 	private Map<String, Image> loadStepImages() {
 		Map<String, Image> map = new HashMap<String, Image>();
 		
-		for (PluginInterface plugin: PluginRegistry.getInstance().getPlugins(StepPluginType.getInstance())) {
+		for (PluginInterface plugin: PluginRegistry.getInstance().getPlugins(StepPluginType.class)) {
 			Image image = new javax.swing.ImageIcon(plugin.getImageFile()).getImage();
 			for (String id : plugin.getIds()) {
 				map.put(id, image);
@@ -203,7 +203,7 @@ public class SwingGC implements GCInterface {
 	private Map<String, Image> loadEntryImages() {
 		Map<String, Image> map = new HashMap<String, Image>();
 		
-		for (PluginInterface plugin : PluginRegistry.getInstance().getPlugins(JobEntryPluginType.getInstance())) {
+		for (PluginInterface plugin : PluginRegistry.getInstance().getPlugins(JobEntryPluginType.class)) {
 			Image image = new javax.swing.ImageIcon(plugin.getImageFile()).getImage();
 			map.put(plugin.getIds()[0], image);
 		}

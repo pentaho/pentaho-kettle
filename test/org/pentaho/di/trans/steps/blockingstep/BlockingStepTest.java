@@ -169,7 +169,7 @@ public class BlockingStepTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -179,7 +179,7 @@ public class BlockingStepTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
         transMeta.addStep(dummyStep1);                              
 
@@ -192,7 +192,7 @@ public class BlockingStepTest extends TestCase
         String blockingStepname = "blocking step";            
         BlockingStepMeta bm = new BlockingStepMeta();
 
-        String blockingStepPid = registry.getPluginId(StepPluginType.getInstance(), bm);
+        String blockingStepPid = registry.getPluginId(StepPluginType.class, bm);
         StepMeta blockingStep = new StepMeta(blockingStepPid, blockingStepname, (StepMetaInterface)bm);
         transMeta.addStep(blockingStep);                              
 
@@ -205,7 +205,7 @@ public class BlockingStepTest extends TestCase
         String dummyStepname2 = "dummy step 2";            
         DummyTransMeta dm2 = new DummyTransMeta();
 
-        String dummyPid2 = registry.getPluginId(StepPluginType.getInstance(), dm2);
+        String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
         StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
         transMeta.addStep(dummyStep2);                              
 
@@ -284,7 +284,7 @@ public class BlockingStepTest extends TestCase
         InjectorMeta im = new InjectorMeta();
         
         // Set the information of the injector.                
-        String injectorPid = registry.getPluginId(StepPluginType.getInstance(), im);
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
@@ -294,7 +294,7 @@ public class BlockingStepTest extends TestCase
         String dummyStepname1 = "dummy step 1";            
         DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid1 = registry.getPluginId(StepPluginType.getInstance(), dm1);
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
         StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
         transMeta.addStep(dummyStep1);                              
 
@@ -308,7 +308,7 @@ public class BlockingStepTest extends TestCase
         BlockingStepMeta bm = new BlockingStepMeta();
         bm.setPassAllRows(true);
 
-        String blockingStepPid = registry.getPluginId(StepPluginType.getInstance(), bm);
+        String blockingStepPid = registry.getPluginId(StepPluginType.class, bm);
         StepMeta blockingStep = new StepMeta(blockingStepPid, blockingStepname, (StepMetaInterface)bm);
         transMeta.addStep(blockingStep);            
 
@@ -321,7 +321,7 @@ public class BlockingStepTest extends TestCase
         String dummyStepname2 = "dummy step 2";            
         DummyTransMeta dm2 = new DummyTransMeta();
 
-        String dummyPid2 = registry.getPluginId(StepPluginType.getInstance(), dm2);
+        String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
         StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
         transMeta.addStep(dummyStep2);                              
 

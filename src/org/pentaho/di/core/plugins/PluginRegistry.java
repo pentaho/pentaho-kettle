@@ -32,17 +32,17 @@ public class PluginRegistry {
 
 	private static PluginRegistry pluginRegistry;
 	
-	private Map<PluginTypeInterface, List<PluginInterface>> pluginMap;
-	private Map<PluginTypeInterface, Map<PluginInterface, URLClassLoader>> classLoaderMap;
-	private Map<PluginTypeInterface, List<String>> categoryMap;
+	private Map<Class<? extends PluginTypeInterface>, List<PluginInterface>> pluginMap;
+	private Map<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>> classLoaderMap;
+	private Map<Class<? extends PluginTypeInterface>, List<String>> categoryMap;
 	
 	/**
 	 * Initialize the registry, keep private to keep this a singleton 
 	 */
 	private PluginRegistry() {
-		pluginMap = new HashMap<PluginTypeInterface, List<PluginInterface>>();
-		classLoaderMap = new HashMap<PluginTypeInterface, Map<PluginInterface,URLClassLoader>>();
-		categoryMap = new HashMap<PluginTypeInterface, List<String>>();
+		pluginMap = new HashMap<Class<? extends PluginTypeInterface>, List<PluginInterface>>();
+		classLoaderMap = new HashMap<Class<? extends PluginTypeInterface>, Map<PluginInterface,URLClassLoader>>();
+		categoryMap = new HashMap<Class<? extends PluginTypeInterface>, List<String>>();
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class PluginRegistry {
 		return pluginRegistry;
 	}
 	
-	public void registerPluginType(PluginTypeInterface pluginType) {
+	public void registerPluginType(Class<? extends PluginTypeInterface> pluginType) {
 		pluginMap.put(pluginType, new ArrayList<PluginInterface>());
 		
 		// Keep track of the categories separately for performance reasons...
@@ -67,7 +67,7 @@ public class PluginRegistry {
 
 	}
 	
-	public void registerPlugin(PluginTypeInterface pluginType, PluginInterface plugin) throws KettlePluginException {
+	public void registerPlugin(Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin) throws KettlePluginException {
 		
 		if (plugin.getIds()[0]==null) {
 			throw new KettlePluginException("Not a valid id specified in plugin :"+plugin);
@@ -112,13 +112,25 @@ public class PluginRegistry {
 				//
 				// Sort the categories in the correct order.
 				//
-				final String[] naturalOrder = pluginType.getNaturalCategoriesOrder();
+				String[] naturalOrder = null;
+				
+
+				PluginTypeCategoriesOrder naturalOrderAnnotation = pluginType.getAnnotation(PluginTypeCategoriesOrder.class);
+				if(naturalOrderAnnotation != null){
+				  String[] naturalOrderKeys = naturalOrderAnnotation.getNaturalCategoriesOrder();
+				  Class i18nClass = naturalOrderAnnotation.i18nPackageClass();
+				  naturalOrder = new String[naturalOrderKeys.length];
+				  for(int i=0; i< naturalOrderKeys.length; i++){
+				    naturalOrder[i] = BaseMessages.getString(i18nClass, naturalOrderKeys[i]);
+				  }
+				}
 				if (naturalOrder!=null) {
+				  final String[] fNaturalOrder = naturalOrder;
 					Collections.sort(categories, new Comparator<String>() {
 						
 						public int compare(String one, String two) {
-							int idx1 = Const.indexOfString(one, naturalOrder);
-							int idx2 = Const.indexOfString(two, naturalOrder);
+							int idx1 = Const.indexOfString(one, fNaturalOrder);
+							int idx2 = Const.indexOfString(two, fNaturalOrder);
 							return idx1 - idx2;
 						}
 					});
@@ -130,16 +142,24 @@ public class PluginRegistry {
 	/**
 	 * @return An unmodifiable list of plugin types
 	 */
-	public List<PluginTypeInterface> getPluginTypes() {
-		return Collections.unmodifiableList(new ArrayList<PluginTypeInterface>(pluginMap.keySet()));
+	public List<Class<? extends PluginTypeInterface>> getPluginTypes() {
+		return Collections.unmodifiableList(new ArrayList<Class<? extends PluginTypeInterface>>(pluginMap.keySet()));
 	}	
 	
 	/**
 	 * @param type The plugin type to query
 	 * @return The list of plugins
 	 */
-	public List<PluginInterface> getPlugins(PluginTypeInterface type) {
-		return pluginMap.get(type);
+	public <T extends PluginInterface, K extends PluginTypeInterface> List<T> getPlugins(Class<K> type) {
+	  ArrayList<T> list = new ArrayList<T>();
+	  List<PluginInterface> mapList = pluginMap.get(type);
+	  if(mapList != null){
+  	  for(PluginInterface p : mapList){
+  	    list.add((T) p);
+  	  }
+	  }
+	  return list;
+//		return pluginMap.get(type);
 	}
 
 	/**
@@ -150,7 +170,7 @@ public class PluginRegistry {
 	 * 
 	 * @return the plugin or null if nothing was found.
 	 */
-	public PluginInterface getPlugin(PluginTypeInterface pluginType, String id) {
+	public PluginInterface getPlugin(Class<? extends PluginTypeInterface> pluginType, String id) {
 		List<PluginInterface> plugins = getPlugins(pluginType);
 		if (plugins==null) {
 			return null;
@@ -173,7 +193,7 @@ public class PluginRegistry {
 	 * 
 	 * @return An unmodifiable list of plugins that belong to the specified type and category.
 	 */
-	public List<PluginInterface> getPluginsByCategory(PluginTypeInterface pluginType, String pluginCategory) {
+	public <T extends PluginTypeInterface> List<PluginInterface> getPluginsByCategory(Class<T> pluginType, String pluginCategory) {
 		List<PluginInterface> plugins = new ArrayList<PluginInterface>();
 		
 		for (PluginInterface verify : getPlugins(pluginType)) {
@@ -183,7 +203,6 @@ public class PluginRegistry {
 		}
 		
 		// Also sort
-		
 		return Collections.unmodifiableList(plugins);
 	}
 
@@ -192,7 +211,7 @@ public class PluginRegistry {
 	 * @param pluginType The plugin type to search categories for.
 	 * @return The list of categories for this plugin type.  The list can be modified (sorted etc) but will not impact the registry in any way.
 	 */
-	public List<String> getCategories(PluginTypeInterface pluginType) {
+	public List<String> getCategories(Class<? extends PluginTypeInterface> pluginType) {
 		List<String> categories = categoryMap.get(pluginType);
 		return categories;
 	}
@@ -205,7 +224,7 @@ public class PluginRegistry {
 	 * @throws KettlePluginException In case there was a loading problem.
 	 */
 	public Object loadClass(PluginInterface plugin) throws KettlePluginException {
-		return loadClass(plugin, PluginClassType.MainClassType);
+	  return loadClass(plugin, plugin.getMainType());
 	}
 	
 	/**
@@ -217,7 +236,7 @@ public class PluginRegistry {
 	 * @return the instantiated class.
 	 * @throws KettlePluginException
 	 */
-	public Object loadClass(PluginTypeInterface pluginType, Object object, PluginClassType classType) throws KettlePluginException {
+	public <T> T loadClass(Class<? extends PluginTypeInterface> pluginType, Object object, Class<T> classType) throws KettlePluginException {
 		PluginInterface plugin = getPlugin(pluginType, object);
 		if (plugin==null) return null;
 		return loadClass(plugin, classType);
@@ -232,7 +251,7 @@ public class PluginRegistry {
 	 * @return the instantiated class.
 	 * @throws KettlePluginException
 	 */
-	public Object loadClass(PluginTypeInterface pluginType, String pluginId, PluginClassType classType) throws KettlePluginException {
+	public <T> T loadClass(Class<? extends PluginTypeInterface> pluginType, String pluginId, Class<T> classType) throws KettlePluginException {
 		PluginInterface plugin = getPlugin(pluginType, pluginId);
 		if (plugin==null) return null;
 		return loadClass(plugin, classType);
@@ -246,7 +265,7 @@ public class PluginRegistry {
 	 * 
 	 * @throws KettlePluginException In case there was a class loading problem somehow
 	 */
-	public Object loadClass(PluginInterface plugin, PluginClassType pluginClass) throws KettlePluginException {
+	public <T> T loadClass(PluginInterface plugin, Class<T> pluginClass) throws KettlePluginException {
         if (plugin == null)
         {
             throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001")); //$NON-NLS-1$
@@ -254,7 +273,7 @@ public class PluginRegistry {
 
     	String className = plugin.getClassMap().get(pluginClass);
     	if (className==null) {
-            throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getDescription())); //$NON-NLS-1$
+            throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName())); //$NON-NLS-1$
     	}
 
         try
@@ -312,7 +331,7 @@ public class PluginRegistry {
                 cl = ucl.loadClass(className);
             }
 
-            return cl.newInstance();
+            return (T) cl.newInstance();
         }
         catch (ClassNotFoundException e)
         {
@@ -354,7 +373,7 @@ public class PluginRegistry {
 		for (PluginTypeInterface pluginType : pluginTypes) {
 			// Register the plugin type 
 			//
-			registry.registerPluginType(pluginType);
+			registry.registerPluginType(pluginType.getClass());
 			
 			// Search plugins for this type...
 			//
@@ -368,7 +387,7 @@ public class PluginRegistry {
 	 * @return The ID of the plugin to which this class belongs (checks the plugin class maps)
 	 */
 	public String getPluginId(Object pluginClass) {
-		for (PluginTypeInterface pluginType : getPluginTypes()) {
+		for (Class<? extends PluginTypeInterface> pluginType : getPluginTypes()) {
 			String id = getPluginId(pluginType, pluginClass);
 			if (id!=null) {
 				return id;
@@ -384,7 +403,7 @@ public class PluginRegistry {
 	 * @param pluginClass The class to look for
 	 * @return The ID of the plugin to which this class belongs (checks the plugin class maps) or null if nothing was found.
 	 */
-	public String getPluginId(PluginTypeInterface pluginType, Object pluginClass) {
+	public String getPluginId(Class<? extends PluginTypeInterface> pluginType, Object pluginClass) {
 		String className = pluginClass.getClass().getName();
 		for (PluginInterface plugin : getPlugins(pluginType)) {
 			for (String check : plugin.getClassMap().values()) {
@@ -402,7 +421,7 @@ public class PluginRegistry {
 	 * @param pluginClass The class of this object is used to look around
 	 * @return the plugin or null if nothing could be found
 	 */
-	public PluginInterface getPlugin(PluginTypeInterface pluginType, Object pluginClass) {
+	public PluginInterface getPlugin(Class<? extends PluginTypeInterface> pluginType, Object pluginClass) {
 		String pluginId = getPluginId(pluginType, pluginClass);
 		if (pluginId==null) {
 			return null;
@@ -417,7 +436,7 @@ public class PluginRegistry {
 	 * @param pluginName The name to look for
 	 * @return The plugin with the specified name or null if nothing was found.
 	 */
-	public PluginInterface findPluginWithName(PluginTypeInterface pluginType, String pluginName) {
+	public PluginInterface findPluginWithName(Class<? extends PluginTypeInterface> pluginType, String pluginName) {
 		for (PluginInterface plugin : getPlugins(pluginType)) {
 
 			if (plugin.getName().equals(pluginName)) {
@@ -434,7 +453,7 @@ public class PluginRegistry {
 	 * @param pluginDescription The description to look for
 	 * @return The plugin with the specified description or null if nothing was found.
 	 */
-	public PluginInterface findPluginWithDescription(PluginTypeInterface pluginType, String pluginDescription) {
+	public PluginInterface findPluginWithDescription(Class<? extends PluginTypeInterface> pluginType, String pluginDescription) {
 		for (PluginInterface plugin : getPlugins(pluginType)) {
 
 			if (plugin.getDescription().equals(pluginDescription)) {
@@ -451,7 +470,7 @@ public class PluginRegistry {
 	 * @param pluginName The name to look for
 	 * @return The plugin with the specified name or null if nothing was found.
 	 */
-	public PluginInterface findPluginWithId(PluginTypeInterface pluginType, String pluginId) {
+	public PluginInterface findPluginWithId(Class<? extends PluginTypeInterface> pluginType, String pluginId) {
 		for (PluginInterface plugin : getPlugins(pluginType)) {
 			if (plugin.matches(pluginId)) {
 				return plugin;
@@ -463,7 +482,7 @@ public class PluginRegistry {
 	/**
 	 * @return a unique list of all the step plugin package names
 	 */
-	public List<String> getPluginPackages(PluginTypeInterface pluginType) 
+	public List<String> getPluginPackages(Class<? extends PluginTypeInterface> pluginType) 
 	{
 		List<String> list = new ArrayList<String>();
 		for (PluginInterface plugin : getPlugins(pluginType))
@@ -500,7 +519,7 @@ public class PluginRegistry {
 	 * @param the type of plugin to get information for
 	 * @return a row buffer containing plugin information for the given plugin type
 	 */
-	public RowBuffer getPluginInformation(PluginTypeInterface pluginType)
+	public RowBuffer getPluginInformation(Class<? extends PluginTypeInterface> pluginType)
 	{
 		RowBuffer rowBuffer = new RowBuffer(getPluginInformationRowMeta());
 		for (PluginInterface plugin : getPlugins(pluginType)) {
@@ -530,11 +549,12 @@ public class PluginRegistry {
 	 * @return the name of the class
 	 * @throws KettlePluginException In case there is something wrong
 	 */
-	public Class<?> getClass(PluginInterface plugin, String className) throws KettlePluginException {
+	public <T> T getClass(PluginInterface plugin, String className) throws KettlePluginException {
 		try {
+		  
 			if (plugin.isNativePlugin()) {
 
-				return Class.forName(className);
+				return (T) Class.forName(className);
 			} else {
 				Map<PluginInterface, URLClassLoader> map = classLoaderMap.get(plugin.getPluginType());
 				if (map==null) {
@@ -544,7 +564,7 @@ public class PluginRegistry {
 				if (classLoader==null) {
 					throw new KettlePluginException("Unable to find class loader for plugin: "+plugin);
 				}
-				return classLoader.loadClass(className);
+				return (T) classLoader.loadClass(className);
 			}
 		} catch (Exception e) {
 			throw new KettlePluginException("Unexpected error loading class with name: "+className, e);
@@ -559,8 +579,8 @@ public class PluginRegistry {
 	 * @return the name of the class
 	 * @throws KettlePluginException In case there is something wrong
 	 */
-	public Class<?> getClass(PluginInterface plugin, PluginClassType classType) throws KettlePluginException {
+	public <T> T getClass(PluginInterface plugin, T classType) throws KettlePluginException {
 		String className = plugin.getClassMap().get(classType);
-		return getClass(plugin, className);
+		return (T) getClass(plugin, className);
 	}
 }

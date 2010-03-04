@@ -108,7 +108,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 						String jet_code = rt.getString("CODE", null);
 
 						PluginRegistry registry = PluginRegistry.getInstance();;
-						PluginInterface jobPlugin = registry.findPluginWithId(JobEntryPluginType.getInstance(), jet_code);
+						PluginInterface jobPlugin = registry.findPluginWithId(JobEntryPluginType.class, jet_code);
 						if (jobPlugin != null)
 						{
 							JobEntryInterface jobEntry = (JobEntryInterface) registry.loadClass(jobPlugin);

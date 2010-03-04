@@ -26,7 +26,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRepositoryNotSupportedException;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.plugins.PluginClassType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -221,7 +220,7 @@ public class RepositoriesMeta
 		    		id=KettleDatabaseRepositoryMeta.REPOSITORY_TYPE_ID;
 				}
 				try {
-  				RepositoryMeta repositoryMeta = (RepositoryMeta)PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), id, PluginClassType.MetaClassType);
+  				RepositoryMeta repositoryMeta = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, id, RepositoryMeta.class);
   				repositoryMeta.loadXML(repnode, databases);
   
   				addRepository(repositoryMeta);

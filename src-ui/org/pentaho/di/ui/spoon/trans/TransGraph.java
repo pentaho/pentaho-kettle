@@ -591,8 +591,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               tii.setDatabaseMeta(transMeta.findDatabase(connectionName));
 
               PluginRegistry registry = PluginRegistry.getInstance();
-              String stepID = registry.getPluginId(StepPluginType.getInstance(), tii);
-              PluginInterface stepPlugin = registry.findPluginWithId(StepPluginType.getInstance(), stepID);
+              String stepID = registry.getPluginId(StepPluginType.class, tii);
+              PluginInterface stepPlugin = registry.findPluginWithId(StepPluginType.class, stepID);
               String stepName = transMeta.getAlternativeStepname(stepPlugin.getName());
               stepMeta = new StepMeta(stepID, stepName, tii);
               if (spoon.editStep(transMeta, stepMeta) != null) {

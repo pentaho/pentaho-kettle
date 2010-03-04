@@ -50,7 +50,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.plugins.PluginClassType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.StringUtil;
@@ -1176,7 +1175,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				return false;
 			}
 			
-			repos = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+			repos = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, Repository.class);
 			repos.init(repositoryMeta);
 			
 			try {
@@ -1293,7 +1292,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 				displayMsg(BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRep"),BaseMessages.getString(PKG, "JobExportRepository.Error.CanNotFindRepMsg",wRepositoryname.getText()),true);
 			}
 
-			repos = (Repository) PluginRegistry.getInstance().loadClass(RepositoryPluginType.getInstance(), repositoryMeta, PluginClassType.MainClassType);
+			repos = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, Repository.class);
 			repos.init(repositoryMeta);
 			
 			try{

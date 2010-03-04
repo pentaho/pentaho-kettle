@@ -30,6 +30,7 @@ import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -198,7 +199,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				case 2: // Job entries
 					if (spoon.showJob) {
 						PluginRegistry registry = PluginRegistry.getInstance();
-						JobEntryPluginType pluginType = JobEntryPluginType.getInstance();
+						Class<? extends PluginTypeInterface>pluginType = JobEntryPluginType.class;
 						PluginInterface plugin = registry.findPluginWithName(pluginType, path[1]);
 						
 						// Retry for Start
@@ -224,7 +225,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 					if (spoon.showTrans)
 					{
 						// Steps
-						object = new TreeSelection(path[1], PluginRegistry.getInstance().findPluginWithName(StepPluginType.getInstance(), path[1]));
+						object = new TreeSelection(path[1], PluginRegistry.getInstance().findPluginWithName(StepPluginType.class, path[1]));
 					}
 					break;
 				default:

@@ -124,7 +124,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	{
         if (stepMetaInterface!=null)
         {
-            this.stepid = PluginRegistry.getInstance().getPluginId(StepPluginType.getInstance(), stepMetaInterface);
+            this.stepid = PluginRegistry.getInstance().getPluginId(StepPluginType.class, stepMetaInterface);
         }
 		this.stepname          = stepname;
 		setStepMetaInterface( stepMetaInterface );
@@ -226,7 +226,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 			stepid   = XMLHandler.getTagValue(stepnode, "type"); //$NON-NLS-1$
 	
 			// Create a new StepMetaInterface object...
-			PluginInterface sp = registry.findPluginWithId(StepPluginType.getInstance(), stepid);
+			PluginInterface sp = registry.findPluginWithId(StepPluginType.class, stepid);
             if (sp!=null)
             {
                 setStepMetaInterface( (StepMetaInterface) registry.loadClass(sp) );

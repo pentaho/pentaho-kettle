@@ -166,7 +166,7 @@ public class ConstantTest extends TestCase
         RowGeneratorMeta rm = new RowGeneratorMeta();
         
         // Set the information of the row generator.                
-        String rowGeneratorPid = registry.getPluginId(StepPluginType.getInstance(), rm);
+        String rowGeneratorPid = registry.getPluginId(StepPluginType.class, rm);
         StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid, rowGeneratorStepname, (StepMetaInterface)rm);
         transMeta.addStep(rowGeneratorStep);
         
@@ -269,7 +269,7 @@ public class ConstantTest extends TestCase
         cnst1.setDecimal(decimal1);
         cnst1.setCurrency(currency);
 
-        String addSeqPid1 = registry.getPluginId(StepPluginType.getInstance(), cnst1);
+        String addSeqPid1 = registry.getPluginId(StepPluginType.class, cnst1);
         StepMeta addSeqStep1 = new StepMeta(addSeqPid1, constStepname1, (StepMetaInterface)cnst1);
         transMeta.addStep(addSeqStep1);                              
 
