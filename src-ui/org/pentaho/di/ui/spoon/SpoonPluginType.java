@@ -1,22 +1,5 @@
 package org.pentaho.di.ui.spoon;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.vfs.FileObject;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.BasePluginType;
-import org.pentaho.di.core.plugins.JarFileAnnotationPlugin;
-import org.pentaho.di.core.plugins.KettlePluginException;
-import org.pentaho.di.core.plugins.Plugin;
-import org.pentaho.di.core.plugins.PluginFolder;
-import org.pentaho.di.core.plugins.PluginFolderInterface;
-import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginTypeInterface;
-import org.pentaho.di.core.util.ResolverUtil;
-import org.pentaho.di.job.entry.JobEntryInterface;
 
 public class SpoonPluginType {//extends BasePluginType implements PluginTypeInterface {
 //
