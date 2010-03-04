@@ -346,19 +346,13 @@ public class SpoonDBDelegate extends SpoonDelegate
           }
         }
 
-        String selstepname = BaseMessages.getString(PKG, "Spoon.Message.Note.HandleReservedWords"); // "Handle
-        // reserved
-        // words";
-        String selstepid = registry.getPluginId(StepPluginType.class, svi);
-        StepMeta selstep = new StepMeta(selstepid, selstepname, svi);
-        selstep.setLocation(350, 100);
-        selstep.setDraw(true);
-        selstep.setDescription(BaseMessages.getString(PKG, "Spoon.Message.Note.RenamesReservedWords",
-            targetDBInfo.getDatabaseTypeDesc()));// "Renames
-        // reserved
-        // words for
-        // "+targetDBInfo.getDatabaseTypeDesc()
-        meta.addStep(selstep);
+		String selstepname = BaseMessages.getString(PKG, "Spoon.Message.Note.HandleReservedWords"); // "Handle reserved words";
+		String selstepid = registry.getPluginId(StepPluginType.class, svi);
+		StepMeta selstep = new StepMeta(selstepid, selstepname, svi);
+		selstep.setLocation(350, 100);
+		selstep.setDraw(true);
+		selstep.setDescription(BaseMessages.getString(PKG, "Spoon.Message.Note.RenamesReservedWords", targetDBInfo.getPluginId()));// 
+		meta.addStep(selstep);
 
         TransHopMeta shi = new TransHopMeta(fromstep, selstep);
         meta.addTransHop(shi);

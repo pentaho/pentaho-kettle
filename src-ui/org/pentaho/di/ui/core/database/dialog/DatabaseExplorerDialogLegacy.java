@@ -47,6 +47,8 @@ import org.pentaho.di.core.database.Catalog;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMetaInformation;
+import org.pentaho.di.core.database.MSSQLServerDatabaseMeta;
+import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.core.database.Schema;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogWriter;
@@ -770,8 +772,11 @@ public class DatabaseExplorerDialogLegacy extends Dialog
                 
                 // Only take non-SAP R/3 connections....
                 List<DatabaseMeta> dbs = new ArrayList<DatabaseMeta>();
-                for (int i=0;i<databases.size();i++) 
-                    if ((databases.get(i)).getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_SAPR3) dbs.add(databases.get(i));
+                for (int i=0;i<databases.size();i++) {
+                    if (!((databases.get(i)).getDatabaseInterface() instanceof SAPR3DatabaseMeta)) {
+                    	dbs.add(databases.get(i));
+                    }
+                }
                 
                 String conn[] = new String[dbs.size()];
     			for (int i=0;i<conn.length;i++) conn[i] = (dbs.get(i)).getName();
@@ -893,7 +898,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog
 				{
                     schemaName = null;
 					tableName = table;
- 					if (dbMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MSSQL) {
+ 					if (dbMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta) {
  						String st[] = tableName.split("\\.",2);
  						if (st.length>1) { // we have a dot in there and need to separate
  		                    schemaName = st[0];

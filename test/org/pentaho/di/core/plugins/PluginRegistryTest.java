@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
@@ -43,7 +44,7 @@ public class PluginRegistryTest extends TestCase
 				
 		// Register a single step plugin
 		//
-		Map<Class, String> classMap = new HashMap<Class, String>();
+		Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
 		classMap.put(TableInputMeta.class, "org.pentaho.di.trans.steps.tableinput.TableInputMeta");
 		PluginInterface tableInputPlugin = new Plugin(
 					new String[] { TABLE_INPUT_PLUGIN_ID, }, 
@@ -70,7 +71,7 @@ public class PluginRegistryTest extends TestCase
 		
 		// Register a second step plugin
 		//
-		classMap = new HashMap<Class, String>();
+		classMap = new HashMap<Class<?>, String>();
 		classMap.put(TableOutputMeta.class, "org.pentaho.di.trans.steps.tableoutput.TableOutputMeta");
 		PluginInterface tableOutputPlugin = new Plugin(
 					new String[] { TABLE_OUTPUT_PLUGIN_ID, }, 
@@ -140,6 +141,12 @@ public class PluginRegistryTest extends TestCase
 		
 		// Run an init() just to see it doesn't blow up
 		//
-		PluginRegistry.init();
+		PluginRegistry.init(new PluginTypeInterface[] {
+				StepPluginType.getInstance(), 			// Steps
+				PartitionerPluginType.getInstance(),    // Partitioners
+				JobEntryPluginType.getInstance(), 	    // Job entries
+				RepositoryPluginType.getInstance(), 	// Repository types
+				DatabasePluginType.getInstance(),       // Databases
+			});
 	}
 }

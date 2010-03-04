@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.InformixDatabaseMeta;
+import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
@@ -56,13 +58,13 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 	private FormData fdlDBName, fdDBName;
 
 	private PropsUI props;
-	private DatabaseMeta info;
+	private DatabaseMeta databaseMeta;
 	
 	public CreateDatabaseWizardPageJDBC(String arg, PropsUI props, DatabaseMeta info)
 	{
 		super(arg);
 		this.props=props;
-		this.info = info;
+		this.databaseMeta = info;
 		
 		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPageJDBC.DialogTitle")); //$NON-NLS-1$
 		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPageJDBC.DialogMessage")); //$NON-NLS-1$
@@ -119,7 +121,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		wlPort.setLayoutData(fdlPort);
 		wPort = new Text(composite, SWT.SINGLE | SWT.BORDER);
  		props.setLook(wPort);
-		wPort.setText(info.getDatabasePortNumberString());
+		wPort.setText(databaseMeta.getDatabasePortNumberString());
 		fdPort = new FormData();
 		fdPort.top    = new FormAttachment(wHostname, margin);
 		fdPort.left   = new FormAttachment(middle, margin);
@@ -163,11 +165,11 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 	
 	public void setData()
 	{
-		wHostname.setText(Const.NVL(info.getHostname(), "")); //$NON-NLS-1$
+		wHostname.setText(Const.NVL(databaseMeta.getHostname(), "")); //$NON-NLS-1$
 		
-		wPort.setText(info.getDatabasePortNumberString()); 
+		wPort.setText(databaseMeta.getDatabasePortNumberString()); 
 		
-		wDBName.setText(Const.NVL(info.getDatabaseName(), "")); //$NON-NLS-1$
+		wDBName.setText(Const.NVL(databaseMeta.getDatabaseName(), "")); //$NON-NLS-1$
 	}
 	
 	public boolean canFlipToNextPage()
@@ -194,20 +196,20 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 	{
 		if (wHostname.getText()!=null && wHostname.getText().length()>0) 
 		{
-			info.setHostname(wHostname.getText());
+			databaseMeta.setHostname(wHostname.getText());
 		}
 		
 		if (wPort.getText()!=null && wPort.getText().length()>0)
 		{
-			info.setDBPort(wPort.getText());
+			databaseMeta.setDBPort(wPort.getText());
 		}
 		
 		if (wDBName.getText()!=null && wDBName.getText().length()>0)
 		{
-			info.setDBName(wDBName.getText());
+			databaseMeta.setDBName(wDBName.getText());
 		}
 		
-		return info;
+		return databaseMeta;
 	}
 	
 	
@@ -220,9 +222,9 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		IWizard wiz = getWizard();
 		
 		IWizardPage nextPage;
-		if (info.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_ORACLE) {
+		if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta) {
 			nextPage = wiz.getPage("oracle"); // Oracle //$NON-NLS-1$
-		} else if (info.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_INFORMIX) {
+		} else if (databaseMeta.getDatabaseInterface() instanceof InformixDatabaseMeta) {
 			nextPage = wiz.getPage("ifx"); // Informix //$NON-NLS-1$
 		} else
 		{

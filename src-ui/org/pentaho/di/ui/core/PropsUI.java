@@ -168,6 +168,7 @@ public class PropsUI extends Props
         loadOpenTabFiles();
         
         //load the editables
+        //
         ResolverUtil<GUIOption<Object>> res = new ResolverUtil<GUIOption<Object>>();
         res.find(new ResolverUtil.IsA(GUIOption.class),"org.pentaho.di.core");
         List<GUIOption<Object>> leditables = new ArrayList<GUIOption<Object>>();

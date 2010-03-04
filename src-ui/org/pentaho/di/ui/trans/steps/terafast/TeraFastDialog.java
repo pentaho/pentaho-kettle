@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SourceToTargetMapping;
+import org.pentaho.di.core.database.TeradataDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -588,8 +589,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
         this.wbnConnection = new Button(this.shell, SWT.PUSH);
         this.wbeConnection = new Button(this.shell, SWT.PUSH);
         this.wlConnection = new Label(this.shell, SWT.RIGHT);
-        this.wConnection = addConnectionLine(this.shell, this.wLogFile, factory.getMiddle(), factory.getMargin(),
-                this.wlConnection, this.wbnConnection, this.wbeConnection, -1);
+        this.wConnection = addConnectionLine(this.shell, this.wLogFile, factory.getMiddle(), factory.getMargin(), this.wlConnection, this.wbnConnection, this.wbeConnection, TeradataDatabaseMeta.class);
         this.buildTableLine(factory);
         this.buildTruncateTableLine(factory);
         this.buildDataFileLine(factory);

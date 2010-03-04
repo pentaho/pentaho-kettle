@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -174,7 +175,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wConnection = addConnectionLine(shell, lastControl, middle, margin);
 		List<String> items = new ArrayList<String>();
 		for (DatabaseMeta dbMeta : transMeta.getDatabases()) {
-			if (dbMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SAPR3) {
+			if (dbMeta.getDatabaseInterface() instanceof SAPR3DatabaseMeta) {
 				items.add(dbMeta.getName());
 			}
 		}

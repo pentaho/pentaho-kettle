@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
@@ -57,14 +58,14 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 	private FormData fdlAccType, fdAccType;
 
 	private PropsUI props;
-	private DatabaseMeta info;
+	private DatabaseMeta databaseMeta;
 	private java.util.List<DatabaseMeta> databases;
 	
-	public CreateDatabaseWizardPage1(String arg, PropsUI props, DatabaseMeta info, java.util.List<DatabaseMeta> databases)
+	public CreateDatabaseWizardPage1(String arg, PropsUI props, DatabaseMeta databaseMeta, java.util.List<DatabaseMeta> databases)
 	{
 		super(arg);
 		this.props=props;
-		this.info = info;
+		this.databaseMeta = databaseMeta;
 		this.databases = databases;
 		
 		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPage1.DialogTitle")); //$NON-NLS-1$
@@ -127,13 +128,15 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		}
     
 		// Select a default: the first
-		if (info.getDatabaseType() <= 0) 
+		/*
+		if (databaseMeta.getDatabaseType() <= 0) 
 		{
 			wDBType.select(0);
 		}
 		else
 		{
-			int idx = wDBType.indexOf(info.getDatabaseTypeDesc());
+		*/
+			int idx = wDBType.indexOf(databaseMeta.getPluginId());
 			if (idx>=0)
 			{
 				wDBType.select(idx);
@@ -142,7 +145,9 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 			{
 				wDBType.select(0);
 			}
-		}
+			
+		// }
+			
 		fdDBType = new FormData();
 		fdDBType.top    = new FormAttachment(wName, margin);
 		fdDBType.left   = new FormAttachment(middle, margin);
@@ -241,25 +246,25 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 	{
 		if (wName.getText()!=null && wName.getText().length()>0) 
 		{
-			info.setName(wName.getText());
+			databaseMeta.setName(wName.getText());
 		}
 		
 		String dbTypeSel[] = wDBType.getSelection();
 		if (dbTypeSel!=null && dbTypeSel.length==1)
 		{
-			info.setDatabaseType(dbTypeSel[0]);
+			databaseMeta.setDatabaseType(dbTypeSel[0]);
 		}
 		
 		String accTypeSel[] = wAccType.getSelection();
 		if (accTypeSel!=null && accTypeSel.length==1)
 		{
-			info.setAccessType(DatabaseMeta.getAccessType(accTypeSel[0]));
+			databaseMeta.setAccessType(DatabaseMeta.getAccessType(accTypeSel[0]));
 		}
 		
 		// Also, set the default port in case of JDBC:
-		info.setDBPort(String.valueOf(info.getDefaultDatabasePort()));
+		databaseMeta.setDBPort(String.valueOf(databaseMeta.getDefaultDatabasePort()));
 		
-		return info;
+		return databaseMeta;
 	}
 	
 	/* (non-Javadoc)
@@ -270,7 +275,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		IWizard wiz = getWizard();
 		
 		IWizardPage nextPage;
-		switch(info.getAccessType())
+		switch(databaseMeta.getAccessType())
 		{
 		case DatabaseMeta.TYPE_ACCESS_OCI:
 			nextPage = wiz.getPage("oci"); // OCI //$NON-NLS-1$
@@ -279,10 +284,10 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 			nextPage = wiz.getPage("odbc");; // ODBC //$NON-NLS-1$
 			break;
 		case DatabaseMeta.TYPE_ACCESS_PLUGIN:
-			nextPage = wiz.getPage(info.getDatabaseTypeDesc());; // e.g. SAPR3
+			nextPage = wiz.getPage(databaseMeta.getPluginId());; // e.g. SAPR3
 			break;		
 		default: // Generic or Native
-			if(info.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_GENERIC)
+			if(databaseMeta.getDatabaseInterface() instanceof GenericDatabaseMeta)
 			{	// Generic
 				nextPage = wiz.getPage("generic");; // generic //$NON-NLS-1$
 			} else { // Native

@@ -46,7 +46,7 @@ public class UIDatabaseConnection extends XulEventSourceAdapter {
 
   public String getType() {
     if(dbMeta != null) {
-      return dbMeta.getDatabaseTypeDesc();
+      return dbMeta.getPluginId();
     }
     return null;
   }

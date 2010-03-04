@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -374,9 +375,11 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 				// Only take non-SAP R/3 connections....
 				List<DatabaseMeta> dbs = new ArrayList<DatabaseMeta>();
-				for (int i = 0; i < databases.size(); i++)
-					if ((databases.get(i)).getDatabaseType() != DatabaseMeta.TYPE_DATABASE_SAPR3)
+				for (int i = 0; i < databases.size(); i++) {
+					if (((databases.get(i)).getDatabaseInterface() instanceof SAPR3DatabaseMeta)) {
 						dbs.add(databases.get(i));
+					}
+				}
 
 				String conn[] = new String[dbs.size()];
 				for (int i = 0; i < conn.length; i++)

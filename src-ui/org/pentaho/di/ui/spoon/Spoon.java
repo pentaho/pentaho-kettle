@@ -108,6 +108,7 @@ import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.clipboard.ImageDataTransfer;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
@@ -2376,8 +2377,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         XulMenuitem item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById("database-inst-explore");
         if (item != null) {
           final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
-          if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SAPR3)
+          if (!(databaseMeta.getDatabaseInterface() instanceof SAPR3DatabaseMeta) ) {
             item.setDisabled(true);
+          }
         }
         item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById("database-inst-clear-cache");
         if (item != null) {

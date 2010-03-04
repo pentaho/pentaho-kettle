@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SourceToTargetMapping;
+import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -409,13 +410,13 @@ public class BaseStepDialog extends Dialog {
   }
 
   public void addDatabases(CCombo wConnection) {
-	  addDatabases(wConnection, -1);
+	  addDatabases(wConnection, null);
   }
 
-  public void addDatabases(CCombo wConnection, int databaseType) {
+  public void addDatabases(CCombo wConnection, Class<? extends DatabaseInterface> databaseType) {
     for (int i = 0; i < transMeta.nrDatabases(); i++) {
       DatabaseMeta ci = transMeta.getDatabase(i);
-      if (databaseType<0 || ci.getDatabaseType() == databaseType)
+      if (databaseType==null || ci.getDatabaseInterface().getClass().equals(databaseType))
       {
     	  wConnection.add(ci.getName());
       }
@@ -433,18 +434,18 @@ public class BaseStepDialog extends Dialog {
 	    return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), null, null);
 	  }
 
-  public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, int databaseType) {
+  public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, Class<? extends DatabaseInterface> databaseType) {
     return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent,
         SWT.PUSH), new Button(parent, SWT.PUSH), databaseType);
   }
 
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
 	      final Button wbnConnection, final Button wbeConnection) {
-	  return addConnectionLine(parent, previous, middle, margin, -1);
+	  return addConnectionLine(parent, previous, middle, margin, null);
   }
   
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-      final Button wbnConnection, final Button wbeConnection, final int databaseType) {
+      final Button wbnConnection, final Button wbeConnection, final Class<? extends DatabaseInterface> databaseType) {
     final CCombo wConnection;
     final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection;
 

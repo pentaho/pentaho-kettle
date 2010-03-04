@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
@@ -55,13 +56,13 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 	private FormData        fdTest;
 
 	private PropsUI			props;
-	private DatabaseMeta	info;
+	private DatabaseMeta	databaseMeta;
 
 	public CreateDatabaseWizardPage2(String arg, PropsUI props, DatabaseMeta info)
 	{
 		super(arg);
 		this.props = props;
-		this.info = info;
+		this.databaseMeta = info;
 
 		setTitle(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.DialogTitle")); //$NON-NLS-1$
 		setDescription(BaseMessages.getString(PKG, "CreateDatabaseWizardPage2.DialogMessage")); //$NON-NLS-1$
@@ -153,7 +154,7 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 	public void test()
 	{
 		Shell shell = getWizard().getContainer().getShell();
-		DatabaseDialog.test(shell, info);
+		DatabaseDialog.test(shell, databaseMeta);
 	}
 
 	public boolean canFlipToNextPage()
@@ -165,24 +166,24 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 	{
 		if (wUsername.getText() != null && wUsername.getText().length() > 0)
 		{
-			info.setUsername(wUsername.getText());
+			databaseMeta.setUsername(wUsername.getText());
 		}
 
 		if (wPassword.getText() != null && wPassword.getText().length() > 0)
 		{
-			info.setPassword(wPassword.getText());
+			databaseMeta.setPassword(wPassword.getText());
 		}
 
-		wTest.setEnabled( info.getDatabaseType() != DatabaseMeta.TYPE_DATABASE_SAPR3 );
+		wTest.setEnabled( !(databaseMeta.getDatabaseInterface() instanceof SAPR3DatabaseMeta) );
 		
-		return info;
+		return databaseMeta;
 	}
 
 	public boolean canFinish()
 	{
 		getDatabaseInfo();
 
-        String[] remarks = info.checkParameters(); 
+        String[] remarks = databaseMeta.checkParameters(); 
 		if (remarks.length == 0)
 		{
 			setErrorMessage(null);

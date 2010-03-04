@@ -1168,13 +1168,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     	boolean enableBatch       = !returnKeys && !transMeta.isUsingUniqueConnections();
     	
     	// If we are on PostgreSQL (and look-a-likes), error handling is not supported. (PDI-366)
-    	enableBatch = enableBatch && !(
-    				databaseMeta!=null && 
-    				( databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES || 
-    				  databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_GREENPLUM
-    				)
-    				&& hasErrorHandling
-    			 	);
+    	enableBatch = enableBatch && !( databaseMeta!=null && databaseMeta.supportsErrorHandlingOnBatchUpdates() && hasErrorHandling );
 
     	// Can't ignore errors when using batch inserts.
         boolean useIgnore          = !useBatch; 

@@ -60,22 +60,12 @@ public class JobEntryDialog extends Dialog {
         
     }
  
-    public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin) {
-	    return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), null, null);
-	  }
-
-  public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, int databaseType) {
-    return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent,
-        SWT.PUSH), new Button(parent, SWT.PUSH), databaseType);
-  }
-
-  public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-	      final Button wbnConnection, final Button wbeConnection) {
-	  return addConnectionLine(parent, previous, middle, margin, -1);
+  public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin) {
+    return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH));
   }
   
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-      final Button wbnConnection, final Button wbeConnection, final int databaseType) {
+      final Button wbnConnection, final Button wbeConnection) {
     final CCombo wConnection;
     final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection;
 
@@ -109,7 +99,7 @@ public class JobEntryDialog extends Dialog {
         if (cid.open() != null) {
         	jobMeta.addDatabase(databaseMeta);
           wConnection.removeAll();
-          addDatabases(wConnection, databaseType);
+          addDatabases(wConnection);
           selectDatabase(wConnection, databaseMeta.getName());
         }
         
@@ -166,16 +156,9 @@ public class JobEntryDialog extends Dialog {
   }
   
   public void addDatabases(CCombo wConnection) {
-	  addDatabases(wConnection, -1);
-  }
-
-  public void addDatabases(CCombo wConnection, int databaseType) {
     for (int i = 0; i < jobMeta.nrDatabases(); i++) {
       DatabaseMeta ci = jobMeta.getDatabase(i);
-      if (databaseType<0 || ci.getDatabaseType() == databaseType)
-      {
-    	  wConnection.add(ci.getName());
-      }
+	  wConnection.add(ci.getName());
     }
   }
 
