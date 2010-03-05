@@ -381,10 +381,10 @@ public class PluginRegistry {
 			annotationDB = new AnnotationDB();
 			URLClassLoader urlClassLoader = ((URLClassLoader)pluginTypes.getClass().getClassLoader());
 			URL[] urls = urlClassLoader.getURLs();
-			LogChannel.GENERAL.logBasic("Found "+urls.length+" objects in the classpath.");
+			LogChannel.GENERAL.logDetailed("Found "+urls.length+" objects in the classpath.");
 			long startScan = System.currentTimeMillis();
 			annotationDB.scanArchives(urls);
-			LogChannel.GENERAL.logBasic("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
+			LogChannel.GENERAL.logDetailed("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
 			
 			classPathFinder = new ClassPathFinder(urlClassLoader);
 		} catch(IOException e) {

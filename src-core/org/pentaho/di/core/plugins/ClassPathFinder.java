@@ -31,7 +31,7 @@ public class ClassPathFinder {
 			try {
 				classPool.appendClassPath( url.getFile() );
 			} catch(NotFoundException e) {
-				LogChannel.GENERAL.logBasic("File not found during append of class pool : "+url.getFile());
+				LogChannel.GENERAL.logError("File not found during append of class pool : "+url.getFile());
 			}
 		}
 		
@@ -63,7 +63,7 @@ public class ClassPathFinder {
 				}
 			}
 		}
-		LogChannel.GENERAL.logBasic("Finished scan for "+interf.getClass()+" in "+(System.currentTimeMillis()-startTime)+"ms.");
+		LogChannel.GENERAL.logDetailed("Finished scan for "+interf.getCanonicalName()+" in "+(System.currentTimeMillis()-startTime)+"ms.");
 
 		return classes;
 	}
