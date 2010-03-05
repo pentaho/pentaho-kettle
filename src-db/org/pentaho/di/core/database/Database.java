@@ -2328,7 +2328,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	 */
 	private RowMetaInterface getRowInfo(ResultSetMetaData rm, boolean ignoreLength, boolean lazyConversion) throws KettleDatabaseException
 	{
-        if (rm==null) return null;
+        if (rm==null) {
+        	throw new KettleDatabaseException("No result set metadata available to retrieve row metadata!");
+        }
 		
 		rowMeta = new RowMeta();
 		
