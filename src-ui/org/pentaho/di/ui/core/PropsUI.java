@@ -19,11 +19,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Set;
-
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.NotFoundException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -45,11 +40,11 @@ import org.pentaho.di.core.gui.GUIOption;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.plugins.ClassPathFinder;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.scannotation.AnnotationDB;
 
 
 /**
@@ -174,56 +169,19 @@ public class PropsUI extends Props
         loadLastUsedFiles();
         loadOpenTabFiles();
 
+        ClassPathFinder classPathFinder = PluginRegistry.getClassPathFinder();
+        List<Class<? extends GUIOption>> classList = classPathFinder.findClassesImplementingInterface(GUIOption.class, "org.pentaho.di.core");
         List<GUIOption<Object>> leditables = new ArrayList<GUIOption<Object>>();
-
-        //load the editables
-        //
-        long startTime = System.currentTimeMillis();
-        AnnotationDB db = PluginRegistry.getAnnotationDB();
-        Set<String> classIndex = db.getClassIndex().keySet();
-		ClassPool classPool = ClassPool.getDefault();
-		for (String key : classIndex) {
-			if (key.startsWith("org.pentaho.di.core")) {
-				try {
-					CtClass ctClass = classPool.get(key);
-		
-					CtClass[] interfaces = ctClass.getInterfaces();
-					for (CtClass interf : interfaces) {
-						if (interf.getName().equals(GUIOption.class.getName())) {
-							try {
-								Class<GUIOption<Object>> clazz = (Class<GUIOption<Object>>) Class.forName(ctClass.getName());
-								leditables.add( clazz.newInstance() );
-							} catch(Exception e) {
-								LogChannel.GENERAL.logDetailed("Unable to reach class "+ctClass.getName()+": "+e.getMessage());
-							}
-						}
-					}
-				} catch(NotFoundException e) {
-					// System.out.println("        - interfaces not found for class: "+ctClass.getName());
-				}
+        for (Class<? extends GUIOption> clazz : classList) {
+        	try {
+        		leditables.add( clazz.newInstance() );
+        	} catch(IllegalAccessException e) {
+        		LogChannel.GENERAL.logError("Illegal access to class "+clazz.getName()+", ignored.");
+        	} catch (InstantiationException e) {
+        		LogChannel.GENERAL.logError("Could not instatiate class class "+clazz.getName()+", ignored.");
 			}
-		}
-		LogChannel.GENERAL.logBasic("Finished GUIOption scan in "+(System.currentTimeMillis()-startTime)+"ms.");
-
-		/*
-        ResolverUtil<GUIOption<Object>> res = new ResolverUtil<GUIOption<Object>>();
-        res.find(new ResolverUtil.IsA(GUIOption.class),"org.pentaho.di.core");
-        for (Class<? extends GUIOption<Object>>c:res.getClasses())
-        {
-        	try
-        	{
-        		if (c.isInterface())
-        			continue;
-        		
-        		leditables.add(c.newInstance());
-        	}
-        	catch(Exception e)
-        	{
-        		e.printStackTrace(); //TODO: either handle it or ignore it stack trace is good for now
-        	}
         }
-        */
-		
+
         editables = Collections.unmodifiableList(leditables);
 
 	}

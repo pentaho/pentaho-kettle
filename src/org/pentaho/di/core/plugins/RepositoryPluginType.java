@@ -86,7 +86,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 			Node repsNode = XMLHandler.getSubNode(document, "repositories");
 			List<Node> repsNodes = XMLHandler.getNodes(repsNode, "repository");
 			for (Node repNode : repsNodes) {
-				registerPluginFromXmlResource(repNode, null, this.getClass());
+				registerPluginFromXmlResource(repNode, null, this.getClass(), true);
 			}			
 		} catch (KettleXMLException e) {
 			throw new KettlePluginException("Unable to read the kettle repositories XML config file: "+xmlFile, e);
@@ -183,7 +183,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "plugin");
 
-						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass());
+						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false);
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...
 						//

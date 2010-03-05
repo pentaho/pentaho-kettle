@@ -1,15 +1,12 @@
 package org.pentaho.di.core.lifecycle;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.NotFoundException;
-
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.plugins.ClassPathFinder;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.scannotation.AnnotationDB;
 
 public class LifecycleSupport implements LifecycleListener
 {
@@ -17,71 +14,18 @@ public class LifecycleSupport implements LifecycleListener
 
 	public LifecycleSupport()
 	{
-		// ResolverUtil<LifecycleListener> listeners = new ResolverUtil<LifecycleListener>();
-		// listeners.find(new ResolverUtil.IsA(LifecycleListener.class), "org.pentaho.di.core.lifecycle.pdi");
-		// Set<Class<? extends LifecycleListener>> listenerClasses = listeners.getClasses();
-
 		lifeListeners = new HashSet<LifecycleListener>();
-
-        long startTime = System.currentTimeMillis();
-        AnnotationDB db = PluginRegistry.getAnnotationDB();
-        Set<String> classIndex = db.getClassIndex().keySet();
-		ClassPool classPool = ClassPool.getDefault();
-		for (String key : classIndex) {
-			if (key.startsWith("org.pentaho.di.core.lifecycle.pdi")) {
-				try {
-				  //TODO: uncomment once launcher.jar is fixed or removed
-//					CtClass ctClass = classPool.get(key);
-//		
-//					CtClass[] interfaces = ctClass.getInterfaces();
-//					for (CtClass interf : interfaces) {
-//						if (interf.getName().equals(LifecycleListener.class.getName())) {
-//							try {
-//								Class<LifecycleListener> clazz = (Class<LifecycleListener>) Class.forName(ctClass.getName());
-//								lifeListeners.add( clazz.newInstance() );
-//							} catch(Exception e) {
-//								LogChannel.GENERAL.logDetailed("Unable to reach class "+ctClass.getName()+": "+e.getMessage());
-//							}
-//						}
-//					}
-				  
-
-          Class<?> clazz = (Class<?>) Class.forName(key);
-          if(LifecycleListener.class.isAssignableFrom(clazz)){
-            lifeListeners.add( (LifecycleListener) clazz.newInstance() );
-          }
-          
-//				} catch(NotFoundException e) {
-//				  System.out.println(e.getMessage());
-//				  e.printStackTrace();
-					// System.out.println("        - interfaces not found for class: "+ctClass.getName());
-				} catch (ClassNotFoundException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        } catch (InstantiationException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        } catch (IllegalAccessException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+        ClassPathFinder classPathFinder = PluginRegistry.getClassPathFinder();
+        List<Class<? extends LifecycleListener>> classList = classPathFinder.findClassesImplementingInterface(LifecycleListener.class, "org.pentaho.di.core.lifecycle.pdi");
+        for (Class<? extends LifecycleListener> clazz : classList) {
+        	try {
+        		lifeListeners.add( clazz.newInstance() );
+        	} catch(IllegalAccessException e) {
+        		LogChannel.GENERAL.logError("Illegal access to class "+clazz+", ignored.");
+        	} catch (InstantiationException e) {
+        		LogChannel.GENERAL.logError("Could not instatiate class class "+clazz+", ignored.");
+			}
         }
-			}
-		}
-		LogChannel.GENERAL.logBasic("Finished lifecycle listener scan in "+(System.currentTimeMillis()-startTime)+"ms.");
-
-		/*
-		for (Class<? extends LifecycleListener> clazz : listenerClasses)
-		{
-			try
-			{
-				lifeListeners.add(clazz.newInstance());
-			} 
-			catch (Throwable e)
-			{
-				log.logError("Unable to init listener:" + e.getMessage(), new Object[] {});
-				continue;
-			}
-		}*/
 	}
 
 	public void onStart(LifeEventHandler handler) throws LifecycleException

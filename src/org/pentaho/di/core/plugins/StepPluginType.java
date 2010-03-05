@@ -19,6 +19,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -46,7 +47,7 @@ import org.w3c.dom.Node;
    ,"BaseStep.Category.Deprecated"
    ,"BaseStep.Category.Bulk"},
    i18nPackageClass = StepInterface.class)
-@PluginMainClassType(StepInterface.class)
+@PluginMainClassType(StepMetaInterface.class)
 public class StepPluginType extends BasePluginType implements PluginTypeInterface {
 	
 	private static StepPluginType stepPluginType;
@@ -102,7 +103,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 			Node stepsNode = XMLHandler.getSubNode(document, "steps");
 			List<Node> stepNodes = XMLHandler.getNodes(stepsNode, "step");
 			for (Node stepNode : stepNodes) {
-				registerPluginFromXmlResource(stepNode, null, this.getClass());
+				registerPluginFromXmlResource(stepNode, null, this.getClass(), true);
 			}
 			
 		} catch (KettleXMLException e) {
@@ -202,7 +203,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "plugin");
 						if (pluginNode!=null) {
-							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass());
+							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false);
 						}
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...

@@ -75,7 +75,7 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 			Node stepsNode = XMLHandler.getSubNode(document, "plugins");
 			List<Node> stepNodes = XMLHandler.getNodes(stepsNode, "plugin-partitioner");
 			for (Node stepNode : stepNodes) {
-				registerPluginFromXmlResource(stepNode, null, this.getClass());
+				registerPluginFromXmlResource(stepNode, null, this.getClass(), true);
 			}
 			
 		} catch (KettleXMLException e) {
@@ -165,7 +165,7 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "partitioner-plugin");
 						if (pluginNode!=null) {
-							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass());
+							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false);
 						}
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...

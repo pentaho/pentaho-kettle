@@ -102,7 +102,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 			Node entriesNode = XMLHandler.getSubNode(document, "job-entries");
 			List<Node> entryNodes = XMLHandler.getNodes(entriesNode, "job-entry");
 			for (Node entryNode : entryNodes) {
-				registerPluginFromXmlResource(entryNode, null, this.getClass());
+				registerPluginFromXmlResource(entryNode, null, this.getClass(), true);
 			}
 			
 		} catch (KettleXMLException e) {
@@ -202,7 +202,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "plugin");
 
-						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass());
+						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false);
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...
 						//

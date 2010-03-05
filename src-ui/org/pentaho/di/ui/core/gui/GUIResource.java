@@ -555,7 +555,7 @@ public class GUIResource
 				Object object = registry.loadClass(steps.get(i));
 				image = ImageUtil.getImage(display, object.getClass(), filename);
 			} catch (Exception e) {
-				log.logError("Kettle", "Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : " + e.toString());
+				log.logError("Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : ", e);
 				image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
 				GC gc = new GC(image);
 				gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
@@ -563,25 +563,6 @@ public class GUIResource
 				gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
 				gc.dispose();
 			}
-			/*
-			} else
-			{
-				String filename = steps.get(i).getImageFile();
-				try
-				{
-					image = new Image(display, filename);
-				} catch (Exception e)
-				{
-					log.logError("Kettle", "Unable to find required step image file [" + filename + " : " + e.toString());
-					image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					GC gc = new GC(image);
-					gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					gc.drawLine(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
-					gc.drawLine(ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE);
-					gc.dispose();
-				}
-			}
-			*/
 
 			// Calculate the smaller version of the image @ 16x16...
 			// Perhaps we should make this configurable?
@@ -821,7 +802,7 @@ public class GUIResource
 				image = ImageUtil.getImage(display, object.getClass(), filename);
 			} catch (Exception e)
 			{
-				log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] for id ["+plugin.getIds()[0]+"] : " + e.toString());
+				log.logError("Unable to find required job entry image file [" + filename + "] for id ["+plugin.getIds()[0]+"] : " + e.toString());
 				image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
 				GC gc = new GC(image);
 				gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);

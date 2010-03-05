@@ -22,7 +22,6 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.scannotation.AnnotationDB;
-import org.scannotation.ClasspathUrlFinder;
 
 /**
  * This singleton provides access to all the plugins in the Kettle universe.<br>
@@ -41,6 +40,8 @@ public class PluginRegistry {
 	private Map<Class<? extends PluginTypeInterface>, List<String>> categoryMap;
 	
 	private static AnnotationDB annotationDB;
+
+	private static ClassPathFinder	classPathFinder;
 	
 	/**
 	 * Initialize the registry, keep private to keep this a singleton 
@@ -162,7 +163,7 @@ public class PluginRegistry {
 	 */
 	@SuppressWarnings("unchecked")
   public <T extends PluginInterface, K extends PluginTypeInterface> List<T> getPlugins(Class<K> type) {
-	  ArrayList<T> list = new ArrayList<T>();
+	  List<T> list = new ArrayList<T>();
 	  List<PluginInterface> mapList = pluginMap.get(type);
 	  if(mapList != null){
   	  for(PluginInterface p : mapList){
@@ -277,7 +278,7 @@ public class PluginRegistry {
 	 * @throws KettlePluginException In case there was a class loading problem somehow
 	 */
 	@SuppressWarnings("unchecked")
-  public <T> T loadClass(PluginInterface plugin, Class<T> pluginClass) throws KettlePluginException {
+    public <T> T loadClass(PluginInterface plugin, Class<T> pluginClass) throws KettlePluginException {
         if (plugin == null)
         {
             throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001")); //$NON-NLS-1$
@@ -290,9 +291,9 @@ public class PluginRegistry {
 
         try
         {
-        	Class<?> cl = null;
+        	Class<? extends T> cl = null;
             if (plugin.isNativePlugin()) {
-                cl = Class.forName(className);
+                cl = (Class<? extends T>) Class.forName(className);
             } else {
                 List<String> jarfiles = plugin.getLibraries();
                 URL urls[] = new URL[jarfiles.size()];
@@ -340,10 +341,10 @@ public class PluginRegistry {
                 }
               
                 // Load the class.
-                cl = ucl.loadClass(className);
+                cl = (Class<? extends T>) ucl.loadClass(className);
             }
 
-            return (T) cl.newInstance();
+            return cl.newInstance();
         }
         catch (ClassNotFoundException e)
         {
@@ -363,6 +364,7 @@ public class PluginRegistry {
         }
         catch (Throwable e)
         {
+        	e.printStackTrace();
             throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnExpectedErrorLoadingClass.PLUGINREGISTRY007"), e); //$NON-NLS-1$
         }
 	}
@@ -377,30 +379,14 @@ public class PluginRegistry {
 		
 		try {
 			annotationDB = new AnnotationDB();
-			URL[] urls = ClasspathUrlFinder.findClassPaths();
-			
-			LogChannel.GENERAL.logDetailed("Found "+urls.length+" objects in the classpath.");
+			URLClassLoader urlClassLoader = ((URLClassLoader)pluginTypes.getClass().getClassLoader());
+			URL[] urls = urlClassLoader.getURLs();
+			LogChannel.GENERAL.logBasic("Found "+urls.length+" objects in the classpath.");
 			long startScan = System.currentTimeMillis();
 			annotationDB.scanArchives(urls);
+			LogChannel.GENERAL.logBasic("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
 			
-			// This has something to do with the fact that we're using our own launcher
-			// The class path of that thing is somehow picked up.  To be investigated!
-			//
-			File kettleCore = new File("lib/kettle-core.jar");
-			if (kettleCore.exists()) {
-  			annotationDB.scanArchives(kettleCore.toURI().toURL());
-  			annotationDB.scanArchives(new File("lib/kettle-db.jar").toURI().toURL());
-  			annotationDB.scanArchives(new File("lib/kettle-engine.jar").toURI().toURL());
-			}
-			
-			// HACK!!
-			// TODO: remove once launcher.jar is removed and or annotation scanning is resolved.
-			File agileBI = new File("plugins/spoon/agile-bi/lib/agile-bi-TRUNK-SNAPSHOT.jar");
-			if(agileBI.exists()){
-        annotationDB.scanArchives(agileBI.toURI().toURL());
-			}
-			
-			LogChannel.GENERAL.logDetailed("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
+			classPathFinder = new ClassPathFinder(urlClassLoader);
 		} catch(IOException e) {
 			throw new KettlePluginException("Unable to scan for annotations in the classpath", e);
 		}
@@ -622,5 +608,12 @@ public class PluginRegistry {
   public <T> T getClass(PluginInterface plugin, T classType) throws KettlePluginException {
 		String className = plugin.getClassMap().get(classType);
 		return (T) getClass(plugin, className);
+	}
+
+	/**
+	 * @return the classPathFinder
+	 */
+	public static ClassPathFinder getClassPathFinder() {
+		return classPathFinder;
 	}
 }

@@ -33,6 +33,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
  * http://stripes.mc4j.org/confluence/display/stripes/Home
  * 
  * @param <T>
+ * @deprecated: see PluginRegistry.getAnnotationDB() and PluginRegistry.getClassPathFinder()
  */
 public class ResolverUtil<T>
 {
