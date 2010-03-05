@@ -44,19 +44,7 @@ public interface DatabaseInterface extends Cloneable
 	 */
 	// public int getDatabaseType();
 	
-	/**
-	 * @return The short description (code) of the database type
-	 * @deprecated
-	 */
-	public String getDatabaseTypeDesc();
-	
-	/**
-	 * @return The long description (user description) of the database type
-	 * @deprecated
-	 */
-	 public String getDatabaseTypeDescLong();
-	
-	
+
 	/**
 	 * @return Returns the accessType.
 	 */

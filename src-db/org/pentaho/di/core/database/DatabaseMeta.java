@@ -1289,32 +1289,8 @@ public class DatabaseMeta
 		return dbAccessTypeDesc[dbaccess];
 	}
 	
-	public final static String[] getDBTypeDescLongList()
-	{
-		List<String> list = new ArrayList<String>();
-		
-		List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins(DatabasePluginType.class);
-		for (PluginInterface plugin : plugins) {
-			list.add( plugin.getName() );
-		}
-		
-		return list.toArray(new String[list.size()]);
-	}
-
-	public final static String[] getDBTypeDescList()
-	{
-		List<String> list = new ArrayList<String>();
-		
-		List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins(DatabasePluginType.class);
-		for (PluginInterface plugin : plugins) {
-			list.add( plugin.getIds()[0] );
-		}
-		
-		return list.toArray(new String[list.size()]);
-	}
-	
 	public static final DatabaseInterface[] getDatabaseInterfaces() {
-		List<DatabaseInterface> list = new ArrayList<DatabaseInterface>(allDatabaseInterfaces.values());
+		List<DatabaseInterface> list = new ArrayList<DatabaseInterface>(getDatabaseInterfacesMap().values());
 		return list.toArray(new DatabaseInterface[list.size()]);
 	}
 	

@@ -1410,22 +1410,4 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		return true;
 	}
 
-	/**
-	 * @return The short description (code) of the database type
-	 * @deprecated
-	 */
-	public String getDatabaseTypeDesc() {
-		PluginInterface plugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, getPluginId());
-		return plugin.getIds()[0];
-	}
-	
-	/**
-	 * @return The long description (user description) of the database type
-	 * @deprecated
-	 */
-	 public String getDatabaseTypeDescLong() {
-			PluginInterface plugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, getPluginId());
-			return plugin.getName();
-	 }
-
 }

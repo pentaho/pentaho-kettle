@@ -14,6 +14,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -223,8 +224,19 @@ public class KettleDatabaseRepositoryCreationHelper {
 			//
 			// Populate...
 			//
-			code = DatabaseMeta.getDBTypeDescList();
-			desc = DatabaseMeta.getDBTypeDescLongList();
+
+	    PluginRegistry registry = PluginRegistry.getInstance();
+	    
+	    List<PluginInterface> plugins = registry.getPlugins(DatabasePluginType.class);
+	    int y=0;
+	    code = desc = new String[]{};
+	    for (PluginInterface plugin : plugins) {
+	      code = new String[plugins.size()];
+        desc = new String[plugins.size()];
+        code[y] = plugin.getIds()[0];
+        desc[y] = plugin.getName();
+        y++;
+	    }
 
 			if (!dryrun) {
 				database.prepareInsert(table, null, tablename);

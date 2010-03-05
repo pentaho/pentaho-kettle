@@ -12,6 +12,9 @@
 
 package org.pentaho.di.ui.core.database.wizard;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -30,6 +33,9 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
+import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
@@ -60,6 +66,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 	private PropsUI props;
 	private DatabaseMeta databaseMeta;
 	private java.util.List<DatabaseMeta> databases;
+	private Map<String, String> wDBIDtoNameMap = new HashMap<String, String>();
 	
 	public CreateDatabaseWizardPage1(String arg, PropsUI props, DatabaseMeta databaseMeta, java.util.List<DatabaseMeta> databases)
 	{
@@ -122,10 +129,20 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		wDBType = new List(composite, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
  		props.setLook(wDBType);
     
-		for (int i=0;i<DatabaseMeta.getDBTypeDescLongList().length;i++)
-		{
-			wDBType.add(DatabaseMeta.getDBTypeDescLongList()[i]);
-		}
+ 		
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+    
+    java.util.List<PluginInterface> plugins = registry.getPlugins(DatabasePluginType.class);
+    for (PluginInterface plugin : plugins) {
+      try {
+        wDBType.add(plugin.getName());
+        wDBIDtoNameMap.put(plugin.getIds()[0], plugin.getName());
+    
+      } catch(Exception e) {
+        throw new RuntimeException("Error creating class for: "+plugin, e);
+      }
+    }
     
 		// Select a default: the first
 		/*
@@ -136,7 +153,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		else
 		{
 		*/
-			int idx = wDBType.indexOf(databaseMeta.getPluginId());
+			int idx = wDBType.indexOf(wDBIDtoNameMap.get(databaseMeta.getPluginId()));
 			if (idx>=0)
 			{
 				wDBType.select(idx);
