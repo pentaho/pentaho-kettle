@@ -160,7 +160,8 @@ public class PluginRegistry {
 	 * @param type The plugin type to query
 	 * @return The list of plugins
 	 */
-	public <T extends PluginInterface, K extends PluginTypeInterface> List<T> getPlugins(Class<K> type) {
+	@SuppressWarnings("unchecked")
+  public <T extends PluginInterface, K extends PluginTypeInterface> List<T> getPlugins(Class<K> type) {
 	  ArrayList<T> list = new ArrayList<T>();
 	  List<PluginInterface> mapList = pluginMap.get(type);
 	  if(mapList != null){
@@ -275,7 +276,8 @@ public class PluginRegistry {
 	 * 
 	 * @throws KettlePluginException In case there was a class loading problem somehow
 	 */
-	public <T> T loadClass(PluginInterface plugin, Class<T> pluginClass) throws KettlePluginException {
+	@SuppressWarnings("unchecked")
+  public <T> T loadClass(PluginInterface plugin, Class<T> pluginClass) throws KettlePluginException {
         if (plugin == null)
         {
             throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001")); //$NON-NLS-1$
@@ -376,6 +378,7 @@ public class PluginRegistry {
 		try {
 			annotationDB = new AnnotationDB();
 			URL[] urls = ClasspathUrlFinder.findClassPaths();
+			
 			LogChannel.GENERAL.logDetailed("Found "+urls.length+" objects in the classpath.");
 			long startScan = System.currentTimeMillis();
 			annotationDB.scanArchives(urls);
@@ -389,6 +392,14 @@ public class PluginRegistry {
   			annotationDB.scanArchives(new File("lib/kettle-db.jar").toURI().toURL());
   			annotationDB.scanArchives(new File("lib/kettle-engine.jar").toURI().toURL());
 			}
+			
+			// HACK!!
+			// TODO: remove once launcher.jar is removed and or annotation scanning is resolved.
+			File agileBI = new File("plugins/spoon/agile-bi/lib/agile-bi-TRUNK-SNAPSHOT.jar");
+			if(agileBI.exists()){
+        annotationDB.scanArchives(agileBI.toURI().toURL());
+			}
+			
 			LogChannel.GENERAL.logDetailed("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
 		} catch(IOException e) {
 			throw new KettlePluginException("Unable to scan for annotations in the classpath", e);
@@ -576,7 +587,8 @@ public class PluginRegistry {
 	 * @return the name of the class
 	 * @throws KettlePluginException In case there is something wrong
 	 */
-	public <T> T getClass(PluginInterface plugin, String className) throws KettlePluginException {
+	@SuppressWarnings("unchecked")
+  public <T> T getClass(PluginInterface plugin, String className) throws KettlePluginException {
 		try {
 		  
 			if (plugin.isNativePlugin()) {
@@ -606,7 +618,8 @@ public class PluginRegistry {
 	 * @return the name of the class
 	 * @throws KettlePluginException In case there is something wrong
 	 */
-	public <T> T getClass(PluginInterface plugin, T classType) throws KettlePluginException {
+	@SuppressWarnings("unchecked")
+  public <T> T getClass(PluginInterface plugin, T classType) throws KettlePluginException {
 		String className = plugin.getClassMap().get(classType);
 		return (T) getClass(plugin, className);
 	}

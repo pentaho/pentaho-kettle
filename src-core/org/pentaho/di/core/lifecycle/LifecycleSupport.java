@@ -30,22 +30,41 @@ public class LifecycleSupport implements LifecycleListener
 		for (String key : classIndex) {
 			if (key.startsWith("org.pentaho.di.core.lifecycle.pdi")) {
 				try {
-					CtClass ctClass = classPool.get(key);
-		
-					CtClass[] interfaces = ctClass.getInterfaces();
-					for (CtClass interf : interfaces) {
-						if (interf.getName().equals(LifecycleListener.class.getName())) {
-							try {
-								Class<LifecycleListener> clazz = (Class<LifecycleListener>) Class.forName(ctClass.getName());
-								lifeListeners.add( clazz.newInstance() );
-							} catch(Exception e) {
-								LogChannel.GENERAL.logDetailed("Unable to reach class "+ctClass.getName()+": "+e.getMessage());
-							}
-						}
-					}
-				} catch(NotFoundException e) {
+				  //TODO: uncomment once launcher.jar is fixed or removed
+//					CtClass ctClass = classPool.get(key);
+//		
+//					CtClass[] interfaces = ctClass.getInterfaces();
+//					for (CtClass interf : interfaces) {
+//						if (interf.getName().equals(LifecycleListener.class.getName())) {
+//							try {
+//								Class<LifecycleListener> clazz = (Class<LifecycleListener>) Class.forName(ctClass.getName());
+//								lifeListeners.add( clazz.newInstance() );
+//							} catch(Exception e) {
+//								LogChannel.GENERAL.logDetailed("Unable to reach class "+ctClass.getName()+": "+e.getMessage());
+//							}
+//						}
+//					}
+				  
+
+          Class<?> clazz = (Class<?>) Class.forName(key);
+          if(LifecycleListener.class.isAssignableFrom(clazz)){
+            lifeListeners.add( (LifecycleListener) clazz.newInstance() );
+          }
+          
+//				} catch(NotFoundException e) {
+//				  System.out.println(e.getMessage());
+//				  e.printStackTrace();
 					// System.out.println("        - interfaces not found for class: "+ctClass.getName());
-				}
+				} catch (ClassNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } catch (InstantiationException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } catch (IllegalAccessException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
 			}
 		}
 		LogChannel.GENERAL.logBasic("Finished lifecycle listener scan in "+(System.currentTimeMillis()-startTime)+"ms.");
