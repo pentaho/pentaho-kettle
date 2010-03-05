@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
@@ -37,6 +38,7 @@ public class RepositoriesHelper {
   private RepositoriesModel model;
   private XulMessageBox messageBox;
   private XulConfirmBox confirmBox;
+  private LogChannel log;  
   public RepositoriesHelper(RepositoriesModel model
       , XulMessageBox messagebox, XulConfirmBox confirmBox, ResourceBundle messages, Shell shell) {
     this.props = PropsUI.getInstance();
@@ -47,6 +49,7 @@ public class RepositoriesHelper {
     this.confirmBox = confirmBox;
     this.messages = messages;
     this.shell = shell;
+    log = new LogChannel("RepositoriesHelper"); //$NON-NLS-1$
     try {
       this.input.readData();
       List<RepositoryMeta> repositoryList = new ArrayList<RepositoryMeta>();
@@ -55,6 +58,7 @@ public class RepositoriesHelper {
       }
       model.setAvailableRepositories(repositoryList);
     } catch (Exception e) {
+      log.logDetailed("Error Reading Repositories Data: " + e.getLocalizedMessage());
       messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
       messageBox.setMessage(BaseMessages.getString(PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", e.getLocalizedMessage()));//$NON-NLS-1$
@@ -94,6 +98,7 @@ public class RepositoriesHelper {
           writeData();
         }
       } catch (Exception e) {
+        log.logDetailed("Error creating new repository: " + e.getLocalizedMessage());
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
         messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
         messageBox.setMessage(BaseMessages.getString(PKG, "RepositoryLogin.ErrorCreatingRepository", e.getLocalizedMessage()));//$NON-NLS-1$
@@ -120,6 +125,7 @@ public class RepositoriesHelper {
             writeData();
           }
     } catch (Exception e) {
+      log.logDetailed("Error edit repository : " + e.getLocalizedMessage());
       messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
       messageBox.setMessage(BaseMessages.getString(PKG, "RepositoryLogin.ErrorEditingRepository", e.getLocalizedMessage()));//$NON-NLS-1$
@@ -147,6 +153,7 @@ public class RepositoriesHelper {
           }
   
           public void onError(XulComponent sender, Throwable t) {
+            log.logDetailed("Error deleting repository : " + t.getLocalizedMessage());
             messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
             messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
             messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
@@ -223,6 +230,7 @@ public class RepositoriesHelper {
     try {
       input.writeData();
     } catch (Exception e) {
+      log.logDetailed("Error deleting repository : " + e.getLocalizedMessage());
       messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
       messageBox.setMessage(messages.getString("RepositoryLogin.ErrorSavingRepositoryDefinition"));//$NON-NLS-1$

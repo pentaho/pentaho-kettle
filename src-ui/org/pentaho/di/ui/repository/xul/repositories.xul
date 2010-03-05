@@ -8,6 +8,7 @@
 		ondialogcancel="repositoryLoginController.closeRepositoryLoginDialog()" 
 		buttons="accept, cancel" buttonalign="right" title="${RepositoryLoginDialog.Title}" 
 		height="330" width="320"
+		appicon="ui/images/spoon.ico"
 		xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 		xmlns:pen="http://www.pentaho.org/2008/xul" 
 		onload="repositoryLoginController.init()" padding="10" spacing="3">
@@ -23,5 +24,6 @@
 		<textbox id="user-name" multiline="false"/>
 		<label value="${RepositoryLoginDialog.Password}"/>
 		<textbox id="user-password" type="password" multiline="false"/>
+		<label id="spacer-label"/>
 		<checkbox id="show-login-dialog-at-startup" command="repositoryLoginController.updateShowDialogAtStartup()" label="${RepositoryLoginDialog.ShowDialogAtStartup}" checked="false"/>			
   </dialog>

@@ -36,16 +36,15 @@
 	
 		<tabbox id="repositoryExplorerTabs" flex="1">
 	
-			<tabs>
-				<tab label="${RepositoryExplorerDialog.Tabs.Browse}" />
-				<tab label="${RepositoryExplorerDialog.Tabs.Connections}" />
-				<tab label="${RepositoryExplorerDialog.Tabs.Security}" />
-				<tab label="${RepositoryExplorerDialog.Tabs.Slaves}" />
-				<tab label="${RepositoryExplorerDialog.Tabs.Partitions}" />
-				<tab label="${RepositoryExplorerDialog.Tabs.Clusters}" />
+			<tabs id="repository-tab-set">
+				<tab id="browse-tab" label="${RepositoryExplorerDialog.Tabs.Browse}" />
+				<tab id="connections-tab" label="${RepositoryExplorerDialog.Tabs.Connections}" />
+				<tab id="slaves-tab" label="${RepositoryExplorerDialog.Tabs.Slaves}" />
+				<tab id="partitions-tab" label="${RepositoryExplorerDialog.Tabs.Partitions}" />
+				<tab id="clusters-tab" label="${RepositoryExplorerDialog.Tabs.Clusters}" />
 			</tabs>
 	
-			<tabpanels flex="1">
+			<tabpanels id="repository-panels-set" flex="1">
 	
 				<!--
 					###############################################################################
@@ -181,36 +180,6 @@
 				-->
 				<!--
 					END - CONNECTIONS TAB
-				-->
-				<!--
-					###############################################################################
-				-->
-	
-				<!--
-					###############################################################################
-				-->
-				<!--
-					START - SECURITY TAB
-				-->
-				<!--
-					###############################################################################
-				-->
-	
-				<tabpanel id="security" >
-					<hbox id="security-box" flex="1"  >
-						<vbox flex="1" id="security-message-box">
-							<hbox>
-								<label flex="1" id="security-available-label" 
-									value="User does not have necessary permission to manage security" />
-							</hbox>
-						</vbox>
-					</hbox>					
-				</tabpanel>
-				<!--
-					###############################################################################
-				-->
-				<!--
-					END - SECURITY TAB
 				-->
 				<!--
 					###############################################################################

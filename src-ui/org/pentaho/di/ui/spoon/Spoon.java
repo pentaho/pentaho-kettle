@@ -1387,7 +1387,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (lastUsedFile.isSourceRepository()
         && (rep == null || !rep.getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))) {
       // Ask for a username password to get the required repository access
-      loginDialog = new RepositoriesDialog(display, lastUsedFile.getRepositoryName(), new ILoginCallback() {
+      loginDialog = new RepositoriesDialog(shell, lastUsedFile.getRepositoryName(), new ILoginCallback() {
         
         public void onSuccess(Repository repository) {
           // Close the previous connection...
@@ -2881,7 +2881,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void openRepository() {
-    loginDialog = new RepositoriesDialog(display, null, new ILoginCallback() {
+    loginDialog = new RepositoriesDialog(shell, null, new ILoginCallback() {
       
       public void onSuccess(Repository repository) {
         // Close previous repository...
@@ -5730,7 +5730,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.AskingForRepository"));// "Asking for repository"
 
       splash.hide();
-      loginDialog = new RepositoriesDialog(display, null, new ILoginCallback() {
+      loginDialog = new RepositoriesDialog(shell, null, new ILoginCallback() {
         
         public void onSuccess(Repository repository) {
           setRepository(repository);
@@ -5766,7 +5766,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           mb.setMessage(BaseMessages.getString(PKG, "Spoon.Error.Repository.NotFound", optionRepname.toString()));
           mb.setText(BaseMessages.getString(PKG, "Spoon.Error.Repository.NotFound.Title"));
           mb.open();
-          loginDialog = new RepositoriesDialog(display, null, new ILoginCallback() {
+          loginDialog = new RepositoriesDialog(shell, null, new ILoginCallback() {
             
             public void onSuccess(Repository repository) {
               setRepository(repository);

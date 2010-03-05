@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.SpoonFactory;
@@ -41,9 +40,11 @@ public class RepositoriesDialog {
     
   };  
 
-  public RepositoriesDialog(Display disp, String preferredRepositoryName, ILoginCallback callback) {
+  public RepositoriesDialog(Shell shell, String preferredRepositoryName, ILoginCallback callback) {
     try {
       this.callback = callback;
+      SwtXulLoader swtLoader = new SwtXulLoader();
+      swtLoader.setOuterContext(shell);
       container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/xul/repositories.xul", resourceBundle); //$NON-NLS-1$
       final XulRunner runner = new SwtXulRunner();
       runner.addContainer(container);
