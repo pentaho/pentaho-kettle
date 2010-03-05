@@ -1,5 +1,7 @@
 package org.pentaho.di.repository;
 
+import java.util.List;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 
@@ -11,12 +13,12 @@ import org.pentaho.di.core.exception.KettleSecurityException;
  * @author matt
  *
  */
-public interface RepositorySecurityProvider {
+public interface RepositorySecurityProvider extends IRepositoryService{
 
 	/**
 	 * @return the user information set on the security provider
 	 */
-	public UserInfo getUserInfo();
+	public IUser getUserInfo();
 	
 	/**
 	 * Validates the supplied operation.
@@ -45,4 +47,24 @@ public interface RepositorySecurityProvider {
 	 * @return true if version comments are allowed and mandatory.
 	 */
 	public boolean isVersionCommentMandatory();
+	
+  /**
+   * Retrieves all users in the system
+   * 
+   * @return list of username
+   * @throws KettleSecurityException in case anything went wrong
+   */
+  public List<String> getAllUsers() throws KettleException;
+
+  /**
+   * Retrieves all roles in the system
+   * 
+   * @return list of role
+   * @throws KettleSecurityException in case anything went wrong
+   */
+  public List<String> getAllRoles() throws KettleException;
+  
+  public String[] getUserLogins() throws KettleException;
+
+
 }

@@ -36,10 +36,10 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityManager;
-import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -58,7 +58,7 @@ public class UserDialog extends Dialog
 	private Button    wOK, wCancel;
 	
 	private PropsUI      props;
-	private UserInfo   userinfo;
+	private IUser   userinfo;
 	
 	private boolean    newUser = false;
 
@@ -68,7 +68,7 @@ public class UserDialog extends Dialog
 	/**
      * This dialog grabs a UserMeta structure, valid for the specified repository.
      */
-	public UserDialog(Shell parent, int style, Repository repository, UserInfo userInfo)
+	public UserDialog(Shell parent, int style, Repository repository, IUser userInfo)
 	{
 		super(parent, style);
 		this.securityManager = repository.getSecurityManager();
@@ -78,7 +78,7 @@ public class UserDialog extends Dialog
 		this.props=PropsUI.getInstance();
 	}
 	
-	public UserInfo open() 
+	public IUser open() 
 	{
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );

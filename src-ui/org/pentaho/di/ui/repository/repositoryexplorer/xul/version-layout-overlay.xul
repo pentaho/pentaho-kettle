@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <overlay 
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul">
-	<vbox flex="1"  id="revision-box" >
+	<vbox flex="1"  id="revision-box" visible="true">
 		<hbox>
 			<label id="revision-label" value="Version History:" />
 			<label id="spacer-label" flex="1" />

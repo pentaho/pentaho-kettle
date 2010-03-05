@@ -11,15 +11,13 @@
 
 package org.pentaho.di.repository;
 
-import java.util.HashSet;
-import java.util.Set;
 
 /*
  * Created on 7-apr-2004
  *
  */
 
-public class UserInfo {
+public class UserInfo implements IUser{
 	// private static Class<?> PKG = UserInfo.class; // for i18n purposes,
 	// needed by Translator2!! $NON-NLS-1$
 
@@ -32,29 +30,20 @@ public class UserInfo {
 	private String username; // Long name
 	private String description; // Description
 	private boolean enabled; // Enabled: yes or no
-
-	private Set<IRole> roles;
-	
 	/**
 	 * copy constructor
 	 * 
 	 * @param copyFrom
 	 */
-	public UserInfo(UserInfo copyFrom) {
-	  this.id = copyFrom.id;
-	  this.login = copyFrom.login;
-	  this.password = copyFrom.password;
-	  this.username = copyFrom.username;
-	  this.description = copyFrom.description;
-	  this.enabled = copyFrom.enabled;
-	  this.roles = copyFrom.roles != null ? new HashSet<IRole>(copyFrom.roles) : null;
+	public UserInfo(IUser copyFrom) {
+	  this.id = copyFrom.getObjectId();
+	  this.login = copyFrom.getLogin();
+	  this.password = copyFrom.getPassword();
+	  this.username = copyFrom.getUsername();
+	  this.description = copyFrom.getDescription();
+	  this.enabled = copyFrom.isEnabled();
 	}
 	
-  public UserInfo(String login, String password, String username, String description, boolean enabled,
-      Set<IRole> roles) {
-    this(login, password, username, description, enabled);
-    this.roles = roles;
-  }	
 	public UserInfo(String login, String password, String username,
 			String description, boolean enabled) {
 		this.login = login;
@@ -62,7 +51,6 @@ public class UserInfo {
 		this.username = username;
 		this.description = description;
 		this.enabled = enabled;
-    this.roles = new HashSet<IRole>();
 	}
 
 	public UserInfo(String login) {
@@ -76,7 +64,6 @@ public class UserInfo {
 		this.username = null;
 		this.description = null;
 		this.enabled = true;
-		this.roles = new HashSet<IRole>();
 	}
 
 	public void setLogin(String login) {
@@ -169,25 +156,5 @@ public class UserInfo {
 	 */
 	public void setName(String name) {
 		this.login = name;
-	}
-
-	public boolean addRole(IRole role) {
-		return this.roles.add(role);
-	}
-
-	public boolean removeRole(IRole role) {
-		return this.roles.remove(role);
-	}
-
-	public void clearRoles() {
-		this.roles.clear();
-	}
-
-	public void setRoles(Set<IRole> roles) {
-		this.roles = roles;
-	}
-
-	public Set<IRole> getRoles() {
-		return this.roles;
 	}
 }

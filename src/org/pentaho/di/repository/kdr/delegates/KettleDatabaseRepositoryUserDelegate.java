@@ -7,6 +7,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.UserInfo;
@@ -31,7 +32,7 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 	}
 
 	// Load user with login from repository, don't verify password...
-	public UserInfo loadUserInfo(UserInfo userInfo, String login) throws KettleException
+	public IUser loadUserInfo(IUser userInfo, String login) throws KettleException
 	{
 		try
 		{
@@ -72,7 +73,7 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 	 * @param passwd
 	 * @throws KettleException
 	 */
-	public UserInfo loadUserInfo(UserInfo userInfo, String login, String passwd) throws KettleException
+	public IUser loadUserInfo(IUser userInfo, String login, String passwd) throws KettleException
 	{
 		loadUserInfo(userInfo, login);
 		
@@ -86,7 +87,7 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 		return userInfo;
 	}
 	
-	public void saveUserInfo(UserInfo userInfo) throws KettleException
+	public void saveUserInfo(IUser userInfo) throws KettleException
 	{
 		try
 		{
@@ -119,7 +120,7 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 		
 	}
 
-	public RowMetaAndData fillTableRow(UserInfo userInfo)
+	public RowMetaAndData fillTableRow(IUser userInfo)
 	{
         RowMetaAndData r = new RowMetaAndData();
 		r.addValue( new ValueMeta("ID_USER", ValueMetaInterface.TYPE_INTEGER), userInfo.getObjectId() );
@@ -161,4 +162,16 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 	}
 
 
+	public synchronized void editUser(IUser userInfo) throws KettleException {
+	  boolean hasPasswordChanged = (userInfo.getPassword() != null && userInfo.getPassword().length() > 0);
+	  String sql = "UPDATE "+ quoteTable(KettleDatabaseRepository.TABLE_R_USER) + (hasPasswordChanged  ? " SET "+quote(KettleDatabaseRepository.FIELD_USER_PASSWORD) + " = ?": "")
+	  +" SET "+quote(KettleDatabaseRepository.FIELD_USER_DESCRIPTION) + " = ? WHERE "+quote(KettleDatabaseRepository.FIELD_USER_ID_USER)+" = ?";
+    RowMetaAndData table = new RowMetaAndData();
+    if(hasPasswordChanged) {
+      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING), userInfo.getPassword());  
+    }
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING), userInfo.getDescription());
+	  table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), getUserID(userInfo.getLogin()));
+	  repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
+	}
 }

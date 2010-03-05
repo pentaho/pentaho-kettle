@@ -19,25 +19,26 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import java.util.List;
 
 import org.pentaho.di.repository.RepositorySecurityManager;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 
 
-public class UIRepositoryUsers extends AbstractModelNode<UIRepositoryUser>{
+public class UIRepositoryUsers extends AbstractModelNode<IUIUser>{
 
     
   public UIRepositoryUsers(){
   }
   
-  public UIRepositoryUsers(List<UIRepositoryUser> users){
+  public UIRepositoryUsers(List<IUIUser> users){
     super(users);
   }
 
-  public UIRepositoryUsers(RepositorySecurityManager rsm) {
+  public UIRepositoryUsers(RepositorySecurityProvider rsp, RepositorySecurityManager rsm) {
 
     String[] logins; 
     try {
-      logins = rsm.getUserLogins();
+      logins = rsp.getUserLogins();
       for (String login : logins) {
-        this.add(new UIRepositoryUser(rsm.loadUserInfo(login)));
+        this.add(UIObjectRegistery.getInstance().constructUIRepositoryUser(rsm.loadUserInfo(login)));
       }
     } catch (Exception e) {
       // TODO: handle exception; can't get users???

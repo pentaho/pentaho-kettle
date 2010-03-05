@@ -78,6 +78,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
@@ -1346,7 +1347,7 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-		  // UserInfo userinfo = securityProvider.getUserInfo();
+		  // IUser userinfo = securityProvider.getUserInfo();
 		  
 			wTree.removeAll();
 			objectMap.clear();
@@ -1451,7 +1452,7 @@ public class RepositoryExplorerDialog extends Dialog
 				tiUser.setText(STRING_USERS);
 	            if (!readonly) TreeItemAccelerator.addDoubleClick(tiUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { newUser(); } });
 				
-				String users[] = securityManager.getUserLogins();
+				String users[] = securityProvider.getUserLogins();
 				for (int i=0;i<users.length;i++)
 				{
 					if ( users[i] != null )
@@ -2012,9 +2013,9 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			UserInfo uinfo = securityManager.loadUserInfo(login); // Get UserInfo from repository...
+			IUser uinfo = securityManager.loadUserInfo(login); // Get UserInfo from repository...
 			UserDialog ud = new UserDialog(shell, SWT.NONE, rep, uinfo);
-			UserInfo ui = ud.open();
+			IUser ui = ud.open();
 			if (!readonly)
 			{
 				if (ui!=null)
@@ -2041,7 +2042,7 @@ public class RepositoryExplorerDialog extends Dialog
 	public void newUser()
 	{
 		UserDialog ud = new UserDialog(shell, SWT.NONE, rep, new UserInfo());
-		UserInfo ui = ud.open();
+		IUser ui = ud.open();
 		if (ui!=null)
 		{
 /***************************

@@ -20,12 +20,12 @@ import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
 
@@ -66,7 +66,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			
 			// Before saving the job, see if it's not locked by someone else...
 			//
-			UserInfo userInfo = repository.getUserInfo();
+			IUser userInfo = repository.getUserInfo();
 			if (!"admin".equals(userInfo.getLogin())) {
 				ObjectId objectId = getJobID(jobMeta.getName(), jobMeta.getRepositoryDirectory().getObjectId());
 				if (objectId!=null) {

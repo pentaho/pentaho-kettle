@@ -18,12 +18,15 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListenerCollection;
+import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener.TYPE;
@@ -38,6 +41,7 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -52,9 +56,21 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  * browse functionality.
  * 
  */
-public class BrowseController extends AbstractXulEventHandler {
+public class BrowseController extends AbstractXulEventHandler{
 
-  private ResourceBundle messages;
+  private ResourceBundle messages = new ResourceBundle() {
+
+    @Override
+    public Enumeration<String> getKeys() {
+      return null;
+    }
+
+    @Override
+    protected Object handleGetObject(String key) {
+      return BaseMessages.getString(RepositoryExplorer.class, key);
+    }
+    
+  };  
 
   private XulTree folderTree;
 
@@ -90,6 +106,9 @@ public class BrowseController extends AbstractXulEventHandler {
   }
 
   public void init() {
+    bf = new DefaultBindingFactory();
+    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
+
     createBindings();
   }
 
@@ -236,19 +255,6 @@ public class BrowseController extends AbstractXulEventHandler {
     }
   }
 
-  public void setBindingFactory(BindingFactory bf) {
-    this.bf = bf;
-  }
-
-  
-  public ResourceBundle getMessages() {
-    return messages;
-  }
-
-  public void setMessages(ResourceBundle messages) {
-    this.messages = messages;
-  }
-  
   public String getName() {
     return "browseController"; //$NON-NLS-1$
   }

@@ -4,13 +4,10 @@ import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
-import org.pentaho.di.repository.IRole;
-import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityProvider;
-import org.pentaho.di.repository.RoleInfo;
 import org.pentaho.di.repository.UserInfo;
 
 public class KettleFileRepositorySecurityProvider implements RepositorySecurityProvider {
@@ -104,70 +101,6 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
 		return false;
 	}
 
-	// The file repository does not support users
-	//
-	
-	public void delUser(ObjectId id_user) throws KettleException {
-	   throw new UnsupportedOperationException();
-	}
-	public ObjectId getUserID(String login) throws KettleException {
-	  throw new UnsupportedOperationException();
-	}
-	public ObjectId[] getUserIDs() throws KettleException {
-	  throw new UnsupportedOperationException();
-	}
-	public String[] getUserLogins() throws KettleException {
-	   throw new UnsupportedOperationException();
-	}
-	public UserInfo loadUserInfo(String login) throws KettleException {
-	  throw new UnsupportedOperationException();
-	}
-	public UserInfo loadUserInfo(String login, String password) throws KettleException {
-	  throw new UnsupportedOperationException();
-	}
-	public void renameUser(ObjectId id_user, String newname) throws KettleException {
-	   throw new UnsupportedOperationException();
-	}
-	public void saveUserInfo(UserInfo userInfo) throws KettleException {
-	   throw new UnsupportedOperationException();
-	}
-
-	public void createRole(RoleInfo role) throws KettleException {
-	   throw new UnsupportedOperationException();
-	}
-  public void deleteUsers(List<UserInfo> users) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-	public RoleInfo getRole(String name) throws KettleException {
-	  throw new UnsupportedOperationException();
-	}
-	public List<IRole> getRoles() throws KettleException {
-	   throw new UnsupportedOperationException();
-	}
-	public void updateRole(RoleInfo role) throws KettleException {
-	   throw new UnsupportedOperationException();
-	}
-
-	public List<UserInfo> getUsers() throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-	public void setUsers(List<UserInfo> roles) throws KettleException {
-    throw new UnsupportedOperationException();		
-	}
-
-	public void delUser(String name) throws KettleException {
-    throw new UnsupportedOperationException();		
-	}
-
-	public void deleteRole(String name) throws KettleException {
-    throw new UnsupportedOperationException();		
-	}
-
-	public void updateUser(UserInfo role) throws KettleException {
-    throw new UnsupportedOperationException();		
-	}
-
   public List<String> getAllRoles() throws KettleException {
     throw new UnsupportedOperationException();
   }
@@ -176,23 +109,7 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
     throw new UnsupportedOperationException();
   }
 
-  public IRole constructRole() throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void createRole(IRole role) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void deleteRoles(List<IRole> roles) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void setRoles(List<IRole> roles) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void updateRole(IRole role) throws KettleException {
+  public String[] getUserLogins() throws KettleException {
     throw new UnsupportedOperationException();
   }
 }

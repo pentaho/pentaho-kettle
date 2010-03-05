@@ -1,11 +1,12 @@
 package org.pentaho.di.repository.kdr;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.repository.BaseRepositorySecurityProvider;
-import org.pentaho.di.repository.IRole;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
@@ -32,7 +33,7 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
    * @param userInfo
    */
   public KettleDatabaseRepositorySecurityProvider(KettleDatabaseRepository repository, RepositoryMeta repositoryMeta,
-      UserInfo userInfo) {
+      IUser userInfo) {
     super(repositoryMeta, userInfo);
     this.repository = repository;
     this.capabilities = repositoryMeta.getRepositoryCapabilities();
@@ -62,11 +63,11 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
 
   // UserInfo
 
-  public UserInfo loadUserInfo(String login) throws KettleException {
+  public IUser loadUserInfo(String login) throws KettleException {
     return userDelegate.loadUserInfo(new UserInfo(), login);
   }
 
-  public void saveUserInfo(UserInfo userInfo) throws KettleException {
+  public void saveUserInfo(IUser userInfo) throws KettleException {
     userDelegate.saveUserInfo(userInfo);
   }
 
@@ -98,64 +99,41 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     userDelegate.renameUser(id_user, newname);
   }
 
-  public void deleteRoles(List<IRole> roles) throws KettleException {
+  public void deleteUsers(List<IUser> users) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
-  public void deleteUsers(List<UserInfo> users) throws KettleException {
-    throw new UnsupportedOperationException();
+  public List<IUser> getUsers() throws KettleException {
+    String[] userLogins = getUserLogins();
+    List<IUser> users = new ArrayList<IUser>();
+    for(String userLogin:userLogins) {
+      users.add(loadUserInfo(userLogin));
+    }
+    return users;
   }
 
-  public List<IRole> getRoles() throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public List<UserInfo> getUsers() throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void setRoles(List<IRole> roles) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void setUsers(List<UserInfo> users) throws KettleException {
+  public void setUsers(List<IUser> users) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
   public void delUser(String name) throws KettleException {
-    throw new UnsupportedOperationException();
+    delUser(getUserID(name));
+  }
+  public void updateUser(IUser user) throws KettleException {
+    userDelegate.editUser(user);
   }
 
-  public void deleteRole(String name) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void updateUser(UserInfo role) throws KettleException {
-    throw new UnsupportedOperationException();
+  public IUser constructUser() throws KettleException {
+    return new UserInfo();
   }
 
   public List<String> getAllRoles() throws KettleException {
-    throw new UnsupportedOperationException();
+    // TODO Auto-generated method stub
+    return null;
   }
 
   public List<String> getAllUsers() throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-
-  public IRole constructRole() throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void createRole(IRole role) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void updateRole(IRole role) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public IRole getRole(String name) throws KettleException {
-    throw new UnsupportedOperationException();
+    // TODO Auto-generated method stub
+    return null;
   }
 }

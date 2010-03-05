@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
@@ -25,7 +27,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.ObjectAcl;
+import org.pentaho.di.repository.IRepositoryService;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -64,13 +67,19 @@ public class KettleFileRepository implements Repository {
 	
 	private LogChannelInterface log;
 
+	private Map<Class<? extends IRepositoryService>, IRepositoryService> serviceMap;
+	private List<Class<? extends IRepositoryService>> serviceList;
 	public void connect(String username, String password) throws KettleException {}
 
 	public void disconnect() {}
 
 	public void init(RepositoryMeta repositoryMeta) {
+	  this.serviceMap = new HashMap<Class<? extends IRepositoryService>, IRepositoryService>(); 
+	  this.serviceList = new ArrayList<Class<? extends IRepositoryService>>();
 		this.repositoryMeta = (KettleFileRepositoryMeta) repositoryMeta;
 		this.securityProvider = new KettleFileRepositorySecurityProvider(repositoryMeta);
+    this.serviceMap.put(RepositorySecurityProvider.class, securityProvider);
+    this.serviceList.add(RepositorySecurityProvider.class);
 		this.log = new LogChannel(this);
 	}
 
@@ -1014,7 +1023,7 @@ public class KettleFileRepository implements Repository {
 	public void delUser(ObjectId id_user) throws KettleException { }
 	public ObjectId getUserID(String login) throws KettleException { return null; }
 	public ObjectId[] getUserIDs() throws KettleException { return new ObjectId[] {}; }
-	public UserInfo getUserInfo() { return null; }
+	public IUser getUserInfo() { return null; }
 	public String[] getUserLogins() throws KettleException { return new String[] {}; }
 
 	public UserInfo loadUserInfo(String login) throws KettleException { return null; }
@@ -1085,15 +1094,7 @@ public class KettleFileRepository implements Repository {
     throw new UnsupportedOperationException();
   }
 
-  public void setAcl(ObjectId id,ObjectAcl aclObject) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public List<ObjectRevision> getRevisions(ObjectId id) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public ObjectAcl getAcl(ObjectId id, boolean forceParentInheriting) throws KettleException {
+	public List<ObjectRevision> getRevisions(ObjectId id) throws KettleException {
     throw new UnsupportedOperationException();
   }
 
@@ -1104,5 +1105,17 @@ public class KettleFileRepository implements Repository {
     objs.addAll(getJobObjects(id_directory, includeDeleted));
     objs.addAll(getTransformationObjects(id_directory, includeDeleted));
     return objs;
+  }
+
+  public IRepositoryService getService(Class<? extends IRepositoryService> clazz) throws KettleException {
+    return serviceMap.get(clazz);
+  }
+
+  public List<Class<? extends IRepositoryService>> getServiceInterfaces() throws KettleException {
+    return serviceList;
+  }
+
+  public boolean hasService(Class<? extends IRepositoryService> clazz) throws KettleException {
+    return serviceMap.containsKey(clazz);
   }
 }

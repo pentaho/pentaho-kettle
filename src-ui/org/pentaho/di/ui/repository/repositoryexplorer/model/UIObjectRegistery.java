@@ -2,14 +2,14 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.lang.reflect.Constructor;
 
-import org.pentaho.di.repository.IRole;
-import org.pentaho.di.ui.repository.repositoryexplorer.UIObjectCreationException;
+import org.pentaho.di.repository.IUser;
 
 public class UIObjectRegistery {
 
+  public static final Class<?> DEFAULT_UIREPOSITORYUSER_CLASS = UIRepositoryUser.class;
   private static UIObjectRegistery instance;
-
-  private Class<?> repositoryRoleClass;
+  
+  private Class<?> repositoryUserClass;
 
   private UIObjectRegistery() {
 
@@ -22,25 +22,27 @@ public class UIObjectRegistery {
     return instance;
   }
 
-  public void registerUIRepositoryRoleClass(Class<?> repositoryRoleClass) {
-    this.repositoryRoleClass = repositoryRoleClass;
+  public void registerUIRepositoryUserClass(Class<?> repositoryUserClass) {
+    this.repositoryUserClass = repositoryUserClass;
   }
 
-  public Class<?> getRegisteredUIRepositoryRoleClass() {
-    return this.repositoryRoleClass;
+  public Class<?> getRegisteredUIRepositoryUserClass() {
+    return this.repositoryUserClass;
   }
 
-  public IUIRole constructUIRepositoryRole(IRole role) throws UIObjectCreationException {
+  public IUIUser constructUIRepositoryUser(IUser user) throws UIObjectCreationException {
     try {
-      Constructor<?> constructor = repositoryRoleClass.getConstructor(IRole.class);
+      if(repositoryUserClass == null) {
+        repositoryUserClass = DEFAULT_UIREPOSITORYUSER_CLASS;
+      }
+      Constructor<?> constructor = repositoryUserClass.getConstructor(IUser.class);
       if (constructor != null) {
-        return (IUIRole) constructor.newInstance(role);
+        return (IUIUser) constructor.newInstance(user);
       } else {
-        throw new UIObjectCreationException("Unable to get the constructor for " + repositoryRoleClass);
+        throw new UIObjectCreationException("Unable to get the constructor for " + repositoryUserClass);
       }
     } catch (Exception e) {
-      throw new UIObjectCreationException("Unable to instantiate object for " + repositoryRoleClass);
+      throw new UIObjectCreationException("Unable to instantiate object for " + repositoryUserClass);
     }
   }
-
 }

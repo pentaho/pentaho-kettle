@@ -12,6 +12,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -33,14 +34,27 @@ import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnectio
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class ConnectionsController extends AbstractXulEventHandler {
+public class ConnectionsController extends AbstractXulEventHandler{
 
-  private ResourceBundle messages;
+  private ResourceBundle messages = new ResourceBundle() {
+
+    @Override
+    public Enumeration<String> getKeys() {
+      return null;
+    }
+
+    @Override
+    protected Object handleGetObject(String key) {
+      return BaseMessages.getString(RepositoryExplorer.class, key);
+    }
+    
+  };  
   
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
   
@@ -75,6 +89,8 @@ public class ConnectionsController extends AbstractXulEventHandler {
   public void init() {
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog)document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
+    bf = new DefaultBindingFactory();
+    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
 
     if (bf!=null){
       createBindings();
@@ -120,11 +136,6 @@ public class ConnectionsController extends AbstractXulEventHandler {
     }
     refreshConnectionList();
   }
-  
-  public void setBindingFactory(BindingFactory bindingFactory) {
-    this.bf = bindingFactory;
-  }
-
   public void setRepository(Repository repository) {
     if(this.repository == null || !this.repository.equals(repository)) {
       this.repository = repository;
@@ -310,13 +321,5 @@ public class ConnectionsController extends AbstractXulEventHandler {
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
-  }
-
-  public void setMessages(ResourceBundle messages) {
-    this.messages = messages;
-  }
-
-  public ResourceBundle getMessages() {
-    return messages;
   }
 }

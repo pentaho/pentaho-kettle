@@ -20,6 +20,8 @@ import java.util.Comparator;
 import java.util.Date;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.IAclManager;
+import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElement;
@@ -33,6 +35,7 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   protected RepositoryElement obj;
   protected Repository rep;
   private RepositoryObjectComparator roc;
+  private IRepositoryService repositoryService;
 
   public UIRepositoryObject() {
     super();
@@ -47,6 +50,12 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   public UIRepositoryObject(RepositoryElement obj, Repository rep) {
     this(obj);
     this.rep = rep;
+    try {
+      this.repositoryService = rep.getService(IAclManager.class);
+    } catch (KettleException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   public String getId() {
@@ -126,6 +135,14 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
   public void setComparator(RepositoryObjectComparator roc) {
     this.roc = roc;
   }
+  public IRepositoryService getRepositoryService() {
+    return repositoryService;
+  }
+
+  public void setRepositoryService(IRepositoryService repositoryService) {
+    this.repositoryService = repositoryService;
+  }
+
   
   public abstract int getCategory();
   
@@ -135,7 +152,8 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
 
   public void readAcls(UIRepositoryObjectAcls acls, boolean forceParentInheriting) throws AccessDeniedException{
     try {
-      acls.setObjectAcl(getRepository().getAcl(getObjectId(), forceParentInheriting));
+      
+      acls.setObjectAcl(((IAclManager) repositoryService).getAcl(getObjectId(), forceParentInheriting));
     } catch(KettleException ke) {
       throw new AccessDeniedException(ke);
     }
@@ -143,7 +161,7 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
 
   public void setAcls(UIRepositoryObjectAcls security) throws AccessDeniedException{
     try {
-      getRepository().setAcl(getObjectId(), security.getObjectAcl());
+      ((IAclManager) repositoryService).setAcl(getObjectId(), security.getObjectAcl());
     } catch (KettleException e) {
       throw new AccessDeniedException(e);
     }

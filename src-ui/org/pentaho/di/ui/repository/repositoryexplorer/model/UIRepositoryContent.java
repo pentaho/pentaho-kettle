@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.IAclManager;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
@@ -135,7 +136,7 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
 
   public void readAcls(UIRepositoryObjectAcls acls) throws AccessDeniedException{
     try {
-      acls.setObjectAcl(getRepository().getAcl(getObjectId(), false));
+      acls.setObjectAcl(((IAclManager)getRepositoryService()).getAcl(getObjectId(), false));
     } catch(KettleException ke) {
       throw new AccessDeniedException(ke);
     }
@@ -143,7 +144,7 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
 
   public void setAcls(UIRepositoryObjectAcls security) throws AccessDeniedException{
     try {
-      getRepository().setAcl(getObjectId(), security.getObjectAcl());
+      ((IAclManager)getRepositoryService()).setAcl(getObjectId(), security.getObjectAcl());
     } catch (KettleException e) {
       throw new AccessDeniedException(e);
     }

@@ -9,11 +9,11 @@ import org.pentaho.di.core.exception.KettleException;
  * APIs that are required for a repository.
  *  
  */
-public interface RepositorySecurityManager {
+public interface RepositorySecurityManager extends IRepositoryService {
 
-  public List<UserInfo> getUsers() throws KettleException;
+  public List<IUser> getUsers() throws KettleException;
 
-  public void setUsers(List<UserInfo> users) throws KettleException;
+  public void setUsers(List<IUser> users) throws KettleException;
 
   public ObjectId getUserID(String login) throws KettleException;
 
@@ -23,35 +23,15 @@ public interface RepositorySecurityManager {
 
   public ObjectId[] getUserIDs() throws KettleException;
 
-  public String[] getUserLogins() throws KettleException;
-
-  public void saveUserInfo(UserInfo userInfo) throws KettleException;
+  public void saveUserInfo(IUser user) throws KettleException;
 
   public void renameUser(ObjectId id_user, String newname) throws KettleException;
 
-  public IRole constructRole()  throws KettleException;
+  public IUser constructUser()  throws KettleException;
 
-  public void createRole(IRole role) throws KettleException;
+  public void updateUser(IUser user) throws KettleException;
 
-  public IRole getRole(String name) throws KettleException;
-
-  public List<IRole> getRoles() throws KettleException;
-
-  public void setRoles(List<IRole> roles) throws KettleException;
-
-  public void updateUser(UserInfo role) throws KettleException;
-
-  public void updateRole(IRole role) throws KettleException;
-
-  public void deleteUsers(List<UserInfo> users) throws KettleException;
+  public void deleteUsers(List<IUser> users) throws KettleException;
   
-  public void deleteRoles(List<IRole> roles) throws KettleException;
-
-  public void deleteRole(String name) throws KettleException;
-  
-  public List<String> getAllUsers() throws KettleException;
-  
-  public List<String> getAllRoles() throws KettleException;
-
-  public UserInfo loadUserInfo(String username) throws KettleException;
+  public IUser loadUserInfo(String username) throws KettleException;
 }

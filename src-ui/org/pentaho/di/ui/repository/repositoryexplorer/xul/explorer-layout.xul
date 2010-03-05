@@ -4,7 +4,7 @@
   height="600" width="800"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:pen="http://www.pentaho.org/2008/xul" 
-  onload="mainController.init(), iSecurityController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init(), permissionsController.init()">
+  onload="mainController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init()">
 
 	<dialog id="repository-explorer-dialog" 
 		title="${RepositoryExplorerDialog.Title}"
@@ -102,7 +102,7 @@
 											</treecols>
 											<treechildren />
 										</tree>
-										<vbox flex="3" id="revision-box" />
+										<vbox flex="3" id="revision-box" visible="false"/>
 								  </splitter>
 						 		</vbox>  
                             </splitter>  
@@ -197,7 +197,14 @@
 				-->
 	
 				<tabpanel id="security" >
-					<hbox id="security-box" flex="1" ></hbox>
+					<hbox id="security-box" flex="1"  >
+						<vbox flex="1" id="security-message-box">
+							<hbox>
+								<label flex="1" id="security-available-label" 
+									value="User does not have necessary permission to manage security" />
+							</hbox>
+						</vbox>
+					</hbox>					
 				</tabpanel>
 				<!--
 					###############################################################################
@@ -398,7 +405,7 @@
     		ondialogaccept="iSecurityController.saveUser()"
     		ondialogcancel="iSecurityController.cancelAddUserDialog()" 
     		buttons="accept, cancel" buttonalign="right" title="${AddUserDialog.Title}" 
-    		height="400" width="350">
+    		height="230" width="350">
        <vbox>
 			<label value="${AddUserDialog.UserName}" />
 			<hbox>
@@ -416,67 +423,7 @@
 				<label id="spacer-label" flex="1" />
 			</hbox>
       </vbox>
-      <groupbox id="role-to-user-group" flex="1">
-      	<caption label="Member"/>
-	       <hbox flex="1">
-		       <vbox flex="1">
-		       	   <label value="${AddUserDialog.Available}"/>
-		    	   <listbox id="available-roles-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
-		       </vbox>
-		       <vbox>
-   		       		<label id="spacer-label" flex="1" />
-					<button id="assign-role-to-user" image="images/accum_add.png"  pen:disabledimage="images/accum_add_disable.png" onclick="iSecurityController.assignRolesToUser()"  disabled="true"/>					    
-					<button id="unassign-role-from-user" image="images/accum_remove.png"  pen:disabledimage="images/accum_remove_disable.png" onclick="iSecurityController.unassignRolesFromUser()" disabled="true"/>
-		       		<label id="spacer-label" flex="1" />
-		       </vbox>
-	   	       <vbox flex="1">
-			       <label value="${AddUserDialog.Assigned}"/>
-			       <listbox id="selected-roles-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
-		       </vbox>
-	       </hbox>      	
-      </groupbox>
-  </dialog>
-  <!--  ###############################################################################   -->
-  <!--     ADD ROLE DIALOG: Dialog to add/edit/manage role                                -->
-  <!--  ###############################################################################   -->    
-  
-  <dialog id="add-role-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
-    		ondialogaccept="iSecurityController.saveRole()"
-    		ondialogcancel="iSecurityController.cancelAddRoleDialog()" 
-    		buttons="accept, cancel" buttonalign="right" title="${AddRoleDialog.AddRole}" 
-    		height="400" width="350">
-       <vbox>
-			<label value="${AddUserDialog.RoleName}" />
-			<hbox>
-				<textbox id="role-name"  flex="3" multiline="false"/>
-				<label id="spacer-label" flex="1" />
-			</hbox>
-			
-			<label value="${AddUserDialog.Description}"/>
-			<hbox>
-				<textbox id="role-description"  flex="3" multiline="false"/>
-				<label id="spacer-label" flex="1" />
-			</hbox>
-      </vbox>
-      <groupbox id="role-to-user-group" flex="1">
-      	  <caption label="Member"/>
-	      <hbox flex="1">
-		       <vbox flex="1">
-		       	   <label value="${AddRoleDialog.Available}"/>
-		    	   <listbox id="available-users-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
-		       </vbox>
-		       <vbox>
-		       		<label id="spacer-label" flex="1" />
-					<button id="assign-user-to-role" image="images/accum_add.png" pen:disabledimage="images/accum_add_disable.png" onclick="iSecurityController.assignUsersToRole()"  disabled="true"/>					    
-					<button id="unassign-user-from-role" image="images/accum_remove.png" pen:disabledimage="images/accum_remove_disable.png" onclick="iSecurityController.unassignUsersFromRole()" disabled="true"/>
-					<label id="spacer-label" flex="1" />
-		       </vbox>
-	   	       <vbox flex="1">
-			       <label value="${AddRoleDialog.Assigned}"/>
-			       <listbox id="selected-users-list" pen:binding="name" disabled="false" flex="1" seltype="multi"/>
-		       </vbox>
-	       </hbox>
-       </groupbox>
+      <vbox id="role-to-user-box" flex="1"/>
   </dialog>
   <!--  ###############################################################################   -->
   <!--     APPLY ACL CONFIRMATION DIALOG: Dialog to display the confirmation              -->

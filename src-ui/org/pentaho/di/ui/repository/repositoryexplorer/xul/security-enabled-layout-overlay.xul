@@ -1,78 +1,44 @@
 <?xml version="1.0"?>
 <overlay 
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul">
-	<hbox id="security-box" flex="1" >
-		<vbox flex="1">
-			<hbox>
-       			<radio id="role-radio-button" label="${SecurityTab.Role}" command="iSecurityController.changeToRoleDeck()" />		    
-       			<radio id="user-radio-button" label="${SecurityTab.User}" command="iSecurityController.changeToUserDeck()" />
-			</hbox>
-		  	<deck id="user-role-deck" flex="1">
-				<hbox flex="1">
-					<vbox flex="1">
-						<!-- Roles list pane -->
-						<hbox>
-							<label value="${SecurityTab.RoleLabel}"/>
-							<label id="spacer-label" flex="1" />
-							<button id="role-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="iSecurityController.showEditRoleDialog()" disabled="true"/>
-							<button id="role-add" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="iSecurityController.showAddRoleDialog()"/>
-							<button id="role-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="iSecurityController.removeRole()" disabled="true"/>
-						</hbox>
-						<!-- Roles list -->
-						<listbox id="roles-list" pen:binding="name" disabled="false" flex="1"/>
-					</vbox>
-					<vbox flex="4">
-						<hbox>
-							<label id="members-label" value="${SecurityTab.Members}"/>
-							<label id="spacer-label" flex="1" />
-							<button id="add-user-to-role" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="iSecurityController.showAddUserToRoleDialog()" disabled="true"/>
-							<button id="remove-user-from-role" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="iSecurityController.removeUsersFromRole()" disabled="true"/>
-						</hbox>
-						<tree id="role-detail-table" flex="1" hidecolumnpicker="true" enableColumnDrag="true">
-							<treecols>
-								<treecol id="user-name-col" flex="1" label="${SecurityTab.Name}"
-									pen:binding="name" pen:childrenbinding="children"/>
-								<treecol id="user-desc-col" flex="1" label="${SecurityTab.Description}"
-									pen:binding="description"/>
-							</treecols>
-							<treechildren />
-						</tree>
-						<vbox id="role-action-permissions-groupbox"/>
-					</vbox>				
-				</hbox>
-				<hbox flex="1">
-					<vbox flex="1">
-						<!-- User list pane -->
-						<hbox>
-							<label value="${SecurityTab.UserLabel}"/>
-							<label id="spacer-label" flex="1" />
-							<button id="user-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="iSecurityController.showEditUserDialog()" disabled="true"/>
-							<button id="user-add" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="iSecurityController.showAddUserDialog()"/>
-							<button id="user-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="iSecurityController.removeUser()" disabled="true"/>
-						</hbox>
-						<!-- Roles list -->
-						<listbox id="users-list" pen:binding="name" disabled="false" flex="1"/>
-					</vbox>
-					<vbox flex="4">
-						<hbox>
-							<label value="${SecurityTab.Memberof}"/>
-							<label id="spacer-label" flex="1" />
-							<button id="add-role-to-user" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="iSecurityController.showAddRoleToUserDialog()" disabled="true"/>
-							<button id="remove-role-from-user" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="iSecurityController.removeRolesFromUser()" disabled="true"/>
-						</hbox>
-						<tree id="user-detail-table" flex="1" hidecolumnpicker="true" enableColumnDrag="true">
-							<treecols>
-								<treecol id="role-name-col" flex="1" label="${SecurityTab.Name}"
-									pen:binding="name" pen:childrenbinding="children"/>
-								<treecol id="role-desc-col" flex="1" label="${SecurityTab.Description}"
-									pen:binding="description"/>
-							</treecols>
-							<treechildren />
-						</tree>
-					</vbox>				
-				</hbox>
-			</deck>	
-		</vbox>					
-	</hbox>
-</overlay>
+    <vbox id="security-message-box" removeelement="true"/>
+    <hbox id="security-box" flex="1" >
+        <vbox flex="1">
+              <hbox id="user-role-radio-button-box" />
+              <deck id="user-role-deck" flex="1">
+                <hbox id="user-box" flex="1">
+                    <vbox flex="1">
+                        <!-- User list pane -->
+                        <hbox>
+                            <label value="${SecurityTab.UserLabel}"/>
+                            <label id="spacer-label" flex="1" />
+                            <button id="user-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="iSecurityController.showEditUserDialog()" disabled="true"/>
+                            <button id="user-add" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="iSecurityController.showAddUserDialog()"/>
+                            <button id="user-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="iSecurityController.removeUser()" disabled="true"/>
+                        </hbox>
+                        <!-- Roles list -->
+                        <listbox id="users-list" pen:binding="name" disabled="false" flex="1"/>
+                    </vbox>
+                    <vbox flex="4">
+                        <hbox>
+                            <label value="${SecurityTab.Memberof}"/>
+                            <label id="spacer-label" flex="1" />
+                            <hbox id="user-manage-button-box"/>
+                        </hbox>
+                        <tree id="user-detail-table" flex="1" hidecolumnpicker="true" enableColumnDrag="true">
+                            <treecols>
+                                <treecol id="role-name-col" flex="1" label="${SecurityTab.Name}"
+                                    pen:binding="name" pen:childrenbinding="children"/>
+                                <treecol id="role-desc-col" flex="1" label="${SecurityTab.Description}"
+                                    pen:binding="description"/>
+                            </treecols>
+                            <treechildren />
+                        </tree>
+                    </vbox>               
+                </hbox>
+                <hbox id="role-box" flex="1"/>                
+            </deck>   
+        </vbox>                   
+    </hbox>
+  </overlay>
 

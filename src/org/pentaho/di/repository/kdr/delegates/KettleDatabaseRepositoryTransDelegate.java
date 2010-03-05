@@ -21,12 +21,12 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransDependency;
@@ -107,7 +107,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
         {
 			// Before saving the job, see if it's not locked by someone else...
 			//
-			UserInfo userInfo = repository.getUserInfo();
+			IUser userInfo = repository.getUserInfo();
 			if (!"admin".equals(userInfo.getLogin())) {
 				ObjectId objectId = getTransformationID(transMeta.getName(), transMeta.getRepositoryDirectory().getObjectId());
 				if (objectId!=null) {

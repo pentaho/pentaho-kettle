@@ -28,10 +28,4 @@ public class UIClusters extends AbstractModelList<UICluster> {
   public UIClusters(List<UICluster> clusters) {
     super(clusters);
   }
-
-  @Override
-  protected void fireCollectionChanged() {
-    this.changeSupport.firePropertyChange("children", null, this.getChildren()); //$NON-NLS-1$
-  }
-
 }

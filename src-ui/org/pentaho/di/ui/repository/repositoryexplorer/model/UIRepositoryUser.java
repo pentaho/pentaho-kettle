@@ -16,106 +16,50 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.pentaho.di.repository.IRole;
-import org.pentaho.di.repository.UserInfo;
-import org.pentaho.di.ui.repository.repositoryexplorer.UIObjectCreationException;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 
-public class UIRepositoryUser extends XulEventSourceAdapter {
+public class UIRepositoryUser extends XulEventSourceAdapter implements IUIUser{
 
-  private UserInfo rui;
+  protected IUser user;
 
   public UIRepositoryUser() {
   }
 
-  public UIRepositoryUser(UserInfo rui) {
-    this.rui = rui;
+  public UIRepositoryUser(IUser user) {
+    this.user = user;
   }
 
   public void setName(String name) {
-    rui.setLogin(name);
+    user.setLogin(name);
   }
 
   public String getName() {
-    return rui.getLogin();
+    return user.getLogin();
   }
 
   public String getDescription() {
-    return rui.getDescription();
+    return user.getDescription();
   }
 
   public void setDescription(String desc) {
-    rui.setDescription(desc);
+    user.setDescription(desc);
   }
 
   public void setPassword(String pass) {
-    rui.setPassword(pass);
+    user.setPassword(pass);
   }
 
   public String getPassword() {
-    return rui.getPassword();
+    return user.getPassword();
   }
 
-  public UserInfo getUserInfo() {
-    return rui;
-  }
-
-  public boolean addRole(IUIRole role) {
-    return rui.addRole(role.getRole());
-  }
-
-  public boolean removeRole(IUIRole role) {
-    return removeRole(role.getRole().getName());
-  }
-
-  public void clearRoles() {
-    rui.clearRoles();
-  }
-
-  public void setRoles(Set<IUIRole> roles) {
-    Set<IRole> roleSet = new HashSet<IRole>();
-    for(IUIRole role:roles) {
-      roleSet.add(role.getRole());
-    }
-    rui.setRoles(roleSet);
-    
-  }
-
-  public Set<IUIRole> getRoles() {
-    Set<IUIRole> rroles = new HashSet<IUIRole>();
-    for(IRole role:rui.getRoles()) {
-      try {
-        rroles.add(UIObjectRegistery.getInstance().constructUIRepositoryRole(role));
-      } catch(UIObjectCreationException uex) {
-        
-      }
-    }
-    return rroles;
+  public IUser getUserInfo() {
+    return user;
   }
   
   public boolean equals(Object o) {
     return ((o instanceof UIRepositoryUser) ? getName().equals(((UIRepositoryUser) o).getName()) : false);
   }
 
-  public int hashCode() {
-    return getName().hashCode();
-  }
-  
-  private boolean removeRole(String roleName) {
-    IRole roleInfo = null;
-    for(IRole role:rui.getRoles()) {
-      if(role.getName().equals(roleName)) {
-        roleInfo = role;
-        break;
-      }
-    }
-    if(roleInfo != null) {
-      return rui.removeRole(roleInfo);
-    } else {
-      return false;
-    }
-  }
 }

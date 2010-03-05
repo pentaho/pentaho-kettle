@@ -2,7 +2,7 @@ package org.pentaho.di.repository;
 
 import org.pentaho.di.core.exception.KettleException;
 
-public interface VersionRepository {
+public interface VersionRepository extends IRepositoryService{
   
   /**
    * Restore a job from the given revision. The state of the specified revision becomes

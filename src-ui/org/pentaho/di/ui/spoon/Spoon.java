@@ -163,7 +163,7 @@ import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
-import org.pentaho.di.repository.Directory;
+import org.pentaho.di.repository.IAclManager;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
@@ -174,10 +174,8 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
-import org.pentaho.di.repository.SecurityManagerRegistery;
+import org.pentaho.di.repository.VersionRepository;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
-import org.pentaho.di.repository.filerep.KettleFileRepositorySecurityProvider;
-import org.pentaho.di.repository.kdr.KettleDatabaseRepositorySecurityProvider;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
@@ -221,6 +219,9 @@ import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.ILoginCallback;
 import org.pentaho.di.ui.repository.RepositoriesDialog;
 import org.pentaho.di.ui.repository.RepositorySecurityUI;
+import org.pentaho.di.ui.repository.capabilities.AclUISupport;
+import org.pentaho.di.ui.repository.capabilities.ManageUserUISupport;
+import org.pentaho.di.ui.repository.capabilities.RevisionsUISupport;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
@@ -228,6 +229,7 @@ import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryObjectReference;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
+import org.pentaho.di.ui.repository.repositoryexplorer.UISupportRegistery;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
@@ -3047,16 +3049,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       };
 
       try {
-        Directory root = rep.loadRepositoryDirectoryTree();
-        // Create the security manager if it is not File or Database Security Provider
-        if (!(rep.getSecurityProvider() instanceof KettleFileRepositorySecurityProvider) && 
-          !(rep.getSecurityProvider() instanceof KettleDatabaseRepositorySecurityProvider)) {  
-          if (SecurityManagerRegistery.getInstance().getRegisteredSecurityManager() != null) {
-            securityManager = SecurityManagerRegistery.getInstance().createSecurityManager(rep, rep.getRepositoryMeta(),
-                rep.getUserInfo());
-          }
-        }
-        RepositoryExplorer explorer = new RepositoryExplorer(rep, getSecurityManager(), cb, Variables
+        RepositoryExplorer explorer = new RepositoryExplorer(rep, cb, Variables
             .getADefaultVariableSpace());
         explorer.show();
       } catch (Throwable e) {
@@ -5094,7 +5087,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     ((XulMenuitem) doc.getElementById("repository-explore-experimental")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
 
-		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
+    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
 
     // What steps & plugins to show?
     refreshCoreObjects();
@@ -5741,6 +5734,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         
         public void onSuccess(Repository repository) {
           setRepository(repository);
+          SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CONNECTED);
         }
         
         public void onError(Throwable t) {
@@ -5763,7 +5757,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           // Define and connect to the repository...
           Repository repo = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, Repository.class);
           repo.init(repositoryMeta);
-		  repo.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
+      repo.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
           setRepository(repo);
         } else {
           String msg = BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined");
@@ -5776,6 +5770,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             
             public void onSuccess(Repository repository) {
               setRepository(repository);
+              SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CONNECTED);
             }
             
             public void onError(Throwable t) {
@@ -6259,8 +6254,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	
 	      refreshGraph();	    
       } catch(Exception e) {
-    	new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.ErrorEditingStepPartitioning.Title"), 
-    			BaseMessages.getString(PKG, "Spoon.ErrorEditingStepPartitioning.Message"), e);
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.ErrorEditingStepPartitioning.Title"), 
+          BaseMessages.getString(PKG, "Spoon.ErrorEditingStepPartitioning.Message"), e);
       }
     }
   }
@@ -6631,18 +6626,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void setRepository(Repository rep) {
     this.rep = rep;
-		
-		try {
-  		if (rep != null) {
-  		  this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-  		  if(SecurityManagerRegistery.getInstance().getRegisteredSecurityManager() != null) {
-          securityManager = SecurityManagerRegistery.getInstance().createSecurityManager(rep, rep.getRepositoryMeta(), rep.getUserInfo());
-        }
-  		}
-		} catch (Exception e) {
-		  getLog().logDebug(e.getMessage());
-		}
-    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
+    if (rep != null) {
+      this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+    }
+    // Registering the UI Support classes
+    UISupportRegistery.getInstance().registerUISupport(RepositorySecurityManager.class, ManageUserUISupport.class);
+    UISupportRegistery.getInstance().registerUISupport(VersionRepository.class, RevisionsUISupport.class);
+    UISupportRegistery.getInstance().registerUISupport(IAclManager.class, AclUISupport.class);
+    
+    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);    
   }
 
   public void addMenuListener(String id, Object listener, String methodName) {
@@ -7035,9 +7027,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public RepositorySecurityManager getSecurityManager() {
-    return securityManager;
+    return rep.getSecurityManager();
   }
-
 
   /* ========================= End XulEventHandler Methods ========================== */
 

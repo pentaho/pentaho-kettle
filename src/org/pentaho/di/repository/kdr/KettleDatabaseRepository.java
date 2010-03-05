@@ -16,7 +16,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
@@ -41,8 +43,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.IRepositoryService;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.LongObjectId;
-import org.pentaho.di.repository.ObjectAcl;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -54,6 +57,8 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
+import org.pentaho.di.repository.RepositorySecurityManager;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryClusterSchemaDelegate;
@@ -102,9 +107,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	public KettleDatabaseRepositoryStepDelegate stepDelegate;
 	public KettleDatabaseRepositoryJobEntryDelegate jobEntryDelegate;
 	private KettleDatabaseRepositorySecurityProvider	securityProvider;
-	
+	private Map<Class<? extends IRepositoryService>, IRepositoryService> serviceMap;
+	private List<Class<? extends IRepositoryService>> serviceList;
 	public KettleDatabaseRepository() {
 		super();
+    		
 	}
 	
   /**
@@ -112,6 +119,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
    */
   public void init(RepositoryMeta repositoryMeta) {
 		this.repositoryMeta = (KettleDatabaseRepositoryMeta)repositoryMeta;
+		this.serviceList = new ArrayList<Class<? extends IRepositoryService>>();
+    this.serviceMap = new HashMap<Class<? extends IRepositoryService>, IRepositoryService>();
 		this.log = new LogChannel(this);
 		init();
 	}
@@ -135,7 +144,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		this.stepDelegate = new KettleDatabaseRepositoryStepDelegate(this);
 		this.jobEntryDelegate = new KettleDatabaseRepositoryJobEntryDelegate(this);
 		this.creationHelper = new KettleDatabaseRepositoryCreationHelper(this);
-		
 	}
 	
     /** 
@@ -155,8 +163,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	  // first disconnect if already connected
 	  connectionDelegate.connect();
 		try {
-		  UserInfo userinfo = userDelegate.loadUserInfo(new UserInfo(), username, password);
+		  IUser userinfo = userDelegate.loadUserInfo(new UserInfo(), username, password);
 		  securityProvider = new KettleDatabaseRepositorySecurityProvider(this, repositoryMeta, userinfo);
+	    
+	    // We need to add services in the list in the order of dependencies
+		  registerRepositoryService(RepositorySecurityProvider.class, securityProvider);
+		  registerRepositoryService(RepositorySecurityManager.class, securityProvider);
 		} catch (KettleDatabaseException e) {
 		  // if we fail to log in, disconnect and then rethrow the exception
 		  connectionDelegate.disconnect();
@@ -164,6 +176,16 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		}
 	}
 
+  /**
+   * Add the repository service to the map and add the interface to the list
+   * @param clazz
+   * @param repositoryService
+   */
+  private void registerRepositoryService(Class<? extends IRepositoryService> clazz, IRepositoryService repositoryService) {
+    this.serviceMap.put(clazz, repositoryService);
+    this.serviceList.add(clazz);
+  }
+  
 	public synchronized void commit() throws KettleException {
 		connectionDelegate.commit();
 	}
@@ -172,7 +194,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		connectionDelegate.rollback();
 	}
 	
-	public UserInfo getUserInfo() {
+	public IUser getUserInfo() {
 	  if (securityProvider != null) {
 	    return securityProvider.getUserInfo();
 	  } else {
@@ -1725,21 +1747,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     throw new UnsupportedOperationException();
   }
 
-  public ObjectAcl getAcl(RepositoryElementLocationInterface element) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void setAcl(ObjectId id, ObjectAcl aclObject) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
   public List<ObjectRevision> getRevisions(ObjectId id) throws KettleException {
     throw new UnsupportedOperationException();
    }
-
-  public ObjectAcl getAcl(ObjectId id, boolean forceParentInheriting) throws KettleException {
-    throw new UnsupportedOperationException();
-  }
   
   public List<RepositoryObject> getJobAndTransformationObjects(ObjectId id_directory, boolean includeDeleted)
       throws KettleException {
@@ -1748,5 +1758,17 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     objs.addAll(getJobObjects(id_directory, includeDeleted));
     objs.addAll(getTransformationObjects(id_directory, includeDeleted));
     return objs;
+  }
+
+  public IRepositoryService getService(Class<? extends IRepositoryService> clazz) throws KettleException {
+    return serviceMap.get(clazz);
+  }
+
+  public List<Class<? extends IRepositoryService>> getServiceInterfaces() throws KettleException {
+    return serviceList;
+  }
+
+  public boolean hasService(Class<? extends IRepositoryService> clazz) throws KettleException {
+    return serviceMap.containsKey(clazz);
   }
 }

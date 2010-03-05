@@ -30,9 +30,4 @@ public class UIPartitions  extends AbstractModelList<UIPartition> {
     super(partitions);
   }
   
-  @Override
-  protected void fireCollectionChanged() {
-    this.changeSupport.firePropertyChange("children", null, this.getChildren()); //$NON-NLS-1$
-  }
-
 }

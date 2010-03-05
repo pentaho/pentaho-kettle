@@ -16,7 +16,10 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -36,16 +39,30 @@ import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartition;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartitions;
+import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class PartitionsController extends AbstractXulEventHandler {
+public class PartitionsController extends AbstractXulEventHandler{
 
-  private ResourceBundle messages;
+  private ResourceBundle messages = new ResourceBundle() {
+
+    @Override
+    public Enumeration<String> getKeys() {
+      return null;
+    }
+
+    @Override
+    protected Object handleGetObject(String key) {
+      return BaseMessages.getString(RepositoryExplorer.class, key);
+    }
+    
+  };  
   
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -58,6 +75,14 @@ public class PartitionsController extends AbstractXulEventHandler {
   private XulTree partitionsTable = null;
 
   private UIPartitions partitionList = new UIPartitions();
+  {
+    partitionList.addPropertyChangeListener("children", new PropertyChangeListener() {//$NON-NLS-1$
+      
+      public void propertyChange(PropertyChangeEvent evt) {
+        PartitionsController.this.changeSupport.firePropertyChange("partitionList", null, partitionList);//$NON-NLS-1$
+      }
+    });
+  }
   
   private VariableSpace variableSpace = null;
 
@@ -71,6 +96,8 @@ public class PartitionsController extends AbstractXulEventHandler {
     shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
 
     setEnableButtons(false);
+    bf = new DefaultBindingFactory();
+    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
     
     if (bf != null) {
       createBindings();
@@ -80,8 +107,8 @@ public class PartitionsController extends AbstractXulEventHandler {
   public void createBindings() {
     try {
       partitionsTable = (XulTree) document.getElementById("partitions-table"); //$NON-NLS-1$
-      bf.createBinding(partitionList, "children", partitionsTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
-      
+      bf.createBinding(this, "partitionList", partitionsTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+      bf.setBindingType(Binding.Type.ONE_WAY);
       bf.createBinding(partitionsTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<List<UIPartition>, Boolean>() {
             @Override
@@ -103,10 +130,6 @@ public class PartitionsController extends AbstractXulEventHandler {
       throw new RuntimeException(e);
     }
     refreshPartitions();
-  }
-
-  public void setBindingFactory(BindingFactory bindingFactory) {
-    this.bf = bindingFactory;
   }
 
   public void setRepository(Repository rep) {
@@ -248,6 +271,14 @@ public class PartitionsController extends AbstractXulEventHandler {
     }
   }
 
+  public UIPartitions getPartitionList() {
+    return partitionList;
+  }
+
+  public void setPartitionList(UIPartitions partitionList) {
+    this.partitionList = partitionList;
+  }
+
   public void setEnableButtons(boolean enable) {
     // Convenience - Leave 'new' enabled, modify 'edit' and 'remove'
     enableButtons(true, enable, enable);
@@ -262,12 +293,6 @@ public class PartitionsController extends AbstractXulEventHandler {
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
   }
-
-  public void setMessages(ResourceBundle messages) {
-    this.messages = messages;
-  }
-
-  public ResourceBundle getMessages() {
-    return messages;
-  }
+  
+  
 }

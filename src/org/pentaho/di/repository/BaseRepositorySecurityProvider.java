@@ -7,16 +7,16 @@ import org.pentaho.di.core.exception.KettleSecurityException;
 public class BaseRepositorySecurityProvider {
 
 	protected RepositoryMeta repositoryMeta;
-	protected UserInfo userInfo;
+	protected IUser userInfo;
 	protected RepositoryCapabilities	capabilities;
 
-	public BaseRepositorySecurityProvider(RepositoryMeta repositoryMeta, UserInfo userInfo) {
+	public BaseRepositorySecurityProvider(RepositoryMeta repositoryMeta, IUser userInfo) {
 		this.repositoryMeta = repositoryMeta;
 		this.userInfo = userInfo;
 		this.capabilities = repositoryMeta.getRepositoryCapabilities();
 	}
 	
-	public UserInfo getUserInfo() {
+	public IUser getUserInfo() {
 	  // return a copy of the user info, so that external editing cannot effect the database repo behavior
 	  // this allows the user info to act as immutable.
 		return userInfo != null ? new UserInfo(userInfo) : null;

@@ -12,6 +12,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -27,6 +28,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlaves;
 import org.pentaho.ui.xul.binding.BindingConvertor;
@@ -36,9 +38,21 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class SlavesController extends AbstractXulEventHandler {
+public class SlavesController extends AbstractXulEventHandler{
 
-  private ResourceBundle messages;
+  private ResourceBundle messages = new ResourceBundle() {
+
+    @Override
+    public Enumeration<String> getKeys() {
+      return null;
+    }
+
+    @Override
+    protected Object handleGetObject(String key) {
+      return BaseMessages.getString(RepositoryExplorer.class, key);
+    }
+    
+  };  
 
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -74,11 +88,6 @@ public class SlavesController extends AbstractXulEventHandler {
   public void setRepository(Repository repository) {
     this.repository = repository;
   }
-  
-  public void setBindingFactory(BindingFactory bindingFactory) {
-    this.bf = bindingFactory;
-  }
-
   public void createBindings() {
     try {
       slavesTable = (XulTree) document.getElementById("slaves-table"); //$NON-NLS-1$
@@ -260,13 +269,5 @@ public class SlavesController extends AbstractXulEventHandler {
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
-  }
-
-  public void setMessages(ResourceBundle messages) {
-    this.messages = messages;
-  }
-
-  public ResourceBundle getMessages() {
-    return messages;
   }
 }

@@ -37,7 +37,7 @@ public interface Repository {
   /**
    * @return the currently logged on user. (also available through the repository security provider)
    */
-  public UserInfo getUserInfo();
+  public IUser getUserInfo();
   
   /**
    * @return The security provider for this repository.
@@ -495,27 +495,6 @@ public interface Repository {
   public List<ObjectRevision> getRevisions(ObjectId id) throws KettleException;
 
   /**
-   * Get the Permissions of a repository object.
-   * 
-   * @param Object Id of the repository object
-   * @param forceParentInheriting retrieve the effective ACLs as if 'inherit from parent' were true
-   * 
-   * @return The permissions.
-   * @throws KettleException in case something goes horribly wrong
-   */
-  public ObjectAcl getAcl(ObjectId id, boolean forceParentInheriting) throws KettleException;
-
-  /**
-   * Set the Permissions of a repository element.
-   * 
-   * @param Acl object that needs to be set.
-   * @param Object Id of a file for which the acl are being set.
-   * 
-   * @throws KettleException in case something goes horribly wrong
-   */
-  public  void setAcl(ObjectId id, ObjectAcl aclObject) throws KettleException;
-
-  /**
    * Removes he deleted flag from a repository element in the repository.  
    * If it wasn't deleted, it remains untouched.
    * 
@@ -532,4 +511,29 @@ public interface Repository {
    * @throws KettleException in case something goes horribly wrong.
    */
   public RepositoryVersionRegistry getVersionRegistry() throws KettleException;
+  
+  /**
+  * Retrieves the current list of of IRepository Services.
+  * 
+  * @return List of repository services
+  * @throws KettleException in case something goes horribly wrong.
+  */
+  public List<Class<? extends IRepositoryService>> getServiceInterfaces() throws KettleException;
+
+  /**
+  * Retrieves a given repository service
+  * @param  service class name
+  * @return repository service
+  * 
+  * @throws KettleException in case something goes horribly wrong.
+  */
+  public IRepositoryService getService(Class<? extends IRepositoryService> clazz) throws KettleException;
+
+  /**
+   * Checks whether a given repository service is available or not 
+   * 
+   * @param repository service class that needs to be checked for support
+   * @throws KettleException in case something goes horribly wrong.
+   */  
+  public boolean hasService(Class<? extends IRepositoryService> clazz) throws KettleException;
 }

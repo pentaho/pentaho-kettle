@@ -23,6 +23,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -30,10 +31,13 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectAcl;
 import org.pentaho.di.repository.ObjectPermission;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityManager;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
+import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
@@ -45,6 +49,7 @@ import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulCheckbox;
 import org.pentaho.ui.xul.components.XulConfirmBox;
@@ -63,10 +68,21 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  * browse functionality.
  *
  */
-public class PermissionsController extends AbstractXulEventHandler implements ContextChangeListener {
+public class PermissionsController extends AbstractXulEventHandler implements ContextChangeListener, IUISupportController {
   
-  private ResourceBundle messages;
-  
+  private ResourceBundle messages = new ResourceBundle() {
+
+    @Override
+    public Enumeration<String> getKeys() {
+      return null;
+    }
+
+    @Override
+    protected Object handleGetObject(String key) {
+      return BaseMessages.getString(RepositoryExplorer.class, key);
+    }
+    
+  };    
   private static final int NO_ACL = 0;
 
   private static final int ACL = 1;
@@ -82,8 +98,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   private XulListbox selectedUserList;
 
   private XulListbox selectedRoleList;
-
-  private UIRepositoryDirectory repositoryDirectory;
 
   private XulCheckbox createCheckbox;
 
@@ -120,7 +134,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   private Binding securityBinding;
 
   private XulLabel fileFolderLabel;
-
+  
   BindingFactory bf;
   private UIRepositoryObjectAcls viewAclsModel;
   UIRepositoryObjectAclModel manageAclsModel = null;
@@ -129,16 +143,16 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   
   List<UIRepositoryObject> repoObject = new ArrayList<UIRepositoryObject>();
 
-  private RepositorySecurityManager rsm;
+  private Repository repository;
   private BrowseController browseController;
   ObjectAcl acl;
   TYPE returnType;
-
   public PermissionsController() {
   }
 
-  public void init()  throws ControllerInitializationException {
+  public void init(Repository rep)  throws ControllerInitializationException {
     try {
+      setRepository(rep);
       confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
       confirmBox.setTitle(messages.getString("PermissionsController.RemoveAclWarning")); //$NON-NLS-1$
       confirmBox.setMessage(messages.getString("PermissionsController.RemoveAclWarningText")); //$NON-NLS-1$
@@ -160,10 +174,13 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
       viewAclsModel = new UIRepositoryObjectAcls();
       manageAclsModel = new UIRepositoryObjectAclModel(viewAclsModel);
       browseController.addContextChangeListener(this);
+      bf = new DefaultBindingFactory();
+      bf.setDocument(this.getXulDomContainer().getDocumentRoot());
+      createBindings();
     } catch (Exception e) {
       throw new ControllerInitializationException(e);
     }
-    createBindings();
+
   }
 
   private void createBindings() {
@@ -488,28 +505,16 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     return repoObject;
   }
 
-  public RepositorySecurityManager getRepositorySecurityManager() {
-    return rsm;
+  public Repository getRepository() {
+    return repository;
   }
 
-  public void setRepositorySecurityManager(RepositorySecurityManager rsm) {
-    this.rsm = rsm;
-  }
-
-  public void setBindingFactory(BindingFactory bf) {
-    this.bf = bf;
+  public void setRepository(Repository repository) {
+    this.repository = repository;
   }
 
   public String getName() {
     return "permissionsController";//$NON-NLS-1$
-  }
-
-  public UIRepositoryDirectory getRepositoryDirectory() {
-    return repositoryDirectory;
-  }
-
-  public void setRepositoryDirectory(UIRepositoryDirectory repositoryDirectory) {
-    this.repositoryDirectory = repositoryDirectory;
   }
 
   /**
@@ -543,8 +548,10 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   public void showManageAclsDialog() throws Exception {
     try {
+      RepositorySecurityProvider rsp = (RepositorySecurityProvider)getRepository()
+        .getService(RepositorySecurityProvider.class);
       manageAclsModel.clear();
-      manageAclsModel.setAclsList(rsm.getAllUsers(), rsm.getAllRoles());
+      manageAclsModel.setAclsList(rsp.getAllUsers(), rsp.getAllRoles());
     } catch (KettleException ke) {
       messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
@@ -818,13 +825,5 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
       returnType = TYPE.NO_OP;
     }
     return returnType;
-  }
-
-  public void setMessages(ResourceBundle messages) {
-    this.messages = messages;
-  }
-
-  public ResourceBundle getMessages() {
-    return messages;
   }
 }

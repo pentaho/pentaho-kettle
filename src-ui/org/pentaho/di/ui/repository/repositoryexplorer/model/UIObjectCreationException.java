@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repository.repositoryexplorer;
+package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 public class UIObjectCreationException extends Exception {
   private static final long serialVersionUID = -2151267602926525247L;

@@ -16,7 +16,10 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -35,8 +38,10 @@ import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UICluster;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIClusters;
+import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -44,7 +49,19 @@ import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
 public class ClustersController extends AbstractXulEventHandler {
 
-  private ResourceBundle messages;
+  private ResourceBundle messages = new ResourceBundle() {
+
+    @Override
+    public Enumeration<String> getKeys() {
+      return null;
+    }
+
+    @Override
+    protected Object handleGetObject(String key) {
+      return BaseMessages.getString(RepositoryExplorer.class, key);
+    }
+    
+  };  
   
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -57,6 +74,21 @@ public class ClustersController extends AbstractXulEventHandler {
   private XulTree clustersTable = null;
 
   private UIClusters clusterList = new UIClusters();
+  {
+    clusterList.addPropertyChangeListener("children", new PropertyChangeListener() { //$NON-NLS-1$
+      
+      public void propertyChange(PropertyChangeEvent evt) {
+        ClustersController.this.changeSupport.firePropertyChange("clusterList", null, clusterList);//$NON-NLS-1$z
+      }
+    });
+  }
+  public UIClusters getClusterList() {
+    return clusterList;
+  }
+
+  public void setClusterList(UIClusters clusterList) {
+    this.clusterList = clusterList;
+  }
 
   @Override
   public String getName() {
@@ -66,6 +98,8 @@ public class ClustersController extends AbstractXulEventHandler {
   public void init() {
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
+    bf = new DefaultBindingFactory();
+    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
 
     setEnableButtons(false);
     
@@ -77,8 +111,8 @@ public class ClustersController extends AbstractXulEventHandler {
   public void createBindings() {
     try {
       clustersTable = (XulTree) document.getElementById("clusters-table"); //$NON-NLS-1$
-      bf.createBinding(clusterList, "children", clustersTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
-      
+      bf.createBinding(this, "clusterList", clustersTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+      bf.setBindingType(Binding.Type.ONE_WAY);
       bf.createBinding(clustersTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<List<UICluster>, Boolean>() {
             @Override
@@ -101,11 +135,6 @@ public class ClustersController extends AbstractXulEventHandler {
     }
     refreshClusters();
   }
-
-  public void setBindingFactory(BindingFactory bindingFactory) {
-    this.bf = bindingFactory;
-  }
-
   public void setRepository(Repository rep) {
     this.repository = rep;
   }
@@ -255,13 +284,4 @@ public class ClustersController extends AbstractXulEventHandler {
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
   }
-
-  public void setMessages(ResourceBundle messages) {
-    this.messages = messages;
-  }
-
-  public ResourceBundle getMessages() {
-    return messages;
-  }
-
 }
