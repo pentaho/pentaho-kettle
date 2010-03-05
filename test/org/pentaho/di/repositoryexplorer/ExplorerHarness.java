@@ -71,8 +71,7 @@ public class ExplorerHarness {
     
     try {
       repository.connect(userInfo.getLogin(), userInfo.getPassword());
-      RepositoryExplorer.setSecurityControllerClass(SecurityController.class);
-      RepositoryExplorer explorer = new RepositoryExplorer(repository, repository.getSecurityManager(), cb, null);
+      RepositoryExplorer explorer = new RepositoryExplorer(repository, cb, null);
       explorer.show();
     } catch (XulException e) {
       e.printStackTrace();
