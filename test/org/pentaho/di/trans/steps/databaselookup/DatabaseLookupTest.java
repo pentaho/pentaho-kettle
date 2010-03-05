@@ -304,6 +304,8 @@ public class DatabaseLookupTest
     @BeforeClass
     public static void createDatabase() throws Exception
     {
+    	KettleEnvironment.init();
+
         //
         // Create a new transformation...
         //
@@ -329,7 +331,7 @@ public class DatabaseLookupTest
 	 * Basic Test case for database lookup.
 	 */
     @Test
-    public void BasicDatabaseLookup() throws Exception
+    public void basicDatabaseLookup() throws Exception
     {
         KettleEnvironment.init();
 

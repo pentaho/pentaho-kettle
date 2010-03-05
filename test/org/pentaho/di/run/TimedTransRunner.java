@@ -8,7 +8,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowListener;
@@ -40,14 +39,7 @@ public class TimedTransRunner
 
     public boolean run() throws Exception
     {
-        init();
         return runEngine(false);
-    }
-
-    public void init() throws KettleException
-    {
-        KettleEnvironment.init();
-        LogWriter.getInstance(logLevel);
     }
     
     public void printTransDescription()

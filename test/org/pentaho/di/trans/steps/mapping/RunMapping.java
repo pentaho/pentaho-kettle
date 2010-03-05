@@ -2,6 +2,7 @@ package org.pentaho.di.trans.steps.mapping;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -36,13 +37,13 @@ public class RunMapping extends TestCase
     
     public void test_MAPPING_INPUT_ONLY() throws Exception
     {
+    	KettleEnvironment.init();
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "test/org/pentaho/di/trans/steps/mapping/filereader/use filereader.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 getTargetDatabase(),
                 1000
             );
-        timedTransRunner.init();
         assertTrue( timedTransRunner.runEngine(true) );
         
         Result newResult = timedTransRunner.getNewResult();
@@ -51,13 +52,13 @@ public class RunMapping extends TestCase
     
     public void test_MAPPING_OUTPUT_ONLY() throws Exception
     {
+    	KettleEnvironment.init();
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "test/org/pentaho/di/trans/steps/mapping/filewriter/use filewriter.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 getTargetDatabase(),
                 1000
             );
-        timedTransRunner.init();
         assertTrue( timedTransRunner.runEngine(true) );
         
         Result newResult = timedTransRunner.getNewResult();
@@ -66,13 +67,13 @@ public class RunMapping extends TestCase
     
     public void test_MAPPING_MULTI_OUTPUT() throws Exception
     {
+    	KettleEnvironment.init();
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "test/org/pentaho/di/trans/steps/mapping/multi_output/use filereader.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 getTargetDatabase(),
                 1000
             );
-        timedTransRunner.init();
         assertTrue( timedTransRunner.runEngine(true) );
         
         Result newResult = timedTransRunner.getNewResult();
