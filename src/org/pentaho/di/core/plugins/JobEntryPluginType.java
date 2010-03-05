@@ -152,7 +152,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 
 	    Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
 	    
-	    classMap.put(JobEntry.class, clazz.getName());
+	    classMap.put(JobEntryInterface.class, clazz.getName());
 	    
 	    PluginClassTypes classTypesAnnotation = clazz.getAnnotation(PluginClassTypes.class);
 	    if(classTypesAnnotation != null){
@@ -164,7 +164,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 	      }
 	    }
 		
-		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), JobEntry.class, category, name, description, jobEntry.image(), false, nativeJobEntry, classMap, libraries, null);
+		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), JobEntryInterface.class, category, name, description, jobEntry.image(), false, nativeJobEntry, classMap, libraries, null);
 		registry.registerPlugin(this.getClass(), stepPlugin);
 	}
 
