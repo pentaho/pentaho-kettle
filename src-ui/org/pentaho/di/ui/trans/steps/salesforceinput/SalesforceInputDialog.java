@@ -285,7 +285,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         wPassword = new LabelTextVar(transMeta,wConnectionGroup, BaseMessages.getString(PKG, "SalesforceInputDialog.Password.Label"), 
         		BaseMessages.getString(PKG, "SalesforceInputDialog.Password.Tooltip"));
         props.setLook(wPassword);
-        //wPassword.setEchoChar('*');
+        wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
         fdPassword = new FormData();
         fdPassword.left = new FormAttachment(0, 0);
