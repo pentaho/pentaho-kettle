@@ -26,6 +26,10 @@ public class KettleEnvironment {
 	private static Boolean initialized;
 	
 	public static void init() throws KettleException {
+	  init(true);
+	}
+	
+	public static void init(boolean simpleJndi) throws KettleException {
 		if (initialized==null) {
 			
 			createKettleHome();
@@ -34,7 +38,9 @@ public class KettleEnvironment {
 			
 			CentralLogStore.init();
 			
-			JndiUtil.initJNDI();
+			if (simpleJndi) {
+			  JndiUtil.initJNDI();
+			}
 			
 			PluginTypeInterface[] pluginTypes = new PluginTypeInterface[] {
 					StepPluginType.getInstance(), 			// Steps
