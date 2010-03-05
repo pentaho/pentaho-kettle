@@ -60,7 +60,7 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 	protected void registerAnnotations() throws KettlePluginException {
 
 		List<Class<?>> classes = getAnnotatedClasses(DatabaseMetaPlugin.class);
-		LogChannel.GENERAL.logBasic("Found "+classes.size()+" classes annotated with @DatabaseMetaPlugin");
+		LogChannel.GENERAL.logDetailed("Found "+classes.size()+" classes annotated with @DatabaseMetaPlugin");
 		for (Class<?> clazz : classes)
 		{
 			DatabaseMetaPlugin databaseMetaPlugin = clazz.getAnnotation(DatabaseMetaPlugin.class);
