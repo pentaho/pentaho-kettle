@@ -383,9 +383,12 @@ public class PluginRegistry {
 			// This has something to do with the fact that we're using our own launcher
 			// The class path of that thing is somehow picked up.  To be investigated!
 			//
-			annotationDB.scanArchives(new File("lib/kettle-core.jar").toURI().toURL());
-			annotationDB.scanArchives(new File("lib/kettle-db.jar").toURI().toURL());
-			annotationDB.scanArchives(new File("lib/kettle-engine.jar").toURI().toURL());
+			File kettleCore = new File("lib/kettle-core.jar");
+			if (kettleCore.exists()) {
+  			annotationDB.scanArchives(kettleCore.toURI().toURL());
+  			annotationDB.scanArchives(new File("lib/kettle-db.jar").toURI().toURL());
+  			annotationDB.scanArchives(new File("lib/kettle-engine.jar").toURI().toURL());
+			}
 			LogChannel.GENERAL.logDetailed("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
 		} catch(IOException e) {
 			throw new KettlePluginException("Unable to scan for annotations in the classpath", e);
