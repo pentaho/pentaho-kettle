@@ -1403,13 +1403,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             // "Error loading transformation", "I was unable to load this
             // transformation from the
             // XML file because of an error"
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.LoadTransformationError.Title"), BaseMessages
+            new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoadTransformationError.Title"), BaseMessages
                 .getString(PKG, "Spoon.Dialog.LoadTransformationError.Message"), ke);
           }
         }
         
         public void onError(Throwable t) {
-          new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages
+          new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages
               .getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
         }
         
@@ -2984,7 +2984,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       
       public void onError(Throwable t) {
         closeRepository();
-        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages
+        new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages
             .getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
         
       }
@@ -5738,7 +5738,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
         
         public void onError(Throwable t) {
-          new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages
+          new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages
               .getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
         }
         
@@ -5774,7 +5774,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             }
             
             public void onError(Throwable t) {
-              new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages
+              new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages
                   .getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
             }
             
