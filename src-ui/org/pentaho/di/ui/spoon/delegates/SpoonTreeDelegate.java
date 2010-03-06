@@ -305,7 +305,7 @@ public class SpoonTreeDelegate extends SpoonDelegate
 				} else if (object instanceof PluginInterface)
 				{
 					PluginInterface plugin = (PluginInterface) object;
-					if (plugin.getPluginType().equals(StepPluginType.getInstance())) {
+					if (plugin.getPluginType().equals(StepPluginType.class)) {
 						type = DragAndDropContainer.TYPE_BASE_STEP_TYPE;
 						data = plugin.getName(); // Step type name
 					} else {
