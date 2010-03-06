@@ -78,9 +78,9 @@ public class SwitchCase extends BaseStep implements StepInterface
         		List<StreamInterface> targetStreams = ioMeta.getTargetStreams();
         		for (int i=0;i<targetStreams.size();i++) {
         			SwitchCaseTarget target = (SwitchCaseTarget) targetStreams.get(i).getSubject();
-	        		if (target.caseTargetStep==null) {
+	        		if (target != null && target.caseTargetStep==null) {
 	        			throw new KettleException(BaseMessages.getString(PKG, "SwitchCase.Log.NoTargetStepSpecifiedForValue", target.caseValue)); //$NON-NLS-1$
-	        		} else {
+	        		} else if (target != null) {
 	        			RowSet rowSet = findOutputRowSet(target.caseTargetStep.getName());
 	        			if (rowSet!=null) {
 		            		try {

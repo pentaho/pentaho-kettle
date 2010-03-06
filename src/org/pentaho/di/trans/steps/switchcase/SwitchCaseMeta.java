@@ -229,7 +229,7 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		for (StreamInterface stream : ioMeta.getTargetStreams()) {
 			SwitchCaseTarget target = (SwitchCaseTarget) stream.getSubject();
 	
-			if ( target.caseTargetStep==null )
+			if ( target != null && target.caseTargetStep==null )
 			{
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
 						             BaseMessages.getString(PKG, "SwitchCaseMeta.CheckResult.TargetStepInvalid", "false", target.caseTargetStepname), 
