@@ -92,7 +92,6 @@
 	<classpathentry kind="lib" path="libext/commons/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="libext/ini4j-0.5.1.jar"/>
 	<classpathentry kind="lib" path="libext/edtftpj2.0.4.jar"/>
-	<classpathentry kind="lib" path="libext/jackcess-1.1.19.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.42.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-2.7.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-TRUNK-SNAPSHOT.jar"/>
@@ -128,5 +127,6 @@
 	<classpathentry kind="lib" path="libext/spring/spring-core-2.5.6.jar"/>
 	<classpathentry kind="lib" path="libext/scannotation-1.0.2.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/jtds-1.2.5.jar"/>
+	<classpathentry kind="lib" path="libext/jackcess-1.1.21.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
