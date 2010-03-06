@@ -243,7 +243,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	@Override
 	public void searchInfoAndTargetSteps(List<StepMeta> steps) {
-		for (StreamInterface stream : getStepIOMeta().getTargetStreams()) {
+		for (StreamInterface stream : getStepIOMeta().getInfoStreams()) {
 			stream.setStepMeta( StepMeta.findStep(steps, (String)stream.getSubject()) );
 		}
 	}
