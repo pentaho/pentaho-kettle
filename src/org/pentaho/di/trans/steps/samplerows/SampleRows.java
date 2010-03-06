@@ -133,27 +133,4 @@ public class SampleRows extends BaseStep implements StepInterface
 		return false;
 	}
 	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-		try
-		{
-			if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "SampleRows.Log.StartingToRun")); //$NON-NLS-1$
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Exception e)
-		{
-			logError(BaseMessages.getString(PKG, "SampleRows.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
-            setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
-	}
 }
