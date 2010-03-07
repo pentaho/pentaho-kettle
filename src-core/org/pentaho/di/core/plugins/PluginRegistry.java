@@ -42,7 +42,9 @@ public class PluginRegistry {
 	private static AnnotationDB annotationDB;
 
 	private static ClassPathFinder	classPathFinder;
-	
+
+  private static List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
+  
 	/**
 	 * Initialize the registry, keep private to keep this a singleton 
 	 */
@@ -369,17 +371,26 @@ public class PluginRegistry {
         }
 	}
 	
+	
+	/**
+	 * Add a PluginType to be managed by the registry
+	 * @param type
+	 */
+	public static void addPluginType(PluginTypeInterface type){
+	  pluginTypes.add(type);
+	}
+	
 	/**
 	 * This method registers plugin types and loads their respective plugins 
 	 * 
 	 * @throws KettlePluginException
 	 */
-	public static void init(PluginTypeInterface[] pluginTypes) throws KettlePluginException {
+	public static void init() throws KettlePluginException {
 		PluginRegistry registry = getInstance();
 		
 		try {
 			annotationDB = new AnnotationDB();
-			URLClassLoader urlClassLoader = ((URLClassLoader)pluginTypes.getClass().getClassLoader());
+			URLClassLoader urlClassLoader = ((URLClassLoader) registry.getClass().getClassLoader());
 			URL[] urls = urlClassLoader.getURLs();
 			LogChannel.GENERAL.logDetailed("Found "+urls.length+" objects in the classpath.");
 			long startScan = System.currentTimeMillis();

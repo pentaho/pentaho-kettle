@@ -42,15 +42,13 @@ public class KettleEnvironment {
 			  JndiUtil.initJNDI();
 			}
 			
-			PluginTypeInterface[] pluginTypes = new PluginTypeInterface[] {
-					StepPluginType.getInstance(), 			// Steps
-					PartitionerPluginType.getInstance(),    // Partitioners
-					JobEntryPluginType.getInstance(), 	    // Job entries
-					RepositoryPluginType.getInstance(), 	// Repository types
-					DatabasePluginType.getInstance(),       // Databases
-				};
+			PluginRegistry.addPluginType(StepPluginType.getInstance());
+			PluginRegistry.addPluginType(PartitionerPluginType.getInstance());
+			PluginRegistry.addPluginType(JobEntryPluginType.getInstance());
+			PluginRegistry.addPluginType(RepositoryPluginType.getInstance());
+			PluginRegistry.addPluginType(DatabasePluginType.getInstance());
 			
-			PluginRegistry.init(pluginTypes);
+			PluginRegistry.init();
 						
 			initialized = true;
 		}

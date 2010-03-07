@@ -141,12 +141,16 @@ public class PluginRegistryTest extends TestCase
 		
 		// Run an init() just to see it doesn't blow up
 		//
-		PluginRegistry.init(new PluginTypeInterface[] {
-				StepPluginType.getInstance(), 			// Steps
-				PartitionerPluginType.getInstance(),    // Partitioners
-				JobEntryPluginType.getInstance(), 	    // Job entries
-				RepositoryPluginType.getInstance(), 	// Repository types
-				DatabasePluginType.getInstance(),       // Databases
-			});
+	  PluginTypeInterface[] plugins = new PluginTypeInterface[] {
+      StepPluginType.getInstance(),       // Steps
+      PartitionerPluginType.getInstance(),    // Partitioners
+      JobEntryPluginType.getInstance(),       // Job entries
+      RepositoryPluginType.getInstance(),   // Repository types
+      DatabasePluginType.getInstance(),       // Databases
+    };
+	  for(PluginTypeInterface pl : plugins){
+	    PluginRegistry.addPluginType(pl);
+	  }
+		PluginRegistry.init();
 	}
 }
