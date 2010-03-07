@@ -54,11 +54,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 	
 	private StepPluginType() {
 		super("STEP", "Step");
-		
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DIRECTORY_PUBLIC, false, true) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DIRECTORY_PRIVATE, false, true) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_STEPS_DIRECTORY_PUBLIC, true, false) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_STEPS_DIRECTORY_PRIVATE, true, false) ); 
+		populateFolders("steps");
 	}
 	
 	public static StepPluginType getInstance() {

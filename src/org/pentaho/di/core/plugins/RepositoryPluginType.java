@@ -37,11 +37,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 	
 	private RepositoryPluginType() {
 		super("REPOSITORY_TYPE", "Repository type");
-		
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DIRECTORY_PUBLIC, false, true) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DIRECTORY_PRIVATE, false, true) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_REPOSITORIES_DIRECTORY_PUBLIC, true, false) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_REPOSITORIES_DIRECTORY_PRIVATE, true, false) ); 
+		populateFolders("repositories");
 	}
 	
 	public static RepositoryPluginType getInstance() {

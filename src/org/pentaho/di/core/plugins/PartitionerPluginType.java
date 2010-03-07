@@ -36,11 +36,7 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 	
 	private PartitionerPluginType() {
 		super("PARTITIONER", "Partitioner");
-		
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DIRECTORY_PUBLIC, false, true) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DIRECTORY_PRIVATE, false, true) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_STEPS_DIRECTORY_PUBLIC, true, false) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_STEPS_DIRECTORY_PRIVATE, true, false) ); 
+		populateFolders("steps");
 	}
 	
 	public static PartitionerPluginType getInstance() {

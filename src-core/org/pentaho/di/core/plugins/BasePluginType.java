@@ -24,6 +24,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -59,6 +60,28 @@ public abstract class BasePluginType {
 		this();
 		this.id = id;
 		this.name = name;
+	}
+	
+	/**
+   * this is a utility method for subclasses so they can easily register
+   * which folders contain plugins
+   *
+   * @param xmlSubfolder the subfolder where xml plugin definitions can be found
+   */
+	protected void populateFolders(String xmlSubfolder) {
+	  String folderPaths = EnvUtil.getSystemProperty("KETTLE_PLUGIN_BASE_FOLDERS");
+	  if (folderPaths == null) {
+	    folderPaths = Const.DEFAULT_PLUGIN_BASE_FOLDERS;
+	  }
+	  if (folderPaths != null) {
+	    String folders[] = folderPaths.split(",");
+	    // for each folder in the list of plugin base folders
+	    // add an annotation and xml path for searching
+	    for (String folder : folders) {
+	      pluginFolders.add(new PluginFolder(folder, false, true) );
+	      pluginFolders.add(new PluginFolder(folder + File.separator + xmlSubfolder, true, false) );
+	    }
+	  }
 	}
 	
 	public Map<Class<?>, String> getAdditionalRuntimeObjectTypes(){

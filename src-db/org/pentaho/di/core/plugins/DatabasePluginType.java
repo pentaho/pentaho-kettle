@@ -25,11 +25,7 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 	
 	private DatabasePluginType() {
 		super("DATABASE", "Database");
-		
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DIRECTORY_PUBLIC, false, true) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DIRECTORY_PRIVATE, false, true) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DATABASES_DIRECTORY_PUBLIC, true, false) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DATABASES_DIRECTORY_PRIVATE, true, false) ); 
+		populateFolders("databases");
 	}
 	
 	public static DatabasePluginType getInstance() {

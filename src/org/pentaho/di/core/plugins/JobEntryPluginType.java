@@ -53,11 +53,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 	
 	private JobEntryPluginType() {
 		super("JOBENTRY", "Job entry");
-		
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DIRECTORY_PUBLIC, false, true) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_DIRECTORY_PRIVATE, false, true) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_JOBENTRIES_DIRECTORY_PUBLIC, true, false) ); 
-		pluginFolders.add( new PluginFolder(Const.PLUGIN_JOBENTRIES_DIRECTORY_PRIVATE, true, false) ); 
+		populateFolders("jobentries");
 	}
 	
 	public static JobEntryPluginType getInstance() {

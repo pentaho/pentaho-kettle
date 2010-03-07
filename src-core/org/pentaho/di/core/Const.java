@@ -132,58 +132,13 @@ public class Const
 	public static final String IMAGE_DIRECTORY = "/ui/images/";
     */
 
-	/**
-	 *  Public directory containing plugins
-	 */
-	public static final String PLUGIN_DIRECTORY_PUBLIC = "plugins";
+    
+  public static final String PLUGIN_BASE_FOLDERS_PROP = "KETTLE_PLUGIN_BASE_FOLDERS";
+  /**
+   * the default comma separated list of base plugin folders.
+   */
+	public static final String DEFAULT_PLUGIN_BASE_FOLDERS = "plugins," + getKettleDirectory() + FILE_SEPARATOR + "plugins";
 
-	/**
-	 *  Private directory containing plugins
-	 */
-	public static final String PLUGIN_DIRECTORY_PRIVATE = getKettleDirectory() + FILE_SEPARATOR + "plugins";
-
-	/**
-	 *  Public directory containing external steps plugins
-	 */
-	public static final String PLUGIN_STEPS_DIRECTORY_PUBLIC = PLUGIN_DIRECTORY_PUBLIC + FILE_SEPARATOR + "steps";
-
-	/**
-	 *  Private directory containing external steps plugins
-	 */
-	public static final String PLUGIN_STEPS_DIRECTORY_PRIVATE = PLUGIN_DIRECTORY_PRIVATE + FILE_SEPARATOR + "steps";
-
-	/**
-	 *  Public directory containing external job entries plugins
-	 */
-	public static final String PLUGIN_JOBENTRIES_DIRECTORY_PUBLIC = PLUGIN_DIRECTORY_PUBLIC + FILE_SEPARATOR + "jobentries";
-
-	/**
-	 *  Private directory containing external job entries plugins
-	 */
-	public static final String PLUGIN_JOBENTRIES_DIRECTORY_PRIVATE = PLUGIN_DIRECTORY_PRIVATE + FILE_SEPARATOR + "jobentries";
-
-	/**
-	 *  Public directory containing external repositories plugins
-	 */
-	public static final String PLUGIN_REPOSITORIES_DIRECTORY_PUBLIC = PLUGIN_DIRECTORY_PUBLIC + FILE_SEPARATOR + "repositories";
-
-	/**
-	 *  Private directory containing external repositories plugins
-	 */
-	public static final String PLUGIN_REPOSITORIES_DIRECTORY_PRIVATE = PLUGIN_DIRECTORY_PRIVATE + FILE_SEPARATOR + "repositories";
-	
-	/**
-	 *  Public directory containing external steps plugins
-	 */
-	public static final String PLUGIN_DATABASES_DIRECTORY_PUBLIC = PLUGIN_DIRECTORY_PUBLIC + FILE_SEPARATOR + "databases";
-
-	/**
-	 *  Private directory containing external steps plugins
-	 */
-	public static final String PLUGIN_DATABASES_DIRECTORY_PRIVATE = PLUGIN_DIRECTORY_PRIVATE + FILE_SEPARATOR + "databases";
-
-	
-	
 	/**
 	 * Default minimum date range...
 	 */
