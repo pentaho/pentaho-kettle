@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.ObjectRecipient;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityManager;
@@ -71,8 +72,6 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
 
   public static final int USER_DECK = 0;
 
-  private XulTree userDetailTable;
-  
   protected XulDialog userDialog;
 
   private XulListbox userListBox;
@@ -87,31 +86,29 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
 
   private XulButton userRemoveButton;
 
-  protected RepositorySecurityManager rsm;
-  
-  protected Repository repository;
+  private RepositorySecurityManager service;
   
   protected UISecurity security;
 
   protected BindingFactory bf;
-
-  protected Binding securityBinding;
-
-  protected Binding userDetailBinding;
 
   protected UISecurityUser securityUser;
 
   protected XulConfirmBox confirmBox = null;
 
   protected XulMessageBox messageBox = null;
-
-
+  
   public SecurityController() {
   }
 
   public void init(Repository rep) throws ControllerInitializationException{
     try {
-      setRepository(rep);
+      // Get the service from the repository
+      if(rep != null && rep.hasService(RepositorySecurityManager.class)) {
+        service = (RepositorySecurityManager) rep.getService(RepositorySecurityManager.class);
+      } else {
+        throw new ControllerInitializationException(BaseMessages.getString(RepositoryExplorer.class, "SecurityController.ERROR_0001_UNABLE_TO_INITIAL_REPOSITORY_SERVICE", RepositorySecurityManager.class)); //$NON-NLS-1$
+      }
       createModel();
       confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
       messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
@@ -130,14 +127,6 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
     changeToUserDeck();
   }
 
-  public UISecurityUser getSecurityUser() {
-    return securityUser;
-  }
-
-  public void setSecurityUser(UISecurityUser securityUser) {
-    this.securityUser = securityUser;
-  }
-
   public XulConfirmBox getConfirmBox() {
     return confirmBox;
   }
@@ -154,16 +143,15 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
     this.messageBox = messageBox;
   }
   protected void createModel()  throws Exception{
-      rsm = repository.getSecurityManager();
       createSecurityUser();
       createSecurity();
   }
 
   protected void createSecurityUser() throws Exception{
-    securityUser = new UISecurityUser(getRepositorySecurityManager());    
+    securityUser = new UISecurityUser(service);    
   }
   protected void createSecurity()  throws Exception {
-    security = new UISecurity(rsm);    
+    security = new UISecurity(service);    
   }
   protected void createBindings() {
     //User Details Binding
@@ -172,7 +160,6 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
     userRemoveButton = (XulButton) document.getElementById("user-remove");//$NON-NLS-1$
     userDialog = (XulDialog) document.getElementById("add-user-dialog");//$NON-NLS-1$
     userListBox = (XulListbox) document.getElementById("users-list");//$NON-NLS-1$
-    userDetailTable = (XulTree) document.getElementById("user-detail-table");//$NON-NLS-1$
 
     // Add User Binding
 
@@ -236,25 +223,8 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
     }
   }
 
-  public void setBindingFactory(BindingFactory bf) {
-    this.bf = bf;
-  }
-
-  public BindingFactory getBindingFactory() {
-    return this.bf;
-  }
-
   public String getName() {
     return "iSecurityController"; //$NON-NLS-1$
-  }
-
-  public RepositorySecurityManager getRepositorySecurityManager() throws KettleException {
-    if(rsm == null) {
-      if(repository != null) {
-        this.rsm = (RepositorySecurityManager)repository.getService(RepositorySecurityManager.class);
-      }
-    }
-    return rsm;
   }
 
   public void showAddUserDialog() throws Exception {
@@ -274,9 +244,9 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
    * @throws Exception
    */
   protected void addUser() throws Exception {
-    if (rsm != null) {
+    if (service != null) {
       try {
-        rsm.saveUserInfo(securityUser.getUserInfo());
+        service.saveUserInfo(securityUser.getUserInfo());
         security.addUser(UIObjectRegistery.getInstance().constructUIRepositoryUser(securityUser.getUserInfo()));
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
@@ -290,7 +260,7 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
   }
 
   public void showEditUserDialog() throws Exception {
-    if (rsm != null) {
+    if (service != null) {
       securityUser.clear();
       securityUser.setUser(security.getSelectedUser());
       securityUser.setMode(Mode.EDIT);
@@ -306,12 +276,12 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
    */
 
   protected void updateUser() throws Exception {
-    if (rsm != null) {
+    if (service != null) {
       try {
         IUIUser uiUser = security.getSelectedUser();
         uiUser.setDescription(securityUser.getDescription());
         uiUser.setPassword(securityUser.getPassword());
-        rsm.updateUser(uiUser.getUserInfo());
+        service.updateUser(uiUser.getUserInfo());
         security.updateUser(uiUser);
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
@@ -339,10 +309,10 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
 
       public void onClose(XulComponent sender, Status returnCode, Object retVal) {
         if (returnCode == Status.ACCEPT) {
-          if (rsm != null) {
+          if (service != null) {
             if (security != null && security.getSelectedUser() != null) {
               try {
-                rsm.delUser(security.getSelectedUser().getName());
+                service.delUser(security.getSelectedUser().getName());
                 security.removeUser(security.getSelectedUser().getName());
               } catch (KettleException ke) {
                 messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
@@ -389,22 +359,4 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
       updateUser();
     }
   }
-
-  public UISecurity getSecurity() {
-    return security;
-  }
-
-  public void setSecurity(UISecurity security) {
-    this.security = security;
-  }
-
-  public Repository getRepository() {
-    return this.repository;
-  }
-
-  public void setRepository(Repository repository) {
-    this.repository = repository;
-  }
-
-
 }

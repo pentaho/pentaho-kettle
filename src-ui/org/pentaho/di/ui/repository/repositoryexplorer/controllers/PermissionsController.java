@@ -32,7 +32,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectAcl;
 import org.pentaho.di.repository.ObjectPermission;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
@@ -68,8 +67,9 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  * browse functionality.
  *
  */
-public class PermissionsController extends AbstractXulEventHandler implements ContextChangeListener, IUISupportController {
-  
+public class PermissionsController extends AbstractXulEventHandler implements ContextChangeListener,
+    IUISupportController {
+
   private ResourceBundle messages = new ResourceBundle() {
 
     @Override
@@ -81,8 +81,9 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     protected Object handleGetObject(String key) {
       return BaseMessages.getString(RepositoryExplorer.class, key);
     }
-    
-  };    
+
+  };
+
   private static final int NO_ACL = 0;
 
   private static final int ACL = 1;
@@ -134,39 +135,54 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   private Binding securityBinding;
 
   private XulLabel fileFolderLabel;
-  
+
   BindingFactory bf;
+
   private UIRepositoryObjectAcls viewAclsModel;
+
   UIRepositoryObjectAclModel manageAclsModel = null;
+
   XulConfirmBox confirmBox = null;
+
   XulMessageBox messageBox = null;
-  
+
   List<UIRepositoryObject> repoObject = new ArrayList<UIRepositoryObject>();
 
-  private Repository repository;
+  private RepositorySecurityProvider service;
+  
   private BrowseController browseController;
+
   ObjectAcl acl;
+
   TYPE returnType;
+
   public PermissionsController() {
   }
 
-  public void init(Repository rep)  throws ControllerInitializationException {
+  public void init(Repository rep) throws ControllerInitializationException {
     try {
-      setRepository(rep);
+      if(rep != null && rep.hasService(RepositorySecurityProvider.class)) {
+        service = (RepositorySecurityProvider) rep.getService(
+            RepositorySecurityProvider.class);
+      } else {
+        throw new ControllerInitializationException("Unable to initialize repository service");
+      }
+      
       confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
       confirmBox.setTitle(messages.getString("PermissionsController.RemoveAclWarning")); //$NON-NLS-1$
       confirmBox.setMessage(messages.getString("PermissionsController.RemoveAclWarningText")); //$NON-NLS-1$
       confirmBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
       confirmBox.setCancelLabel(messages.getString("Dialog.Cancel")); //$NON-NLS-1$
-      confirmBox.addDialogCallback(new XulDialogCallback(){
+      confirmBox.addDialogCallback(new XulDialogCallback() {
 
         public void onClose(XulComponent sender, Status returnCode, Object retVal) {
-           if(returnCode == Status.ACCEPT){
-             viewAclsModel.removeSelectedAcls();
-           } 
+          if (returnCode == Status.ACCEPT) {
+            viewAclsModel.removeSelectedAcls();
+          }
         }
+
         public void onError(XulComponent sender, Throwable t) {
-          
+
         }
       });
 
@@ -220,14 +236,14 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     bf.createBinding(manageAclsModel, "selectedUserList", selectedUserList, "elements");//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(manageAclsModel, "availableRoleList", availableRoleList, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(manageAclsModel, "selectedRoleList", selectedRoleList, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
-    
+
     // indicesToObjectsConverter convert the selected indices to the list of objects and vice versa
     BindingConvertor<int[], List<UIRepositoryObjectAcl>> indicesToObjectsConverter = new BindingConvertor<int[], List<UIRepositoryObjectAcl>>() {
 
       @Override
       public int[] targetToSource(List<UIRepositoryObjectAcl> acls) {
         if (acls != null) {
-          int i=0;
+          int i = 0;
           int[] retVal = new int[acls.size()];
           for (UIRepositoryObjectAcl acl : acls) {
             retVal[i++] = viewAclsModel.getAceIndex(acl.getAce());
@@ -374,24 +390,21 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(selectedUserList, "selectedIndex", manageAclsModel, "userUnassignmentPossible",//$NON-NLS-1$ //$NON-NLS-2$
         accumulatorButtonConverter);
-    bf
-        .createBinding(availableUserList, "selectedIndex", manageAclsModel, "userAssignmentPossible",//$NON-NLS-1$ //$NON-NLS-2$
-            accumulatorButtonConverter);
+    bf.createBinding(availableUserList, "selectedIndex", manageAclsModel, "userAssignmentPossible",//$NON-NLS-1$ //$NON-NLS-2$
+        accumulatorButtonConverter);
     bf.createBinding(manageAclsModel, "userUnassignmentPossible", unassignUserButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(manageAclsModel, "userAssignmentPossible", assignUserButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
 
     bf.createBinding(selectedRoleList, "selectedIndex", manageAclsModel, "roleUnassignmentPossible",//$NON-NLS-1$ //$NON-NLS-2$
         accumulatorButtonConverter);
-    bf
-        .createBinding(availableRoleList, "selectedIndex", manageAclsModel, "roleAssignmentPossible",//$NON-NLS-1$ //$NON-NLS-2$
-            accumulatorButtonConverter);
+    bf.createBinding(availableRoleList, "selectedIndex", manageAclsModel, "roleAssignmentPossible",//$NON-NLS-1$ //$NON-NLS-2$
+        accumulatorButtonConverter);
 
     bf.createBinding(manageAclsModel, "roleUnassignmentPossible", unassignRoleButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(manageAclsModel, "roleAssignmentPossible", assignRoleButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
 
     bf.setBindingType(Binding.Type.ONE_WAY);
 
-    
     BindingConvertor securityBindingConverter = new BindingConvertor<List<UIRepositoryObject>, List<UIRepositoryObjectAcl>>() {
       @Override
       public List<UIRepositoryObjectAcl> sourceToTarget(List<UIRepositoryObject> ro) {
@@ -415,7 +428,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
           messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
           messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
               "PermissionsController.UnableToGetAcls", repoObject.getName(), ade.getLocalizedMessage()));//$NON-NLS-1$
-          
+
           messageBox.open();
         } catch (Exception e) {
           messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
@@ -434,18 +447,20 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
         return null;
       }
     };
-    
+
     // Binding between the selected repository objects and the user role list for acls
-    securityBinding = bf.createBinding(getBrowseController(), "repositoryObjects", userRoleList, "elements", securityBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
-    securityBinding = bf.createBinding(getBrowseController(), "repositoryDirectories", userRoleList, "elements", securityBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
-    
+    securityBinding = bf.createBinding(getBrowseController(),
+        "repositoryObjects", userRoleList, "elements", securityBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    securityBinding = bf.createBinding(getBrowseController(),
+        "repositoryDirectories", userRoleList, "elements", securityBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
+
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
 
     // Binding Add Remove button to the inherit check box. If the checkbox is checked that disable add remove
     bf.createBinding(viewAclsModel, "entriesInheriting", inheritParentPermissionCheckbox, "checked"); //$NON-NLS-1$  //$NON-NLS-2$
     // Binding the selected indices of acl list to the list of acl objects in the mode
     bf.createBinding(userRoleList, "selectedIndices", viewAclsModel, "selectedAclList", indicesToObjectsConverter); //$NON-NLS-1$  //$NON-NLS-2$
-    
+
     bf.setBindingType(Binding.Type.ONE_WAY);
     // Only enable add Acl button if the entries checkbox is unchecked
     bf.createBinding(viewAclsModel, "entriesInheriting", addAclButton, "disabled");//$NON-NLS-1$  //$NON-NLS-2$ 
@@ -464,7 +479,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
           @Override
           public UIRepositoryObjectAcl sourceToTarget(List<UIRepositoryObjectAcl> value) {
-            if (value!=null && value.size()>0){
+            if (value != null && value.size() > 0) {
               return value.get(0);
             }
             return null;
@@ -474,7 +489,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
           public List<UIRepositoryObjectAcl> targetToSource(UIRepositoryObjectAcl value) {
             return null;
           }
-    });
+        });
     bf.createBinding(userRoleList, "selectedItem", this, "recipientChanged"); //$NON-NLS-1$  //$NON-NLS-2$
     // Setting the default Deck to show no permission
     aclDeck.setSelectedIndex(NO_ACL);
@@ -496,21 +511,15 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   }
 
   public void setBrowseController(BrowseController controller) {
-   this.browseController = controller; 
+    this.browseController = controller;
   }
+
   public BrowseController getBrowseController() {
     return this.browseController;
   }
+
   public List<UIRepositoryObject> getSelectedRepositoryObject() {
     return repoObject;
-  }
-
-  public Repository getRepository() {
-    return repository;
-  }
-
-  public void setRepository(Repository repository) {
-    this.repository = repository;
   }
 
   public String getName() {
@@ -524,14 +533,14 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   public void assignUsers() {
     manageAclsModel.assignUsers(Arrays.asList(availableUserList.getSelectedItems()));
   }
-  
+
   /**
    * unassignUsers method is call to add  unselected user(s) from the assign users list
    */
   public void unassignUsers() {
     manageAclsModel.unassign(Arrays.asList(selectedUserList.getSelectedItems()));
   }
-  
+
   /**
    * assignRoles method is call to add  selected role(s) to the assign roles list
    */
@@ -548,17 +557,14 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   public void showManageAclsDialog() throws Exception {
     try {
-      RepositorySecurityProvider rsp = (RepositorySecurityProvider)getRepository()
-        .getService(RepositorySecurityProvider.class);
       manageAclsModel.clear();
-      manageAclsModel.setAclsList(rsp.getAllUsers(), rsp.getAllRoles());
+      manageAclsModel.setAclsList(service.getAllUsers(), service.getAllRoles());
     } catch (KettleException ke) {
       messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
       messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
           "PermissionsController.UnableToGetUserOrRole", ke.getLocalizedMessage()));//$NON-NLS-1$
-      
-      
+
       messageBox.open();
     }
     manageAclsDialog.show();
@@ -629,7 +635,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
       }
       messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
-      messageBox.setMessage(messages.getString(ade.getLocalizedMessage())); 
+      messageBox.setMessage(messages.getString(ade.getLocalizedMessage()));
       messageBox.open();
     }
   }
@@ -659,7 +665,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
       messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
       messageBox.setMessage(messages.getString("PermissionsController.Error.FunctionalityNotSupported")); //$NON-NLS-1$
-      messageBox.open();      
+      messageBox.open();
     }
   }
 
@@ -680,8 +686,8 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     acls.add(acl);
     viewAclsModel.setSelectedAclList(acls);
   }
-  
-  public void setAclState(UIRepositoryObjectAcl acl){
+
+  public void setAclState(UIRepositoryObjectAcl acl) {
     uncheckAllPermissionBox();
     if (acl != null && acl.getPermissionSet() != null) {
       for (ObjectPermission permission : acl.getPermissionSet()) {
@@ -700,7 +706,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
           modifyCheckbox.setChecked(true);
         }
       }
-    }else{
+    } else {
       uncheckAllPermissionBox();
     }
   }
@@ -777,15 +783,15 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   /*
    * If the user check or unchecks the inherit from parent checkbox, this method is called.
    */
-  public void updateInheritFromParentPermission() throws Exception{
+  public void updateInheritFromParentPermission() throws Exception {
     // viewAclsModel.clear();
     viewAclsModel.setEntriesInheriting(inheritParentPermissionCheckbox.isChecked());
-    if(inheritParentPermissionCheckbox.isChecked()){
+    if (inheritParentPermissionCheckbox.isChecked()) {
       UIRepositoryObject ro = repoObject.get(0);
       // force inherit to true to get effective ACLs before apply...
       ro.readAcls(viewAclsModel, true);
     }
-    
+
     /*
     if (inheritParentPermissionCheckbox.isChecked()) {
       uncheckAllPermissionBox();
@@ -800,25 +806,26 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
    */
   @SuppressWarnings("unchecked")
   public TYPE onContextChange() {
-    if(viewAclsModel.isModelDirty()) {
+    if (viewAclsModel.isModelDirty()) {
       confirmBox.setTitle(messages.getString("PermissionsController.ContextChangeWarning")); //$NON-NLS-1$
       confirmBox.setMessage(messages.getString("PermissionsController.ContextChangeWarningText")); //$NON-NLS-1$
       confirmBox.setAcceptLabel(messages.getString("Dialog.Yes")); //$NON-NLS-1$
       confirmBox.setCancelLabel(messages.getString("Dialog.No")); //$NON-NLS-1$
-      confirmBox.addDialogCallback(new XulDialogCallback(){
-  
+      confirmBox.addDialogCallback(new XulDialogCallback() {
+
         public void onClose(XulComponent sender, Status returnCode, Object retVal) {
-           if(returnCode == Status.ACCEPT){
-             returnType = TYPE.OK;
-             viewAclsModel.clear();
-             viewAclsModel.setModelDirty(false);
-           } else {
-             returnType = TYPE.CANCEL;
-           }
+          if (returnCode == Status.ACCEPT) {
+            returnType = TYPE.OK;
+            viewAclsModel.clear();
+            viewAclsModel.setModelDirty(false);
+          } else {
+            returnType = TYPE.CANCEL;
+          }
         }
+
         public void onError(XulComponent sender, Throwable t) {
           returnType = TYPE.NO_OP;
-        }        
+        }
       });
       confirmBox.open();
     } else {
