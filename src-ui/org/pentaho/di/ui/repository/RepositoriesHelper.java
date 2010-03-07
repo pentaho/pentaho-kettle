@@ -19,6 +19,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
 import org.pentaho.di.ui.repository.model.RepositoriesModel;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
@@ -59,10 +60,7 @@ public class RepositoriesHelper {
       model.setAvailableRepositories(repositoryList);
     } catch (Exception e) {
       log.logDetailed("Error Reading Repositories Data: " + e.getLocalizedMessage());
-      messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-      messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-      messageBox.setMessage(BaseMessages.getString(PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", e.getLocalizedMessage()));//$NON-NLS-1$
-      messageBox.open();
+      new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", ""), e);
     }
   }
   public void newRepository() {
@@ -99,10 +97,7 @@ public class RepositoriesHelper {
         }
       } catch (Exception e) {
         log.logDetailed("Error creating new repository: " + e.getLocalizedMessage());
-        messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-        messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-        messageBox.setMessage(BaseMessages.getString(PKG, "RepositoryLogin.ErrorCreatingRepository", e.getLocalizedMessage()));//$NON-NLS-1$
-        messageBox.open();
+        new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorCreatingRepository", ""), e);
       }
     }
   }
@@ -126,10 +121,7 @@ public class RepositoriesHelper {
           }
     } catch (Exception e) {
       log.logDetailed("Error edit repository : " + e.getLocalizedMessage());
-      messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-      messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-      messageBox.setMessage(BaseMessages.getString(PKG, "RepositoryLogin.ErrorEditingRepository", e.getLocalizedMessage()));//$NON-NLS-1$
-      messageBox.open();
+      new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorEditingRepository", e.getLocalizedMessage()), e);
     }
   }
 
@@ -154,11 +146,7 @@ public class RepositoriesHelper {
   
           public void onError(XulComponent sender, Throwable t) {
             log.logDetailed("Error deleting repository : " + t.getLocalizedMessage());
-            messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-            messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-            messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
-                "RepositoryLogin.UnableToDeleteRepository", t.getLocalizedMessage()));//$NON-NLS-1$
-            messageBox.open();
+            new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.UnableToDeleteRepository", ""), t);
           }
         });
         confirmBox.open();
@@ -231,10 +219,7 @@ public class RepositoriesHelper {
       input.writeData();
     } catch (Exception e) {
       log.logDetailed("Error deleting repository : " + e.getLocalizedMessage());
-      messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-      messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-      messageBox.setMessage(messages.getString("RepositoryLogin.ErrorSavingRepositoryDefinition"));//$NON-NLS-1$
-      messageBox.open();
+      new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorSavingRepositoryDefinition", e.getLocalizedMessage()), e);
     } 
   }
 }
