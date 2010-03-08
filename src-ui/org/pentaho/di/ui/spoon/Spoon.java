@@ -666,13 +666,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       SpoonPluginManager.getInstance().applyPluginsForContainer("spoon", mainSpoonContainer);
 
-//      for (XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("spoon")) {
-//        mainSpoonContainer.addEventHandler(handler);
-//      }
-
       SpoonPerspectiveManager.getInstance().setDeck(deck);
       SpoonPerspectiveManager.getInstance().setXulDoc(mainSpoonContainer);
       boolean firstBtn = true;
+      int y = 0;
       for (SpoonPerspective per : SpoonPerspectiveManager.getInstance().getPerspectives()) {
         String name = per.getDisplayName(LanguageChoice.getInstance().getDefaultLocale());
         InputStream in = per.getPerspectiveIcon();
@@ -682,7 +679,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         btn.setType("toggle");
         btn.setLabel(name);
         btn.setTooltiptext(name);
-        btn.setOnclick("spoon.loadPerspective('" + per.getClass().getName() + "')");
+        btn.setOnclick("spoon.loadPerspective(" + y+ ")");
         mainToolbar.addChild(btn);
         if (firstBtn) {
           btn.setSelected(true);
@@ -713,6 +710,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             btn.setSelected(false);
           }
         });
+        y++;
       }
       deck.setSelectedIndex(0);
 
@@ -841,14 +839,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   @SuppressWarnings("unchecked")
-  public void loadPerspective(String className) {
+  public void loadPerspective(int pos) {
 
     Class clazz;
     try {
-      clazz = Class.forName(className);
-      SpoonPerspectiveManager.getInstance().activatePerspective(clazz);
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+      
+      SpoonPerspectiveManager.getInstance().activatePerspective(SpoonPerspectiveManager.getInstance().getPerspectives().get(pos).getClass());
     } catch (KettleException e) {
       e.printStackTrace();
     }
