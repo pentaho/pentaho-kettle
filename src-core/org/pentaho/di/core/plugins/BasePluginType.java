@@ -213,7 +213,7 @@ public abstract class BasePluginType {
 					FileObject folderObject = KettleVFS.getFileObject( pluginFolder.getFolder() );
 					FileObject[] fileObjects = folderObject.findFiles(new FileSelector() {
 						public boolean traverseDescendents(FileSelectInfo fileSelectInfo) throws Exception {
-							return true;
+						  return ! fileSelectInfo.getFile().getName().getBaseName().equals("lib");
 						}
 						
 						public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
