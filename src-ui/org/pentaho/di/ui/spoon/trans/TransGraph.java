@@ -368,7 +368,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer container = loader.loadXul(XUL_FILE_TRANS_TOOLBAR, bundle);
       container.addEventHandler(this);
-
+      
       SpoonPluginManager.getInstance().applyPluginsForContainer("trans-graph", xulDomContainer);
       
       setXulDomContainer(container);
@@ -3488,7 +3488,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         public void run() {
           // Start/Run button...
           //
-          XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("trans-run"); //$NON-NLS-1$
+          XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("process-run"); //$NON-NLS-1$
           if (runButton != null && !controlDisposed(runButton)) {
         	runButton.setDisabled(running);
           }

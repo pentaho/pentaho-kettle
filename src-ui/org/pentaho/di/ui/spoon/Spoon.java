@@ -325,7 +325,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   public static final String APP_NAME = BaseMessages.getString(PKG, "Spoon.Application.Name");
 
   private static Spoon staticSpoon;
-
+  
   private LogChannelInterface log;
 
   private Display display;
@@ -592,7 +592,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     SpoonFactory.setSpoonInstance(this);
   }
-  
+
   /**
    * The core plugin types don't know about UI classes. This method adds those in before initialization.
    * 
@@ -608,7 +608,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void init(TransMeta ti) {
-    
     FormLayout layout = new FormLayout();
     layout.marginWidth = 0;
     layout.marginHeight = 0;
@@ -1309,18 +1308,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void addMenuLast() {
     org.pentaho.ui.xul.dom.Document doc = (org.pentaho.ui.xul.dom.Document) mainSpoonContainer.getDocumentRoot();
-    XulMenuseparator sep = (XulMenuseparator) doc.getElementById("file-last-separator");
-    XulMenupopup msFile = (XulMenupopup) sep.getParent();
-    if (msFile == null || sep == null) {
-      // The menu system has been altered and we can't display the last
-      // used files
-      return;
-    }
+    XulMenupopup recentFilesPopup = (XulMenupopup) doc.getElementById("file-open-recent-popup");
 
-    int idx = msFile.getChildNodes().indexOf(sep);
-    int max = msFile.getChildNodes().size();
-    for (int i = max - 1; i > idx; i--) {
-      XulComponent mi = msFile.getChildNodes().get(i);
+    int max = recentFilesPopup.getChildNodes().size();
+    for (int i = max - 1; i >= 0; i--) {
+      XulComponent mi = recentFilesPopup.getChildNodes().get(i);
       mi.getParent().removeChild(mi);
     }
 
@@ -1340,7 +1332,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         accessText = null;
       }
 
-      XulMenuitem miFileLast = ((SwtMenupopup) msFile).createNewMenuitem();
+      XulMenuitem miFileLast = ((SwtMenupopup) recentFilesPopup).createNewMenuitem();
 
       // shorten the filename if necessary
       int targetLength = 40;
@@ -2380,7 +2372,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
           if (!(databaseMeta.getDatabaseInterface() instanceof SAPR3DatabaseMeta) ) {
             item.setDisabled(true);
-          }
+        }
         }
         item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById("database-inst-clear-cache");
         if (item != null) {
@@ -3085,7 +3077,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         jobMeta.clearChanged();
         // jobMeta.setFilename(objname);
         jobMeta.setArguments(arguments);
-        delegates.jobs.addJobGraph(jobMeta);
+        addJobGraph(jobMeta);
         refreshTree();
         refreshGraph();
       } catch (Exception e) {
@@ -3195,7 +3187,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             props.addLastFile(LastUsedFile.FILE_TYPE_JOB, name, repdir.getPath(), true, rep.getName());
             saveSettings();
             addMenuLast();
-            delegates.jobs.addJobGraph(jobMeta);
+            addJobGraph(jobMeta);
           }
           refreshGraph();
           refreshTree();
@@ -3554,7 +3546,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         jobMeta.setName(STRING_JOB + " " + nr); // rename
       }
 
-      delegates.jobs.addJobGraph(jobMeta);
+      addJobGraph(jobMeta);
       applyVariables();
 
       // switch to design mode...
@@ -4022,7 +4014,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       repositoriesMeta.addRepository(fileRepositoryMeta);
       repositoriesMeta.writeData();
 	  */
-      
+
       // Show some information concerning all this work...
       //
       EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized",
@@ -5017,8 +5009,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
     }
 
-    //design.setEnabled(enableTransMenu || enableJobMenu);
-
     org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
     // Only enable certain menu-items if we need to.
     ((XulMenuitem) doc.getElementById("file-save")).setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu)
@@ -5039,11 +5029,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     ((XulMenuitem) doc.getElementById("edit-clear-selection")).setDisabled(!enableTransMenu);
     ((XulMenuitem) doc.getElementById("edit-select-all")).setDisabled(!enableTransMenu);
-    //    ((XulMenuitem) doc.getElementById("edit-copy")).setDisabled(!enableTransMenu);
-    //    ((XulMenuitem) doc.getElementById("edit-paste")).setDisabled(!enableTransMenu);
 
     // Transformations
-    ((XulMenuitem) doc.getElementById("trans-run")).setDisabled(!(enableTransMenu && !disablePreviewButton));
+    ((XulMenuitem) doc.getElementById("process-run")).setDisabled(!(enableTransMenu && !disablePreviewButton) && !enableJobMenu);
     ((XulMenuitem) doc.getElementById("trans-replay")).setDisabled(!(enableTransMenu && !disablePreviewButton));
     ((XulMenuitem) doc.getElementById("trans-preview")).setDisabled(!(enableTransMenu && !disablePreviewButton));
     ((XulMenuitem) doc.getElementById("trans-debug")).setDisabled(!(enableTransMenu && !disablePreviewButton));
@@ -5052,42 +5040,28 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     ((XulMenuitem) doc.getElementById("trans-get-sql")).setDisabled(!enableTransMenu);
     ((XulMenuitem) doc.getElementById("trans-last-impact")).setDisabled(!enableTransMenu);
 
-    //TODO Figure out why this isn't working
-    //    ((XulMenuitem)doc.getElementById("trans-last-check")).setDisabled(!enableTransMenu);
+    // Trans
     ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableTransMenu);
     ((XulMenuitem) doc.getElementById("trans-copy")).setDisabled(!enableTransMenu);
     ((XulMenuitem) doc.getElementById("trans-copy-image")).setDisabled(!enableTransMenu);
-    ((XulMenuitem) doc.getElementById("trans-settings")).setDisabled(!enableTransMenu);
-    //    menuBar.setEnableById("trans-run", enableTransMenu && !disablePreviewButton);
-    //    menuBar.setEnableById("trans-replay", enableTransMenu && !disablePreviewButton);
-    //    menuBar.setEnableById("trans-preview", enableTransMenu && !disablePreviewButton);
-    //    menuBar.setEnableById("trans-debug", enableTransMenu && !disablePreviewButton);
-    //    menuBar.setEnableById("trans-verify", enableTransMenu);
-    //    menuBar.setEnableById("trans-impact", enableTransMenu);
-    //    menuBar.setEnableById("trans-get-sql", enableTransMenu);
-    //    menuBar.setEnableById("trans-last-impact", enableTransMenu);
-    //    menuBar.setEnableById("trans-last-check", enableTransMenu);
-    //    menuBar.setEnableById("trans-last-preview", enableTransMenu);
-    //    menuBar.setEnableById("trans-copy", enableTransMenu);
-    //    // miTransPaste.setEnabled(enableTransMenu);
-    //    menuBar.setEnableById("trans-copy-image", enableTransMenu);
-    //    menuBar.setEnableById("trans-settings", enableTransMenu);
 
     // Jobs
-    ((XulMenuitem) doc.getElementById("job-run")).setDisabled(!enableJobMenu);
     ((XulMenuitem) doc.getElementById("job-copy")).setDisabled(!enableJobMenu);
-    ((XulMenuitem) doc.getElementById("job-settings")).setDisabled(!enableJobMenu);
 
+    // Tools
+    ((XulMenuitem) doc.getElementById("repository-connect")).setSelected(!enableRepositoryMenu);
+    
+    // Wizard
     ((XulMenuitem) doc.getElementById("wizard-connection")).setDisabled(!(enableTransMenu || enableJobMenu));
     ((XulMenuitem) doc.getElementById("wizard-copy-table")).setDisabled(!(enableTransMenu || enableJobMenu));
     ((XulMenuitem) doc.getElementById("wizard-copy-tables"))
         .setDisabled(!(enableRepositoryMenu || enableTransMenu || enableJobMenu));
 
-    ((XulMenuitem) doc.getElementById("repository-disconnect")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!enableRepositoryMenu);
+    ((XulMenuitem) doc.getElementById("repository-explore-experimental")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
 
-    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
+		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
 
     // What steps & plugins to show?
     refreshCoreObjects();
@@ -5565,7 +5539,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     try {
       Document doc = XMLHandler.loadXMLString(xml);
       JobMeta jobMeta = new JobMeta(XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep, this);
-      delegates.jobs.addJobGraph(jobMeta); // create a new tab
+      addJobGraph(jobMeta); // create a new tab
       refreshGraph();
       refreshTree();
     } catch (KettleException e) {
@@ -5757,7 +5731,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           // Define and connect to the repository...
           Repository repo = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta, Repository.class);
           repo.init(repositoryMeta);
-      repo.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
+		  repo.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
           setRepository(repo);
         } else {
           String msg = BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined");
@@ -5847,7 +5821,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                     // version
                     jobMeta.clearChanged();
                     jobMeta.setInternalKettleVariables();
-                    delegates.jobs.addJobGraph(jobMeta);
+                    addJobGraph(jobMeta);
                   }
                 }
               }
@@ -6050,7 +6024,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                   props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep
                       .getName());
                 jobMeta.clearChanged();
-                delegates.jobs.addJobGraph(jobMeta);
+                addJobGraph(jobMeta);
               }
             }
             refreshTree();
@@ -6254,8 +6228,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	
 	      refreshGraph();	    
       } catch(Exception e) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.ErrorEditingStepPartitioning.Title"), 
-          BaseMessages.getString(PKG, "Spoon.ErrorEditingStepPartitioning.Message"), e);
+    	new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.ErrorEditingStepPartitioning.Title"), 
+    			BaseMessages.getString(PKG, "Spoon.ErrorEditingStepPartitioning.Message"), e);
       }
     }
   }
@@ -6626,15 +6600,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void setRepository(Repository rep) {
     this.rep = rep;
-    if (rep != null) {
-      this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-    }
+  		if (rep != null) {
+  		  this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+        }
     // Registering the UI Support classes
     UISupportRegistery.getInstance().registerUISupport(RepositorySecurityManager.class, ManageUserUISupport.class);
     UISupportRegistery.getInstance().registerUISupport(VersionRepository.class, RevisionsUISupport.class);
     UISupportRegistery.getInstance().registerUISupport(IAclManager.class, AclUISupport.class);
     
-    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);    
+    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
   }
 
   public void addMenuListener(String id, Object listener, String methodName) {
@@ -6643,6 +6617,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void addTransGraph(TransMeta transMeta) {
     delegates.trans.addTransGraph(transMeta);
+  }
+  
+  public void addJobGraph(JobMeta jobMeta) {
+    delegates.jobs.addJobGraph(jobMeta);
   }
 
   public boolean addSpoonBrowser(String name, String urlString) {
@@ -7029,6 +7007,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   public RepositorySecurityManager getSecurityManager() {
     return rep.getSecurityManager();
   }
+
 
   /* ========================= End XulEventHandler Methods ========================== */
 
