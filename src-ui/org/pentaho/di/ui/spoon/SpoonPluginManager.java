@@ -2,12 +2,16 @@ package org.pentaho.di.ui.spoon;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
+import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 /**
@@ -38,6 +42,8 @@ public class SpoonPluginManager {
   private List<SpoonPluginInterface> plugins = new ArrayList<SpoonPluginInterface>();
   private final String PLUGIN_FILE_NAME = "plugin.xml";
   
+  private Map<String, List<SpoonPluginInterface>> pluginCategoryMap = new HashMap<String, List<SpoonPluginInterface>>();
+  
   private SpoonPluginManager(){
     List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins(SpoonPluginType.class);
     for(PluginInterface plug : plugins){
@@ -51,11 +57,23 @@ public class SpoonPluginManager {
   
   @SuppressWarnings("unchecked")
   private void loadPlugin(final SpoonPluginInterface sp){
-    plugins.add(sp);
+    SpoonPluginCategories categories = sp.getClass().getAnnotation(SpoonPluginCategories.class);
+    if(categories != null){
+      for(String cat : categories.value()){
+        List<SpoonPluginInterface> categoryList = pluginCategoryMap.get(cat);
+        if(categoryList == null){
+          categoryList = new ArrayList<SpoonPluginInterface>();
+          pluginCategoryMap.put(cat, categoryList);
+        }
+        categoryList.add(sp);
+      }
+    }
+    
     if(sp.getPerspective() != null){
       SpoonPerspectiveManager.getInstance().addPerspective(sp.getPerspective());
     }
-    
+
+    plugins.add(sp);
   }
   
   /**
@@ -67,6 +85,16 @@ public class SpoonPluginManager {
     return instance;
   }
   
+  
+  public void applyPluginsForContainer(String category, XulDomContainer container) throws XulException{
+    List<SpoonPluginInterface> plugins = pluginCategoryMap.get(category);
+    if(plugins != null){
+      for(SpoonPluginInterface sp : plugins){
+        sp.applyToContainer(category, container);
+      }
+    }
+  }
+  
   /**
    * Returns an unmodifiable list of all Spoon Plugins.
    * 
@@ -74,50 +102,6 @@ public class SpoonPluginManager {
    */
   public List<SpoonPluginInterface> getPlugins(){
     return Collections.unmodifiableList(plugins);
-  }
-  
-  /**
-   * Returns a list of Overlays registered for the given category 
-   * 
-   * @param category Predefined Overlay category e.g. "spoon", "databaseDialog"
-   * @return list of XulOverlays
-   */
-  public List<XulOverlay> getOverlaysforContainer(String category){
-    List<XulOverlay> overlays = new ArrayList<XulOverlay>();
-    
-    for(SpoonPluginInterface p : plugins){
-      if(p.getOverlays() == null){
-        continue;
-      }
-      if(p.getOverlays().containsKey(category)){
-        for(XulOverlay o : p.getOverlays().get(category)){
-          overlays.add(o);
-        }
-      }
-    }
-    return overlays;
-  }
-
-  /** 
-   * Returns a list of XulEventHandlers registered for the given category.
-   * 
-   * @param category Predefined Overlay category e.g. "spoon", "databaseDialog"
-   * @return list of XulEventHandlers
-   */
-  public List<XulEventHandler> getEventHandlersforContainer(String category){
-    List<XulEventHandler> handlers = new ArrayList<XulEventHandler>();
-    
-    for(SpoonPluginInterface p : plugins){
-      if(p.getEventHandlers() == null){
-        continue;
-      }
-      if(p.getEventHandlers().containsKey(category)){
-        for(XulEventHandler h : p.getEventHandlers().get(category)){
-          handlers.add(h);
-        }
-      }
-    }
-    return handlers;
   }
   
   /**

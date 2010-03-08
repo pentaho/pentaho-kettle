@@ -76,16 +76,18 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
     List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(SpoonPlugin.class.getName());
     for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
       
-      URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarFilePlugin.getJarFile(), });
+      URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarFilePlugin.getJarFile(), }, getClass().getClassLoader());
+
       try {
         Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
         SpoonPlugin partitioner = clazz.getAnnotation(SpoonPlugin.class);
         List<String> libraries = new ArrayList<String>();
         
-        File f = new File(jarFilePlugin.getJarFile().toExternalForm());
+        File f = new File(jarFilePlugin.getJarFile().getFile());
         File parent = f.getParentFile();
-        if(parent.exists()){
-          for(File fil : parent.listFiles()){
+        File libDir = new File(parent.toString()+File.separator+"lib");;
+        if(libDir.exists()){
+          for(File fil : libDir.listFiles()){
             if(fil.getName().indexOf(".jar") > 0){
               try {
                 libraries.add(fil.toURI().toURL().getFile());
@@ -95,7 +97,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
             }
           }
         }
-        
+
         libraries.add(jarFilePlugin.getJarFile().getFile());
         handleAnnotation(clazz, partitioner, libraries, false);
       } catch(ClassNotFoundException e) {

@@ -98,17 +98,7 @@ public abstract class AbstractChangedWarningDialog extends AbstractXulEventHandl
     
     container.addEventHandler(this);
     
-    // Load functionality from plugins
-    for(XulOverlay over : SpoonPluginManager.getInstance().getOverlaysforContainer(getSpoonPluginManagerContainerNamespace())) {
-      container.loadOverlay(over.getOverlayUri());
-    }
-    
-    // Load handlers from plugin
-    for(XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer(getSpoonPluginManagerContainerNamespace())) {
-      if(handler instanceof AbstractChangedWarningDialog) {
-        container.addEventHandler(handler);
-      }
-    }
+    SpoonPluginManager.getInstance().applyPluginsForContainer(getSpoonPluginManagerContainerNamespace(), container);
     
     final XulRunner runner = new SwtXulRunner();
     runner.addContainer(container);

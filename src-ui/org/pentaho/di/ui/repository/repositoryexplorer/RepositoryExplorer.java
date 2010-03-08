@@ -119,10 +119,8 @@ public class RepositoryExplorer {
     container = new SwtXulLoader().loadXul(
         "org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
 
-    // Load functionality from plugins
-    for (XulOverlay over : SpoonPluginManager.getInstance().getOverlaysforContainer("repository-explorer")) { //$NON-NLS-1$
-      container.loadOverlay(over.getOverlayUri());
-    }
+
+    SpoonPluginManager.getInstance().applyPluginsForContainer("repository-explorer", container);
 
     final XulRunner runner = new SwtXulRunner();
     runner.addContainer(container);

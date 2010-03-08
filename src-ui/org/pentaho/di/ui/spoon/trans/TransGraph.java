@@ -368,14 +368,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer container = loader.loadXul(XUL_FILE_TRANS_TOOLBAR, bundle);
       container.addEventHandler(this);
-      
-      for(XulOverlay overlay : SpoonPluginManager.getInstance().getOverlaysforContainer("trans-graph")){
-        xulDomContainer.loadOverlay(overlay.getOverlayUri());
-      }
-      
-      for(XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("trans-graph")){
-        xulDomContainer.addEventHandler(handler);
-      }
+
+      SpoonPluginManager.getInstance().applyPluginsForContainer("trans-graph", xulDomContainer);
       
       setXulDomContainer(container);
     } catch (XulException e1) {

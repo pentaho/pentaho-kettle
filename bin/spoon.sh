@@ -27,15 +27,15 @@ cd $BASEDIR
 
 PLUGINPATH=NONE
 
-for f in `find $BASEDIR/plugins/spoon -maxdepth 2 -type d -name "lib"` 
-do
-if [ "$PLUGINPATH" != "NONE" ]
-then
-	PLUGINPATH=$PLUGINPATH:../$f
-else
-	PLUGINPATH=../$f
-fi
-done
+#for f in `find $BASEDIR/plugins/spoon -maxdepth 2 -type d -name "lib"` 
+#do
+#if [ "$PLUGINPATH" != "NONE" ]
+#then
+#	PLUGINPATH=$PLUGINPATH:../$f
+#else
+#	PLUGINPATH=../$f
+#fi
+#done
 
 # **************************************************
 # ** Platform specific libraries ...              **

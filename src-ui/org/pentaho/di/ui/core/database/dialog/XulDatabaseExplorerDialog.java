@@ -64,19 +64,8 @@ public class XulDatabaseExplorerDialog {
 
 			this.container = theLoader.loadXul(XUL, new XulDatabaseExplorerResourceBundle());
 
-			SpoonPluginManager theSpoonPluginManager = SpoonPluginManager.getInstance();
-			List<XulOverlay> theXulOverlays = theSpoonPluginManager.getOverlaysforContainer("database_dialog");
-			List<XulEventHandler> theXulEventHandlers = theSpoonPluginManager.getEventHandlersforContainer("database_dialog");
-
-			for (XulEventHandler handler : theXulEventHandlers) {
-				handler.setData(this.controller);
-				this.container.addEventHandler(handler);
-			}
-
-			for (XulOverlay overlay : theXulOverlays) {
-				this.container.loadOverlay(overlay.getOverlayUri());
-			}
-
+			SpoonPluginManager.getInstance().applyPluginsForContainer("database_dialog", container);
+	    
 			this.container.addEventHandler(this.controller);
 
 			this.runner = new SwtXulRunner();

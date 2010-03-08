@@ -665,13 +665,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       mainPerspective = new MainSpoonPerspective(tempSashComposite, tabfolder);
       SpoonPerspectiveManager.getInstance().addPerspective(mainPerspective);
 
-      for (XulOverlay over : SpoonPluginManager.getInstance().getOverlaysforContainer("spoon")) {
-        mainSpoonContainer.loadOverlay(over.getOverlayUri());
-      }
+      SpoonPluginManager.getInstance().applyPluginsForContainer("spoon", mainSpoonContainer);
 
-      for (XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("spoon")) {
-        mainSpoonContainer.addEventHandler(handler);
-      }
+//      for (XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("spoon")) {
+//        mainSpoonContainer.addEventHandler(handler);
+//      }
 
       SpoonPerspectiveManager.getInstance().setDeck(deck);
       SpoonPerspectiveManager.getInstance().setXulDoc(mainSpoonContainer);

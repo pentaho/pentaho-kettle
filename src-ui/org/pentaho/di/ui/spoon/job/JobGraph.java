@@ -304,13 +304,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       XulDomContainer container = loader.loadXul(XUL_FILE_JOB_GRAPH, bundle);
       container.addEventHandler(this);
       
-      for(XulOverlay overlay : SpoonPluginManager.getInstance().getOverlaysforContainer("job-graph")){
-        xulDomContainer.loadOverlay(overlay.getOverlayUri());
-      }
-      
-      for(XulEventHandler handler : SpoonPluginManager.getInstance().getEventHandlersforContainer("job-graph")){
-        xulDomContainer.addEventHandler(handler);
-      }
+      SpoonPluginManager.getInstance().applyPluginsForContainer("job-graph", xulDomContainer);
       
       setXulDomContainer(container);
     } catch (XulException e1) {
