@@ -1,5 +1,7 @@
 package org.pentaho.di.ui.spoon;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -79,6 +81,21 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
         Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
         SpoonPlugin partitioner = clazz.getAnnotation(SpoonPlugin.class);
         List<String> libraries = new ArrayList<String>();
+        
+        File f = new File(jarFilePlugin.getJarFile().toExternalForm());
+        File parent = f.getParentFile();
+        if(parent.exists()){
+          for(File fil : parent.listFiles()){
+            if(fil.getName().indexOf(".jar") > 0){
+              try {
+                libraries.add(fil.toURI().toURL().getFile());
+              } catch (MalformedURLException e) {
+                e.printStackTrace();
+              }
+            }
+          }
+        }
+        
         libraries.add(jarFilePlugin.getJarFile().getFile());
         handleAnnotation(clazz, partitioner, libraries, false);
       } catch(ClassNotFoundException e) {
