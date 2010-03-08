@@ -223,10 +223,8 @@ import org.pentaho.di.ui.repository.capabilities.AclUISupport;
 import org.pentaho.di.ui.repository.capabilities.ManageUserUISupport;
 import org.pentaho.di.ui.repository.capabilities.RevisionsUISupport;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
-import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
-import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryObjectReference;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.UISupportRegistery;
@@ -2999,7 +2997,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     loginDialog.show();
   }
 
-  public void exploreRepository() {
+  /*public void exploreRepository() {
     if (rep != null) {
       RepositoryExplorerDialog.RepositoryExplorerCallback cb = new RepositoryExplorerDialog.RepositoryExplorerCallback() {
 
@@ -3021,9 +3019,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       erd.open();
 
     }
-  }
+  }*/
 
-  public void exploreRepositoryExperimental() {
+  public void exploreRepository() {
     if (rep != null) {
       RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
 
@@ -5089,7 +5087,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     ((XulMenuitem) doc.getElementById("repository-disconnect")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!enableRepositoryMenu);
-    ((XulMenuitem) doc.getElementById("repository-explore-experimental")).setDisabled(!enableRepositoryMenu);
     ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
 
     SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);

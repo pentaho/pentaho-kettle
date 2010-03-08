@@ -92,8 +92,6 @@
           label="${Spoon.Menu.Repository.DisconnectRepository}" command="spoon.closeRepository()" />
         <menuitem id="repository-explore" acceltext="CTRL-E" accesskey="ctrl-e" disabled="true"
           label="${Spoon.Menu.Repository.ExploreRepository}" command="spoon.exploreRepository()" />
-        <menuitem id="repository-explore-experimental" acceltext="CTRL-E" accesskey="ctrl-e" disabled="true"
-          label="${Spoon.Menu.Repository.ExploreExperimentalRepository}" command="spoon.exploreRepositoryExperimental()" />
       </menupopup>
     </menu>
     <menu id="trans" label="${Spoon.Menu.Transformation}">

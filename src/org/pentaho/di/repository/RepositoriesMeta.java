@@ -221,10 +221,13 @@ public class RepositoriesMeta
 				}
 				try {
   				RepositoryMeta repositoryMeta = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, id, RepositoryMeta.class);
-  				repositoryMeta.loadXML(repnode, databases);
-  
-  				addRepository(repositoryMeta);
-  				log.logDebug("Read repository : "+repositoryMeta.getName());
+  				if(repositoryMeta != null) {
+    				repositoryMeta.loadXML(repnode, databases);
+    				addRepository(repositoryMeta);
+    				log.logDebug("Read repository : "+repositoryMeta.getName()); //$NON-NLS-1$
+  				} else {
+            log.logDebug("Unable to read repository with id: "+id); //$NON-NLS-1$
+  				}
 				} catch (KettleException ex) {
 				  // Get to the root cause
 				  Throwable cause = ex;
