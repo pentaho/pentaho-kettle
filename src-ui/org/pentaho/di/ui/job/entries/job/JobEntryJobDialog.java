@@ -140,7 +140,11 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 	private Label wlSlaveServer;
 	private ComboVar wSlaveServer;
 	private FormData fdlSlaveServer, fdSlaveServer;
-	
+
+	private Label wlPassExport;
+	private Button wPassExport;
+	private FormData fdlPassExport, fdPassExport;
+
 	private Label wlWaitingToFinish;
 	private Button wWaitingToFinish;
 	private FormData fdlWaitingToFinish, fdWaitingToFinish;
@@ -550,19 +554,37 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
 		// Wait for the remote transformation to finish?
 		//
+		wlPassExport = new Label(wAdvanced, SWT.RIGHT);
+		wlPassExport.setText(BaseMessages.getString(PKG, "JobJob.PassExportToSlave.Label"));
+		props.setLook(wlPassExport);
+		fdlPassExport = new FormData();
+		fdlPassExport.left = new FormAttachment(0, 0);
+		fdlPassExport.top = new FormAttachment(wSlaveServer, margin);
+		fdlPassExport.right = new FormAttachment(middle, -margin);
+		wlPassExport.setLayoutData(fdlPassExport);
+		wPassExport = new Button(wAdvanced, SWT.CHECK);
+		props.setLook(wPassExport);
+		fdPassExport = new FormData();
+		fdPassExport.left = new FormAttachment(middle, 0);
+		fdPassExport.top = new FormAttachment(wSlaveServer, margin);
+		fdPassExport.right = new FormAttachment(100, 0);
+		wPassExport.setLayoutData(fdPassExport);
+		
+		// Wait for the remote transformation to finish?
+		//
 		wlWaitingToFinish = new Label(wAdvanced, SWT.RIGHT);
 		wlWaitingToFinish.setText(BaseMessages.getString(PKG, "JobJob.WaitToFinish.Label"));
 		props.setLook(wlWaitingToFinish);
 		fdlWaitingToFinish = new FormData();
 		fdlWaitingToFinish.left = new FormAttachment(0, 0);
-		fdlWaitingToFinish.top = new FormAttachment(wSlaveServer, margin);
+		fdlWaitingToFinish.top = new FormAttachment(wPassExport, margin);
 		fdlWaitingToFinish.right = new FormAttachment(middle, -margin);
 		wlWaitingToFinish.setLayoutData(fdlWaitingToFinish);
 		wWaitingToFinish = new Button(wAdvanced, SWT.CHECK);
 		props.setLook(wWaitingToFinish);
 		fdWaitingToFinish = new FormData();
 		fdWaitingToFinish.left = new FormAttachment(middle, 0);
-		fdWaitingToFinish.top = new FormAttachment(wSlaveServer, margin);
+		fdWaitingToFinish.top = new FormAttachment(wPassExport, margin);
 		fdWaitingToFinish.right = new FormAttachment(100, 0);
 		wWaitingToFinish.setLayoutData(fdWaitingToFinish);
 		wWaitingToFinish.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setActive(); } });
@@ -872,7 +894,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		fdPassParams.right = new FormAttachment(100, 0);
 		wPassParams.setLayoutData(fdPassParams);
 		
-		final int parameterRows = jobEntry.parameters.length;
+		final int parameterRows = jobEntry.parameters==null ? 0 : jobEntry.parameters.length;
 
 	    colinf = new ColumnInfo[] {
 			new ColumnInfo(BaseMessages.getString(PKG, "JobJob.Parameters.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false),
@@ -1163,6 +1185,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		{
 			wSlaveServer.setText(jobEntry.getRemoteSlaveServerName());
 		}
+		wPassExport.setSelection(jobEntry.isPassingExport());
 
 		wLoglevel.select(jobEntry.loglevel);
 		wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
@@ -1267,6 +1290,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		jobEntry.execPerRow = wEveryRow.getSelection();
 		
 		jobEntry.setRemoteSlaveServerName( wSlaveServer.getText() );
+		jobEntry.setPassingExport( wPassExport.getSelection() );
 		jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
 		jobEntry.setWaitingToFinish( wWaitingToFinish.getSelection() );
 		jobEntry.createParentFolder = wCreateParentFolder.getSelection();

@@ -103,7 +103,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     private String remoteSlaveServerName;
     public  boolean passingAllParameters=true;
 
+    private boolean	passingExport;
+
 	private Job	job;
+
 
     public JobEntryJob(String name)
 	{
@@ -165,6 +168,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		this.directory = directory;
 	}
+	
+	public boolean isPassingExport() {
+		return passingExport;
+	}
+	
+	public void setPassingExport(boolean passingExport) {
+		this.passingExport = passingExport;
+	}
 
 	public String getLogFilename()
 	{
@@ -221,6 +232,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished",     waitingToFinish));
 		retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote",     followingAbortRemotely));
 		retval.append("      ").append(XMLHandler.addTagValue("create_parent_folder",     createParentFolder));
+		retval.append("      ").append(XMLHandler.addTagValue("pass_export",     passingExport));
 		
 		if (arguments!=null)  {
 			for (int i=0;i<arguments.length;i++)
@@ -271,6 +283,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			loglevel = LogWriter.getLogLevel(XMLHandler.getTagValue(entrynode, "loglevel"));
 			setAppendLogfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "set_append_logfile"));
 			remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
+	        passingExport = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "pass_export"));
 			directory = XMLHandler.getTagValue(entrynode, "directory");
 			createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "create_parent_folder") );
 			
@@ -334,6 +347,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			loglevel = LogWriter.getLogLevel(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
 			setAppendLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
 			remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
+			passingExport = rep.getJobEntryAttributeBoolean(id_jobentry, "pass_export");
 			waitingToFinish = rep.getJobEntryAttributeBoolean(id_jobentry, "wait_until_finished", true);
 			followingAbortRemotely = rep.getJobEntryAttributeBoolean(id_jobentry, "follow_abort_remote");
 			createParentFolder       = rep.getJobEntryAttributeBoolean(id_jobentry, "create_parent_folder");
@@ -405,6 +419,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_append_logfile", setAppendLogfile);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "slave_server_name", remoteSlaveServerName);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "pass_export", passingExport);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wait_until_finished", waitingToFinish);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "create_parent_folder", createParentFolder);
@@ -800,6 +815,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	jobExecutionConfiguration.setRemoteServer(remoteSlaveServer);
                 	jobExecutionConfiguration.setRepository(rep);
                 	jobExecutionConfiguration.setLogLevel(LogWriter.getInstance().getLogLevel());
+                	jobExecutionConfiguration.setPassingExport(passingExport);
 
                 	// Send the XML over to the slave server
                 	// Also start the job over there...
