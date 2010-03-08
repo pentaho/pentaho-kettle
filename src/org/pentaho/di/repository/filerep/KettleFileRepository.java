@@ -830,7 +830,6 @@ public class KettleFileRepository implements Repository {
 		transMeta.setFilename(null);
 		transMeta.setName(transname);
 		transMeta.setObjectId(new StringObjectId(calcObjectId(repdir, transname, EXT_TRANSFORMATION)));
-		
 		return transMeta;
 	}
 

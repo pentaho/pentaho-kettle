@@ -4006,6 +4006,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       String message = ResourceUtil.getExplanation(zipFilename, topLevelResource.getResourceName(),
           resourceExportInterface);
 
+      /*
       // Add the ZIP file as a repository to the repository list...
       //
       RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
@@ -4024,7 +4025,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       repositoriesMeta.addRepository(fileRepositoryMeta);
       repositoriesMeta.writeData();
-
+	  */
+      
       // Show some information concerning all this work...
       //
       EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized",

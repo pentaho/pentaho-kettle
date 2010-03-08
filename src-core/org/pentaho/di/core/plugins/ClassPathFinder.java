@@ -1,7 +1,9 @@
 package org.pentaho.di.core.plugins;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -29,9 +31,11 @@ public class ClassPathFinder {
 		classPool = ClassPool.getDefault();
 		for (URL url : urls) {
 			try {
-				classPool.appendClassPath( url.getFile() );
+				classPool.appendClassPath( URLDecoder.decode(url.getFile(), "UTF-8") );
 			} catch(NotFoundException e) {
 				LogChannel.GENERAL.logError("File not found during append of class pool : "+url.getFile());
+			} catch (UnsupportedEncodingException e) {
+				LogChannel.GENERAL.logError("Encoding UTF-8 not found during append of class pool : "+url);
 			}
 		}
 		

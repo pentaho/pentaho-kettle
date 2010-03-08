@@ -27,7 +27,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/asjava.zip"/>
 	<classpathentry kind="lib" path="libext/JDBC/db2jcc_license_cu.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/db2jcc.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/h2.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/hsqldb.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/ifxjdbc.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/iijdbc.jar"/>
@@ -126,7 +125,8 @@
 	<classpathentry kind="lib" path="libext/javassist.jar"/>
 	<classpathentry kind="lib" path="libext/spring/spring-core-2.5.6.jar"/>
 	<classpathentry kind="lib" path="libext/scannotation-1.0.2.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/jtds-1.2.5.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/h2.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.1.21.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/jtds-1.2.5.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
