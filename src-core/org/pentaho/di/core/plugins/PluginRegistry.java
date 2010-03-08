@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -391,7 +392,14 @@ public class PluginRegistry {
 		try {
 			annotationDB = new AnnotationDB();
 			URLClassLoader urlClassLoader = ((URLClassLoader) registry.getClass().getClassLoader());
-			URL[] urls = urlClassLoader.getURLs();
+			URL[] tempurls = urlClassLoader.getURLs();
+			
+			URL[] urls = new URL[tempurls.length];
+			for(int i=0; i< tempurls.length; i++){
+			  urls[i] = new URL(URLDecoder.decode(tempurls[i].toString(), "UTF-8"));
+
+			}
+			
 			LogChannel.GENERAL.logDetailed("Found "+urls.length+" objects in the classpath.");
 			long startScan = System.currentTimeMillis();
 			annotationDB.scanArchives(urls);
