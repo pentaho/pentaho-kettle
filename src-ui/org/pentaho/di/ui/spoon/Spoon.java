@@ -5054,7 +5054,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         .setDisabled(!(enableRepositoryMenu || enableTransMenu || enableJobMenu));
 
     ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!enableRepositoryMenu);
-    ((XulMenuitem) doc.getElementById("repository-explore-experimental")).setDisabled(!enableRepositoryMenu);
+    
+    // TODO: added to allow build to work remove this code to the appropriate plugin.
+    if(doc.getElementById("repository-explore-experimental") != null){
+      ((XulMenuitem) doc.getElementById("repository-explore-experimental")).setDisabled(!enableRepositoryMenu);
+    }
     ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
 
 		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
