@@ -38,7 +38,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.sapinput.SapInputMeta;
-import org.pentaho.di.trans.steps.sapinput.mock.SAPConnectionFactory;
+import org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPFunction;
 import org.pentaho.di.ui.core.PropsUI;
