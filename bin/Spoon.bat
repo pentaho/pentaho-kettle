@@ -31,7 +31,7 @@ REM **************************************************
 
 set LIBSPATH=-lib ..\libswt\win32
 
-FOR /D %%F IN (plugins\spoon\*) DO call :addpp %%F
+REM FOR /D %%F IN (plugins\spoon\*) DO call :addpp %%F
 
 goto extlibe
 
