@@ -134,6 +134,7 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PartitionerPluginType;
+import org.pentaho.di.core.plugins.PluginFolder;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
@@ -481,6 +482,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       registerUIPluginObjectTypes();
       
+      
+      
       KettleEnvironment.init();
 
       List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
@@ -605,6 +608,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     
 
     PluginRegistry.addPluginType(SpoonPluginType.getInstance());
+    
+    SpoonPluginType.getInstance().getPluginFolders().add(new PluginFolder("plugins/repository", false, true));
+    
+    
   }
 
   public void init(TransMeta ti) {
