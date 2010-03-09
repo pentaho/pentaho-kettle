@@ -70,7 +70,7 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  */
 public class PermissionsController extends AbstractXulEventHandler implements ContextChangeListener,
     IUISupportController {
-
+  public static final String COMMA = " , \n"; //$NON-NLS-1$
   private ResourceBundle messages = new ResourceBundle() {
 
     @Override
@@ -137,8 +137,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   private XulLabel fileFolderLabel;
 
-  private XulButton applyAclButton;
-  
   BindingFactory bf;
 
   private UIRepositoryObjectAcls viewAclsModel;
@@ -234,8 +232,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     applyOnlyRadioButton = (XulRadio) document.getElementById("apply-only-radio-button");//$NON-NLS-1$ 
     applyRecursiveRadioButton = (XulRadio) document.getElementById("apply-recursive-radio-button");//$NON-NLS-1$ 
     
-    applyAclButton = (XulButton) document.getElementById("apply-acl");//$NON-NLS-1$
-
     // Binding the model user or role list to the ui user or role list
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(manageAclsModel, "availableUserList", availableUserList, "elements");//$NON-NLS-1$ //$NON-NLS-2$
@@ -477,7 +473,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     bf.createBinding(viewAclsModel, "removeEnabled", readCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
     bf.createBinding(viewAclsModel, "removeEnabled", deleteCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
     bf.createBinding(viewAclsModel, "removeEnabled", modifyCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
-    bf.createBinding(viewAclsModel, "applyValid", applyAclButton, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
     bf.setBindingType(Binding.Type.ONE_WAY);
     // Binding when the user select from the list
 
@@ -620,30 +615,39 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
    * @param hideDialog
    */
   private void applyOnObjectOnly(List<UIRepositoryObject> roList, boolean hideDialog) {
-    try {
-      if (roList.get(0) instanceof UIRepositoryDirectory) {
-        UIRepositoryDirectory rd = (UIRepositoryDirectory) roList.get(0);
-        rd.setAcls(viewAclsModel);
-      } else {
-        UIRepositoryContent rc = (UIRepositoryContent) roList.get(0);
-        rc.setAcls(viewAclsModel);
-      }
-      if (hideDialog) {
-        applyAclConfirmationDialog.hide();
-      }
-      viewAclsModel.setModelDirty(false);
-      messageBox.setTitle(messages.getString("Dialog.Success")); //$NON-NLS-1$
-      messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
-      messageBox.setMessage(messages.getString("PermissionsController.PermissionAppliedSuccessfully")); //$NON-NLS-1$
-      messageBox.open();
-    } catch (AccessDeniedException ade) {
-      if (hideDialog) {
-        applyAclConfirmationDialog.hide();
-      }
+    String recipients =findRecipientsWithEmptyPermissions();
+    if(recipients != null && recipients.length() > 0) {
+      closeApplyAclConfirmationDialog();
       messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
-      messageBox.setMessage(messages.getString(ade.getLocalizedMessage()));
+      messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class, "PermissionsController.NullRecipients", recipients)); //$NON-NLS-1$
       messageBox.open();
+    } else {
+      try {
+        if (roList.get(0) instanceof UIRepositoryDirectory) {
+          UIRepositoryDirectory rd = (UIRepositoryDirectory) roList.get(0);
+          rd.setAcls(viewAclsModel);
+        } else {
+          UIRepositoryContent rc = (UIRepositoryContent) roList.get(0);
+          rc.setAcls(viewAclsModel);
+        }
+        if (hideDialog) {
+          applyAclConfirmationDialog.hide();
+        }
+        viewAclsModel.setModelDirty(false);
+        messageBox.setTitle(messages.getString("Dialog.Success")); //$NON-NLS-1$
+        messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+        messageBox.setMessage(messages.getString("PermissionsController.PermissionAppliedSuccessfully")); //$NON-NLS-1$
+        messageBox.open();
+      } catch (AccessDeniedException ade) {
+        if (hideDialog) {
+          applyAclConfirmationDialog.hide();
+        }
+        messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
+        messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+        messageBox.setMessage(messages.getString(ade.getLocalizedMessage()));
+        messageBox.open();
+      }
     }
   }
   
@@ -739,17 +743,25 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     modifyCheckbox.setChecked(true);
   }
 
-  private boolean isRequestDataValid() {
+  private String findRecipientsWithEmptyPermissions() {
     List<UIRepositoryObjectAcl> uiAcls = viewAclsModel.getAcls();
+    StringBuffer recipients = new StringBuffer();
+    boolean firstEntry = true;
     for (UIRepositoryObjectAcl uiAcl : uiAcls) {
       if (uiAcl != null && uiAcl.getRecipientName() != null) {
         EnumSet<ObjectPermission> permissions = uiAcl.getPermissionSet();
         if (permissions == null || permissions.size() == 0) {
-          return false;
+          if(!firstEntry) {
+            recipients.append(COMMA);
+          }
+          recipients.append(uiAcl.getRecipientName());
+          if(firstEntry) {
+            firstEntry = false;
+          }
         }
       }
     }
-    return true;
+    return (recipients != null) ? recipients.toString(): null;
   }
 
   /*

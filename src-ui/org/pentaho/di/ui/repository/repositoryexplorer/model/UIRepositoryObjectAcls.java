@@ -1,12 +1,10 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 import org.pentaho.di.repository.ObjectAce;
 import org.pentaho.di.repository.ObjectAcl;
-import org.pentaho.di.repository.ObjectPermission;
 import org.pentaho.di.repository.ObjectRecipient;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 
@@ -29,7 +27,6 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
 
   public void setObjectAcl(ObjectAcl obj) {
     this.obj = obj;
-    isApplyValid();
     this.firePropertyChange("acls", null, getAcls()); //$NON-NLS-1$
     this.firePropertyChange("entriesInheriting", null, isEntriesInheriting()); //$NON-NLS-1$
   }
@@ -68,16 +65,14 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     }
     this.firePropertyChange("acls", null, getAcls()); //$NON-NLS-1$
     // Setting the selected index to the first item in the list
-    if (obj.getAces().size() > 0) {
+    if(obj.getAces().size() > 0) {
       List<UIRepositoryObjectAcl> aclList = new ArrayList<UIRepositoryObjectAcl>();
       aclList.add(new UIRepositoryObjectAcl(getAceAtIndex(0)));
       setSelectedAclList(aclList);
     }
     setRemoveEnabled((!obj.isEntriesInheriting() && !isEmpty()));
     setModelDirty(true);
-    isApplyValid();
   }
-
   public void addAcl(UIRepositoryObjectAcl aclToAdd) {
     this.obj.getAces().add(aclToAdd.getAce());
   }
@@ -88,7 +83,7 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     }
 
     this.firePropertyChange("acls", null, getAcls()); //$NON-NLS-1$
-    if (obj.getAces().size() > 0) {
+    if(obj.getAces().size() > 0) {
       List<UIRepositoryObjectAcl> aclList = new ArrayList<UIRepositoryObjectAcl>();
       aclList.add(new UIRepositoryObjectAcl(getAceAtIndex(0)));
       setSelectedAclList(aclList);
@@ -97,7 +92,6 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     }
     setRemoveEnabled((!obj.isEntriesInheriting() && !isEmpty()));
     setModelDirty(true);
-    isApplyValid();
   }
 
   public void removeAcl(String recipientName) {
@@ -115,12 +109,11 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
   public void removeSelectedAcls() {
     // side effect deletes multiple acls when only one selected.
     List<UIRepositoryObjectAcl> removalList = new ArrayList<UIRepositoryObjectAcl>();
-    for (UIRepositoryObjectAcl rem : getSelectedAclList()) {
+    for (UIRepositoryObjectAcl rem : getSelectedAclList()){
       removalList.add(rem);
     }
     removeAcls(removalList);
   }
-
   public void updateAcl(UIRepositoryObjectAcl aclToUpdate) {
     List<ObjectAce> aces = obj.getAces();
     for (ObjectAce ace : aces) {
@@ -135,8 +128,8 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     List<UIRepositoryObjectAcl> aclList = new ArrayList<UIRepositoryObjectAcl>();
     aclList.add(aclToUpdate);
     setSelectedAclList(aclList);
+
     setModelDirty(true);
-    isApplyValid();
   }
 
   public UIRepositoryObjectAcl getAcl(String recipient) {
@@ -156,7 +149,7 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     List<UIRepositoryObjectAcl> previousVal = new ArrayList<UIRepositoryObjectAcl>();
     previousVal.addAll(selectedAclList);
     selectedAclList.clear();
-    if (list != null) {
+    if(list != null) {
       selectedAclList.addAll(list);
       this.firePropertyChange("selectedAclList", null, list); //$NON-NLS-1$
     }
@@ -222,40 +215,15 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
   public boolean isModelDirty() {
     return modelDirty;
   }
-
+  
   public void clear() {
     setRemoveEnabled(false);
     setModelDirty(false);
     setAcls(null);
     setSelectedAclList(null);
   }
-
+  
   private boolean isEmpty() {
     return getSelectedAclList() == null || getSelectedAclList().size() <= 0;
-  }
-
-  public boolean isModelValid() {
-    List<UIRepositoryObjectAcl> uiAcls = getAcls();
-    if (uiAcls != null) {
-      for (UIRepositoryObjectAcl uiAcl : uiAcls) {
-        if (uiAcl != null && uiAcl.getRecipientName() != null) {
-          EnumSet<ObjectPermission> permissions = uiAcl.getPermissionSet();
-          if (permissions == null || permissions.size() == 0) {
-            return false;
-          }
-        }
-      }
-    }
-    return true;    
-  }
-  
-  public boolean isApplyValid() {
-    if(isModelValid() && isModelDirty()) {
-      this.firePropertyChange("applyValid", null, true); //$NON-NLS-1$
-      return true;
-    } else {
-      this.firePropertyChange("applyValid", null, false); //$NON-NLS-1$
-      return false;
-    }
   }
 }
