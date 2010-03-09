@@ -462,4 +462,11 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MailValidator.Tooltip</tooltip>
 		<iconfile>ui/images/MAV.png</iconfile>
 	</job-entry>
+		<job-entry id="FTPS_GET">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.FTPSGet.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.ftpsget.JobEntryFTPSGet</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FTPSGet.Tooltip</tooltip>
+		<iconfile>ui/images/FTPG.png</iconfile>
+	</job-entry>
 </job-entries>

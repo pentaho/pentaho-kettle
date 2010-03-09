@@ -128,5 +128,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/h2.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.1.21.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/jtds-1.2.5.jar"/>
+	<classpathentry kind="lib" path="libext/ftp4che-0.7.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
