@@ -32,6 +32,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectAcl;
 import org.pentaho.di.repository.ObjectPermission;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
@@ -125,7 +126,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   private XulButton unassignUserButton;
 
   private XulButton assignRoleButton;
-
+  
   private XulButton unassignRoleButton;
 
   private XulRadio applyOnlyRadioButton;
@@ -136,6 +137,8 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   private XulLabel fileFolderLabel;
 
+  private XulButton applyAclButton;
+  
   BindingFactory bf;
 
   private UIRepositoryObjectAcls viewAclsModel;
@@ -149,7 +152,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   List<UIRepositoryObject> repoObject = new ArrayList<UIRepositoryObject>();
 
   private RepositorySecurityProvider service;
-  
+
   private BrowseController browseController;
 
   ObjectAcl acl;
@@ -161,13 +164,14 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   public void init(Repository rep) throws ControllerInitializationException {
     try {
-      if(rep != null && rep.hasService(RepositorySecurityProvider.class)) {
-        service = (RepositorySecurityProvider) rep.getService(
-            RepositorySecurityProvider.class);
+      if (rep != null && rep.hasService(RepositorySecurityProvider.class)) {
+        service = (RepositorySecurityProvider) rep.getService(RepositorySecurityProvider.class);
       } else {
-        throw new ControllerInitializationException("Unable to initialize repository service");
+        throw new ControllerInitializationException(BaseMessages.getString(RepositoryExplorer.class,
+            "PermissionsController.ERROR_0001_UNABLE_TO_INITIAL_REPOSITORY_SERVICE", RepositorySecurityManager.class)); //$NON-NLS-1$
+
       }
-      
+
       confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
       confirmBox.setTitle(messages.getString("PermissionsController.RemoveAclWarning")); //$NON-NLS-1$
       confirmBox.setMessage(messages.getString("PermissionsController.RemoveAclWarningText")); //$NON-NLS-1$
@@ -229,6 +233,8 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     applyAclConfirmationDialog = (XulDialog) document.getElementById("apply-acl-confirmation-dialog");//$NON-NLS-1$ 
     applyOnlyRadioButton = (XulRadio) document.getElementById("apply-only-radio-button");//$NON-NLS-1$ 
     applyRecursiveRadioButton = (XulRadio) document.getElementById("apply-recursive-radio-button");//$NON-NLS-1$ 
+    
+    applyAclButton = (XulButton) document.getElementById("apply-acl");//$NON-NLS-1$
 
     // Binding the model user or role list to the ui user or role list
     bf.setBindingType(Binding.Type.ONE_WAY);
@@ -471,6 +477,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     bf.createBinding(viewAclsModel, "removeEnabled", readCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
     bf.createBinding(viewAclsModel, "removeEnabled", deleteCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
     bf.createBinding(viewAclsModel, "removeEnabled", modifyCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
+    bf.createBinding(viewAclsModel, "applyValid", applyAclButton, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
     bf.setBindingType(Binding.Type.ONE_WAY);
     // Binding when the user select from the list
 
@@ -639,7 +646,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
       messageBox.open();
     }
   }
-
+  
   public void setApplyOnly() {
     applyOnlyRadioButton.setSelected(true);
     applyRecursiveRadioButton.setSelected(false);
@@ -730,6 +737,19 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     createCheckbox.setChecked(true);
     updateCheckbox.setChecked(true);
     modifyCheckbox.setChecked(true);
+  }
+
+  private boolean isRequestDataValid() {
+    List<UIRepositoryObjectAcl> uiAcls = viewAclsModel.getAcls();
+    for (UIRepositoryObjectAcl uiAcl : uiAcls) {
+      if (uiAcl != null && uiAcl.getRecipientName() != null) {
+        EnumSet<ObjectPermission> permissions = uiAcl.getPermissionSet();
+        if (permissions == null || permissions.size() == 0) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   /*

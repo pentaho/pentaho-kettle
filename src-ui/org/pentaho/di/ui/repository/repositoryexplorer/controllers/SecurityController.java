@@ -107,7 +107,8 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
       if(rep != null && rep.hasService(RepositorySecurityManager.class)) {
         service = (RepositorySecurityManager) rep.getService(RepositorySecurityManager.class);
       } else {
-        throw new ControllerInitializationException(BaseMessages.getString(RepositoryExplorer.class, "SecurityController.ERROR_0001_UNABLE_TO_INITIAL_REPOSITORY_SERVICE", RepositorySecurityManager.class)); //$NON-NLS-1$
+        throw new ControllerInitializationException(BaseMessages.getString(RepositoryExplorer.class,
+            "SecurityController.ERROR_0001_UNABLE_TO_INITIAL_REPOSITORY_SERVICE", RepositorySecurityManager.class)); //$NON-NLS-1$
       }
       createModel();
       confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
