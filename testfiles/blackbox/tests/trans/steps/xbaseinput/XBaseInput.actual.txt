@@ -1,13 +1,13 @@
 LEISTNR;LEISTUNG;PREIS;KNAME
 999999;Leistung;0;NoNam
-10;1 Buehnenmeister;28.5;BMei
-1;1 Buehnenhandwerker;22.8;BHan
-2;2 Buehnenhandwerker;22.8;BHan
-3;3 Buehnenhandwerker;22.8;BHan
-4;4 Buehnenhandwerker;22.8;BHan
-5;5 Bhnenhandwerker;22.8;BHan
-6;6 Bhnenhandwerker;22.8;BHan
-7;7 Bhnenhandwerker;22.8;BHan
+10;1 Buehnenmeister;28.5;B?Mei
+1;1 Buehnenhandwerker;22.8;B?Han
+2;2 Buehnenhandwerker;22.8;B?Han
+3;3 Buehnenhandwerker;22.8;B?Han
+4;4 Buehnenhandwerker;22.8;B?Han
+5;5 B?hnenhandwerker;22.8;B?Han
+6;6 B?hnenhandwerker;22.8;B?Han
+7;7 B?hnenhandwerker;22.8;B?Han
 15;Fahrtkosten;1.8;Fahrt
 16;Fahrtkosten;1.6;Fahrt
 17;Fahrtkosten;1.4;Fahrt
@@ -16,9 +16,9 @@ LEISTNR;LEISTUNG;PREIS;KNAME
 850;Forex 8mm 3050x2030;61.25;Forex
 851;Forex 10mm 3050x2030;60.75;Forex
 20;Spesen;0;Spese
-30;Drehbhne pro Sendung;8875;FSG
+30;Drehb?hne pro Sendung;8875;FSG
 31;Gabelstapler-Miete;400;FSG
-32;Transportfahrzeug , 4 Anhnger;400;FSG
+32;Transportfahrzeug , 4 Anh?nger;400;FSG
 35;Angebote Nr.1082 vom 04.05.06;0;
 21;Theatermaler;40.5;Theat
 500;Dekomaterial;0;
@@ -33,8 +33,8 @@ LEISTNR;LEISTUNG;PREIS;KNAME
 36;Angebot vom 06.07.2005;0;
 37;Angebot Nr. 1077 vom 02.04.06;2300;
 26;Dekoeinlagerung;525;Einla
-8;8 Buehnenhandwerker;22.8;BHan
-9;berstunden;0;bert
+8;8 Buehnenhandwerker;22.8;B?Han
+9;?berstunden;0;?bert
 520;d-c-fix Folie;12.75;
 530;Lackfolie 130 breit;4.75;Lackf
 830;Plexiglas 5mm;93;Plexi
@@ -53,7 +53,7 @@ LEISTNR;LEISTUNG;PREIS;KNAME
 319;Tischlerplatte 19mm;11.2;Tipla
 1001;Einlagerung Januar;300;Einla
 1002;Einlagerung Februar;300;Einla
-1003;Einlagerung Mrz;300;Einla
+1003;Einlagerung M?rz;300;Einla
 1004;Einlagerung April;300;Einla
 1005;Einlagerung Mai;300;Einla
 1006;Einlagerung Juni;300;Einla
@@ -74,37 +74,37 @@ LEISTNR;LEISTUNG;PREIS;KNAME
 38;Angebot Nr. 1061 vom 31.10.05;0;Angeb
 345;Sperrholz 25mm Wasserfest;40.5;Sperr
 350;Kantholz 10x10;4.2;Kanth
-33;Drehbhne;375;Drehb
+33;Drehb?hne;375;Drehb
 34;Nachtzuschlag;20.25;Nacht
 450;Epoxidharz;250;Epoxi
 50;Hotelkosten;999999.9;Hotel
 330;Siebdruckplatten 9mm 250x125;19.5;00000
-70;Bhnengewichte 12,6 kg;999999.9;Bhgw
-71;Bhnengewicht 12 kg;999999.9;Bhgw
+70;B?hnengewichte 12,6 kg;999999.9;B?hgw
+71;B?hnengewicht 12 kg;999999.9;B?hgw
 39;Angebot vom 19.01.06;0;Angeb
 840;Forex 5mm 3050x2030;31.75;Forex
 831;Plexiglas 3mm;49.9;Plexi
 905;Glasscheibe Miete;6;Glas
 40;Angebot vom 18.02.und 23.02.05;13000;Angeb
 903;Einlegeboden Miete;3;
-920;Mero-Turm 2x2m,Hhe 6m;450;Mero
-950;Linetraleuchten  30cm+Rhre;30.65;Lines
-951;Linetraleuchten  50cm+Rhre;44;Lines
-952;Linetraleuchten 100cm+Rhre;77;Lines
+920;Mero-Turm 2x2m,H?he 6m;450;Mero
+950;Linetraleuchten  30cm+R?hre;30.65;Lines
+951;Linetraleuchten  50cm+R?hre;44;Lines
+952;Linetraleuchten 100cm+R?hre;77;Lines
 960;Lichterketten;77;Licht
 521;Spiegelfolie;12.75;
-965;Tublights mit Zubehr;3514;Tubli
+965;Tublights mit Zubeh?r;3514;Tubli
 535;Opera Projektionsfolie 140cm;15;Opera
 12;Vorhandwerker;27;Schlo
 930;U-Schellen Miete;2;Schel
 835;Waben-Plexiglas 8 mm;136.25;Plexi
-1202;Stahlblech 1mm;300;Tr
+1202;Stahlblech 1mm;300;T?r
 1300;Alu-U-Profil 12x45x12x2,5;16.5;Alu
 560;Tanzteppich 160cm breit;29.6;Tanzt
 565;Folie 200cm breit;9999;Tanzt
 941;Miete Merostangen 70cm;3;MeSta
 942;Miete Foliendach;25;FoDac
-566;Folie weiá qm;2;Folie
+566;Folie wei� qm;2;Folie
 570;Bluebox-Stoff 180;69;BlueB
 360;Topanplatten;4.8;Topan
 860;Styropor;98.5;Styro
@@ -114,7 +114,7 @@ LEISTNR;LEISTUNG;PREIS;KNAME
 945;Praktikabel-Miete;22;FoDac
 28;Transportkosten;999999.99;Trans
 946;Lochbleche 120x200;2.66;Lochb
-925;Gittertrger Miete;999999.99;Gitte
+925;Gittertr?ger Miete;999999.99;Gitte
 820;Plexi Rot  3mm  GS 568 300x200;48.85;Plexi
 821;Plexi Rot  4mm  GS 568 300x200;62.35;Plexi
 822;Plexi Rot  5mm  GS 568 300x200;76.4;Plexi
@@ -125,18 +125,18 @@ LEISTNR;LEISTUNG;PREIS;KNAME
 575;Fallschirmseide;11.75;Falls
 1021;Einlagerung April - Oktober;0;Einla
 1022;Einlagerung Dez.98 - Dez.99;0;Einla
-13;Brokraft;20;Bro
+13;B?rokraft;20;B?ro
 1550;Techniker;17;
 855;Teppichboden;28.5;
 1605;Werkzeugeinkauf;6.85;
 1500;Auf- und Abbau;17;
-1700;Mllcontainer;6.85;
+1700;M?llcontainer;6.85;
 1756;Vierpunkttraverse;25;
 325;Tischlerplatte 25mm;37.45;Tipla
 1204;Fenster;350;
 1205;Tapete;35;
 1800;Mauerwerk Naturstein;170;
-1551;Bhnenhandwerker;35;
+1551;B?hnenhandwerker;35;
 344;Spanplatten 19mm Ahorn besch.;19.5;Spanp
 580;Vorhangschiene;0;Vorha
 14;Dekorateur;37.5;Dekor
@@ -145,15 +145,15 @@ LEISTNR;LEISTUNG;PREIS;KNAME
 1552;Dekorateur;37.5;
 1023;Einlagerung 01.03.bis 01.10.06;0;Einla
 1301;Alu-U-Profil 30x26x20x2;6.5;Alu
-72;Bhnengewicht 6,5 kg;999999.9;Bhgw
-73;Bhnengewicht;999999.9;Bhgw
+72;B?hnengewicht 6,5 kg;999999.9;B?hgw
+73;B?hnengewicht;999999.9;B?hgw
 370;Sperrholz 10mm;16;Sperr
 371;Sperrholz 8mm;21;Sperr
 372;Sperrholz 6mm;12.5;Sperr
 373;Sperrholz 4mm;13;Sperr
 380;Birke Multipl. 9 mm 150x300cm;21.9;Birke
 381;Birke Multipl. 18mm 150x300c;41.9;Birke
-383;Kchenarbeitsplatte;45;Kpla
+383;K?chenarbeitsplatte;45;K?pla
 384;Homopal 431, 305x130cm;60;Homo
 390;Hartfaserplatten 2600x2030 4mm;5.25;Hartf
 391;Hartfaserplatten 2600x2030 6mm;6.9;Hartf
@@ -184,19 +184,19 @@ LEISTNR;LEISTUNG;PREIS;KNAME
 870;PVC-Boden;999999;PVC
 871;PVC-Bodenbelag Buche qm;32.35;PVC
 904;Paneele Miete;3;Panee
-906;Beschlge;6;Besc.
+906;Beschl?ge;6;Besc.
 907;Riegel;6;Riege
 908;Schrauben;0;Schra
 926;MM-Rohr Miete;2;MM
 927;MM-Rohrschellen Miete;2;MM
-928;Spindelfueáe Miete;3;MM
-943;Ballast fr Lichttrme;15;Balla
+928;Spindelfue�e Miete;3;MM
+943;Ballast f?r Lichtt?rme;15;Balla
 944;Treppenstufe Miete;22;Trepp
 913;Einlegeboden;3;
 914;Paneele;3;Panee
 915;Glasscheibe;6;Glas
-909;Clip 100 Stck;85;Clip
-910;Clip 100 Stck Miete;85;Clip
+909;Clip 100 St?ck;85;Clip
+910;Clip 100 St?ck Miete;85;Clip
 1835;Gesamtpreis;0;
 1840;Blenden pro lfm.;10;
 1900;Pos. 1);0;
@@ -207,10 +207,10 @@ LEISTNR;LEISTUNG;PREIS;KNAME
 1905;Pos. 5);0;
 1906;Pos. 6);0;
 1836;Entsorgungskosten;800;
-1837;Sanitrarbeiten;0;
+1837;Sanit?rarbeiten;0;
 1910;Tapeten entfernt;2.95;
 51;Miete-Kranarm;250;Kran
-1911;Miete Bhnengewichte/Steifen;2.95;
+1911;Miete B?hnengewichte/Steifen;2.95;
 1920;Miete Podeste;2.95;
 1930;Miete Sternenhimmel;2.95;
 1931;Miete Leiter;2.95;
@@ -222,18 +222,18 @@ LEISTNR;LEISTUNG;PREIS;KNAME
 1951;Plexiglas orange 478;330;
 1952;Montage;2000;
 1953;Einwegpaletten;9;
-1955;Bhnentechnik/Transp./Personal;0;
-1960;Erbstll 3,3m x 6,8m;635;
-1961;Erbstll 2,8m x 6,8m;585;
-1962;Erbstll 3,3m x 6,3m;596;
-1963;Erbstll 2,8m x 6,3m;525;
+1955;B?hnentechnik/Transp./Personal;0;
+1960;Erbst?ll 3,3m x 6,8m;635;
+1961;Erbst?ll 2,8m x 6,8m;585;
+1962;Erbst?ll 3,3m x 6,3m;596;
+1963;Erbst?ll 2,8m x 6,3m;525;
 1024;Einlagerung Okt.05 bis Okt.06;180;Einla
 1964;Erbstuell;0;
 1970;Pult News Pos. 6.1;0;
 1971;Pult Requisite 6.2;0;
 1972;Pult Klein 6.3;0;
 921;Mero-Turm 2mx2m,Hoehe 4m;450;Mero
-922;Mero-Turm 2mx3m,Hhe 4m;450;Mero
+922;Mero-Turm 2mx3m,H?he 4m;450;Mero
 1975;Bohlen;0;
 2000;1 Handwerker;32.5;
 2001;Transport von Akten;0;
