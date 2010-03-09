@@ -507,7 +507,7 @@ public class Const
 	/**
 	 * The default SAP R/3 connection factory
 	 */
-	public static final String	KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME	= "org.pentaho.di.ui.trans.steps.sapinput.SAPConnectionFactory";
+	public static final String	KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME	= "org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory";
 	
 	/**
 	 * A general initial version comment 
