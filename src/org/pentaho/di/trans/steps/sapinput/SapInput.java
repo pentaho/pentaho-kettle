@@ -26,7 +26,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.sapinput.mock.SAPConnectionFactory;
+import org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory;
+import org.pentaho.di.trans.steps.sapinput.sap.SAPException;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPResultSet;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPRow;
@@ -103,7 +104,12 @@ public class SapInput extends BaseStep implements StepInterface
 		
 		// Get the output...
 		//
-		SAPResultSet resultSet = data.sapConnection.executeFunction(meta.getFunction(), input, data.output);
+		SAPResultSet resultSet;
+		try {
+			resultSet = data.sapConnection.executeFunction(meta.getFunction(), input, data.output);
+		} catch (SAPException e) {
+			throw new KettleException(e);
+		}
 		for (SAPRow sapRow : resultSet.getRows()) {
 			Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
 			int outputIndex = 0; // Makes it easier to add all sorts of fields later on, like row number, input fields, etc.
@@ -160,7 +166,7 @@ public class SapInput extends BaseStep implements StepInterface
 				data.sapConnection.open(meta.getDatabaseMeta());
 				return true;
 			}
-			catch(KettleException e)
+			catch(SAPException e)
 			{
 				logError("An error occurred while connecting to SAP R/3, processing will be stopped:", e);
 				setErrors(1);

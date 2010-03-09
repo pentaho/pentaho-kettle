@@ -5,6 +5,7 @@ public class SAPField {
 	private String name;
 	private String table;
 	private String type;
+	private String typePentaho;
 	private Object value;
 
 	public SAPField(String name, String table, String type) {
@@ -25,7 +26,7 @@ public class SAPField {
 	@Override
 	public String toString() {
 		return "SAPField [name=" + name + ", table=" + table + ", type=" + type
-				+ ", value=" + value + "]";
+				+ ", typePentaho=" + typePentaho + ", value=" + value + "]";
 	}
 
 	public String getName() {
@@ -50,6 +51,14 @@ public class SAPField {
 
 	public void setTable(String table) {
 		this.table = table;
+	}
+
+	public String getTypePentaho() {
+		return typePentaho;
+	}
+
+	public void setTypePentaho(String typePentaho) {
+		this.typePentaho = typePentaho;
 	}
 
 	public Object getValue() {

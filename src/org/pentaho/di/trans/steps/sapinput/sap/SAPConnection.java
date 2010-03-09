@@ -15,7 +15,7 @@ public interface SAPConnection {
 	 * @param sapConnection The SAP Connection to use, needs to be of type SAP R/3
 	 * @throws KettleException in case something went wrong during the connection phase.
 	 */
-	void open(DatabaseMeta sapConnection) throws KettleException;
+	void open(DatabaseMeta sapConnection) throws SAPException;
 	
 	/**
 	 * Close the connection
@@ -23,14 +23,14 @@ public interface SAPConnection {
 	void close();
 
 	// methods for UI
-	Collection<SAPFunction> getFunctions(String query);
+	Collection<SAPFunction> getFunctions(String query) throws SAPException;
 
-	SAPFunction getFunction(String name);
+	SAPFunction getFunction(String name) throws SAPException;
 
-	SAPFunctionSignature getFunctionSignature(SAPFunction function);
+	SAPFunctionSignature getFunctionSignature(SAPFunction function) throws SAPException;
 
 	// methods for data
 	SAPResultSet executeFunction(SAPFunction function,
-			Collection<SAPField> input, Collection<SAPField> output);
+			Collection<SAPField> input, Collection<SAPField> output) throws SAPException;
 
 }

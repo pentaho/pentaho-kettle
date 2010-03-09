@@ -29,14 +29,17 @@ public class SAPConnectionMock implements SAPConnection {
 		sfc.add(new SAPFunction("SAPFunction9", "SAP Testfunction 9", "Group C", "", ""));
 	}
 
+	@Override
 	public void open(DatabaseMeta sapConnection) {
 		// TODO Auto-generated method stub	
 	}
 	
+	@Override
 	public void close() {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
 	public Collection<SAPFunction> getFunctions(String query) {
 		Collection<SAPFunction> sfc = new Vector<SAPFunction>();
 		for (SAPFunction sapFunction : this.sfc) {
@@ -51,6 +54,7 @@ public class SAPConnectionMock implements SAPConnection {
 		return sfc;
 	}
 
+	@Override
 	public SAPFunction getFunction(String name) {
 		for (SAPFunction sapFunction : this.sfc) {
 			if (sapFunction.getName().equals(name)) {
@@ -60,6 +64,7 @@ public class SAPConnectionMock implements SAPConnection {
 		return null;
 	}
 
+	@Override
 	public SAPFunctionSignature getFunctionSignature(SAPFunction function) {
 		SAPFunctionSignature sfs = new SAPFunctionSignature();
 		if (function.getName().equalsIgnoreCase("SearchCustomer")) {
@@ -87,6 +92,7 @@ public class SAPConnectionMock implements SAPConnection {
 		return sfs;
 	}
 
+	@Override
 	public SAPResultSet executeFunction(SAPFunction function,
 			Collection<SAPField> input, Collection<SAPField> output) {
 		SAPResultSet srs = new SAPResultSet();
