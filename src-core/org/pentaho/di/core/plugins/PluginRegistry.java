@@ -302,7 +302,6 @@ public class PluginRegistry {
                 URL urls[] = new URL[jarfiles.size()];
                 for (int i = 0; i < jarfiles.size(); i++)
                 {
-                  System.out.println("adding plugin library: "+jarfiles.get(i));
                     File jarfile = new File(jarfiles.get(i));
                     urls[i] = new URL(URLDecoder.decode(jarfile.toURI().toURL().toString(), "UTF-8"));
                 }
