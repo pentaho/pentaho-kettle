@@ -115,10 +115,9 @@ public class RepositoryExplorer {
       new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
           "Spoon.Error"), e.getMessage(), e); //$NON-NLS-1$
     }
-
-    container = new SwtXulLoader().loadXul(
-        "org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
-
+    SwtXulLoader swtXulLoader = new SwtXulLoader();
+    swtXulLoader.registerClassLoader(getClass().getClassLoader());
+    container = swtXulLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
 
     SpoonPluginManager.getInstance().applyPluginsForContainer("repository-explorer", container);
 
