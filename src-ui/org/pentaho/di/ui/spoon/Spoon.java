@@ -475,15 +475,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       //
 
       // The core plugin types don't know about UI classes. Add them in now before the PluginRegistry inits.
+      Display display = new Display();
+
+      Splash splash = new Splash(display);
+
       registerUIPluginObjectTypes();
       
       KettleEnvironment.init();
 
       List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
-
-      Display display = new Display();
-
-      Splash splash = new Splash(display);
 
       CommandLineOption[] commandLineOptions = getCommandLineArgs(args);
 
@@ -5054,11 +5054,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         .setDisabled(!(enableRepositoryMenu || enableTransMenu || enableJobMenu));
 
     ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!enableRepositoryMenu);
-    
-    // TODO: added to allow build to work remove this code to the appropriate plugin.
-    if(doc.getElementById("repository-explore-experimental") != null){
-      ((XulMenuitem) doc.getElementById("repository-explore-experimental")).setDisabled(!enableRepositoryMenu);
-    }
     ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
 
 		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
