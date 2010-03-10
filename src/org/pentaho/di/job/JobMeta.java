@@ -2665,6 +2665,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		logTables.add(channelLogTable);
 		return logTables;
 	}
-
+	
+	public boolean canSave() {
+    return true;
+  }
 
 }

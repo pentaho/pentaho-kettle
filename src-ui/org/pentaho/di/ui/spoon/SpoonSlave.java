@@ -784,6 +784,10 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			public String getXML() {
 				return null;
 			}
+			
+			public boolean canSave() {
+		     return true;
+		  }			
 		
 			public String getName() {
 				return slaveServer.getName();

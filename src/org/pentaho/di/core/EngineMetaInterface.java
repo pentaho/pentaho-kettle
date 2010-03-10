@@ -45,6 +45,8 @@ public interface EngineMetaInterface extends RepositoryElementInterface {
     
     public void setCreatedDate(Date date);
     
+    public boolean canSave();
+    
     public String getCreatedUser();
     
     public void setCreatedUser(String createduser);

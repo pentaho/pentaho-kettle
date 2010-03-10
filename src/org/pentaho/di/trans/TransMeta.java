@@ -5782,4 +5782,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		this.transformationType = transformationType;
 	}
 	
+	public boolean canSave() {
+	  return true;
+	}
+	
 }

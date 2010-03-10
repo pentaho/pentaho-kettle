@@ -3746,7 +3746,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       if (meta.getFilename() != null) {
         saved = save(meta, meta.getFilename(), false);
       } else {
-        saved = saveFileAs(meta);
+        if(meta.canSave()) {
+          saved = saveFileAs(meta);
+        }
       }
     }
 
@@ -3911,9 +3913,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public boolean saveFileAs() throws KettleException {
     EngineMetaInterface meta = getActiveMeta();
-    if (meta != null)
-      return saveFileAs(meta);
-
+    if (meta != null) {
+      if(meta.canSave()) {
+        return saveFileAs(meta);
+      }
+    }
     return false;
   }
 
