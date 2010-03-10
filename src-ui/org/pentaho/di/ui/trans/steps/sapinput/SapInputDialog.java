@@ -33,11 +33,13 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -92,6 +94,10 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 	private SAPFunction function;
 	private SapInputMeta input;
+	
+	// asc info
+	private Button wAbout;
+	private Link wAscLink;
 
 	/**
 	 * List of ColumnInfo that should have the field names of the selected database table
@@ -123,6 +129,18 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
  		props.setLook(shell);
         setShellImage(shell, input);
 
+        if (!this.input.isJCoAvailable()) {
+        	int style = SWT.ICON_ERROR;
+            
+            MessageBox messageBox = new MessageBox(shell, style);
+            messageBox.setMessage(BaseMessages.getString(PKG, "SapInputDialog.JCoNotFound"));
+            messageBox.open();
+
+            dispose();
+            return stepname;
+        }
+        
+        
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
@@ -255,10 +273,12 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wGet.setText(BaseMessages.getString(PKG, "SapInputDialog.GetFields.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
-
-		setButtonPositions(new Button[] { wOK, wCancel , wGet, }, margin, null);
-
-        // The output fields...
+		wAbout=new Button(shell, SWT.PUSH);
+		wAbout.setText(BaseMessages.getString(PKG, "SapInputDialog.About.Button"));
+		setButtonPositions(new Button[] { wOK, wCancel, wAbout , wGet, }, margin, null);
+		
+		
+		// The output fields...
 		//
         wlOutput=new Label(shell, SWT.NONE);
         wlOutput.setText(BaseMessages.getString(PKG, "SapInputDialog.Output.Label")); //$NON-NLS-1$
@@ -285,22 +305,42 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
                               props
                               );
 
+		
         FormData fdOutput = new FormData();
         fdOutput.left  = new FormAttachment(0, 0);
         fdOutput.top   = new FormAttachment(wlOutput, margin);
         fdOutput.right = new FormAttachment(100, 0);
-        fdOutput.bottom= new FormAttachment(wOK, -3*margin);
+        fdOutput.bottom= new FormAttachment(wOK, -8*margin);
         wOutput.setLayoutData(fdOutput);
         lastControl = wOutput;
 
+        
+        this.wAscLink = new Link(this.shell, SWT.NONE);
+        FormData fdAscLink = new FormData();
+		fdAscLink.left = new FormAttachment(0, 0);
+        fdAscLink.top = new FormAttachment(wOutput, margin);
+        wAscLink.setLayoutData(fdAscLink);
+		this.wAscLink.setText(BaseMessages.getString(PKG, "SapInputDialog.Provided.Info"));
+		lastControl = wAscLink;
+		
+		
         // Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };
 		lsGet      = new Listener() { public void handleEvent(Event e) { get();       } };
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();    } };
-		
+		Listener lsAbout    = new Listener() { public void handleEvent(Event e) { about();     } };
+            
 		wOK.addListener    (SWT.Selection, lsOK    );
 		wGet.addListener   (SWT.Selection, lsGet   );
 		wCancel.addListener(SWT.Selection, lsCancel);
+		this.wAbout.addListener(SWT.Selection, lsAbout);
+		
+		
+		this.wAscLink.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(final Event event) {
+                Program.launch(event.text);
+            }
+        });
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
@@ -437,6 +477,10 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		getInfo(input);
 		
 		dispose();
+	}
+	
+	private void about() {
+		new SapInputAboutDialog(SapInputDialog.this.shell).open();		
 	}
 
 	private int showDatabaseWarning(boolean includeCancel) {
