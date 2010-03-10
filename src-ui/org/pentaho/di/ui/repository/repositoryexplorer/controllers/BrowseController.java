@@ -58,7 +58,7 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  * browse functionality.
  * 
  */
-public class BrowseController extends AbstractXulEventHandler   implements IUISupportController {
+public class BrowseController extends AbstractXulEventHandler implements IUISupportController {
 
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -71,15 +71,15 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
     protected Object handleGetObject(String key) {
       return BaseMessages.getString(RepositoryExplorer.class, key);
     }
-    
-  };  
+
+  };
 
   private XulTree folderTree;
 
   private XulTree fileTable;
 
   private XulTree revisionTable;
-  
+
   private XulDeck historyDeck;
 
   private UIRepositoryDirectory repositoryDirectory;
@@ -107,14 +107,15 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
   public BrowseController() {
   }
 
-  public void init(Repository repository) throws ControllerInitializationException{
+  public void init(Repository repository) throws ControllerInitializationException {
     try {
-    this.repositoryDirectory = new UIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
-    bf = new DefaultBindingFactory();
-    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
+      mainController = (MainController) this.getXulDomContainer().getEventHandler("mainController");
+      this.repositoryDirectory = new UIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
+      bf = new DefaultBindingFactory();
+      bf.setDocument(this.getXulDomContainer().getDocumentRoot());
 
-    createBindings();
-    } catch(KettleException e) {
+      createBindings();
+    } catch (Exception e) {
       throw new ControllerInitializationException(e);
     }
   }
@@ -126,12 +127,12 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
     // Bind the repository folder structure to the folder tree.
     //bf.setBindingType(Binding.Type.ONE_WAY);
     directoryBinding = bf.createBinding(repositoryDirectory, "children", folderTree, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
- 
+
     // Bind the selected index from the folder tree to the list of repository objects in the file table. 
     bf.setBindingType(Binding.Type.ONE_WAY);
 
     bf.createBinding(folderTree, "selectedItems", this, "selectedFolderItems"); //$NON-NLS-1$  //$NON-NLS-2$
-    bf.createBinding(this, "repositoryDirectories", fileTable, "elements",  //$NON-NLS-1$  //$NON-NLS-2$
+    bf.createBinding(this, "repositoryDirectories", fileTable, "elements", //$NON-NLS-1$  //$NON-NLS-2$
         new BindingConvertor<List<UIRepositoryDirectory>, UIRepositoryObjects>() {
           @Override
           public UIRepositoryObjects sourceToTarget(List<UIRepositoryDirectory> rd) {
@@ -150,7 +151,7 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
               throw new RuntimeException(e);
             }
             bf.setBindingType(Binding.Type.ONE_WAY);
-            bf.createBinding(listOfObjects, "children", fileTable, "elements");  //$NON-NLS-1$  //$NON-NLS-2$
+            bf.createBinding(listOfObjects, "children", fileTable, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
             return listOfObjects;
           }
 
@@ -179,9 +180,9 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
     historyDeck = (XulDeck) document.getElementById("history-deck");//$NON-NLS-1$ 
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    Binding revisionTreeBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-table",    //$NON-NLS-1$ //$NON-NLS-2$
+    Binding revisionTreeBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-table", //$NON-NLS-1$ //$NON-NLS-2$
         "!disabled"); //$NON-NLS-1$
-    Binding revisionLabelBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-label",   //$NON-NLS-1$ //$NON-NLS-2$
+    Binding revisionLabelBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-label", //$NON-NLS-1$ //$NON-NLS-2$
         "!disabled"); //$NON-NLS-1$
 
     BindingConvertor<int[], Boolean> forButtons = new BindingConvertor<int[], Boolean>() {
@@ -204,8 +205,7 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
 
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(folderTree, "selectedItems", this, "noHistoryDeck"); //$NON-NLS-1$  //$NON-NLS-2$
-    
-    
+
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
     revisionBinding = bf.createBinding(this, "repositoryObjects", revisionTable, "elements", //$NON-NLS-1$ //$NON-NLS-2$
@@ -255,9 +255,9 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
     }
 
   }
-  
-  public <T> void setNoHistoryDeck(Collection<T> items){
-    if (historyDeck != null){
+
+  public <T> void setNoHistoryDeck(Collection<T> items) {
+    if (historyDeck != null) {
       historyDeck.setSelectedIndex(NO_HISTORY);
     }
   }
@@ -266,15 +266,6 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
     return "browseController"; //$NON-NLS-1$
   }
 
-  
-  public MainController getMainController() {
-    return mainController;
-  }
-
-  public void setMainController(MainController mainController) {
-    this.mainController = mainController;
-  }
-  
   public UIRepositoryDirectory getRepositoryDirectory() {
     return repositoryDirectory;
   }
@@ -295,8 +286,8 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
     Collection<UIRepositoryObject> content = fileTable.getSelectedItems();
     openContent(content.toArray());
   }
-  
-  public void openContent(Object[] items){
+
+  public void openContent(Object[] items) {
     if ((items != null) && (items.length > 0)) {
       for (Object o : items) {
         if (o instanceof UIRepositoryDirectory) {
@@ -304,8 +295,9 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
           List<Object> selectedFolder = new ArrayList<Object>();
           selectedFolder.add(o);
           folderTree.setSelectedItems(selectedFolder);
-        }else if ((mainController != null && mainController.getCallback() != null) && (o instanceof UIRepositoryContent)) {
-          if (mainController.getCallback().open((UIRepositoryContent)o, null)) {
+        } else if ((mainController != null && mainController.getCallback() != null)
+            && (o instanceof UIRepositoryContent)) {
+          if (mainController.getCallback().open((UIRepositoryContent) o, null)) {
             //TODO: fire request to close dialog
           }
         }
@@ -345,21 +337,21 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
       }
     }
   }
-  
+
   public void restoreRevision() {
     try {
       Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
       final UIRepositoryContent contentToRestore = content.iterator().next();
-      
+
       Collection<UIRepositoryObjectRevision> versions = revisionTable.getSelectedItems();
       final UIRepositoryObjectRevision versionToRestore = versions.iterator().next();
-      
+
       XulPromptBox commitPrompt = RepositoryExplorer.promptCommitComment(document, messages, null);
-      
+
       commitPrompt.addDialogCallback(new XulDialogCallback<String>() {
         public void onClose(XulComponent component, Status status, String value) {
 
-          if(!status.equals(Status.CANCEL)) {
+          if (!status.equals(Status.CANCEL)) {
             try {
               contentToRestore.restoreVersion(versionToRestore, value);
             } catch (Exception e) {
@@ -455,7 +447,7 @@ public class BrowseController extends AbstractXulEventHandler   implements IUISu
     XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
     String currentName = (object == null) ? messages.getString("BrowserController.NewFolder") //$NON-NLS-1$
         : object.getName();
-    
+
     prompt.setTitle(messages.getString("BrowserController.Name").concat(currentName));//$NON-NLS-1$
     prompt.setButtons(new DialogConstant[] { DialogConstant.OK, DialogConstant.CANCEL });
 

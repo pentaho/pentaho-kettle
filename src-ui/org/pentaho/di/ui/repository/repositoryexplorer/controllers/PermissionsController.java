@@ -162,6 +162,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   public void init(Repository rep) throws ControllerInitializationException {
     try {
+      browseController = (BrowseController) this.getXulDomContainer().getEventHandler("browseController");
       if (rep != null && rep.hasService(RepositorySecurityProvider.class)) {
         service = (RepositorySecurityProvider) rep.getService(RepositorySecurityProvider.class);
       } else {
@@ -451,9 +452,9 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     };
 
     // Binding between the selected repository objects and the user role list for acls
-    securityBinding = bf.createBinding(getBrowseController(),
+    securityBinding = bf.createBinding(browseController,
         "repositoryObjects", userRoleList, "elements", securityBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
-    securityBinding = bf.createBinding(getBrowseController(),
+    securityBinding = bf.createBinding(browseController,
         "repositoryDirectories", userRoleList, "elements", securityBindingConverter);//$NON-NLS-1$ //$NON-NLS-2$
 
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
@@ -511,15 +512,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
       repoObject.addAll(roList);
     }
   }
-
-  public void setBrowseController(BrowseController controller) {
-    this.browseController = controller;
-  }
-
-  public BrowseController getBrowseController() {
-    return this.browseController;
-  }
-
   public List<UIRepositoryObject> getSelectedRepositoryObject() {
     return repoObject;
   }
