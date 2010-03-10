@@ -53,20 +53,20 @@ public class SAPField {
 		this.table = table;
 	}
 
-	public String getTypePentaho() {
-		return typePentaho;
-	}
-
-	public void setTypePentaho(String typePentaho) {
-		this.typePentaho = typePentaho;
-	}
-
 	public Object getValue() {
 		return value;
 	}
 
 	public void setValue(Object value) {
 		this.value = value;
+	}
+
+	public String getTypePentaho() {
+		return typePentaho;
+	}
+
+	public void setTypePentaho(String typepentaho) {
+		this.typePentaho = typepentaho;
 	}
 
 }

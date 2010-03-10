@@ -6,12 +6,12 @@ public class SAPException extends KettleException {
 
 	private static final long serialVersionUID = 1L;
 
-	public SAPException(String message) {
-		super(message);
-	}
-
 	public SAPException(String message, Throwable cause) {
 		super(message, cause);
+	}
+
+	public SAPException(String message) {
+		super(message);
 	}
 
 }
