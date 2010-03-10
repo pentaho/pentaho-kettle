@@ -11,9 +11,11 @@
               command="spoon.newTransFile()" />
             <menuitem id="file-new-job" acceltext="CTRL-ALT-N" accesskey="ctrl-alt-n" label="${Spoon.Menu.Job}"
               command="spoon.newJobFile()" />
+            <menuitem id="tools-data-new" label="${Spoon.Menu.Tools.Data.New}"/>
           </menupopup>
         </menu>
         <menuitem id="file-open" acceltext="CTRL-O" accesskey="ctrl-o" label="${Spoon.Menu.File.Open}" command="spoon.openFile()" />
+        <menuitem id="file-open-from-vfs" label="${Spoon.Menu.File.OpenVFS}" command="spoon.openFileVFSFile()" />
         <menu id="file-open-recent" label="${Spoon.Menu.File.Open.Recent.Popup}">
           <menupopup id="file-open-recent-popup" />
         </menu>
@@ -24,7 +26,8 @@
         <menuseparator />
         <menuitem id="file-save" acceltext="CTRL-S" accesskey="ctrl-s" label="${Spoon.Menu.File.Save}" command="spoon.saveFile()" />
         <menuitem id="file-save-as" label="${Spoon.Menu.File.SaveAs}" command="spoon.saveFileAs()" />
-        <menuitem id="file-publish" label="${Spoon.Menu.File.Publish}"/>
+        <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveXMLFileToVfs()" />
+        <!-- <menuitem id="file-publish" label="${Spoon.Menu.File.Publish}"/> -->
         <menuseparator />
         <menuitem id="file-print" label="${Spoon.Menu.File.Print}" command="spoon.printFile()" />
 
@@ -44,10 +47,6 @@
             -->
           </menupopup>
         </menu>
-        
-        <menuseparator />
-        <menu id="file-properties" label="Properties..." />
-        
         <menuseparator />
         <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile()" />        
       </menupopup>
@@ -97,7 +96,8 @@
           command="spoon.zoomOut()" />
         <menuitem id="view-zoom-100pct" acceltext="HOME" accesskey="home" label="${Spoon.Menu.View.Zoom100}"
           command="spoon.zoom100Percent()" />
-        <menuseparator id="view-perspective-seperator" />  
+        <menuseparator id="view-perspective-seperator" />
+        <menuitem id="view-results" label="${Spoon.Menu.View.Results}" command="spoon.showExecutionResults()"/>  
       </menupopup>
     </menu>
   
