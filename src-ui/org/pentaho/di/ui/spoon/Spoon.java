@@ -3749,9 +3749,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         saved = save(meta, meta.getFilename(), false);
       } else {
         if(meta.canSave()) {
-          saved = saveFileAs(meta);
-        }
+        saved = saveFileAs(meta);
       }
+    }
     }
 
     meta.saveSharedObjects(); // throws Exception in case anything goes wrong
@@ -3917,7 +3917,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     EngineMetaInterface meta = getActiveMeta();
     if (meta != null) {
       if(meta.canSave()) {
-        return saveFileAs(meta);
+      return saveFileAs(meta);
       }
     }
     return false;
@@ -4998,7 +4998,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     boolean enableTransMenu = getActiveTransformation() != null;
     boolean enableJobMenu = getActiveJob() != null;
     boolean enableMetaMenu = getActiveMeta() != null;
-    boolean enableRepositoryMenu = rep != null;
+    boolean isRepositoryRunning = rep != null;
 
     // boolean enableLastPreviewMenu = false;
     boolean disablePreviewButton = false;
@@ -5062,16 +5062,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     ((XulMenuitem) doc.getElementById("job-copy")).setDisabled(!enableJobMenu);
 
     // Tools
-    ((XulMenuitem) doc.getElementById("repository-connect")).setSelected(!enableRepositoryMenu);
+    ((XulMenuitem) doc.getElementById("repository-connect")).setSelected(isRepositoryRunning);
+    ((XulMenuitem) doc.getElementById("repository-disconnect")).setDisabled(!isRepositoryRunning);
+    ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!isRepositoryRunning);
     
     // Wizard
     ((XulMenuitem) doc.getElementById("wizard-connection")).setDisabled(!(enableTransMenu || enableJobMenu));
     ((XulMenuitem) doc.getElementById("wizard-copy-table")).setDisabled(!(enableTransMenu || enableJobMenu));
     ((XulMenuitem) doc.getElementById("wizard-copy-tables"))
-        .setDisabled(!(enableRepositoryMenu || enableTransMenu || enableJobMenu));
+        .setDisabled(!(isRepositoryRunning || enableTransMenu || enableJobMenu));
 
-    ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!enableRepositoryMenu);
-    ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableRepositoryMenu);
+    ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!isRepositoryRunning);
+    ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!isRepositoryRunning);
 
 		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
 
@@ -6621,8 +6623,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     UISupportRegistery.getInstance().registerUISupport(VersionRepository.class, RevisionsUISupport.class);
     UISupportRegistery.getInstance().registerUISupport(IAclManager.class, AclUISupport.class);
     if(rep != null) {
-      SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
-    }
+    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
+  }
   }
 
   public void addMenuListener(String id, Object listener, String methodName) {

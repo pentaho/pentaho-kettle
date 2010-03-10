@@ -300,7 +300,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     
     try {
       XulLoader loader = new SwtXulLoader();
-      ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
+      ResourceBundle bundle = new XulSpoonResourceBundle(JobGraph.class);
       XulDomContainer container = loader.loadXul(XUL_FILE_JOB_GRAPH, bundle);
       container.addEventHandler(this);
       
