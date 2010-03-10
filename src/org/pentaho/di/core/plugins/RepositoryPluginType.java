@@ -82,7 +82,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 			Node repsNode = XMLHandler.getSubNode(document, "repositories");
 			List<Node> repsNodes = XMLHandler.getNodes(repsNode, "repository");
 			for (Node repNode : repsNodes) {
-				registerPluginFromXmlResource(repNode, null, this.getClass(), true);
+				registerPluginFromXmlResource(repNode, null, this.getClass(), true, null);
 			}			
 		} catch (KettleXMLException e) {
 			throw new KettlePluginException("Unable to read the kettle repositories XML config file: "+xmlFile, e);
@@ -141,7 +141,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 	      }
 	    }
 		
-		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), Repository.class, category, name, description, null, false, nativeRepositoryType, classMap, libraries, null);
+		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), Repository.class, category, name, description, null, false, nativeRepositoryType, classMap, libraries, null, null);
 		registry.registerPlugin(this.getClass(), stepPlugin);
 	}
 
@@ -179,7 +179,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "plugin");
 
-						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false);
+						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false, file.getParent().getURL());
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...
 						//

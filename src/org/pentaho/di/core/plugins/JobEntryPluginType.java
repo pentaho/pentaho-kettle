@@ -98,7 +98,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 			Node entriesNode = XMLHandler.getSubNode(document, "job-entries");
 			List<Node> entryNodes = XMLHandler.getNodes(entriesNode, "job-entry");
 			for (Node entryNode : entryNodes) {
-				registerPluginFromXmlResource(entryNode, null, this.getClass(), true);
+				registerPluginFromXmlResource(entryNode, null, this.getClass(), true, null);
 			}
 			
 		} catch (KettleXMLException e) {
@@ -160,7 +160,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 	      }
 	    }
 		
-		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), JobEntryInterface.class, category, name, description, jobEntry.image(), false, nativeJobEntry, classMap, libraries, null);
+		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), JobEntryInterface.class, category, name, description, jobEntry.image(), false, nativeJobEntry, classMap, libraries, null, null);
 		registry.registerPlugin(this.getClass(), stepPlugin);
 	}
 
@@ -198,7 +198,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "plugin");
 
-						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false);
+						registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false, file.getParent().getURL());
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...
 						//

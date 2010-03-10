@@ -9,16 +9,17 @@ public class JarFileAnnotationPlugin {
 	private URL			jarFile;
 	private ClassFile	classFile;
 	private Annotation	annotation;
-
+	private URL pluginFolder;
 	/**
 	 * @param jarFile
 	 * @param classFile
 	 * @param annotation
 	 */
-	public JarFileAnnotationPlugin(URL jarFile, ClassFile classFile, Annotation annotation) {
+	public JarFileAnnotationPlugin(URL jarFile, ClassFile classFile, Annotation annotation, URL pluginFolder) {
 		this.jarFile = jarFile;
 		this.classFile = classFile;
 		this.annotation = annotation;
+		this.pluginFolder = pluginFolder;
 	}
 
 	@Override
@@ -70,5 +71,15 @@ public class JarFileAnnotationPlugin {
 	public void setAnnotation(Annotation annotation) {
 		this.annotation = annotation;
 	}
+
+  public URL getPluginFolder() {
+    return pluginFolder;
+  }
+
+  public void setPluginFolder(URL pluginFolder) {
+    this.pluginFolder = pluginFolder;
+  }
+	
+	
 
 }

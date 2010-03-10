@@ -27,6 +27,7 @@ public abstract class AbstractRepositoryExplorerUISupport implements IRepository
 
   public void apply(XulDomContainer container) throws XulException {
     this.container = container;
+    container.registerClassLoader(getClass().getClassLoader());
     for(XulEventHandler handler:handlers) {
       container.addEventHandler(handler);
     }

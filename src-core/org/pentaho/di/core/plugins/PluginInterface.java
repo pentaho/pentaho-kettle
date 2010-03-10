@@ -1,5 +1,6 @@
 package org.pentaho.di.core.plugins;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -78,4 +79,6 @@ public interface PluginInterface {
 	 * @return An optional location to a help file that the plugin can refer to in case there is a loading problem.  This usually happens if a jar file is not installed correctly (class not found exceptions) etc. 
 	 */
 	public String getErrorHelpFile();
+	
+	public URL getPluginDirectory();
 }

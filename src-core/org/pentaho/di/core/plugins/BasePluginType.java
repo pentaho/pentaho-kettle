@@ -3,6 +3,7 @@ package org.pentaho.di.core.plugins;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -236,7 +237,7 @@ public abstract class BasePluginType {
 									Annotation[] anns = visible.getAnnotations();
 									for (Annotation ann : anns) {
 										if (ann.getTypeName().equals(annotationClassName)) {
-											classFiles.add(new JarFileAnnotationPlugin(fileObject.getURL(), classFile, ann));
+											classFiles.add(new JarFileAnnotationPlugin(fileObject.getURL(), classFile, ann, fileObject.getParent().getURL()));
 											break;
 										}
 									}
@@ -284,7 +285,7 @@ public abstract class BasePluginType {
 		return list;
 	}
 
-    protected PluginInterface registerPluginFromXmlResource( Node pluginNode, String path, Class<? extends PluginTypeInterface> pluginType, boolean nativePlugin) throws KettlePluginException {
+    protected PluginInterface registerPluginFromXmlResource( Node pluginNode, String path, Class<? extends PluginTypeInterface> pluginType, boolean nativePlugin, URL pluginFolder) throws KettlePluginException {
         try
         {
 
@@ -352,7 +353,7 @@ public abstract class BasePluginType {
               classMap.put(entry.getKey(), clzName); 
             }
             
-            PluginInterface pluginInterface = new Plugin(id.split(","), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip, iconFilename, false, nativePlugin, classMap, jarFiles, errorHelpFileFull);
+            PluginInterface pluginInterface = new Plugin(id.split(","), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip, iconFilename, false, nativePlugin, classMap, jarFiles, errorHelpFileFull, pluginFolder);
             registry.registerPlugin(pluginType, pluginInterface);
             
             return pluginInterface;

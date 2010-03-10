@@ -3,6 +3,7 @@
  */
 package org.pentaho.di.core.plugins;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ public class Plugin implements PluginInterface {
 	private List<String>				libraries;
 	private String                      errorHelpFile;
 	private Class<?>             mainType;
+	private URL              pluginFolder;
 
 	/**
 	 * @param ids
@@ -42,7 +44,7 @@ public class Plugin implements PluginInterface {
 	 * @param classMap
 	 * @param libraries
 	 */
-	public Plugin(String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType, String category, String name, String description, String imageFile, boolean seaerateClassLoaderNeeded, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile) {
+	public Plugin(String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType, String category, String name, String description, String imageFile, boolean seaerateClassLoaderNeeded, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile, URL pluginFolder) {
 		this.ids = ids;
 		this.pluginType = pluginType;
 		this.mainType = mainType;
@@ -55,6 +57,7 @@ public class Plugin implements PluginInterface {
 		this.classMap = classMap;
 		this.libraries = libraries;
 		this.errorHelpFile = errorHelpFile;
+		this.pluginFolder = pluginFolder;
 	}
 	
 	@Override
@@ -257,6 +260,12 @@ public class Plugin implements PluginInterface {
   public Class<?> getMainType() {
     return mainType;
   }
+
+  public URL getPluginDirectory() {
+    return this.pluginFolder;
+  }
+  
+
 	
 	
 	

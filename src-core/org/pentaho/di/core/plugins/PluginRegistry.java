@@ -37,7 +37,10 @@ public class PluginRegistry {
 	private static PluginRegistry pluginRegistry;
 	
 	private Map<Class<? extends PluginTypeInterface>, List<PluginInterface>> pluginMap;
+	
+	private Map<String, URLClassLoader> folderBasedClassLoaderMap = new HashMap<String, URLClassLoader>();
 	private Map<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>> classLoaderMap;
+	
 	private Map<Class<? extends PluginTypeInterface>, List<String>> categoryMap;
 	
 	private static AnnotationDB annotationDB;
@@ -99,7 +102,7 @@ public class PluginRegistry {
 		if (list==null) {
 			list = new ArrayList<PluginInterface>();
 			pluginMap.put(pluginType, list);
-			classLoaderMap.put(pluginType, new HashMap<PluginInterface, URLClassLoader>());
+//			classLoaderMap.put(pluginType, new HashMap<PluginInterface, URLClassLoader>());
 		}
 		
 		int index = list.indexOf(plugin);
@@ -327,6 +330,7 @@ public class PluginRegistry {
                 	
                     // See if we can find a class loader to re-use.
                 	//
+                  
                 	Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get(plugin.getPluginType());
                 	if (classLoaders==null) {
                 		classLoaders=new HashMap<PluginInterface, URLClassLoader>();
@@ -334,13 +338,19 @@ public class PluginRegistry {
                 	} else {
                 		ucl = classLoaders.get(plugin);
                 	}
-                    if (ucl==null)
-                    {
-                        // Construct a new URLClassLoader based on the parent class loader...
-                    	//
+                  if (ucl==null)
+                  {
+
+                    if(plugin.getPluginDirectory() != null){
+                      ucl = folderBasedClassLoaderMap.get(plugin.getPluginDirectory().toString());
+                      if(ucl == null){
                         ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
                         classLoaders.put(plugin, ucl); // save for later use...
+                        folderBasedClassLoaderMap.put(plugin.getPluginDirectory().toString(), ucl);
+                      }
                     }
+                    
+                  }
                 }
               
                 // Load the class.

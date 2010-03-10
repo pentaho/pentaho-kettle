@@ -605,12 +605,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   private static void registerUIPluginObjectTypes(){
     RepositoryPluginType.getInstance().addObjectType(RepositoryRevisionBrowserDialogInterface.class, "version-browser-classname");
     RepositoryPluginType.getInstance().addObjectType(RepositoryDialogInterface.class, "dialog-classname");
-    
 
     PluginRegistry.addPluginType(SpoonPluginType.getInstance());
     
-    SpoonPluginType.getInstance().getPluginFolders().add(new PluginFolder("plugins/repository", false, true));
-    
+    SpoonPluginType.getInstance().getPluginFolders().add(new PluginFolder("plugins/repositories", false, true));
     
   }
 

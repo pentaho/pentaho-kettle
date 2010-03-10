@@ -60,11 +60,11 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 		for (Class<?> clazz : classes)
 		{
 			DatabaseMetaPlugin databaseMetaPlugin = clazz.getAnnotation(DatabaseMetaPlugin.class);
-			handleDatabaseMetaPluginAnnotation(clazz, databaseMetaPlugin, new ArrayList<String>(), true);
+			handleDatabaseMetaPluginAnnotation(clazz, databaseMetaPlugin, new ArrayList<String>(), true, null);
 		}		
 	}
 	
-	private void handleDatabaseMetaPluginAnnotation(Class<?> clazz, DatabaseMetaPlugin databaseMetaPlugin, List<String> libraries, boolean nativeStep) throws KettlePluginException {
+	private void handleDatabaseMetaPluginAnnotation(Class<?> clazz, DatabaseMetaPlugin databaseMetaPlugin, List<String> libraries, boolean nativeStep, URL pluginFolder) throws KettlePluginException {
 		
 		String[] ids = new String[] { databaseMetaPlugin.type(), }; 
 		
@@ -81,7 +81,7 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 		Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
 		classMap.put(clazz.getClass(), clazz.getName());
 		
-		PluginInterface plugin = new Plugin(ids, this.getClass(), clazz.getClass(), category, name, description, null, false, nativeStep, classMap, libraries, null);
+		PluginInterface plugin = new Plugin(ids, this.getClass(), clazz.getClass(), category, name, description, null, false, nativeStep, classMap, libraries, "", pluginFolder);
 		registry.registerPlugin(this.getClass(), plugin);
 	}
 
@@ -101,7 +101,7 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 				DatabaseMetaPlugin databaseMetaPlugin = clazz.getAnnotation(DatabaseMetaPlugin.class);
 				List<String> libraries = new ArrayList<String>();
 				libraries.add(jarFilePlugin.getJarFile().getFile());
-				handleDatabaseMetaPluginAnnotation(clazz, databaseMetaPlugin, libraries, false);
+				handleDatabaseMetaPluginAnnotation(clazz, databaseMetaPlugin, libraries, false, jarFilePlugin.getPluginFolder());
 			} catch(ClassNotFoundException e) {
 				// Ignore for now, don't know if it's even possible.
 			}

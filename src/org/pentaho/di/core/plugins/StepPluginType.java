@@ -99,7 +99,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 			Node stepsNode = XMLHandler.getSubNode(document, "steps");
 			List<Node> stepNodes = XMLHandler.getNodes(stepsNode, "step");
 			for (Node stepNode : stepNodes) {
-				registerPluginFromXmlResource(stepNode, null, this.getClass(), true);
+				registerPluginFromXmlResource(stepNode, null, this.getClass(), true, null);
 			}
 			
 		} catch (KettleXMLException e) {
@@ -161,7 +161,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 	      }
 	    }
 			
-		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), StepInterface.class, category, name, description, step.image(), step.isSeparateClassLoaderNeeded(), nativeStep, classMap, libraries, null);
+		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), StepInterface.class, category, name, description, step.image(), step.isSeparateClassLoaderNeeded(), nativeStep, classMap, libraries, null, null);
 		registry.registerPlugin(this.getClass(), stepPlugin);
 	}
 
@@ -199,7 +199,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 						Document document = XMLHandler.loadXMLFile(file);
 						Node pluginNode = XMLHandler.getSubNode(document, "plugin");
 						if (pluginNode!=null) {
-							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false);
+							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false, file.getParent().getURL());
 						}
 					} catch(Exception e) {
 						// We want to report this plugin.xml error, perhaps an XML typo or something like that...

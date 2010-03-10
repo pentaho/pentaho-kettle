@@ -60,7 +60,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
     for (Class<?> clazz : classes)
     {
       SpoonPlugin repositoryPlugin = clazz.getAnnotation(SpoonPlugin.class);
-      handleAnnotation(clazz, repositoryPlugin, new ArrayList<String>(), true);
+      handleAnnotation(clazz, repositoryPlugin, new ArrayList<String>(), true, null);
     }   
   }
   
@@ -75,6 +75,8 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
     
     List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(SpoonPlugin.class.getName());
     for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
+      
+      System.out.println("found spoonPlugin in :"+jarFilePlugin.getPluginFolder());
       
       URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarFilePlugin.getJarFile(), }, getClass().getClassLoader());
 
@@ -99,7 +101,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
         }
 
         libraries.add(jarFilePlugin.getJarFile().getFile());
-        handleAnnotation(clazz, partitioner, libraries, false);
+        handleAnnotation(clazz, partitioner, libraries, false, jarFilePlugin.getPluginFolder());
       } catch(ClassNotFoundException e) {
         // Ignore for now, don't know if it's even possible.
       }
@@ -113,7 +115,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
   }
 
 
-  private void handleAnnotation(Class<?> clazz, SpoonPlugin spoonPlugin, List<String> libraries, boolean nativeJobEntry) throws KettlePluginException {
+  private void handleAnnotation(Class<?> clazz, SpoonPlugin spoonPlugin, List<String> libraries, boolean nativeJobEntry, URL pluginFolder) throws KettlePluginException {
     
     // Only one ID for now
     String[] ids = new String[] { spoonPlugin.id(), }; 
@@ -142,7 +144,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
     Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
     classMap.put(SpoonPlugin.class, clazz.getName());
     
-    PluginInterface stepPlugin = new Plugin(ids, this.getClass(), SpoonPlugin.class, category, description, null, null, false, false, classMap, libraries, null);
+    PluginInterface stepPlugin = new Plugin(ids, this.getClass(), SpoonPlugin.class, category, description, null, null, false, false, classMap, libraries, null, pluginFolder);
     registry.registerPlugin(this.getClass(), stepPlugin);
   }
 
