@@ -175,6 +175,7 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
+import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.VersionRepository;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.resource.ResourceExportInterface;
@@ -221,6 +222,7 @@ import org.pentaho.di.ui.repository.ILoginCallback;
 import org.pentaho.di.ui.repository.RepositoriesDialog;
 import org.pentaho.di.ui.repository.RepositorySecurityUI;
 import org.pentaho.di.ui.repository.capabilities.AclUISupport;
+import org.pentaho.di.ui.repository.capabilities.BaseRepositoryExplorerUISupport;
 import org.pentaho.di.ui.repository.capabilities.ManageUserUISupport;
 import org.pentaho.di.ui.repository.capabilities.RevisionsUISupport;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
@@ -6614,11 +6616,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   		  this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
         }
     // Registering the UI Support classes
+  	UISupportRegistery.getInstance().registerUISupport(RepositorySecurityProvider.class, BaseRepositoryExplorerUISupport.class);	
     UISupportRegistery.getInstance().registerUISupport(RepositorySecurityManager.class, ManageUserUISupport.class);
     UISupportRegistery.getInstance().registerUISupport(VersionRepository.class, RevisionsUISupport.class);
     UISupportRegistery.getInstance().registerUISupport(IAclManager.class, AclUISupport.class);
-    
-    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
+    if(rep != null) {
+      SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
+    }
   }
 
   public void addMenuListener(String id, Object listener, String methodName) {

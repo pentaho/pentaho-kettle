@@ -35,6 +35,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
+import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UICluster;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIClusters;
@@ -47,7 +49,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class ClustersController extends AbstractXulEventHandler {
+public class ClustersController extends AbstractXulEventHandler   implements IUISupportController {
 
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -65,7 +67,7 @@ public class ClustersController extends AbstractXulEventHandler {
   
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-  private BindingFactory bf = null;
+  protected BindingFactory bf = null;
 
   private Shell shell = null;
 
@@ -95,7 +97,8 @@ public class ClustersController extends AbstractXulEventHandler {
     return "clustersController"; //$NON-NLS-1$
   }
 
-  public void init() {
+  public void init(Repository repository) throws ControllerInitializationException {
+    this.repository = repository;
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
     bf = new DefaultBindingFactory();
@@ -134,9 +137,6 @@ public class ClustersController extends AbstractXulEventHandler {
       throw new RuntimeException(e);
     }
     refreshClusters();
-  }
-  public void setRepository(Repository rep) {
-    this.repository = rep;
   }
 
   public void editCluster() {

@@ -25,6 +25,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -56,8 +57,9 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   };  
   
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private RepositoryExplorerCallback callback;
 
-	public static final int CANCELLED = 0;
+  public static final int CANCELLED = 0;
 	public static final int OK = 1;
 	
 	private int lastClicked = CANCELLED;
@@ -96,6 +98,14 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
 
     dialog = (XulDialog) document.getElementById("repository-explorer-dialog");//$NON-NLS-1$
     // acceptButton = (XulButton) document.getElementById("repository-explorer-dialog_accept");
+  }
+
+  public RepositoryExplorerCallback getCallback() {
+    return callback;
+  }
+
+  public void setCallback(RepositoryExplorerCallback callback) {
+    this.callback = callback;
   }
   
   public void setRepository(Repository rep) {

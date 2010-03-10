@@ -4,7 +4,7 @@
   height="600" width="800"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:pen="http://www.pentaho.org/2008/xul" 
-  onload="mainController.init(), connectionsController.init(), slavesController.init(), partitionsController.init(), clustersController.init()">
+  onload="mainController.init()">
 
 	<dialog id="repository-explorer-dialog" 
 		title="${RepositoryExplorerDialog.Title}"
@@ -324,7 +324,8 @@
 	<dialog id="manage-acls-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
 	    		ondialogaccept="permissionsController.updateAcls()"
 	    		ondialogcancel="permissionsController.closeManageAclsDialog()" 
-	    		buttons="accept, cancel" buttonalign="right" title="${ManageAclsDialog.Title}" 
+	    		buttons="accept, cancel" buttonalign="right" title="${ManageAclsDialog.Title}"
+	    		appicon="ui/images/spoon.ico" 
 	    		height="500" width="400">
 	    	<vbox flex="1">
 		    	<groupbox id="user-section" flex="1">
@@ -373,23 +374,21 @@
     <dialog id="add-user-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
     		ondialogaccept="iSecurityController.saveUser()"
     		ondialogcancel="iSecurityController.cancelAddUserDialog()" 
-    		buttons="accept, cancel" buttonalign="right" title="${AddUserDialog.Title}" 
+    		buttons="accept, cancel" buttonalign="right" title="${AddUserDialog.Title}"
+    		appicon="ui/images/spoon.ico" 
     		height="230" width="350">
        <vbox>
 			<label value="${AddUserDialog.UserName}" />
-			<hbox>
-				<textbox id="user-name" flex="3" multiline="false"/>
-				<label id="spacer-label" flex="1" />
+			<hbox id="user-name-box">
+				<textbox id="user-name" flex="1" multiline="false"/>
 			</hbox>
 			<label value="${AddUserDialog.Password}"/>
-			<hbox>
-				<textbox id="user-password" flex="3" type="password" multiline="false"/>
-				<label id="spacer-label" flex="1" />
+			<hbox id="user-password-box">
+				<textbox id="user-password" flex="1" type="password" multiline="false"/>
 			</hbox>
 			<label value="${AddUserDialog.Description}"/>
-			<hbox>
-				<textbox id="user-description" flex="3" multiline="false"/>
-				<label id="spacer-label" flex="1" />
+			<hbox id="user-description-box"> 
+				<textbox id="user-description" flex="1" multiline="false"/>
 			</hbox>
       </vbox>
       <vbox id="role-to-user-box" flex="1"/>
@@ -400,7 +399,7 @@
   <!--         cancel   												                  -->
   <!--  ###############################################################################   -->    
   <dialog id="apply-acl-confirmation-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}" buttons="accept, cancel" ondialogcancel="permissionsController.closeApplyAclConfirmationDialog()"
-	  ondialogaccept="permissionsController.applyAcl()" buttonalign="right" title="${ApplyAclConfirmationDialog.Title}" 
+	  ondialogaccept="permissionsController.applyAcl()" buttonalign="right" title="${ApplyAclConfirmationDialog.Title}" appicon="ui/images/spoon.ico" 
   		xmlns:pen="http://www.pentaho.org/2008/xul" height="180" width="320">
        <vbox>
         <label value="${ApplyAclConfirmationDialog.ConfirmMessage1}"/>

@@ -24,7 +24,6 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -33,18 +32,11 @@ import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.capabilities.IRepositoryExplorerUISupport;
-import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
-import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersController;
-import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
-import org.pentaho.di.ui.repository.repositoryexplorer.controllers.PartitionsController;
-import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SlavesController;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -63,16 +55,6 @@ public class RepositoryExplorer {
   private static final Class CLZ = RepositoryExplorer.class;
 
   private MainController mainController = new MainController();
-
-  private BrowseController browseController = new BrowseController();
-
-  private ConnectionsController connectionsController = new ConnectionsController();
-
-  private SlavesController slavesController = new SlavesController();
-
-  private PartitionsController partitionsController = new PartitionsController();
-
-  private ClustersController clustersController = new ClustersController();
 
   private XulDomContainer container;
 
@@ -108,40 +90,19 @@ public class RepositoryExplorer {
   // private Repository repository;
   public RepositoryExplorer(final Repository rep, RepositoryExplorerCallback callback, VariableSpace variableSpace)
       throws XulException {
-    try {
-      Directory root = rep.loadRepositoryDirectoryTree();
-    } catch (KettleException e) {
-      log.error(resourceBundle.getString("RepositoryExplorer.ErrorStartingXulApplication"), e);//$NON-NLS-1$
-      new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
-          "Spoon.Error"), e.getMessage(), e); //$NON-NLS-1$
-    }
     SwtXulLoader swtXulLoader = new SwtXulLoader();
     swtXulLoader.registerClassLoader(getClass().getClassLoader());
     container = swtXulLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
 
-    SpoonPluginManager.getInstance().applyPluginsForContainer("repository-explorer", container);
+    SpoonPluginManager.getInstance().applyPluginsForContainer("repository-explorer", container); //$NON-NLS-1$
 
     final XulRunner runner = new SwtXulRunner();
     runner.addContainer(container);
 
     mainController.setRepository(rep);
+    mainController.setCallback(callback);
+    
     container.addEventHandler(mainController);
-
-    container.addEventHandler(browseController);
-    browseController.setCallback(callback);
-
-    connectionsController.setRepository(rep);
-    container.addEventHandler(connectionsController);
-
-    slavesController.setRepository(rep);
-    container.addEventHandler(slavesController);
-
-    partitionsController.setRepository(rep);
-    partitionsController.setVariableSpace(variableSpace);
-    container.addEventHandler(partitionsController);
-
-    clustersController.setRepository(rep);
-    container.addEventHandler(clustersController);
 
     List<IRepositoryExplorerUISupport> uiSupportList = new ArrayList<IRepositoryExplorerUISupport>();
     try {
@@ -167,18 +128,6 @@ public class RepositoryExplorer {
             "Spoon.Error"), e.getMessage(), e); //$NON-NLS-1$
       }
     }
-    container.invokeLater(new Runnable() {
-      public void run() {
-        try {
-          repositoryDirectory = rep.loadRepositoryDirectoryTree();
-          browseController.setRepositoryDirectory(new UIRepositoryDirectory(repositoryDirectory, rep));
-          browseController.init();
-        } catch (Throwable e) {
-          new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
-              "Spoon.Error"), e.getMessage(), e); //$NON-NLS-1$
-        }
-      }
-    });
 
     try {
       runner.initialize();

@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
@@ -36,6 +37,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
+import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartition;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartitions;
@@ -48,7 +51,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class PartitionsController extends AbstractXulEventHandler{
+public class PartitionsController extends AbstractXulEventHandler  implements IUISupportController {
 
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -66,7 +69,7 @@ public class PartitionsController extends AbstractXulEventHandler{
   
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-  private BindingFactory bf = null;
+  protected BindingFactory bf = null;
 
   private Shell shell = null;
 
@@ -84,14 +87,15 @@ public class PartitionsController extends AbstractXulEventHandler{
     });
   }
   
-  private VariableSpace variableSpace = null;
+  private VariableSpace variableSpace = Variables.getADefaultVariableSpace();
 
   @Override
   public String getName() {
     return "partitionsController"; //$NON-NLS-1$
   }
 
-  public void init() {
+  public void init(Repository repository) throws ControllerInitializationException {
+    this.repository = repository;
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
 
@@ -132,10 +136,6 @@ public class PartitionsController extends AbstractXulEventHandler{
     refreshPartitions();
   }
 
-  public void setRepository(Repository rep) {
-    this.repository = rep;
-  }
-  
   public void setVariableSpace(VariableSpace variableSpace) {
     this.variableSpace = variableSpace;
   }

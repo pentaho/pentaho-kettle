@@ -28,17 +28,21 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
+import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlaves;
+import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class SlavesController extends AbstractXulEventHandler{
+public class SlavesController extends AbstractXulEventHandler  implements IUISupportController {
 
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -60,7 +64,7 @@ public class SlavesController extends AbstractXulEventHandler{
 
   private Repository repository = null;
   
-  private BindingFactory bf = null;
+  protected BindingFactory bf = null;
   
   private Shell shell = null;
   
@@ -69,12 +73,15 @@ public class SlavesController extends AbstractXulEventHandler{
   public SlavesController() {
   }
 
-  public void init() {
+  public void init(Repository repository) throws ControllerInitializationException {
+    this.repository = repository;
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog)document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
     
     setEnableButtons(false);
-    
+    bf = new DefaultBindingFactory();
+    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
+
     if (bf!=null){
       createBindings();
     }
@@ -85,14 +92,11 @@ public class SlavesController extends AbstractXulEventHandler{
     return "slavesController"; //$NON-NLS-1$
   }
 
-  public void setRepository(Repository repository) {
-    this.repository = repository;
-  }
   public void createBindings() {
     try {
       slavesTable = (XulTree) document.getElementById("slaves-table"); //$NON-NLS-1$
-      bf.createBinding(slaveList, "children", slavesTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
-      
+      bf.setBindingType(Binding.Type.ONE_WAY);
+      bf.createBinding(this, "slaveList", slavesTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(slavesTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
         new BindingConvertor<List<UISlave>, Boolean>() {
           @Override
@@ -270,4 +274,14 @@ public class SlavesController extends AbstractXulEventHandler{
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
   }
+  
+
+  public UISlaves getSlaveList() {
+    return slaveList;
+  }
+
+  public void setSlaveList(UISlaves slaveList) {
+    this.slaveList = slaveList;
+  }
+
 }

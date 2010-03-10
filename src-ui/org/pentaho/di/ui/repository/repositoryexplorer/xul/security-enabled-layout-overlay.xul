@@ -23,7 +23,7 @@
 		                        <!-- Roles list -->
 		                        <listbox id="users-list" pen:binding="name" disabled="false" flex="1"/>
 		                    </vbox>
-		                    <vbox flex="4">
+		                    <vbox flex="4" id="user-memberof-box" visible="false">
 		                        <hbox>
 		                            <label value="${SecurityTab.Memberof}"/>
 		                            <label id="spacer-label" flex="1" />

@@ -24,8 +24,10 @@ import java.util.ResourceBundle;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListenerCollection;
+import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
@@ -56,7 +58,7 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  * browse functionality.
  * 
  */
-public class BrowseController extends AbstractXulEventHandler{
+public class BrowseController extends AbstractXulEventHandler   implements IUISupportController {
 
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -82,8 +84,6 @@ public class BrowseController extends AbstractXulEventHandler{
 
   private UIRepositoryDirectory repositoryDirectory;
 
-  private RepositoryExplorerCallback callback;
-
   private ContextChangeListenerCollection contextChangeListeners;
 
   private static final int NO_HISTORY = 0;
@@ -102,14 +102,21 @@ public class BrowseController extends AbstractXulEventHandler{
 
   List<UIRepositoryObject> repositoryObjects;
 
+  private MainController mainController;
+
   public BrowseController() {
   }
 
-  public void init() {
+  public void init(Repository repository) throws ControllerInitializationException{
+    try {
+    this.repositoryDirectory = new UIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
     bf = new DefaultBindingFactory();
     bf.setDocument(this.getXulDomContainer().getDocumentRoot());
 
     createBindings();
+    } catch(KettleException e) {
+      throw new ControllerInitializationException(e);
+    }
   }
 
   private void createBindings() {
@@ -259,16 +266,21 @@ public class BrowseController extends AbstractXulEventHandler{
     return "browseController"; //$NON-NLS-1$
   }
 
+  
+  public MainController getMainController() {
+    return mainController;
+  }
+
+  public void setMainController(MainController mainController) {
+    this.mainController = mainController;
+  }
+  
   public UIRepositoryDirectory getRepositoryDirectory() {
     return repositoryDirectory;
   }
 
   public void setRepositoryDirectory(UIRepositoryDirectory repositoryDirectory) {
     this.repositoryDirectory = repositoryDirectory;
-  }
-
-  public void setCallback(RepositoryExplorerCallback callback) {
-    this.callback = callback;
   }
 
   public void expandAllFolders() {
@@ -292,8 +304,8 @@ public class BrowseController extends AbstractXulEventHandler{
           List<Object> selectedFolder = new ArrayList<Object>();
           selectedFolder.add(o);
           folderTree.setSelectedItems(selectedFolder);
-        }else if ((callback != null) && (o instanceof UIRepositoryContent)) {
-          if (callback.open((UIRepositoryContent)o, null)) {
+        }else if ((mainController != null && mainController.getCallback() != null) && (o instanceof UIRepositoryContent)) {
+          if (mainController.getCallback().open((UIRepositoryContent)o, null)) {
             //TODO: fire request to close dialog
           }
         }
@@ -327,8 +339,8 @@ public class BrowseController extends AbstractXulEventHandler{
 
     // TODO: Is it a requirement to allow opening multiple revisions? 
     UIRepositoryObjectRevision revisionToOpen = revision.iterator().next();
-    if (callback != null) {
-      if (callback.open(contentToOpen, revisionToOpen.getName())) {
+    if (mainController != null && mainController.getCallback() != null) {
+      if (mainController.getCallback().open(contentToOpen, revisionToOpen.getName())) {
         //TODO: fire request to close dialog
       }
     }

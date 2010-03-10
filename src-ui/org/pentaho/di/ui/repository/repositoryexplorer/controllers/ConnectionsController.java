@@ -28,6 +28,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
+import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnection;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnections;
@@ -40,7 +42,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class ConnectionsController extends AbstractXulEventHandler{
+public class ConnectionsController extends AbstractXulEventHandler  implements IUISupportController {
 
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -60,7 +62,7 @@ public class ConnectionsController extends AbstractXulEventHandler{
   
   private XulTree connectionsTable = null;
     
-  private BindingFactory bf = null;
+  protected BindingFactory bf = null;
   
   private Repository repository = null;;
   
@@ -76,8 +78,9 @@ public class ConnectionsController extends AbstractXulEventHandler{
   
   private boolean initComplete = false;
   
-  private UIDatabaseConnections dbConns = new UIDatabaseConnections();
-  
+  private UIDatabaseConnections dbConnectionList = new UIDatabaseConnections();
+
+
   public ConnectionsController() {
   }
   
@@ -86,7 +89,10 @@ public class ConnectionsController extends AbstractXulEventHandler{
     return "connectionsController"; //$NON-NLS-1$
   }
   
-  public void init() {
+  public void init(Repository repository) throws ControllerInitializationException {
+    this.repository = repository;
+    setRepReadOnly(this.repository.getRepositoryMeta().getRepositoryCapabilities().isReadOnly());
+
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog)document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
     bf = new DefaultBindingFactory();
@@ -106,8 +112,7 @@ public class ConnectionsController extends AbstractXulEventHandler{
     bf.setBindingType(Binding.Type.ONE_WAY);
 
     try{
-      bf.createBinding(dbConns, "children", connectionsTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
-      
+      bf.createBinding(this, "dbConnectionList", connectionsTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
       (bindButtonNew = bf.createBinding(this, "repReadOnly", "connections-new", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       (bindButtonEdit = bf.createBinding(this, "repReadOnly", "connections-edit", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       (bindButtonRemove = bf.createBinding(this, "repReadOnly", "connections-remove", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -135,13 +140,6 @@ public class ConnectionsController extends AbstractXulEventHandler{
       throw new RuntimeException(ex);
     }
     refreshConnectionList();
-  }
-  public void setRepository(Repository repository) {
-    if(this.repository == null || !this.repository.equals(repository)) {
-      this.repository = repository;
-      
-      setRepReadOnly(this.repository.getRepositoryMeta().getRepositoryCapabilities().isReadOnly());
-    }
   }
 
   public Repository getRepository() {
@@ -171,13 +169,13 @@ public class ConnectionsController extends AbstractXulEventHandler{
 
    private void refreshConnectionList() {
     try {
-      dbConns.clear();
+      dbConnectionList.clear();
       ObjectId[] dbIdList = repository.getDatabaseIDs(false);
       for(ObjectId dbId : dbIdList) {
         DatabaseMeta dbMeta = repository.loadDatabaseMeta(dbId, null);
                 
         // Add the database connection to the list
-        dbConns.add(new UIDatabaseConnection(dbMeta));
+        dbConnectionList.add(new UIDatabaseConnection(dbMeta));
       }
     } catch (KettleException e) {
       // convert to runtime exception so it bubbles up through the UI
@@ -185,6 +183,15 @@ public class ConnectionsController extends AbstractXulEventHandler{
     }
   }
   
+   
+   public UIDatabaseConnections getDbConnectionList() {
+     return dbConnectionList;
+   }
+
+   public void setDbConnectionList(UIDatabaseConnections dbConnectionList) {
+     this.dbConnectionList = dbConnectionList;
+   }
+   
   public void createConnection() {
     try
     {
