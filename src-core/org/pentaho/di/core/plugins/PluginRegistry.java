@@ -294,7 +294,7 @@ public class PluginRegistry {
     	if (className==null) {
             throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName())); //$NON-NLS-1$
     	}
-
+    	
         try
         {
         	Class<? extends T> cl = null;
@@ -610,15 +610,33 @@ public class PluginRegistry {
 
 				return (T) Class.forName(className);
 			} else {
-				Map<PluginInterface, URLClassLoader> map = classLoaderMap.get(plugin.getPluginType());
-				if (map==null) {
-					throw new KettlePluginException("Unable to find class loader map for plugin type: "+plugin.getPluginType());
-				}
-				ClassLoader classLoader = map.get(plugin);
-				if (classLoader==null) {
-					throw new KettlePluginException("Unable to find class loader for plugin: "+plugin);
-				}
-				return (T) classLoader.loadClass(className);
+			  
+			  
+			  URLClassLoader ucl = null;
+			   Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get(plugin.getPluginType());
+               if (classLoaders==null) {
+                   classLoaders=new HashMap<PluginInterface, URLClassLoader>();
+                   classLoaderMap.put(plugin.getPluginType(), classLoaders);
+               } else {
+                   ucl = classLoaders.get(plugin);
+               }
+             if (ucl==null)
+             {
+
+               if(plugin.getPluginDirectory() != null){
+                 ucl = folderBasedClassLoaderMap.get(plugin.getPluginDirectory().toString());
+
+                 classLoaders.put(plugin, ucl); // save for later use...
+                 
+               }
+               
+             }
+			  
+             if (ucl==null) {
+               throw new KettlePluginException("Unable to find class loader for plugin: "+plugin);
+             }
+             return (T) ucl.loadClass(className);
+  			  
 			}
 		} catch (Exception e) {
 			throw new KettlePluginException("Unexpected error loading class with name: "+className, e);
