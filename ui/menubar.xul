@@ -11,7 +11,8 @@
               command="spoon.newTransFile()" />
             <menuitem id="file-new-job" acceltext="CTRL-ALT-N" accesskey="ctrl-alt-n" label="${Spoon.Menu.Job}"
               command="spoon.newJobFile()" />
-            <menuitem id="tools-data-new" label="${Spoon.Menu.Tools.Data.New}"/>
+            <menuitem id="file-new-database" label="${Spoon.Menu.File.NewDB}"
+              command="spoon.newConnection()" />
           </menupopup>
         </menu>
         <menuitem id="file-open" acceltext="CTRL-O" accesskey="ctrl-o" label="${Spoon.Menu.File.Open}" command="spoon.openFile()" />
@@ -155,10 +156,14 @@
         </menu>
         <menu id="repository" label="${Spoon.Menu.Repository}">
       	  <menupopup id="repository-popup">
-        	<menuitem id="repository-connect" acceltext="CTRL-R" accesskey="ctrl-r"
-          	  label="${Spoon.Menu.Repository.ConnectToRepository}" command="spoon.openRepository()" />
-        	<menuitem id="repository-explore" acceltext="CTRL-E" accesskey="ctrl-e" disabled="true"
+            <menuitem id="repository-connect" acceltext="CTRL-R" accesskey="ctrl-r"
+              label="${Spoon.Menu.Repository.ConnectToRepository}" command="spoon.openRepository()" />
+            <menuitem id="repository-disconnect" acceltext="CTRL-D" accesskey="ctrl-d" disabled="true"
+              label="${Spoon.Menu.Repository.DisconnectRepository}" command="spoon.closeRepository()" />
+            <menuitem id="repository-explore" acceltext="CTRL-E" accesskey="ctrl-e" disabled="true"
               label="${Spoon.Menu.Repository.ExploreRepository}" command="spoon.exploreRepository()" />
+            <menuitem id="repository-edit-user" acceltext="CTRL-U" accesskey="ctrl-u" disabled="true"
+              label="${Spoon.Menu.Repository.EditCurrentUser}" command="spoon.editRepositoryUser()" />
       	  </menupopup>
         </menu>
         <menu id="plugins" label="${Spoon.Menu.Tools.Plugins.Popup}">
@@ -181,6 +186,9 @@
       <menupopup id="help-popup">
         <menuitem id="help-tip" label="${Spoon.Menu.Help.Tip}" command="spoon.showTips()" />
         <menuitem id="help-welcome" label="${Spoon.Menu.Help.Welcome}" command="spoon.showWelcomePage()" />
+        <menuseparator />
+        <menuitem id="help-step-plugins" label="${Spoon.Menu.StepPlugins}" command="spoon.helpShowStepPlugins()" />
+        <menuitem id="help-jobentry-plugins" label="${Spoon.Menu.JobEntryPlugins}" command="spoon.helpShowJobEntryPlugins()" />
         <menuseparator />
         <menuitem id="help-about" label="${Spoon.Menu.About}" command="spoon.helpAbout()" />
       </menupopup>
