@@ -1266,6 +1266,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     TransGraph transGraph = getActiveTransGraph();
     if (transGraph != null) {
       transGraph.showExecutionResults();
+      enableMenus();
     }
   }
   
