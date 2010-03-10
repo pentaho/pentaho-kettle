@@ -56,7 +56,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
    */
   protected void registerAnnotations() throws KettlePluginException {
 
-    List<Class<?>> classes = getAnnotatedClasses(RepositoryPlugin.class);
+    List<Class<?>> classes = getAnnotatedClasses(SpoonPlugin.class);
     for (Class<?> clazz : classes)
     {
       SpoonPlugin repositoryPlugin = clazz.getAnnotation(SpoonPlugin.class);
@@ -87,6 +87,13 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
         
         File f = new File(jarFilePlugin.getJarFile().getFile());
         File parent = f.getParentFile();
+        for(File fil : parent.listFiles()){
+          try {
+            libraries.add(fil.toURI().toURL().getFile());
+          } catch (MalformedURLException e) {
+            e.printStackTrace();
+          }
+        }
         File libDir = new File(parent.toString()+File.separator+"lib");;
         if(libDir.exists()){
           for(File fil : libDir.listFiles()){
@@ -100,7 +107,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
           }
         }
 
-        libraries.add(jarFilePlugin.getJarFile().getFile());
+//        libraries.add(jarFilePlugin.getJarFile().getFile());
         handleAnnotation(clazz, partitioner, libraries, false, jarFilePlugin.getPluginFolder());
       } catch(ClassNotFoundException e) {
         // Ignore for now, don't know if it's even possible.
