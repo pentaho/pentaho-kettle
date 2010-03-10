@@ -97,7 +97,7 @@
         <menuitem id="view-zoom-100pct" acceltext="HOME" accesskey="home" label="${Spoon.Menu.View.Zoom100}"
           command="spoon.zoom100Percent()" />
         <menuseparator id="view-perspective-seperator" />
-        <menuitem id="view-results" label="${Spoon.Menu.View.Results}" command="spoon.showExecutionResults()"/>  
+        <menuitem id="view-results" type="checkbox" label="${Spoon.Menu.View.Results}" command="spoon.showExecutionResults()"/>  
       </menupopup>
     </menu>
   
