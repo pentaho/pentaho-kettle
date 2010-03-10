@@ -39,12 +39,12 @@ public class Plugin implements PluginInterface {
 	 * @param name
 	 * @param description
 	 * @param imageFile
-	 * @param seaerateClassLoaderNeeded
+	 * @param separateClassLoaderNeeded
 	 * @param nativePlugin
 	 * @param classMap
 	 * @param libraries
 	 */
-	public Plugin(String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType, String category, String name, String description, String imageFile, boolean seaerateClassLoaderNeeded, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile, URL pluginFolder) {
+	public Plugin(String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType, String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile, URL pluginFolder) {
 		this.ids = ids;
 		this.pluginType = pluginType;
 		this.mainType = mainType;
@@ -52,7 +52,7 @@ public class Plugin implements PluginInterface {
 		this.name = name;
 		this.description = description;
 		this.imageFile = imageFile;
-		this.separateClassLoaderNeeded = seaerateClassLoaderNeeded;
+		this.separateClassLoaderNeeded = separateClassLoaderNeeded;
 		this.nativePlugin = nativePlugin;
 		this.classMap = classMap;
 		this.libraries = libraries;

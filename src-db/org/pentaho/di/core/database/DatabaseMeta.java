@@ -1308,6 +1308,7 @@ public class DatabaseMeta
 			try {
 				DatabaseInterface databaseInterface = (DatabaseInterface)registry.loadClass(plugin);
 				databaseInterface.setPluginId(plugin.getIds()[0]);
+				databaseInterface.setPluginName(plugin.getName());
 				allDatabaseInterfaces.put(plugin.getIds()[0], databaseInterface);
 			} catch(Exception e) {
 				throw new RuntimeException("Error creating class for: "+plugin, e);

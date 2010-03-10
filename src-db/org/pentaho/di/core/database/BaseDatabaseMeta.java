@@ -194,6 +194,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	private ObjectId objectId;
 
 	private String pluginId;
+	private String pluginName;
 
 	public BaseDatabaseMeta()
 	{
@@ -215,6 +216,20 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		this.pluginId = pluginId;
 	}
 
+	 /**
+   * @return plugin name of this class
+   */
+  public String getPluginName() {
+    return pluginName;
+  }
+  
+  /**
+   * @param pluginName The plugin name to set.
+   */
+  public void setPluginName(String pluginName) {
+    this.pluginName = pluginName;
+  }
+	
 	/**
 	 * @return Returns the accessType.
 	 */

@@ -37,6 +37,17 @@ public interface DatabaseInterface extends Cloneable
 	 */
 	public void setPluginId(String pluginId);
 	
+	
+	/**
+	 * @return the plugin name of this database, the same thing as the annotation typeDescription
+	 */
+	public String getPluginName();
+	
+	/**
+	 * 
+	 * @param pluginName set the plugin name of this plugin (after instantiation)
+	 */
+	public void setPluginName(String pluginName);
 	/*
 	/**
 	 * 
