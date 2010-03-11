@@ -566,6 +566,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public Spoon(Display d, Repository rep) {
     this.log = new LogChannel(APP_NAME);
+    SpoonFactory.setSpoonInstance(this);
     setRepository(rep);
 
     if (d != null) {
@@ -590,7 +591,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       new ErrorDialog(shell, "Unable to init simple JNDI", "Unable to init simple JNDI", e);
     }
 
-    SpoonFactory.setSpoonInstance(this);
   }
 
   /**
