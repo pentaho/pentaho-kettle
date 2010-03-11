@@ -970,6 +970,9 @@ public class KettleFileRepository implements Repository {
 
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public ObjectId renameRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
 		try {
 			// In case of a root object, the ID is the same as the relative filename...

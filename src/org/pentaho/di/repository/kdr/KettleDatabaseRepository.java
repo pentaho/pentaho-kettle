@@ -478,9 +478,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		directoryDelegate.delRepositoryDirectory(dir);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public ObjectId renameRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.RENAME_DIRECTORY);
-		return directoryDelegate.renameRepositoryDirectory(dir);
+		return directoryDelegate.renameRepositoryDirectory(dir.getObjectId(), dir, dir.getName());
 	}
 	
 	 public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectory newParentDir, String newName) throws KettleException {
