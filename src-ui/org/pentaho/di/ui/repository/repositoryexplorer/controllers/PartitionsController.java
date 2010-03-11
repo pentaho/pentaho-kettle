@@ -78,15 +78,7 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
   private XulTree partitionsTable = null;
 
   private UIPartitions partitionList = new UIPartitions();
-  {
-    partitionList.addPropertyChangeListener("children", new PropertyChangeListener() {//$NON-NLS-1$
-      
-      public void propertyChange(PropertyChangeEvent evt) {
-        PartitionsController.this.changeSupport.firePropertyChange("partitionList", null, partitionList);//$NON-NLS-1$
-      }
-    });
-  }
-  
+
   private VariableSpace variableSpace = Variables.getADefaultVariableSpace();
 
   @Override
@@ -111,8 +103,8 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
   public void createBindings() {
     try {
       partitionsTable = (XulTree) document.getElementById("partitions-table"); //$NON-NLS-1$
-      bf.createBinding(this, "partitionList", partitionsTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
       bf.setBindingType(Binding.Type.ONE_WAY);
+      bf.createBinding(partitionList, "children", partitionsTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(partitionsTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<List<UIPartition>, Boolean>() {
             @Override
@@ -269,14 +261,6 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
         throw new RuntimeException(e);
       }
     }
-  }
-
-  public UIPartitions getPartitionList() {
-    return partitionList;
-  }
-
-  public void setPartitionList(UIPartitions partitionList) {
-    this.partitionList = partitionList;
   }
 
   public void setEnableButtons(boolean enable) {

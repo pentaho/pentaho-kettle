@@ -11,6 +11,8 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -96,7 +98,7 @@ public class SlavesController extends AbstractXulEventHandler  implements IUISup
     try {
       slavesTable = (XulTree) document.getElementById("slaves-table"); //$NON-NLS-1$
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(this, "slaveList", slavesTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(slaveList, "children", slavesTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(slavesTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
         new BindingConvertor<List<UISlave>, Boolean>() {
           @Override
@@ -274,14 +276,4 @@ public class SlavesController extends AbstractXulEventHandler  implements IUISup
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
   }
-  
-
-  public UISlaves getSlaveList() {
-    return slaveList;
-  }
-
-  public void setSlaveList(UISlaves slaveList) {
-    this.slaveList = slaveList;
-  }
-
 }

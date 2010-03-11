@@ -11,6 +11,8 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -80,7 +82,6 @@ public class ConnectionsController extends AbstractXulEventHandler  implements I
   
   private UIDatabaseConnections dbConnectionList = new UIDatabaseConnections();
 
-
   public ConnectionsController() {
   }
   
@@ -112,7 +113,7 @@ public class ConnectionsController extends AbstractXulEventHandler  implements I
     bf.setBindingType(Binding.Type.ONE_WAY);
 
     try{
-      bf.createBinding(this, "dbConnectionList", connectionsTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(dbConnectionList, "children", connectionsTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
       (bindButtonNew = bf.createBinding(this, "repReadOnly", "connections-new", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       (bindButtonEdit = bf.createBinding(this, "repReadOnly", "connections-edit", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       (bindButtonRemove = bf.createBinding(this, "repReadOnly", "connections-remove", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -182,15 +183,6 @@ public class ConnectionsController extends AbstractXulEventHandler  implements I
       throw new RuntimeException(e);
     }
   }
-  
-   
-   public UIDatabaseConnections getDbConnectionList() {
-     return dbConnectionList;
-   }
-
-   public void setDbConnectionList(UIDatabaseConnections dbConnectionList) {
-     this.dbConnectionList = dbConnectionList;
-   }
    
   public void createConnection() {
     try

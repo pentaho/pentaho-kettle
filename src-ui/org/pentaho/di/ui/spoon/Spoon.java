@@ -1395,6 +1395,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           // Close the previous connection...
           if (rep != null) {
             rep.disconnect();
+            SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
           }
           setRepository(repository);
           try {
@@ -2892,6 +2893,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         // Close previous repository...
         if (rep != null) {
           rep.disconnect();
+          SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
         }
 
         RepositoryDirectory directoryTree = null;

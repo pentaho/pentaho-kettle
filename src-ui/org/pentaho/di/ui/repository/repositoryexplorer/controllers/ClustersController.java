@@ -76,21 +76,6 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
   private XulTree clustersTable = null;
 
   private UIClusters clusterList = new UIClusters();
-  {
-    clusterList.addPropertyChangeListener("children", new PropertyChangeListener() { //$NON-NLS-1$
-      
-      public void propertyChange(PropertyChangeEvent evt) {
-        ClustersController.this.changeSupport.firePropertyChange("clusterList", null, clusterList);//$NON-NLS-1$z
-      }
-    });
-  }
-  public UIClusters getClusterList() {
-    return clusterList;
-  }
-
-  public void setClusterList(UIClusters clusterList) {
-    this.clusterList = clusterList;
-  }
 
   @Override
   public String getName() {
@@ -114,8 +99,8 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
   public void createBindings() {
     try {
       clustersTable = (XulTree) document.getElementById("clusters-table"); //$NON-NLS-1$
-      bf.createBinding(this, "clusterList", clustersTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
       bf.setBindingType(Binding.Type.ONE_WAY);
+      bf.createBinding(clusterList, "children", clustersTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(clustersTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
           new BindingConvertor<List<UICluster>, Boolean>() {
             @Override
