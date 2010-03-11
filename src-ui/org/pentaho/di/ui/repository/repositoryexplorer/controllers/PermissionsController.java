@@ -70,7 +70,6 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  */
 public class PermissionsController extends AbstractXulEventHandler implements ContextChangeVetoer,
     IUISupportController {
-  public static final String COMMA = " , "; //$NON-NLS-1$
   public static final String NEWLINE = "\n"; //$NON-NLS-1$
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -193,7 +192,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
       messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$ 
       viewAclsModel = new UIRepositoryObjectAcls();
       manageAclsModel = new UIRepositoryObjectAclModel(viewAclsModel);
-      browseController.addContextChangeListener(this);
+      browseController.addContextChangeVetoer(this);
       bf = new DefaultBindingFactory();
       bf.setDocument(this.getXulDomContainer().getDocumentRoot());
       createBindings();
@@ -744,9 +743,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
       if (uiAcl != null && uiAcl.getRecipientName() != null) {
         EnumSet<ObjectPermission> permissions = uiAcl.getPermissionSet();
         if (permissions == null || permissions.size() == 0) {
-          if(!firstEntry) {
-            recipients.append(COMMA);
-          } else {
+          if(firstEntry) {
             recipients.append(NEWLINE);
           }
           recipients.append(uiAcl.getRecipientName());

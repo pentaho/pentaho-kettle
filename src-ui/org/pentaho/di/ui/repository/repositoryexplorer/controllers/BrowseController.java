@@ -84,7 +84,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   private UIRepositoryDirectory repositoryDirectory;
 
-  private ContextChangeVetoerCollection contextChangeListeners;
+  private ContextChangeVetoerCollection contextChangeVetoers;
 
   private static final int NO_HISTORY = 0;
 
@@ -555,16 +555,16 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     firePropertyChange("repositoryDirectories", null, selectedFolderItems); //$NON-NLS-1$
   }
 
-  public void addContextChangeListener(ContextChangeVetoer listener) {
-    if (contextChangeListeners == null) {
-      contextChangeListeners = new ContextChangeVetoerCollection();
+  public void addContextChangeVetoer(ContextChangeVetoer listener) {
+    if (contextChangeVetoers == null) {
+      contextChangeVetoers = new ContextChangeVetoerCollection();
     }
-    contextChangeListeners.add(listener);
+    contextChangeVetoers.add(listener);
   }
 
-  public void removeContextChangeListener(ContextChangeVetoer listener) {
-    if (contextChangeListeners != null) {
-      contextChangeListeners.remove(listener);
+  public void removeContextChangeVetoer(ContextChangeVetoer listener) {
+    if (contextChangeVetoers != null) {
+      contextChangeVetoers.remove(listener);
     }
   }
 
@@ -582,8 +582,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
    * should happen. 
    */
   List<TYPE> pollContextChangeVetoResults() {
-    if (contextChangeListeners != null) {
-      return contextChangeListeners.fireContextChange();
+    if (contextChangeVetoers != null) {
+      return contextChangeVetoers.fireContextChange();
     } else {
       List<TYPE> returnValue = new ArrayList<TYPE>();
       returnValue.add(TYPE.NO_OP);
