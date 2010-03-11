@@ -88,7 +88,7 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
 
   public abstract String getDescription();
 
-  public abstract String getLockMessage();
+  public abstract String getLockMessage() throws KettleException;
   
   public boolean isDeleted(){
     return false;

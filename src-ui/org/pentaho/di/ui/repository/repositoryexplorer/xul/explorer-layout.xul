@@ -32,7 +32,18 @@
 			<menuitem id="file-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
 			<menuitem id="file-context-rename" label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameContent()"/>
 			<menuitem id="file-context-delete" label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteContent()"/>
+			<!--
+			<menuitem id="file-context-lock" type="checkbox" label="${RepositoryExplorerDialog.ContextMenu.Lock}" command="browseController.lockContent()"/>
+			<menuitem id="file-context-locknotes" label="${RepositoryExplorerDialog.ContextMenu.LockNotes}" command="browseController.viewLockNote()"/>
+			-->
 		</menupopup>
+		
+		<!--
+		<menupopup id="lockContextMenu">
+			<menuitem id="lock-context-lock" type="checkbox" label="${RepositoryExplorerDialog.ContextMenu.Lock}" command="browseController.lockContent()"/>
+			<menuitem id="lock-context-locknotes" label="${RepositoryExplorerDialog.ContextMenu.LockNotes}" command="browseController.viewLockNote()"/>
+		</menupopup>
+		-->
 	
 		<tabbox id="repositoryExplorerTabs" flex="1">
 	
@@ -85,22 +96,25 @@
 									</tree>
 								</vbox>
 								<vbox flex="4">
-									<splitter flex="1" orient="VERTICAL">  
-										<tree id="file-table" flex="4" hidecolumnpicker="true"
-											enableColumnDrag="true" context="fileContextMenu" 
-											ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()" 
-											pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
-											<treecols>
-												<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}"
-													pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
-													pen:comparatorbinding="comparator"/>
-												<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}"
-													pen:binding="type" />
-												<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}"
-													pen:binding="formatModifiedDate" />
-											</treecols>
-											<treechildren />
-										</tree>
+									<splitter flex="1" orient="VERTICAL"> 
+										<vbox flex="4"> 
+											<hbox id="file-table-tools"/>
+											<tree id="file-table" flex="1" hidecolumnpicker="true"
+												enableColumnDrag="true" context="fileContextMenu" 
+												ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()" 
+												pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
+												<treecols>
+													<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}"
+														pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
+														pen:comparatorbinding="comparator"/>
+													<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}"
+														pen:binding="type" />
+													<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}"
+														pen:binding="formatModifiedDate" />
+												</treecols>
+												<treechildren />
+											</tree>
+										</vbox>
 										<vbox flex="3" id="revision-box" visible="false"/>
 								  </splitter>
 						 		</vbox>  

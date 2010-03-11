@@ -86,6 +86,17 @@ public class RepositoryExplorer {
         .setValue(defaultMessage == null ? messages.getString("RepositoryExplorer.DefaultCommitMessage") : defaultMessage); //$NON-NLS-1$
     return prompt;
   }
+  
+  public static XulPromptBox promptLockMessage(org.pentaho.ui.xul.dom.Document document, ResourceBundle messages, String defaultMessage) throws XulException {
+    XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
+    
+    prompt.setTitle(messages.getString("RepositoryExplorer.LockMessage.Title"));//$NON-NLS-1$
+    prompt.setButtons(new DialogConstant[] { DialogConstant.OK, DialogConstant.CANCEL });
+
+    prompt.setMessage(messages.getString("RepositoryExplorer.LockMessage.Label"));//$NON-NLS-1$
+    prompt.setValue(defaultMessage == null ? messages.getString("RepositoryExplorer.DefaultLockMessage") : defaultMessage); //$NON-NLS-1$
+    return prompt;
+  }
 
   // private Repository repository;
   public RepositoryExplorer(final Repository rep, RepositoryExplorerCallback callback, VariableSpace variableSpace)

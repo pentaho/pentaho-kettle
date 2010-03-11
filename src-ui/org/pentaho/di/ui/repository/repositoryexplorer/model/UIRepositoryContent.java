@@ -45,14 +45,10 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
     this.rc = rc;
     this.uiParent = parent;
   }
+  
   @Override
   public String getDescription() {
     return rc.getDescription();
-  }
-
-  @Override
-  public String getLockMessage() {
-    return rc.getLockMessage();
   }
 
   @Override
@@ -153,6 +149,19 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
   @Override
   public int getCategory() {
     return 20;
+  }
+  
+  public abstract void lock(String lockNote) throws KettleException;
+  
+  public abstract void unlock() throws KettleException;
+  
+  @Override
+  public String getLockMessage() throws KettleException {
+    return rc.getLockMessage();
+  }
+  
+  public boolean isLocked() throws KettleException {
+    return false;
   }
   
   public abstract void restoreVersion(UIRepositoryObjectRevision revision, String commitMessage) throws KettleException;

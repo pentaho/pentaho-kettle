@@ -19,6 +19,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.VersionRepository;
 
 public class UIJob extends UIRepositoryContent {
@@ -32,6 +33,13 @@ public class UIJob extends UIRepositoryContent {
 
   @Override
   public String getImage() {
+    try {
+      if(isLocked()) {
+        return "images/lock.png"; //$NON-NLS-1$
+      }
+    } catch (KettleException e) {
+      throw new RuntimeException(e);
+    }
     return "images/job.png"; //$NON-NLS-1$
   }
 
@@ -64,4 +72,32 @@ public class UIJob extends UIRepositoryContent {
     }
   }
 
+  @Override
+  public String getLockMessage() throws KettleException {
+    String result = null;
+    RepositoryLock objLock = getRepository().getJobLock(getObjectId());
+    if(objLock != null) {
+      result = objLock.getMessage();
+    }
+    return result;
+  }
+
+  @Override
+  public void lock(String lockNote) throws KettleException {
+    getRepository().lockJob(getObjectId(), lockNote);
+    refreshRevisions();
+    uiParent.fireCollectionChanged();
+  }
+
+  @Override
+  public void unlock() throws KettleException {
+    getRepository().unlockJob(getObjectId());
+    refreshRevisions();
+    uiParent.fireCollectionChanged();
+  }
+  
+  @Override
+  public boolean isLocked() throws KettleException {
+    return (getRepository().getJobLock(getObjectId()) != null);
+  }
 }
