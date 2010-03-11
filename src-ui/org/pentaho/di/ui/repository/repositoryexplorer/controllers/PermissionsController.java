@@ -71,6 +71,7 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
 public class PermissionsController extends AbstractXulEventHandler implements ContextChangeListener,
     IUISupportController {
   public static final String COMMA = " , \n"; //$NON-NLS-1$
+  public static final String NEWLINE = "\n"; //$NON-NLS-1$
   private ResourceBundle messages = new ResourceBundle() {
 
     @Override
@@ -745,6 +746,8 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
         if (permissions == null || permissions.size() == 0) {
           if(!firstEntry) {
             recipients.append(COMMA);
+          } else {
+            recipients.append(NEWLINE);
           }
           recipients.append(uiAcl.getRecipientName());
           if(firstEntry) {
