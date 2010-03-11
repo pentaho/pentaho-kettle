@@ -443,7 +443,6 @@ public abstract class BasePluginType {
 			String libFolderName = new File(URLDecoder.decode(jarFileUrl.getFile(), "UTF-8")).getParent()+"/lib";
 			if (new File(libFolderName).exists()) {
 				PluginFolder pluginFolder = new PluginFolder(libFolderName, false, true);
-				System.out.println("Search for jar files in: "+libFolderName);
 				FileObject[] libFiles = pluginFolder.findJarFiles();
 				for (FileObject libFile : libFiles) {
 					urls.add(libFile.getURL());
