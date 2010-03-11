@@ -1,10 +1,12 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.pentaho.di.repository.ObjectAce;
 import org.pentaho.di.repository.ObjectAcl;
+import org.pentaho.di.repository.ObjectPermission;
 import org.pentaho.di.repository.ObjectRecipient;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 
@@ -74,6 +76,9 @@ public class UIRepositoryObjectAcls extends XulEventSourceAdapter {
     setModelDirty(true);
   }
   public void addAcl(UIRepositoryObjectAcl aclToAdd) {
+    // By default the user or role will get a read acl when a user of role is added
+    EnumSet<ObjectPermission> initialialPermisson = EnumSet.of(ObjectPermission.READ);
+    aclToAdd.setPermissionSet(initialialPermisson);
     this.obj.getAces().add(aclToAdd.getAce());
   }
 
