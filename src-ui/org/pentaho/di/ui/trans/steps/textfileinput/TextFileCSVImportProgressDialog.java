@@ -280,7 +280,8 @@ public class TextFileCSVImportProgressDialog
             	valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
             }
             
-            Object[] r = TextFileInput.convertLineToRow(log, new TextFileLine(line, fileLineNumber, null), strinfo, null, 0, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, null);
+    		String delimiter = transMeta.environmentSubstitute(meta.getSeparator());
+            Object[] r = TextFileInput.convertLineToRow(log, new TextFileLine(line, fileLineNumber, null), strinfo, null, 0, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, delimiter, null);
 
             if(r == null )
             {

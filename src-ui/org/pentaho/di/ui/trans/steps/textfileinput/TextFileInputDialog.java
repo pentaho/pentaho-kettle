@@ -194,7 +194,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 	private Label        wlSeparator;
 	private Button       wbSeparator;
-	private Text         wSeparator;
+	private TextVar      wSeparator;
 	private FormData     fdlSeparator, fdbSeparator, fdSeparator;
 
 	private Label        wlEnclosure;
@@ -551,12 +551,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				}
 			}
 		);
+		
 		// Allow the insertion of tabs as separator...
 		wbSeparator.addSelectionListener(new SelectionAdapter() 
 			{
 				public void widgetSelected(SelectionEvent se) 
 				{
-					wSeparator.insert("\t");
+					wSeparator.getTextWidget().insert("\t");
 				}
 			}
 		);
@@ -1003,19 +1004,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wlSeparator.setLayoutData(fdlSeparator);
 
         wbSeparator=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
+        wbSeparator.setText(BaseMessages.getString(PKG, "TextFileInputDialog.Delimiter.Button"));
         props.setLook(wbSeparator);
-        wbSeparator.setText(BaseMessages.getString(PKG, "TextFileInputDialog.Separator.Button"));
         fdbSeparator=new FormData();
         fdbSeparator.right= new FormAttachment(100, 0);
         fdbSeparator.top  = new FormAttachment(wFiletype, 0);
         wbSeparator.setLayoutData(fdbSeparator);
-
-        wSeparator=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSeparator=new TextVar(transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSeparator);
         wSeparator.addModifyListener(lsMod);
         fdSeparator=new FormData();
-        fdSeparator.left = new FormAttachment(middle, 0);
         fdSeparator.top  = new FormAttachment(wFiletype, margin);
+        fdSeparator.left = new FormAttachment(middle, 0);
         fdSeparator.right= new FormAttachment(wbSeparator, -margin);
         wSeparator.setLayoutData(fdSeparator);
 
@@ -2399,9 +2399,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	{
 		TextFileInputMeta meta = new TextFileInputMeta();
 		getInfo(meta);
-		
 		TextFileInputMeta previousMeta = (TextFileInputMeta) meta.clone();
-		
 		FileInputList    textFileList = meta.getTextFileList(transMeta);
 		InputStream      fileInputStream = null;
 		ZipInputStream   zipInputStream = null ;
@@ -2409,6 +2407,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		InputStream      inputStream  = null;
         StringBuilder     lineStringBuilder = new StringBuilder(256);
         int              fileFormatType = meta.getFileFormatTypeNr();
+
+		String delimiter = transMeta.environmentSubstitute(meta.getSeparator());
         
 		if (textFileList.nrOfFiles()>0)
 		{
@@ -2464,6 +2464,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				{
                     // Scan the header-line, determine fields...
                     String line = null;
+                    
                     if (meta.hasHeader() || meta.getInputFields().length == 0)
                     {
                         line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
@@ -2471,7 +2472,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                         { 
                         	// Estimate the number of input fields...
                         	// Chop up the line using the delimiter
-                        	String[] fields = TextFileInput.guessStringsFromLine(log, line, meta);
+                        	String[] fields = TextFileInput.guessStringsFromLine(log, line, meta, delimiter);
 
                             for (int i = 0; i < fields.length; i++)
                             {
@@ -2998,7 +2999,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		return fields;
 	}
 
-	
 	public String toString()
 	{
 		return this.getClass().getName();

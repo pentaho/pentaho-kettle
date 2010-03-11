@@ -159,7 +159,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return null;
 	}
 	
-	public static final String[] guessStringsFromLine(LogChannelInterface log, String line, TextFileInputMeta inf) throws KettleException
+	public static final String[] guessStringsFromLine(LogChannelInterface log, String line, TextFileInputMeta inf, String delimiter) throws KettleException
 	{
 		List<String> strings = new ArrayList<String>();
         int fieldnr;
@@ -258,7 +258,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						int tries = 1;
 						do
 						{
-							next = line.indexOf(inf.getSeparator(), startpoint);
+							next = line.indexOf(delimiter, startpoint); 
 
 							// See if this position is preceded by an escape character.
 							if (len_esc > 0 && next - len_esc > 0)
@@ -318,19 +318,19 @@ public class TextFileInput extends BaseStep implements StepInterface
 						pol = Const.replace(pol, replace, replaceWith);
 					}
 
-					//replace the escaped separators with separators... 
+					//replace the escaped separators with separators...
 					if (contains_escaped_separators) 
 					{
-						String replace = inf.getEscapeCharacter() + inf.getSeparator();
-						String replaceWith = inf.getSeparator();
-
+						String replace = inf.getEscapeCharacter() + delimiter;
+						String replaceWith = delimiter;
+						
 						pol = Const.replace(pol, replace, replaceWith);
 					}
 
 					// Now add pol to the strings found!
 					strings.add(pol);
 
-					pos = next + inf.getSeparator().length();
+					pos = next + delimiter.length();
 					fieldnr++;
 				}
 				if ( pos == length )
@@ -376,7 +376,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 	}
     
 	
-	public static final String[] convertLineToStrings(LogChannelInterface log, String line, InputFileMetaInterface inf) throws KettleException
+	public static final String[] convertLineToStrings(LogChannelInterface log, String line, InputFileMetaInterface inf, String delimiter) throws KettleException
 	{
 		String[] strings = new String[inf.getInputFields().length];
         int fieldnr;
@@ -475,7 +475,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						int tries = 1;
 						do
 						{
-							next = line.indexOf(inf.getSeparator(), startpoint);
+							next = line.indexOf(delimiter, startpoint);
 
 							// See if this position is preceded by an escape character.
 							if (len_esc > 0 && next - len_esc > 0)
@@ -538,8 +538,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 					//replace the escaped separators with separators... 
 					if (contains_escaped_separators) 
 					{
-						String replace = inf.getEscapeCharacter() + inf.getSeparator();
-						String replaceWith = inf.getSeparator();
+						String replace = inf.getEscapeCharacter() + delimiter;
+						String replaceWith = delimiter;
 
 						pol = Const.replace(pol, replace, replaceWith);
 					}
@@ -558,7 +558,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						strings = newStrings;
 					}
 
-					pos = next + inf.getSeparator().length();
+					pos = next + delimiter.length();
 					fieldnr++;
 				}
 				if ( pos == length)
@@ -606,13 +606,13 @@ public class TextFileInput extends BaseStep implements StepInterface
     /**
      * @deprecated Use {@link #convertLineToRow(TextFileLine,InputFileMetaInterface,Object[],int,RowMetaInterface,RowMetaInterface,String,long, FileErrorHandler)} instead
      */
-    public static final Object[] convertLineToRow(LogChannelInterface log, TextFileLine textFileLine, InputFileMetaInterface info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, FileErrorHandler errorHandler) throws KettleException
+    public static final Object[] convertLineToRow(LogChannelInterface log, TextFileLine textFileLine, InputFileMetaInterface info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, FileErrorHandler errorHandler) throws KettleException
     {
         return convertLineToRow(log, textFileLine, info, null, 0, outputRowMeta, convertRowMeta, fname,
-                rowNr, errorHandler);
+                rowNr, delimiter, errorHandler);
     }
 
-    public static final Object[] convertLineToRow(LogChannelInterface log, TextFileLine textFileLine, InputFileMetaInterface info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, FileErrorHandler errorHandler) throws KettleException
+    public static final Object[] convertLineToRow(LogChannelInterface log, TextFileLine textFileLine, InputFileMetaInterface info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, FileErrorHandler errorHandler) throws KettleException
     {
       if (textFileLine == null || textFileLine.line == null /*|| textFileLine.line.length() == 0*/) return null;
 
@@ -640,7 +640,7 @@ public class TextFileInput extends BaseStep implements StepInterface
         try
         {
             // System.out.println("Convertings line to string ["+line+"]");
-            String[] strings = convertLineToStrings(log, textFileLine.line, info);
+            String[] strings = convertLineToStrings(log, textFileLine.line, info, delimiter);
 
             for (fieldnr = 0; fieldnr < nrfields; fieldnr++)
             {
@@ -963,7 +963,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					data.pageLinesRead++;
 					data.lineInFile ++;
 					long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;
-					r = convertLineToRow(log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
+					r = convertLineToRow(log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.separator, data.dataErrorLineHandler);
 					if (r != null) putrow = true;
 					
 					// Possible fix for bug PDI-1121 - paged layout header and line count off by 1 
@@ -1047,7 +1047,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					{
 						data.lineInFile ++;
 						long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;
-						r = convertLineToRow(log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
+						r = convertLineToRow(log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.separator, data.dataErrorLineHandler);
 						if (r != null)
 						{
 							if (log.isRowLevel()) logRowlevel("Found data row: "+data.outputRowMeta.getString(r));
@@ -1421,7 +1421,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 
             // calculate the file type in advance CSV or Fixed?
             data.fileType = meta.getFileTypeNr();
-                
+            
+            // Handle the possibility of a variable substitution 
+            data.separator= environmentSubstitute(meta.getSeparator());
+                    
 			return true;
 		}
 		return false;

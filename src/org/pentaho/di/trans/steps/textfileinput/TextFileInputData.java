@@ -97,6 +97,11 @@ public class TextFileInputData extends BaseStepData implements
     public RowMetaInterface convertRowMeta;
 
 	public RowSet rowSet;
+	
+	/**
+	 * The separator (delimiter)
+	 */
+	public String separator;
     
 	/**
 	 * 
