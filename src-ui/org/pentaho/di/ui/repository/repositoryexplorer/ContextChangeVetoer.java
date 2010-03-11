@@ -2,7 +2,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer;
 
 
 
-public interface ContextChangeListener {
+public interface ContextChangeVetoer {
 
   public enum TYPE {OK, CANCEL, NO_OP};
   /**

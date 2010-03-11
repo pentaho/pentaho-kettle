@@ -25,13 +25,13 @@ import java.util.ResourceBundle;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
-import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListenerCollection;
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoerCollection;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
-import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener.TYPE;
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer.TYPE;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
@@ -84,7 +84,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   private UIRepositoryDirectory repositoryDirectory;
 
-  private ContextChangeListenerCollection contextChangeListeners;
+  private ContextChangeVetoerCollection contextChangeListeners;
 
   private static final int NO_HISTORY = 0;
 
@@ -511,11 +511,11 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   public void setSelectedFolderItems(List<UIRepositoryDirectory> selectedFolderItems) {
     if (!compareFolderList(selectedFolderItems, this.selectedFolderItems)) {
-      TYPE returnType = fireContextChange();
-      if (returnType != TYPE.CANCEL) {
+      List<TYPE> pollResults = pollContextChangeVetoResults();
+      if (!contains(TYPE.CANCEL, pollResults)) {
         this.selectedFolderItems = selectedFolderItems;
         setRepositoryDirectories(selectedFolderItems);
-      } else if (returnType == TYPE.CANCEL) {
+      } else if (contains(TYPE.CANCEL, pollResults)) {
         folderTree.setSelectedItems(this.selectedFolderItems);
       }
     }
@@ -527,11 +527,11 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   public void setSelectedFileItems(List<UIRepositoryObject> selectedFileItems) {
     if (!compareFileList(selectedFileItems, this.selectedFileItems)) {
-      TYPE returnType = fireContextChange();
-      if (returnType != TYPE.CANCEL) {
+      List<TYPE> pollResults = pollContextChangeVetoResults();
+      if (!contains(TYPE.CANCEL, pollResults)) {
         this.selectedFileItems = selectedFileItems;
         setRepositoryObjects(selectedFileItems);
-      } else if (returnType == TYPE.CANCEL) {
+      } else if (contains(TYPE.CANCEL, pollResults)) {
         fileTable.setSelectedItems(this.selectedFileItems);
       }
     }
@@ -555,27 +555,40 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     firePropertyChange("repositoryDirectories", null, selectedFolderItems); //$NON-NLS-1$
   }
 
-  public void addContextChangeListener(ContextChangeListener listener) {
+  public void addContextChangeListener(ContextChangeVetoer listener) {
     if (contextChangeListeners == null) {
-      contextChangeListeners = new ContextChangeListenerCollection();
+      contextChangeListeners = new ContextChangeVetoerCollection();
     }
     contextChangeListeners.add(listener);
   }
 
-  public void removeContextChangeListener(ContextChangeListener listener) {
+  public void removeContextChangeListener(ContextChangeVetoer listener) {
     if (contextChangeListeners != null) {
       contextChangeListeners.remove(listener);
     }
   }
 
+  private boolean contains(TYPE type, List<TYPE> typeList) {
+    for(TYPE t:typeList) {
+      if(t.equals(type)) {
+        return true;
+      }
+    }
+    return false;
+  }
   /**
-   * Fire all current {@link ContextChangeListener}.
+   * Fire all current {@link ContextChangeVetoer}.
+   * Every on who has added their self as a vetoer has a change to vote on what
+   * should happen. 
    */
-  TYPE fireContextChange() {
+  List<TYPE> pollContextChangeVetoResults() {
     if (contextChangeListeners != null) {
       return contextChangeListeners.fireContextChange();
+    } else {
+      List<TYPE> returnValue = new ArrayList<TYPE>();
+      returnValue.add(TYPE.NO_OP);
+      return returnValue;
     }
-    return TYPE.NO_OP;
   }
 
   boolean compareFolderList(List<UIRepositoryDirectory> rd1, List<UIRepositoryDirectory> rd2) {

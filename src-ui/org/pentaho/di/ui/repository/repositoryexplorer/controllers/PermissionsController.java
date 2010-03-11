@@ -35,7 +35,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
-import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeListener;
+import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
@@ -68,7 +68,7 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  * browse functionality.
  *
  */
-public class PermissionsController extends AbstractXulEventHandler implements ContextChangeListener,
+public class PermissionsController extends AbstractXulEventHandler implements ContextChangeVetoer,
     IUISupportController {
   public static final String COMMA = " , \n"; //$NON-NLS-1$
   public static final String NEWLINE = "\n"; //$NON-NLS-1$
