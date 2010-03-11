@@ -70,7 +70,7 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  */
 public class PermissionsController extends AbstractXulEventHandler implements ContextChangeVetoer,
     IUISupportController {
-  public static final String COMMA = " , \n"; //$NON-NLS-1$
+  public static final String COMMA = " , "; //$NON-NLS-1$
   public static final String NEWLINE = "\n"; //$NON-NLS-1$
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -750,6 +750,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
             recipients.append(NEWLINE);
           }
           recipients.append(uiAcl.getRecipientName());
+          recipients.append(NEWLINE);
           if(firstEntry) {
             firstEntry = false;
           }
