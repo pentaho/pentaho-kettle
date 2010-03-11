@@ -260,6 +260,29 @@ public abstract class BasePluginType {
 		}
 		return list;
 	}
+	
+	 /**
+   * This method allows for custom registration of plugins that are on the main classpath.  This was originally
+   * created so that test environments could register test plugins programmatically.
+   * 
+   * @param clazz the plugin implementation to register 
+   * @param category the category of the plugin
+   * @param id the id for the plugin
+   * @param name the name for the plugin
+   * @param description the description for the plugin
+   * @param image the image for the plugin
+   * @throws KettlePluginException
+   */
+  @SuppressWarnings("unchecked")
+  public void registerCustom(Class<?> clazz, String category, String id, String name, String description, String image) throws KettlePluginException {
+    Class<? extends PluginTypeInterface> pluginType = (Class<? extends PluginTypeInterface>)getClass();
+    Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
+    PluginMainClassType mainClassTypesAnnotation = pluginType.getAnnotation(PluginMainClassType.class);
+    classMap.put(mainClassTypesAnnotation.value(), clazz.getName());
+    PluginInterface stepPlugin = new Plugin(new String[]{id}, pluginType, mainClassTypesAnnotation.value(), category, name, description, image, false, false, classMap, new ArrayList<String>(), null, null);
+    registry.registerPlugin(pluginType, stepPlugin);
+  }
+
 
     protected PluginInterface registerPluginFromXmlResource( Node pluginNode, String path, Class<? extends PluginTypeInterface> pluginType, boolean nativePlugin, URL pluginFolder) throws KettlePluginException {
         try

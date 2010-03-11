@@ -142,7 +142,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 		
 
 	    Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
-	    classMap.put(StepInterface.class, clazz.getName());
+	    classMap.put(StepMetaInterface.class, clazz.getName());
 	    
 	    // Handle addition Plugin classes to be managed by the registry.
 	    PluginClassTypes classTypesAnnotation = clazz.getAnnotation(PluginClassTypes.class);
@@ -155,7 +155,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 	      }
 	    }
 			
-		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), StepInterface.class, category, name, description, step.image(), step.isSeparateClassLoaderNeeded(), nativeStep, classMap, libraries, null, null);
+		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), StepMetaInterface.class, category, name, description, step.image(), step.isSeparateClassLoaderNeeded(), nativeStep, classMap, libraries, null, null);
 		registry.registerPlugin(this.getClass(), stepPlugin);
 	}
 
