@@ -1539,8 +1539,8 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
         if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Veuillez svp donner un nom à cette entrée tâche!");
-			mb.setText("Entrée tâche non nommée");
+			mb.setMessage("Please give this job entry a name!");
+			mb.setText("Specify a name");
 			mb.open(); 
 			return;
         }

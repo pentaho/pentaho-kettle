@@ -2447,7 +2447,7 @@ public class RepositoryExplorerDialog extends Dialog
     		{
     			repdir.setName(newname);
     			try {
-    				rep.renameRepositoryDirectory(repdir);
+    				rep.renameRepositoryDirectory(repdir.getObjectId(), repdir, newname);
     				retval=true;
     			} catch (Exception exception) {
     				retval=false;

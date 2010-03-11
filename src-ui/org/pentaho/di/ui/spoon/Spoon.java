@@ -414,7 +414,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   private List<Object[]> menuListeners = new ArrayList<Object[]>();
 
   // loads the lifecycle listeners
-  private LifecycleSupport lcsup = new LifecycleSupport();
+  private LifecycleSupport lifecycleSupport = new LifecycleSupport();
 
   private Composite mainComposite;
 
@@ -505,7 +505,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // listeners
       //
       try {
-        staticSpoon.lcsup.onStart(staticSpoon);
+        staticSpoon.lifecycleSupport.onStart(staticSpoon);
       } catch (LifecycleException e) {
         // if severe, we have to quit
         MessageBox box = new MessageBox(staticSpoon.shell, (e.isSevere() ? SWT.ICON_ERROR : SWT.ICON_WARNING) | SWT.OK);
@@ -3710,7 +3710,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     // and now we call the listeners
 
     try {
-      lcsup.onExit(this);
+      lifecycleSupport.onExit(this);
     } catch (LifecycleException e) {
       MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
       box.setMessage(e.getMessage());
