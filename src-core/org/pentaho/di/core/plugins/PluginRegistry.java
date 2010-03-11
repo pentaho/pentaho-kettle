@@ -426,11 +426,11 @@ public class PluginRegistry {
 				}
 			}
 			
-			LogChannel.GENERAL.logBasic("Found "+urlList.size()+" objects to scan for annotated plugins.");
+			LogChannel.GENERAL.logDetailed("Found "+urlList.size()+" objects to scan for annotated plugins.");
 			long startScan = System.currentTimeMillis();
 			URL[] urls = urlList.toArray(new URL[urlList.size()]);
 			annotationDB.scanArchives(urls);
-			LogChannel.GENERAL.logBasic("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
+			LogChannel.GENERAL.logDetailed("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
 			
 			classPathFinder = new ClassPathFinder(urls);
 		} catch(Exception e) {
