@@ -45,8 +45,6 @@ public class PluginRegistry {
 	
 	private static AnnotationDB annotationDB;
 
-	private static ClassPathFinder	classPathFinder;
-
     private static List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
   
 	/**
@@ -431,8 +429,6 @@ public class PluginRegistry {
 			URL[] urls = urlList.toArray(new URL[urlList.size()]);
 			annotationDB.scanArchives(urls);
 			LogChannel.GENERAL.logDetailed("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
-			
-			classPathFinder = new ClassPathFinder(urls);
 		} catch(Exception e) {
 			throw new KettlePluginException("Unable to scan for annotations in the classpath", e);
 		}
@@ -669,15 +665,8 @@ public class PluginRegistry {
 	 * @throws KettlePluginException In case there is something wrong
 	 */
 	@SuppressWarnings("unchecked")
-  public <T> T getClass(PluginInterface plugin, T classType) throws KettlePluginException {
+    public <T> T getClass(PluginInterface plugin, T classType) throws KettlePluginException {
 		String className = plugin.getClassMap().get(classType);
 		return (T) getClass(plugin, className);
-	}
-
-	/**
-	 * @return the classPathFinder
-	 */
-	public static ClassPathFinder getClassPathFinder() {
-		return classPathFinder;
 	}
 }
