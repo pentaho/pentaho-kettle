@@ -158,7 +158,6 @@ import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
-import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulMenu;
@@ -1651,6 +1650,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           delSelected(null);
         }
       }
+      
+	  if (e.keyCode == SWT.F1) {
+		spoon.editOptions();
+	  }
+
 
       // CTRL-UP : allignTop();
       if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.CONTROL) != 0) {

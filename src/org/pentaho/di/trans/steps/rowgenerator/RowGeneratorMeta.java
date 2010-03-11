@@ -21,7 +21,6 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -31,8 +30,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -47,8 +46,6 @@ import org.w3c.dom.Node;
 /*
  * Created on 4-apr-2003
  */
-@Step(name="RowGenerator",image="ui/images/GEN.png",tooltip="BaseStep.TypeTooltipDesc.GenerateRows",description="BaseStep.TypeLongDesc.GenerateRows",
-		categoryDescription="BaseStep.Category.Input", i18nPackageName="org.pentaho.di.trans.step")
 public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = RowGeneratorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$

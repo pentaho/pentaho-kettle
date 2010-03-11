@@ -14,7 +14,6 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -23,7 +22,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since  11-mrt-2005
  */
-@DatabaseMetaPlugin( type="AS/400", typeDescription="AS/400" )
 public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	public int[] getAccessTypeList()

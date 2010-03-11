@@ -18,7 +18,6 @@ import java.sql.ResultSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -28,7 +27,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since  11-mrt-2005
  */
 
-@DatabaseMetaPlugin( type="ORACLE", typeDescription="Oracle" )
 public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	public int[] getAccessTypeList()

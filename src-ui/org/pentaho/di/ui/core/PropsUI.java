@@ -154,6 +154,7 @@ public class PropsUI extends Props
     	super(filename);
     }
     
+	@SuppressWarnings("unchecked")
 	protected synchronized void init() {
 		super.createLogChannel();
 		properties = new Properties();

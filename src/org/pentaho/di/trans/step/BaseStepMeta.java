@@ -52,8 +52,7 @@ public class BaseStepMeta implements Cloneable
 	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step metadata", LoggingObjectType.STEPMETA, null);
 		
 	private boolean changed;
-	private long    id;
-    
+	
     /** database connection object to use for searching fields & checking steps */
     protected Database databases[];
     
@@ -69,16 +68,6 @@ public class BaseStepMeta implements Cloneable
 		changed    = false;
 	}
 	
-	public long getID()
-	{
-		return id;
-	}
-	
-	public void setID(long id)
-	{
-		this.id = id;
-	}
-
 	public Object clone()
 	{
 		try

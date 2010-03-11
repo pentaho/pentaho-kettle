@@ -26,6 +26,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRepositoryNotSupportedException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -55,6 +56,12 @@ public class RepositoriesMeta
 		clear();
 	}
 	
+	@Deprecated
+	public RepositoriesMeta(LogWriter log)
+	{
+		clear();
+	}
+
 	public void clear() {
 		databases = new ArrayList<DatabaseMeta>();
 		repositories = new ArrayList<RepositoryMeta>();
@@ -145,7 +152,7 @@ public class RepositoriesMeta
 	
 	// We read the repositories from the file:
 	// 
-	public void readData() throws KettleException
+	public boolean readData() throws KettleException
 	{
 		// Clear the information
 		//
@@ -158,7 +165,7 @@ public class RepositoriesMeta
 			file = new File(Const.getKettleUserRepositoriesFile());
 			if (!file.exists() || !file.isFile())
 			{
-				return; // nothing to read!
+				return true; // nothing to read!
 			}
 		}
 		
@@ -250,6 +257,8 @@ public class RepositoriesMeta
 			clear();
 			throw new KettleException("Error reading information from file : ", e);
 		}
+		
+		return true;
 	}
 	
 	public String getXML()

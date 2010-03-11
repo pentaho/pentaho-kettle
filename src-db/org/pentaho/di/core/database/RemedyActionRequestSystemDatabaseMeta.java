@@ -13,7 +13,6 @@
 
 package org.pentaho.di.core.database;
 
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 
 
 /**
@@ -24,7 +23,6 @@ import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
  * @since  11-Sep-2007
  */
 
-@DatabaseMetaPlugin( type="REMEDY-AR-SYSTEM", typeDescription="Remedy Action Request System" )
 public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta implements DatabaseInterface
 {
 	public int[] getAccessTypeList()

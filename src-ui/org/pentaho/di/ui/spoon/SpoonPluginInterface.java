@@ -1,12 +1,7 @@
 package org.pentaho.di.ui.spoon;
 
-import java.util.List;
-import java.util.Map;
-
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulOverlay;
-import org.pentaho.ui.xul.impl.XulEventHandler;
 
 public interface SpoonPluginInterface {
   

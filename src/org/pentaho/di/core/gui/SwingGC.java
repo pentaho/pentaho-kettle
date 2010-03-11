@@ -13,24 +13,17 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.InputStream;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import org.jfree.text.TextUtilities;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.plugins.JobEntryPluginType;
-import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.laf.BasePropertyHandler;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.trans.step.StepMeta;
 
 public class SwingGC implements GCInterface {
@@ -113,12 +106,12 @@ public class SwingGC implements GCInterface {
 	private int	xOffset;
 
 
-	public SwingGC(ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset) {
+	public SwingGC(ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset) throws KettleException {
 		this.image = new BufferedImage(area.x, area.y, BufferedImage.TYPE_INT_RGB);
 		this.gc = image.createGraphics();
 		this.observer = observer;
-		this.stepImages = loadStepImages();
-		this.entryImages = loadEntryImages();
+		this.stepImages = SwingGUIResource.getInstance().getStepImages();
+		this.entryImages = SwingGUIResource.getInstance().getEntryImages();
 		this.iconsize = iconsize;
 		this.area = area;
 		this.xOffset = xOffset;
@@ -127,12 +120,12 @@ public class SwingGC implements GCInterface {
 		init();
    	}
 
-	public SwingGC(Graphics2D gc, Rectangle2D rect, int iconsize, int xOffset, int yOffset) {
+	public SwingGC(Graphics2D gc, Rectangle2D rect, int iconsize, int xOffset, int yOffset) throws KettleException {
 		this.image = null;
 		this.gc = gc;
 		this.observer = null;
-		this.stepImages = loadStepImages();
-		this.entryImages = loadEntryImages();
+		this.stepImages = SwingGUIResource.getInstance().getStepImages();
+		this.entryImages = SwingGUIResource.getInstance().getEntryImages();
 		this.iconsize = iconsize;
 		this.area = new Point((int)rect.getWidth(), (int)rect.getHeight());
 		this.xOffset = xOffset;
@@ -141,7 +134,7 @@ public class SwingGC implements GCInterface {
 		init();
    	}
 
-	private void init(){
+	private void init() throws KettleException {
 		this.lineStyle = ELineStyle.SOLID;
 		this.lineWidth = 1;
 		this.alpha = 255;
@@ -158,24 +151,24 @@ public class SwingGC implements GCInterface {
         this.lightGray      = new Color(200, 200, 200);
         this.darkGray       = new Color(80, 80, 80);
         
-        imageLocked = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("Locked_image")).getImage();
-        imageStepError = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("StepErrorLines_image")).getImage();
-    	imageEdit = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("Edit_image")).getImage();
-    	imageContextMenu = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("ContextMenu_image")).getImage();
-    	imageTrue = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("True_image")).getImage();
-    	imageFalse = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("False_image")).getImage();
-    	imageErrorHop = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("ErrorHop_image")).getImage();
-    	imageInfoHop = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("InfoHop_image")).getImage();
-    	imageHopTarget = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("HopTarget_image")).getImage();
-    	imageHopInput = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("HopInput_image")).getImage();
-    	imageHopOutput = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("HopOutput_image")).getImage();
-    	imageArrow = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("ArrowIcon_image")).getImage();
-    	imageCopyHop = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("CopyHop_image")).getImage();
-    	imageParallelHop = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("ParallelHop_image")).getImage();
-    	imageUnconditionalHop = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("UnconditionalHop_image")).getImage();
-    	imageStart = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("STR_image")).getImage();
-    	imageDummy = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("DUM_image")).getImage();
-    	imageBusy = new javax.swing.ImageIcon(BasePropertyHandler.getProperty("Busy_image")).getImage();
+        imageLocked = getImageIcon(BasePropertyHandler.getProperty("Locked_image"));
+        imageStepError = getImageIcon(BasePropertyHandler.getProperty("StepErrorLines_image"));
+    	imageEdit = getImageIcon(BasePropertyHandler.getProperty("Edit_image"));
+    	imageContextMenu = getImageIcon(BasePropertyHandler.getProperty("ContextMenu_image"));
+    	imageTrue = getImageIcon(BasePropertyHandler.getProperty("True_image"));
+    	imageFalse = getImageIcon(BasePropertyHandler.getProperty("False_image"));
+    	imageErrorHop = getImageIcon(BasePropertyHandler.getProperty("ErrorHop_image"));
+    	imageInfoHop = getImageIcon(BasePropertyHandler.getProperty("InfoHop_image"));
+    	imageHopTarget = getImageIcon(BasePropertyHandler.getProperty("HopTarget_image"));
+    	imageHopInput = getImageIcon(BasePropertyHandler.getProperty("HopInput_image"));
+    	imageHopOutput = getImageIcon(BasePropertyHandler.getProperty("HopOutput_image"));
+    	imageArrow = getImageIcon(BasePropertyHandler.getProperty("ArrowIcon_image"));
+    	imageCopyHop = getImageIcon(BasePropertyHandler.getProperty("CopyHop_image"));
+    	imageParallelHop = getImageIcon(BasePropertyHandler.getProperty("ParallelHop_image"));
+    	imageUnconditionalHop = getImageIcon(BasePropertyHandler.getProperty("UnconditionalHop_image"));
+    	imageStart = getImageIcon(BasePropertyHandler.getProperty("STR_image"));
+    	imageDummy = getImageIcon(BasePropertyHandler.getProperty("DUM_image"));
+    	imageBusy = getImageIcon(BasePropertyHandler.getProperty("Busy_image"));
     	
     	fontGraph = new Font("FreeSans", Font.PLAIN, 10);
     	fontNote = new Font("FreeSans", Font.PLAIN, 10);
@@ -187,30 +180,31 @@ public class SwingGC implements GCInterface {
     	gc.fillRect(0, 0, area.x, area.y);
 	}
 	
-	private Map<String, Image> loadStepImages() {
-		Map<String, Image> map = new HashMap<String, Image>();
-		
-		for (PluginInterface plugin: PluginRegistry.getInstance().getPlugins(StepPluginType.class)) {
-			Image image = new javax.swing.ImageIcon(plugin.getImageFile()).getImage();
-			for (String id : plugin.getIds()) {
-				map.put(id, image);
+	private Image getImageIcon(String fileName) throws KettleException {
+		try {
+			ImageIcon imageIcon = new javax.swing.ImageIcon(fileName);
+			if (imageIcon.getIconHeight()<0) {
+				imageIcon = new javax.swing.ImageIcon("/"+fileName);
 			}
+			if (imageIcon.getIconHeight()<0) {
+				InputStream inputStream = getClass().getResourceAsStream(fileName);
+				if (inputStream==null) {
+					inputStream = getClass().getResourceAsStream("/"+fileName);
+				}
+				if (inputStream==null) {
+					throw new KettleException("Unable to load image from file : '"+fileName+"'");
+				}
+				
+				BufferedImage image = ImageIO.read(inputStream);
+				inputStream.close();
+				
+				return image;
+			}
+			return imageIcon.getImage();
+		} catch(Throwable e) {
+			throw new KettleException("Unable to load image from file : '"+fileName+"'", e);
 		}
-		
-		return map;
 	}
-	
-	private Map<String, Image> loadEntryImages() {
-		Map<String, Image> map = new HashMap<String, Image>();
-		
-		for (PluginInterface plugin : PluginRegistry.getInstance().getPlugins(JobEntryPluginType.class)) {
-			Image image = new javax.swing.ImageIcon(plugin.getImageFile()).getImage();
-			map.put(plugin.getIds()[0], image);
-		}
-		
-		return map;
-	}
-
 
 	public void dispose() {
 	}
@@ -506,39 +500,6 @@ public class SwingGC implements GCInterface {
 		
 		gc.setColor(bg);
 		gc.setBackground(fg);
-	}
-
-	
-	public static void main(String[] args) throws Exception {
-		
-		KettleEnvironment.init();
-		
-		String filename = "samples/transformations/XML Join - Create a multilayer XML file.ktr";
-
-		// Load the transformation
-		//
-		TransMeta transMeta = new TransMeta(filename);
-		Point area = transMeta.getMaximum();
-		area.x+=50;
-		area.y+=50;
-		int iconsize = 32;
-		
-		ScrollBarInterface bar = new ScrollBarInterface() {
-			public void setThumb(int thumb) {}
-			public int getSelection() { return 0; }
-		};
-		
-		// Paint the transformation...
-		//
-		GCInterface gc = new SwingGC(null, area, iconsize, 50, 20);
-		TransPainter painter = new TransPainter(gc, transMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(), new ArrayList<StepMeta>(), iconsize, 1, 0, 0, true, "FreeSans", 10);
-	    painter.buildTransformationImage();
-	    BufferedImage bufferedImage = (BufferedImage)gc.getImage();
-	    
-	    // Save it for good measure!
-	    //
-	    ImageIO.write(bufferedImage, "PNG", new FileOutputStream("/tmp/trans.png"));
-	    
 	}
 	
 	public Point getArea() {

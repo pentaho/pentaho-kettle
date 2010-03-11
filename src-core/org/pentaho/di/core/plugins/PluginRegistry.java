@@ -1,7 +1,6 @@
 package org.pentaho.di.core.plugins;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -13,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -68,6 +68,9 @@ public class PluginRegistry {
 		return pluginRegistry;
 	}
 	
+	/**
+	 * @return The annotation database of all the classes in the plugins/ folders ONLY!
+	 */
 	public static AnnotationDB getAnnotationDB() {
 		return annotationDB;
 	}
@@ -348,8 +351,13 @@ public class PluginRegistry {
                         classLoaders.put(plugin, ucl); // save for later use...
                         folderBasedClassLoaderMap.put(plugin.getPluginDirectory().toString(), ucl);
                       }
+                    } else {
+                    	ucl = classLoaders.get(plugin);
+                    	if (ucl==null) {
+	                        ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
+	                        classLoaders.put(plugin, ucl); // save for later use...
+                    	}
                     }
-                    
                   }
                 }
               
@@ -401,22 +409,31 @@ public class PluginRegistry {
 		
 		try {
 			annotationDB = new AnnotationDB();
-			URLClassLoader urlClassLoader = ((URLClassLoader) registry.getClass().getClassLoader());
-			URL[] tempurls = urlClassLoader.getURLs();
 			
-			URL[] urls = new URL[tempurls.length];
-			for(int i=0; i< tempurls.length; i++){
-			  urls[i] = new URL(URLDecoder.decode(tempurls[i].toString(), "UTF-8"));
-
+			List<URL> urlList = new ArrayList<URL>();
+			List<PluginFolderInterface> folders = PluginFolder.populateFolders(null);
+			for (PluginFolderInterface pluginFolder : folders) {
+				try {
+					FileObject[] fileObjects = pluginFolder.findJarFiles();
+					if (fileObjects!=null) {
+						for (FileObject fileObject : fileObjects) {
+							String uri = fileObject.getName().getURI();
+							urlList.add(new URL(URLDecoder.decode(uri, "UTF-8")));
+						}
+					}
+				} catch(Exception e) {
+					LogChannel.GENERAL.logError("Error searching for jar files in plugin folder '"+pluginFolder+"'", e);
+				}
 			}
 			
-			LogChannel.GENERAL.logDetailed("Found "+urls.length+" objects in the classpath.");
+			LogChannel.GENERAL.logBasic("Found "+urlList.size()+" objects to scan for annotated plugins.");
 			long startScan = System.currentTimeMillis();
+			URL[] urls = urlList.toArray(new URL[urlList.size()]);
 			annotationDB.scanArchives(urls);
-			LogChannel.GENERAL.logDetailed("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
+			LogChannel.GENERAL.logBasic("Finished annotation scan in "+(System.currentTimeMillis()-startScan)+"ms.");
 			
-			classPathFinder = new ClassPathFinder(urlClassLoader);
-		} catch(IOException e) {
+			classPathFinder = new ClassPathFinder(urls);
+		} catch(Exception e) {
 			throw new KettlePluginException("Unable to scan for annotations in the classpath", e);
 		}
 		

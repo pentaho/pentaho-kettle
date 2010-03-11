@@ -11,17 +11,14 @@ import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.RepositoryPlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.BasePluginType;
 import org.pentaho.di.core.plugins.JarFileAnnotationPlugin;
 import org.pentaho.di.core.plugins.Plugin;
-import org.pentaho.di.core.plugins.PluginClassTypes;
 import org.pentaho.di.core.plugins.PluginFolder;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 
 
 public class SpoonPluginType extends BasePluginType implements PluginTypeInterface {
@@ -55,20 +52,13 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
    * Scan & register internal repository type plugins
    */
   protected void registerAnnotations() throws KettlePluginException {
-
-    List<Class<?>> classes = getAnnotatedClasses(SpoonPlugin.class);
-    for (Class<?> clazz : classes)
-    {
-      SpoonPlugin repositoryPlugin = clazz.getAnnotation(SpoonPlugin.class);
-      handleAnnotation(clazz, repositoryPlugin, new ArrayList<String>(), true, null);
-    }   
+	// This is no longer done because it was deemed too slow.  Only jar files in the plugins/ folders are scanned for annotations.
   }
   
 
   @Override
   protected void registerNatives() throws KettlePluginException {
     // TODO Auto-generated method stub
-    
   }
 
   protected void registerPluginJars() throws KettlePluginException {

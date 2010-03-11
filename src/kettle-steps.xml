@@ -1113,5 +1113,69 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SapInput</tooltip>
 		<iconfile>ui/images/SIP.png</iconfile>
 	</step>
+
+	<step id="ClosureGenerator">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ClosureGenerator</description>
+		<classname>org.pentaho.di.trans.steps.closure.ClosureGeneratorMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ClosureGenerator</tooltip>
+		<iconfile>ui/images/CLG.png</iconfile>
+	</step>
+
+	<step id="CubeInput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CubeInput</description>
+		<classname>org.pentaho.di.trans.steps.cubeinput.CubeInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Cubeinput</tooltip>
+		<iconfile>ui/images/CIP.png</iconfile>
+	</step>
 	
+	<step id="CubeOutput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.CubeOutput</description>
+		<classname>org.pentaho.di.trans.steps.cubeoutput.CubeOutputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Cubeoutput</tooltip>
+		<iconfile>ui/images/COP.png</iconfile>
+	</step>
+
+	<step id="FieldsChangeSequence">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FieldsChangeSequence</description>
+		<classname>org.pentaho.di.trans.steps.fieldschangesequence.FieldsChangeSequenceMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FieldsChangeSequence</tooltip>
+		<iconfile>ui/images/CSEQ.png</iconfile>
+	</step>
+
+	<step id="FieldSplitter">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SplitFields</description>
+		<classname>org.pentaho.di.trans.steps.fieldsplitter.FieldSplitterMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SplitFields</tooltip>
+		<iconfile>ui/images/SPL.png</iconfile>
+	</step>
+
+	<step id="FixedInput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FixedInput</description>
+		<classname>org.pentaho.di.trans.steps.fixedinput.FixedInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FixedInput</tooltip>
+		<iconfile>ui/images/TFI.png</iconfile>
+	</step>
+
+	<step id="RowGenerator">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GenerateRows</description>
+		<classname>org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GenerateRows</tooltip>
+		<iconfile>ui/images/GEN.png</iconfile>
+	</step>
+
+	<step id="ValueMapper">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ValueMapper</description>
+		<classname>org.pentaho.di.trans.steps.valuemapper.ValueMapperMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MapValues</tooltip>
+		<iconfile>ui/images/VMP.png</iconfile>
+	</step>
+		
 </steps>

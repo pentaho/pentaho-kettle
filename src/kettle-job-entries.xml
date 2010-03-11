@@ -3,8 +3,6 @@
 
     <!-- NOTE i18n arguments are : i18n package and key separated by colon (:)
     --> 
-
-    <!-- Configured via Job annotation 
 	
 	<job-entry id="TRANS">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Trans.TypeDesc</description>
@@ -12,8 +10,7 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Trans.Tooltip</tooltip>
 		<iconfile>ui/images/TRN.png</iconfile>
 	</job-entry>
-	 -->
-	
+
 	<job-entry id="JOB">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Job.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.job.JobEntryJob</classname>

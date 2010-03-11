@@ -14,7 +14,6 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -24,7 +23,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since  27-jul-2006
  */
 
-@DatabaseMetaPlugin( type="ORACLERDB", typeDescription="Oracle RDB" )
 public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	public int[] getAccessTypeList()

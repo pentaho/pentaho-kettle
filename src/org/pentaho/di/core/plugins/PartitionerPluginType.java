@@ -83,13 +83,7 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 	 * Scan & register internal step plugins
 	 */
 	protected void registerAnnotations() throws KettlePluginException {
-
-		List<Class<?>> classes = getAnnotatedClasses(PartitionerPlugin.class);
-		for (Class<?> clazz : classes)
-		{
-			PartitionerPlugin partitioner = clazz.getAnnotation(PartitionerPlugin.class);
-			handlePartitionerAnnotation(clazz, partitioner, new ArrayList<String>(), true);
-		}		
+		// This is no longer done because it was deemed too slow.  Only jar files in the plugins/ folders are scanned for annotations.
 	}
 
 	private void handlePartitionerAnnotation(Class<?> clazz, PartitionerPlugin partitioner, List<String> libraries, boolean nativeStep) throws KettlePluginException {

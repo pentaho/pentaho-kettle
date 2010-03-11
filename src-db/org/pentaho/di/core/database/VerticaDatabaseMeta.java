@@ -14,7 +14,6 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -26,7 +25,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since  May-2008
  */
 
-@DatabaseMetaPlugin( type="VERTICA", typeDescription="Vertica" )
 public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	public int[] getAccessTypeList()

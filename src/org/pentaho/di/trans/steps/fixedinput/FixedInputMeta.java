@@ -20,7 +20,6 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -32,8 +31,8 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -56,8 +55,6 @@ import org.w3c.dom.Node;
  * @version 3.0
  */
 
-@Step(name="FixedInput",image="ui/images/TFI.png",tooltip="BaseStep.TypeTooltipDesc.FixedInput",description="BaseStep.TypeLongDesc.FixedInput",
-		categoryDescription="BaseStep.Category.Input", i18nPackageName="org.pentaho.di.trans.step")
 public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$

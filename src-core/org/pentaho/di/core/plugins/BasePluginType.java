@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -25,12 +24,10 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
-import org.scannotation.AnnotationDB;
 import org.w3c.dom.Node;
 
 public abstract class BasePluginType {
@@ -67,22 +64,10 @@ public abstract class BasePluginType {
    * this is a utility method for subclasses so they can easily register
    * which folders contain plugins
    *
-   * @param xmlSubfolder the subfolder where xml plugin definitions can be found
+   * @param xmlSubfolder the sub-folder where xml plugin definitions can be found
    */
 	protected void populateFolders(String xmlSubfolder) {
-	  String folderPaths = EnvUtil.getSystemProperty("KETTLE_PLUGIN_BASE_FOLDERS");
-	  if (folderPaths == null) {
-	    folderPaths = Const.DEFAULT_PLUGIN_BASE_FOLDERS;
-	  }
-	  if (folderPaths != null) {
-	    String folders[] = folderPaths.split(",");
-	    // for each folder in the list of plugin base folders
-	    // add an annotation and xml path for searching
-	    for (String folder : folders) {
-	      pluginFolders.add(new PluginFolder(folder, false, true) );
-	      pluginFolders.add(new PluginFolder(folder + File.separator + xmlSubfolder, true, false) );
-	    }
-	  }
+	  pluginFolders.addAll(PluginFolder.populateFolders(xmlSubfolder));
 	}
 	
 	public Map<Class<?>, String> getAdditionalRuntimeObjectTypes(){
@@ -209,45 +194,36 @@ public abstract class BasePluginType {
 			if (pluginFolder.isPluginAnnotationsFolder()) {
 				
 				try {
-					// Find all the jar files in this folder...
+					// Get all the jar files in the plugin folder...
 					//
-					FileObject folderObject = KettleVFS.getFileObject( pluginFolder.getFolder() );
-					FileObject[] fileObjects = folderObject.findFiles(new FileSelector() {
-						public boolean traverseDescendents(FileSelectInfo fileSelectInfo) throws Exception {
-						  return ! fileSelectInfo.getFile().getName().getBaseName().equals("lib");
-						}
-						
-						public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
-							return fileSelectInfo.getFile().toString().matches(".*\\.jar$");
-						}
-					});
-					
-					for (FileObject fileObject : fileObjects) {
-						
-						// These are the jar files : find annotations in it...
-						//
-						JarFile jarFile = new JarFile(KettleVFS.getFilename(fileObject));
-						Enumeration<JarEntry> entries = jarFile.entries();
-						while (entries.hasMoreElements()) {
-							JarEntry entry = entries.nextElement();
-							try {
-								ClassFile classFile = new ClassFile( new DataInputStream(new BufferedInputStream(jarFile.getInputStream(entry))) );
-								AnnotationsAttribute visible = (AnnotationsAttribute) classFile.getAttribute(AnnotationsAttribute.visibleTag);
-								if (visible!=null) {
-									Annotation[] anns = visible.getAnnotations();
-									for (Annotation ann : anns) {
-										if (ann.getTypeName().equals(annotationClassName)) {
-											classFiles.add(new JarFileAnnotationPlugin(fileObject.getURL(), classFile, ann, fileObject.getParent().getURL()));
-											break;
+					FileObject[] fileObjects = pluginFolder.findJarFiles();
+					if (fileObjects!=null) {
+						for (FileObject fileObject : fileObjects) {
+							
+							// These are the jar files : find annotations in it...
+							//
+							JarFile jarFile = new JarFile(KettleVFS.getFilename(fileObject));
+							Enumeration<JarEntry> entries = jarFile.entries();
+							while (entries.hasMoreElements()) {
+								JarEntry entry = entries.nextElement();
+								try {
+									ClassFile classFile = new ClassFile( new DataInputStream(new BufferedInputStream(jarFile.getInputStream(entry))) );
+									AnnotationsAttribute visible = (AnnotationsAttribute) classFile.getAttribute(AnnotationsAttribute.visibleTag);
+									if (visible!=null) {
+										Annotation[] anns = visible.getAnnotations();
+										for (Annotation ann : anns) {
+											if (ann.getTypeName().equals(annotationClassName)) {
+												classFiles.add(new JarFileAnnotationPlugin(fileObject.getURL(), classFile, ann, fileObject.getParent().getURL()));
+												break;
+											}
 										}
 									}
+								} catch(Exception e) {
+									// Not a class, ignore exception
 								}
-							} catch(Exception e) {
-								// Not a class, ignore exception
 							}
 						}
-					}
-					
+					}					
 				} catch(Exception e) {
 					// The plugin folder could not be found or we can't read it
 					// Let's not through an exception here
@@ -424,23 +400,5 @@ public abstract class BasePluginType {
         }
         
         return map;
-	}
-
-	protected List<Class<?>> getAnnotatedClasses(Class<?> annotation) throws KettlePluginException {
-		try {
-			List<Class<?>> list = new ArrayList<Class<?>>();
-			
-			AnnotationDB db = PluginRegistry.getAnnotationDB();
-			Map<String, Set<String>> annotationIndex = db.getAnnotationIndex();
-			Set<String> classSet = annotationIndex.get(annotation.getName());
-			if (classSet!=null) {
-				for (String className : classSet) {
-					list.add( Class.forName(className) );
-				}
-			}
-			return list;
-		} catch(Exception e) {
-			throw new KettlePluginException("Alternative scanning failed: ", e);
-		}
 	}
 }

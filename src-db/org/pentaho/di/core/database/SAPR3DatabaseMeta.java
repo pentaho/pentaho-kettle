@@ -14,7 +14,6 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 
@@ -25,7 +24,6 @@ import org.pentaho.di.core.util.EnvUtil;
  * @since  03-07-2005
  */
 
-@DatabaseMetaPlugin( type="SAPR3", typeDescription="SAP R/3 System" )
 public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
     public static final String ATTRIBUTE_SAP_LANGUAGE = "SAPLanguage";

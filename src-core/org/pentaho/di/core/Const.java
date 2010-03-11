@@ -539,6 +539,11 @@ public class Const
 	 */
 	public static final String	XML_FILE_KETTLE_REPOSITORIES = "kettle-repositories.xml";
 
+	/**
+	 * The XML file that contains the list of native Kettle database types (MySQL, Oracle, etc)
+	 */
+	public static final String	XML_FILE_KETTLE_DATABASE_TYPES = "kettle-database-types.xml";
+
 
     private static String[] emptyPaddedSpacesStrings;
 

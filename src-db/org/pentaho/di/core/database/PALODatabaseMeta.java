@@ -13,7 +13,6 @@
 
 package org.pentaho.di.core.database;
 
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 
 
 /**
@@ -25,7 +24,6 @@ import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
  * @since  18-Sep-2007
  */
 
-@DatabaseMetaPlugin( type="PALO", typeDescription="Palo MOLAP Server" )
 public class PALODatabaseMeta extends GenericDatabaseMeta implements DatabaseInterface
 {
 	public int[] getAccessTypeList()

@@ -18,7 +18,6 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -29,8 +28,8 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -45,8 +44,6 @@ import org.w3c.dom.Node;
  * Created on 19-Sep-2007
  *
  */
-@Step(name="ClosureGenerator",image="ui/images/CLG.png",tooltip="ClosureGenerator.Step.ToolTip",description="ClosureGenerator.Step.Description",
-		categoryDescription="BaseStep.Category.Transform", i18nPackageName="org.pentaho.di.trans.step")
 public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private boolean rootIdZero;

@@ -14,7 +14,6 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -24,7 +23,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since  16-oct-2006
  */
 
-@DatabaseMetaPlugin( type="NETEZZA", typeDescription="Netezza" )
 public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	public static final int MAX_CHAR_LEN = 32767;

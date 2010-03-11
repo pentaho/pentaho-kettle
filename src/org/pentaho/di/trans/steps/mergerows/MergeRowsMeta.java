@@ -363,4 +363,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
     	return ioMeta;
     }
 
+    @Override
+    public void resetStepIoMeta() {
+    }
 }

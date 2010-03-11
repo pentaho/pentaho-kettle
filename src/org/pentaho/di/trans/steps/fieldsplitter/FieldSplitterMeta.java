@@ -18,7 +18,6 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -28,8 +27,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -90,8 +89,6 @@ import org.w3c.dom.Node;
 
 </CODE>
 **/
-@Step(name="FieldSplitter",image="ui/images/SPL.png",tooltip="BaseStep.TypeTooltipDesc.SplitFields",description="BaseStep.TypeLongDesc.SplitFields",
-		categoryDescription="BaseStep.Category.Transform", i18nPackageName="org.pentaho.di.trans.step")
 public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = FieldSplitterMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$

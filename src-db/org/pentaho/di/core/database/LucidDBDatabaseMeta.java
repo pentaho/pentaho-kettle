@@ -14,7 +14,6 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -24,7 +23,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since  24-oct-2008
  */
 
-@DatabaseMetaPlugin( type="LucidDB", typeDescription="LucidDB" )
 public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
     private static final String UNUSED_DB_NAME = "DEFAULT";

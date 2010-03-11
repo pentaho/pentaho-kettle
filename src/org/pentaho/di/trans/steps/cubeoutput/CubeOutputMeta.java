@@ -19,7 +19,6 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -28,8 +27,8 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
@@ -47,8 +46,6 @@ import org.w3c.dom.Node;
  * Created on 4-apr-2003
  *
  */
-@Step(name="CubeOutput",image="ui/images/COP.png",tooltip="BaseStep.TypeTooltipDesc.Cubeoutput",description="BaseStep.TypeLongDesc.CubeOutput",
-		categoryDescription="BaseStep.Category.Output", i18nPackageName="org.pentaho.di.trans.step")
 public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = CubeOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$

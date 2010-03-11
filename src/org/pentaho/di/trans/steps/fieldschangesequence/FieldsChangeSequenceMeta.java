@@ -18,12 +18,10 @@ package org.pentaho.di.trans.steps.fieldschangesequence;
 import java.util.List;
 import java.util.Map;
 
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -51,8 +49,6 @@ import org.w3c.dom.Node;
  *
  */
 
-@Step(name="FieldsChangeSequence",image="ui/images/CSEQ.png",tooltip="BaseStep.TypeTooltipDesc.FieldsChangeSequence",description="BaseStep.TypeLongDesc.FieldsChangeSequence",
-		categoryDescription="BaseStep.Category.Transform", i18nPackageName="org.pentaho.di.trans.step")
 public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = FieldsChangeSequenceMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$

@@ -2,7 +2,6 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -12,7 +11,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since  21-03-2008
  */
 
-@DatabaseMetaPlugin( type="KINGBASEES", typeDescription="KingbaseES" )
 public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	/**

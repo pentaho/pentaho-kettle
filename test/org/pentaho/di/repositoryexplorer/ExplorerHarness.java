@@ -25,7 +25,6 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
-import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
 import org.pentaho.ui.xul.XulException;
 
 public class ExplorerHarness {

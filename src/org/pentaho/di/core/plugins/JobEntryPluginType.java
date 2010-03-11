@@ -110,13 +110,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 	 * Scan & register internal job entry plugins
 	 */
 	protected void registerAnnotations() throws KettlePluginException {
-
-		List<Class<?>> classes = getAnnotatedClasses(JobEntry.class);
-		for (Class<?> clazz : classes)
-		{
-			JobEntry jobEntry = clazz.getAnnotation(JobEntry.class);
-			handleJobEntryAnnotation(clazz, jobEntry, new ArrayList<String>(), true);
-		}		
+		// This is no longer done because it was deemed too slow.  Only jar files in the plugins/ folders are scanned for annotations.
 	}
 
 	private void handleJobEntryAnnotation(Class<?> clazz, JobEntry jobEntry, List<String> libraries, boolean nativeJobEntry) throws KettlePluginException {

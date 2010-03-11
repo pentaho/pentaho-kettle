@@ -14,7 +14,6 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -24,7 +23,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since  11-mrt-2005
  */
 
-@DatabaseMetaPlugin( type="MONETDB", typeDescription="MonetDB" )
 public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	public int[] getAccessTypeList()

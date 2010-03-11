@@ -61,7 +61,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 	 * Scan & register internal step plugins
 	 */
 	protected void registerNatives() throws KettlePluginException {
-		// Scan the native steps...
+		// Scan the native repository types...
 		//
 		String xmlFile = Const.XML_FILE_KETTLE_REPOSITORIES;
 		
@@ -93,13 +93,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 	 * Scan & register internal repository type plugins
 	 */
 	protected void registerAnnotations() throws KettlePluginException {
-
-		List<Class<?>> classes = getAnnotatedClasses(RepositoryPlugin.class);
-		for (Class<?> clazz : classes)
-		{
-			RepositoryPlugin repositoryPlugin = clazz.getAnnotation(RepositoryPlugin.class);
-			handleRepositoryPluginAnnotation(clazz, repositoryPlugin, new ArrayList<String>(), true);
-		}		
+		// This is no longer done because it was deemed too slow.  Only jar files in the plugins/ folders are scanned for annotations.
 	}
 
 	private void handleRepositoryPluginAnnotation(Class<?> clazz, RepositoryPlugin repositoryPlugin, List<String> libraries, boolean nativeRepositoryType) throws KettlePluginException {

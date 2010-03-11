@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -27,7 +26,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since  26-jul-2006
  */
 
-@DatabaseMetaPlugin( type="TERADATA", typeDescription="Teradata" )
 public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {   
 	public int[] getAccessTypeList()

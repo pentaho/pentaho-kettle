@@ -13,7 +13,6 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -23,7 +22,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since  11-Apr-2006
  */
 
-@DatabaseMetaPlugin( type="EXTENDB", typeDescription="ExtenDB" )
 public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
     private static final String [] RESERVED_WORDS =

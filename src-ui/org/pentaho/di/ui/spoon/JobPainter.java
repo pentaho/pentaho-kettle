@@ -182,7 +182,7 @@ public class JobPainter extends BasePainter {
 		gc.drawJobEntryIcon(x, y, jobEntryCopy);
 		gc.setBackground(EColor.BACKGROUND);
 		
-		if (activeJobEntries.contains(jobEntryCopy)) {
+		if (activeJobEntries!=null && activeJobEntries.contains(jobEntryCopy)) {
 			gc.setForeground(EColor.BLUE);
 			int iconX = x + iconsize - 7;
 			int iconY = y - 7;

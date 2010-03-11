@@ -1,0 +1,189 @@
+<database-types>
+ 
+   <database-type id="AS/400">                                                        
+    <description>AS/400</description>                                                
+    <classname>org.pentaho.di.core.database.AS400DatabaseMeta</classname>            
+  </database-type>                                                                   
+
+  <database-type id="CACHE">
+    <description>Intersystems Cache</description>
+    <classname>org.pentaho.di.core.database.CacheDatabaseMeta</classname>
+  </database-type>                                                       
+
+  <database-type id="DB2">
+    <description>IBM DB2</description>
+    <classname>org.pentaho.di.core.database.DB2DatabaseMeta</classname>
+  </database-type>                                                     
+
+  <database-type id="DBASE">
+    <description>dBase III, IV or 5</description>
+    <classname>org.pentaho.di.core.database.DbaseDatabaseMeta</classname>
+  </database-type>                                                       
+
+  <database-type id="DERBY">
+    <description>Apache Derby</description>
+    <classname>org.pentaho.di.core.database.DerbyDatabaseMeta</classname>
+  </database-type>                                                       
+
+  <database-type id="EXTENDB">
+    <description>ExtenDB</description>
+    <classname>org.pentaho.di.core.database.ExtenDBDatabaseMeta</classname>
+  </database-type>                                                         
+
+  <database-type id="FIREBIRD">
+    <description>Firebird SQL</description>
+    <classname>org.pentaho.di.core.database.FirebirdDatabaseMeta</classname>
+  </database-type>                                                          
+
+  <database-type id="GENERIC">
+    <description>Generic database</description>
+    <classname>org.pentaho.di.core.database.GenericDatabaseMeta</classname>
+  </database-type>                                                         
+
+  <database-type id="GREENPLUM">
+    <description>Greenplum</description>
+    <classname>org.pentaho.di.core.database.GreenplumDatabaseMeta</classname>
+  </database-type>                                                           
+
+  <database-type id="SQLBASE">
+    <description>Gupta SQL Base</description>
+    <classname>org.pentaho.di.core.database.GuptaDatabaseMeta</classname>
+  </database-type>                                                       
+
+  <database-type id="H2">
+    <description>H2</description>
+    <classname>org.pentaho.di.core.database.H2DatabaseMeta</classname>
+  </database-type>                                                    
+
+  <database-type id="HYPERSONIC">
+    <description>Hypersonic</description>
+    <classname>org.pentaho.di.core.database.HypersonicDatabaseMeta</classname>
+  </database-type>                                                            
+
+  <database-type id="INFOBRIGHT">
+    <description>Infobright</description>
+    <classname>org.pentaho.di.core.database.InfobrightDatabaseMeta</classname>
+  </database-type>                                                            
+
+  <database-type id="INFORMIX">
+    <description>Informix</description>
+    <classname>org.pentaho.di.core.database.InformixDatabaseMeta</classname>
+  </database-type>                                                          
+
+  <database-type id="INGRES">
+    <description>Ingres</description>
+    <classname>org.pentaho.di.core.database.IngresDatabaseMeta</classname>
+  </database-type>                                                        
+
+  <database-type id="INTERBASE">
+    <description>Borland Interbase</description>
+    <classname>org.pentaho.di.core.database.InterbaseDatabaseMeta</classname>
+  </database-type>                                                           
+
+  <database-type id="KINGBASEES">
+    <description>KingbaseES</description>
+    <classname>org.pentaho.di.core.database.KingbaseESDatabaseMeta</classname>
+  </database-type>                                                            
+
+  <database-type id="LucidDB">
+    <description>LucidDB</description>
+    <classname>org.pentaho.di.core.database.LucidDBDatabaseMeta</classname>
+  </database-type>                                                         
+
+  <database-type id="MONETDB">
+    <description>MonetDB</description>
+    <classname>org.pentaho.di.core.database.MonetDBDatabaseMeta</classname>
+  </database-type>                                                         
+
+  <database-type id="MSACCESS">
+    <description>MS Access</description>
+    <classname>org.pentaho.di.core.database.MSAccessDatabaseMeta</classname>
+  </database-type>                                                          
+
+  <database-type id="MSSQL">
+    <description>MS SQL Server</description>
+    <classname>org.pentaho.di.core.database.MSSQLServerDatabaseMeta</classname>
+  </database-type>                                                             
+
+  <database-type id="MYSQL">
+    <description>MySQL</description>
+    <classname>org.pentaho.di.core.database.MySQLDatabaseMeta</classname>
+  </database-type>                                                       
+
+  <database-type id="NEOVIEW">
+    <description>Neoview</description>
+    <classname>org.pentaho.di.core.database.NeoviewDatabaseMeta</classname>
+  </database-type>                                                         
+
+  <database-type id="NETEZZA">
+    <description>Netezza</description>
+    <classname>org.pentaho.di.core.database.NetezzaDatabaseMeta</classname>
+  </database-type>                                                         
+
+  <database-type id="ORACLE">
+    <description>Oracle</description>
+    <classname>org.pentaho.di.core.database.OracleDatabaseMeta</classname>
+  </database-type>                                                        
+
+  <database-type id="ORACLERDB">
+    <description>Oracle RDB</description>
+    <classname>org.pentaho.di.core.database.OracleRDBDatabaseMeta</classname>
+  </database-type>                                                           
+
+  <database-type id="PALO">
+    <description>Palo MOLAP Server</description>
+    <classname>org.pentaho.di.core.database.PALODatabaseMeta</classname>
+  </database-type>                                                      
+
+  <database-type id="POSTGRESQL">
+    <description>PostgreSQL</description>
+    <classname>org.pentaho.di.core.database.PostgreSQLDatabaseMeta</classname>
+  </database-type>                                                            
+
+  <database-type id="REMEDY-AR-SYSTEM">
+    <description>Remedy Action Request System</description>
+    <classname>org.pentaho.di.core.database.RemedyActionRequestSystemDatabaseMeta</classname>                                                                                           
+  </database-type>                                                                          
+
+  <database-type id="SAPDB">
+    <description>MaxDB (SAP DB)</description>
+    <classname>org.pentaho.di.core.database.SAPDBDatabaseMeta</classname>
+  </database-type>                                                       
+
+  <database-type id="SAPR3">
+    <description>SAP R/3 System</description>
+    <classname>org.pentaho.di.core.database.SAPR3DatabaseMeta</classname>
+  </database-type>                                                       
+
+  <database-type id="SQLITE">
+    <description>SQLite</description>
+    <classname>org.pentaho.di.core.database.SQLiteDatabaseMeta</classname>
+  </database-type>
+
+  <database-type id="SYBASE">
+    <description>Sybase</description>
+    <classname>org.pentaho.di.core.database.SybaseDatabaseMeta</classname>
+  </database-type>
+
+  <database-type id="SYBASEIQ">
+    <description>SybaseIQ</description>
+    <classname>org.pentaho.di.core.database.SybaseIQDatabaseMeta</classname>
+  </database-type>
+
+  <database-type id="TERADATA">
+    <description>Teradata</description>
+    <classname>org.pentaho.di.core.database.TeradataDatabaseMeta</classname>
+  </database-type>
+
+  <database-type id="UNIVERSE">
+    <description>UniVerse database</description>
+    <classname>org.pentaho.di.core.database.UniVerseDatabaseMeta</classname>
+  </database-type>
+
+  <database-type id="VERTICA">
+    <description>Vertica</description>
+    <classname>org.pentaho.di.core.database.VerticaDatabaseMeta</classname>
+  </database-type>
+ 
+ 
+ </database-types>

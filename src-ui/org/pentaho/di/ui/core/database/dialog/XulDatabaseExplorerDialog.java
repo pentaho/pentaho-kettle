@@ -26,15 +26,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
-import org.pentaho.di.i18n.BaseMessages;
 
 public class XulDatabaseExplorerDialog {
 

@@ -111,13 +111,7 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 	 * Scan & register internal step plugins
 	 */
 	protected void registerAnnotations() throws KettlePluginException {
-
-		List<Class<?>> classes = getAnnotatedClasses(Step.class);
-		for (Class<?> clazz : classes)
-		{
-			Step step = clazz.getAnnotation(Step.class);
-			handleStepAnnotation(clazz, step, new ArrayList<String>(), true);
-		}		
+		// We no longer scan for annotations in the class path itself, only in jar files in the plugins/ folders.
 	}
 
 	private void handleStepAnnotation(Class<?> clazz, Step step, List<String> libraries, boolean nativeStep) throws KettlePluginException {

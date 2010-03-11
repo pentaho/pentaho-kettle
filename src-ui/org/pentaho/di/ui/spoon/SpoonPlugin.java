@@ -5,11 +5,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
-import java.util.Map;
-
-import org.pentaho.ui.xul.XulOverlay;
-import org.pentaho.ui.xul.impl.XulEventHandler;
 
 /**
  * Xul-based Spoon plugin. Implementations can modify the look of Spoon, register a 

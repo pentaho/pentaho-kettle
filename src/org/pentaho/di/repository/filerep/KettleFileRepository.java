@@ -44,6 +44,7 @@ import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
@@ -111,7 +112,11 @@ public class KettleFileRepository implements Repository {
 
 		if (dir!=null) {
 			String path = calcRelativeElementDirectory(dir);
-			directory.append(path);
+			if (path.startsWith("/")) {
+				directory.append(path.substring(1));
+			} else {
+				directory.append(path);
+			}
 			if (!path.endsWith("/")) {
 				directory.append("/");
 			}
@@ -142,11 +147,13 @@ public class KettleFileRepository implements Repository {
 	public String calcObjectId(RepositoryDirectory directory, String name, String extension) {
 		StringBuilder id = new StringBuilder();
 		
+		/*
 		String path = calcRelativeElementDirectory(directory);
 		id.append(path);
 		if (!path.endsWith("/")) {
 			id.append("/");
 		}
+		*/
 		
 		id.append(name+extension);
 		
@@ -215,7 +222,7 @@ public class KettleFileRepository implements Repository {
 
 	public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
 		try {
-			if (!(repositoryElement instanceof XMLInterface)) {
+			if (!(repositoryElement instanceof XMLInterface) && !(repositoryElement instanceof SharedObjectInterface)) {
 				throw new KettleException("Class ["+repositoryElement.getClass().getName()+"] needs to implement the XML Interface in order to save it to disk");
 			}
 			
@@ -741,13 +748,13 @@ public class KettleFileRepository implements Repository {
 	}
 	
 
-	public List<RepositoryObject> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException {
+	public List<RepositoryObject> getTransformationObjects(ObjectId idDirectory, boolean includeDeleted) throws KettleException {
 		
 		try {
 			List<RepositoryObject> list = new ArrayList<RepositoryObject>();
 			
 			RepositoryDirectory tree = loadRepositoryDirectoryTree();
-			RepositoryDirectory directory = tree.findDirectory(id_directory);
+			RepositoryDirectory directory = tree.findDirectory(idDirectory);
 			
 			String folderName = calcDirectoryName(directory);
 			FileObject folder = KettleVFS.getFileObject(folderName);
@@ -769,7 +776,7 @@ public class KettleFileRepository implements Repository {
 			return list;
 		}
 		catch(Exception e) {
-			throw new KettleException("Unable to get list of transformations in folder with id : "+id_directory, e);
+			throw new KettleException("Unable to get list of transformations in folder with id : "+idDirectory, e);
 		}
 	}
 	

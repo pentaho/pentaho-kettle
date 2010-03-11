@@ -12,8 +12,6 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulOverlay;
-import org.pentaho.ui.xul.impl.XulEventHandler;
 /**
  *  SpoonPluginManager is a singleton class which loads all SpoonPlugins from the 
  *  SPOON_HOME/plugins/spoon directory. 

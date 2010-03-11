@@ -14,7 +14,6 @@
 package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -24,7 +23,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since  16-nov-2006
  */
 
-@DatabaseMetaPlugin( type="UNIVERSE", typeDescription="UniVerse database" )
 public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
 	private static final int MAX_VARCHAR_LENGTH = 65535;
