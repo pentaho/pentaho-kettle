@@ -4,7 +4,6 @@
 package org.pentaho.di.core.plugins;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -149,7 +148,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 		List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(RepositoryPlugin.class.getName());
 		for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
 			
-			URLClassLoader urlClassLoader = new KettleURLClassLoader(new URL[] { jarFilePlugin.getJarFile(), }, getClass().getClassLoader());
+			URLClassLoader urlClassLoader = createUrlClassLoader(jarFilePlugin.getJarFile(), getClass().getClassLoader());
 			try {
 				Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
 				RepositoryPlugin repositoryPlugin = clazz.getAnnotation(RepositoryPlugin.class);

@@ -47,7 +47,7 @@ public class PluginRegistry {
 
 	private static ClassPathFinder	classPathFinder;
 
-  private static List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
+    private static List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
   
 	/**
 	 * Initialize the registry, keep private to keep this a singleton 

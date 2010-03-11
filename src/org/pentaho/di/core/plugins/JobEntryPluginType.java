@@ -4,7 +4,6 @@
 package org.pentaho.di.core.plugins;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,7 +167,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 		List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(JobEntry.class.getName());
 		for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
 			
-			URLClassLoader urlClassLoader = new KettleURLClassLoader(new URL[] { jarFilePlugin.getJarFile(), }, getClass().getClassLoader());
+			URLClassLoader urlClassLoader = createUrlClassLoader(jarFilePlugin.getJarFile(), getClass().getClassLoader());
 			try {
 				Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
 				JobEntry jobEntry = clazz.getAnnotation(JobEntry.class);

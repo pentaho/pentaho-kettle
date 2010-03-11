@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -424,4 +426,37 @@ public abstract class BasePluginType {
         
         return map;
 	}
+	
+	/**
+	 * Create a new URL class loader with the jar file specified.  Also include all the jar files in the lib folder next to that file.
+	 * 
+	 * @param jarFileUrl The jar file to include
+	 * @param classLoader the parent class loader to use
+	 * @return The URL class loader
+	 */
+	protected URLClassLoader createUrlClassLoader(URL jarFileUrl, ClassLoader classLoader) {
+		List<URL> urls = new ArrayList<URL>();
+		
+		// Also append all the files in the underlying lib folder if it exists...
+		//
+		try {
+			String libFolderName = new File(URLDecoder.decode(jarFileUrl.getFile(), "UTF-8")).getParent()+"/lib";
+			if (new File(libFolderName).exists()) {
+				PluginFolder pluginFolder = new PluginFolder(libFolderName, false, true);
+				System.out.println("Search for jar files in: "+libFolderName);
+				FileObject[] libFiles = pluginFolder.findJarFiles();
+				for (FileObject libFile : libFiles) {
+					urls.add(libFile.getURL());
+				}
+			}
+		} catch(Exception e) {
+			LogChannel.GENERAL.logError("Unexpected error searching for jar files in lib/ folder next to '"+jarFileUrl+"'", e);
+		}
+
+		urls.add(jarFileUrl);
+
+		return new KettleURLClassLoader(urls.toArray(new URL[urls.size()]), classLoader);
+	}
+
+
 }

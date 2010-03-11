@@ -119,7 +119,7 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 		List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(DatabaseMetaPlugin.class.getName());
 		for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
 			
-			URLClassLoader urlClassLoader = new KettleURLClassLoader(new URL[] { jarFilePlugin.getJarFile(), }, getClass().getClassLoader());
+			URLClassLoader urlClassLoader = createUrlClassLoader(jarFilePlugin.getJarFile(), getClass().getClassLoader());
 			try {
 				Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
 				DatabaseMetaPlugin databaseMetaPlugin = clazz.getAnnotation(DatabaseMetaPlugin.class);

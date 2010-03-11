@@ -53,7 +53,6 @@ public class SpoonPluginManager {
     }
   }
   
-  @SuppressWarnings("unchecked")
   private void loadPlugin(final SpoonPluginInterface sp){
     SpoonPluginCategories categories = sp.getClass().getAnnotation(SpoonPluginCategories.class);
     if(categories != null){

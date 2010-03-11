@@ -4,7 +4,6 @@
 package org.pentaho.di.core.plugins;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -131,7 +130,7 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 		List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(PartitionerPlugin.class.getName());
 		for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
 			
-			URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarFilePlugin.getJarFile(), });
+			URLClassLoader urlClassLoader = createUrlClassLoader(jarFilePlugin.getJarFile(), getClass().getClassLoader());
 			try {
 				Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
 				PartitionerPlugin partitioner = clazz.getAnnotation(PartitionerPlugin.class);

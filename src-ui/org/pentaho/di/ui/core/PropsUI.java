@@ -36,11 +36,13 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.GUIOption;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.plugins.ClassPathFinder;
+import org.pentaho.di.core.plugins.LifecyclePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -170,19 +172,17 @@ public class PropsUI extends Props
         loadLastUsedFiles();
         loadOpenTabFiles();
 
-        ClassPathFinder classPathFinder = PluginRegistry.getClassPathFinder();
-        List<Class<? extends GUIOption>> classList = classPathFinder.findClassesImplementingInterface(GUIOption.class, "org.pentaho.di.core");
+        PluginRegistry registry = PluginRegistry.getInstance();
+        List<PluginInterface> plugins = registry.getPlugins(LifecyclePluginType.class);
         List<GUIOption<Object>> leditables = new ArrayList<GUIOption<Object>>();
-        for (Class<? extends GUIOption> clazz : classList) {
+        for (PluginInterface plugin : plugins) {
         	try {
-        		leditables.add( clazz.newInstance() );
-        	} catch(IllegalAccessException e) {
-        		LogChannel.GENERAL.logError("Illegal access to class "+clazz.getName()+", ignored.");
-        	} catch (InstantiationException e) {
-        		LogChannel.GENERAL.logError("Could not instatiate class class "+clazz.getName()+", ignored.");
-			}
+        		leditables.add( registry.loadClass(plugin, GUIOption.class) );
+        	} catch(KettleException e) {
+        		LogChannel.GENERAL.logError("Unexpected error loading class for plugin "+plugin.getName(), e);
+        	}
         }
-
+        
         editables = Collections.unmodifiableList(leditables);
 
 	}

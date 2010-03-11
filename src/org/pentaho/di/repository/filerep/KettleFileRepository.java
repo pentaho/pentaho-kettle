@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -147,13 +148,11 @@ public class KettleFileRepository implements Repository {
 	public String calcObjectId(RepositoryDirectory directory, String name, String extension) {
 		StringBuilder id = new StringBuilder();
 		
-		/*
 		String path = calcRelativeElementDirectory(directory);
 		id.append(path);
 		if (!path.endsWith("/")) {
 			id.append("/");
 		}
-		*/
 		
 		id.append(name+extension);
 		
@@ -258,8 +257,24 @@ public class KettleFileRepository implements Repository {
 	
 	
 	public RepositoryDirectory createRepositoryDirectory(RepositoryDirectory parentDirectory, String directoryPath) throws KettleException {
+		String folder = calcDirectoryName(parentDirectory);
+		String newFolder = folder;
+		if (folder.endsWith("/")) newFolder+=directoryPath; else newFolder+="/"+directoryPath;
 		
-		return null;
+		FileObject parent = KettleVFS.getFileObject(newFolder);
+		try {
+			parent.createFolder();
+		} catch (FileSystemException e) {
+			throw new KettleException("Unable to create folder "+newFolder, e);
+		}
+		
+		// Incremental change of the directory structure...
+		//
+		RepositoryDirectory newDir = new RepositoryDirectory(parentDirectory, directoryPath);
+		parentDirectory.addSubdirectory(newDir);
+		newDir.setObjectId(new StringObjectId(newDir.toString()));
+		
+		return newDir;
 	}
 
 	public void saveRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
@@ -765,8 +780,9 @@ public class KettleFileRepository implements Repository {
 					
 					if (name.endsWith(EXT_TRANSFORMATION)) {
 						
-						ObjectId id = new StringObjectId(calcObjectId(directory, folderName, EXT_TRANSFORMATION));
 						String transName = name.substring(0, name.length()-4);
+						
+						ObjectId id = new StringObjectId(calcObjectId(directory, transName, EXT_TRANSFORMATION));
 						Date date = new Date(child.getContent().getLastModifiedTime());
 						list.add( new RepositoryObject(id, transName, directory, "-", date, RepositoryObjectType.TRANSFORMATION, "", "", false) );
 					}
@@ -917,7 +933,11 @@ public class KettleFileRepository implements Repository {
 			// In case of a root object, the ID is the same as the relative filename...
 			//
 			FileObject fileObject = KettleVFS.getFileObject(calcDirectoryName(null)+id.getId());
-			
+
+			// Same name, different folder?
+			if (Const.isEmpty(newName)) {
+				newName = calcObjectName(id);
+			}
 			// The new filename can be anywhere so we re-calculate a new ID...
 			//
 			String newFilename = calcDirectoryName(newDirectory)+newName+extension;
@@ -931,6 +951,13 @@ public class KettleFileRepository implements Repository {
 			throw new KettleException("Unable to rename object with ID ["+id+"] to ["+newName+"]", e);
 		}
 		
+	}
+
+	private String calcObjectName(ObjectId id) {
+		int slashIndex = id.getId().lastIndexOf('/');
+		int dotIndex = id.getId().lastIndexOf('.');
+		
+		return id.getId().substring(slashIndex+1, dotIndex);
 	}
 
 	public ObjectId renameDatabase(ObjectId id_database, String newname) throws KettleException {

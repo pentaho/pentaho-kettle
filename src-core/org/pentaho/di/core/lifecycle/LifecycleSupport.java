@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.plugins.ClassPathFinder;
+import org.pentaho.di.core.plugins.LifecyclePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 
 public class LifecycleSupport implements LifecycleListener
@@ -15,16 +17,14 @@ public class LifecycleSupport implements LifecycleListener
 	public LifecycleSupport()
 	{
 		lifeListeners = new HashSet<LifecycleListener>();
-        ClassPathFinder classPathFinder = PluginRegistry.getClassPathFinder();
-        List<Class<? extends LifecycleListener>> classList = classPathFinder.findClassesImplementingInterface(LifecycleListener.class, "org.pentaho.di.core.lifecycle.pdi");
-        for (Class<? extends LifecycleListener> clazz : classList) {
+        PluginRegistry registry = PluginRegistry.getInstance();
+        List<PluginInterface> plugins = registry.getPlugins(LifecyclePluginType.class);
+        for (PluginInterface plugin : plugins) {
         	try {
-        		lifeListeners.add( clazz.newInstance() );
-        	} catch(IllegalAccessException e) {
-        		LogChannel.GENERAL.logError("Illegal access to class "+clazz+", ignored.");
-        	} catch (InstantiationException e) {
-        		LogChannel.GENERAL.logError("Could not instatiate class class "+clazz+", ignored.");
-			}
+        		lifeListeners.add( registry.loadClass(plugin, LifecycleListener.class) );
+        	} catch(KettleException e) {
+        		LogChannel.GENERAL.logError("Unexpected error loading class for plugin "+plugin.getName(), e);
+        	}
         }
 	}
 
