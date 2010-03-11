@@ -151,7 +151,7 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
     return 20;
   }
   
-  public abstract void lock(String lockNote) throws KettleException;
+    public abstract void lock(String lockNote) throws KettleException;
   
   public abstract void unlock() throws KettleException;
   
@@ -162,6 +162,11 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
   
   public boolean isLocked() throws KettleException {
     return false;
+  }
+  
+  
+  public UIRepositoryDirectory getParent() {
+    return uiParent;
   }
   
   public abstract void restoreVersion(UIRepositoryObjectRevision revision, String commitMessage) throws KettleException;

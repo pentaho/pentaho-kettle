@@ -19,18 +19,20 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoerCollection;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
-import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer.TYPE;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
@@ -58,7 +60,7 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
  * browse functionality.
  * 
  */
-public class BrowseController extends AbstractXulEventHandler implements IUISupportController {
+public class BrowseController extends AbstractXulEventHandler implements IUISupportController, IBrowseController {
 
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -74,35 +76,41 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   };
 
-  private XulTree folderTree;
+  protected XulTree folderTree;
 
-  private XulTree fileTable;
+  protected XulTree fileTable;
 
-  private XulTree revisionTable;
+  protected XulTree revisionTable;
+  
+  protected XulDeck historyDeck;
 
-  private XulDeck historyDeck;
+  protected UIRepositoryDirectory repositoryDirectory;
 
-  private UIRepositoryDirectory repositoryDirectory;
+  protected ContextChangeVetoerCollection contextChangeVetoers;
 
-  private ContextChangeVetoerCollection contextChangeVetoers;
+  protected static final int NO_HISTORY = 0;
 
-  private static final int NO_HISTORY = 0;
+  protected static final int HISTORY = 1;
 
-  private static final int HISTORY = 1;
+  protected BindingFactory bf;
 
-  BindingFactory bf;
+  protected Binding directoryBinding;
 
-  Binding directoryBinding;
+  protected List<UIRepositoryDirectory> selectedFolderItems;
 
-  List<UIRepositoryDirectory> selectedFolderItems;
+  protected List<UIRepositoryObject> selectedFileItems;
 
-  List<UIRepositoryObject> selectedFileItems;
-
-  List<UIRepositoryDirectory> repositoryDirectories;
+  protected List<UIRepositoryDirectory> repositoryDirectories;
 
   List<UIRepositoryObject> repositoryObjects;
 
   private MainController mainController;
+  
+  /**
+   * Allows for lookup of a UIRepositoryDirectory by ObjectId. This allows the reuse of instances that are inside a UI
+   * tree.
+   */
+  protected Map<ObjectId, UIRepositoryDirectory> dirMap;
 
   public BrowseController() {
   }
@@ -111,23 +119,24 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     try {
       mainController = (MainController) this.getXulDomContainer().getEventHandler("mainController");
       this.repositoryDirectory = new UIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
+      dirMap = new HashMap<ObjectId, UIRepositoryDirectory>();
+      populateDirMap(repositoryDirectory);
+
       bf = new DefaultBindingFactory();
       bf.setDocument(this.getXulDomContainer().getDocumentRoot());
 
       createBindings();
     } catch (Exception e) {
       throw new ControllerInitializationException(e);
-    }
+  }
   }
 
-  private void createBindings() {
+  protected void createBindings() {
     folderTree = (XulTree) document.getElementById("folder-tree"); //$NON-NLS-1$
     fileTable = (XulTree) document.getElementById("file-table"); //$NON-NLS-1$ 
 
-    // Bind the repository folder structure to the folder tree.
-    //bf.setBindingType(Binding.Type.ONE_WAY);
-    directoryBinding = bf.createBinding(repositoryDirectory, "children", folderTree, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
-
+    directoryBinding = createDirectoryBinding();
+ 
     // Bind the selected index from the folder tree to the list of repository objects in the file table. 
     bf.setBindingType(Binding.Type.ONE_WAY);
 
@@ -173,6 +182,12 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       createRevisionBindings();
     }
 
+  }
+  
+  protected Binding createDirectoryBinding() {
+    // Bind the repository folder structure to the folder tree.
+    //bf.setBindingType(Binding.Type.ONE_WAY);
+    return bf.createBinding(repositoryDirectory, "children", folderTree, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
   }
 
   private void createRevisionBindings() {
@@ -272,6 +287,15 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   public void setRepositoryDirectory(UIRepositoryDirectory repositoryDirectory) {
     this.repositoryDirectory = repositoryDirectory;
+  }
+  
+  protected void populateDirMap(UIRepositoryDirectory repDir) {
+    dirMap.put(repDir.getObjectId(), repDir);
+    for (UIRepositoryObject obj : repDir.getChildren()) {
+      if (obj instanceof UIRepositoryDirectory) {
+        populateDirMap((UIRepositoryDirectory) obj);
+      }
+    }
   }
 
   public void expandAllFolders() {

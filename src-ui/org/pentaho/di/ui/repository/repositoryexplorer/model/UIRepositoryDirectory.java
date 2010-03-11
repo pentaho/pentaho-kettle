@@ -248,4 +248,11 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     firePropertyChange("expanded", null, this.expanded); //$NON-NLS-1$
   }
   
+  public UIRepositoryDirectory getParent() {
+    return uiParent;
+  }
+  
+  public String getPath() {
+    return ((RepositoryDirectory) rd).getPath();
+  }
 }

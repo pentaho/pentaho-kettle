@@ -96,27 +96,29 @@
 									</tree>
 								</vbox>
 								<vbox flex="4">
-									<splitter flex="1" orient="VERTICAL"> 
-										<vbox flex="4"> 
-											<hbox id="file-table-tools"/>
-											<tree id="file-table" flex="1" hidecolumnpicker="true"
-												enableColumnDrag="true" context="fileContextMenu" 
-												ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()" 
-												pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
-												<treecols>
-													<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}"
-														pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
-														pen:comparatorbinding="comparator"/>
-													<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}"
-														pen:binding="type" />
-													<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}"
-														pen:binding="formatModifiedDate" />
-												</treecols>
-												<treechildren />
-											</tree>
+                  <deck id="browse-tab-right-panel-deck" flex="1">
+  									<splitter flex="1" orient="VERTICAL">
+                                      <vbox flex="4"> 
+										<hbox id="file-table-tools"/>  
+  										<tree id="file-table" flex="1" hidecolumnpicker="true"
+  											enableColumnDrag="true" context="fileContextMenu" 
+  											ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()" 
+  											pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
+  											<treecols>
+  												<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}"
+  													pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
+  													pen:comparatorbinding="comparator"/>
+  												<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}"
+  													pen:binding="type" />
+  												<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}"
+  													pen:binding="formatModifiedDate" />
+  											</treecols>
+  											<treechildren />
+  										</tree>
 										</vbox>
-										<vbox flex="3" id="revision-box" visible="false"/>
-								  </splitter>
+  										<vbox flex="3" id="revision-box" visible="false"/>
+  								  </splitter>
+                  </deck>
 						 		</vbox>  
                             </splitter>  
 				</tabpanel>
@@ -343,7 +345,7 @@
 	    		height="500" width="400">
 	    	<vbox flex="1">
 		    	<groupbox id="user-section" flex="1">
-		    		<caption label="${ManageAclsDialog.UserLabel}" />
+		    		<caption label="User" />
 		    		<hbox flex="1">
 			    		<vbox flex="2">
 							<label value="${ManageAclsDialog.Available}"/>
@@ -362,7 +364,7 @@
 		    		</hbox>
 		    	</groupbox>
 		    	<groupbox id="role-section" flex="1">
-		    		<caption label="${ManageAclsDialog.RoleLabel}" />
+		    		<caption label="Role" />
 		    		<hbox flex="1">
 			    		<vbox flex="2">
 							<label value="${ManageAclsDialog.Available}"/>

@@ -90,6 +90,12 @@ public abstract class UIRepositoryObject extends XulEventSourceAdapter {
 
   public abstract String getLockMessage() throws KettleException;
   
+  public abstract UIRepositoryDirectory getParent();
+  
+  public String getParentPath() {
+    return getParent() != null ? getParent().getPath() : null;
+  }
+  
   public boolean isDeleted(){
     return false;
   }
