@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface PluginClassTypes {
+public @interface PluginClassTypeMapping {
   /**
    * Returns an array of class types that the PluginType will track and respond to. 
    * these classes are ususaly interfaces and the implementation class needs to decend from them
@@ -27,10 +27,4 @@ public @interface PluginClassTypes {
    */
   Class<?>[] implementationClass() default {};
 
-  /**
-   * As an alternative to Implementation Classes, xml node names can be added that will be scanned 
-   * when processing an XML-based plugin. 
-   * @return
-   */
-  String[] xmlNodeNames() default {};
 }

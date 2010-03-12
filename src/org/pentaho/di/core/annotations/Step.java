@@ -34,7 +34,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Step
 {
-	String[] name();
+
+  String id();
+  
+	String name();
 
 	String description() default "";
 

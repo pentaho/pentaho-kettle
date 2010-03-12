@@ -4,6 +4,7 @@
 package org.pentaho.di.core.plugins;
 
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 	private static PartitionerPluginType pluginType;
 	
 	private PartitionerPluginType() {
-		super("PARTITIONER", "Partitioner");
+		super(PartitionerPlugin.class, "PARTITIONER", "Partitioner");
 		populateFolders("steps");
 	}
 	
@@ -85,64 +86,6 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 		// This is no longer done because it was deemed too slow.  Only jar files in the plugins/ folders are scanned for annotations.
 	}
 
-	private void handlePartitionerAnnotation(Class<?> clazz, PartitionerPlugin partitioner, List<String> libraries, boolean nativeStep) throws KettlePluginException {
-		
-		// saving old value for change the loglevel to BASIC to avoid i18n messages, see below
-		//
-		String[] ids = partitioner.name(); 
-		
-		if (ids.length == 1 && ids[0].equals("")) { 
-			throw new KettlePluginException("No ID specified for plugin with class: "+clazz.getName());
-		}
-		
-		// The package name to get the descriptions or tool tip from...
-		//
-		String packageName = partitioner.i18nPackageName();
-		if (Const.isEmpty(packageName)) packageName = StepInterface.class.getPackage().getName();
-		
-		// An alternative package to get the description or tool tip from...
-		//
-		String altPackageName = clazz.getPackage().getName();
-		
-		// Determine the i18n descriptions of the step description (name), tool tip and category
-		//
-		String description = getTranslation(partitioner.description(), packageName, altPackageName, clazz);
-		String tooltip = getTranslation(partitioner.tooltip(), packageName, altPackageName, clazz);
-		String category = null;
-		
-		// Register this step plugin...
-		//
-
-		Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
-		classMap.put(Partitioner.class, clazz.getName());
-		
-		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), Partitioner.class, category, description, tooltip, null, false, nativeStep, classMap, libraries, null, null);
-		registry.registerPlugin(this.getClass(), stepPlugin);
-	}
-
-	/**
-	 * Scan jar files in a set of plugin folders.  Open these jar files and scan for annotations if they are labeled for annotation scanning.
-	 * 
-	 * @throws KettlePluginException in case something goes horribly wrong
-	 */
-	protected void registerPluginJars() throws KettlePluginException {
-		
-		List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(PartitionerPlugin.class.getName());
-		for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
-			
-			URLClassLoader urlClassLoader = createUrlClassLoader(jarFilePlugin.getJarFile(), getClass().getClassLoader());
-			try {
-				Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
-				PartitionerPlugin partitioner = clazz.getAnnotation(PartitionerPlugin.class);
-				List<String> libraries = new ArrayList<String>();
-				libraries.add(jarFilePlugin.getJarFile().getFile());
-				handlePartitionerAnnotation(clazz, partitioner, libraries, false);
-			} catch(ClassNotFoundException e) {
-				// Ignore for now, don't know if it's even possible.
-			}
-		}
-	}
-	
 	protected void registerXmlPlugins() throws KettlePluginException {
 		for (PluginFolderInterface folder : pluginFolders) {
 			
@@ -165,5 +108,26 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 			}
 		}
 	}
+	
+
+  @Override
+  protected String extractCategory(Annotation annotation) {
+    return "";
+  }
+
+  @Override
+  protected String extractDesc(Annotation annotation) {
+    return ((PartitionerPlugin) annotation).description();
+  }
+
+  @Override
+  protected String extractID(Annotation annotation) {
+    return "";
+  }
+
+  @Override
+  protected String extractName(Annotation annotation) {
+    return ((PartitionerPlugin) annotation).name();
+  }
 	
 }

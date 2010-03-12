@@ -4,18 +4,15 @@
 package org.pentaho.di.core.plugins;
 
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.ui.spoon.SpoonPlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -30,7 +27,7 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 	private static DatabasePluginType pluginType;
 	
 	private DatabasePluginType() {
-		super("DATABASE", "Database");
+		super(DatabaseMetaPlugin.class, "DATABASE", "Database");
 		populateFolders("databases");
 	}
 	
@@ -41,16 +38,6 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 		return pluginType;
 	}
 	
-	/**
-	 * Let's put in code here to search for the step plugins..
-	 */
-	public void searchPlugins() throws KettlePluginException {
-		registerNatives();
-		registerAnnotations();
-		registerPluginJars();
-		registerXmlPlugins();
-	}
-
 	/**
 	 * Scan & register internal step plugins
 	 */
@@ -80,57 +67,6 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 			throw new KettlePluginException("Unable to read the kettle database types XML config file: "+xmlFile, e);
 		}
 	}
-
-	/**
-	 * Scan & register internal step plugins
-	 */
-	protected void registerAnnotations() throws KettlePluginException {
-		// This is no longer done because it was deemed too slow.  Only jar files in the plugins/ folders are scanned for annotations.
-	}
-	
-	private void handleDatabaseMetaPluginAnnotation(Class<?> clazz, DatabaseMetaPlugin databaseMetaPlugin, List<String> libraries, boolean nativeStep, URL pluginFolder) throws KettlePluginException {
-		
-		String[] ids = new String[] { databaseMetaPlugin.type(), }; 
-		
-		if (ids.length == 1 && Const.isEmpty(ids[0])) { 
-			throw new KettlePluginException("No ID specified for plugin with class: "+clazz.getName());
-		}
-		
-		String name = databaseMetaPlugin.typeDescription();
-		String description = null;
-		String category = null;
-		
-		// Register this step plugin...
-		//
-		Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
-		classMap.put(clazz.getClass(), clazz.getName());
-		
-		PluginInterface plugin = new Plugin(ids, this.getClass(), clazz.getClass(), category, name, description, null, false, nativeStep, classMap, libraries, "", pluginFolder);
-		registry.registerPlugin(this.getClass(), plugin);
-	}
-
-	/**
-	 * Scan jar files in a set of plugin folders.  Open these jar files and scan for annotations if they are labeled for annotation scanning.
-	 * 
-	 * @throws KettlePluginException in case something goes horribly wrong
-	 */
-	protected void registerPluginJars() throws KettlePluginException {
-		
-		List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(DatabaseMetaPlugin.class.getName());
-		for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
-			
-			URLClassLoader urlClassLoader = createUrlClassLoader(jarFilePlugin.getJarFile(), getClass().getClassLoader());
-			try {
-				Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
-				DatabaseMetaPlugin databaseMetaPlugin = clazz.getAnnotation(DatabaseMetaPlugin.class);
-				List<String> libraries = new ArrayList<String>();
-				libraries.add(jarFilePlugin.getJarFile().getFile());
-				handleDatabaseMetaPluginAnnotation(clazz, databaseMetaPlugin, libraries, false, jarFilePlugin.getPluginFolder());
-			} catch(ClassNotFoundException e) {
-				// Ignore for now, don't know if it's even possible.
-			}
-		}
-	}
 	
 	protected void registerXmlPlugins() throws KettlePluginException {
 	}
@@ -138,4 +74,26 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 	public String[] getNaturalCategoriesOrder() {
 		return new String[0];
 	}
+
+
+  @Override
+  protected String extractCategory(Annotation annotation) {
+    return "";
+  }
+
+  @Override
+  protected String extractDesc(Annotation annotation) {
+    return ((DatabaseMetaPlugin) annotation).typeDescription();
+  }
+
+  @Override
+  protected String extractID(Annotation annotation) {
+    return ((DatabaseMetaPlugin) annotation).type();
+  }
+
+  @Override
+  protected String extractName(Annotation annotation) {
+    return ((DatabaseMetaPlugin) annotation).type();
+  }
+	
 }

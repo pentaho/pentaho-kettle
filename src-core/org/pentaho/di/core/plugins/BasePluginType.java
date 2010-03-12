@@ -3,6 +3,7 @@ package org.pentaho.di.core.plugins;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
@@ -23,6 +24,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.LifecyclePlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogWriter;
@@ -30,9 +32,10 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.ui.spoon.SpoonPlugin;
 import org.w3c.dom.Node;
 
-public abstract class BasePluginType {
+public abstract class BasePluginType implements PluginTypeInterface{
 	private static Class<?> PKG = BasePluginType.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	protected String id;
@@ -44,20 +47,23 @@ public abstract class BasePluginType {
 	protected LogChannel log;
 	
 	protected Map<Class<?>, String> objectTypes = new HashMap<Class<?>, String>();
+	
+	Class<? extends java.lang.annotation.Annotation> pluginType;
 
-	public BasePluginType() {
+	public BasePluginType(Class<? extends java.lang.annotation.Annotation> pluginType) {
 		this.pluginFolders = new ArrayList<PluginFolderInterface>();
 		this.log = new LogChannel("Plugin type");
 		
 		registry = PluginRegistry.getInstance();
+		this.pluginType = pluginType;
 	}
 	
 	/**
 	 * @param id The plugin type ID
 	 * @param name the name of the plugin
 	 */
-	public BasePluginType(String id, String name) {
-		this();
+	public BasePluginType(Class<? extends java.lang.annotation.Annotation> pluginType, String id, String name) {
+		this(pluginType);
 		this.id = id;
 		this.name = name;
 	}
@@ -90,14 +96,11 @@ public abstract class BasePluginType {
 	 */
 	public void searchPlugins() throws KettlePluginException {
 		registerNatives();
-		registerAnnotations();
 		registerPluginJars();
 		registerXmlPlugins();
 	}
 	
 	protected abstract void registerNatives() throws KettlePluginException;
-	protected abstract void registerAnnotations() throws KettlePluginException;
-	protected abstract void registerPluginJars() throws KettlePluginException;
 	protected abstract void registerXmlPlugins() throws KettlePluginException;
 	
 	/**
@@ -236,6 +239,7 @@ public abstract class BasePluginType {
 		return classFiles;
 	}
 	
+	
 	protected List<FileObject> findPluginXmlFiles(String folder) {
 		
 		List<FileObject> list = new ArrayList<FileObject>();
@@ -332,17 +336,12 @@ public abstract class BasePluginType {
             classMap.put(mainClassTypesAnnotation.value(), classname);
             
             // process annotated extra types
-            PluginClassTypes classTypesAnnotation = pluginType.getAnnotation(PluginClassTypes.class);
+            PluginExtraClassTypes classTypesAnnotation = pluginType.getAnnotation(PluginExtraClassTypes.class);
             if(classTypesAnnotation != null){
               for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
                 Class<?> classType = classTypesAnnotation.classTypes()[i];
-                Class<?> implementationType = (classTypesAnnotation.implementationClass().length > i) ? classTypesAnnotation.implementationClass()[i] : null;
-                String className = null;
-                if(implementationType != null){
-                  className = implementationType.getName();
-                } else {
-                  className = getTagOrAttribute(pluginNode, classTypesAnnotation.xmlNodeNames()[i]); //$NON-NLS-1$
-                }
+                String className = getTagOrAttribute(pluginNode, classTypesAnnotation.xmlNodeNames()[i]); //$NON-NLS-1$
+                
                 classMap.put(classType, className);
               }
             }
@@ -457,5 +456,82 @@ public abstract class BasePluginType {
 		return new KettleURLClassLoader(urls.toArray(new URL[urls.size()]), classLoader);
 	}
 
+	protected abstract String extractID(java.lang.annotation.Annotation annotation);
+	protected abstract String extractName(java.lang.annotation.Annotation annotation);
+	protected abstract String extractDesc(java.lang.annotation.Annotation annotation);
+	protected abstract String extractCategory(java.lang.annotation.Annotation annotation);
+    
+	protected void registerPluginJars() throws KettlePluginException {
+	    
+	    List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(pluginType.getName());
+	    for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
+	      
+	      
+	      URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarFilePlugin.getJarFile(), }, getClass().getClassLoader());
 
+	      try {
+	        Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
+	        java.lang.annotation.Annotation partitioner = clazz.getAnnotation(pluginType);
+	        List<String> libraries = new ArrayList<String>();
+	        
+	        File f = new File(jarFilePlugin.getJarFile().getFile());
+	        File parent = f.getParentFile();
+	        for(File fil : parent.listFiles()){
+	          try {
+	            libraries.add(fil.toURI().toURL().getFile());
+	          } catch (MalformedURLException e) {
+	            e.printStackTrace();
+	          }
+	        }
+	        File libDir = new File(parent.toString()+File.separator+"lib");;
+	        if(libDir.exists()){
+	          for(File fil : libDir.listFiles()){
+	            if(fil.getName().indexOf(".jar") > 0){
+	              try {
+	                libraries.add(fil.toURI().toURL().getFile());
+	              } catch (MalformedURLException e) {
+	                e.printStackTrace();
+	              }
+	            }
+	          }
+	        }
+
+	        handlePluginAnnotation(clazz, partitioner, libraries, false, jarFilePlugin.getPluginFolder());
+	      } catch(ClassNotFoundException e) {
+	        // Ignore for now, don't know if it's even possible.
+	      }
+	    }
+	  }
+	  
+    
+	private void handlePluginAnnotation(Class<?> clazz, java.lang.annotation.Annotation annotation, List<String> libraries, boolean nativeRepositoryType, URL pluginFolder) throws KettlePluginException {
+      
+      // Only one ID for now
+      String[] ids = new String[] { extractID(annotation), }; 
+      
+      if (ids.length == 1 && Const.isEmpty(ids[0])) { 
+          throw new KettlePluginException("No ID specified for plugin with class: "+clazz.getName());
+      }
+      
+      String name = extractName(annotation);
+      String description = extractDesc(annotation); 
+      String category = extractCategory(annotation); 
+      
+      
+      Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
+
+      PluginMainClassType mainType = getClass().getAnnotation(PluginMainClassType.class);
+      
+      classMap.put(mainType.value(), clazz.getName());
+      
+      PluginClassTypeMapping extraTypes = clazz.getAnnotation(PluginClassTypeMapping.class);
+      if(extraTypes != null){
+        for(int i=0; i< extraTypes.classTypes().length; i++){
+          classMap.put(extraTypes.classTypes()[i], extraTypes.implementationClass()[i].getName());
+        }
+      }
+      
+      PluginInterface plugin = new Plugin(ids, this.getClass(), mainType.value(), category, name, description, null, false, nativeRepositoryType, classMap, libraries, null, pluginFolder);
+      registry.registerPlugin(this.getClass(), plugin);
+  }
 }

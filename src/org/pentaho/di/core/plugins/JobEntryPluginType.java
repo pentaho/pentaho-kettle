@@ -4,11 +4,8 @@
 package org.pentaho.di.core.plugins;
 
 import java.io.InputStream;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -51,7 +48,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 	private static JobEntryPluginType pluginType;
 	
 	private JobEntryPluginType() {
-		super("JOBENTRY", "Job entry");
+		super(JobEntry.class, "JOBENTRY", "Job entry");
 		populateFolders("jobentries");
 	}
 	
@@ -112,73 +109,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 		// This is no longer done because it was deemed too slow.  Only jar files in the plugins/ folders are scanned for annotations.
 	}
 
-	private void handleJobEntryAnnotation(Class<?> clazz, JobEntry jobEntry, List<String> libraries, boolean nativeJobEntry) throws KettlePluginException {
-		
-		// Only one ID for now
-		String[] ids = new String[] { jobEntry.id(), }; 
-		
-		if (ids.length == 1 && Const.isEmpty(ids[0])) { 
-			throw new KettlePluginException("No ID specified for plugin with class: "+clazz.getName());
-		}
-		
-		// The package name to get the descriptions or tool tip from...
-		//
-		String packageName = jobEntry.i18nPackageName();
-		if (Const.isEmpty(packageName)) packageName = JobEntryInterface.class.getPackage().getName();
-		
-		// An alternative package to get the description or tool tip from...
-		//
-		String altPackageName = clazz.getPackage().getName();
-		
-		// Determine the i18n descriptions of the step description (name), tool tip and category
-		//
-		String name = getTranslation(jobEntry.name(), packageName, altPackageName, clazz);
-		String description = getTranslation(jobEntry.description(), packageName, altPackageName, clazz);
-		String category = getTranslation(jobEntry.categoryDescription(), packageName, altPackageName, clazz);
-		
-		// Register this step plugin...
-		//
 
-	    Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
-	    
-	    classMap.put(JobEntryInterface.class, clazz.getName());
-	    
-	    PluginClassTypes classTypesAnnotation = clazz.getAnnotation(PluginClassTypes.class);
-	    if(classTypesAnnotation != null){
-	      for(int i=0; i< classTypesAnnotation.classTypes().length; i++){
-	        Class<?> classType = classTypesAnnotation.classTypes()[i];
-	        Class<?> implementationType = (classTypesAnnotation.implementationClass().length > i) ? classTypesAnnotation.implementationClass()[i] : null;
-	        String className = implementationType.getName();
-	        classMap.put(classType, className);
-	      }
-	    }
-		
-		PluginInterface stepPlugin = new Plugin(ids, this.getClass(), JobEntryInterface.class, category, name, description, jobEntry.image(), false, nativeJobEntry, classMap, libraries, null, null);
-		registry.registerPlugin(this.getClass(), stepPlugin);
-	}
-
-	/**
-	 * Scan jar files in a set of plugin folders.  Open these jar files and scan for annotations if they are labeled for annotation scanning.
-	 * 
-	 * @throws KettlePluginException in case something goes horribly wrong
-	 */
-	protected void registerPluginJars() throws KettlePluginException {
-		
-		List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(JobEntry.class.getName());
-		for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
-			
-			URLClassLoader urlClassLoader = createUrlClassLoader(jarFilePlugin.getJarFile(), getClass().getClassLoader());
-			try {
-				Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
-				JobEntry jobEntry = clazz.getAnnotation(JobEntry.class);
-				List<String> libraries = new ArrayList<String>();
-				libraries.add(jarFilePlugin.getJarFile().getFile());
-				handleJobEntryAnnotation(clazz, jobEntry, libraries, false);
-			} catch(ClassNotFoundException e) {
-				// Ignore for now, don't know if it's even possible.
-			}
-		}
-	}
 	
 	protected void registerXmlPlugins() throws KettlePluginException {
 		for (PluginFolderInterface folder : pluginFolders) {
@@ -201,4 +132,24 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 			}
 		}
 	}
+
+  @Override
+  protected String extractCategory(Annotation annotation) {
+    return ((JobEntry) annotation).categoryDescription();
+  }
+
+  @Override
+  protected String extractDesc(Annotation annotation) {
+    return ((JobEntry) annotation).description();
+  }
+
+  @Override
+  protected String extractID(Annotation annotation) {
+    return ((JobEntry) annotation).id();
+  }
+
+  @Override
+  protected String extractName(Annotation annotation) {
+    return ((JobEntry) annotation).name();
+  }
 }
