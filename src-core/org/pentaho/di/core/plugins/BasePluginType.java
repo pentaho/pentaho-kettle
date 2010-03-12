@@ -24,7 +24,6 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.LifecyclePlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogWriter;
@@ -32,7 +31,6 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
-import org.pentaho.di.ui.spoon.SpoonPlugin;
 import org.w3c.dom.Node;
 
 public abstract class BasePluginType implements PluginTypeInterface{
