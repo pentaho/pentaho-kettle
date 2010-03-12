@@ -345,7 +345,7 @@
 	    		height="500" width="400">
 	    	<vbox flex="1">
 		    	<groupbox id="user-section" flex="1">
-		    		<caption label="User" />
+		    		<caption label="${ManageAclsDialog.UserLabel}" />
 		    		<hbox flex="1">
 			    		<vbox flex="2">
 							<label value="${ManageAclsDialog.Available}"/>
@@ -364,7 +364,7 @@
 		    		</hbox>
 		    	</groupbox>
 		    	<groupbox id="role-section" flex="1">
-		    		<caption label="Role" />
+		    		<caption label="${ManageAclsDialog.RoleLabel}" />
 		    		<hbox flex="1">
 			    		<vbox flex="2">
 							<label value="${ManageAclsDialog.Available}"/>
