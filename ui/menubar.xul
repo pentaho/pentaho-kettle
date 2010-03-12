@@ -22,7 +22,7 @@
         </menu>
         <menuitem id="file-close" acceltext="CTRL-F4" accesskey="ctrl-f4" label="${Spoon.Menu.File.Close}"
           command="spoon.closeFile()" />
-        <menuitem id="file-close-all" label="${Spoon.Menu.File.Close.All}" />
+        <menuitem id="file-close-all" label="${Spoon.Menu.File.Close.All}" command="spoon.closeAllFiles()" />
 
         <menuseparator />
         <menuitem id="file-save" acceltext="CTRL-S" accesskey="ctrl-s" label="${Spoon.Menu.File.Save}" command="spoon.saveFile()" />
@@ -62,9 +62,11 @@
         <menuseparator />
         <menuitem id="edit-cut-steps" label="${Spoon.Menu.Edit.Cut}" />
         <menuitem id="edit-copy-steps" acceltext="CTRL-C" accesskey="ctrl-c" label="${Spoon.Menu.Edit.CopyToClipboard}"
-          command="spoon.copySteps()" />
+          command="spoon.copy()" />
+        <menuitem id="trans-copy-image" acceltext="CTRL-ALT-I" accesskey="ctrl-alt-i"
+          label="${Spoon.Menu.Transformation.CopyTransformationImageClipboard}" command="spoon.copyTransformationImage()" />   
         <menuitem id="edit-paste-steps" acceltext="CTRL-V" accesskey="ctrl-v" label="${Spoon.Menu.Edit.PasteFromClipboard}"
-          command="spoon.pasteSteps()" />
+          command="spoon.paste()" />
         <menuseparator />
         <menuitem id="edit-clear-selection" acceltext="ESC" accesskey="esc" label="${Spoon.Menu.Edit.ClearSelection}"
           command="spoon.editUnselectAll()" />
@@ -79,6 +81,9 @@
           command="spoon.showVariables()" />
         <menuitem id="edit-show-arguments" acceltext="CTRL-ALT-U" accesskey="ctrl-alt-u" label="${Spoon.Menu.Edit.ShowArguments}"
           command="spoon.showArguments()" />
+        <menuseparator />
+        <menuitem id="trans-settings" acceltext="CTRL-T" accesskey="ctrl-t" label="${Spoon.Menu.Transformation.Settings}"
+          command="spoon.editProperties()" />
       </menupopup>
     </menu>
     
@@ -127,22 +132,6 @@
               label="${Spoon.Menu.Transformation.ShowLastPreviewResults}" comand="spoon.showLastTransPreview()" />       
           </menupopup>
         </menu>
-        <menuseparator />
-        <menu id="trans-copy-main" label="${Spoon.Menu.Transformation.Copy.Popup}">
-          <menupopup id="trans-copy-popup">
-            <menuitem id="trans-copy" label="${Spoon.Menu.Transformation.CopyTransformationToClipboard}" command="spoon.copyTransformation()" />
-            <menuitem id="trans-copy-image" acceltext="CTRL-ALT-I" accesskey="ctrl-alt-i"
-              label="${Spoon.Menu.Transformation.CopyTransformationImageClipboard}" command="spoon.copyTransformationImage()" />
-            <menuitem id="job-copy" label="${Spoon.Menu.Job.CopyToClipboard}" command="spoon.copyJob()" />
-          </menupopup>
-        </menu>
-        <menu id="trans-past-main" label="${Spoon.Menu.Transformation.Paste.Popup}">
-          <menupopup id="trans-paste-popup">
-            <menuitem id="trans-paste" label="${Spoon.Menu.Transformation.PasteTransformationFromClipboard}"
-              command="spoon.pasteTransformation()" />      
-            <menuitem id="job-paste" label="${Spoon.Menu.Job.PasteJobFromClipboard}" command="spoon.pasteJob()" />          
-          </menupopup>
-        </menu>
       </menupopup>
     </menu>
     
@@ -162,8 +151,6 @@
               label="${Spoon.Menu.Repository.DisconnectRepository}" command="spoon.closeRepository()" />
             <menuitem id="repository-explore" acceltext="CTRL-E" accesskey="ctrl-e" disabled="true"
               label="${Spoon.Menu.Repository.ExploreRepository}" command="spoon.exploreRepository()" />
-            <menuitem id="repository-edit-user" acceltext="CTRL-U" accesskey="ctrl-u" disabled="true"
-              label="${Spoon.Menu.Repository.EditCurrentUser}" command="spoon.editRepositoryUser()" />
       	  </menupopup>
         </menu>
         <menu id="plugins" label="${Spoon.Menu.Tools.Plugins.Popup}">
