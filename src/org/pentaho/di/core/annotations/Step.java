@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * An alternate way of defining steps. Classes annotated with "Step" are
  * automatically recognized and registered as a step.
  * 
- * Important: The XML definitions alienate annoated steps and the two methods of definition are therefore
+ * Important: The XML definitions alienate annotated steps and the two methods of definition are therefore
  * mutually exclusive.
  * 
  * @author Alex Silva
@@ -35,13 +35,11 @@ import java.lang.annotation.Target;
 public @interface Step
 {
 
-  String id();
+    String id();
   
 	String name();
 
 	String description() default "";
-
-	String tooltip() default "";
 
 	String image();
 	
