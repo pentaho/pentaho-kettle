@@ -34,7 +34,7 @@ public class CentralLogStore {
 		if (logCleanerTimer!=null) {
 			logCleanerTimer.cancel();
 		}
-		logCleanerTimer = new Timer();
+		logCleanerTimer = new Timer(true);
 		final AtomicBoolean busy = new AtomicBoolean(false);
 		TimerTask timerTask = new TimerTask() {
 			public void run() {
