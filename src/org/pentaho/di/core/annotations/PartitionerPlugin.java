@@ -34,11 +34,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface PartitionerPlugin
 {
-	String name();
+	String id();
+
+	String name() default "";
 
 	String description() default "";
-
-	String tooltip() default "";
 
 	String i18nPackageName() default "";	
 }

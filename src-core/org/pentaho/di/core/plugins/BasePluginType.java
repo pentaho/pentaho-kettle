@@ -464,37 +464,44 @@ System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
 	    List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(pluginType.getName());
 	    for (JarFileAnnotationPlugin jarFilePlugin : jarFilePlugins) {
 	      
-	      
-	      URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarFilePlugin.getJarFile(), }, getClass().getClassLoader());
+	      URLClassLoader urlClassLoader = createUrlClassLoader(jarFilePlugin.getJarFile(), getClass().getClassLoader());
 
 	      try {
 	        Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassName());
-	        java.lang.annotation.Annotation partitioner = clazz.getAnnotation(pluginType);
-	        List<String> libraries = new ArrayList<String>();
-	        
-	        File f = new File(jarFilePlugin.getJarFile().getFile());
-	        File parent = f.getParentFile();
-	        for(File fil : parent.listFiles()){
-	          try {
-	            libraries.add(fil.toURI().toURL().getFile());
-	          } catch (MalformedURLException e) {
-	            e.printStackTrace();
-	          }
+	        if (clazz==null) {
+	        	throw new KettlePluginException("Unable to load class: "+jarFilePlugin.getClassName());
 	        }
-	        File libDir = new File(parent.toString()+File.separator+"lib");;
-	        if(libDir.exists()){
-	          for(File fil : libDir.listFiles()){
-	            if(fil.getName().indexOf(".jar") > 0){
-	              try {
-	                libraries.add(fil.toURI().toURL().getFile());
-	              } catch (MalformedURLException e) {
-	                e.printStackTrace();
-	              }
-	            }
-	          }
+	        List<String> libraries = new ArrayList<String>();
+	        java.lang.annotation.Annotation annotation = null;
+	        try {
+	        	annotation = clazz.getAnnotation(pluginType);
+		        
+		        File f = new File(jarFilePlugin.getJarFile().getFile());
+		        File parent = f.getParentFile();
+		        for(File fil : parent.listFiles()){
+		          try {
+		            libraries.add(fil.toURI().toURL().getFile());
+		          } catch (MalformedURLException e) {
+		            e.printStackTrace();
+		          }
+		        }
+		        File libDir = new File(parent.toString()+File.separator+"lib");;
+		        if(libDir.exists()){
+		          for(File fil : libDir.listFiles()){
+		            if(fil.getName().indexOf(".jar") > 0){
+		              try {
+		                libraries.add(fil.toURI().toURL().getFile());
+		              } catch (MalformedURLException e) {
+		                e.printStackTrace();
+		              }
+		            }
+		          }
+		        }
+	        } catch(Exception e) {
+	        	throw new KettlePluginException("Unexpected error loading class "+clazz.getName()+" of plugin type: "+pluginType, e);
 	        }
 
-	        handlePluginAnnotation(clazz, partitioner, libraries, false, jarFilePlugin.getPluginFolder());
+	        handlePluginAnnotation(clazz, annotation, libraries, false, jarFilePlugin.getPluginFolder());
 	      } catch(ClassNotFoundException e) {
 	        // Ignore for now, don't know if it's even possible.
 	      }

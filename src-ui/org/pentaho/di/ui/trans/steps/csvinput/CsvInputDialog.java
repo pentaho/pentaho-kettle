@@ -846,6 +846,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
         getInfo(oneMeta);
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
+        transMeta.getVariable("Internal.Transformation.Filename.Directory");
+        previewMeta.getVariable("Internal.Transformation.Filename.Directory");
         
         EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "CsvInputDialog.PreviewSize.DialogTitle"), BaseMessages.getString(PKG, "CsvInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();

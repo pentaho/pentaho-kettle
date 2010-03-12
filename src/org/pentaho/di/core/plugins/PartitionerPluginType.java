@@ -122,7 +122,7 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
 
   @Override
   protected String extractID(Annotation annotation) {
-    return "";
+    return ((PartitionerPlugin) annotation).id();
   }
 
   @Override
