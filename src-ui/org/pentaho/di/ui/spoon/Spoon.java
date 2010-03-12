@@ -775,7 +775,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     addTree();
     addTabs();
     mainPerspective.setTabset(this.tabfolder);
-
+    addPerspectiveMenus();
     ((Composite) deck.getManagedObject()).layout(true, true);
 
     SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.STARTUP);
@@ -874,6 +874,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }   
   }
 
+  public void closeAllFiles() {
+    TransMeta transMeta = getActiveTransformation();
+    JobMeta jobMeta = getActiveJob();
+    while (jobMeta != null || transMeta != null) {
+      closeFile();
+      transMeta = getActiveTransformation();
+      jobMeta = getActiveJob();
+    }
+  }
   public void closeSpoonBrowser() {
     TabMapEntry browserTab = delegates.tabs.findTabMapEntry(STRING_WELCOME_TAB_NAME, ObjectType.BROWSER);
 
@@ -1189,6 +1198,27 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
 
+  public void copy() {
+    TransMeta transMeta = getActiveTransformation();
+    JobMeta jobMeta = getActiveJob();
+    boolean transActive = transMeta != null;
+    boolean jobActive = jobMeta != null;
+    
+    if (transActive) {
+      if (transMeta.getSelectedSteps().size() > 0) {
+        copySteps();
+      } else {
+        copyTransformation();
+      }
+    } else if (jobActive) {
+      if (jobMeta.getSelectedEntries().size() > 0) {
+        copyJobentries();
+      } else {
+        copyJob();
+      }
+    }
+  }
+  
   public void createPopupMenus() {
 
     try {
@@ -1286,6 +1316,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     TransGraph.editProperties(getActiveTransformation(), this, rep, true);
   }
 
+  public void editProperties() {
+    if (getActiveTransformation() != null) {
+      editTransformationProperties();
+    } else if (getActiveJob() != null) {
+      
+    }
+  }
   public void executeJob() {
     executeJob(getActiveJob(), true, false, null, false);
   }
@@ -1375,6 +1412,53 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       }
       miFileLast.setCommand("spoon.lastFileSelect('" + i + "')");
     }
+  }
+
+  public void addPerspectiveMenus() {
+    org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
+    XulMenupopup pluginPopup = (XulMenupopup) doc.getElementById("plugins-popup-placeholder");
+    SpoonPerspectiveManager perspectiveManager = SpoonPerspectiveManager.getInstance();
+    List<SpoonPerspective> perspectives = perspectiveManager.getPerspectives();
+    int i=0;
+    for (SpoonPerspective perspective : perspectives) {
+      try {
+        XulMenuitem menuItem = (XulMenuitem) doc.createElement("menuitem");
+        menuItem.setLabel(perspective.getDisplayName(Locale.getDefault()));
+        menuItem.setAttribute("type", "checkbox");
+        menuItem.setCommand("spoon.selectPerspective(" + i + ")");
+        pluginPopup.addComponent(menuItem);
+      } catch (XulException e) {
+        e.printStackTrace();
+      }
+      i++;
+    }
+    upDatePerspectiveMenu();
+  }
+  
+  /**
+   * 
+   */
+  private void upDatePerspectiveMenu() {
+    org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
+    XulMenupopup pluginPopup = (XulMenupopup) doc.getElementById("plugins-popup-placeholder");
+    List perspectiveMenus = pluginPopup.getChildNodes();
+    SpoonPerspectiveManager perspectiveManager = SpoonPerspectiveManager.getInstance();
+    List<SpoonPerspective> perspectives = perspectiveManager.getPerspectives();
+    SpoonPerspective activePerspective = perspectiveManager.getActivePerspective();
+    for (int i=0; i<perspectives.size(); i++) {
+      SpoonPerspective currentPerspective = perspectives.get(i);
+      XulMenuitem currentMenuItem = (XulMenuitem) perspectiveMenus.get(i);
+      currentMenuItem.setSelected(currentPerspective == activePerspective);
+    }
+  }
+  
+  public void selectPerspective(int i) {
+    SpoonPerspectiveManager perspectiveManager = SpoonPerspectiveManager.getInstance();
+    try {
+      perspectiveManager.activatePerspective(perspectiveManager.getPerspectives().get(i).getClass());
+    } catch (KettleException e) {
+      e.printStackTrace();
+    }   
   }
 
   public void lastFileSelect(String id) {
@@ -5070,88 +5154,161 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     markTabsChanged();
   }
 
+//  public void enableMenus() {
+//    boolean enableTransMenu = getActiveTransformation() != null;
+//    boolean enableJobMenu = getActiveJob() != null;
+//    boolean enableMetaMenu = getActiveMeta() != null;
+//    boolean isRepositoryRunning = rep != null;
+//
+//    // boolean enableLastPreviewMenu = false;
+//    boolean disablePreviewButton = false;
+//
+//    TabItemInterface currentTab = getActiveTabitem();
+//    boolean saveEnabled = true;
+//    if (currentTab != null && currentTab.canHandleSave()) {
+//      saveEnabled = currentTab.hasContentChanged();
+//    }
+//
+//    TransGraph transGraph = getActiveTransGraph();
+//    if (transGraph != null) {
+//      disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
+//    }
+//
+//    org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
+//    // Only enable certain menu-items if we need to.
+//    ((XulMenuitem) doc.getElementById("file-new-database")).setDisabled(!((enableTransMenu || enableJobMenu) && !isRepositoryRunning))
+//    ((XulMenuitem) doc.getElementById("file-save")).setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu)
+//        && saveEnabled);
+//    ((XulMenuitem) doc.getElementById("file-save-as"))
+//        .setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
+//    ((XulMenuitem) doc.getElementById("file-save-as-vfs"))
+//    .setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
+//    ((XulMenuitem) doc.getElementById("file-close")).setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
+//    ((XulMenuitem) doc.getElementById("file-print")).setDisabled(!(enableTransMenu || enableJobMenu));
+//    ((XulMenuitem) doc.getElementById("file-export-to-xml")).setDisabled(!(enableTransMenu || enableJobMenu));
+//    ((XulMenuitem) doc.getElementById("file-close")).setDisabled(!(enableTransMenu || enableJobMenu));
+//    
+//    // Disable the undo and redo menus if there is no active transformation
+//    // or active job
+//    // DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
+//    //
+//    if (!enableTransMenu && !enableJobMenu) {
+//      ((XulMenuitem) doc.getElementById(UNDO_MENUITEM)).setDisabled(true);
+//      ((XulMenuitem) doc.getElementById(REDO_MENUITEM)).setDisabled(true);
+//    }
+//
+//    ((XulMenuitem) doc.getElementById("edit-clear-selection")).setDisabled(!enableTransMenu);
+//    ((XulMenuitem) doc.getElementById("edit-select-all")).setDisabled(!enableTransMenu);
+//
+//    // View Menu
+//    ((XulMenuitem) doc.getElementById("view-results")).setSelected(isExecutionResultsPaneVisible());
+//    ((XulMenuitem) doc.getElementById("view-results")).setDisabled(transGraph == null);
+//    
+//    // Transformations
+//    ((XulMenuitem) doc.getElementById("process-run")).setDisabled(!(enableTransMenu && !disablePreviewButton) && !enableJobMenu);
+//    ((XulMenuitem) doc.getElementById("trans-replay")).setDisabled(!(enableTransMenu && !disablePreviewButton));
+//    ((XulMenuitem) doc.getElementById("trans-preview")).setDisabled(!(enableTransMenu && !disablePreviewButton));
+//    ((XulMenuitem) doc.getElementById("trans-debug")).setDisabled(!(enableTransMenu && !disablePreviewButton));
+//    ((XulMenuitem) doc.getElementById("trans-verify")).setDisabled(!enableTransMenu);
+//    ((XulMenuitem) doc.getElementById("trans-impact")).setDisabled(!enableTransMenu);
+//    ((XulMenuitem) doc.getElementById("trans-get-sql")).setDisabled(!enableTransMenu);
+//    ((XulMenuitem) doc.getElementById("trans-last-impact")).setDisabled(!enableTransMenu);
+//
+//    // Trans
+//    ((XulMenuitem) doc.getElementById("trans-copy")).setDisabled(!enableTransMenu);
+//    ((XulMenuitem) doc.getElementById("trans-copy-image")).setDisabled(!enableTransMenu);
+//    ((XulMenuitem) doc.getElementById("trans-last-impact")).setDisabled(!enableTransMenu);
+//    
+//    // Jobs
+//    ((XulMenuitem) doc.getElementById("job-copy")).setDisabled(!enableJobMenu);
+//
+//    // Tools
+//    ((XulMenuitem) doc.getElementById("repository-connect")).setSelected(isRepositoryRunning);
+//    ((XulMenuitem) doc.getElementById("repository-disconnect")).setDisabled(!isRepositoryRunning);
+//    ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!isRepositoryRunning);
+//    ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!isRepositoryRunning || !enableTransMenu);
+//    
+//    // Wizard
+//    ((XulMenuitem) doc.getElementById("wizard-connection")).setDisabled(!(enableTransMenu || enableJobMenu));
+//    ((XulMenuitem) doc.getElementById("wizard-copy-table")).setDisabled(!(enableTransMenu || enableJobMenu));
+//    ((XulMenuitem) doc.getElementById("wizard-copy-tables"))
+//        .setDisabled(!(isRepositoryRunning || enableTransMenu || enableJobMenu));
+//    
+//		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
+//
+//    // What steps & plugins to show?
+//    refreshCoreObjects();
+//  }
+
   public void enableMenus() {
-    boolean enableTransMenu = getActiveTransformation() != null;
-    boolean enableJobMenu = getActiveJob() != null;
-    boolean enableMetaMenu = getActiveMeta() != null;
-    boolean isRepositoryRunning = rep != null;
-
-    // boolean enableLastPreviewMenu = false;
-    boolean disablePreviewButton = false;
-
-    TabItemInterface currentTab = getActiveTabitem();
-    boolean saveEnabled = true;
-    if (currentTab != null && currentTab.canHandleSave()) {
-      saveEnabled = currentTab.hasContentChanged();
-    }
-
+    boolean disableTransMenu = getActiveTransformation() == null;
+    boolean disableJobMenu = getActiveJob() == null;
+    boolean disableMetaMenu = getActiveMeta() == null;
+    boolean isRepositoryRunning = rep != null;    
+    boolean disablePreviewButton = true;
     TransGraph transGraph = getActiveTransGraph();
     if (transGraph != null) {
-      disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
+      disablePreviewButton = !(transGraph.isRunning() && !transGraph.isHalting());
+    }
+    boolean disableSave = true;
+    TabItemInterface currentTab = getActiveTabitem();
+    if (currentTab != null && currentTab.canHandleSave()) {
+      disableSave = !currentTab.hasContentChanged();
     }
 
     org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
     // Only enable certain menu-items if we need to.
-    ((XulMenuitem) doc.getElementById("file-save")).setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu)
-        && saveEnabled);
-    ((XulMenuitem) doc.getElementById("file-save-as"))
-        .setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
-    ((XulMenuitem) doc.getElementById("file-save-as-vfs"))
-    .setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
-    ((XulMenuitem) doc.getElementById("file-close")).setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
-    ((XulMenuitem) doc.getElementById("file-print")).setDisabled(!(enableTransMenu || enableJobMenu));
-    ((XulMenuitem) doc.getElementById("file-export-to-xml")).setDisabled(!(enableTransMenu || enableJobMenu));
-    ((XulMenuitem) doc.getElementById("file-close")).setDisabled(!(enableTransMenu || enableJobMenu));
+    ((XulMenuitem) doc.getElementById("file-new-database")).setDisabled((disableTransMenu && disableJobMenu) || !isRepositoryRunning);
+    ((XulMenuitem) doc.getElementById("file-save")).setDisabled((disableTransMenu && disableJobMenu && disableMetaMenu) || disableSave);
+    ((XulMenuitem) doc.getElementById("file-save-as")).setDisabled(disableTransMenu && disableJobMenu && disableMetaMenu);
+    ((XulMenuitem) doc.getElementById("file-save-as-vfs")).setDisabled(disableTransMenu && disableJobMenu && disableMetaMenu);
+    ((XulMenuitem) doc.getElementById("file-close")).setDisabled(disableTransMenu && disableJobMenu && disableMetaMenu);
+    ((XulMenuitem) doc.getElementById("file-print")).setDisabled(disableTransMenu && disableJobMenu);
+    ((XulMenuitem) doc.getElementById("file-export-to-xml")).setDisabled(disableTransMenu && disableJobMenu);
+    ((XulMenuitem) doc.getElementById("file-export-to-xml")).setDisabled(disableTransMenu && disableJobMenu);
+    ((XulMenuitem) doc.getElementById("file-export-all-to-xml")).setDisabled(disableTransMenu && disableJobMenu);
     
     // Disable the undo and redo menus if there is no active transformation
     // or active job
     // DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
     //
-    if (!enableTransMenu && !enableJobMenu) {
+    if (disableTransMenu && disableJobMenu) {
       ((XulMenuitem) doc.getElementById(UNDO_MENUITEM)).setDisabled(true);
       ((XulMenuitem) doc.getElementById(REDO_MENUITEM)).setDisabled(true);
     }
 
-    ((XulMenuitem) doc.getElementById("edit-clear-selection")).setDisabled(!enableTransMenu);
-    ((XulMenuitem) doc.getElementById("edit-select-all")).setDisabled(!enableTransMenu);
+    ((XulMenuitem) doc.getElementById("edit-clear-selection")).setDisabled(disableTransMenu);
+    ((XulMenuitem) doc.getElementById("edit-select-all")).setDisabled(disableTransMenu);
 
     // View Menu
     ((XulMenuitem) doc.getElementById("view-results")).setSelected(isExecutionResultsPaneVisible());
     ((XulMenuitem) doc.getElementById("view-results")).setDisabled(transGraph == null);
+    ((XulMenuitem) doc.getElementById("view-zoom-in")).setDisabled(disableTransMenu && disableJobMenu);
+    ((XulMenuitem) doc.getElementById("view-zoom-out")).setDisabled(disableTransMenu && disableJobMenu);
+    ((XulMenuitem) doc.getElementById("view-zoom-100pct")).setDisabled(disableTransMenu && disableJobMenu);
     
     // Transformations
-    ((XulMenuitem) doc.getElementById("process-run")).setDisabled(!(enableTransMenu && !disablePreviewButton) && !enableJobMenu);
-    ((XulMenuitem) doc.getElementById("trans-replay")).setDisabled(!(enableTransMenu && !disablePreviewButton));
-    ((XulMenuitem) doc.getElementById("trans-preview")).setDisabled(!(enableTransMenu && !disablePreviewButton));
-    ((XulMenuitem) doc.getElementById("trans-debug")).setDisabled(!(enableTransMenu && !disablePreviewButton));
-    ((XulMenuitem) doc.getElementById("trans-verify")).setDisabled(!enableTransMenu);
-    ((XulMenuitem) doc.getElementById("trans-impact")).setDisabled(!enableTransMenu);
-    ((XulMenuitem) doc.getElementById("trans-get-sql")).setDisabled(!enableTransMenu);
-    ((XulMenuitem) doc.getElementById("trans-last-impact")).setDisabled(!enableTransMenu);
-
-    // Trans
-    ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!enableTransMenu);
-    ((XulMenuitem) doc.getElementById("trans-copy")).setDisabled(!enableTransMenu);
-    ((XulMenuitem) doc.getElementById("trans-copy-image")).setDisabled(!enableTransMenu);
-
-    // Jobs
-    ((XulMenuitem) doc.getElementById("job-copy")).setDisabled(!enableJobMenu);
+    ((XulMenuitem) doc.getElementById("process-run")).setDisabled(disableTransMenu && disablePreviewButton && disableJobMenu);
+    ((XulMenuitem) doc.getElementById("trans-replay")).setDisabled(disableTransMenu && disablePreviewButton);
+    ((XulMenuitem) doc.getElementById("trans-preview")).setDisabled(disableTransMenu && disablePreviewButton);
+    ((XulMenuitem) doc.getElementById("trans-debug")).setDisabled(disableTransMenu && disablePreviewButton);
+    ((XulMenuitem) doc.getElementById("trans-verify")).setDisabled(disableTransMenu);
+    ((XulMenuitem) doc.getElementById("trans-impact")).setDisabled(disableTransMenu);
+    ((XulMenuitem) doc.getElementById("trans-get-sql")).setDisabled(disableTransMenu);
+    ((XulMenuitem) doc.getElementById("trans-last-impact")).setDisabled(disableTransMenu);
 
     // Tools
     ((XulMenuitem) doc.getElementById("repository-connect")).setSelected(isRepositoryRunning);
     ((XulMenuitem) doc.getElementById("repository-disconnect")).setDisabled(!isRepositoryRunning);
     ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!isRepositoryRunning);
+    ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!isRepositoryRunning || disableTransMenu);
     
     // Wizard
-    ((XulMenuitem) doc.getElementById("wizard-connection")).setDisabled(!(enableTransMenu || enableJobMenu));
-    ((XulMenuitem) doc.getElementById("wizard-copy-table")).setDisabled(!(enableTransMenu || enableJobMenu));
-    ((XulMenuitem) doc.getElementById("wizard-copy-tables"))
-        .setDisabled(!(isRepositoryRunning || enableTransMenu || enableJobMenu));
-
-    ((XulMenuitem) doc.getElementById("repository-explore")).setDisabled(!isRepositoryRunning);
-    ((XulMenuitem) doc.getElementById("trans-last-preview")).setDisabled(!isRepositoryRunning);
-
-		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
+    ((XulMenuitem) doc.getElementById("wizard-connection")).setDisabled(disableTransMenu && disableJobMenu);
+    ((XulMenuitem) doc.getElementById("wizard-copy-table")).setDisabled(disableTransMenu && disableJobMenu);
+    ((XulMenuitem) doc.getElementById("wizard-copy-tables")).setDisabled(isRepositoryRunning && disableTransMenu && disableJobMenu);
+    
+    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
 
     // What steps & plugins to show?
     refreshCoreObjects();
@@ -6560,7 +6717,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     // delegates.jobs.addJobHistory(jobMeta, select);
   }
 
-  public void pasteSteps() {
+  public void paste() {
     String clipcontent = fromClipboard();
     if (clipcontent != null) {
       // Load the XML
