@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -31,6 +32,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.scannotation.AnnotationDB;
 import org.w3c.dom.Node;
 
 public abstract class BasePluginType implements PluginTypeInterface{
@@ -94,7 +96,13 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	 */
 	public void searchPlugins() throws KettlePluginException {
 		registerNatives();
+		long startScan = System.currentTimeMillis();
 		registerPluginJars();
+    
+long endScan = System.currentTimeMillis();
+
+System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
+    
 		registerXmlPlugins();
 	}
 	
@@ -205,31 +213,23 @@ public abstract class BasePluginType implements PluginTypeInterface{
 							
 							// These are the jar files : find annotations in it...
 							//
-							JarFile jarFile = new JarFile(KettleVFS.getFilename(fileObject));
-							Enumeration<JarEntry> entries = jarFile.entries();
-							while (entries.hasMoreElements()) {
-								JarEntry entry = entries.nextElement();
-								try {
-									ClassFile classFile = new ClassFile( new DataInputStream(new BufferedInputStream(jarFile.getInputStream(entry))) );
-									AnnotationsAttribute visible = (AnnotationsAttribute) classFile.getAttribute(AnnotationsAttribute.visibleTag);
-									if (visible!=null) {
-										Annotation[] anns = visible.getAnnotations();
-										for (Annotation ann : anns) {
-											if (ann.getTypeName().equals(annotationClassName)) {
-												classFiles.add(new JarFileAnnotationPlugin(fileObject.getURL(), classFile, ann, fileObject.getParent().getURL()));
-												break;
-											}
-										}
-									}
-								} catch(Exception e) {
-									// Not a class, ignore exception
-								}
-							}
-						}
+				      AnnotationDB annotationDB = new AnnotationDB();
+				      
+				      annotationDB.scanArchives(fileObject.getURL());
+				      
+				      // These are the jar files : find annotations in it...
+				      //
+				      Set<String> impls = annotationDB.getAnnotationIndex().get(annotationClassName);
+				      if(impls != null){
+  				      
+  				      for(String fil : impls)
+  				        classFiles.add(new JarFileAnnotationPlugin(fil, fileObject.getURL(),fileObject.getParent().getURL()));
+				      }    
+				    }
+
 					}					
 				} catch(Exception e) {
-					// The plugin folder could not be found or we can't read it
-					// Let's not through an exception here
+				  e.printStackTrace();
 				}
 			}
 		}
@@ -468,7 +468,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	      URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarFilePlugin.getJarFile(), }, getClass().getClassLoader());
 
 	      try {
-	        Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassFile().getName());
+	        Class<?> clazz = urlClassLoader.loadClass(jarFilePlugin.getClassName());
 	        java.lang.annotation.Annotation partitioner = clazz.getAnnotation(pluginType);
 	        List<String> libraries = new ArrayList<String>();
 	        

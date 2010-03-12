@@ -7,24 +7,22 @@ import javassist.bytecode.annotation.Annotation;
 
 public class JarFileAnnotationPlugin {
 	private URL			jarFile;
-	private ClassFile	classFile;
-	private Annotation	annotation;
 	private URL pluginFolder;
+	private String className;
 	/**
 	 * @param jarFile
 	 * @param classFile
 	 * @param annotation
 	 */
-	public JarFileAnnotationPlugin(URL jarFile, ClassFile classFile, Annotation annotation, URL pluginFolder) {
+	public JarFileAnnotationPlugin(String className, URL jarFile, URL pluginFolder) {
+	  this.className = className;
 		this.jarFile = jarFile;
-		this.classFile = classFile;
-		this.annotation = annotation;
 		this.pluginFolder = pluginFolder;
 	}
 
 	@Override
 	public String toString() {
-		return jarFile.toString()+" - "+classFile.getName()+" - "+annotation.getTypeName();
+		return jarFile.toString();
 	}
 	
 	/**
@@ -42,36 +40,6 @@ public class JarFileAnnotationPlugin {
 		this.jarFile = jarFile;
 	}
 
-	/**
-	 * @return the classFile
-	 */
-	public ClassFile getClassFile() {
-		return classFile;
-	}
-
-	/**
-	 * @param classFile
-	 *            the classFile to set
-	 */
-	public void setClassFile(ClassFile classFile) {
-		this.classFile = classFile;
-	}
-
-	/**
-	 * @return the annotation
-	 */
-	public Annotation getAnnotation() {
-		return annotation;
-	}
-
-	/**
-	 * @param annotation
-	 *            the annotation to set
-	 */
-	public void setAnnotation(Annotation annotation) {
-		this.annotation = annotation;
-	}
-
   public URL getPluginFolder() {
     return pluginFolder;
   }
@@ -80,6 +48,8 @@ public class JarFileAnnotationPlugin {
     this.pluginFolder = pluginFolder;
   }
 	
-	
+  public String getClassName(){
+    return className;
+  }
 
 }

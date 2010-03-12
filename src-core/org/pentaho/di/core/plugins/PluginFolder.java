@@ -71,8 +71,9 @@ public class PluginFolder implements PluginFolderInterface {
 			//
 			FileObject folderObject = KettleVFS.getFileObject( this.getFolder() );
 			FileObject[] fileObjects = folderObject.findFiles(new FileSelector() {
+			  int level = 0;
 				public boolean traverseDescendents(FileSelectInfo fileSelectInfo) throws Exception {
-				  return true;
+				  return level++ < 2;
 				}
 				
 				public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
