@@ -12,7 +12,6 @@ import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.ui.spoon.SpoonPlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
