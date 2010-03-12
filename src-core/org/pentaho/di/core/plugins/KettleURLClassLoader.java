@@ -52,40 +52,6 @@ public class KettleURLClassLoader extends URLClassLoader
         return name;
     }
     
-    
-    
-    @Override
-    protected synchronized Class<?> loadClass(String arg0, boolean arg1)
-        throws ClassNotFoundException {
-      Class<?> clz = null;
-      if((clz = findLoadedClass(arg0)) != null){
-        if(arg1){
-          resolveClass(clz);
-        }
-        return clz;
-      }
-      try{
-        if ((clz = findClass(arg0)) != null){
-          if(arg1){
-            resolveClass(clz);
-          }
-          return clz;
-        }
-      } catch(ClassNotFoundException e){
-        
-      } catch(NoClassDefFoundError e){
-        
-      }
-
-      if((clz = getParent().loadClass(arg0)) != null){
-        if(arg1){
-          resolveClass(clz);
-        }
-        return clz; 
-      }
-      throw new ClassNotFoundException("Could not find :"+arg0);
-    }
-
     /*
         Cglib doe's not creates custom class loader (to access package methotds and classes ) it uses reflection to invoke "defineClass", 
         but you can call protected method in subclass without problems:
