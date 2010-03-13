@@ -785,12 +785,21 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
             String realPassword =environmentSubstitute(password); 
             int realPort = Const.toInt(environmentSubstitute(this.port), 0);
             
-            connection = new FTPSConnection(realServername,realPort, realUsername, realPassword); 
+            connection = new FTPSConnection(getConnectionType(), realServername,realPort, realUsername, realPassword); 
             
             if (!Const.isEmpty(proxyHost))  {
           	  String realProxy_host = environmentSubstitute(proxyHost);
+        	  String realProxy_username = environmentSubstitute(proxyUsername);
+        	  String realProxy_password = environmentSubstitute(proxyPassword);
+        	  
           	  connection.setProxyHost(realProxy_host);
-          	  if ( log.isDetailed() )
+           	  if(!Const.isEmpty(realProxy_username)) {
+        		  connection.setProxyUser(realProxy_username);
+        	  }
+        	  if(!Const.isEmpty(realProxy_password)) {
+        		  connection.setProxyPassword(realProxy_password);
+        	  }
+          	  if (log.isDetailed() )
           	      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPS.OpenedProxyConnectionOn",realProxy_host));
 	  
           	  int proxyport = Const.toInt(environmentSubstitute(proxyPort), 21);
@@ -1178,12 +1187,18 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     {
         return activeConnection;
     }
-    
+    /**
+     * @return the conenction type
+     */
     public int getConnectionType() 
     {
     	return connectionType;
     }
     
+
+    /**
+     * @param connectionType the connectionType to set
+     */
     public void setConnectionType(int type)
     {
     	connectionType = type;

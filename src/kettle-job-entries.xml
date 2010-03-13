@@ -466,4 +466,11 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FTPSGet.Tooltip</tooltip>
 		<iconfile>ui/images/FTPG.png</iconfile>
 	</job-entry>
+		<job-entry id="FTPS_PUT">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.FTPSPut.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.ftpsput.JobEntryFTPSPUT</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FTPSPut.Tooltip</tooltip>
+		<iconfile>ui/images/FTPSPut.png</iconfile>
+	</job-entry>
 </job-entries>

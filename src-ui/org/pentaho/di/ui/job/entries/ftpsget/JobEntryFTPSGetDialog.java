@@ -1345,26 +1345,26 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 		        String realUsername = jobMeta.environmentSubstitute(wUserName.getText());
 		        String realPassword = jobMeta.environmentSubstitute(wPassword.getText());
 		        
-		        connection = new FTPSConnection(realServername, port, realUsername,realPassword);  
-		        /*
-		        if (!Const.isEmpty(wProxyHost.getText())) 
-		        {
-		      	  String realProxy_host = StringUtil.environmentSubstitute(wProxyHost.getText());
-		      	  FTPSclient.setRemoteAddr(InetAddress.getByName(realProxy_host));
-		
-		      	  // FIXME: Proper default port for proxy    	  
-		      	  int port = Const.toInt(StringUtil.environmentSubstitute(wProxyHost.getText()), 21);
-		      	  if (port != 0) 
-		      	  {
-		      	     FTPSclient.setRemotePort(port);
-		      	  }
-		        } 
-		        else 
-		        {
-		            FTPSclient.setRemoteAddr(InetAddress.getByName(realServername));
-		                           
-		        }
-		         */
+		        connection = new FTPSConnection(FTPSConnection.getConnectionTypeByCode(wConnectionType.getText()),realServername, port, realUsername,realPassword); 
+		        
+		        if (!Const.isEmpty(wProxyHost.getText()))  {
+		        	  // Set proxy
+	            	  String realProxy_host = jobMeta.environmentSubstitute(wProxyHost.getText());
+	            	  String realProxy_user = jobMeta.environmentSubstitute(wProxyUsername.getText());
+	            	  String realProxy_pass = jobMeta.environmentSubstitute(wProxyPassword.getText());
+	            	  connection.setProxyHost(realProxy_host);
+	            	  int proxyport = Const.toInt(jobMeta.environmentSubstitute(wProxyPort.getText()), 990);
+	            	  if (proxyport != 0) {
+	            		connection.setProxyPort(proxyport);
+	            	  }
+	               	  if(!Const.isEmpty(realProxy_user)) {
+	            		  connection.setProxyUser(realProxy_user);
+	            	  }
+	            	  if(!Const.isEmpty(realProxy_pass)) {
+	            		  connection.setProxyPassword(realProxy_pass);
+	            	  }
+	              } 
+
 		        // login to FTPS host ...
 		        connection.connect();     
 		        //pwdFolder=connection.getWorkingDirectory();
