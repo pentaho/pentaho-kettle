@@ -17,7 +17,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Appender;
@@ -551,5 +553,16 @@ public class LogWriter
     public static Layout getLayout()
     {
         return layout;
+    }
+    
+    public List<Appender> getAppenders() {
+    	
+    	List<Appender> list = new ArrayList<Appender>();
+    	
+        Enumeration<?> appenders = logWriter.pentahoLogger.getAllAppenders(); 
+        while (appenders.hasMoreElements()) {
+        	list.add((Appender)appenders.nextElement());
+        }
+        return list;
     }
 }

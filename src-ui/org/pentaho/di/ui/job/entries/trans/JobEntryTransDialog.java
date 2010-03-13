@@ -773,7 +773,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wPassParams.setLayoutData(fdPassParams);
 
 		final int ParameterCols = 3;
-		final int parameterRows = jobEntry.parameters.length;
+		final int parameterRows = jobEntry.parameters==null ? 0 : jobEntry.parameters.length;
 
 	    colinf = new ColumnInfo[ParameterCols];
 		colinf[0] = new ColumnInfo(Messages.getString("JobTrans.Parameters.Parameter.Label"),

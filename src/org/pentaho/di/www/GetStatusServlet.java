@@ -15,6 +15,7 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URLEncoder;
+import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -80,6 +81,8 @@ public class GetStatusServlet extends HttpServlet
             SlaveServerStatus serverStatus = new SlaveServerStatus();
             serverStatus.setStatusDescription("Online");
             
+            Arrays.sort(transNames);
+
             for (int i=0;i<transNames.length;i++)
             {
                 String name   = transNames[i]; 
@@ -90,6 +93,8 @@ public class GetStatusServlet extends HttpServlet
                 sstatus.setPaused(trans.isPaused());
                 serverStatus.getTransStatusList().add(sstatus);
             }
+
+            Arrays.sort(jobNames);
 
             for (int i=0;i<jobNames.length;i++)
             {
@@ -113,7 +118,7 @@ public class GetStatusServlet extends HttpServlet
             try
             {
                 out.println("<table border=\"1\">");
-                out.print("<tr> <th>" + Messages.getString("GetStatusServlet.TransName") + "</th> <th>" + Messages.getString("GetStatusServlet.Status") + "</th> </tr>");
+                out.print("<tr> <th>" + Messages.getString("GetStatusServlet.TransName") + "</th> <th>" + Messages.getString("GetStatusServlet.Status") + "</th> <th>" + Messages.getString("GetStatusServlet.LastLogDate") + "</th> </tr>");
 
                 for (int i=0;i<transNames.length;i++)
                 {
@@ -124,12 +129,13 @@ public class GetStatusServlet extends HttpServlet
                     out.print("<tr>");
                     out.print("<td><a href=\"/kettle/transStatus?name="+URLEncoder.encode(name, "UTF-8")+"\">"+name+"</a></td>");
                     out.print("<td>"+status+"</td>");
+                    out.print("<td>"+( trans.getLogDate()==null ? "-" : XMLHandler.date2string( trans.getLogDate() ))+"</td>");
                     out.print("</tr>");
                 }
                 out.print("</table><p>");
                 
                 out.println("<table border=\"1\">");
-                out.print("<tr> <th>" + Messages.getString("GetStatusServlet.JobName") + "</th> <th>" + Messages.getString("GetStatusServlet.Status") + "</th> </tr>");
+                out.print("<tr> <th>" + Messages.getString("GetStatusServlet.JobName") + "</th> <th>" + Messages.getString("GetStatusServlet.Status") + "</th> <th>" + Messages.getString("GetStatusServlet.LastLogDate") + "</th> </tr>");
 
                 for (int i=0;i<jobNames.length;i++)
                 {
@@ -140,6 +146,7 @@ public class GetStatusServlet extends HttpServlet
                     out.print("<tr>");
                     out.print("<td><a href=\"/kettle/jobStatus?name="+URLEncoder.encode(name, "UTF-8")+"\">"+name+"</a></td>");
                     out.print("<td>"+status+"</td>");
+                    out.print("<td>"+( job.getLogDate()==null ? "-" : XMLHandler.date2string( job.getLogDate() ))+"</td>");
                     out.print("</tr>");
                 }
                 out.print("</table>");
