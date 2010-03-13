@@ -553,6 +553,14 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MondrianInput</tooltip>
 		<iconfile>ui/images/MON.png</iconfile>
 	</step>
+	
+	<step id="OlapInput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.OlapInput</description>
+		<classname>org.pentaho.di.trans.steps.olapinput.OlapInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.OlapInput</tooltip>
+		<iconfile>ui/images/MON.png</iconfile>
+	</step>
 
 	<step id="GetFilesRowsCount">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetFilesRowsCount</description>
