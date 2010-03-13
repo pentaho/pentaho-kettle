@@ -186,6 +186,7 @@ public class OlapInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdPassword.right = new FormAttachment(100, 0);
 		fdPassword.top = new FormAttachment(wUsername, margin);
 		wPassword.setLayoutData(fdPassword);
+		wPassword.setEchoChar('*');
 
 		// Some buttons
 		//
