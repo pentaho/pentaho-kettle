@@ -7,6 +7,7 @@
 	<job-entry id="TRANS">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Trans.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.trans.JobEntryTrans</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Trans.Tooltip</tooltip>
 		<iconfile>ui/images/TRN.png</iconfile>
 	</job-entry>
@@ -472,5 +473,12 @@
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileTransfer</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.FTPSPut.Tooltip</tooltip>
 		<iconfile>ui/images/FTPSPut.png</iconfile>
+	</job-entry>
+		<job-entry id="CHECK_DB_CONNECTIONS">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.CheckDbConnections.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.checkdbconnection.JobEntryCheckDbConnections</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CheckDbConnections.TypeDesc.Tooltip</tooltip>
+		<iconfile>ui/images/CDBC.png</iconfile>
 	</job-entry>
 </job-entries>
