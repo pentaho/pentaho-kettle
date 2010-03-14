@@ -48,24 +48,30 @@ public class FTPSConnection implements FTPListener {
 	public static final int CONNECTION_TYPE_FTP=0;
 	public static final int CONNECTION_TYPE_FTP_IMPLICIT_SSL=1;
 	public static final int CONNECTION_TYPE_FTP_AUTH_SSL=2;
-	public static final int CONNECTION_TYPE_FTP_AUTH_TLS=3;
-	public static final int CONNECTION_TYPE_FTP_IMPLICIT_TLS=4;
+	public static final int CONNECTION_TYPE_FTP_IMPLICIT_SSL_WITH_CRYPTED =3;
+	public static final int CONNECTION_TYPE_FTP_AUTH_TLS=4;
+	public static final int CONNECTION_TYPE_FTP_IMPLICIT_TLS=5;
+	public static final int CONNECTION_TYPE_FTP_IMPLICIT_TLS_WITH_CRYPTED =6;
 	
 
 	public static final String[] connection_type_Desc = new String[] { 
 		BaseMessages.getString(PKG, "JobFTPS.ConnectionType.FTP"), 
 		BaseMessages.getString(PKG, "JobFTPS.ConnectionType.ImplicitSSL"),
 		BaseMessages.getString(PKG, "JobFTPS.ConnectionType.AuthSSL"),
+		BaseMessages.getString(PKG, "JobFTPS.ConnectionType.ImplicitSSLCrypted"),
 		BaseMessages.getString(PKG, "JobFTPS.ConnectionType.AuthTLS"),
-		BaseMessages.getString(PKG, "JobFTPS.ConnectionType.ImplicitTLS")
+		BaseMessages.getString(PKG, "JobFTPS.ConnectionType.ImplicitTLS"),
+		BaseMessages.getString(PKG, "JobFTPS.ConnectionType.ImplicitTLSCrypted")
 	};
 	
 	public static final String[] connection_type_Code = new String[] {
 		"FTP_CONNECTION", 
 		"IMPLICIT_SSL_FTP_CONNECTION",
 		"AUTH_SSL_FTP_CONNECTION", 
+		"IMPLICIT_SSL_WITH_CRYPTED_DATA_FTP_CONNECTION",
 		"AUTH_TLS_FTP_CONNECTION",
-		"IMPLICIT_TLS_FTP_CONNECTION"
+		"IMPLICIT_TLS_FTP_CONNECTION",
+		"IMPLICIT_TLS_WITH_CRYPTED_DATA_FTP_CONNECTION"
 	};	
 	
 	private FTPConnection connection = null;
@@ -470,6 +476,27 @@ public class FTPSConnection implements FTPListener {
 				}catch(Exception e){};
 			}
 		}
+		return retval;
+	}
+
+    /**
+     * 
+     * Checks if a file exists on remote host
+     * 
+     * @param filename
+     * 		the name of the file to check
+     * @return 
+     * 		true if the file exists
+     *   
+     */
+	public boolean isFileExists(String filename) {
+		boolean retval = false;
+		try {
+		    FTPFile file = new FTPFile(new File(filename));
+		    // Get modification time just to check if file exists
+		    connection.getModificationTime(file);
+		    retval=true;
+		}catch(Exception e) {}
 		return retval;
 	}
 	

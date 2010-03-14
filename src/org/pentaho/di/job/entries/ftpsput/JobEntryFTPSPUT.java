@@ -573,28 +573,17 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
                 if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobFTPSPUT.Log.ChangedDirectory", realRemoteDirectory)); //$NON-NLS-1$
 			}
 			realRemoteDirectory=Const.NVL(realRemoteDirectory, FTPSConnection.HOME_FOLDER);
-			
-			// Get all the files in the local directory...
-			int x = 0;
-			
-			// Joerg:  ..that's for Java5 
-			// ArrayList<String> myFileList = new ArrayList<String>();
+
 			ArrayList<String> myFileList = new ArrayList<String>();
-			
-			
 			File localFiles = new File(realLocalDirectory);
 			File[] children = localFiles.listFiles();
 			for (int i=0; i<children.length; i++) {
 	            // Get filename of file or directory
 				if (!children[i].isDirectory()) {
-					// myFileList.add(children[i].getAbsolutePath());
 					myFileList.add(children[i].getName());
-					x = x+1;
-					
 				}
-	        } // end for
+			}
 			
-			// Joerg:  ..that's for Java5
 			String[] filelist = new String[myFileList.size()];
 			myFileList.toArray(filelist);
 			
@@ -620,15 +609,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 				
 				if (getIt) {				
 					// File exists?
-					boolean fileExist=false;
-					/*try
-					{
-						fileExist=ftpclient.exists(filelist[i]);
-						
-					}
-					catch (Exception e){
-						// Assume file does not exist !!
-					}*/
+					boolean fileExist= connection.isFileExists(filelist[i]);
 					
 					if (log.isDebug()) {
 						if(fileExist)
@@ -664,13 +645,13 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
             logError(Const.getStackTracker(e));
 		} finally {
 			 if (connection!=null) {
-	                try
-	                {
-	                	connection.disconnect();
-	                } catch(Exception e) {
-	                    logError(BaseMessages.getString(PKG, "JobFTPSPUT.Log.ErrorQuitingFTP",e.getMessage()));
-	                }
-	            }
+                try
+                {
+                	connection.disconnect();
+                } catch(Exception e) {
+                    logError(BaseMessages.getString(PKG, "JobFTPSPUT.Log.ErrorQuitingFTP",e.getMessage()));
+                }
+            }
 		}
 		
 		return result;
