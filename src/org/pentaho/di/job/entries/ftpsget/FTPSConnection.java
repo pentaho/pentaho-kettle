@@ -1,5 +1,5 @@
 /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
- * This software was developed by Pentaho Corporation and is provided under the terms 
+ * This software was developed by Samatar HASSAN and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
  * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
@@ -39,8 +39,12 @@ import org.pentaho.di.i18n.BaseMessages;
 
 
 public class FTPSConnection implements FTPListener {
+	
 	private static Class<?> PKG = JobEntryFTPSGet.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	public static final String HOME_FOLDER ="/";
+	public static final String COMMAND_SUCCESSUL = "COMMAND SUCCESSFUL";
+	
 	public static final int CONNECTION_TYPE_FTP=0;
 	public static final int CONNECTION_TYPE_FTP_IMPLICIT_SSL=1;
 	public static final int CONNECTION_TYPE_FTP_AUTH_SSL=2;
@@ -62,7 +66,7 @@ public class FTPSConnection implements FTPListener {
 		"AUTH_SSL_FTP_CONNECTION", 
 		"AUTH_TLS_FTP_CONNECTION",
 		"IMPLICIT_TLS_FTP_CONNECTION"
-		};	
+	};	
 	
 	private FTPConnection connection = null;
 	private ArrayList<String> replies = new ArrayList<String>();
@@ -130,7 +134,12 @@ public class FTPSConnection implements FTPListener {
 	public void setProxyPassword(String password){
 		this.proxyPassword=password;
 	}
-	
+	 /**
+     * 
+     * this method is used to connect to a remote host
+     * 
+     * @throws KettleException
+     */
 	public void connect() throws KettleException {
 	    try {
 	      connection = FTPConnectionFactory.getInstance(getProperties(hostName, portNumber, 
@@ -236,6 +245,13 @@ public class FTPSConnection implements FTPListener {
 		this.passiveMode=passivemode;	
 	}
 	
+	 /**
+     * 
+     * this method is used to return the passive mode
+     * 
+     * @return TRUE if we use passive mode
+     *    
+     */
 	public boolean isPassiveMode() {
 		return this.passiveMode;	
 	}
@@ -249,6 +265,13 @@ public class FTPSConnection implements FTPListener {
 	public void setTimeOut(int timeout) {
 		this.timeOut=timeout;	
 	}
+	 /**
+     * 
+     * this method is used to return the timeout
+     * 
+     * @return timeout
+     *    
+     */
 	public int getTimeOut() {
 		return this.timeOut;	
 	}
@@ -279,7 +302,7 @@ public class FTPSConnection implements FTPListener {
 		for (String e : event.getReply().getLines()) {
 			if (!e.trim().equals("")) {
 				e = e.substring(3).trim().replace("\n", "");
-				if (!e.toUpperCase().contains("COMMAND SUCCESSFUL")) {
+				if (!e.toUpperCase().contains(COMMAND_SUCCESSUL)) {
 					e = e.substring(1).trim();
 					replies.add(e);
 				}
@@ -301,6 +324,14 @@ public class FTPSConnection implements FTPListener {
 			throw new KettleException(BaseMessages.getString(PKG, "JobFTPS.Error.ChangingFolder", directory), f);
 		}
 	}
+	 /**
+     * 
+     * this method is used to create a directory in remote host
+     * 
+     * @param  directory 
+     * 		   directory name on remote host	 
+     * @throws KettleException	
+     */
 	public void createDirectory(String directory) throws KettleException {
 		try {
 			this.connection.makeDirectory(directory);
@@ -321,7 +352,16 @@ public class FTPSConnection implements FTPListener {
 			throw new KettleException(e);
 		}
 	}
-
+	 /**
+     * 
+     * this method is used to download a file from a remote host
+     * 
+     * @param  file 
+     * 		   remote file to download	 
+     * @param  localFilename
+     * 		   target filename in local host 	
+     * @throws KettleException	
+     */
 	public void downloadFile(FTPFile file, String localFilename) throws KettleException {
 		try {
 			File localFile= new File(localFilename);

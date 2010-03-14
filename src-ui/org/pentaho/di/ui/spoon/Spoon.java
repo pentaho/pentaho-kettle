@@ -1986,7 +1986,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
         for (int j = 0; j < baseJobEntries.size(); j++) {
           if (!baseJobEntries.get(j).getIds()[0].equals("SPECIAL")) {
-
             if (baseJobEntries.get(j).getCategory().equalsIgnoreCase(baseCategories.get(i))) {
               final Image jobEntryImage = (Image) GUIResource.getInstance().getImagesJobentriesSmall().get(
                   baseJobEntries.get(j).getIds()[0]);

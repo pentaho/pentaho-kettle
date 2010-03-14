@@ -572,6 +572,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
                 connection.changeDirectory(realRemoteDirectory);
                 if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobFTPSPUT.Log.ChangedDirectory", realRemoteDirectory)); //$NON-NLS-1$
 			}
+			realRemoteDirectory=Const.NVL(realRemoteDirectory, FTPSConnection.HOME_FOLDER);
 			
 			// Get all the files in the local directory...
 			int x = 0;
@@ -637,9 +638,10 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 					}
 					
 					if (!fileExist || (!onlyPuttingNewFiles && fileExist)) {
-						if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobFTPSPUT.Log.PuttingFileToRemoteDirectory",filelist[i],realRemoteDirectory));
-						
+
 						String localFilename = realLocalDirectory+Const.FILE_SEPARATOR+filelist[i]; 
+						if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobFTPSPUT.Log.PuttingFileToRemoteDirectory",localFilename,realRemoteDirectory));
+						
 						connection.uploadFile(localFilename, filelist[i]);
 						
 						filesput++;

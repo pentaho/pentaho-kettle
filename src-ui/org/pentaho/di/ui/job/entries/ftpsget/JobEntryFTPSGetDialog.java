@@ -1345,7 +1345,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 		        String realUsername = jobMeta.environmentSubstitute(wUserName.getText());
 		        String realPassword = jobMeta.environmentSubstitute(wPassword.getText());
 		        
-		        connection = new FTPSConnection(FTPSConnection.getConnectionTypeByCode(wConnectionType.getText()),realServername, port, realUsername,realPassword); 
+		        connection = new FTPSConnection(FTPSConnection.getConnectionTypeByDesc(wConnectionType.getText()),realServername, port, realUsername,realPassword); 
 		        
 		        if (!Const.isEmpty(wProxyHost.getText()))  {
 		        	  // Set proxy

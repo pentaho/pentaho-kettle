@@ -3,14 +3,14 @@
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
  * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
- * Data Integration.  The Initial Developer is Pentaho Corporation.
+ * Data Integration.  The Initial Developer is Samatar HASSAN.
  *
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.*/
 
 /*
- * Created on 19-jun-2003
+ * Created on 10-03-2010
  *
  */
 
@@ -59,10 +59,10 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
- * This dialog allows you to edit the FTP Put job entry settings
+ * This dialog allows you to edit the FTPS Put job entry settings
  * 
  * @author Samatar
- * @since 15-09-2007
+ * @since 10-03-2010
  */
 
 public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDialogInterface
@@ -896,17 +896,17 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
 		try
 		{
 	        String realServername = jobMeta.environmentSubstitute(wServerName.getText());
-	        int port = Const.toInt(jobMeta.environmentSubstitute(wServerPort.getText()), 0);
+	        int realPort = Const.toInt(jobMeta.environmentSubstitute(wServerPort.getText()), 0);
 	        String realUsername = jobMeta.environmentSubstitute(wUserName.getText());
 	        String realPassword = jobMeta.environmentSubstitute(wPassword.getText());
-			if(connection==null)
-			{
-
-		    	 // Create ftp client to host:port ...
-				connection = new FTPSConnection(FTPSConnection.getConnectionTypeByCode(wConnectionType.getText()), realServername, port, realUsername,realPassword); 
+			
+	        if(connection==null)
+			{		    	 // Create ftp client to host:port ...
+				connection = new FTPSConnection(FTPSConnection.getConnectionTypeByDesc(wConnectionType.getText()), 
+						realServername, realPort, realUsername,realPassword); 
 		        
-				  if (!Const.isEmpty(wProxyHost.getText()))  {
-		        	  // Set proxy
+				if (!Const.isEmpty(wProxyHost.getText()))  {
+		         // Set proxy
 	            	  String realProxy_host = jobMeta.environmentSubstitute(wProxyHost.getText());
 	            	  String realProxy_user = jobMeta.environmentSubstitute(wProxyUsername.getText());
 	            	  String realProxy_pass = jobMeta.environmentSubstitute(wProxyPassword.getText());
@@ -922,7 +922,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
 	            	  if(!Const.isEmpty(realProxy_pass)) {
 	            		  connection.setProxyPassword(realProxy_pass);
 	            	  }
-	              } 
+	             }
 
 		        // login to FTPS host ...
 		        connection.connect();   
@@ -936,11 +936,8 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
 					retval=connection.isDirectoryExists(realFtpDirectory);
 				}
 	        }
-	        	
 	        retval=true;
-		}
-	     catch (Exception e)
-	    {
+		} catch (Exception e) {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage(BaseMessages.getString(PKG, "JobFTPSPUT.ErrorConnect.NOK",e.getMessage()) +Const.CR);
 			mb.setText(BaseMessages.getString(PKG, "JobFTPSPUT.ErrorConnect.Title.Bad"));
@@ -1021,7 +1018,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
         jobEntry.setProxyUsername(wProxyUsername.getText());
         jobEntry.setProxyPassword(wProxyPassword.getText());
 		jobEntry.setConnectionType(FTPSConnection.getConnectionTypeByDesc(wConnectionType.getText()));
-		
+
         dispose();
     }
 
