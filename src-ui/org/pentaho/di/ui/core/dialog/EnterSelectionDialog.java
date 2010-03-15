@@ -213,14 +213,16 @@ public class EnterSelectionDialog extends Dialog
             updateFilter();
           }});		    
 		    
-	    addConnection = new ToolItem(treeTb,SWT.PUSH);
-	    addConnection.setImage(GUIResource.getInstance().getImageAdd());
-	    addConnection.setToolTipText(BaseMessages.getString(PKG, "Add.Datasource.Label"));
-	    
-	    addConnection.addSelectionListener(new SelectionAdapter() {
-	          public void widgetSelected(SelectionEvent event) {
-	            addDataSource();
-	          }});  
+	    if(this.databasesInterface != null) {
+  	    addConnection = new ToolItem(treeTb,SWT.PUSH);
+  	    addConnection.setImage(GUIResource.getInstance().getImageAdd());
+  	    addConnection.setToolTipText(BaseMessages.getString(PKG, "Add.Datasource.Label"));
+  	    
+  	    addConnection.addSelectionListener(new SelectionAdapter() {
+  	          public void widgetSelected(SelectionEvent event) {
+  	            addDataSource();
+  	          }});  
+	    }
 		    
 	        FormData fd=new FormData();
 	        fd.right = new FormAttachment(100, -margin);
