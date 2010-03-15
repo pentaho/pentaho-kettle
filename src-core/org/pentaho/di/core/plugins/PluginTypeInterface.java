@@ -1,5 +1,6 @@
 package org.pentaho.di.core.plugins;
 
+import java.net.URL;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -42,5 +43,17 @@ public interface PluginTypeInterface {
 	 * @throws KettlePluginException
 	 */
 	public void searchPlugins() throws KettlePluginException;
-	
+
+	/**
+	 * Handle an annotated plugin
+	 * 
+	 * @param clazz The class to use
+	 * @param annotation The annotation to get information from
+	 * @param libraries The libraries to add
+	 * @param nativePluginType Is this a native plugin?
+	 * @param pluginFolder The plugin folder to use
+	 * @throws KettlePluginException
+	 */
+	public void handlePluginAnnotation(Class<?> clazz, java.lang.annotation.Annotation annotation, List<String> libraries, boolean nativePluginType, URL pluginFolder) throws KettlePluginException;
+
 }

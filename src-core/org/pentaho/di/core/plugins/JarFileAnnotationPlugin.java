@@ -2,9 +2,6 @@ package org.pentaho.di.core.plugins;
 
 import java.net.URL;
 
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.annotation.Annotation;
-
 public class JarFileAnnotationPlugin {
 	private URL			jarFile;
 	private URL pluginFolder;

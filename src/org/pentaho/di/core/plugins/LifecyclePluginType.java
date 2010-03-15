@@ -19,6 +19,7 @@ import org.pentaho.di.core.lifecycle.LifecycleListener;
  */
 @PluginMainClassType(LifecycleListener.class)
 @PluginExtraClassTypes(classTypes = { GUIOption.class })
+@PluginAnnotationType(LifecyclePlugin.class)
 public class LifecyclePluginType extends BasePluginType implements
     PluginTypeInterface {
 

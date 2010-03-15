@@ -7,11 +7,13 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.BasePluginType;
 import org.pentaho.di.core.plugins.JarFileAnnotationPlugin;
+import org.pentaho.di.core.plugins.PluginAnnotationType;
 import org.pentaho.di.core.plugins.PluginFolder;
 import org.pentaho.di.core.plugins.PluginMainClassType;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 
 @PluginMainClassType(SpoonPlugin.class)
+@PluginAnnotationType(SpoonPlugin.class)
 public class SpoonPluginType extends BasePluginType implements PluginTypeInterface {
 
   private SpoonPluginType() {

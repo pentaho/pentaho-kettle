@@ -86,19 +86,13 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	 */
 	public void searchPlugins() throws KettlePluginException {
 		registerNatives();
-		long startScan = System.currentTimeMillis();
 		registerPluginJars();
-    
-long endScan = System.currentTimeMillis();
-
-System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
-    
 		registerXmlPlugins();
 	}
 	
 	protected abstract void registerNatives() throws KettlePluginException;
 	protected abstract void registerXmlPlugins() throws KettlePluginException;
-	
+
 	/**
 	 * @return the id
 	 */
@@ -502,8 +496,18 @@ System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
 	    }
 	  }
 	  
-    
-	private void handlePluginAnnotation(Class<?> clazz, java.lang.annotation.Annotation annotation, List<String> libraries, boolean nativeRepositoryType, URL pluginFolder) throws KettlePluginException {
+
+	/**
+	 * Handle an annotated plugin
+	 * 
+	 * @param clazz The class to use
+	 * @param annotation The annotation to get information from
+	 * @param libraries The libraries to add
+	 * @param nativePluginType Is this a native plugin?
+	 * @param pluginFolder The plugin folder to use
+	 * @throws KettlePluginException
+	 */
+	public void handlePluginAnnotation(Class<?> clazz, java.lang.annotation.Annotation annotation, List<String> libraries, boolean nativePluginType, URL pluginFolder) throws KettlePluginException {
       
       // Only one ID for now
       String[] ids = new String[] { extractID(annotation), }; 
@@ -533,7 +537,7 @@ System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
         }
       }
       
-      PluginInterface plugin = new Plugin(ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader, nativeRepositoryType, classMap, libraries, null, pluginFolder);
+      PluginInterface plugin = new Plugin(ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader, nativePluginType, classMap, libraries, null, pluginFolder);
       registry.registerPlugin(this.getClass(), plugin);
       
       if (libraries!=null && libraries.size()>0) {

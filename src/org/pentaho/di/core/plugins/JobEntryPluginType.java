@@ -39,7 +39,8 @@ import org.w3c.dom.Node;
     ,"JobCategory.Category.FileTransfer"
     ,"JobCategory.Category.Experimental"},
    i18nPackageClass = JobMeta.class)
- @PluginMainClassType(JobEntryInterface.class)
+@PluginMainClassType(JobEntryInterface.class)
+@PluginAnnotationType(JobEntry.class)
 public class JobEntryPluginType extends BasePluginType implements PluginTypeInterface {
 	private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 

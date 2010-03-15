@@ -22,6 +22,7 @@ import org.w3c.dom.Node;
  *
  */
 @PluginMainClassType(DatabaseInterface.class)
+@PluginAnnotationType(DatabaseMetaPlugin.class)
 public class DatabasePluginType extends BasePluginType implements PluginTypeInterface {
 	private static DatabasePluginType pluginType;
 	

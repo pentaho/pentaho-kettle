@@ -25,6 +25,7 @@ import org.w3c.dom.Node;
  *
  */
 @PluginMainClassType(Partitioner.class)
+@PluginAnnotationType(PartitionerPlugin.class)
 public class PartitionerPluginType extends BasePluginType implements PluginTypeInterface {
 	
 	private static PartitionerPluginType pluginType;

@@ -27,6 +27,7 @@ import org.w3c.dom.Node;
  */
 @PluginMainClassType(Repository.class)
 @PluginExtraClassTypes(classTypes = { RepositoryMeta.class }, xmlNodeNames = { "meta-classname" })
+@PluginAnnotationType(RepositoryPlugin.class)
 public class RepositoryPluginType extends BasePluginType implements PluginTypeInterface {
 
 	private static RepositoryPluginType pluginType;

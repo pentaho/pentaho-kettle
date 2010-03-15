@@ -1,6 +1,7 @@
 package org.pentaho.di.core.plugins;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -20,8 +21,8 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
-import org.scannotation.AnnotationDB;
 
 /**
  * This singleton provides access to all the plugins in the Kettle universe.<br>
@@ -42,8 +43,6 @@ public class PluginRegistry {
 	
 	private Map<Class<? extends PluginTypeInterface>, List<String>> categoryMap;
 	
-	private static AnnotationDB annotationDB;
-
     private static List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
   
 	/**
@@ -396,9 +395,7 @@ public class PluginRegistry {
 	 */
 	public static void init() throws KettlePluginException {
 		PluginRegistry registry = getInstance();
-		
-
-		
+				
 		for (PluginTypeInterface pluginType : pluginTypes) {
 			// Register the plugin type 
 			//
@@ -408,8 +405,34 @@ public class PluginRegistry {
 			//
 			long startScan = System.currentTimeMillis();
 			pluginType.searchPlugins();
+			
+			// Also scan for plugin classes to facilitate debugging etc.
+			//
+			String pluginClasses = EnvUtil.getSystemProperty(Const.KETTLE_PLUGIN_CLASSES);
+			if (!Const.isEmpty(pluginClasses)) {
+				String[] classNames = pluginClasses.split(",");
+				for (String className : classNames) {
+					try {
+						// What annotation does the plugin type have?
+						//
+						PluginAnnotationType annotationType = pluginType.getClass().getAnnotation(PluginAnnotationType.class);
+						Class<? extends Annotation> annotationClass = annotationType.value();
 
-    	LogChannel.GENERAL.logDetailed("Registered "+registry.getPlugins(pluginType.getClass()).size()+" plugins of type '"+pluginType.getName()+"' in "+(System.currentTimeMillis()-startScan)+"ms.");
+						Class<?> clazz = Class.forName(className);
+						Annotation annotation = clazz.getAnnotation(annotationClass);
+						
+						if (annotation!=null) {
+							// Register this one!
+							//
+							pluginType.handlePluginAnnotation(clazz, annotation, new ArrayList<String>(), true, null);
+						}
+					} catch(Exception e) {
+						LogChannel.GENERAL.logError("Error registring plugin class from KETTLE_PLUGIN_CLASSES: "+className, e);
+					}
+				}
+			}
+			
+			LogChannel.GENERAL.logDetailed("Registered "+registry.getPlugins(pluginType.getClass()).size()+" plugins of type '"+pluginType.getName()+"' in "+(System.currentTimeMillis()-startScan)+"ms.");
 		}
 	}
 

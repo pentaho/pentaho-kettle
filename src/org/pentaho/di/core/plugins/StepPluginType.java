@@ -44,6 +44,7 @@ import org.w3c.dom.Node;
    ,"BaseStep.Category.Bulk"},
    i18nPackageClass = StepInterface.class)
 @PluginMainClassType(StepMetaInterface.class)
+@PluginAnnotationType(Step.class)
 public class StepPluginType extends BasePluginType implements PluginTypeInterface {
 	
 	private static StepPluginType stepPluginType;
@@ -92,8 +93,6 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 			throw new KettlePluginException("Unable to read the kettle steps XML config file: "+kettleStepsXmlFile, e);
 		}
 	}
-
-
 	
 	protected void registerXmlPlugins() throws KettlePluginException {
 		for (PluginFolderInterface folder : pluginFolders) {

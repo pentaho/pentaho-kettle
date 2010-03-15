@@ -554,8 +554,6 @@ public class Const
 	 */
 	public static final String	KETTLE_CHANNEL_LOG_TABLE	= "KETTLE_CHANNEL_LOG_TABLE";
 
-
-	
 	/**
 	 * Name of the environment variable to set the location of the shared object file (xml) for transformations and jobs
 	 */
@@ -589,7 +587,12 @@ public class Const
 	 * The default SAP R/3 connection factory
 	 */
 	public static final String	KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME	= "org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory";
-	
+
+	/**
+	 * Name of the environment variable to specify additional classes to scan for plugin annotations
+	 */
+	public static final String KETTLE_PLUGIN_CLASSES = "KETTLE_PLUGIN_CLASSES";
+
 	/**
 	 * A general initial version comment 
 	 */
