@@ -473,7 +473,7 @@ public class Const
 	/**
 	 * The name of the variable that defines the log database connection by default for all jobs
 	 */
-	public static final String KETTLE_JOB_LOG_DATABASE_NAME = "KETTLE_TRANS_LOG_DATABASE_NAME";
+	public static final String KETTLE_JOB_LOG_DATABASE_NAME = "KETTLE_JOB_LOG_DATABASE_NAME";
 
 	/**
 	 * Name of the environment variable to set the location of the shared object file (xml) for transformations and jobs
