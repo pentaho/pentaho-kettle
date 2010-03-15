@@ -64,6 +64,8 @@ import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.warning.SimpleWarningMessage;
+import org.pentaho.di.ui.core.widget.warning.SupportsWarningInterface;
+import org.pentaho.di.ui.core.widget.warning.TextVarWarning;
 import org.pentaho.di.ui.core.widget.warning.WarningInterface;
 import org.pentaho.di.ui.core.widget.warning.WarningMessageInterface;
 import org.pentaho.di.ui.core.widget.warning.WarningText;
@@ -146,9 +148,9 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 	private Label wlRegExpDisallowed;
 	private WarningText wRegExpDisallowed;
 	private Label wlErrorCode;
-	private WarningText wErrorCode;
+	private TextVarWarning wErrorCode;
 	private Label wlErrorDescription;
-	private WarningText wErrorDescription;
+	private TextVarWarning wErrorDescription;
 	private Button	wConcatErrors;
 	private Text	wConcatSeparator;
 
@@ -386,7 +388,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlErrorCode.right= new FormAttachment(middle, -margin);
 		fdlErrorCode.top  = new FormAttachment(wFieldName, margin);
 		wlErrorCode.setLayoutData(fdlErrorCode);
-		wErrorCode=new WarningText(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wErrorCode=new TextVarWarning(transMeta, wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wErrorCode);
 		FormData fdErrorCode = new FormData();
 		fdErrorCode.left = new FormAttachment(middle, margin);
@@ -405,7 +407,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlErrorDescription.right= new FormAttachment(middle, -margin);
 		fdlErrorDescription.top  = new FormAttachment(wErrorCode, margin);
 		wlErrorDescription.setLayoutData(fdlErrorDescription);
-		wErrorDescription=new WarningText(wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wErrorDescription=new TextVarWarning(transMeta, wComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wErrorDescription);
 		FormData fdErrorDescription = new FormData();
 		fdErrorDescription.left = new FormAttachment(middle, margin);
@@ -984,7 +986,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 		wConcatSeparator.setEnabled(wValidateAll.getSelection());
 	}
 
-	private void addSpacesWarning(WarningText warningText) {
+	private void addSpacesWarning(SupportsWarningInterface warningText) {
 		warningText.addWarningInterface(new WarningInterface() { public WarningMessageInterface getWarningSituation(String text, Control widget, Object subject) {
 			return new SimpleWarningMessage( spacesValidation(text), BaseMessages.getString(PKG, "System.Warning.OnlySpaces")); }});
 		warningText.addWarningInterface(new WarningInterface() { public WarningMessageInterface getWarningSituation(String text, Control widget, Object subject) {

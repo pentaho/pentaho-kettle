@@ -28,28 +28,29 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.CheckBoxVar;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 /**
- * A Widget that combines a Text widget with a "Warning" image to the left.
+ * A Widget that combines a TextVar widget with a "Warning" image to the right.
  * It's shown when there is a warning condition in the text field.
  * 
  * @author Matt
- * @since 25-FEB-2009
+ * @since 15-MAR-2009
  */
-public class WarningText extends Composite implements SupportsWarningInterface {
+public class TextVarWarning extends Composite implements SupportsWarningInterface {
   private static Class<?> PKG = CheckBoxVar.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private ControlDecoration warningControlDecoration;
 
-  private Text wText;
+  private TextVar wText;
   
   private List<WarningInterface> warningInterfaces;
 
-  public WarningText(Composite composite, int flags) {
+  public TextVarWarning(VariableSpace space, Composite composite, int flags) {
     super(composite, SWT.NONE);
     
     warningInterfaces = new ArrayList<WarningInterface>();
@@ -63,7 +64,7 @@ public class WarningText extends Composite implements SupportsWarningInterface {
     this.setLayout(formLayout);
 
     // add a text field on it...
-    wText = new Text(this, flags);
+    wText = new TextVar(space, this, flags);
 
     warningControlDecoration = new ControlDecoration(wText, SWT.CENTER | SWT.RIGHT);
     Image warningImage = GUIResource.getInstance().getImageWarning();
@@ -116,7 +117,7 @@ public class WarningText extends Composite implements SupportsWarningInterface {
     wText.setText(text);
   }
 
-  public Text getTextWidget() {
+  public TextVar getTextWidget() {
     return wText;
   }
 
