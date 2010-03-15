@@ -348,7 +348,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       "Spoon.Application.Name");
 
   private static Spoon staticSpoon;
-
+  
   private LogChannelInterface log;
 
   private Display display;
@@ -495,7 +495,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
    * This is the main procedure for Spoon.
    * 
    * @param a
-   *          Arguments are available in the "Get System Info" step.
+   *            Arguments are available in the "Get System Info" step.
    */
   public static void main(String[] a) throws KettleException {
     try {
@@ -509,7 +509,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       Splash splash = new Splash(display);
 
       registerUIPluginObjectTypes();
-
+      
       KettleEnvironment.init();
 
       List<String> args = new ArrayList<String>(java.util.Arrays.asList(a));
@@ -639,15 +639,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
    * TODO: create a SpoonLifecycle listener that can notify interested parties
    * of a pre-initialization state so this can happen in those listeners.
    */
-  private static void registerUIPluginObjectTypes() {
+  private static void registerUIPluginObjectTypes(){
     RepositoryPluginType.getInstance().addObjectType(
         RepositoryRevisionBrowserDialogInterface.class,
         "version-browser-classname");
     RepositoryPluginType.getInstance().addObjectType(
         RepositoryDialogInterface.class, "dialog-classname");
-
+    
     PluginRegistry.addPluginType(SpoonPluginType.getInstance());
-
+    
     SpoonPluginType.getInstance().getPluginFolders().add(
         new PluginFolder("plugins/repositories", false, true));
 
@@ -738,7 +738,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
         btn.setType("toggle");
         btn.setLabel(name);
         btn.setTooltiptext(name);
-        btn.setOnclick("spoon.loadPerspective(" + y + ")");
+        btn.setOnclick("spoon.loadPerspective(" + y+ ")");
         mainToolbar.addChild(btn);
         if (firstBtn) {
           btn.setSelected(true);
@@ -833,7 +833,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     addTree();
     addTabs();
     mainPerspective.setTabset(this.tabfolder);
-    addPerspectiveMenus();
     ((Composite) deck.getManagedObject()).layout(true, true);
 
     SpoonPluginManager.getInstance().notifyLifecycleListeners(
@@ -904,7 +903,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
     Class clazz;
     try {
-
+      
       SpoonPerspectiveManager.getInstance().activatePerspective(
           SpoonPerspectiveManager.getInstance().getPerspectives().get(pos)
               .getClass());
@@ -932,7 +931,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       JobMeta jobMeta = getActiveJob();
       if (jobMeta != null)
         delegates.jobs.closeJob(jobMeta);
-    }
+    }   
   }
 
   public void closeAllFiles() {
@@ -944,7 +943,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       jobMeta = getActiveJob();
     }
   }
-
   public void closeSpoonBrowser() {
     TabMapEntry browserTab = delegates.tabs.findTabMapEntry(
         STRING_WELCOME_TAB_NAME, ObjectType.BROWSER);
@@ -1213,7 +1211,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   /**
    * @param stopped
-   *          True to stop this application.
+   *            True to stop this application.
    */
   public void setStopped(boolean stopped) {
     this.stopped = stopped;
@@ -1221,7 +1219,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   /**
    * @param destroy
-   *          Whether or not to distroy the display.
+   *            Whether or not to distroy the display.
    */
   public void setDestroy(boolean destroy) {
     this.destroy = destroy;
@@ -1236,7 +1234,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   /**
    * @param arguments
-   *          The arguments to set.
+   *            The arguments to set.
    */
   public void setArguments(String[] arguments) {
     this.arguments = arguments;
@@ -1288,7 +1286,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       copyJobentries();
     }
   }
-
+  
   public void copyJobentries() {
     JobMeta jobMeta = getActiveJob();
     if (jobMeta != null) {
@@ -1301,7 +1299,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     JobMeta jobMeta = getActiveJob();
     boolean transActive = transMeta != null;
     boolean jobActive = jobMeta != null;
-
+    
     if (transActive) {
       if (transMeta.getSelectedSteps().size() > 0) {
         copySteps();
@@ -1316,7 +1314,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       }
     }
   }
-
+  
   public void createPopupMenus() {
 
     try {
@@ -1408,12 +1406,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       enableMenus();
     }
   }
-
+  
   public boolean isExecutionResultsPaneVisible() {
     TransGraph transGraph = getActiveTransGraph();
     return (transGraph != null) && (transGraph.isExecutionResultsPaneVisible());
   }
-
+  
   public void copyTransformation() {
     copyTransformation(getActiveTransformation());
   }
@@ -1430,10 +1428,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     if (getActiveTransformation() != null) {
       editTransformationProperties();
     } else if (getActiveJob() != null) {
-
+      
     }
   }
-
   public void executeJob() {
     executeJob(getActiveJob(), true, false, null, false);
   }
@@ -1529,60 +1526,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     }
   }
 
-  public void addPerspectiveMenus() {
-    org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
-    XulMenupopup pluginPopup = (XulMenupopup) doc
-        .getElementById("plugins-popup-placeholder");
-    SpoonPerspectiveManager perspectiveManager = SpoonPerspectiveManager
-        .getInstance();
-    List<SpoonPerspective> perspectives = perspectiveManager.getPerspectives();
-    int i = 0;
-    for (SpoonPerspective perspective : perspectives) {
-      try {
-        XulMenuitem menuItem = (XulMenuitem) doc.createElement("menuitem");
-        menuItem.setLabel(perspective.getDisplayName(Locale.getDefault()));
-        menuItem.setAttribute("type", "checkbox");
-        menuItem.setCommand("spoon.selectPerspective(" + i + ")");
-        pluginPopup.addComponent(menuItem);
-      } catch (XulException e) {
-        e.printStackTrace();
-      }
-      i++;
-    }
-    upDatePerspectiveMenu();
-  }
-
-  /**
-   * 
-   */
-  private void upDatePerspectiveMenu() {
-    org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
-    XulMenupopup pluginPopup = (XulMenupopup) doc
-        .getElementById("plugins-popup-placeholder");
-    List perspectiveMenus = pluginPopup.getChildNodes();
-    SpoonPerspectiveManager perspectiveManager = SpoonPerspectiveManager
-        .getInstance();
-    List<SpoonPerspective> perspectives = perspectiveManager.getPerspectives();
-    SpoonPerspective activePerspective = perspectiveManager
-        .getActivePerspective();
-    for (int i = 0; i < perspectives.size(); i++) {
-      SpoonPerspective currentPerspective = perspectives.get(i);
-      XulMenuitem currentMenuItem = (XulMenuitem) perspectiveMenus.get(i);
-      currentMenuItem.setSelected(currentPerspective == activePerspective);
-    }
-  }
-
-  public void selectPerspective(int i) {
-    SpoonPerspectiveManager perspectiveManager = SpoonPerspectiveManager
-        .getInstance();
-    try {
-      perspectiveManager.activatePerspective(perspectiveManager
-          .getPerspectives().get(i).getClass());
-    } catch (KettleException e) {
-      e.printStackTrace();
-    }
-  }
-
   public void lastFileSelect(String id) {
 
     int idx = Integer.parseInt(id);
@@ -1598,7 +1541,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       // Ask for a username password to get the required repository access
       loginDialog = new RepositoriesDialog(shell, lastUsedFile
           .getRepositoryName(), new ILoginCallback() {
-
+        
         public void onSuccess(Repository repository) {
           // Close the previous connection...
           if (rep != null) {
@@ -1621,16 +1564,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
                     "Spoon.Dialog.LoadTransformationError.Message"), ke);
           }
         }
-
+        
         public void onError(Throwable t) {
           new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG,
               "Spoon.Dialog.LoginFailed.Title"), BaseMessages.getString(PKG,
               "Spoon.Dialog.LoginFailed.Message"), t);
         }
-
+        
         public void onCancel() {
           // TODO Auto-generated method stub
-
+          
         }
       });
       loginDialog.show();
@@ -1952,8 +1895,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
                 .findPluginWithName(StepPluginType.class, name);
             Image image = GUIResource.getInstance().getImagesSteps().get(
                 plugin.getIds()[0]);
-            if (image == null) {
-              toolTip.hide();
+            if (image==null) {
+            	toolTip.hide();
             }
             toolTip.setImage(image);
             toolTip.setText(name + Const.CR + Const.CR + tip);
@@ -2041,11 +1984,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       // ////////////////////////////////////////////////////////////////////////////////////////////////
 
       PluginRegistry registry = PluginRegistry.getInstance();
-
+      
       final List<PluginInterface> basesteps = registry
           .getPlugins(StepPluginType.class);
       final List<String> basecat = registry.getCategories(StepPluginType.class);
-
+      
       for (int i = 0; i < basecat.size(); i++) {
         TreeItem item = new TreeItem(coreObjectsTree, SWT.NONE);
         item.setText(basecat.get(i));
@@ -2128,7 +2071,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
           .getPlugins(JobEntryPluginType.class);
       List<String> baseCategories = registry
           .getCategories(JobEntryPluginType.class);
-
+      
       TreeItem generalItem = null;
 
       for (int i = 0; i < baseCategories.size(); i++) {
@@ -2147,7 +2090,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
                 baseCategories.get(i))) {
               final Image jobEntryImage = (Image) GUIResource.getInstance()
                   .getImagesJobentriesSmall().get(
-                      baseJobEntries.get(j).getIds()[0]);
+                  baseJobEntries.get(j).getIds()[0]);
               String pluginName = Const
                   .NVL(baseJobEntries.get(j).getName(), "");
               String pluginDescription = Const.NVL(baseJobEntries.get(j)
@@ -2419,6 +2362,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       delegates.db.clearDBCache(databaseMeta);
     }
   }
+  
+  
 
   public void exploreDatabase() {
 
@@ -2639,9 +2584,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
             .getElementById("database-inst-explore");
         if (item != null) {
           final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
-          if (!(databaseMeta.getDatabaseInterface() instanceof SAPR3DatabaseMeta)) {
+          if (!(databaseMeta.getDatabaseInterface() instanceof SAPR3DatabaseMeta) ) {
             item.setDisabled(true);
-          }
+        }
         }
         item = (XulMenuitem) mainSpoonContainer.getDocumentRoot()
             .getElementById("database-inst-clear-cache");
@@ -3012,7 +2957,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       TransHopMeta after = (TransHopMeta) transHopMeta.clone();
       addUndoChange(transMeta, new TransHopMeta[] { before },
           new TransHopMeta[] { after }, new int[] { transMeta
-              .indexOfTransHop(transHopMeta) });
+          .indexOfTransHop(transHopMeta) });
 
       String newname = transHopMeta.toString();
       if (!name.equalsIgnoreCase(newname)) {
@@ -3176,7 +3121,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   public void openRepository() {
     loginDialog = new RepositoriesDialog(shell, null, new ILoginCallback() {
-
+      
       public void onSuccess(Repository repository) {
         // Close previous repository...
         if (rep != null) {
@@ -3283,15 +3228,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
         SpoonPluginManager.getInstance().notifyLifecycleListeners(
             SpoonLifeCycleEvent.REPOSITORY_CONNECTED);
       }
-
+      
       public void onError(Throwable t) {
         closeRepository();
         new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG,
             "Spoon.Dialog.LoginFailed.Title"), BaseMessages.getString(PKG,
             "Spoon.Dialog.LoginFailed.Message"), t);
-
+        
       }
-
+      
       public void onCancel() {
 
       }
@@ -4137,10 +4082,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       if (meta.getFilename() != null) {
         saved = save(meta, meta.getFilename(), false);
       } else {
-        if (meta.canSave()) {
-          saved = saveFileAs(meta);
-        }
+        if(meta.canSave()) {
+        saved = saveFileAs(meta);
       }
+    }
     }
 
     meta.saveSharedObjects(); // throws Exception in case anything goes wrong
@@ -4224,7 +4169,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
                 | SWT.ICON_QUESTION);
             mb.setMessage(BaseMessages.getString(PKG,
                 "Spoon.Dialog.PromptOverwriteTransformation.Message", meta
-                    .getName(), Const.CR));// "There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
+                .getName(), Const.CR));// "There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
             mb.setText(BaseMessages.getString(PKG,
                 "Spoon.Dialog.PromptOverwriteTransformation.Title"));// "Overwrite?"
             response = mb.open();
@@ -4334,8 +4279,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
   public boolean saveFileAs() throws KettleException {
     EngineMetaInterface meta = getActiveMeta();
     if (meta != null) {
-      if (meta.canSave()) {
-        return saveFileAs(meta);
+      if(meta.canSave()) {
+      return saveFileAs(meta);
       }
     }
     return false;
@@ -4442,7 +4387,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
        * 
        * repositoriesMeta.addRepository(fileRepositoryMeta);
        * repositoriesMeta.writeData();
-       */
+	  */
 
       // Show some information concerning all this work...
       //
@@ -4856,7 +4801,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       mb.open();
     }
   }
-  
+
   public void editKettlePropertiesFile() {
 	  KettlePropertiesFileDialog dialog = new KettlePropertiesFileDialog(shell, SWT.NONE);
 	  dialog.open();
@@ -5379,13 +5324,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
    * Allocate new step, optionally open and rename it.
    * 
    * @param name
-   *          Name of the new step
+   *            Name of the new step
    * @param description
-   *          Description of the type of step
+   *            Description of the type of step
    * @param openit
-   *          Open the dialog for this step?
+   *            Open the dialog for this step?
    * @param rename
-   *          Rename this step?
+   *            Rename this step?
    * 
    * @return The newly created StepMeta object.
    * 
@@ -5571,39 +5516,39 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     markTabsChanged();
   }
 
-  // public void enableMenus() {
-  // boolean enableTransMenu = getActiveTransformation() != null;
-  // boolean enableJobMenu = getActiveJob() != null;
-  // boolean enableMetaMenu = getActiveMeta() != null;
-  // boolean isRepositoryRunning = rep != null;
-  //
-  // // boolean enableLastPreviewMenu = false;
-  // boolean disablePreviewButton = false;
-  //
-  // TabItemInterface currentTab = getActiveTabitem();
-  // boolean saveEnabled = true;
-  // if (currentTab != null && currentTab.canHandleSave()) {
-  // saveEnabled = currentTab.hasContentChanged();
-  // }
-  //
-  // TransGraph transGraph = getActiveTransGraph();
-  // if (transGraph != null) {
-  // disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
-  // }
-  //
-  // org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
-  // // Only enable certain menu-items if we need to.
+//  public void enableMenus() {
+//    boolean enableTransMenu = getActiveTransformation() != null;
+//    boolean enableJobMenu = getActiveJob() != null;
+//    boolean enableMetaMenu = getActiveMeta() != null;
+//    boolean isRepositoryRunning = rep != null;
+//
+//    // boolean enableLastPreviewMenu = false;
+//    boolean disablePreviewButton = false;
+//
+//    TabItemInterface currentTab = getActiveTabitem();
+//    boolean saveEnabled = true;
+//    if (currentTab != null && currentTab.canHandleSave()) {
+//      saveEnabled = currentTab.hasContentChanged();
+//    }
+//
+//    TransGraph transGraph = getActiveTransGraph();
+//    if (transGraph != null) {
+//      disablePreviewButton = transGraph.isRunning() && !transGraph.isHalting();
+//    }
+//
+//    org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
+//    // Only enable certain menu-items if we need to.
   // ((XulMenuitem)
   // doc.getElementById("file-new-database")).setDisabled(!((enableTransMenu ||
   // enableJobMenu) && !isRepositoryRunning))
   // ((XulMenuitem)
   // doc.getElementById("file-save")).setDisabled(!(enableTransMenu ||
   // enableJobMenu || enableMetaMenu)
-  // && saveEnabled);
-  // ((XulMenuitem) doc.getElementById("file-save-as"))
-  // .setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
-  // ((XulMenuitem) doc.getElementById("file-save-as-vfs"))
-  // .setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
+//        && saveEnabled);
+//    ((XulMenuitem) doc.getElementById("file-save-as"))
+//        .setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
+//    ((XulMenuitem) doc.getElementById("file-save-as-vfs"))
+//    .setDisabled(!(enableTransMenu || enableJobMenu || enableMetaMenu));
   // ((XulMenuitem)
   // doc.getElementById("file-close")).setDisabled(!(enableTransMenu ||
   // enableJobMenu || enableMetaMenu));
@@ -5616,28 +5561,28 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
   // ((XulMenuitem)
   // doc.getElementById("file-close")).setDisabled(!(enableTransMenu ||
   // enableJobMenu));
-  //    
-  // // Disable the undo and redo menus if there is no active transformation
-  // // or active job
-  // // DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
-  // //
-  // if (!enableTransMenu && !enableJobMenu) {
-  // ((XulMenuitem) doc.getElementById(UNDO_MENUITEM)).setDisabled(true);
-  // ((XulMenuitem) doc.getElementById(REDO_MENUITEM)).setDisabled(true);
-  // }
-  //
+//    
+//    // Disable the undo and redo menus if there is no active transformation
+//    // or active job
+//    // DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
+//    //
+//    if (!enableTransMenu && !enableJobMenu) {
+//      ((XulMenuitem) doc.getElementById(UNDO_MENUITEM)).setDisabled(true);
+//      ((XulMenuitem) doc.getElementById(REDO_MENUITEM)).setDisabled(true);
+//    }
+//
   // ((XulMenuitem)
   // doc.getElementById("edit-clear-selection")).setDisabled(!enableTransMenu);
   // ((XulMenuitem)
   // doc.getElementById("edit-select-all")).setDisabled(!enableTransMenu);
-  //
-  // // View Menu
+//
+//    // View Menu
   // ((XulMenuitem)
   // doc.getElementById("view-results")).setSelected(isExecutionResultsPaneVisible());
   // ((XulMenuitem) doc.getElementById("view-results")).setDisabled(transGraph
   // == null);
-  //    
-  // // Transformations
+//    
+//    // Transformations
   // ((XulMenuitem)
   // doc.getElementById("process-run")).setDisabled(!(enableTransMenu &&
   // !disablePreviewButton) && !enableJobMenu);
@@ -5658,19 +5603,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
   // doc.getElementById("trans-get-sql")).setDisabled(!enableTransMenu);
   // ((XulMenuitem)
   // doc.getElementById("trans-last-impact")).setDisabled(!enableTransMenu);
-  //
-  // // Trans
+//
+//    // Trans
   // ((XulMenuitem)
   // doc.getElementById("trans-copy")).setDisabled(!enableTransMenu);
   // ((XulMenuitem)
   // doc.getElementById("trans-copy-image")).setDisabled(!enableTransMenu);
   // ((XulMenuitem)
   // doc.getElementById("trans-last-impact")).setDisabled(!enableTransMenu);
-  //    
-  // // Jobs
-  // ((XulMenuitem) doc.getElementById("job-copy")).setDisabled(!enableJobMenu);
-  //
-  // // Tools
+//    
+//    // Jobs
+//    ((XulMenuitem) doc.getElementById("job-copy")).setDisabled(!enableJobMenu);
+//
+//    // Tools
   // ((XulMenuitem)
   // doc.getElementById("repository-connect")).setSelected(isRepositoryRunning);
   // ((XulMenuitem)
@@ -5680,28 +5625,28 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
   // ((XulMenuitem)
   // doc.getElementById("trans-last-preview")).setDisabled(!isRepositoryRunning
   // || !enableTransMenu);
-  //    
-  // // Wizard
+//    
+//    // Wizard
   // ((XulMenuitem)
   // doc.getElementById("wizard-connection")).setDisabled(!(enableTransMenu ||
   // enableJobMenu));
   // ((XulMenuitem)
   // doc.getElementById("wizard-copy-table")).setDisabled(!(enableTransMenu ||
   // enableJobMenu));
-  // ((XulMenuitem) doc.getElementById("wizard-copy-tables"))
-  // .setDisabled(!(isRepositoryRunning || enableTransMenu || enableJobMenu));
-  //    
-  // SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
-  //
-  // // What steps & plugins to show?
-  // refreshCoreObjects();
-  // }
+//    ((XulMenuitem) doc.getElementById("wizard-copy-tables"))
+//        .setDisabled(!(isRepositoryRunning || enableTransMenu || enableJobMenu));
+//    
+//		SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
+//
+//    // What steps & plugins to show?
+//    refreshCoreObjects();
+//  }
 
   public void enableMenus() {
     boolean disableTransMenu = getActiveTransformation() == null;
     boolean disableJobMenu = getActiveJob() == null;
     boolean disableMetaMenu = getActiveMeta() == null;
-    boolean isRepositoryRunning = rep != null;
+    boolean isRepositoryRunning = rep != null;    
     boolean disablePreviewButton = true;
     TransGraph transGraph = getActiveTransGraph();
     if (transGraph != null) {
@@ -5715,90 +5660,56 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     }
 
     org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
+    
     // Only enable certain menu-items if we need to.
-    ((XulMenuitem) doc.getElementById("file-new-database"))
-        .setDisabled((disableTransMenu && disableJobMenu)
-            || !isRepositoryRunning);
-    ((XulMenuitem) doc.getElementById("file-save"))
-        .setDisabled((disableTransMenu && disableJobMenu && disableMetaMenu)
-            || disableSave);
-    ((XulMenuitem) doc.getElementById("file-save-as"))
-        .setDisabled(disableTransMenu && disableJobMenu && disableMetaMenu);
-    ((XulMenuitem) doc.getElementById("file-save-as-vfs"))
-        .setDisabled(disableTransMenu && disableJobMenu && disableMetaMenu);
-    ((XulMenuitem) doc.getElementById("file-close"))
-        .setDisabled(disableTransMenu && disableJobMenu && disableMetaMenu);
-    ((XulMenuitem) doc.getElementById("file-print"))
-        .setDisabled(disableTransMenu && disableJobMenu);
-    ((XulMenuitem) doc.getElementById("file-export-to-xml"))
-        .setDisabled(disableTransMenu && disableJobMenu);
-    ((XulMenuitem) doc.getElementById("file-export-to-xml"))
-        .setDisabled(disableTransMenu && disableJobMenu);
-    ((XulMenuitem) doc.getElementById("file-export-all-to-xml"))
-        .setDisabled(disableTransMenu && disableJobMenu);
-
+    disableMenuItem(doc, "file-new-database", disableTransMenu && disableJobMenu || !isRepositoryRunning);
+    disableMenuItem(doc, "file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
+    disableMenuItem(doc, "file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu);
+    disableMenuItem(doc, "file-save-as-vfs", disableTransMenu && disableJobMenu && disableMetaMenu);
+    disableMenuItem(doc, "file-close", disableTransMenu && disableJobMenu && disableMetaMenu);    //    ((XulMenuitem) doc.getElementById("file-print")).setDisabled(disableTransMenu && disableJobMenu);
+    disableMenuItem(doc, "file-print", disableTransMenu && disableJobMenu);    
+    disableMenuItem(doc, "file-export-to-xml", disableTransMenu && disableJobMenu);    
+    disableMenuItem(doc, "file-export-all-to-xml", disableTransMenu && disableJobMenu);    
+    
     // Disable the undo and redo menus if there is no active transformation
     // or active job
     // DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
     //
-    if (disableTransMenu && disableJobMenu) {
-      ((XulMenuitem) doc.getElementById(UNDO_MENUITEM)).setDisabled(true);
-      ((XulMenuitem) doc.getElementById(REDO_MENUITEM)).setDisabled(true);
-    }
+    disableMenuItem(doc, UNDO_MENUITEM, disableTransMenu && disableJobMenu);
+    disableMenuItem(doc, REDO_MENUITEM, disableTransMenu && disableJobMenu);
 
-    ((XulMenuitem) doc.getElementById("edit-clear-selection"))
-        .setDisabled(disableTransMenu);
-    ((XulMenuitem) doc.getElementById("edit-select-all"))
-        .setDisabled(disableTransMenu);
-
+    disableMenuItem(doc, "edit-clear-selection", disableTransMenu);
+    disableMenuItem(doc, "edit-select-all", disableTransMenu);
+    
     // View Menu
     ((XulMenuitem) doc.getElementById("view-results"))
         .setSelected(isExecutionResultsPaneVisible());
-    ((XulMenuitem) doc.getElementById("view-results"))
-        .setDisabled(transGraph == null);
-    ((XulMenuitem) doc.getElementById("view-zoom-in"))
-        .setDisabled(disableTransMenu && disableJobMenu);
-    ((XulMenuitem) doc.getElementById("view-zoom-out"))
-        .setDisabled(disableTransMenu && disableJobMenu);
-    ((XulMenuitem) doc.getElementById("view-zoom-100pct"))
-        .setDisabled(disableTransMenu && disableJobMenu);
-
+    disableMenuItem(doc, "view-results", transGraph == null && disableJobMenu);
+    disableMenuItem(doc, "view-zoom-in", disableTransMenu && disableJobMenu);
+    disableMenuItem(doc, "view-zoom-out", disableTransMenu && disableJobMenu);
+    disableMenuItem(doc, "view-zoom-100pct", disableTransMenu && disableJobMenu);
+    
     // Transformations
-    ((XulMenuitem) doc.getElementById("process-run"))
-        .setDisabled(disableTransMenu && disablePreviewButton && disableJobMenu);
-    ((XulMenuitem) doc.getElementById("trans-replay"))
-        .setDisabled(disableTransMenu && disablePreviewButton);
-    ((XulMenuitem) doc.getElementById("trans-preview"))
-        .setDisabled(disableTransMenu && disablePreviewButton);
-    ((XulMenuitem) doc.getElementById("trans-debug"))
-        .setDisabled(disableTransMenu && disablePreviewButton);
-    ((XulMenuitem) doc.getElementById("trans-verify"))
-        .setDisabled(disableTransMenu);
-    ((XulMenuitem) doc.getElementById("trans-impact"))
-        .setDisabled(disableTransMenu);
-    ((XulMenuitem) doc.getElementById("trans-get-sql"))
-        .setDisabled(disableTransMenu);
-    ((XulMenuitem) doc.getElementById("trans-last-impact"))
-        .setDisabled(disableTransMenu);
+    disableMenuItem(doc, "process-run", disableTransMenu && disablePreviewButton && disableJobMenu);
+    disableMenuItem(doc, "trans-replay", disableTransMenu && disablePreviewButton);
+    disableMenuItem(doc, "trans-preview", disableTransMenu && disablePreviewButton);
+    disableMenuItem(doc, "trans-debug", disableTransMenu && disablePreviewButton);
+    disableMenuItem(doc, "trans-verify", disableTransMenu);
+    disableMenuItem(doc, "trans-impact", disableTransMenu);
+    disableMenuItem(doc, "trans-get-sql", disableTransMenu);
+    disableMenuItem(doc, "trans-last-impact", disableTransMenu);
 
     // Tools
-    ((XulMenuitem) doc.getElementById("repository-connect"))
-        .setSelected(isRepositoryRunning);
-    ((XulMenuitem) doc.getElementById("repository-disconnect"))
-        .setDisabled(!isRepositoryRunning);
-    ((XulMenuitem) doc.getElementById("repository-explore"))
-        .setDisabled(!isRepositoryRunning);
-    ((XulMenuitem) doc.getElementById("trans-last-preview"))
-        .setDisabled(!isRepositoryRunning || disableTransMenu);
-
+    disableMenuItem(doc, "repository-connect", isRepositoryRunning);
+    disableMenuItem(doc, "repository-disconnect", !isRepositoryRunning);
+    disableMenuItem(doc, "repository-explore", !isRepositoryRunning);
+    disableMenuItem(doc, "trans-last-preview", !isRepositoryRunning || disableTransMenu);
+    
     // Wizard
-    ((XulMenuitem) doc.getElementById("wizard-connection"))
-        .setDisabled(disableTransMenu && disableJobMenu);
-    ((XulMenuitem) doc.getElementById("wizard-copy-table"))
-        .setDisabled(disableTransMenu && disableJobMenu);
-    ((XulMenuitem) doc.getElementById("wizard-copy-tables"))
-        .setDisabled(isRepositoryRunning && disableTransMenu && disableJobMenu);
-
+    disableMenuItem(doc, "wizard-connection", disableTransMenu && disableJobMenu);
+    disableMenuItem(doc, "wizard-copy-table", disableTransMenu && disableJobMenu);
+    disableMenuItem(doc, "wizard-copy-tables", isRepositoryRunning && disableTransMenu && disableJobMenu);
+    
     SpoonPluginManager.getInstance().notifyLifecycleListeners(
         SpoonLifeCycleEvent.MENUS_REFRESHED);
 
@@ -5806,6 +5717,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     refreshCoreObjects();
   }
 
+  private void disableMenuItem(org.pentaho.ui.xul.dom.Document doc, String itemId, boolean disable) {
+    XulMenuitem menuItem = (XulMenuitem) doc.getElementById(itemId);
+    if (menuItem != null) {
+      menuItem.setDisabled(disable);
+    } else {
+      // TODO log the error
+    }
+  }
+  
   private void markTabsChanged() {
     for (TabMapEntry entry : delegates.tabs.getTabs()) {
       if (entry.getTabItem().isDisposed())
@@ -6072,7 +5992,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
    * Sets the text and enabled settings for the undo and redo menu items
    * 
    * @param undoInterface
-   *          the object which holds the undo/redo information
+   *            the object which holds the undo/redo information
    */
   public void setUndoMenu(UndoInterface undoInterface) {
     if (shell.isDisposed())
@@ -6097,9 +6017,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     //    menuBar.setTextById(UNDO_MENUITEM, prev == null ? UNDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Undo.Available", prev.toString())); //$NON-NLS-1$
     //    menuBar.setTextById(REDO_MENUITEM, next == null ? REDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Redo.Available", next.toString())); //$NON-NLS-1$
     //
-    // // Set the enabled flags
-    // menuBar.setEnableById(UNDO_MENUITEM, prev != null);
-    // menuBar.setEnableById(REDO_MENUITEM, next != null);
+    //    // Set the enabled flags
+    //    menuBar.setEnableById(UNDO_MENUITEM, prev != null);
+    //    menuBar.setEnableById(REDO_MENUITEM, next != null);
   }
 
   public void addUndoNew(UndoInterface undoInterface, Object obj[],
@@ -6164,7 +6084,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
    * Check the steps in a transformation
    * 
    * @param only_selected
-   *          True: Check only the selected steps...
+   *            True: Check only the selected steps...
    */
   public void checkTrans(TransMeta transMeta, boolean only_selected) {
     if (transMeta == null)
@@ -6500,22 +6420,22 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
       splash.hide();
       loginDialog = new RepositoriesDialog(shell, null, new ILoginCallback() {
-
+        
         public void onSuccess(Repository repository) {
           setRepository(repository);
           SpoonPluginManager.getInstance().notifyLifecycleListeners(
               SpoonLifeCycleEvent.REPOSITORY_CONNECTED);
         }
-
+        
         public void onError(Throwable t) {
           new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG,
               "Spoon.Dialog.LoginFailed.Title"), BaseMessages.getString(PKG,
               "Spoon.Dialog.LoginFailed.Message"), t);
         }
-
+        
         public void onCancel() {
           // TODO Auto-generated method stub
-
+          
         }
       });
       loginDialog.show();
@@ -6546,25 +6466,25 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
           mb.open();
           loginDialog = new RepositoriesDialog(shell, null,
               new ILoginCallback() {
-
-                public void onSuccess(Repository repository) {
-                  setRepository(repository);
+            
+            public void onSuccess(Repository repository) {
+              setRepository(repository);
                   SpoonPluginManager.getInstance().notifyLifecycleListeners(
                       SpoonLifeCycleEvent.REPOSITORY_CONNECTED);
-                }
-
-                public void onError(Throwable t) {
+            }
+            
+            public void onError(Throwable t) {
                   new ErrorDialog(loginDialog.getShell(), BaseMessages
                       .getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
                       BaseMessages.getString(PKG,
                           "Spoon.Dialog.LoginFailed.Message"), t);
-                }
-
-                public void onCancel() {
-                  // TODO Auto-generated method stub
-
-                }
-              });
+            }
+            
+            public void onCancel() {
+              // TODO Auto-generated method stub
+              
+            }
+          });
           loginDialog.show();
         }
       } catch (Exception e) {
@@ -6576,7 +6496,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   public void handleStartOptions(CommandLineOption[] options) {
 
-    // note that at this point the rep object is populated by previous calls
+    // note that at this point the rep object is populated by previous calls 
 
     StringBuffer optionRepname = getCommandLineOption(options, "rep")
         .getArgument();
@@ -6694,7 +6614,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     selectRep(splash, options);
     // Enable menue based on whether user was able to login or not
     enableMenus();
-
+    
     if (props.showTips()) {
       TipsDialog tip = new TipsDialog(shell);
       tip.open();
@@ -6858,7 +6778,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
               if (log.isDetailed())
                 log.logDetailed(BaseMessages.getString(PKG,
                     "Spoon.Log.AutoLoadingTransformation", lastUsedFile
-                        .getFilename(), lastUsedFile.getDirectory()));// "Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
+                    .getFilename(), lastUsedFile.getDirectory()));// "Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
               TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell,
                   rep, lastUsedFile.getFilename(), repdir, null);
               TransMeta transMeta = tlpd.open();
@@ -6922,7 +6842,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
    * required fields.
    * 
    * @param stepMeta
-   *          The target step to map against.
+   *            The target step to map against.
    */
   // retry of required fields acquisition
   public void generateFieldMapping(TransMeta transMeta, StepMeta stepMeta) {
@@ -7008,7 +6928,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     PluginRegistry registry = PluginRegistry.getInstance();
     List<PluginInterface> plugins = registry
         .getPlugins(PartitionerPluginType.class);
-
+    
     String options[] = new String[StepPartitioningMeta.methodDescriptions.length
         + plugins.size()];
     String codes[] = new String[StepPartitioningMeta.methodDescriptions.length
@@ -7047,67 +6967,67 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       }
 
       try {
-        int methodType = StepPartitioningMeta.getMethodType(method);
-        stepPartitioningMeta.setMethodType(methodType);
-        stepPartitioningMeta.setMethod(method);
-        switch (methodType) {
-        case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
-          break;
-        case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
-        case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
-
-          // Ask for a Partitioning Schema
-          String schemaNames[] = transMeta.getPartitionSchemasNames();
-          if (schemaNames.length == 0) {
-            MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-            box.setText("Create a partition schema");
+	      int methodType = StepPartitioningMeta.getMethodType(method);
+	      stepPartitioningMeta.setMethodType(methodType);
+	      stepPartitioningMeta.setMethod(method);
+	      switch (methodType) {
+	        case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
+	          break;
+	        case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
+	        case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
+	
+	          // Ask for a Partitioning Schema
+	          String schemaNames[] = transMeta.getPartitionSchemasNames();
+	          if (schemaNames.length == 0) {
+	            MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+	            box.setText("Create a partition schema");
             box
                 .setMessage("You first need to create one or more partition schemas in the transformation settings dialog before you can select one!");
-            box.open();
-          } else {
-            // Set the partitioning schema too.
+	            box.open();
+	          } else {
+	            // Set the partitioning schema too.
             PartitionSchema partitionSchema = stepPartitioningMeta
                 .getPartitionSchema();
-            idx = -1;
-            if (partitionSchema != null) {
-              idx = Const.indexOfString(partitionSchema.getName(), schemaNames);
-            }
+	            idx = -1;
+	            if (partitionSchema != null) {
+	              idx = Const.indexOfString(partitionSchema.getName(), schemaNames);
+	            }
             EnterSelectionDialog askSchema = new EnterSelectionDialog(shell,
                 schemaNames, "Select a partition schema",
-                "Select the partition schema to use:");
-            String schemaName = askSchema.open(idx);
-            if (schemaName != null) {
-              idx = Const.indexOfString(schemaName, schemaNames);
+	                "Select the partition schema to use:");
+	            String schemaName = askSchema.open(idx);
+	            if (schemaName != null) {
+	              idx = Const.indexOfString(schemaName, schemaNames);
               stepPartitioningMeta.setPartitionSchema(transMeta
                   .getPartitionSchemas().get(idx));
-            }
-          }
-
-          if (methodType == StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL) {
-            // ask for a fieldname
-
-            StepDialogInterface partitionerDialog = null;
-            try {
+	            }
+	          }
+	
+	          if (methodType == StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL) {
+	            // ask for a fieldname
+	
+	            StepDialogInterface partitionerDialog = null;
+	            try {
               partitionerDialog = delegates.steps.getPartitionerDialog(
                   stepMeta, stepPartitioningMeta, transMeta);
-              partitionerDialog.open();
-            } catch (Exception e) {
+	              partitionerDialog.open();
+	            } catch (Exception e) {
               new ErrorDialog(
                   shell,
                   "Error",
                   "There was an unexpected error while editing the partitioning method specifics:",
                   e);
-            }
-          }
-          break;
-        }
-        StepMeta after = (StepMeta) stepMeta.clone();
+	            }
+	          }
+	          break;
+	      }
+	      StepMeta after = (StepMeta) stepMeta.clone();
         addUndoChange(transMeta, new StepMeta[] { before },
             new StepMeta[] { after }, new int[] { transMeta
-                .indexOfStep(stepMeta) });
-
-        refreshGraph();
-      } catch (Exception e) {
+	          .indexOfStep(stepMeta) });
+	
+	      refreshGraph();	    
+      } catch(Exception e) {
         new ErrorDialog(shell, BaseMessages.getString(PKG,
             "Spoon.ErrorEditingStepPartitioning.Title"), BaseMessages
             .getString(PKG, "Spoon.ErrorEditingStepPartitioning.Message"), e);
@@ -7119,7 +7039,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
    * Select a clustering schema for this step.
    * 
    * @param stepMeta
-   *          The step to set the clustering schema for.
+   *            The step to set the clustering schema for.
    */
   public void editClustering(TransMeta transMeta, StepMeta stepMeta) {
     List<StepMeta> stepMetas = new ArrayList<StepMeta>();
@@ -7131,7 +7051,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
    * Select a clustering schema for this step.
    * 
    * @param stepMeta
-   *          The steps (at least one!) to set the clustering schema for.
+   *            The steps (at least one!) to set the clustering schema for.
    */
   public void editClustering(TransMeta transMeta, List<StepMeta> stepMetas) {
     StepMeta stepMeta = stepMetas.get(0);
@@ -7510,9 +7430,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   public void setRepository(Repository rep) {
     this.rep = rep;
-    if (rep != null) {
-      this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
-    }
+  		if (rep != null) {
+  		  this.capabilities = rep.getRepositoryMeta().getRepositoryCapabilities();
+        }
     // Registering the UI Support classes
     UISupportRegistery.getInstance()
         .registerUISupport(RepositorySecurityProvider.class,
@@ -7523,10 +7443,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
         RevisionsUISupport.class);
     UISupportRegistery.getInstance().registerUISupport(IAclManager.class,
         AclUISupport.class);
-    if (rep != null) {
+    if(rep != null) {
       SpoonPluginManager.getInstance().notifyLifecycleListeners(
           SpoonLifeCycleEvent.REPOSITORY_CHANGED);
-    }
+  }
   }
 
   public void addMenuListener(String id, Object listener, String methodName) {
@@ -7536,7 +7456,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
   public void addTransGraph(TransMeta transMeta) {
     delegates.trans.addTransGraph(transMeta);
   }
-
+  
   public void addJobGraph(JobMeta jobMeta) {
     delegates.jobs.addJobGraph(jobMeta);
   }
@@ -7613,15 +7533,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
           flags |= SWT.CANCEL;
         }
         switch (type) {
-        case Const.INFO:
-          flags |= SWT.ICON_INFORMATION;
-          break;
-        case Const.ERROR:
-          flags |= SWT.ICON_ERROR;
-          break;
-        case Const.WARNING:
-          flags |= SWT.ICON_WARNING;
-          break;
+          case Const.INFO:
+            flags |= SWT.ICON_INFORMATION;
+            break;
+          case Const.ERROR:
+            flags |= SWT.ICON_ERROR;
+            break;
+          case Const.WARNING:
+            flags |= SWT.ICON_WARNING;
+            break;
         }
 
         Shell shell = new Shell(display);
@@ -7648,7 +7568,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   /**
    * @param previewExecutionConfiguration
-   *          the previewExecutionConfiguration to set
+   *            the previewExecutionConfiguration to set
    */
   public void setTransPreviewExecutionConfiguration(
       TransExecutionConfiguration previewExecutionConfiguration) {
@@ -7664,7 +7584,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   /**
    * @param debugExecutionConfiguration
-   *          the debugExecutionConfiguration to set
+   *            the debugExecutionConfiguration to set
    */
   public void setTransDebugExecutionConfiguration(
       TransExecutionConfiguration debugExecutionConfiguration) {
@@ -7673,7 +7593,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   /**
    * @param executionConfiguration
-   *          the executionConfiguration to set
+   *            the executionConfiguration to set
    */
   public void setTransExecutionConfiguration(
       TransExecutionConfiguration executionConfiguration) {
@@ -7689,7 +7609,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   /**
    * @param jobExecutionConfiguration
-   *          the jobExecutionConfiguration to set
+   *            the jobExecutionConfiguration to set
    */
   public void setJobExecutionConfiguration(
       JobExecutionConfiguration jobExecutionConfiguration) {
@@ -7727,8 +7647,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     } else {
       MessageBox box = new MessageBox(shell,
           (info.getState() != LifeEventInfo.State.SUCCESS ? SWT.ICON_ERROR
-              : SWT.ICON_INFORMATION)
-              | SWT.OK);
+          : SWT.ICON_INFORMATION)
+          | SWT.OK);
       box.setText(info.getName());
       box.setMessage(info.getMessage());
       box.open();

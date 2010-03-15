@@ -33,12 +33,8 @@
         <menuitem id="file-print" label="${Spoon.Menu.File.Print}" command="spoon.printFile()" />
 
         <menuseparator />
-        <menu id="file-import" label="${Spoon.Menu.File.Import.Popup}">
-          <menupopup id="import-popup">
-            <menuitem id="file-import-from-xml" acceltext="CTRL-I" accesskey="ctrl-i" label="${Spoon.Menu.File.Import}"
-              command="spoon.importFile()" />
-          </menupopup>
-        </menu>
+        <menuitem id="file-import-from-xml" acceltext="CTRL-I" accesskey="ctrl-i" label="${Spoon.Menu.File.Import}"
+          command="spoon.importFile()" />
         <menu id="file-export" label="${Spoon.Menu.File.Export.Popup}" >
           <menupopup id="export-popup">
           	<menuitem id="file-export-to-xml" label="${Spoon.Menu.File.Export}" command="spoon.exportXMLFile()" />
@@ -63,10 +59,14 @@
         <menuitem id="edit-cut-steps" label="${Spoon.Menu.Edit.Cut}" />
         <menuitem id="edit-copy-steps" acceltext="CTRL-C" accesskey="ctrl-c" label="${Spoon.Menu.Edit.CopyToClipboard}"
           command="spoon.copy()" />
-        <menuitem id="trans-copy-image" acceltext="CTRL-ALT-I" accesskey="ctrl-alt-i"
-          label="${Spoon.Menu.Transformation.CopyTransformationImageClipboard}" command="spoon.copyTransformationImage()" />   
+          
+          <!-- Copy Files goes here  -->
+          
         <menuitem id="edit-paste-steps" acceltext="CTRL-V" accesskey="ctrl-v" label="${Spoon.Menu.Edit.PasteFromClipboard}"
           command="spoon.paste()" />
+        <menuseparator />
+        <menuitem id="trans-copy-image" acceltext="CTRL-ALT-I" accesskey="ctrl-alt-i"
+          label="${Spoon.Menu.Transformation.CopyTransformationImageClipboard}" command="spoon.copyTransformationImage()" />   
         <menuseparator />
         <menuitem id="edit-clear-selection" acceltext="ESC" accesskey="esc" label="${Spoon.Menu.Edit.ClearSelection}"
           command="spoon.editUnselectAll()" />
@@ -139,8 +139,8 @@
       <menupopup id="tools-popup">
         <menu id="tools-data" label="${Spoon.Menu.Tools.Data.Popup}">
           <menupopup id="tools-data-popup">
-            <menuitem id="tools-data-new" label="${Spoon.Menu.Tools.Data.New}"/>
-            <menuitem id="tools-data-clear-cache" label="${Spoon.Menu.Tools.Data.Clear.Cache}" />
+            <menuitem id="tools-dabase-explore" label="${Spoon.Menu.Tools.Database.Explore}" command="spoon.exploreDatabase()" />
+            <menuitem id="tools-data-clear-cache" label="${Spoon.Menu.Tools.Data.Clear.Cache}" command="clearDBCache('database-class-clear-cache')" />
           </menupopup>
         </menu>
         <menu id="repository" label="${Spoon.Menu.Repository}">
@@ -153,9 +153,6 @@
               label="${Spoon.Menu.Repository.ExploreRepository}" command="spoon.exploreRepository()" />
       	  </menupopup>
         </menu>
-        <menu id="plugins" label="${Spoon.Menu.Tools.Plugins.Popup}">
-          <menupopup id="plugins-popup-placeholder" />
-        </menu>
         <menu id="wizard" label="${Spoon.Menu.Wizard}">
           <menupopup id="wizard-popup">
             <menuitem id="wizard-connection" acceltext="F3" accesskey="f3"
@@ -165,7 +162,9 @@
             <menuitem id="wizard-copy-tables" acceltext="CTRL-F10" accesskey="ctrl-f10" label="${Spoon.Menu.Wizard.CopyTables}"
               command="spoon.ripDBWizard()" />
           </menupopup>
-        </menu> 
+        </menu>
+        <menuseparator />
+        <menuitem id="edit-options" label="${Spoon.Menu.Edit.Options}" command="spoon.editOptions()" />
       </menupopup>
     </menu>
     
