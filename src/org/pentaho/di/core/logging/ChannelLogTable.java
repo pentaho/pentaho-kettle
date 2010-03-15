@@ -168,15 +168,15 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 	}
 
 	public String getConnectionNameVariable() {
-		return "KETTLE_LOG_CHANNEL_DB"; // $NON-NLS-1$
+		return Const.KETTLE_CHANNEL_LOG_DB; // $NON-NLS-1$
 	}
 
 	public String getSchemaNameVariable() {
-		return "KETTLE_LOG_CHANNEL_SCHEMA"; // $NON-NLS-1$
+		return Const.KETTLE_CHANNEL_LOG_SCHEMA; // $NON-NLS-1$
 	}
 
 	public String getTableNameVariable() {
-		return "KETTLE_LOG_CHANNEL_TABLE"; // $NON-NLS-1$
+		return Const.KETTLE_CHANNEL_LOG_TABLE; // $NON-NLS-1$
 	}
 
 	

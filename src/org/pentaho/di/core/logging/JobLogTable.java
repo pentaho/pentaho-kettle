@@ -286,15 +286,15 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 	}
 
 	public String getConnectionNameVariable() {
-		return "KETTLE_LOG_JOB_DB"; // $NON-NLS-1$
+		return Const.KETTLE_JOB_LOG_DB;
 	}
 
 	public String getSchemaNameVariable() {
-		return "KETTLE_LOG_JOB_SCHEMA"; // $NON-NLS-1$
+		return Const.KETTLE_JOB_LOG_SCHEMA;
 	}
 
 	public String getTableNameVariable() {
-		return "KETTLE_LOG_JOB_TABLE"; // $NON-NLS-1$
+		return Const.KETTLE_JOB_LOG_TABLE;
 	}
 
 }

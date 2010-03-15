@@ -32,24 +32,37 @@ public class KettleEnvironment {
 	public static void init(boolean simpleJndi) throws KettleException {
 		if (initialized==null) {
 			
+			// Create a home for Kettle if it doesn't exist yet.
+			//
 			createKettleHome();
 			
+			// Read the kettle.properties file before anything else
+			//
 			EnvUtil.environmentInit();
 			
+			// Initialize the logging back-end.
+			//
 			CentralLogStore.init();
 			
+			// Configure Simple JNDI when we run in stand-alone mode (spoon, pan, kitchen, carte, ... NOT on the platform
+			//
 			if (simpleJndi) {
 			  JndiUtil.initJNDI();
 			}
 			
+			// Register the native types and the plugins for the various plugin types...
+			//
 			PluginRegistry.addPluginType(StepPluginType.getInstance());
 			PluginRegistry.addPluginType(PartitionerPluginType.getInstance());
 			PluginRegistry.addPluginType(JobEntryPluginType.getInstance());
 			PluginRegistry.addPluginType(RepositoryPluginType.getInstance());
 			PluginRegistry.addPluginType(DatabasePluginType.getInstance());
 			PluginRegistry.addPluginType(LifecyclePluginType.getInstance());
-			
 			PluginRegistry.init();
+			
+			// Also read the list of variables.
+			//
+			KettleVariablesList.init();
 						
 			initialized = true;
 		}
@@ -86,16 +99,7 @@ public class KettleEnvironment {
 			try 
 			{
 				out = new FileOutputStream(file);
-				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line01", Const.VERSION)+Const.CR).getBytes());
-				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line02")+Const.CR).getBytes());
-				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line03")+Const.CR).getBytes());
-				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line04")+Const.CR).getBytes());
-				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line05")+Const.CR).getBytes());
-				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line06")+Const.CR).getBytes());
-				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line07")+Const.CR).getBytes());
-				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line08")+Const.CR).getBytes());
-				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line09")+Const.CR).getBytes());
-				out.write((BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line10")+Const.CR).getBytes());
+				out.write(Const.getKettlePropertiesFileHeader().getBytes());
 			} 
 			catch (IOException e) 
 			{

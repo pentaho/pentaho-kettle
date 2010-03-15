@@ -201,14 +201,14 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 	}
 
 	public String getConnectionNameVariable() {
-		return "KETTLE_JOBENTRY_LOG_DB"; // $NON-NLS-1$
+		return Const.KETTLE_JOBENTRY_LOG_DB; // $NON-NLS-1$
 	}
 
 	public String getSchemaNameVariable() {
-		return "KETTLE_JOBENTRY_LOG_SCHEMA"; // $NON-NLS-1$
+		return Const.KETTLE_JOBENTRY_LOG_SCHEMA; // $NON-NLS-1$
 	}
 
 	public String getTableNameVariable() {
-		return "KETTLE_JOBENTRY_LOG_TABLE"; // $NON-NLS-1$
+		return Const.KETTLE_JOBENTRY_LOG_TABLE; // $NON-NLS-1$
 	}
 }

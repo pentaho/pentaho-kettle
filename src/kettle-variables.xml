@@ -1,0 +1,123 @@
+<kettle-variables>
+
+    <kettle-variable>
+    	<description>You can set this environment variable to make Kettle scan additional packages for annotated plugins. The packages are comma (,) delimited and the base specification is in the kettle-config.xml file</description>
+		<variable>KETTLE_PLUGIN_PACKAGES</variable>
+	</kettle-variable>
+	
+    <kettle-variable>
+    	<description>If you set this environment variable you can limit the log size of all transformations and jobs that don't have the "log size limit" property set in their respective properties.</description>
+		<variable>KETTLE_LOG_SIZE_LIMIT</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the log database connection by default for all transformations.</description>
+		<variable>KETTLE_TRANS_LOG_DB</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the logging schema for all transformations</description>
+		<variable>KETTLE_TRANS_LOG_SCHEMA</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the logging table for all transformations</description>
+		<variable>KETTLE_TRANS_LOG_TABLE</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the log database connection by default for all jobs</description>
+		<variable>KETTLE_JOB_LOG_DB</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the logging schema for all jobs</description>
+		<variable>KETTLE_JOB_LOG_SCHEMA</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the logging table for all jobs</description>
+		<variable>KETTLE_JOB_LOG_TABLE</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the transformation performance log schema by default for all transformations</description>
+		<variable>KETTLE_TRANS_PERFORMANCE_LOG_DB</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the transformation performance log database connection by default for all transformations</description>
+		<variable>KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the transformation performance log table by default for all transformations</description>
+		<variable>KETTLE_TRANS_PERFORMANCE_LOG_TABLE</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the job entry log database by default for all jobs</description>
+		<variable>KETTLE_JOBENTRY_LOG_DB</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the job entry log schema by default for all jobs</description>
+		<variable>KETTLE_JOBENTRY_LOG_SCHEMA</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the job entry log table by default for all jobs</description>
+		<variable>KETTLE_JOBENTRY_LOG_TABLE</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the steps log database by default for all transformations</description>
+		<variable>KETTLE_STEP_LOG_DB</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the steps log schema by default for all transformations</description>
+		<variable>KETTLE_STEP_LOG_SCHEMA</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the steps log table by default for all transformations</description>
+		<variable>KETTLE_STEP_LOG_TABLE</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the log channel log database by default for all transformations and jobs</description>
+		<variable>KETTLE_CHANNEL_LOG_DB</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the log channel log schema by default for all transformations and jobs</description>
+		<variable>KETTLE_CHANNEL_LOG_SCHEMA</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The name of the variable that defines the log channel log table by default for all transformations and jobs</description>
+		<variable>KETTLE_CHANNEL_LOG_TABLE</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>Name of the environment variable to set the location of the shared object file (xml) for transformations and jobs</description>
+		<variable>KETTLE_SHARED_OBJECTS</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>System wide flag to drive the evaluation of null in ValueMeta.  If this setting is set to Y, an empty string and null are different. Otherwise they are not.</description>
+		<variable>KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>System wide flag to set the maximum number of log lines that are kept internally by Kettle.	Set to 0 to keep all rows (default)</description>
+		<variable>KETTLE_MAX_LOG_SIZE_IN_LINES</variable>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>System wide flag to set the maximum age (in minutes) of a log line while being kept internally by Kettle.	Set to 0 to keep all rows indefinitely (default)</description>
+		<variable>KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES</variable>
+	</kettle-variable>
+
+</kettle-variables>

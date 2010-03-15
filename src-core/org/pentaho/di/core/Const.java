@@ -452,29 +452,110 @@ public class Const
 	 * The default undo level for Kettle
 	 */
 	public static final int MAX_UNDO = 100;
-
+	
 	/**
-	 * You can set this environment variable to make Kettle scan additional packages for annotated plugins.
-	 * The packages are comma (,) delimited and the base specification is in the kettle-config.xml file
+	 * The file that documents these variables.
 	 */
-	public static final String KETTLE_PLUGIN_PACKAGES = "KETTLE_PLUGIN_PACKAGES";
+	public static final String KETTLE_VARIABLES_FILE = "kettle-variables.xml";
 
 	/**
 	 * If you set this environment variable you can limit the log size of all transformations and jobs 
 	 * that don't have the "log size limit" property set in their respective properties.
 	 */
 	public static final String KETTLE_LOG_SIZE_LIMIT = "KETTLE_LOG_SIZE_LIMIT";
-	
+
 	/**
 	 * The name of the variable that defines the log database connection by default for all transformations
 	 */
-	public static final String KETTLE_TRANS_LOG_DATABASE_NAME = "KETTLE_TRANS_LOG_DATABASE_NAME";
+	public static final String	KETTLE_TRANS_LOG_DB	= "KETTLE_TRANS_LOG_DB";
+
+	/**
+	 * The name of the variable that defines the logging schema for all transformations
+	 */
+	public static final String	KETTLE_TRANS_LOG_SCHEMA	= "KETTLE_TRANS_LOG_SCHEMA";
+
+	/**
+	 * The name of the variable that defines the logging table for all transformations
+	 */
+	public static final String	KETTLE_TRANS_LOG_TABLE	= "KETTLE_TRANS_LOG_TABLE";
 
 	/**
 	 * The name of the variable that defines the log database connection by default for all jobs
 	 */
-	public static final String KETTLE_JOB_LOG_DATABASE_NAME = "KETTLE_JOB_LOG_DATABASE_NAME";
+	public static final String	KETTLE_JOB_LOG_DB	= "KETTLE_JOB_LOG_DB";
 
+	/**
+	 * The name of the variable that defines the logging schema for all jobs
+	 */
+	public static final String	KETTLE_JOB_LOG_SCHEMA	= "KETTLE_JOB_LOG_SCHEMA";
+
+	/**
+	 * The name of the variable that defines the logging table for all jobs
+	 */
+	public static final String	KETTLE_JOB_LOG_TABLE	= "KETTLE_JOB_LOG_TABLE";
+
+	/**
+	 * The name of the variable that defines the transformation performance log schema by default for all transformations
+	 */
+	public static final String	KETTLE_TRANS_PERFORMANCE_LOG_DB	= "KETTLE_TRANS_PERFORMANCE_LOG_DB";
+
+	/**
+	 * The name of the variable that defines the transformation performance log database connection by default for all transformations
+	 */
+	public static final String	KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA	= "KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA";
+
+	/**
+	 * The name of the variable that defines the transformation performance log table by default for all transformations
+	 */
+	public static final String	KETTLE_TRANS_PERFORMANCE_LOG_TABLE	= "KETTLE_TRANS_PERFORMANCE_LOG_TABLE";
+
+	/**
+	 * The name of the variable that defines the job entry log database by default for all jobs
+	 */
+	public static final String	KETTLE_JOBENTRY_LOG_DB	= "KETTLE_JOBENTRY_LOG_DB";
+
+	/**
+	 * The name of the variable that defines the job entry log schema by default for all jobs
+	 */
+	public static final String	KETTLE_JOBENTRY_LOG_SCHEMA	= "KETTLE_JOBENTRY_LOG_SCHEMA";
+
+	/**
+	 * The name of the variable that defines the job entry log table by default for all jobs
+	 */
+	public static final String	KETTLE_JOBENTRY_LOG_TABLE	= "KETTLE_JOBENTRY_LOG_TABLE";
+
+	/**
+	 * The name of the variable that defines the steps log database by default for all transformations
+	 */
+	public static final String	KETTLE_STEP_LOG_DB	= "KETTLE_STEP_LOG_DB";
+
+	/**
+	 * The name of the variable that defines the steps log schema by default for all transformations
+	 */
+	public static final String	KETTLE_STEP_LOG_SCHEMA	= "KETTLE_STEP_LOG_SCHEMA";
+
+	/**
+	 * The name of the variable that defines the steps log table by default for all transformations
+	 */
+	public static final String	KETTLE_STEP_LOG_TABLE	= "KETTLE_STEP_LOG_TABLE";
+
+	/**
+	 * The name of the variable that defines the log channel log database by default for all transformations and jobs
+	 */
+	public static final String	KETTLE_CHANNEL_LOG_DB	= "KETTLE_CHANNEL_LOG_DB";
+
+	/**
+	 * The name of the variable that defines the log channel log schema by default for all transformations and jobs
+	 */
+	public static final String	KETTLE_CHANNEL_LOG_SCHEMA	= "KETTLE_CHANNEL_LOG_SCHEMA";
+
+	/**
+	 * The name of the variable that defines the log channel log table by default for all transformations and jobs
+	 */
+	public static final String	KETTLE_CHANNEL_LOG_TABLE	= "KETTLE_CHANNEL_LOG_TABLE";
+
+
+	
 	/**
 	 * Name of the environment variable to set the location of the shared object file (xml) for transformations and jobs
 	 */
@@ -2299,5 +2380,21 @@ public class Const
 	    }
 	    return FontName;
 	}
-	
+
+	public static String getKettlePropertiesFileHeader() {
+		StringBuilder out = new StringBuilder();
+		
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line01", VERSION)+CR);
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line02")+CR);
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line03")+CR);
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line04")+CR);
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line05")+CR);
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line06")+CR);
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line07")+CR);
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line08")+CR);
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line09")+CR);
+		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line10")+CR);
+		
+		return out.toString();
+	}
 }

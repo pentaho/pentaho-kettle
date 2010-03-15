@@ -325,14 +325,14 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 	}
 	
 	public String getConnectionNameVariable() {
-		return "KETTLE_TRANS_LOG_DB"; // $NON-NLS-1$
+		return Const.KETTLE_TRANS_LOG_DB;
 	}
 
 	public String getSchemaNameVariable() {
-		return "KETTLE_TRANS_LOG_SCHEMA"; // $NON-NLS-1$
+		return Const.KETTLE_TRANS_LOG_SCHEMA;
 	}
 
 	public String getTableNameVariable() {
-		return "KETTLE_TRANS_LOG_TABLE"; // $NON-NLS-1$
+		return Const.KETTLE_TRANS_LOG_TABLE;
 	}
 }

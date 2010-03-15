@@ -199,15 +199,15 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
 	}
 
 	public String getConnectionNameVariable() {
-		return "KETTLE_TRANS_LOG_PERFORMANCE_DB"; // $NON-NLS-1$
+		return Const.KETTLE_TRANS_PERFORMANCE_LOG_DB; // $NON-NLS-1$
 	}
 
 	public String getSchemaNameVariable() {
-		return "KETTLE_TRANS_LOG_PERFORMANCE_SCHEMA"; // $NON-NLS-1$
+		return Const.KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA; // $NON-NLS-1$
 	}
 
 	public String getTableNameVariable() {
-		return "KETTLE_TRANS_LOG_PERFORMANCE_TABLE"; // $NON-NLS-1$
+		return Const.KETTLE_TRANS_PERFORMANCE_LOG_TABLE; // $NON-NLS-1$
 	}
 
 }

@@ -211,6 +211,7 @@ import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterStringsDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.KettlePropertiesFileDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
@@ -4854,6 +4855,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
           "Spoon.Dialog.PleaseRestartApplication.Title"));
       mb.open();
     }
+  }
+  
+  public void editKettlePropertiesFile() {
+	  KettlePropertiesFileDialog dialog = new KettlePropertiesFileDialog(shell, SWT.NONE);
+	  dialog.open();
   }
 
   /**

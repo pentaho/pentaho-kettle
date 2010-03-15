@@ -178,14 +178,14 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 	}
 
 	public String getConnectionNameVariable() {
-		return "KETTLE_STEP_LOG_DB"; // $NON-NLS-1$
+		return Const.KETTLE_STEP_LOG_DB; // $NON-NLS-1$
 	}
 
 	public String getSchemaNameVariable() {
-		return "KETTLE_STEP_LOG_SCHEMA"; // $NON-NLS-1$
+		return Const.KETTLE_STEP_LOG_SCHEMA; // $NON-NLS-1$
 	}
 
 	public String getTableNameVariable() {
-		return "KETTLE_STEP_LOG_TABLE"; // $NON-NLS-1$
+		return Const.KETTLE_STEP_LOG_TABLE; // $NON-NLS-1$
 	}
 }

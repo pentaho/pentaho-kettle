@@ -1655,6 +1655,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 		spoon.editOptions();
 	  }
 
+	  if (e.keyCode == SWT.F2) {
+	    spoon.editKettlePropertiesFile();
+	  }
+
 
       // CTRL-UP : allignTop();
       if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.CONTROL) != 0) {
