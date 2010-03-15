@@ -1,11 +1,6 @@
 <kettle-variables>
 
     <kettle-variable>
-    	<description>You can set this environment variable to make Kettle scan additional packages for annotated plugins. The packages are comma (,) delimited and the base specification is in the kettle-config.xml file</description>
-		<variable>KETTLE_PLUGIN_PACKAGES</variable>
-	</kettle-variable>
-	
-    <kettle-variable>
     	<description>If you set this environment variable you can limit the log size of all transformations and jobs that don't have the "log size limit" property set in their respective properties.</description>
 		<variable>KETTLE_LOG_SIZE_LIMIT</variable>
 	</kettle-variable>
