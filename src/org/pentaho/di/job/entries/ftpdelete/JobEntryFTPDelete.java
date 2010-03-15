@@ -41,6 +41,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.ftpsget.FTPSConnection;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -93,6 +94,12 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
      
     private String proxyPassword;
     private String protocol;
+    
+    public static final String PROTOCOL_FTP= "FTP";
+    public static final String PROTOCOL_FTPS= "FTPS";
+    public static final String PROTOCOL_SFTP= "SFTP";
+    public static final String PROTOCOL_SSH= "SSH";
+    
 	
 	public  String SUCCESS_IF_AT_LEAST_X_FILES_DOWNLOADED="success_when_at_least";
 	public  String SUCCESS_IF_ERRORS_LESS="success_if_errors_less";
@@ -102,6 +109,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	private String success_condition;
 	private boolean copyprevious;
 	
+	private int FTPSConnectionType;
 	
 	long NrErrors=0;
 	long NrfilesDeleted=0;
@@ -111,6 +119,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	int limitFiles=0;
 	
 	FTPClient ftpclient=null;
+	FTPSConnection ftpsclient=null;
 	SFTPClient sftpclient=null;
 	SFTPv3Client sshclient = null;
 
@@ -118,7 +127,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	{
 		super(n, "");
 		copyprevious=false;
-		protocol="FTP";
+		protocol=PROTOCOL_FTP;
 		port="21";
 		nr_limit_success="10";
 		success_condition=SUCCESS_IF_ALL_FILES_DOWNLOADED;
@@ -126,7 +135,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		keyFilename=null;
 		keyFilePass=null;
 		serverName=null;
-		
+		FTPSConnectionType= FTPSConnection.CONNECTION_TYPE_FTP;
 		setID(-1L);
 	}
 
@@ -170,7 +179,8 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		retval.append("      ").append(XMLHandler.addTagValue("nr_limit_success", nr_limit_success));
 		retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));
 		retval.append("      ").append(XMLHandler.addTagValue("copyprevious",       copyprevious));
-		
+		retval.append("      ").append(XMLHandler.addTagValue("ftps_connection_type",FTPSConnection.getConnectionTypeCode(FTPSConnectionType)));
+	    
 		
 	    
 		return retval.toString();
@@ -205,7 +215,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		    nr_limit_success          = XMLHandler.getTagValue(entrynode, "nr_limit_success");
 			success_condition          = XMLHandler.getTagValue(entrynode, "success_condition");
 			copyprevious    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "copyprevious") );
-			
+			FTPSConnectionType = FTPSConnection.getConnectionTypeByCode(Const.NVL(XMLHandler.getTagValue(entrynode,	"ftps_connection_type"), ""));
 		      
 		}
 		catch(KettleXMLException xe)
@@ -243,7 +253,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			
 		    nr_limit_success  = rep.getJobEntryAttributeString(id_jobentry, "nr_limit_success");
 			success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
-			
+			FTPSConnectionType = FTPSConnection.getConnectionTypeByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry,"ftps_connection_type"), ""));
 		}
 		catch(KettleException dbe)
 		{
@@ -279,6 +289,8 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_limit_success",  nr_limit_success);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",    success_condition);
+			rep.saveJobEntryAttribute(id_job, getObjectId(),"ftps_connection_type", FTPSConnection.getConnectionType(FTPSConnectionType));
+			
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -357,6 +369,22 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	{
 		return keyFilePass;
 	}
+    /**
+     * @return the conenction type
+     */
+    public int getFTPSConnectionType() 
+    {
+    	return FTPSConnectionType;
+    }
+    
+
+    /**
+     * @param connectionType the connectionType to set
+     */
+    public void setFTPSConnectionType(int type)
+    {
+    	FTPSConnectionType = type;
+    }
 	public void setLimitSuccess(String nr_limit_successin)
 	{
 		this.nr_limit_success=nr_limit_successin;
@@ -621,7 +649,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			
 			// Get all the files in the current directory...
 			String[] filelist=null;
-			if(protocol.equals("FTP"))
+			if(protocol.equals(PROTOCOL_FTP))
 			{
 				// establish the connection
 				 FTPConnect(log,realservername,realUsername, realPassword,
@@ -646,7 +674,14 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		          }
 				}
 			}
-			else if(protocol.equals("SFTP"))
+			else if(protocol.equals(PROTOCOL_FTPS))
+			{
+				// establish the secure connection
+				FTPSConnect(log,realservername,realUsername,realserverport,realPassword, realFtpDirectory, timeout);
+				// Get all the files in the current directory...
+				filelist = ftpsclient.getFileNames();
+			}
+			else if(protocol.equals(PROTOCOL_SFTP))
 			{
 				// establish the secure connection
 				SFTPConnect(log,realservername,realUsername,realserverport,realPassword, realFtpDirectory);
@@ -654,7 +689,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 				// Get all the files in the current directory...
 				filelist = sftpclient.dir();
 			}
-			else if(protocol.equals("SSH"))
+			else if(protocol.equals(PROTOCOL_SSH))
 			{
 				// establish the secure connection
 				SSHConnect(log,realservername, realserverpassword, realserverport,
@@ -689,7 +724,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 				}
 			}
 
-			if(log.isDetailed()) logDetailed("JobEntryFTPDelete.FoundNFiles",""+filelist.length);
+			if(log.isDetailed()) logDetailed("JobEntryFTPDelete.FoundNFiles",String.valueOf(filelist.length));
 			int found = filelist == null ? 0 : filelist.length;
 			if(found==0)
 			{
@@ -737,7 +772,6 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			
 				try
 				{
-				
 					// First see if the file matches the regular expression!
 					if(copyprevious)
 					{
@@ -755,21 +789,25 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 					if (getIt)
 					{
 						// Delete file
-						if(protocol.equals("FTP"))
+						if(protocol.equals(PROTOCOL_FTP))
 						{
 							ftpclient.delete(filelist[i]);
 						}
-						else if(protocol.equals("SFTP"))
+						if(protocol.equals(PROTOCOL_FTPS))
+						{
+							System.out.println("---------------"+filelist[i]);
+							ftpsclient.deleteFile(filelist[i]);
+						}
+						else if(protocol.equals(PROTOCOL_SFTP))
 						{
 							sftpclient.delete(filelist[i]);
 						}
-						else if(protocol.equals("SSH"))
+						else if(protocol.equals(PROTOCOL_SSH))
 						{
 							sshclient.rm(filelist[i]);	
 						}
-						if(log.isDetailed()) logDetailed("JobEntryFTPDelete.RemotfileDeleted",filelist[i]);
+						if(log.isDetailed()) logDetailed("JobEntryFTPDelete.RemotefileDeleted",filelist[i]);
 						updateDeletedFiles();
-						
 					}
 				}catch (Exception e)
 				{
@@ -779,13 +817,8 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 				
 					if(successConditionBroken) 
 						throw new Exception(BaseMessages.getString(PKG, "JobEntryFTPDelete.SuccesConditionBroken"));
-				
 				}
-			
-			
-			} // end for
-
-			
+			} // end for			
 		}
 		catch(Exception e)
 		{
@@ -801,6 +834,17 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	            {
 	                ftpclient.quit();
 	                ftpclient=null;
+	            }
+	            catch(Exception e)
+	            {
+	            	logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
+	            }
+	        }
+	        if (ftpsclient!=null)
+	        {
+	            try
+	            {
+	            	ftpsclient.disconnect();
 	            }
 	            catch(Exception e)
 	            {
@@ -927,6 +971,63 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			if(log.isDetailed()) logDetailed("Changed to directory ["+realFTPDirectory+"]");
 		}
 
+	}
+	private void FTPSConnect(LogWriter log,String realservername,String realusername,int realport,
+			String realpassword, String realFTPDirectory, int realtimeout) throws Exception
+	{
+		// Create ftps client to host ...
+		ftpsclient = new FTPSConnection(getFTPSConnectionType(), realservername,realport, 
+				realusername, realpassword); 
+		
+		if (!Const.isEmpty(proxyHost))  {
+        	  String realProxy_host = environmentSubstitute(proxyHost);
+        	  String realProxy_username = environmentSubstitute(proxyUsername);
+        	  String realProxy_password = environmentSubstitute(proxyPassword);
+      	  
+      	  	  ftpsclient.setProxyHost(realProxy_host);
+         	  if(!Const.isEmpty(realProxy_username)) {
+         		 ftpsclient.setProxyUser(realProxy_username);
+	      	  }
+	      	  if(!Const.isEmpty(realProxy_password)) {
+	      		ftpsclient.setProxyPassword(realProxy_password);
+	      	  }
+	    	  if (log.isDetailed() )
+	    	      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.OpenedProxyConnectionOn",realProxy_host));
+	  
+	    	  int proxyport = Const.toInt(environmentSubstitute(proxyPort), 21);
+	    	  if (proxyport != 0) {
+	    		  ftpsclient.setProxyPort(proxyport);
+	    	  }
+          } else  {
+              if ( log.isDetailed() )
+        	      logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPDelete.OpenedConnectionTo",realservername));                
+          }
+		
+		// set activeConnection connectmode ...
+        if (activeConnection)
+        {
+        	ftpsclient.setPassiveMode(false);
+            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetActive")); //$NON-NLS-1$
+        }
+        else
+        {
+        	ftpsclient.setPassiveMode(true);
+            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetPassive")); //$NON-NLS-1$
+        }
+
+		// Set the timeout
+        ftpsclient.setTimeOut(realtimeout);
+	    if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetTimeout", String.valueOf(realtimeout))); //$NON-NLS-1$
+	    
+		// now connect
+		ftpsclient.connect();
+		
+		// move to spool dir ...
+		if (!Const.isEmpty(realFTPDirectory))
+		{
+			ftpsclient.changeDirectory(realFTPDirectory);
+			if(log.isDetailed()) logDetailed("Changed to directory ["+realFTPDirectory+"]");
+		}
 	}
 	private void FTPConnect(LogWriter log,String realServername,String realusername, String realpassword,
 			int realport,String realFtpDirectory, String realProxyhost,String realproxyusername, 

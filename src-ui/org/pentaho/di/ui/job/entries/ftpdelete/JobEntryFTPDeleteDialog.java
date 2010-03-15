@@ -50,6 +50,7 @@ import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.ftpdelete.JobEntryFTPDelete;
+import org.pentaho.di.job.entries.ftpsget.FTPSConnection;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -120,6 +121,12 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     private Button wActive;
 
     private FormData fdlActive, fdActive;
+    
+    
+    private Label wlConnectionType;
+    private FormData fdlConnectionType;
+    private CCombo wConnectionType;
+    private FormData fdConnectionType;
 
     private Button wOK, wCancel;
 
@@ -225,6 +232,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     private FormData fdlgetPrevious, fdgetPrevious;
     
 	
+	private FTPSConnection ftpsclient = null;
 	private FTPClient ftpclient = null;
 	private SFTPClient sftpclient = null;
 	private Connection conn = null;
@@ -234,15 +242,6 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         BaseMessages.getString(PKG, "JobFTPDelete.Filetype.Pem"),
         BaseMessages.getString(PKG, "JobFTPDelete.Filetype.All") };
 
-    //
-    // Original code used to fill encodings, this display all possibilities but
-    // takes 10 seconds on my pc to fill.
-    //
-    // static {
-    //     SortedMap charsetMap = Charset.availableCharsets();
-    //    Set charsetSet = charsetMap.keySet();
-    //    encodings = (String [])charsetSet.toArray(new String[0]);
-    // }
 
     public JobEntryFTPDeleteDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -268,6 +267,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
             {
             	pwdFolder=null;
             	ftpclient=null;
+            	ftpsclient=null;
             	sftpclient=null;
             	conn=null;
                 jobEntry.setChanged();
@@ -340,9 +340,10 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         wlProtocol.setLayoutData(fdlProtocol);
         wProtocol=new Combo(wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wProtocol.setToolTipText(BaseMessages.getString(PKG, "JobFTPDelete.Protocol.Tooltip"));
-        wProtocol.add("FTP");
-        wProtocol.add("SFTP");
-        wProtocol.add("SSH");
+        wProtocol.add(JobEntryFTPDelete.PROTOCOL_FTP);
+        wProtocol.add(JobEntryFTPDelete.PROTOCOL_FTPS);
+        wProtocol.add(JobEntryFTPDelete.PROTOCOL_SFTP);
+        wProtocol.add(JobEntryFTPDelete.PROTOCOL_SSH);
         props.setLook(wProtocol);
         fdProtocol=new FormData();
         fdProtocol.left = new FormAttachment(middle, margin);
@@ -413,6 +414,25 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
             }
         });
 
+
+		wlConnectionType= new Label(wServerSettings, SWT.RIGHT);
+		wlConnectionType.setText(BaseMessages.getString(PKG, "JobFTPDelete.ConnectionType.Label"));
+		props.setLook(wlConnectionType);
+		fdlConnectionType= new FormData();
+		fdlConnectionType.left = new FormAttachment(0, 0);
+		fdlConnectionType.right = new FormAttachment(middle, 0);
+		fdlConnectionType.top = new FormAttachment(wPassword, 2*margin);
+		wlConnectionType.setLayoutData(fdlConnectionType);
+		wConnectionType= new CCombo(wServerSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wConnectionType.setItems(FTPSConnection.connection_type_Desc);
+		props.setLook(wConnectionType);
+		fdConnectionType= new FormData();
+		fdConnectionType.left = new FormAttachment(middle, margin);
+		fdConnectionType.top = new FormAttachment(wPassword, 2*margin);
+		fdConnectionType.right = new FormAttachment(100, 0);
+		wConnectionType.setLayoutData(fdConnectionType);
+		wConnectionType.addModifyListener(lsMod);
+	    
         
         // Use proxy...
         wluseProxy = new Label(wServerSettings, SWT.RIGHT);
@@ -420,7 +440,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         props.setLook(wluseProxy);
         fdluseProxy = new FormData();
         fdluseProxy.left = new FormAttachment(0, 0);
-        fdluseProxy.top = new FormAttachment(wPassword, margin);
+        fdluseProxy.top = new FormAttachment(wConnectionType, margin);
         fdluseProxy.right = new FormAttachment(middle, 0);
         wluseProxy.setLayoutData(fdluseProxy);
         wuseProxy = new Button(wServerSettings, SWT.CHECK);
@@ -428,7 +448,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         wuseProxy.setToolTipText(BaseMessages.getString(PKG, "JobFTPDelete.useProxy.Tooltip"));
         fduseProxy = new FormData();
         fduseProxy.left = new FormAttachment(middle, margin);
-        fduseProxy.top = new FormAttachment(wPassword, margin);
+        fduseProxy.top = new FormAttachment(wConnectionType, margin);
         fduseProxy.right = new FormAttachment(100, 0);
         wuseProxy.setLayoutData(fduseProxy);
         wuseProxy.addSelectionListener(new SelectionAdapter()
@@ -1009,11 +1029,12 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     }
     private void activeFTPProtocol()
     {
-    	if(wProtocol.getText().equals("SSH"))
+    	wlConnectionType.setEnabled(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_FTPS));
+    	wConnectionType.setEnabled(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_FTPS));
+    	if(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_SSH))
     	{
     		wlusePublicKey.setEnabled(true);
     		wusePublicKey.setEnabled(true);
-
     	}else
     	{
     		wusePublicKey.setSelection(false);
@@ -1054,19 +1075,25 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 	    	{
 	    		if(connect())
 	    		{
-	    			if(wProtocol.getText().equals("FTP"))
+	    			if(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_FTP))
 	    			{
 	    				ftpclient.chdir(pwdFolder);
 	    				ftpclient.chdir(realfoldername);
 	    				folderexists=true;
 	    			}
-	    			else if(wProtocol.getText().equals("SFTP"))
+	    			if(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_FTPS))
+	    			{
+	    				ftpsclient.changeDirectory(pwdFolder);
+	    				ftpsclient.changeDirectory(realfoldername);
+	    				folderexists=true;
+	    			}
+	    			else if(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_SFTP))
 	    			{
 	    				sftpclient.chdir(pwdFolder);
 	    				sftpclient.chdir(realfoldername);
 	    				folderexists=true;
 	    			}
-	    			else if(wProtocol.getText().equals("SSH"))
+	    			else if(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_SSH))
 	    			{
 	    				SFTPv3Client client = new SFTPv3Client(conn);
 	    				boolean folderexist=sshDirectoryExists(client,realfoldername);
@@ -1105,11 +1132,13 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     private boolean connect()
     {
     	boolean connexion=false;
-		if(wProtocol.getText().equals("FTP"))
+		if(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_FTP))
 			connexion=connectToFTP();
-		else if(wProtocol.getText().equals("SFTP"))
+		else if(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_FTPS))
+			connexion=connectToFTPS();
+		else if(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_SFTP))
 			connexion=connectToSFTP();
-		else if(wProtocol.getText().equals("SSH"))
+		else if(wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_SSH))
 			connexion=connectToSSH();
 		return connexion;
     }
@@ -1176,6 +1205,54 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 		        // login now ...
 		        ftpclient.login(realUsername, realPassword);
 		        pwdFolder=ftpclient.pwd();
+			}  	
+	        retval=true;
+		}
+	     catch (Exception e)
+	    {
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setMessage(BaseMessages.getString(PKG, "JobFTPDelete.ErrorConnect.NOK",e.getMessage()) +Const.CR);
+			mb.setText(BaseMessages.getString(PKG, "JobFTPDelete.ErrorConnect.Title.Bad"));
+			mb.open(); 
+	    } 
+	    return retval;
+    }
+    private boolean connectToFTPS()
+    {
+    	boolean retval=false;
+		try
+		{
+			if(ftpsclient==null)
+			{
+		        String realServername = jobMeta.environmentSubstitute(wServerName.getText());
+		        String realUsername = jobMeta.environmentSubstitute(wUserName.getText());
+		        String realPassword = jobMeta.environmentSubstitute(wPassword.getText());
+		        int port = Const.toInt(jobMeta.environmentSubstitute(wPort.getText()), 0);
+		        
+		    	 // Create ftp client to host:port ...
+				ftpsclient = new FTPSConnection(FTPSConnection.getConnectionTypeByDesc(wConnectionType.getText()),realServername, port, realUsername,realPassword); 
+			        
+				if (!Const.isEmpty(wProxyHost.getText()))  {
+		        	  // Set proxy
+	            	  String realProxy_host = jobMeta.environmentSubstitute(wProxyHost.getText());
+	            	  String realProxy_user = jobMeta.environmentSubstitute(wProxyUsername.getText());
+	            	  String realProxy_pass = jobMeta.environmentSubstitute(wProxyPassword.getText());
+	            	  ftpsclient.setProxyHost(realProxy_host);
+	            	  int proxyport = Const.toInt(jobMeta.environmentSubstitute(wProxyPort.getText()), 990);
+	            	  if (proxyport != 0) {
+	            		  ftpsclient.setProxyPort(proxyport);
+	            	  }
+	               	  if(!Const.isEmpty(realProxy_user)) {
+	               		ftpsclient.setProxyUser(realProxy_user);
+	            	  }
+	            	  if(!Const.isEmpty(realProxy_pass)) {
+	            		  ftpsclient.setProxyPassword(realProxy_pass);
+	            	  }
+	              } 
+
+		        // login to FTPS host ...
+				ftpsclient.connect();  
+		        pwdFolder=ftpsclient.getWorkingDirectory();
 			}  	
 	        retval=true;
 		}
@@ -1339,6 +1416,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         if(jobEntry.getKeyFilePass()!=null) wkeyfilePass.setText(jobEntry.getKeyFilePass());
         
         wgetPrevious.setSelection(jobEntry.isCopyPrevious());
+		wConnectionType.setText(FTPSConnection.getConnectionTypeDesc(jobEntry.getFTPSConnectionType()));
 		
     }
 
@@ -1392,7 +1470,7 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 	     jobEntry.setKeyFilePass(wkeyfilePass.getText());
 	        
 	     jobEntry.setCopyPrevious(wgetPrevious.getSelection());
-	     
+	    jobEntry.setFTPSConnectionType(FTPSConnection.getConnectionTypeByDesc(wConnectionType.getText()));
         dispose();
     }
 	private void closeFTPConnections()

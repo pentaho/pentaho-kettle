@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -416,7 +417,30 @@ public class FTPSConnection implements FTPListener {
 			}
 		}
 	}
-	
+	 /**
+     * 
+     * this method is used to return filenames
+     *  in working directory
+     * @return  filenames  
+     * @throws KettleException	
+     */
+	public String[] getFileNames() throws KettleException{
+		ArrayList<String> list =null;
+		try {
+			List<FTPFile> fileList=getFileList(getWorkingDirectory());
+			list = new ArrayList<String>();
+			Iterator<FTPFile> it= fileList.iterator();
+			while(it.hasNext()) {
+				FTPFile file = it.next();
+				if(!file.isDirectory()) {
+					list.add(file.getName());
+				}
+			}
+		}catch(Exception e) {
+			throw new KettleException(BaseMessages.getString(PKG, "JobFTPS.Error.RetrievingFilenames"), e);
+		}
+		return list==null?null:(String[]) list.toArray(new String[list.size()]);
+	}
 	 /**
      * 
      * this method is used to delete a file in remote host
@@ -430,6 +454,21 @@ public class FTPSConnection implements FTPListener {
 			this.connection.deleteFile(file);
 		}catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "JobFTPS.Error.DeletingFile", file.getName()), e);
+		}
+	}
+	 /**
+     * 
+     * this method is used to delete a file in remote host
+     * 
+     * @param  filename 
+     * 		   Name of file on remote host to delete	 
+     * @throws KettleException	
+     */
+	public void deleteFile(String filename) throws KettleException{
+		try {
+			this.connection.deleteFile(new FTPFile(getWorkingDirectory(), filename));
+		}catch(Exception e) {
+			throw new KettleException(BaseMessages.getString(PKG, "JobFTPS.Error.DeletingFile", filename), e);
 		}
 	}
 	 /**

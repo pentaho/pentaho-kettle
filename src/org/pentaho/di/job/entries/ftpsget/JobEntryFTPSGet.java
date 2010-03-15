@@ -773,7 +773,6 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 		
 		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPS.Start")); //$NON-NLS-1$
 
-
         FTPSConnection connection=null;
         
 		try
@@ -831,9 +830,6 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
             connection.setTimeOut(timeout);
 		    if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.SetTimeout", String.valueOf(timeout))); //$NON-NLS-1$
 			
-			//FTPSclient.setControlEncoding(controlEncoding);
-		     // if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.SetEncoding", controlEncoding)); //$NON-NLS-1$
-
 			// login to FTPS host ...
             connection.connect();
             if(log.isDetailed()) {
@@ -852,23 +848,10 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 
 			//Create move to folder if necessary
 			if(movefiles && !Const.isEmpty(movetodirectory)) {
-				realMoveToFolder=environmentSubstitute(movetodirectory);
-				realMoveToFolder=normalizePath(realMoveToFolder);
+				realMoveToFolder=normalizePath(environmentSubstitute(movetodirectory));
 				// Folder exists?
-				boolean folderExist=true;
+				boolean folderExist=connection.isDirectoryExists(realMoveToFolder);
 				if(log.isDetailed()) logDetailed(toString(),  BaseMessages.getString(PKG, "JobEntryFTPS.CheckMoveToFolder",realMoveToFolder));
-				String originalLocation = connection.getWorkingDirectory();
-				try{
-					// does not work for folders, see PDI-2567: folderExist=FTPSclient.exists(realMoveToFolder);
-					// try switching to the 'move to' folder.
-					connection.changeDirectory(realMoveToFolder);
-					// Switch back to the previous location.
-				    if(log.isDetailed()) logDetailed(toString(),  BaseMessages.getString(PKG, "JobEntryFTPS.CheckMoveToFolderSwitchBack",originalLocation));
-				    connection.changeDirectory(originalLocation);				    
-				} catch (Exception e){
-					folderExist=false; 
-					// Assume folder does not exist !!
-				}
 				
 				if(!folderExist){
 					if(createmovefolder){
@@ -997,7 +980,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
         }
 	}
 
-	   /**
+	/**
      * normalize / to \ and remove trailing slashes from a path
      * 
      * @param path
