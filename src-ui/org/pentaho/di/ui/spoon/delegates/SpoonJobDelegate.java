@@ -120,7 +120,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				int nr=2;
 				JobEntryCopy check = jobMeta.findJobEntry(entry_name, 0, true);
 				while(check!=null) {
-					entry_name=basename+" "+nr++;
+					entry_name=basename+" "+nr++; //$NON-NLS-1$
 					check = jobMeta.findJobEntry(entry_name, 0, true);
 				}
 
@@ -194,9 +194,9 @@ public class SpoonJobDelegate extends SpoonDelegate
 		{
 			new ErrorDialog(
 					spoon.getShell(),
-					BaseMessages.getString(PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Title"), 
-					BaseMessages.getString(PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Message"), 
-					new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$
+					BaseMessages.getString(PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Title"),  //$NON-NLS-1$
+					BaseMessages.getString(PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Message"), //$NON-NLS-1$ 
+					new Exception(e));
 			return null;
 		}
 	}
@@ -295,8 +295,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 			if (!spoon.getShell().isDisposed())
 				new ErrorDialog(
 						spoon.getShell(),
-						BaseMessages.getString(PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Title"), 
-						BaseMessages.getString(PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+						BaseMessages.getString(PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Title"),  //$NON-NLS-1$
+						BaseMessages.getString(PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -344,8 +344,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 		if (jobEntry.isStart())
 		{
 			MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
-			mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.OnlyUseStartOnce.Message"));
-			mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.OnlyUseStartOnce.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.OnlyUseStartOnce.Message")); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.OnlyUseStartOnce.Title")); //$NON-NLS-1$
 			mb.open();
 			return;
 		}
@@ -370,7 +370,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			return;
 
 		String xml = XMLHandler.getXMLHeader();
-		xml += XMLHandler.openTag(Spoon.XML_TAG_JOB_JOB_ENTRIES) + Const.CR; //$NON-NLS-1$
+		xml += XMLHandler.openTag(Spoon.XML_TAG_JOB_JOB_ENTRIES) + Const.CR;
 
 		for (int i = 0; i < jec.size(); i++)
 		{
@@ -391,7 +391,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			// De-select all, re-select pasted steps...
 			jobMeta.unselectAll();
 
-			Node entriesnode = XMLHandler.getSubNode(doc, Spoon.XML_TAG_JOB_JOB_ENTRIES); //$NON-NLS-1$
+			Node entriesnode = XMLHandler.getSubNode(doc, Spoon.XML_TAG_JOB_JOB_ENTRIES);
 			int nr = XMLHandler.countNodes(entriesnode, "entry"); //$NON-NLS-1$
 			spoon.getLog().logDebug(spoon.toString(), "I found " + nr + " job entries to paste on location: " + loc); //$NON-NLS-1$ //$NON-NLS-2$
 			List<JobEntryCopy> entryList = new ArrayList<JobEntryCopy>(nr);
@@ -573,7 +573,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		} 
 		else
 		{
-			jobMeta.setFilename(Const.createFilename(directory, jobname, "."+Const.STRING_JOB_DEFAULT_EXT));
+			jobMeta.setFilename(Const.createFilename(directory, jobname, "."+Const.STRING_JOB_DEFAULT_EXT)); //$NON-NLS-1$
 		}
 
 		spoon.refreshTree();
@@ -621,7 +621,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 							transMeta.setRepositoryDirectory(repdir);
 						} else
 						{
-							transMeta.setFilename(Const.createFilename(directory, transname, "."+Const.STRING_TRANS_DEFAULT_EXT));
+							transMeta.setFilename(Const.createFilename(directory, transname, "."+Const.STRING_TRANS_DEFAULT_EXT)); //$NON-NLS-1$
 						}
 	
 						// Add the source & target db
@@ -761,7 +761,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						} 
 						else
 						{
-							jetrans.setFileName(Const.createFilename("${"+ Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}", transMeta.getName(), "."+Const.STRING_TRANS_DEFAULT_EXT));
+							jetrans.setFileName(Const.createFilename("${"+ Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}", transMeta.getName(), "."+Const.STRING_TRANS_DEFAULT_EXT)); //$NON-NLS-1$  //$NON-NLS-2$
 						}
 	
 						JobEntryCopy jectrans = new JobEntryCopy(jetrans);
@@ -939,10 +939,18 @@ public class SpoonJobDelegate extends SpoonDelegate
 				JobGraph jobGraph = new JobGraph(spoon.tabfolder.getSwtTabset(), spoon, jobMeta);
 				
 				TabItem tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeTabName(jobMeta, showLocation));
+				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeTabName(jobMeta, showLocation)); //$NON-NLS-1$
 				if (!Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
 				tabItem.setToolTipText(toolTipText);
-				tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
+				try {
+          if((spoon.getRepository() != null) && (spoon.getRepository().getTransformationLock(jobMeta.getObjectId()) != null)) {
+            tabItem.setImage(GUIResource.getInstance().getImageLocked());
+          } else {
+            tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
+          }
+        } catch(Exception e) {
+          throw new RuntimeException(e);
+        }
 				tabItem.setControl(jobGraph);
 
 				// OK, also see if we need to open a new history window.
@@ -1459,8 +1467,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_ERROR);
-					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Message"));
-					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Title"));
+					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Message")); //$NON-NLS-1$
+					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 			}

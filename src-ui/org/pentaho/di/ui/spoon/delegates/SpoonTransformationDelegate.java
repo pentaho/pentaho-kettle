@@ -176,10 +176,18 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			if (addTab) {
 				TransGraph transGraph = new TransGraph(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
 				TabItem tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName(transMeta, showLocation));
+				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName(transMeta, showLocation)); //$NON-NLS-1$
 				if (!Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
 				tabItem.setToolTipText(toolTipText);
-				tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
+				try {
+  				if((spoon.getRepository() != null) && (spoon.getRepository().getTransformationLock(transMeta.getObjectId()) != null)) {
+  				  tabItem.setImage(GUIResource.getInstance().getImageLocked());
+  				} else {
+  				  tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
+  				}
+				} catch(Exception e) {
+				  throw new RuntimeException(e);
+				}
 				tabItem.setControl(transGraph);
 
 				TransLogTable logTable = transMeta.getTransLogTable();
@@ -888,8 +896,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				if (transDebugMeta.getNrOfUsedSteps()==0)
 				{
 					MessageBox box = new MessageBox(spoon.getShell(), SWT.ICON_WARNING | SWT.YES | SWT.NO);
-					box.setText(BaseMessages.getString(PKG, "Spoon.Dialog.Warning.NoPreviewOrDebugSteps.Title"));
-					box.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.Warning.NoPreviewOrDebugSteps.Message"));
+					box.setText(BaseMessages.getString(PKG, "Spoon.Dialog.Warning.NoPreviewOrDebugSteps.Title")); //$NON-NLS-1$
+					box.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.Warning.NoPreviewOrDebugSteps.Message")); //$NON-NLS-1$
 					int answer = box.open();
 					if (answer!=SWT.YES)
 					{
@@ -921,8 +929,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 					
 				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
-					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Message"));
-					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Title"));
+					mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Message")); //$NON-NLS-1$
+					mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.NoRemoteServerSpecified.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 				

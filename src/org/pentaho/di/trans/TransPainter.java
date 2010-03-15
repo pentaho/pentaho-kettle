@@ -204,14 +204,6 @@ public class TransPainter extends BasePainter
         	drawRect(selrect);
         }
 
-        RepositoryLock lock = transMeta.getRepositoryLock();
-        if (lock!=null) {
-        	// This transformation is locked, draw some kind of logo in the right upper corner...
-        	//
-        	Point lockBounds = gc.getImageBounds(EImage.LOCK);
-        	gc.drawImage(EImage.LOCK, area.x - lockBounds.y, 0);
-        	areaOwners.add(new AreaOwner(AreaType.REPOSITORY_LOCK_IMAGE, area.x - lockBounds.x, 0, lockBounds.y, lockBounds.y, offset, transMeta, lock));
-        }
     }
 
 	private void drawHop(TransHopMeta hi)
