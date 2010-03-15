@@ -152,4 +152,20 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
   protected String extractName(Annotation annotation) {
     return ((JobEntry) annotation).name();
   }
+  
+  @Override
+  protected String extractImageFile(Annotation annotation) {
+    return ((JobEntry) annotation).image();
+  }
+
+  @Override
+  protected boolean extractSeparateClassLoader(Annotation annotation) {
+    return false;
+  }
+  
+  @Override
+  protected String extractI18nPackageName(Annotation annotation) {
+    return ((JobEntry) annotation).i18nPackageName();
+  }
+
 }

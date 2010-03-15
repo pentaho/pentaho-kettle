@@ -2,6 +2,8 @@ package org.pentaho.di.core.gui;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +16,7 @@ import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 public class SwingGUIResource {
 	private static SwingGUIResource instance;
@@ -92,6 +95,18 @@ public class SwingGUIResource {
 			if (inputStream==null) {
 				inputStream = object.getClass().getResourceAsStream("/"+plugin.getImageFile());
 			}
+			if (inputStream==null) {
+				inputStream = registry.getClass().getResourceAsStream(plugin.getImageFile());
+			}
+			if (inputStream==null) {
+				inputStream = registry.getClass().getResourceAsStream("/"+plugin.getImageFile());
+			}
+			try {
+				inputStream = new FileInputStream(plugin.getImageFile());
+			} catch(FileNotFoundException e) {
+				// Ignore, throws error below
+			}
+			
 			if (inputStream==null) {
 				throw new KettleException("Unable to find file: "+plugin.getImageFile()+" for plugin: "+plugin);
 			}

@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.PartitionerPlugin;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -139,5 +138,18 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
     return ((Step) annotation).name();
   }
   
-	
+  @Override
+  protected String extractImageFile(Annotation annotation) {
+    return ((Step) annotation).image();
+  }
+  
+  @Override
+  protected boolean extractSeparateClassLoader(Annotation annotation) {
+    return ((Step) annotation).isSeparateClassLoaderNeeded();
+  }
+
+  @Override
+  protected String extractI18nPackageName(Annotation annotation) {
+    return ((Step) annotation).i18nPackageName();
+  }
 }

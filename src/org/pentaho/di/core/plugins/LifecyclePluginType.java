@@ -85,5 +85,19 @@ public class LifecyclePluginType extends BasePluginType implements
     return ((LifecyclePlugin) annotation).name();
   }
 
+  @Override
+  protected String extractImageFile(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected boolean extractSeparateClassLoader(Annotation annotation) {
+    return false;
+  }
+  
+  @Override
+  protected String extractI18nPackageName(Annotation annotation) {
+    return null;
+  }
 
 }

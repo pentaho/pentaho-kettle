@@ -119,5 +119,19 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
   protected String extractName(Annotation annotation) {
     return ((RepositoryPlugin) annotation).name();
   }
-	
+
+  @Override
+  protected String extractImageFile(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected boolean extractSeparateClassLoader(Annotation annotation) {
+    return false;
+  }
+
+  @Override
+  protected String extractI18nPackageName(Annotation annotation) {
+    return ((RepositoryPlugin) annotation).i18nPackageName();
+  }
 }

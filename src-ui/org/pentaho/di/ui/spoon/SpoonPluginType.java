@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.BasePluginType;
 import org.pentaho.di.core.plugins.JarFileAnnotationPlugin;
@@ -50,7 +49,6 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
   @Override
   protected void registerXmlPlugins() throws KettlePluginException {
     // TODO Auto-generated method stub
-    
   }
 
 
@@ -74,5 +72,18 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
     return ((SpoonPlugin) annotation).name();
   }
 
-  
+  @Override
+  protected String extractImageFile(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected boolean extractSeparateClassLoader(Annotation annotation) {
+    return false;
+  }
+
+  @Override
+  protected String extractI18nPackageName(Annotation annotation) {
+    return ((SpoonPlugin) annotation).i18nPackageName();
+  }
 }

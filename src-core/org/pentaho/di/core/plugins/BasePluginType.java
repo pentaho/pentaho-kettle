@@ -1,25 +1,16 @@
 package org.pentaho.di.core.plugins;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.annotation.Annotation;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
@@ -182,13 +173,22 @@ System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
 						
 			// Try the default package name
 			//
-			String translation = BaseMessages.getString(packageName, string, resourceClass);
-			if (translation.startsWith("!") && translation.endsWith("!")) translation=BaseMessages.getString(PKG, string, resourceClass);
+			String translation;
+			if (!Const.isEmpty(packageName)) {
+				translation=BaseMessages.getString(packageName, string, resourceClass);
+				if (translation.startsWith("!") && translation.endsWith("!")) translation=BaseMessages.getString(PKG, string, resourceClass);
 			
-			// restore loglevel, when the last alternative fails, log it when loglevel is detailed
-			//
-			LogWriter.getInstance().setLogLevel(oldLogLevel); 
-			if (translation.startsWith("!") && translation.endsWith("!")) translation=BaseMessages.getString(altPackageName, string, resourceClass);
+				// restore loglevel, when the last alternative fails, log it when loglevel is detailed
+				//
+				LogWriter.getInstance().setLogLevel(oldLogLevel);
+				if (!Const.isEmpty(altPackageName)) {
+					if (translation.startsWith("!") && translation.endsWith("!")) translation=BaseMessages.getString(altPackageName, string, resourceClass);
+				}
+			} else {
+				// Translations are not supported, simply keep the original text.
+				//
+				translation=string;
+			}
 			
 			return translation;
 		}
@@ -209,6 +209,7 @@ System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
 					//
 					FileObject[] fileObjects = pluginFolder.findJarFiles();
 					if (fileObjects!=null) {
+						System.out.println("Found "+fileObjects.length+" jar files in folder "+pluginFolder);
 						for (FileObject fileObject : fileObjects) {
 							
 							// These are the jar files : find annotations in it...
@@ -277,7 +278,6 @@ System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
    * @param image the image for the plugin
    * @throws KettlePluginException
    */
-  @SuppressWarnings("unchecked")
   public void registerCustom(Class<?> clazz, String category, String id, String name, String description, String image) throws KettlePluginException {
     Class<? extends PluginTypeInterface> pluginType = (Class<? extends PluginTypeInterface>)getClass();
     Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
@@ -458,7 +458,10 @@ System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
 	protected abstract String extractName(java.lang.annotation.Annotation annotation);
 	protected abstract String extractDesc(java.lang.annotation.Annotation annotation);
 	protected abstract String extractCategory(java.lang.annotation.Annotation annotation);
-    
+	protected abstract String extractImageFile(java.lang.annotation.Annotation annotation);
+	protected abstract boolean extractSeparateClassLoader(java.lang.annotation.Annotation annotation);
+	protected abstract String extractI18nPackageName(java.lang.annotation.Annotation annotation);
+	
 	protected void registerPluginJars() throws KettlePluginException {
 	    
 	    List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(pluginType.getName());
@@ -476,25 +479,17 @@ System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
 	        try {
 	        	annotation = clazz.getAnnotation(pluginType);
 		        
-		        File f = new File(jarFilePlugin.getJarFile().getFile());
-		        File parent = f.getParentFile();
-		        for(File fil : parent.listFiles()){
-		          try {
-		            libraries.add(fil.toURI().toURL().getFile());
-		          } catch (MalformedURLException e) {
-		            e.printStackTrace();
-		          }
-		        }
-		        File libDir = new File(parent.toString()+File.separator+"lib");;
-		        if(libDir.exists()){
-		          for(File fil : libDir.listFiles()){
-		            if(fil.getName().indexOf(".jar") > 0){
-		              try {
-		                libraries.add(fil.toURI().toURL().getFile());
-		              } catch (MalformedURLException e) {
-		                e.printStackTrace();
-		              }
-		            }
+	        	String jarFilename = URLDecoder.decode(jarFilePlugin.getJarFile().getFile(), "UTF-8");
+	        	libraries.add( jarFilename );
+	        	FileObject fileObject = KettleVFS.getFileObject(jarFilename);
+	        	FileObject parentFolder = fileObject.getParent();
+	        	String parentFolderName = KettleVFS.getFilename(parentFolder);
+	        	String libFolderName = parentFolderName+Const.FILE_SEPARATOR+"lib";
+	        	PluginFolder folder = new PluginFolder(libFolderName, false, false);
+	        	FileObject[] jarFiles = folder.findJarFiles();
+	        	if (jarFiles!=null) {
+		          for(FileObject jarFile : jarFiles) {
+		            libraries.add( KettleVFS.getFilename(jarFile) );
 		          }
 		        }
 	        } catch(Exception e) {
@@ -518,10 +513,13 @@ System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
           throw new KettlePluginException("No ID specified for plugin with class: "+clazz.getName());
       }
       
-      String name = extractName(annotation);
-      String description = extractDesc(annotation); 
-      String category = extractCategory(annotation); 
-      
+      String packageName = extractI18nPackageName(annotation);
+      String altPackageName = clazz.getPackage().getName();
+      String name = getTranslation(extractName(annotation), packageName, altPackageName, clazz);
+      String description = getTranslation(extractDesc(annotation), packageName, altPackageName, clazz);
+      String category = getTranslation(extractCategory(annotation), packageName, altPackageName, clazz);
+      String imageFile = extractImageFile(annotation); 
+      boolean separateClassLoader = extractSeparateClassLoader(annotation); 
       
       Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
 
@@ -536,7 +534,11 @@ System.out.println("    jar scan took "+ (endScan - startScan)+"ms");
         }
       }
       
-      PluginInterface plugin = new Plugin(ids, this.getClass(), mainType.value(), category, name, description, null, false, nativeRepositoryType, classMap, libraries, null, pluginFolder);
+      PluginInterface plugin = new Plugin(ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader, nativeRepositoryType, classMap, libraries, null, pluginFolder);
       registry.registerPlugin(this.getClass(), plugin);
+      
+      if (libraries!=null && libraries.size()>0) {
+    	  LogChannel.GENERAL.logBasic("Plugin with id ["+ids[0]+"] has "+libraries.size()+" libaries in its private class path");
+      }
   }
 }

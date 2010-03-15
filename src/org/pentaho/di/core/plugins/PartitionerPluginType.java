@@ -5,11 +5,7 @@ package org.pentaho.di.core.plugins;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -19,7 +15,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Partitioner;
-import org.pentaho.di.trans.step.StepInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -129,5 +124,20 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
   protected String extractName(Annotation annotation) {
     return ((PartitionerPlugin) annotation).name();
   }
-	
+
+  @Override
+  protected String extractImageFile(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected boolean extractSeparateClassLoader(Annotation annotation) {
+    return false;
+  }
+  
+  @Override
+  protected String extractI18nPackageName(Annotation annotation) {
+    return ((PartitionerPlugin) annotation).i18nPackageName();
+  }
+
 }

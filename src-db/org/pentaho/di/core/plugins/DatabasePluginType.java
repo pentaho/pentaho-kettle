@@ -94,5 +94,19 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
   protected String extractName(Annotation annotation) {
     return ((DatabaseMetaPlugin) annotation).type();
   }
-	
+
+  @Override
+  protected String extractImageFile(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected boolean extractSeparateClassLoader(Annotation annotation) {
+    return false;
+  }
+  
+  @Override
+  protected String extractI18nPackageName(Annotation annotation) {
+    return null;
+  }
 }
