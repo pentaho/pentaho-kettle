@@ -27,6 +27,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
+import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 
@@ -151,7 +152,7 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
     return 20;
   }
   
-    public abstract void lock(String lockNote) throws KettleException;
+  public abstract void lock(String lockNote) throws KettleException;
   
   public abstract void unlock() throws KettleException;
   
@@ -159,6 +160,8 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
   public String getLockMessage() throws KettleException {
     return rc.getLockMessage();
   }
+  
+  public abstract RepositoryLock getRepositoryLock() throws KettleException;
   
   public boolean isLocked() throws KettleException {
     return false;

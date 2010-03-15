@@ -75,7 +75,7 @@ public class UITransformation extends UIRepositoryContent {
   @Override
   public String getLockMessage() throws KettleException {
     String result = null;
-    RepositoryLock objLock = getRepository().getTransformationLock(getObjectId());
+    RepositoryLock objLock = getRepositoryLock();
     if(objLock != null) {
       result = objLock.getMessage();
     }
@@ -98,6 +98,11 @@ public class UITransformation extends UIRepositoryContent {
   
   @Override
   public boolean isLocked() throws KettleException {
-    return (getRepository().getTransformationLock(getObjectId()) != null);
+    return (getRepositoryLock() != null);
+  }
+
+  @Override
+  public RepositoryLock getRepositoryLock() throws KettleException {
+    return getRepository().getTransformationLock(getObjectId());
   }
 }
