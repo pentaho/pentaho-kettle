@@ -943,7 +943,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				if (!Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
 				tabItem.setToolTipText(toolTipText);
 				try {
-          if((spoon.getRepository() != null) && (spoon.getRepository().getTransformationLock(jobMeta.getObjectId()) != null)) {
+          if((spoon.getRepository() != null) && (jobMeta.getObjectId() != null) && (spoon.getRepository().getJobLock(jobMeta.getObjectId()) != null)) {
             tabItem.setImage(GUIResource.getInstance().getImageLocked());
           } else {
             tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
