@@ -897,6 +897,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     return mainSpoonContainer;
   }
 
+  public void loadPerspective(String id)
+  {
+    List<SpoonPerspective> perspectives = SpoonPerspectiveManager.getInstance().getPerspectives();
+    for (int pos=0; pos < perspectives.size(); pos++) {
+      SpoonPerspective perspective = perspectives.get(pos);
+      if (perspective.getId().equals(id)) {
+        loadPerspective(pos);
+        return;
+      }
+    }
+  }
+  
   @SuppressWarnings("unchecked")
   public void loadPerspective(int pos) {
 
