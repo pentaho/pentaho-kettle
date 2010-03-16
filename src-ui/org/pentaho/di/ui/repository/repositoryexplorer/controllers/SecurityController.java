@@ -94,8 +94,6 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
 
   protected UISecurityUser securityUser;
 
-  protected XulConfirmBox confirmBox = null;
-
   protected XulMessageBox messageBox = null;
   
   public SecurityController() {
@@ -111,7 +109,6 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
             "SecurityController.ERROR_0001_UNABLE_TO_INITIAL_REPOSITORY_SERVICE", RepositorySecurityManager.class)); //$NON-NLS-1$
       }
       createModel();
-      confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
       messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
       bf = new DefaultBindingFactory();
       bf.setDocument(this.getXulDomContainer().getDocumentRoot());
@@ -126,14 +123,6 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
 
   protected void setInitialDeck() {
     changeToUserDeck();
-  }
-
-  public XulConfirmBox getConfirmBox() {
-    return confirmBox;
-  }
-
-  public void setConfirmBox(XulConfirmBox confirmBox) {
-    this.confirmBox = confirmBox;
   }
 
   public XulMessageBox getMessageBox() {
@@ -302,6 +291,7 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
    * @throws Exception
    */
   public void removeUser() throws Exception {
+    XulConfirmBox confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
     confirmBox.setTitle(messages.getString("ConfirmDialog.Title"));//$NON-NLS-1$
     confirmBox.setMessage(messages.getString("RemoveUserConfirmDialog.Message"));//$NON-NLS-1$
     confirmBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
