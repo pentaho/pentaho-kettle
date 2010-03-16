@@ -1735,45 +1735,40 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         if (menu != null) {
           XulMenuitem miPopEvalUncond = (XulMenuitem) doc.getElementById("job-graph-hop-evaluation-uncond");
           XulMenuitem miPopEvalTrue = (XulMenuitem) doc.getElementById("job-graph-hop-evaluation-true");
-          XulMenuitem miPopEvalFalse = (XulMenuitem) doc.getElementById("job-graph-hop-evaluation-uncond");
+          XulMenuitem miPopEvalFalse = (XulMenuitem) doc.getElementById("job-graph-hop-evaluation-false");
           XulMenuitem miDisHop = (XulMenuitem) doc.getElementById("job-graph-hop-enabled");
 
           // Set the checkboxes in the right places...
           //
-          if (hi.isUnconditional()) {
-            if (miPopEvalUncond != null)
-              miPopEvalUncond.setSelected(true);
-            if (miPopEvalTrue != null)
-              miPopEvalTrue.setSelected(false);
-            if (miPopEvalFalse != null)
-              miPopEvalFalse.setSelected(false);
-          } else {
-            if (hi.getEvaluation()) {
-              if (miPopEvalUncond != null)
-                miPopEvalUncond.setSelected(false);
-              if (miPopEvalTrue != null)
-                miPopEvalTrue.setSelected(true);
-              if (miPopEvalFalse != null)
-                miPopEvalFalse.setSelected(false);
-            } else {
-              if (miPopEvalUncond != null)
-                miPopEvalUncond.setSelected(false);
-              if (miPopEvalTrue != null)
-                miPopEvalTrue.setSelected(false);
-              if (miPopEvalFalse != null)
-                miPopEvalFalse.setSelected(true);
-            }
-          }
-          if (!hi.getFromEntry().evaluates()) {
-            if (miPopEvalTrue != null)
-              miPopEvalTrue.setDisabled(true);
-            if (miPopEvalFalse != null)
-              miPopEvalFalse.setDisabled(true);
-          }
-          if (!hi.getFromEntry().isUnconditional()) {
-            if (miPopEvalUncond != null)
-              miPopEvalUncond.setDisabled(true);
-          }
+          if (miPopEvalUncond != null && miPopEvalTrue != null && miPopEvalFalse != null) {
+	          if (hi.isUnconditional()) {
+	              miPopEvalUncond.setSelected(true);
+	              miPopEvalTrue.setSelected(false);
+	              miPopEvalFalse.setSelected(false);
+	          } else {
+	            if (hi.getEvaluation()) {
+	                miPopEvalUncond.setSelected(false);
+	                miPopEvalTrue.setSelected(true);
+	                miPopEvalFalse.setSelected(false);
+	            } else {
+	                miPopEvalUncond.setSelected(false);
+	                miPopEvalTrue.setSelected(false);
+	                miPopEvalFalse.setSelected(true);
+	            }
+	          }
+	          if (!hi.getFromEntry().evaluates()) {
+	              miPopEvalTrue.setDisabled(true);
+	              miPopEvalFalse.setDisabled(true);
+	          } else {
+	              miPopEvalTrue.setDisabled(false);
+	              miPopEvalFalse.setDisabled(false);
+	          }
+	          if (!hi.getFromEntry().isUnconditional()) {
+	              miPopEvalUncond.setDisabled(true);
+	          } else {
+	        	  miPopEvalUncond.setDisabled(false);
+	          }
+        }
 
           if (miDisHop != null) {
             if (hi.isEnabled())
@@ -1923,21 +1918,21 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     spoon.refreshGraph();
   }
 
-  public void setHopConditional(String id) {
+  public void setHopUnconditional() {
+	currentHop.setUnconditional();	    
+    spoon.refreshGraph();
+  }
 
-    if ("job-graph-hop-evaluation-uncond".equals(id)) { //$NON-NLS-1$
-      currentHop.setUnconditional();
-      spoon.refreshGraph();
-    } else if ("job-graph-hop-evaluation-true".equals(id)) { //$NON-NLS-1$
-      currentHop.setConditional();
-      currentHop.setEvaluation(true);
-      spoon.refreshGraph();
-    } else if ("job-graph-hop-evaluation-false".equals(id)) { //$NON-NLS-1$
-      currentHop.setConditional();
-      currentHop.setEvaluation(false);
-      spoon.refreshGraph();
-    }
+  public void setHopEvaluationTrue() {
+	currentHop.setConditional();
+	currentHop.setEvaluation(true);
+	spoon.refreshGraph();
+  }
 
+  public void setHopEvaluationFalse() {
+	currentHop.setConditional();
+	currentHop.setEvaluation(false);
+	spoon.refreshGraph();
   }
 
   protected void setCurrentHop(JobHopMeta hop) {

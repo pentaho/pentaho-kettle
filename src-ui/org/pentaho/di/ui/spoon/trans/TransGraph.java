@@ -2182,7 +2182,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             }
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-distribute"); //$NON-NLS-1$
-            item.setSelected(!stepMeta.isDistributes());
+            item.setSelected(stepMeta.isDistributes());
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-copy"); //$NON-NLS-1$
             item.setSelected(!stepMeta.isDistributes());
 

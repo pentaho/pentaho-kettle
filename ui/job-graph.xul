@@ -58,11 +58,11 @@
     <menu id="job-graph-hop-evaluation" label="${JobGraph.PopupMenu.Hop.Evaluation}">
       <menupopup id="job-graph-hop-evaluation-popup">
         <menuitem id="job-graph-hop-evaluation-uncond" type="checkbox"
-          label="${JobGraph.PopupMenu.Hop.Evaluation.Unconditional}" command="jobgraph.setHopConditional()" />
+          label="${JobGraph.PopupMenu.Hop.Evaluation.Unconditional}" command="jobgraph.setHopUnconditional()" />
         <menuitem id="job-graph-hop-evaluation-true" type="checkbox" label="${JobGraph.PopupMenu.Hop.Evaluation.FollowWhenOK}"
-          command="jobgraph.setHopConditional()" />
+          command="jobgraph.setHopEvaluationTrue()" />
         <menuitem id="job-graph-hop-evaluation-false" type="checkbox"
-          label="${JobGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed}" command="jobgraph.setHopConditional()" />
+          label="${JobGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed}" command="jobgraph.setHopEvaluationFalse()" />
       </menupopup>
     </menu>
     <menuitem id="job-graph-hop-flip" label="${JobGraph.PopupMenu.Hop.FlipDirection}" command="jobgraph.flipHop()" />
