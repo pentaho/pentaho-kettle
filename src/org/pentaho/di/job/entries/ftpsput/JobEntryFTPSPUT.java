@@ -557,7 +557,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
             
 			// Set the timeout
             connection.setTimeOut(timeout);
-		    if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetTimeout", String.valueOf(timeout))); //$NON-NLS-1$
+		    if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetTimeout", timeout)); //$NON-NLS-1$
 
 			// login to FTPS host ...
             connection.connect();
@@ -588,7 +588,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 			myFileList.toArray(filelist);
 			
 			
-			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobFTPSPUT.Log.FoundFileLocalDirectory",""+filelist.length,realLocalDirectory));
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobFTPSPUT.Log.FoundFileLocalDirectory",filelist.length,realLocalDirectory));
 			
 			Pattern pattern = null;
 			if (!Const.isEmpty(realWildcard)) {
@@ -638,7 +638,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 		
 			result.setResult( true );
 			result.setNrLinesOutput(filesput);
-			if (log.isDetailed()) logDebug(BaseMessages.getString(PKG, "JobFTPSPUT.Log.WeHavePut",""+filesput));
+			if (log.isDetailed()) logDebug(BaseMessages.getString(PKG, "JobFTPSPUT.Log.WeHavePut",filesput));
 		} catch(Exception e) {
 			result.setNrErrors(1);
 			logError(BaseMessages.getString(PKG, "JobFTPSPUT.Log.ErrorPuttingFiles",e.getMessage()));

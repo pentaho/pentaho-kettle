@@ -905,7 +905,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 			Pattern pattern, Result result) throws KettleException {
 		
 	 List<FTPFile> fileList = connection.getFileList(folder);
-	 if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.FoundNFiles", String.valueOf(fileList.size()))); //$NON-NLS-1$
+	 if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.FoundNFiles", fileList.size())); //$NON-NLS-1$
 		
         for (int i = 0; i < fileList.size(); i++) {
         	
@@ -914,7 +914,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 			}
 			
 			if(successConditionBroken){
-				throw new KettleException(BaseMessages.getString(PKG, "JobEntryFTPS.SuccesConditionBroken",""+NrErrors));
+				throw new KettleException(BaseMessages.getString(PKG, "JobEntryFTPS.SuccesConditionBroken",NrErrors));
 			}
 			
         	FTPFile file = fileList.get(i);
