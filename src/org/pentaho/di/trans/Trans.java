@@ -2554,7 +2554,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     // Prepare the master...
                     if (masterSteps.size()>0) // If there is something that needs to be done on the master...
                     {
-                        String masterReply = masterServer.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(master.getName(), "UTF-8")+"&xml=Y");
+                        String masterReply = masterServer.execService(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(master.getName(), "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(masterReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2567,7 +2567,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                        String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveTrans.getName(), "UTF-8")+"&xml=Y");
+                        String slaveReply = slaves[i].execService(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveTrans.getName(), "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2581,7 +2581,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     // Start the master...
                     if (masterSteps.size()>0) // If there is something that needs to be done on the master...
                     {
-                        String masterReply = masterServer.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(master.getName(), "UTF-8")+"&xml=Y");
+                        String masterReply = masterServer.execService(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(master.getName(), "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(masterReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2594,7 +2594,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                        String slaveReply = slaves[i].getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveTrans.getName(), "UTF-8")+"&xml=Y");
+                        String slaveReply = slaves[i].execService(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveTrans.getName(), "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2937,7 +2937,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	
 			// Prepare the transformation
 			//
-			String reply = slaveServer.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
+			String reply = slaveServer.execService(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
 			WebResult webResult = WebResult.fromXMLString(reply);
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 			{
@@ -2946,7 +2946,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 			// Start the transformation
 			//
-			reply = slaveServer.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
+			reply = slaveServer.execService(StartExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
 			webResult = WebResult.fromXMLString(reply);
 
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))

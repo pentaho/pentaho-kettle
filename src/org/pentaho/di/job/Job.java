@@ -1353,7 +1353,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
 			// Start the job
 			//
-			String reply = slaveServer.getContentFromServer(StartJobServlet.CONTEXT_PATH + "/?name="+ URLEncoder.encode(jobMeta.getName(), "UTF-8") + "&xml=Y");
+			String reply = slaveServer.execService(StartJobServlet.CONTEXT_PATH + "/?name="+ URLEncoder.encode(jobMeta.getName(), "UTF-8") + "&xml=Y");
 			WebResult webResult = WebResult.fromXMLString(reply);
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 			{
