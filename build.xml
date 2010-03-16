@@ -900,7 +900,6 @@
 	  	        		<include name="${libswt}/osx/java_swt"/>
 	  	        		<include name="${samples}/**/*"/>
 	  	        		<include name="${docs}/**/*"/>
-	  	        		<include name="README_FIRST.txt"/>
 	  	        		<include name="README_OSX.txt"/>
 	  	        		<include name="*.sh"/>
 	  	        		<include name="simple-jndi/**/*"/>
