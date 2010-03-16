@@ -17,8 +17,8 @@
 
 package org.pentaho.di.ui.core.dialog;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -196,7 +196,7 @@ public class KettlePropertiesFileDialog extends Dialog
 			String filename = getKettlePropertiesFilename();
 			File file = new File(filename);
 			Properties properties = new Properties();
-			properties.load(new FileReader(file));
+			properties.load(new FileInputStream(file));
 			
 			
 			// These are the standard Kettle variables...
