@@ -123,7 +123,6 @@ import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.lifecycle.LifeEventHandler;
 import org.pentaho.di.core.lifecycle.LifeEventInfo;
 import org.pentaho.di.core.lifecycle.LifecycleException;
-import org.pentaho.di.core.lifecycle.LifecycleListener;
 import org.pentaho.di.core.lifecycle.LifecycleSupport;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -1315,50 +1314,88 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     }
   }
   
+  public void copyFile() {
+    TransMeta transMeta = getActiveTransformation();
+    JobMeta jobMeta = getActiveJob();
+    boolean transActive = transMeta != null;
+    boolean jobActive = jobMeta != null;
+    
+    if (transActive) {
+      copyTransformation();
+    } else if (jobActive) {
+      copyJob();
+    }
+  }
+  
+  public void cut() {
+    TransMeta transMeta = getActiveTransformation();
+    JobMeta jobMeta = getActiveJob();
+    boolean transActive = transMeta != null;
+    boolean jobActive = jobMeta != null;
+ 
+    if (transActive) {
+      List<StepMeta> stepMetas = transMeta.getSelectedSteps();
+      if (stepMetas != null && stepMetas.size() > 0) {
+        copySteps();
+        for (StepMeta stepMeta : stepMetas) {
+          delStep(transMeta, stepMeta);
+        }
+      }
+    } else if (jobActive) {
+      List<JobEntryCopy> jobEntryCopies = jobMeta.getSelectedEntries();
+      if (jobEntryCopies != null && jobEntryCopies.size() > 0) {
+        copyJobentries();
+        for (JobEntryCopy jobEntryCopy : jobEntryCopies) {
+          deleteJobEntryCopies(jobMeta, jobEntryCopy);
+        }
+      }
+    }
+  }
+  
   public void createPopupMenus() {
 
     try {
-      menuMap.put("trans-class", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("trans-class"));
-      menuMap.put("trans-class-new", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("trans-class-new"));
-      menuMap.put("job-class", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("job-class"));
-      menuMap.put("trans-hop-class", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("trans-hop-class"));
-      menuMap.put("database-class", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("database-class"));
-      menuMap.put("partition-schema-class", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("partition-schema-class"));
-      menuMap.put("cluster-schema-class", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("cluster-schema-class"));
-      menuMap.put("slave-cluster-class", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("slave-cluster-class"));
-      menuMap.put("trans-inst", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("trans-inst"));
-      menuMap.put("job-inst", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("job-inst"));
-      menuMap.put("step-plugin", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("step-plugin"));
-      menuMap.put("database-inst", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("database-inst"));
-      menuMap.put("step-inst", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("step-inst"));
-      menuMap.put("job-entry-copy-inst", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("job-entry-copy-inst"));
-      menuMap.put("trans-hop-inst", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("trans-hop-inst"));
-      menuMap.put("partition-schema-inst", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("partition-schema-inst"));
-      menuMap.put("cluster-schema-inst", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("cluster-schema-inst"));
-      menuMap.put("slave-server-inst", (XulComponent) mainSpoonContainer
-          .getDocumentRoot().getElementById("slave-server-inst"));
+      menuMap.put("trans-class", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("trans-class")); //$NON-NLS-1$
+      menuMap.put("trans-class-new", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("trans-class-new")); //$NON-NLS-1$
+      menuMap.put("job-class", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("job-class")); //$NON-NLS-1$
+      menuMap.put("trans-hop-class", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("trans-hop-class")); //$NON-NLS-1$
+      menuMap.put("database-class", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("database-class")); //$NON-NLS-1$
+      menuMap.put("partition-schema-class", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("partition-schema-class")); //$NON-NLS-1$
+      menuMap.put("cluster-schema-class", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("cluster-schema-class")); //$NON-NLS-1$
+      menuMap.put("slave-cluster-class", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("slave-cluster-class")); //$NON-NLS-1$
+      menuMap.put("trans-inst", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("trans-inst")); //$NON-NLS-1$
+      menuMap.put("job-inst", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("job-inst")); //$NON-NLS-1$
+      menuMap.put("step-plugin", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("step-plugin")); //$NON-NLS-1$
+      menuMap.put("database-inst", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("database-inst")); //$NON-NLS-1$
+      menuMap.put("step-inst", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("step-inst")); //$NON-NLS-1$
+      menuMap.put("job-entry-copy-inst", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("job-entry-copy-inst")); //$NON-NLS-1$
+      menuMap.put("trans-hop-inst", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("trans-hop-inst")); //$NON-NLS-1$
+      menuMap.put("partition-schema-inst", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("partition-schema-inst")); //$NON-NLS-1$
+      menuMap.put("cluster-schema-inst", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("cluster-schema-inst")); //$NON-NLS-1$
+      menuMap.put("slave-server-inst", mainSpoonContainer //$NON-NLS-1$
+          .getDocumentRoot().getElementById("slave-server-inst")); //$NON-NLS-1$
     } catch (Throwable t) {
       t.printStackTrace();
       new ErrorDialog(shell, BaseMessages.getString(PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(
-          PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS),
+          "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString( //$NON-NLS-1$
+          PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS), //$NON-NLS-1$
           new Exception(t));
     }
 
@@ -5722,7 +5759,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     if (menuItem != null) {
       menuItem.setDisabled(disable);
     } else {
-      // TODO log the error
+      staticSpoon.log.logError("Non-Fatal error : Menu Item with id = " + itemId + " does not exist!  Check 'menubar.xul'"); 
     }
   }
   
