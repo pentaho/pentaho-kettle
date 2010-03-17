@@ -58,6 +58,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -312,6 +313,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 
     
     setLayout(new FormLayout());
+    setLayoutData(new GridData(GridData.FILL_BOTH));
 
     // Add a tool-bar at the top of the tab
     // The form-data is set on the native widget automatically
