@@ -471,6 +471,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
   private XulDomContainer mainSpoonContainer;
 
   private BindingFactory bf;
+  
+  // Menu controllers to modify the main spoon menu
+  private List<ISpoonMenuController> menuControllers = new ArrayList<ISpoonMenuController>();
 
   // private XulMenubar menuBar;
 
@@ -5713,7 +5716,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     // Only enable certain menu-items if we need to.
     disableMenuItem(doc, "file-new-database", disableTransMenu && disableJobMenu || !isRepositoryRunning);
     disableMenuItem(doc, "file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
+    disableMenuItem(doc, "toolbar-file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
     disableMenuItem(doc, "file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu);
+    disableMenuItem(doc, "toolbar-file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu);
     disableMenuItem(doc, "file-save-as-vfs", disableTransMenu && disableJobMenu && disableMetaMenu);
     disableMenuItem(doc, "file-close", disableTransMenu && disableJobMenu && disableMetaMenu);    //    ((XulMenuitem) doc.getElementById("file-print")).setDisabled(disableTransMenu && disableJobMenu);
     disableMenuItem(doc, "file-print", disableTransMenu && disableJobMenu);    
@@ -5764,10 +5769,43 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
     // What steps & plugins to show?
     refreshCoreObjects();
+    
+    for(ISpoonMenuController menuController : menuControllers) {
+      menuController.updateMenu(doc);
+    }
+  }
+  
+  public void addSpoonMenuController(ISpoonMenuController menuController) {
+    if(menuControllers != null) {
+      menuControllers.add(menuController);
+    }
+  }
+  
+  public boolean removeSpoonMenuController(ISpoonMenuController menuController) {
+    if(menuControllers != null) {
+      return menuControllers.remove(menuController);
+    }
+    return false;
+  }
+  
+  public ISpoonMenuController removeSpoonMenuController(String menuControllerName) {
+    ISpoonMenuController result = null;
+    
+    if(menuControllers != null) {
+      for(ISpoonMenuController menuController : menuControllers) {
+        if(menuController.getName().equals(menuControllerName)) {
+          result = menuController;
+          menuControllers.remove(result);
+          break;
+        }
+      }
+    }
+    
+    return result;
   }
 
   private void disableMenuItem(org.pentaho.ui.xul.dom.Document doc, String itemId, boolean disable) {
-    XulMenuitem menuItem = (XulMenuitem) doc.getElementById(itemId);
+    XulComponent menuItem = doc.getElementById(itemId);
     if (menuItem != null) {
       menuItem.setDisabled(disable);
     } else {
