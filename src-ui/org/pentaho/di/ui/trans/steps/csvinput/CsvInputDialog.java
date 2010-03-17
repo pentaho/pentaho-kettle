@@ -56,6 +56,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -732,6 +733,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 			getInfo(meta);
 			
 			String filename = transMeta.environmentSubstitute(meta.getFilename());
+			String delimiter = transMeta.environmentSubstitute(meta.getDelimiter());
 			
 			FileObject fileObject = KettleVFS.getFileObject(filename);
 			if (!(fileObject instanceof LocalFile)) {
@@ -752,7 +754,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
             
             // Split the string, header or data into parts...
             //
-            String[] fieldNames = Const.splitString(line, meta.getDelimiter()); 
+            String[] fieldNames = Const.splitString(line, delimiter); 
             
             if (!meta.isHeaderPresent()) {
             	// Don't use field names from the header...
