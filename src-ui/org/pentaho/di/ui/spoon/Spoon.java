@@ -471,7 +471,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
   private XulDomContainer mainSpoonContainer;
 
   private BindingFactory bf;
-  
+
   // Menu controllers to modify the main spoon menu
   private List<ISpoonMenuController> menuControllers = new ArrayList<ISpoonMenuController>();
 
@@ -4128,7 +4128,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       log.logDetailed(BaseMessages.getString(PKG,
           "Spoon.Log.SaveToFileOrRepository"));// "Save to file or repository..."
 
-    if (rep != null) {
+    String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
+    boolean EtlPerspective = activePerspectiveId.equals("spoon-jobs"); 
+    if (rep != null && EtlPerspective) {
       saved = saveToRepository(meta);
     } else {
       if (meta.getFilename() != null) {
@@ -4344,7 +4346,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     if (log.isBasic())
       log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.SaveAs"));// "Save as..."
 
-    if (rep != null) {
+    String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
+    boolean EtlPerspective = activePerspectiveId.equals("spoon-jobs"); 
+    if (rep != null && EtlPerspective) {
       meta.setObjectId(null);
       saved = saveToRepository(meta, true);
 
@@ -5799,8 +5803,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
           break;
         }
       }
-    }
-    
+  }
+
     return result;
   }
 
