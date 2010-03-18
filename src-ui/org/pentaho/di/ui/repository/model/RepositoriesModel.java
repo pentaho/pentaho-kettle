@@ -26,6 +26,7 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
     String previousValue = this.username;
     this.username = username;
     this.firePropertyChange("username", previousValue, username); //$NON-NLS-1$
+    checkIfModelValid();
   }
   public String getPassword() {
     return password;
@@ -34,6 +35,7 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
     String previousValue = this.password;
     this.password = password;
     this.firePropertyChange("password", previousValue, password); //$NON-NLS-1$
+    checkIfModelValid();
   }
   public boolean isShowDialogAtStartup() {
     return showDialogAtStartup;
@@ -50,7 +52,7 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
     List<RepositoryMeta> previousValue = new ArrayList<RepositoryMeta>();
     previousValue.addAll(this.availableRepositories);
     this.availableRepositories = repositoryList;
-    this.firePropertyChange("availableRepositories", previousValue, repositoryList); //$NON-NLS-1$    
+    this.firePropertyChange("availableRepositories", previousValue, repositoryList); //$NON-NLS-1$
   }
   public void addToAvailableRepositories(RepositoryMeta meta) {
     List<RepositoryMeta> previousValue = new ArrayList<RepositoryMeta>();
@@ -77,7 +79,8 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
   public void setSelectedRepository(RepositoryMeta selectedRepository) {
     RepositoryMeta previousValue = this.selectedRepository;
     this.selectedRepository = selectedRepository;
-    this.firePropertyChange("selectedRepository", previousValue, selectedRepository); //$NON-NLS-1$    
+    this.firePropertyChange("selectedRepository", previousValue, selectedRepository); //$NON-NLS-1$
+    checkIfModelValid();
   }
 
   public RepositoryMeta getSelectedRepository() {
@@ -107,4 +110,10 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
     return availableRepositories.get(index);
   }
   
+  public void checkIfModelValid() {
+    this.firePropertyChange("valid", null, isValid());//$NON-NLS-1$
+  }
+  public boolean isValid() {
+    return username != null && username.length() > 0 && password != null && password.length() > 0 && selectedRepository != null;
+  }
 }

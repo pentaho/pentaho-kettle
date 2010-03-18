@@ -12,6 +12,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationE
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulCheckbox;
 import org.pentaho.ui.xul.components.XulConfirmBox;
@@ -41,7 +42,9 @@ public class RepositoriesController extends AbstractXulEventHandler {
   private XulCheckbox showAtStartup;
 
   private RepositoriesModel loginModel;
-
+  
+  private XulButton okButton;
+  
   private XulMessageBox messageBox;
 
   private XulConfirmBox confirmBox;
@@ -79,7 +82,8 @@ public class RepositoriesController extends AbstractXulEventHandler {
     username = (XulTextbox) document.getElementById("user-name");//$NON-NLS-1$
     userPassword = (XulTextbox) document.getElementById("user-password");//$NON-NLS-1$
     availableRepositories = (XulListbox) document.getElementById("available-repository-list");//$NON-NLS-1$
-    showAtStartup = (XulCheckbox) document.getElementById("show-login-dialog-at-startup");//$NON-NLS-1$    
+    showAtStartup = (XulCheckbox) document.getElementById("show-login-dialog-at-startup");//$NON-NLS-1$
+    okButton = (XulButton) document.getElementById("repository-login-dialog_accept"); //$NON-NLS-1$
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     bf.createBinding(loginModel, "username", username, "value");//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(loginModel, "password", userPassword, "value");//$NON-NLS-1$ //$NON-NLS-2$
@@ -87,6 +91,7 @@ public class RepositoriesController extends AbstractXulEventHandler {
     bf.createBinding(loginModel, "selectedRepository", availableRepositories, "selectedItem");//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(loginModel, "showDialogAtStartup", showAtStartup, "checked");//$NON-NLS-1$ //$NON-NLS-2$
     bf.setBindingType(Binding.Type.ONE_WAY);
+    bf.createBinding(loginModel, "valid", okButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
 
     BindingConvertor<RepositoryMeta, Boolean> buttonConverter = new BindingConvertor<RepositoryMeta, Boolean>() {
 
