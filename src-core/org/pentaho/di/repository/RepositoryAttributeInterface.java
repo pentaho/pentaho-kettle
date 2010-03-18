@@ -1,6 +1,5 @@
 package org.pentaho.di.repository;
 
-import org.pentaho.di.core.database.DatabaseMeta;
 
 /**
  * This interface allows you to pass a simple interface to an object to allow it 
