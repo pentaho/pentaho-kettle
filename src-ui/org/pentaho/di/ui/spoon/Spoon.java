@@ -1144,11 +1144,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
     // Now ask the use for more info on these!
     EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
-    esd
-        .setTitle(BaseMessages
-            .getString(PKG, "Spoon.Dialog.SetVariables.Title"));
-    esd.setMessage(BaseMessages.getString(PKG,
-        "Spoon.Dialog.SetVariables.Message"));
+    esd.setTitle(BaseMessages.getString(PKG, "Spoon.Dialog.SetVariables.Title"));
+    esd.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.SetVariables.Message"));
     esd.setReadOnly(false);
     esd.setShellImage(GUIResource.getInstance().getImageVariable());
     if (esd.open() != null) {
@@ -1190,10 +1187,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
     // Now ask the use for more info on these!
     EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
-    esd.setTitle(BaseMessages
-        .getString(PKG, "Spoon.Dialog.ShowVariables.Title"));
-    esd.setMessage(BaseMessages.getString(PKG,
-        "Spoon.Dialog.ShowVariables.Message"));
+    esd.setTitle(BaseMessages.getString(PKG, "Spoon.Dialog.ShowVariables.Title"));
+    esd.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.ShowVariables.Message"));
     esd.setReadOnly(true);
     esd.setShellImage(GUIResource.getInstance().getImageVariable());
     esd.open();
@@ -4187,25 +4182,25 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     }
 
     if (log.isDetailed())
-      log
-          .logDetailed(BaseMessages
-              .getString(PKG, "Spoon.Log.SaveToRepository"));// "Save to repository..."
+      // "Save to repository..."
+      //
+      log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.SaveToRepository"));
     if (rep != null) {
       boolean answer = true;
       boolean ask = ask_name;
       while (answer && (ask || Const.isEmpty(meta.getName()))) {
         if (!ask) {
           MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-          mb.setMessage(BaseMessages.getString(PKG,
-              "Spoon.Dialog.PromptTransformationName.Message"));// "Please give this transformation a name before saving it in the database."
-          mb.setText(BaseMessages.getString(PKG,
-              "Spoon.Dialog.PromptTransformationName.Title"));// "Transformation has no name."
+          
+          // "Please give this transformation a name before saving it in the database."
+          mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptTransformationName.Message"));
+          // "Transformation has no name."
+          mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.PromptTransformationName.Title"));
           mb.open();
         }
         ask = false;
         if (meta instanceof TransMeta) {
-          answer = TransGraph
-              .editProperties((TransMeta) meta, this, rep, false);
+          answer = TransGraph.editProperties((TransMeta) meta, this, rep, false);
         }
         if (meta instanceof JobMeta) {
           answer = JobGraph.editProperties((JobMeta) meta, this, rep, false);
@@ -4215,20 +4210,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       if (answer && !Const.isEmpty(meta.getName())) {
 
         int response = SWT.YES;
-        if (rep.exists(meta.getName(), meta.getRepositoryDirectory(), meta
-            .getRepositoryElementType())) {
+        if (meta.getObjectId()==null && rep.exists(meta.getName(), meta.getRepositoryDirectory(), meta.getRepositoryElementType())) {
           // In case we support revisions, we can simply overwrite
           // without a problem so we simply don't ask.
           //
-          if (!rep.getRepositoryMeta().getRepositoryCapabilities()
-              .supportsRevisions()) {
-            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO
-                | SWT.ICON_QUESTION);
-            mb.setMessage(BaseMessages.getString(PKG,
-                "Spoon.Dialog.PromptOverwriteTransformation.Message", meta
-                .getName(), Const.CR));// "There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
-            mb.setText(BaseMessages.getString(PKG,
-                "Spoon.Dialog.PromptOverwriteTransformation.Title"));// "Overwrite?"
+          if (!rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions()) {
+            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+            
+            // There already is a transformation called ... in the repository.
+            // Do you want to overwrite the transformation?
+            //
+            mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Message", meta.getName(), Const.CR));
+            mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.PromptOverwriteTransformation.Title"));
             response = mb.open();
           }
         }
