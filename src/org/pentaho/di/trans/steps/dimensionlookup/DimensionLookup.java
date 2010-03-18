@@ -1486,27 +1486,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 }
                 else
                 {
-                	
-                	/*
-                	 * TODO: migrate this to a new method DatabaseMeta.getSQLInsertUnknownDimensionRow(String keyField, String versionField);
-                	 * 
-                    switch(databaseMeta.getDatabaseType())
-                    {
-                    case DatabaseMeta.TYPE_DATABASE_CACHE       :
-                    case DatabaseMeta.TYPE_DATABASE_GUPTA     :
-                    case DatabaseMeta.TYPE_DATABASE_ORACLE      :  isql = "insert into "+data.schemaTable+"("+databaseMeta.quoteField(meta.getKeyField())+", "+databaseMeta.quoteField(meta.getVersionField())+") values (0, 1)"; break; 
-                    case DatabaseMeta.TYPE_DATABASE_INFORMIX    : 
-                    case DatabaseMeta.TYPE_DATABASE_MYSQL       :  isql = "insert into "+data.schemaTable+"("+databaseMeta.quoteField(meta.getKeyField())+", "+databaseMeta.quoteField(meta.getVersionField())+") values (1, 1)"; break;
-                    case DatabaseMeta.TYPE_DATABASE_MSSQL       :  
-                    case DatabaseMeta.TYPE_DATABASE_DB2         : 
-                    case DatabaseMeta.TYPE_DATABASE_DBASE       :  
-                    case DatabaseMeta.TYPE_DATABASE_GENERIC     :  
-                    case DatabaseMeta.TYPE_DATABASE_SYBASE      :
-                    case DatabaseMeta.TYPE_DATABASE_ACCESS      :  
-                    case DatabaseMeta.TYPE_DATABASE_DERBY       :  isql = "insert into "+data.schemaTable+"("+databaseMeta.quoteField(meta.getVersionField())+") values (1)"; break;
-                    default: isql = "insert into "+data.schemaTable+"("+databaseMeta.quoteField(meta.getKeyField())+", "+databaseMeta.quoteField(meta.getVersionField())+") values (0, 1)"; break;
-                    }
-                    */                  
+                	isql = databaseMeta.getSQLInsertAutoIncUnknownDimensionRow(data.schemaTable, databaseMeta.quoteField(meta.getKeyField()), databaseMeta.quoteField(meta.getVersionField()));
                 }
                 
                 data.db.execStatement(databaseMeta.stripCR(isql));

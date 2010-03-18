@@ -2272,7 +2272,7 @@ public class TableView extends Composite
 			try
 			{
                 int extra = 25;
-                if (Const.isOSX()) max*=1.25;
+                if (Const.isOSX() || Const.isLinux()) max*=1.25;
                 tc.setWidth(max+extra);
 			}
 			catch(Exception e) {}

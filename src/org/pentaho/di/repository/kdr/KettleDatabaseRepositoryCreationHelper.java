@@ -63,7 +63,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		String schemaTable;
 		String indexname;
 		String keyfield[];
-		String user[], pass[], code[], desc[], prof[];
+		String user[], pass[], code[], desc[];
 
 		int KEY = 9; // integer, no need for bigint!
 
@@ -224,58 +224,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 			//
 			// Populate...
 			//
-
-	    PluginRegistry registry = PluginRegistry.getInstance();
-	    
-	    List<PluginInterface> plugins = registry.getPlugins(DatabasePluginType.class);
-	    int y=0;
-	    code = desc = new String[]{};
-	    for (PluginInterface plugin : plugins) {
-	      code = new String[plugins.size()];
-        desc = new String[plugins.size()];
-        code[y] = plugin.getIds()[0];
-        desc[y] = plugin.getName();
-        y++;
-	    }
-
-			if (!dryrun) {
-				database.prepareInsert(table, null, tablename);
-			}
-
-			for (int i = 1; i < code.length; i++)
-			{
-				RowMetaAndData lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT "+repository.quote(KettleDatabaseRepository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE)+" FROM " + schemaTable + " WHERE " + repository.quote(KettleDatabaseRepository.FIELD_DATABASE_TYPE_CODE) +" = '" + code[i] + "'");
-				if (lookup == null)
-				{
-					ObjectId nextid = new LongObjectId(i);
-					if (!create) {
-						nextid = repository.connectionDelegate.getNextDatabaseTypeID();
-					}
-
-					Object[] tableData = new Object[] { new LongObjectId(nextid).longValue(), code[i], desc[i], };
-					
-					if (dryrun) {
-		            	sql = database.getSQLOutput(null, tablename, table, tableData, null);
-		            	statements.add(sql);
-					} else {
-						database.setValuesInsert(table, tableData);
-						database.insertRow();
-					}
-				}
-			}
-
-			try
-			{
-				if (!dryrun) {
-					database.closeInsert();
-				}
-                if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
-			}
-			catch (KettleException dbe)
-			{
-                throw new KettleException("Unable to close insert after populating table " + schemaTable, dbe);
-			}
+			updateDatabaseTypes(statements, dryrun, create);
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -309,6 +258,9 @@ public class KettleDatabaseRepositoryCreationHelper {
             if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
+		// If it's creating the table, go ahead and populate below...
+		//
+		ok_database_contype=sql.toUpperCase().contains("CREATE TABLE");
 		if (ok_database_contype)
 		{
 			//
@@ -1145,7 +1097,7 @@ public class KettleDatabaseRepositoryCreationHelper {
             if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 
-		if (ok_step_type && !dryrun)
+		if (ok_step_type)
 		{
 			updateStepTypes(statements, dryrun, create);
             if (log.isDetailed()) log.logDetailed("Populated table " + schemaTable);
@@ -1916,7 +1868,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 			pass = new String[] { "admin", "guest" };
 			code = new String[] { "Administrator", "Guest account" };
 			desc = new String[] { "User manager", "Read-only guest account" };
-			prof = new String[] { "Administrator", "Read-only" };
+			// prof = new String[] { "Administrator", "Read-only" };
 
 			if (!dryrun) {
 				database.prepareInsert(table, null, tablename);
@@ -2005,6 +1957,49 @@ public class KettleDatabaseRepositoryCreationHelper {
 		            	statements.add(sql);
 					} else {
 						database.prepareInsert(table.getRowMeta(), null, KettleDatabaseRepository.TABLE_R_STEP_TYPE);
+						database.setValuesInsert(table);
+						database.insertRow();
+						database.closeInsert();
+					}
+				}
+			}
+		}
+		return statements;
+	}
+	
+	/**
+	 * Update the list in R_DATABASE_TYPE using the database plugin entries
+	 * 
+	 * @throws KettleException if the update didn't go as planned.
+	 */
+	public List<String> updateDatabaseTypes(List<String> statements, boolean dryrun, boolean create) throws KettleException
+	{
+		synchronized (repository) {
+			
+			// We should only do an update if something has changed...
+			//
+			List<PluginInterface> plugins = pluginRegistry.getPlugins(DatabasePluginType.class);
+			for (int i = 0; i < plugins.size(); i++)
+			{
+				PluginInterface plugin = plugins.get(i);
+				ObjectId id = null;
+				if (!create) id = repository.databaseDelegate.getDatabaseTypeID(plugin.getIds()[0]);
+				if (id==null) // Not found, we need to add this one...
+				{
+					// We need to add this one ...
+					id = new LongObjectId(i+1);
+					if (!create) id = repository.connectionDelegate.getNextDatabaseTypeID();
+	
+					RowMetaAndData table = new RowMetaAndData();
+					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_TYPE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER), id);
+					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_TYPE_CODE, ValueMetaInterface.TYPE_STRING), plugin.getIds()[0]);
+					table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING), plugin.getName());
+	
+					if (dryrun) {
+		            	String sql = database.getSQLOutput(null, KettleDatabaseRepository.TABLE_R_DATABASE_TYPE, table.getRowMeta(), table.getData(), null);
+		            	statements.add(sql);
+					} else {
+						database.prepareInsert(table.getRowMeta(), null, KettleDatabaseRepository.TABLE_R_DATABASE_TYPE);
 						database.setValuesInsert(table);
 						database.insertRow();
 						database.closeInsert();

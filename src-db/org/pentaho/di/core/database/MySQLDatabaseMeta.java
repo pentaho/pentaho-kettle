@@ -398,6 +398,17 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		if ( tableName.equals("dtproperties")) return true;
 		return false;
 	}
+	
+	/**
+	 * Get the SQL to insert a new empty unknown record in a dimension.
+	 * @param schemaTable the schema-table name to insert into
+	 * @param keyField The key field
+	 * @param versionField the version field
+	 * @return the SQL to insert the unknown record into the SCD.
+	 */
+	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
+		return "insert into "+schemaTable+"("+keyField+", "+versionField+") values (1, 1)";		
+	}
 }
 
 

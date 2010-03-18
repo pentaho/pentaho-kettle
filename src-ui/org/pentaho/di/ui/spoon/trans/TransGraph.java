@@ -982,6 +982,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             startHopStep = null;
             endHopLocation = null;
             redraw();
+            spoon.setShellText();
           }
 
           // Notes?

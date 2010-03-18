@@ -162,6 +162,10 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 			return null;
 		}
 	}
+	
+	public String getLogTableCode() {
+		return "CHANNEL";
+	}
 
 	public String getLogTableType() {
 		return BaseMessages.getString(PKG, "ChannelLogTable.Type.Description");

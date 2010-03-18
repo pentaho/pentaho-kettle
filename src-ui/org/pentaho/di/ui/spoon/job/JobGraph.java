@@ -868,6 +868,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
           startHopEntry = null;
           endHopLocation = null;
           redraw();
+          spoon.setShellText();
         }
 
         // Notes?

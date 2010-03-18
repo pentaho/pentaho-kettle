@@ -1631,6 +1631,35 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return new Point(maxx + 100, maxy + 100);
 	}
 
+    /**
+     * Get the minimum point on the canvas of a job
+     * @return Minimum coordinate of a step in the job
+     */
+    public Point getMinimum()
+    {
+        int minx= Integer.MAX_VALUE;
+        int miny = Integer.MAX_VALUE;
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy jobEntryCopy = getJobEntry(i);
+            Point loc = jobEntryCopy.getLocation();
+            if (loc.x < minx) minx = loc.x;
+            if (loc.y < miny) miny = loc.y;
+        }
+        for (int i = 0; i < nrNotes(); i++)
+        {
+            NotePadMeta notePadMeta = getNote(i);
+            Point loc = notePadMeta.getLocation();
+            if (loc.x < minx) minx = loc.x;
+            if (loc.y < miny) miny = loc.y;
+        }
+        
+        if (minx>20) minx-=20; else minx=0;
+        if (miny>20) miny-=20; else miny=0;
+
+        return new Point(minx, miny);
+    }
+
 	public Point[] getSelectedLocations() {
 		List<JobEntryCopy> selectedEntries = getSelectedEntries();
 		Point retval[] = new Point[selectedEntries.size()];

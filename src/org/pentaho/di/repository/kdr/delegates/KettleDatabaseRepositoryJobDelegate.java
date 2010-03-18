@@ -304,7 +304,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 						//
 						DatabaseMeta logDb = repository.loadDatabaseMeta(new LongObjectId(id_logdb), null);
 						jobMeta.getJobLogTable().setConnectionName( logDb.getName() );
-						jobMeta.getJobLogTable().getDatabaseMeta().shareVariablesWith(jobMeta);
+						// jobMeta.getJobLogTable().getDatabaseMeta().shareVariablesWith(jobMeta);
 					} else {
 						// TODO: save the name as a string attribute
 					}

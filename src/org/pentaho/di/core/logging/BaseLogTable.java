@@ -5,14 +5,28 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.w3c.dom.Node;
 
 abstract class BaseLogTable {
 	public static final String	XML_TAG	= "field";
-	
+
+	public static String	PROP_LOG_TABLE_CONNECTION_NAME	= "_LOG_TABLE_CONNECTION_NAME";
+	public static String	PROP_LOG_TABLE_SCHEMA_NAME	= "_LOG_TABLE_SCHEMA_NAME";
+	public static String	PROP_LOG_TABLE_TABLE_NAME	= "_LOG_TABLE_TABLE_NAME";
+
+	public static String	PROP_LOG_TABLE_FIELD_ID	= "_LOG_TABLE_FIELD_ID";
+	public static String	PROP_LOG_TABLE_FIELD_NAME	= "_LOG_TABLE_FIELD_NAME";
+	public static String	PROP_LOG_TABLE_FIELD_ENABLED	= "_LOG_TABLE_FIELD_ENABLED";
+
+	public static String	PROP_LOG_TABLE_INTERVAL	= "LOG_TABLE_INTERVAL";
+	public static String	PROP_LOG_TABLE_SIZE_LIMIT	= "LOG_TABLE_SIZE_LIMIT";
+	public static String	PROP_LOG_TABLE_TIMEOUT_DAYS	= "_LOG_TABLE_TIMEOUT_IN_DAYS";
+
 	protected VariableSpace space;
 	protected HasDatabasesInterface databasesInterface;;
 	
@@ -39,6 +53,45 @@ abstract class BaseLogTable {
 		}
 		return super.toString();
 	}
+
+	/**
+	 * Save this core information of the log table to the repository using the specified attribute interface.
+	 * 
+	 * @param attributeInterface The attribute interface to use to set attributes
+	 * @throws KettleException 
+	 */
+	public void saveToRepository(RepositoryAttributeInterface attributeInterface) throws KettleException {
+		  
+		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_CONNECTION_NAME, getConnectionName());
+		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_SCHEMA_NAME, getSchemaName());
+		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_TABLE_NAME, getTableName());
+		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_TIMEOUT_DAYS, getTimeoutInDays());
+		
+		// Store the fields too...
+		//
+		for (int i=0;i<getFields().size();i++) {
+			LogTableField field = getFields().get(i);
+			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_ID+i, field.getId());
+			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_NAME+i, field.getName());
+			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_ENABLED+i, field.isEnabled());
+		}
+	}
+	
+	public void loadFromRepository(RepositoryAttributeInterface attributeInterface) throws KettleException {
+		connectionName = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_CONNECTION_NAME);
+		schemaName = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_SCHEMA_NAME);
+		tableName = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_TABLE_NAME);
+		timeoutInDays = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_TIMEOUT_DAYS);
+		for (int i=0;i<getFields().size();i++) {
+			String id = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_ID+i);
+			LogTableField field = findField(id);
+			field.setFieldName(attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_NAME+i));
+			field.setEnabled(attributeInterface.getAttributeBoolean(getLogTableCode()+PROP_LOG_TABLE_FIELD_ENABLED+i));
+		}
+	}
+
+	
+	abstract String getLogTableCode();
 	
 	abstract String getConnectionNameVariable();
 	

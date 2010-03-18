@@ -4591,13 +4591,17 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				case ValueMetaInterface.TYPE_BOOLEAN:
 				case ValueMetaInterface.TYPE_STRING:
 					String string = valueMeta.getString(valueData);
-					if (string.contains("'")) {
-						if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta) {
-							string = string.replace("'", "\\'");
-						} else {
-							string = string.replace("'", "''"); break;
-						}
+					if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta) {
+						string = string.replaceAll("'", "\\\\'"); 
+						// string = string.replaceAll("'", "''"); 
+						string = string.replaceAll("\\n", "\\\\n");
+						string = string.replaceAll("\\r", "\\\\r");
+					} else {
+						string = string.replaceAll("'", "\\\\'"); 
+						string = string.replaceAll("\\n", "\\\\n");
+						string = string.replaceAll("\\r", "\\\\r");
 					}
+
 					ins.append("'" + string + "'") ;
 					break;
 				case ValueMetaInterface.TYPE_DATE:

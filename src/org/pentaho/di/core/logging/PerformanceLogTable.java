@@ -6,10 +6,12 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
 import org.w3c.dom.Node;
@@ -100,6 +102,21 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
 		
 		super.loadFieldsXML(node);
 	}
+	
+	public void saveToRepository(RepositoryAttributeInterface attributeInterface) throws KettleException {
+		super.saveToRepository(attributeInterface);
+		
+		// Also save the log interval and log size limit
+		//
+		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_INTERVAL, logInterval);
+	}
+	
+	public void loadFromRepository(RepositoryAttributeInterface attributeInterface) throws KettleException {
+		super.loadFromRepository(attributeInterface);
+		
+		logInterval = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_INTERVAL);
+	}
+
 
 	public static PerformanceLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface) {
 		PerformanceLogTable table = new PerformanceLogTable(space, databasesInterface);
@@ -192,6 +209,10 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
 		else {
 			return null;
 		}
+	}
+
+	public String getLogTableCode() {
+		return "PERFORMANCE";
 	}
 
 	public String getLogTableType() {

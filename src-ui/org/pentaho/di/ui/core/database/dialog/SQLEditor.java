@@ -318,19 +318,67 @@ public class SQLEditor extends Dialog
     			while (to<length)
     			{
     				char c = all.charAt(to);
-    				if (c=='"')
-    				{
-    					to++;
-    					c=' ';
-    					while (to<length && c!='"') { c=all.charAt(to); to++; }
+    			
+    				// Skip comment lines...
+    				//
+    				while (all.substring(from).startsWith("--")) {
+    					int nextLineIndex=all.indexOf(Const.CR, from);
+    					from=nextLineIndex+Const.CR.length();
+    					if (to>=length) break;
+    					c=all.charAt(c);
     				}
-    				else
-    				if (c=='\'') // skip until next '
-    				{
-    					to++;
-    					c=' ';
-    					while (to<length && c!='\'') { c=all.charAt(to); to++; }
+					if (to>=length) break;
+    				
+    				// Skip over double quotes...
+    				//
+    				if (c=='"') {
+	    				int nextDQuoteIndex = all.indexOf('"', to+1);
+	    				if (nextDQuoteIndex>=0) {
+	    					to=nextDQuoteIndex+1;
+	    				}
     				}
+					c = all.charAt(to);
+    				if (c=='\'') {
+    					boolean skip=true;
+    					
+    					// Don't skip over \' or ''
+    					//
+    					if (to>0) {
+    						char prevChar = all.charAt(to-1);
+    						if (prevChar=='\\' || prevChar=='\'') {
+    							skip=false;
+    						}
+    					}
+
+    					// Jump to the next quote and continue from there.
+    					//
+    					while (skip) {
+    						int nextQuoteIndex = all.indexOf('\'', to+1);
+		    				if (nextQuoteIndex>=0) {
+	    						to=nextQuoteIndex+1;
+	    						
+	    						skip=false;
+	    						
+	    						if (to<all.length()) {
+	    							char nextChar = all.charAt(to);
+	    							if (nextChar=='\'') {
+	    								skip=true;
+	    								to++;
+	    							}
+	    						}
+	    						if (to>0) {
+	    							char prevChar = all.charAt(to-2);
+	    							if (prevChar=='\\') {
+	    								skip=true;
+	    								to++;
+	    							}
+	    						}
+		    				}	    					
+	    				}
+    				}
+    				
+    				c = all.charAt(to);
+
     				if (c==';' || to>=length-1) // end of statement
     				{
     					if (to>=length-1) to++; // grab last char also!
@@ -387,7 +435,10 @@ public class SQLEditor extends Dialog
     							{
                                     String error = BaseMessages.getString(PKG, "SQLEditor.Log.SQLExecError", sql, dbe.toString());
                                     message.append(error).append(Const.CR);
-    								new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Title"), error, dbe);
+    								ErrorDialog dialog = new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Title"), error, dbe, true);
+    								if (dialog.isCancelled()) {
+    									break;
+    								}
     							}
     						}
     					}

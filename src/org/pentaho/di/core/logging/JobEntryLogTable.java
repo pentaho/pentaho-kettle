@@ -195,6 +195,10 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 			return null;
 		}
 	}
+	
+	public String getLogTableCode() {
+		return "JOB_ENTRY";
+	}
 
 	public String getLogTableType() {
 		return BaseMessages.getString(PKG, "JobEntryLogTable.Type.Description");

@@ -32,6 +32,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
@@ -463,6 +464,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
             try {
               rows = getHistoryData(logTables.get(i));
             } catch (KettleException e) {
+              LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+logTables.get(i), e);
               rows = new ArrayList<Object[]>();
             }
             rowList.add(rows);

@@ -1294,6 +1294,17 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	}
 	
 	/**
+	 * Update the list in R_DATABASE_TYPE using the plugin registry
+	 * 
+	 * @return the SQL statements executed
+	 * @throws KettleException if the update didn't go as planned.
+	 */
+	public void updateDatabaseTypes() throws KettleException
+	{
+		creationHelper.updateDatabaseTypes(new ArrayList<String>(), false, false);
+	}
+	
+	/**
 	 * Update the list in R_JOBENTRY_TYPE 
 	 * 
 	 * @exception KettleException if something went wrong during the update.

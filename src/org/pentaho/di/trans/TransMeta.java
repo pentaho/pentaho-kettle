@@ -3571,6 +3571,34 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     /**
+     * Get the minimum point on the canvas of a transformation
+     * @return Minimum coordinate of a step in the transformation 
+     */
+    public Point getMinimum()
+    {
+        int minx= Integer.MAX_VALUE, miny = Integer.MAX_VALUE;
+        for (int i = 0; i < nrSteps(); i++)
+        {
+            StepMeta stepMeta = getStep(i);
+            Point loc = stepMeta.getLocation();
+            if (loc.x < minx) minx = loc.x;
+            if (loc.y < miny) miny = loc.y;
+        }
+        for (int i = 0; i < nrNotes(); i++)
+        {
+            NotePadMeta notePadMeta = getNote(i);
+            Point loc = notePadMeta.getLocation();
+            if (loc.x < minx) minx = loc.x;
+            if (loc.y < miny) miny = loc.y;
+        }
+        
+        if (minx>20) minx-=20; else minx=0;
+        if (miny>20) miny-=20; else miny=0;
+
+        return new Point(minx, miny);
+    }
+
+    /**
      * Get the names of all the steps.
      *
      * @return An array of step names.

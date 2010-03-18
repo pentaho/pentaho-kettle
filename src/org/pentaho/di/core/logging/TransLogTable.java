@@ -7,10 +7,12 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.StepMeta;
@@ -27,7 +29,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 	private static Class<?> PKG = TransLogTable.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public static final String	XML_TAG	= "trans-log-table";
-	
+
 	public enum ID {
 		
 		ID_BATCH("ID_BATCH"),
@@ -119,7 +121,21 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		}
 	}
 
-
+	public void saveToRepository(RepositoryAttributeInterface attributeInterface) throws KettleException {
+		super.saveToRepository(attributeInterface);
+		
+		// Also save the log interval and log size limit
+		//
+		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_INTERVAL, logInterval);
+		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_SIZE_LIMIT, logSizeLimit);
+	}
+	
+	public void loadFromRepository(RepositoryAttributeInterface attributeInterface) throws KettleException {
+		super.loadFromRepository(attributeInterface);
+		
+		logInterval = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_INTERVAL);
+		logSizeLimit = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_SIZE_LIMIT);
+	}
 	
 	public static TransLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface) {
 		TransLogTable table = new TransLogTable(space, databasesInterface);
@@ -270,6 +286,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 	 * This method calculates all the values that are required
 	 * @param id the id to use or -1 if no id is needed
 	 * @param status the log status to use
+	 * @param subject the subject to query, in this case a Trans object
 	 */
 	public RowMetaAndData getLogRecord(LogStatus status, Object subject) {
 		if (subject==null || subject instanceof Trans) {
@@ -318,6 +335,10 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		else {
 			return null;
 		}
+	}
+
+	public String getLogTableCode() {
+		return "TRANS";
 	}
 
 	public String getLogTableType() {

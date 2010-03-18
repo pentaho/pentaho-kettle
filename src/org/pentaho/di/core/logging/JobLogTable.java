@@ -7,11 +7,13 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.w3c.dom.Node;
 
@@ -105,6 +107,22 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		timeoutInDays = XMLHandler.getTagValue(node, "timeout_days");
 
 		super.loadFieldsXML(node);
+	}
+	
+	public void saveToRepository(RepositoryAttributeInterface attributeInterface) throws KettleException {
+		super.saveToRepository(attributeInterface);
+		
+		// Also save the log interval and log size limit
+		//
+		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_INTERVAL, logInterval);
+		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_SIZE_LIMIT, logSizeLimit);
+	}
+
+	public void loadFromRepository(RepositoryAttributeInterface attributeInterface) throws KettleException {
+		super.loadFromRepository(attributeInterface);
+		
+		logInterval = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_INTERVAL);
+		logSizeLimit = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_SIZE_LIMIT);
 	}
 
 	public static JobLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface) {
@@ -279,6 +297,10 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		else {
 			return null;
 		}
+	}
+
+	public String getLogTableCode() {
+		return "JOB";
 	}
 
 	public String getLogTableType() {

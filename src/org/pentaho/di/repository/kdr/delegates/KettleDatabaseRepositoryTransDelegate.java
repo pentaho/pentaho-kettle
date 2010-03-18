@@ -24,6 +24,7 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -198,6 +199,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             // It is possible that we received another step through a plugin.
             if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.CheckingStepTypes")); //$NON-NLS-1$
             repository.updateStepTypes();
+            repository.updateDatabaseTypes();
 
             if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingSteps")); //$NON-NLS-1$
             for (int i = 0; i < transMeta.nrSteps(); i++)
@@ -1116,6 +1118,14 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 
 		// Save the maxdate connection link...
 		if (transMeta.getMaxDateConnection()!=null) repository.insertStepDatabase(transMeta.getObjectId(), null, transMeta.getMaxDateConnection().getObjectId());
+		
+	    // Save the logging tables too..
+	    //
+		RepositoryAttributeInterface attributeInterface = new KettleDatabaseRepositoryTransAttribute(repository.connectionDelegate, transMeta.getObjectId());
+	    transMeta.getTransLogTable().saveToRepository(attributeInterface);
+	    transMeta.getStepLogTable().saveToRepository(attributeInterface);
+	    transMeta.getPerformanceLogTable().saveToRepository(attributeInterface);
+	    transMeta.getChannelLogTable().saveToRepository(attributeInterface);		
 	}
 
 	private synchronized ObjectId insertTransHop(ObjectId id_transformation, ObjectId id_step_from, ObjectId id_step_to, boolean enabled) throws KettleException {

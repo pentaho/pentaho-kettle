@@ -60,11 +60,13 @@ public class ErrorDialog extends Dialog
 	private Text         wDesc;
     private FormData     fdlDesc, fdDesc;
 		
-	private Button wOK, wDetails;
+	private Button wOK, wDetails, wCancel;
 
 	private Shell  shell;
 	private SelectionAdapter lsDef;
 	private PropsUI props;
+
+	private boolean	cancelled;
 
 	// private LogChannelInterface	log;
 
@@ -78,20 +80,27 @@ public class ErrorDialog extends Dialog
 		//  log.logError(message, throwable);
 		
 		if (throwable instanceof Exception) {
-			showErrorDialog(parent, title, message, (Exception)throwable);
+			showErrorDialog(parent, title, message, (Exception)throwable, false);
 		} else {
 			// not optimal, but better then nothing
-			showErrorDialog(parent, title, message + Const.CR + Const.getStackTracker(throwable), null);
+			showErrorDialog(parent, title, message + Const.CR + Const.getStackTracker(throwable), null, false);
 		}
 	}
 
 	public ErrorDialog(Shell parent, String title, String message, Exception exception)
 	{
 		super(parent, SWT.NONE);
-		showErrorDialog(parent, title, message, exception);
+		showErrorDialog(parent, title, message, exception, false);
 	}
 	
-	private void showErrorDialog(Shell parent, String title, String message, Exception exception)
+	public ErrorDialog(Shell parent, String title, String message, Exception exception, boolean showCancelButton)
+	{
+		super(parent, SWT.NONE);
+		showErrorDialog(parent, title, message, exception, showCancelButton);
+	}
+
+	
+	private void showErrorDialog(Shell parent, String title, String message, Exception exception, boolean showCancelButton)
 	{
 		if (parent.isDisposed()) {
 			exception.printStackTrace();
@@ -196,13 +205,23 @@ public class ErrorDialog extends Dialog
 
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+		wCancel=new Button(shell, SWT.PUSH);
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         wDetails=new Button(shell, SWT.PUSH);
         wDetails.setText(BaseMessages.getString(PKG, "System.Button.Details"));
+
+        Button[] buttons;
+        if (showCancelButton) {
+        	buttons = new Button[] { wOK, wCancel, wDetails, };
+        } else {
+        	buttons = new Button[] { wOK, wDetails, };
+        }
         
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wDetails }, margin, null);
+        BaseStepDialog.positionBottomButtons(shell, buttons, margin, null);
 
 		// Add listeners
 		wOK.addListener     (SWT.Selection, new Listener() { public void handleEvent(Event e) { ok(); } });
+		wCancel.addListener     (SWT.Selection, new Listener() { public void handleEvent(Event e) { cancel(); } });
         wDetails.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { showDetails(details.toString()); } });
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
@@ -248,5 +267,15 @@ public class ErrorDialog extends Dialog
 	private void ok()
 	{
 		dispose();
+	}
+	
+	private void cancel()
+	{
+		cancelled=true;
+		dispose();
+	}
+	
+	public boolean isCancelled() {
+		return cancelled;
 	}
 }

@@ -1361,6 +1361,7 @@ public class DatabaseMeta
 	
 	public String stripCR(String sbsql)
 	{
+		if (sbsql==null) return null;
 		return stripCR(new StringBuffer(sbsql));
 	}
 	
@@ -2546,5 +2547,15 @@ public class DatabaseMeta
 		return databaseInterface.supportsErrorHandlingOnBatchUpdates();
 	}
 
-
+	/**
+	 * Get the SQL to insert a new empty unknown record in a dimension.
+	 * 
+	 * @param schemaTable the schema-table name to insert into
+	 * @param keyField The key field
+	 * @param versionField the version field
+	 * @return the SQL to insert the unknown record into the SCD.
+	 */
+	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
+		return databaseInterface.getSQLInsertAutoIncUnknownDimensionRow(schemaTable, keyField, versionField);
+	}
 }

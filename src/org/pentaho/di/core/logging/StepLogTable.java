@@ -173,6 +173,10 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 		}
 	}
 
+	public String getLogTableCode() {
+		return "STEP";
+	}
+
 	public String getLogTableType() {
 		return BaseMessages.getString(PKG, "StepLogTable.Type.Description");
 	}

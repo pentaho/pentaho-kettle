@@ -2,6 +2,7 @@ package org.pentaho.di.core.util;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -19,92 +20,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  */
 public class StringEvaluator {
 
-	private static String[] NUMBER_FORMATS = new String[] {
-		"###############.##############",
-		"#,###,###,###,###,###.############",
-		"0000000000000",
-		"000000000000",
-		"00000000000",
-		"0000000000",
-		"000000000",
-		"00000000",
-		"0000000",
-		"000000",
-		"00000",
-		"0000",
-		"000",
-		"00",
-		"0",
-		"#.0",
-		"#.00",
-		"#.000",
-		"#.0000",
-		"#.00000",
-		"#.000000",
-		"#.0000000",
-		"#.00000000",
-		"#.000000000",
-		"#.0000000000",
-		"#.00000000000",
-		"00.0",
-		"00.00",
-		"00.000",
-		"00.0000",
-		"00.00000",
-		"00.000000",
-		"00.0000000",
-		"00.00000000",
-		"00.000000000",
-		"00.0000000000",
-		"00.00000000000",
-		"000.0",
-		"000.00",
-		"000.000",
-		"000.0000",
-		"000.00000",
-		"000.000000",
-		"000.0000000",
-		"000.00000000",
-		"000.000000000",
-		"000.0000000000",
-		"000.00000000000",
-		"0000.0",
-		"0000.00",
-		"0000.000",
-		"0000.0000",
-		"0000.00000",
-		"0000.000000",
-		"0000.0000000",
-		"0000.00000000",
-		"0000.000000000",
-		"0000.0000000000",
-		"0000.00000000000",
-		"00000.0",
-		"00000.00",
-		"00000.000",
-		"00000.0000",
-		"00000.00000",
-		"00000.000000",
-		"00000.0000000",
-		"00000.00000000",
-		"00000.000000000",
-		"00000.0000000000",
-		"00000.00000000000",
-		"000000.0",
-		"000000.00",
-		"000000.000",
-		"000000.0000",
-		"000000.00000",
-		"000000.000000",
-		"000000.0000000",
-		"000000.00000000",
-		"000000.000000000",
-		"000000.0000000000",
-		"000000.00000000000",
-		
-	};
-
-	
 	private Set<String> values;
 	private List<StringEvaluationResult> evaluationResults;
 	private int maxLength;
@@ -254,6 +169,86 @@ public class StringEvaluator {
 			maxLength=value.length();
 		}
 	}
+	
+	private boolean containsInteger() {
+		for (StringEvaluationResult result : evaluationResults) {
+			if (result.getConversionMeta().isInteger()) return true;
+		}
+		return false;
+	}
+
+	private boolean containsNumber() {
+		for (StringEvaluationResult result : evaluationResults) {
+			if (result.getConversionMeta().isNumber()) return true;
+		}
+		return false;
+	}
+
+	private boolean containsDate() {
+		for (StringEvaluationResult result : evaluationResults) {
+			if (result.getConversionMeta().isDate()) return true;
+		}
+		return false;
+	}
+
+	public StringEvaluationResult getAdvicedResult() {
+		if (evaluationResults.isEmpty()) {
+			ValueMetaInterface adviced = new ValueMeta("adviced", ValueMetaInterface.TYPE_STRING);
+			adviced.setLength(maxLength);
+			String min=null;
+			String max=null;
+			for (String string : values) {
+				if (min==null || min.compareTo(string)>0) min=string;
+				if (max==null || max.compareTo(string)<0) max=string;
+			}
+			
+			StringEvaluationResult result = new StringEvaluationResult(adviced);
+			result.setMin(min);
+			result.setMax(max);
+			return result;
+			
+		} else {
+			// If there are Numbers and Integers, pick the integers...
+			//
+			if (containsInteger() && containsNumber()) {
+				for (Iterator<StringEvaluationResult> iterator = evaluationResults.iterator(); iterator.hasNext();) {
+					StringEvaluationResult result = iterator.next();
+					if (result.getConversionMeta().isNumber()) {
+						iterator.remove();
+					}
+				}
+			}
+			// If there are Dates and Integers, pick the dates...
+			//
+			if (containsInteger() && containsDate()) {
+				for (Iterator<StringEvaluationResult> iterator = evaluationResults.iterator(); iterator.hasNext();) {
+					StringEvaluationResult result = iterator.next();
+					if (result.getConversionMeta().isInteger()) {
+						iterator.remove();
+					}
+				}
+			}
+			
+			// Select the one with the shortest format mask.
+			//
+			int minIndex=0;
+			int minLength=Integer.MAX_VALUE;
+			for (int i=0;i<evaluationResults.size();i++) {
+				StringEvaluationResult result = evaluationResults.get(i);
+				ValueMetaInterface conversionMeta = result.getConversionMeta();
+				if (!Const.isEmpty(conversionMeta.getConversionMask()) && !conversionMeta.isBoolean()) {
+					int maskLength = conversionMeta.getConversionMask().length();
+					if (minLength>maskLength) {
+						minLength=maskLength;
+						minIndex=i;
+					}
+				}
+			}
+			
+			return evaluationResults.get(minIndex);
+		}
+		
+	}
 
 	private void populateConversionMetaList() {
 		
@@ -273,12 +268,27 @@ public class StringEvaluator {
 				evaluationResults.add(new StringEvaluationResult(conversionMeta));
 			}
 	
-			for (String format : NUMBER_FORMATS) {
+			final String[] numberFormats = new String[] {
+				"#,###,###.#",
+				"#.#",
+				" #.#",
+				"#",
+				"#.0",
+				"#.00",
+				"#.000",
+				"#.0000",
+				"#.00000",
+				"#.000000",
+			};
+			
+			for (String format : numberFormats) {
 				ValueMetaInterface conversionMeta = new ValueMeta("number-us", ValueMetaInterface.TYPE_NUMBER);
 				conversionMeta.setConversionMask(format);
 				conversionMeta.setTrimType(trimType);
 				conversionMeta.setDecimalSymbol(".");
 				conversionMeta.setGroupingSymbol(",");
+				conversionMeta.setLength(-1);
+				conversionMeta.setPrecision(-1);
 				evaluationResults.add(new StringEvaluationResult(conversionMeta));
 				
 				conversionMeta = new ValueMeta("number-eu", ValueMetaInterface.TYPE_NUMBER);
@@ -286,13 +296,21 @@ public class StringEvaluator {
 				conversionMeta.setTrimType(trimType);
 				conversionMeta.setDecimalSymbol(",");
 				conversionMeta.setGroupingSymbol(".");
+				conversionMeta.setLength(-1);
+				conversionMeta.setPrecision(-1);
 				evaluationResults.add(new StringEvaluationResult(conversionMeta));
 			}
-	
+				
 			// Integer
 			//
 			ValueMetaInterface conversionMeta = new ValueMeta("integer", ValueMetaInterface.TYPE_INTEGER);
 			conversionMeta.setConversionMask("#");
+			conversionMeta.setLength(15);
+			evaluationResults.add(new StringEvaluationResult(conversionMeta));
+
+			conversionMeta = new ValueMeta("integer", ValueMetaInterface.TYPE_INTEGER);
+			conversionMeta.setConversionMask(" #");
+			conversionMeta.setLength(15);
 			evaluationResults.add(new StringEvaluationResult(conversionMeta));
 
 			// Boolean
@@ -300,7 +318,6 @@ public class StringEvaluator {
 			conversionMeta = new ValueMeta("boolean", ValueMetaInterface.TYPE_BOOLEAN);
 			evaluationResults.add(new StringEvaluationResult(conversionMeta));		
 		}
-		
 	}
 
 
@@ -318,8 +335,6 @@ public class StringEvaluator {
 	public List<StringEvaluationResult> getStringEvaluationResults() {
 		return evaluationResults;
 	}
-	
-	
 	
 	/**
 	 * @return the number of values analyzed

@@ -1422,4 +1422,15 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		return true;
 	}
 
+	/**
+	 * Get the SQL to insert a new empty unknown record in a dimension.
+	 * @param schemaTable the schema-table name to insert into
+	 * @param keyField The key field
+	 * @param versionField the version field
+	 * @return the SQL to insert the unknown record into the SCD.
+	 */
+	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
+		return "insert into "+schemaTable+"("+keyField+", "+versionField+") values (0, 1)";		
+	}
+
 }
