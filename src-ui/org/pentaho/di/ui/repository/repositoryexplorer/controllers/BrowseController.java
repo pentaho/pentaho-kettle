@@ -491,38 +491,45 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void onDrop(DropEvent event) {
+    boolean result = false;
     try {
-      if (event.getDropParent() != null) {
-        if (event.getDataTransfer().getData().size() == 1) {
-          Object o = event.getDataTransfer().getData().get(0);
-          if (o instanceof UIRepositoryObject && event.getDropParent() instanceof UIRepositoryDirectory) {
-            UIRepositoryObject obj = (UIRepositoryObject) o;
-            UIRepositoryDirectory targetDirectory = (UIRepositoryDirectory) event.getDropParent();
-
-            obj.move(targetDirectory);
-
-            // Make sure only Folders are copied to the Directory Tree
-            List<Object> dirList = new ArrayList<Object>();
-            for (Object repObj : event.getDataTransfer().getData()) {
-              if (repObj instanceof UIRepositoryDirectory) {
-                dirList.add(repObj);
+      List<Object> dirList = new ArrayList<Object>();
+      List<UIRepositoryObject> moveList = new ArrayList<UIRepositoryObject>();
+      UIRepositoryDirectory targetDirectory = null;
+      
+      if (event.getDropParent() != null && event.getDropParent() instanceof UIRepositoryDirectory) {
+        targetDirectory = (UIRepositoryDirectory) event.getDropParent();        
+        if (event.getDataTransfer().getData().size() > 0) {
+          for(Object o : event.getDataTransfer().getData()) {
+            if (o instanceof UIRepositoryObject) {
+              moveList.add((UIRepositoryObject) o);
+  
+              // Make sure only Folders are copied to the Directory Tree
+              if (o instanceof UIRepositoryDirectory) {
+                dirList.add(o);
               }
+              result = true;
             }
-            event.getDataTransfer().setData(dirList);
-
-            event.setAccepted(true);
-          } else {
-            event.setAccepted(false);
           }
         }
-      } else {
-        event.setAccepted(false);
+      }
+      
+      if(result == true) {
+        // Perform move
+        for(UIRepositoryObject o : moveList) {
+          o.move(targetDirectory);
+        }
+        // Set UI objects to appear in folder directory
+        event.getDataTransfer().setData(dirList);
       }
     } catch (Exception e) {
+      result = false;
       event.setAccepted(false);
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
     }
+    
+    event.setAccepted(result);
   }
 
   public void onDoubleClick(Object[] selectedItems) {
