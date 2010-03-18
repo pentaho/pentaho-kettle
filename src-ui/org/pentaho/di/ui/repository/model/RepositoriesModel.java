@@ -114,6 +114,6 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
     this.firePropertyChange("valid", null, isValid());//$NON-NLS-1$
   }
   public boolean isValid() {
-    return username != null && username.length() > 0 && password != null && password.length() > 0 && selectedRepository != null;
+    return username != null && username.length() > 0 && selectedRepository != null;
   }
 }
