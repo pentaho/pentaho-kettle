@@ -41,18 +41,18 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
     }
     
     public void saveSlaveServer(SlaveServer slaveServer, ObjectId id_transformation, boolean isUsedByTransformation, boolean overwrite) throws KettleException {
-        if (slaveServer.getObjectId() == null)
+
+    	ObjectId existingSlaveId = getSlaveID(slaveServer.getName());
+    	if (existingSlaveId==null)
         {
           // New Slave Server
         	slaveServer.setObjectId(insertSlave(slaveServer));
         }
         else
         {
-          // If not overwriting, check for name collision
-          ObjectId existingSlaveId = getSlaveID(slaveServer.getName());
-          
           // If we received a slaveId and it is different from the Slave Server we are working with...
-          if(existingSlaveId != null && !slaveServer.getObjectId().equals(existingSlaveId)) {
+          //
+          if(existingSlaveId != null && slaveServer.getObjectId()!=null && !slaveServer.getObjectId().equals(existingSlaveId)) {
             // A slave with this name already exists
             if(overwrite) {
               // Proceed with save, removing the original version from the repository first
