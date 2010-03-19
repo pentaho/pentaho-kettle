@@ -27,9 +27,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElement;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
 
-public abstract class UIRepositoryObject extends XulEventSourceAdapter {
+public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryObject> {
   
   // This object can be a Directory or a RepositoryContent
   protected RepositoryElement obj;

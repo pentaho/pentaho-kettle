@@ -16,6 +16,8 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -81,7 +83,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected XulTree fileTable;
 
   protected XulTree revisionTable;
-  
+
   protected XulDeck historyDeck;
 
   protected UIRepositoryDirectory repositoryDirectory;
@@ -105,7 +107,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   List<UIRepositoryObject> repositoryObjects;
 
   private MainController mainController;
-  
   /**
    * Allows for lookup of a UIRepositoryDirectory by ObjectId. This allows the reuse of instances that are inside a UI
    * tree.
@@ -114,6 +115,14 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   public BrowseController() {
   }
+
+  // begin PDI-3326 hack
+
+  private void fireRepositoryDirectoryChange() {
+    firePropertyChange("repositoryDirectory", null, repositoryDirectory);
+  }
+  
+  // end PDI-3326 hack
 
   public void init(Repository repository) throws ControllerInitializationException {
     try {
@@ -128,15 +137,35 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       createBindings();
     } catch (Exception e) {
       throw new ControllerInitializationException(e);
-  }
+    }
   }
 
   protected void createBindings() {
     folderTree = (XulTree) document.getElementById("folder-tree"); //$NON-NLS-1$
     fileTable = (XulTree) document.getElementById("file-table"); //$NON-NLS-1$ 
 
+    if (!repositoryDirectory.isVisible()) {
+      folderTree.setHiddenrootnode(true);
+    } else {
+      folderTree.setHiddenrootnode(false);
+    }
+    
+    // begin PDI-3326 hack
+    
+    PropertyChangeListener childrenListener = new PropertyChangeListener() {
+
+      public void propertyChange(PropertyChangeEvent evt) {
+        fireRepositoryDirectoryChange();
+      }
+
+    };
+
+    repositoryDirectory.addPropertyChangeListener("children", childrenListener);
+    
+    // end PDI-3326 hack
+    
     directoryBinding = createDirectoryBinding();
- 
+
     // Bind the selected index from the folder tree to the list of repository objects in the file table. 
     bf.setBindingType(Binding.Type.ONE_WAY);
 
@@ -170,6 +199,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
           }
         });
 
+    // bindings can be added here in subclasses
+    doCreateBindings();
+    
     try {
       // Fires the population of the repository tree of folders. 
       directoryBinding.fireSourceChanged();
@@ -184,10 +216,11 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   }
   
+  protected void doCreateBindings() {}
+
   protected Binding createDirectoryBinding() {
-    // Bind the repository folder structure to the folder tree.
-    //bf.setBindingType(Binding.Type.ONE_WAY);
-    return bf.createBinding(repositoryDirectory, "children", folderTree, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
+    bf.setBindingType(Binding.Type.ONE_WAY);
+    return bf.createBinding(this, "repositoryDirectory", folderTree, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
   }
 
   private void createRevisionBindings() {
@@ -284,10 +317,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   public UIRepositoryDirectory getRepositoryDirectory() {
     return repositoryDirectory;
   }
-
-  public void setRepositoryDirectory(UIRepositoryDirectory repositoryDirectory) {
-    this.repositoryDirectory = repositoryDirectory;
-  }
   
   protected void populateDirMap(UIRepositoryDirectory repDir) {
     dirMap.put(repDir.getObjectId(), repDir);
@@ -334,7 +363,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     UIRepositoryObject contentToRename = content.iterator().next();
     renameRepositoryObject(contentToRename);
     if (contentToRename instanceof UIRepositoryDirectory) {
-      repositoryDirectory.fireCollectionChanged();
+      directoryBinding.fireSourceChanged();
     }
   }
 
@@ -343,7 +372,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     UIRepositoryObject toDelete = content.iterator().next();
     toDelete.delete();
     if (toDelete instanceof UIRepositoryDirectory) {
-      repositoryDirectory.fireCollectionChanged();
+      directoryBinding.fireSourceChanged();
     }
   }
 
@@ -422,7 +451,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         selectedFolder = repositoryDirectory;
       }
       UIRepositoryDirectory newDirectory = selectedFolder.createFolder(newName);
-      repositoryDirectory.fireCollectionChanged();
+      directoryBinding.fireSourceChanged();
       System.out.println(newDirectory.getName() + ", " + newDirectory.getObjectId().getId());
     }
     newName = null;
@@ -432,14 +461,14 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
     UIRepositoryDirectory toDelete = directory.iterator().next();
     toDelete.delete();
-    repositoryDirectory.fireCollectionChanged();
+    directoryBinding.fireSourceChanged();
   }
 
   public void renameFolder() throws Exception {
     Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
     final UIRepositoryDirectory toRename = directory.iterator().next();
     renameRepositoryObject(toRename);
-    repositoryDirectory.fireCollectionChanged();
+    directoryBinding.fireSourceChanged();
   }
 
   private void renameRepositoryObject(final UIRepositoryObject object) throws XulException {
@@ -531,7 +560,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     
     event.setAccepted(result);
   }
-
+  
   public void onDoubleClick(Object[] selectedItems) {
     openContent(selectedItems);
   }
@@ -600,13 +629,14 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   private boolean contains(TYPE type, List<TYPE> typeList) {
-    for(TYPE t:typeList) {
-      if(t.equals(type)) {
+    for (TYPE t : typeList) {
+      if (t.equals(type)) {
         return true;
       }
     }
     return false;
   }
+
   /**
    * Fire all current {@link ContextChangeVetoer}.
    * Every on who has added their self as a vetoer has a change to vote on what

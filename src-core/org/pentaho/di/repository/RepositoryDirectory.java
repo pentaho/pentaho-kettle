@@ -38,6 +38,12 @@ public class RepositoryDirectory implements Directory
 	private String directoryname;
 	
 	private ObjectId id;
+	
+	/**
+	 * True to show this directory in UIs. Not necessarily persisted. Each repo impl decides whether to mark each dir as
+	 * visible.
+	 */
+	private boolean visible = true;
     
 	/**
 	 * Create a new sub-directory in a certain other directory.
@@ -501,5 +507,15 @@ public class RepositoryDirectory implements Directory
             return getPath()+RepositoryDirectory.DIRECTORY_SEPARATOR+transName;
         }
     }
+
+  public boolean isVisible()
+  {
+    return visible;
+  }
+
+  public void setVisible(boolean visible)
+  {
+    this.visible = visible;
+  }
 
 }

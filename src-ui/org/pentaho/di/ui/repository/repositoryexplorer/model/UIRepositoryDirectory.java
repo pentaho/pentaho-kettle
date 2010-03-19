@@ -17,6 +17,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
@@ -255,4 +256,27 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   public String getPath() {
     return ((RepositoryDirectory) rd).getPath();
   }
+
+  public boolean isVisible() {
+    return rd.isVisible();
+  }
+
+  // begin PDI-3326 hack
+  
+  @Override
+  public int size() {
+    return getChildren().size();
+  }
+
+  @Override
+  public UIRepositoryObject get(int index) {
+    return getChildren().get(index);
+  }
+  
+  @Override
+  public Iterator<UIRepositoryObject> iterator() {
+    return getChildren().iterator();
+  }
+  
+  // end PDI-3326 hack
 }
