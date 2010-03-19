@@ -25,6 +25,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.ui.database.DatabaseConnectionDialog;
@@ -38,6 +39,11 @@ public class XulDatabaseDialog {
   private static Class<?> PKG = XulDatabaseDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private DatabaseMeta databaseMeta;
+  
+  /**
+   * The original objectId of the databaseMeta before it was edited, possibly null.
+   */
+  private ObjectId databaseMetaObjectId;
 
   private Shell shell;
 
@@ -69,6 +75,7 @@ public class XulDatabaseDialog {
 
     parentShell = parent;
     databaseMeta = dbMeta;
+    databaseMetaObjectId = dbMeta.getObjectId();
     if (dbMeta != null) {
       databaseName = databaseMeta.getName();
     }
@@ -166,6 +173,9 @@ public class XulDatabaseDialog {
       					// caught with a HACK in DataHandler.loadConnectionData()
 
       databaseMeta = (DatabaseMeta) dataHandler.getData();
+      
+      // keep the original id
+      databaseMeta.setObjectId(databaseMetaObjectId);
       databaseName = Const.isEmpty(databaseMeta.getName()) ? null : databaseMeta.getName();
       
     } catch (Exception e) {
