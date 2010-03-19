@@ -49,6 +49,7 @@ import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulPromptBox;
+import org.pentaho.ui.xul.components.XulTab;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.dnd.DropEvent;
@@ -78,6 +79,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   };
 
+  private XulTab historyTab;
+  
   protected XulTree folderTree;
 
   protected XulTree fileTable;
@@ -141,6 +144,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   protected void createBindings() {
+    historyTab = (XulTab) document.getElementById("history"); //$NON-NLS-1$     
     folderTree = (XulTree) document.getElementById("folder-tree"); //$NON-NLS-1$
     fileTable = (XulTree) document.getElementById("file-table"); //$NON-NLS-1$ 
 
@@ -269,6 +273,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
               return null;
             }
             if (ro.get(0) instanceof UIRepositoryDirectory) {
+              historyTab.setVisible(false);
               historyDeck.setSelectedIndex(NO_HISTORY);
               return null;
             }
@@ -282,6 +287,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
               // convert to runtime exception so it bubbles up through the UI
               throw new RuntimeException(e);
             }
+            historyTab.setVisible(true);
             historyDeck.setSelectedIndex(HISTORY);
             return revisions;
           }
@@ -306,6 +312,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   public <T> void setNoHistoryDeck(Collection<T> items) {
     if (historyDeck != null) {
+      historyTab.setVisible(false);
       historyDeck.setSelectedIndex(NO_HISTORY);
     }
   }

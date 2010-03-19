@@ -12,8 +12,8 @@
 
 							<tabbox id="file-properties-tabs" flex="1">
 								<tabs>
-									<tab label="History" />
-									<tab label="Permission" />
+									<tab id="history" label="History" />
+									<tab id="permission" label="Permission" />
 								</tabs>
 								<tabpanels flex="1">
 									<tabpanel id="history-tab">
