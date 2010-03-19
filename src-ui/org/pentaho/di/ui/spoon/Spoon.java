@@ -110,7 +110,6 @@ import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.clipboard.ImageDataTransfer;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
@@ -1982,17 +1981,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
           String name = item.getText();
           String tip = coreStepToolTipMap.get(name);
           if (tip != null) {
-            PluginInterface plugin = PluginRegistry.getInstance()
-                .findPluginWithName(StepPluginType.class, name);
-            Image image = GUIResource.getInstance().getImagesSteps().get(
-                plugin.getIds()[0]);
-            if (image==null) {
-            	toolTip.hide();
+            PluginInterface plugin = PluginRegistry.getInstance().findPluginWithName(StepPluginType.class, name);
+            if (plugin!=null) {
+	            Image image = GUIResource.getInstance().getImagesSteps().get(plugin.getIds()[0]);
+	            if (image==null) {
+	            	toolTip.hide();
+	            }
+	            toolTip.setImage(image);
+	            toolTip.setText(name + Const.CR + Const.CR + tip);
+	            toolTip.show(new org.eclipse.swt.graphics.Point(move.x + 10,
+	                move.y + 10));
             }
-            toolTip.setImage(image);
-            toolTip.setText(name + Const.CR + Const.CR + tip);
-            toolTip.show(new org.eclipse.swt.graphics.Point(move.x + 10,
-                move.y + 10));
           }
           tip = coreJobToolTipMap.get(name);
           if (tip != null) {
@@ -2121,12 +2120,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       // 
       for (int i = 0; i < pluginHistory.size() && i < 10; i++) {
         ObjectUsageCount usage = pluginHistory.get(i);
-        PluginInterface stepPlugin = PluginRegistry.getInstance()
-            .findPluginWithId(StepPluginType.class, usage.getObjectName());
+        PluginInterface stepPlugin = PluginRegistry.getInstance().findPluginWithId(StepPluginType.class, usage.getObjectName());
         if (stepPlugin != null) {
-          final Image stepimg = GUIResource.getInstance().getImagesSteps().get(
-              stepPlugin.getIds()[0]);
-          String pluginName = Const.NVL(stepPlugin.getDescription(), "");
+          final Image stepimg = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getIds()[0]);
+          String pluginName = Const.NVL(stepPlugin.getName(), "");
           String pluginDescription = Const.NVL(stepPlugin.getDescription(), "");
 
           if (!filterMatch(pluginName) && !filterMatch(pluginDescription))
@@ -2141,8 +2138,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
               System.out.println("Tree item Listener fired");
             }
           });
-          // if (isPlugin)
-          // stepItem.setFont(GUIResource.getInstance().getFontBold());
 
           coreStepToolTipMap.put(stepPlugin.getDescription(), pluginDescription
               + " (" + usage.getNrUses() + ")");
