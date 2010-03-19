@@ -61,6 +61,7 @@ public class MainSpoonPerspective implements SpoonPerspective {
     for(SpoonPerspectiveListener l : listeners){
       if(active){
         l.onActivation();
+        Spoon.getInstance().enableMenus();
       } else {
         l.onDeactication();
       }
