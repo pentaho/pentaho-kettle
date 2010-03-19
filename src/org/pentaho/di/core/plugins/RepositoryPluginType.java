@@ -17,8 +17,6 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
-import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -30,8 +28,8 @@ import org.w3c.dom.Node;
  */
 @PluginMainClassType(Repository.class)
 @PluginExtraClassTypes(
-		classTypes = { RepositoryMeta.class, RepositoryDialogInterface.class, }, 
-		xmlNodeNames = { "meta-classname", "dialog-classname", }
+		classTypes = { RepositoryMeta.class }, 
+		xmlNodeNames = { "meta-classname" }
 	)
 @PluginAnnotationType(RepositoryPlugin.class)
 public class RepositoryPluginType extends BasePluginType implements PluginTypeInterface {
