@@ -35,7 +35,6 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
     String previousValue = this.password;
     this.password = password;
     this.firePropertyChange("password", previousValue, password); //$NON-NLS-1$
-    checkIfModelValid();
   }
   public boolean isShowDialogAtStartup() {
     return showDialogAtStartup;

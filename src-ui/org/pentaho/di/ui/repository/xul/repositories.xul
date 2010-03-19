@@ -22,9 +22,9 @@
 		</hbox>
        	<listbox id="available-repository-list" pen:binding="name" disabled="false" flex="1"/>
 		<label value="${RepositoryLoginDialog.UserName}" />
-		<textbox id="user-name" multiline="false"/>
+		<textbox id="user-name" multiline="false" command="repositoryLoginController.login()"/>
 		<label value="${RepositoryLoginDialog.Password}"/>
-		<textbox id="user-password" type="password" multiline="false"/>
+		<textbox id="user-password" type="password" multiline="false" command="repositoryLoginController.login()"/>
 		<label id="spacer-label"/>
 		<checkbox id="show-login-dialog-at-startup" command="repositoryLoginController.updateShowDialogAtStartup()" label="${RepositoryLoginDialog.ShowDialogAtStartup}" checked="false"/>			
   </dialog>
