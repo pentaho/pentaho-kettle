@@ -42,6 +42,8 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
@@ -166,6 +168,7 @@ import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
 import org.pentaho.di.repository.IAclManager;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
@@ -552,8 +555,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       // We do this to (hopefully) also catch Out of Memory Exceptions
       //
       t.printStackTrace();
-      staticSpoon.log
-          .logError("Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error"))); //$NON-NLS-1$ //$NON-NLS-2$
+      staticSpoon.log.logError("Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error"))); //$NON-NLS-1$ //$NON-NLS-2$
       staticSpoon.log.logError(Const.getStackTracker(t));
     }
 
@@ -1492,17 +1494,40 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   public void showWelcomePage() {
     try {
+      LocationListener listener = new LocationListener() {
+		public void changing(LocationEvent event) {
+
+			System.out.println("Changing to: "+event.location);
+
+			// file:///home/matt/svn/kettle/trunk/docs/English/welcome/samples/transformations/
+			//
+			if (event.location.contains("samples/transformations")) {
+				try {
+					FileObject fileObject = KettleVFS.getFileObject(event.location);
+					lastDirOpened=KettleVFS.getFilename(fileObject);
+					
+					openFile(true);
+					event.doit=false;
+				} catch(Exception e) {
+					log.logError("Error moving to folder: "+event.location, e);
+				}
+			}
+		}
+		public void changed(LocationEvent event) {
+			System.out.println("Changed to: "+event.location);
+		}
+      };
+      
       // see if we are in webstart mode
       String webstartRoot = System.getProperty("spoon.webstartroot");
       if (webstartRoot != null) {
         URL url = new URL(webstartRoot + '/' + FILE_WELCOME_PAGE);
-        addSpoonBrowser(STRING_WELCOME_TAB_NAME, url.toString()); // ./docs/English/tips/index.htm
+        addSpoonBrowser(STRING_WELCOME_TAB_NAME, url.toString(), listener); // ./docs/English/tips/index.htm
       } else {
         // see if we can find the welcome file on the file system
         File file = new File(FILE_WELCOME_PAGE);
         if (file.exists()) {
-          addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURI().toURL()
-              .toString()); // ./docs/English/tips/index.htm
+          addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURI().toURL().toString(), listener); // ./docs/English/tips/index.htm
         }
       }
     } catch (MalformedURLException e1) {
@@ -1582,19 +1607,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     // If the file comes from a repository and it's not the same as
     // the one we're connected to, ask for a username/password!
     //
-    if (lastUsedFile.isSourceRepository()
-        && (rep == null || !rep.getName().equalsIgnoreCase(
-            lastUsedFile.getRepositoryName()))) {
+    if (lastUsedFile.isSourceRepository() && (rep == null || !rep.getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))) {
       // Ask for a username password to get the required repository access
-      loginDialog = new RepositoriesDialog(shell, lastUsedFile
-          .getRepositoryName(), new ILoginCallback() {
+      //
+      loginDialog = new RepositoriesDialog(shell, lastUsedFile.getRepositoryName(), new ILoginCallback() {
         
         public void onSuccess(Repository repository) {
           // Close the previous connection...
           if (rep != null) {
             rep.disconnect();
-            SpoonPluginManager.getInstance().notifyLifecycleListeners(
-                SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
+            SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
           }
           setRepository(repository);
           try {
@@ -1619,14 +1641,28 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
         }
         
         public void onCancel() {
-          // TODO Auto-generated method stub
-          
         }
       });
       loginDialog.show();
     } else if (!lastUsedFile.isSourceRepository()) {
       // This file must have been on the file system.
       openFile(lastUsedFile.getFilename(), false);
+    } else {
+    	// read from a repository...
+    	//
+        try {
+            loadLastUsedFile(lastUsedFile, rep == null ? null : rep.getName());
+            addMenuLast();
+            refreshHistory();
+          } catch (KettleException ke) {
+            // "Error loading transformation", "I was unable to load this
+            // transformation from the
+            // XML file because of an error"
+            new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG,
+                "Spoon.Dialog.LoadTransformationError.Title"),
+                BaseMessages.getString(PKG,
+                    "Spoon.Dialog.LoadTransformationError.Message"), ke);
+          }
     }
   }
 
@@ -4210,7 +4246,22 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       if (answer && !Const.isEmpty(meta.getName())) {
 
         int response = SWT.YES;
-        if (meta.getObjectId()==null && rep.exists(meta.getName(), meta.getRepositoryDirectory(), meta.getRepositoryElementType())) {
+        
+        ObjectId existingId = null;
+        if (meta instanceof TransMeta) {
+        	existingId = rep.getTransformationID(meta.getName(), meta.getRepositoryDirectory());
+        }
+        if (meta instanceof JobMeta) {
+        	existingId = rep.getJobId(meta.getName(), meta.getRepositoryDirectory());
+        }
+        
+        // If there is no object id (import from XML) and there is an existing object.
+        //
+        // or...
+        //
+        // If the transformation/job has an object id and it's different from the one in the repository.
+        //
+        if ((meta.getObjectId()==null && existingId!=null) || existingId!=null && !meta.getObjectId().equals(existingId)) {
           // In case we support revisions, we can simply overwrite
           // without a problem so we simply don't ask.
           //
@@ -6706,13 +6757,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     return clOptions;
   }
 
-  private void loadLastUsedFile(LastUsedFile lastUsedFile, String repositoryName)
-      throws KettleException {
+  private void loadLastUsedFile(LastUsedFile lastUsedFile, String repositoryName) throws KettleException {
     loadLastUsedFile(lastUsedFile, repositoryName, true);
   }
 
-  private void loadLastUsedFile(LastUsedFile lastUsedFile,
-      String repositoryName, boolean trackIt) throws KettleException {
+  private void loadLastUsedFile(LastUsedFile lastUsedFile, String repositoryName, boolean trackIt) throws KettleException {
     boolean useRepository = repositoryName != null;
     // Perhaps we need to connect to the repository?
     // 
@@ -7422,8 +7471,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     delegates.jobs.addJobGraph(jobMeta);
   }
 
+  public boolean addSpoonBrowser(String name, String urlString, LocationListener locationListener) {
+	    return delegates.tabs.addSpoonBrowser(name, urlString, locationListener);
+  }
   public boolean addSpoonBrowser(String name, String urlString) {
-    return delegates.tabs.addSpoonBrowser(name, urlString);
+    return delegates.tabs.addSpoonBrowser(name, urlString, null);
   }
 
   public TransExecutionConfiguration getTransExecutionConfiguration() {
@@ -7600,8 +7652,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     if (info.hasHint(LifeEventInfo.Hint.DISPLAY_BROWSER)) {
       display.asyncExec(new Runnable() {
         public void run() {
-          delegates.tabs.addSpoonBrowser(info.getName(), info.getMessage(),
-              false);
+          delegates.tabs.addSpoonBrowser(info.getName(), info.getMessage(), false, null);
         }
       });
 
