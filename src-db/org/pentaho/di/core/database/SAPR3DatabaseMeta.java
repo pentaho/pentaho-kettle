@@ -122,4 +122,13 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	public String getDatabaseFactoryName() {
 		return EnvUtil.getSystemProperty(Const.KETTLE_SAP_CONNECTION_FACTORY, Const.KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME);
 	}
+
+	/**
+	 * @return true if this is a relational database you can explore.
+	 * Return false for SAP, PALO, etc.
+	 */
+	public boolean isExplorable() {
+		return false;
+	}
+
 }

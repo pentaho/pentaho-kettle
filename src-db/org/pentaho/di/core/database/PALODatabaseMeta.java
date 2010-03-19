@@ -39,4 +39,12 @@ public class PALODatabaseMeta extends GenericDatabaseMeta implements DatabaseInt
 		return "plugin.palo.core.PaloHelper";
 		// return PaloDatabaseFactory.class.getName();
 	}
+
+	/**
+	 * @return true if this is a relational database you can explore.
+	 * Return false for SAP, PALO, etc.
+	 */
+	public boolean isExplorable() {
+		return false;
+	}
 }

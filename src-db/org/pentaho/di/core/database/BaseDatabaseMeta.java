@@ -1433,4 +1433,12 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		return "insert into "+schemaTable+"("+keyField+", "+versionField+") values (0, 1)";		
 	}
 
+	/**
+	 * @return true if this is a relational database you can explore.
+	 * Return false for SAP, PALO, etc.
+	 */
+	public boolean isExplorable() {
+		return true;
+	}
+
 }

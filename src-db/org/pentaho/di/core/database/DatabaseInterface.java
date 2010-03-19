@@ -824,4 +824,11 @@ public interface DatabaseInterface extends Cloneable
 	 * @return the SQL to insert the unknown record into the SCD.
 	 */
 	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField);
+
+	/**
+	 * @return true if this is a relational database you can explore.
+	 * Return false for SAP, PALO, etc.
+	 */
+	public boolean isExplorable();
+
 }

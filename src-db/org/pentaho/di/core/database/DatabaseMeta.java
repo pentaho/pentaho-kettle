@@ -2558,4 +2558,12 @@ public class DatabaseMeta
 	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
 		return databaseInterface.getSQLInsertAutoIncUnknownDimensionRow(schemaTable, keyField, versionField);
 	}
+
+	/**
+	 * @return true if this is a relational database you can explore.
+	 * Return false for SAP, PALO, etc.
+	 */
+	public boolean isExplorable() {
+		return databaseInterface.isExplorable();
+	}
 }
