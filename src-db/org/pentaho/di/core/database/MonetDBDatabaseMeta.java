@@ -124,10 +124,6 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return true;
 	}
 	
-	public boolean supportsBooleanDataType() {
-		return true;
-	}
-	
 	public boolean supportsSetMaxRows() {
 		return true;
 	}
