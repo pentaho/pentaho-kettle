@@ -155,7 +155,7 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
 		wbdSourceFileFolder=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbdSourceFileFolder);
 		wbdSourceFileFolder.setText("Supprimer");
-		wbdSourceFileFolder.setToolTipText("Supprimer les entrées sélectionnées");
+		wbdSourceFileFolder.setToolTipText(BaseMessages.getString(PKG, "JobCheckDbConnections.DeleteSourceFileButton.Label"));
 		fdbdSourceFileFolder=new FormData();
 		fdbdSourceFileFolder.right = new FormAttachment(100, -margin);
 		fdbdSourceFileFolder.top  = new FormAttachment (wlFields, 50);
@@ -166,7 +166,7 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
 		wbgetConnections=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbgetConnections);
 		wbgetConnections.setText("Connexions");
-		wbgetConnections.setToolTipText("Récupérer les connexions disponibles");
+		wbgetConnections.setToolTipText("Rï¿½cupï¿½rer les connexions disponibles");
 		fdbgetConnections=new FormData();
 		fdbgetConnections.right = new FormAttachment(100, -margin);
 		fdbgetConnections.top  = new FormAttachment (wlFields, 20);
