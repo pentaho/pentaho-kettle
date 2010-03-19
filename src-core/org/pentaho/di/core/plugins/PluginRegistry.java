@@ -57,14 +57,14 @@ public class PluginRegistry {
 	/**
 	 * @return The one and only PluginRegistry instance
 	 */
-	public static PluginRegistry getInstance() {
+	public synchronized static PluginRegistry getInstance() {
 		if (pluginRegistry==null) {
 			pluginRegistry=new PluginRegistry();
 		}
 		return pluginRegistry;
 	}
 	
-	public void registerPluginType(Class<? extends PluginTypeInterface> pluginType) {
+	public synchronized void registerPluginType(Class<? extends PluginTypeInterface> pluginType) {
 		pluginMap.put(pluginType, new ArrayList<PluginInterface>());
 		
 		// Keep track of the categories separately for performance reasons...
@@ -76,25 +76,16 @@ public class PluginRegistry {
 
 	}
 	
-	public void registerPlugin(Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin) throws KettlePluginException {
+	public synchronized void registerPlugin(Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin) throws KettlePluginException {
 		
 		if (plugin.getIds()[0]==null) {
 			throw new KettlePluginException("Not a valid id specified in plugin :"+plugin);
-		}
-		
-		if (plugin.getName().startsWith("i18n:")) {
-			System.out.println("i18n untranslated key detected: "+plugin.getName());
-		}
-
-		if (plugin.getName().startsWith("!") && plugin.getName().endsWith("!")) {
-			System.out.println("i18n untranslated key detected: "+plugin.getName());
 		}
 
 		List<PluginInterface> list = pluginMap.get(pluginType);
 		if (list==null) {
 			list = new ArrayList<PluginInterface>();
 			pluginMap.put(pluginType, list);
-//			classLoaderMap.put(pluginType, new HashMap<PluginInterface, URLClassLoader>());
 		}
 		
 		int index = list.indexOf(plugin);
@@ -393,7 +384,7 @@ public class PluginRegistry {
 	 * 
 	 * @throws KettlePluginException
 	 */
-	public static void init() throws KettlePluginException {
+	public synchronized static void init() throws KettlePluginException {
 		PluginRegistry registry = getInstance();
 				
 		for (PluginTypeInterface pluginType : pluginTypes) {
@@ -543,9 +534,6 @@ public class PluginRegistry {
 		for (PluginInterface plugin : getPlugins(pluginType))
 		{
 			for (String className : plugin.getClassMap().values()) {
-				if (className==null) {
-					System.out.println("SNAFU!!!");
-				}
 				int lastIndex = className.lastIndexOf(".");
 				String packageName = className.substring(0, lastIndex); 
 				if (!list.contains(packageName)) list.add(packageName);
