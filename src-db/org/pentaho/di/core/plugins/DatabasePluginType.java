@@ -6,6 +6,7 @@ package org.pentaho.di.core.plugins;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -109,5 +110,9 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
   @Override
   protected String extractI18nPackageName(Annotation annotation) {
     return null;
+  }
+
+  @Override
+  protected void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation) {	  
   }
 }

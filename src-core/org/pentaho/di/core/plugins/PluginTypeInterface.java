@@ -17,8 +17,8 @@ import org.pentaho.di.core.exception.KettlePluginException;
 public interface PluginTypeInterface {
   
   /**
-   * Register an additional class  type to be managed by the plugin system.
-   * @param clz category class, ususally an interface
+   * Register an additional class type to be managed by the plugin system.
+   * @param clz category class, usually an interface
    * @param xmlNodeName xml node to search for a class name
    */
   public void addObjectType(Class<?> clz, String xmlNodeName);
@@ -55,5 +55,4 @@ public interface PluginTypeInterface {
 	 * @throws KettlePluginException
 	 */
 	public void handlePluginAnnotation(Class<?> clazz, java.lang.annotation.Annotation annotation, List<String> libraries, boolean nativePluginType, URL pluginFolder) throws KettlePluginException;
-
 }

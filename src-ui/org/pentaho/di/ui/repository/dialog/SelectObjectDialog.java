@@ -64,7 +64,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 public class SelectObjectDialog extends Dialog
 {
-	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label        wlTree;
 	private Tree         wTree;

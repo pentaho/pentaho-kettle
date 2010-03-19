@@ -1334,6 +1334,11 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 				delSelected();
 			}
 		}
+		
+		if (e.keyCode == SWT.F1) {
+			spoon.browseVersionHistory();
+		}
+		
 		// CTRL-UP : allignTop();
 		if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.CONTROL) != 0) {
 			alligntop();
@@ -3167,17 +3172,10 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
     refreshListeners.add(refreshListener);
   }
 
-  /* (non-Javadoc)
-   * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
-   */
   public String getName() {
-    // TODO Auto-generated method stub
     return "jobgraph";
   }
 
-  /* (non-Javadoc)
-   * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
-   */
   public XulDomContainer getXulDomContainer() {
     return xulDomContainer;
   }

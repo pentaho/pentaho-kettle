@@ -153,8 +153,10 @@ public class RepositoriesHelper {
       }
       
   }
+
   protected RepositoryDialogInterface getRepositoryDialog(PluginInterface plugin, RepositoryMeta repositoryMeta, RepositoriesMeta input2, Shell shell) throws Exception {
-    Class<? extends RepositoryDialogInterface> dialogClass = PluginRegistry.getInstance().getClass(plugin, RepositoryDialogInterface.class);
+	String className = repositoryMeta.getDialogClassName();
+    Class<? extends RepositoryDialogInterface> dialogClass = PluginRegistry.getInstance().getClass(plugin, className);
     Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, RepositoryMeta.class, RepositoriesMeta.class);
     return (RepositoryDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repositoryMeta, input, });
   }
@@ -221,5 +223,9 @@ public class RepositoriesHelper {
       log.logDetailed("Error deleting repository : " + e.getLocalizedMessage());
       new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorSavingRepositoryDefinition", e.getLocalizedMessage()), e);
     } 
+  }
+  
+  public XulMessageBox getMessageBox() {
+	return messageBox;
   }
 }

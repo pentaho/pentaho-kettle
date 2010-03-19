@@ -6,6 +6,7 @@ package org.pentaho.di.core.plugins;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -16,6 +17,8 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
+import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -26,7 +29,10 @@ import org.w3c.dom.Node;
  *
  */
 @PluginMainClassType(Repository.class)
-@PluginExtraClassTypes(classTypes = { RepositoryMeta.class }, xmlNodeNames = { "meta-classname" })
+@PluginExtraClassTypes(
+		classTypes = { RepositoryMeta.class, RepositoryDialogInterface.class, }, 
+		xmlNodeNames = { "meta-classname", "dialog-classname", }
+	)
 @PluginAnnotationType(RepositoryPlugin.class)
 public class RepositoryPluginType extends BasePluginType implements PluginTypeInterface {
 
@@ -135,4 +141,16 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
   protected String extractI18nPackageName(Annotation annotation) {
     return ((RepositoryPlugin) annotation).i18nPackageName();
   }
+  
+	/**
+	 * Extract extra classes information from a plugin annotation.
+	 * 
+	 * @param classMap
+	 * @param annotation
+	 */
+	public void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation) {
+		RepositoryPlugin repositoryPlugin = (RepositoryPlugin) annotation;
+		
+		classMap.put(RepositoryMeta.class, repositoryPlugin.metaClass());
+	}
 }

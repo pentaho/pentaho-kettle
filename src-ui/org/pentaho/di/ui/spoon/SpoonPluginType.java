@@ -2,6 +2,7 @@ package org.pentaho.di.ui.spoon;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -88,4 +89,9 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
   protected String extractI18nPackageName(Annotation annotation) {
     return ((SpoonPlugin) annotation).i18nPackageName();
   }
+
+  @Override
+  protected void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation) {	  
+  }
+
 }

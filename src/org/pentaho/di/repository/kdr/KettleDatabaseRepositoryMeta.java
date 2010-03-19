@@ -115,5 +115,5 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
 		{
 			throw new KettleException("Unable to load Kettle database repository meta object", e);
 		}
-	}	
+	}
 }

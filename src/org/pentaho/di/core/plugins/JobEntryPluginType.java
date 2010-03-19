@@ -6,6 +6,7 @@ package org.pentaho.di.core.plugins;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -169,4 +170,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
     return ((JobEntry) annotation).i18nPackageName();
   }
 
+  @Override
+  protected void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation) {	  
+  }
 }

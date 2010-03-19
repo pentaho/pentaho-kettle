@@ -26,8 +26,6 @@ import java.lang.annotation.Target;
  * Important: The XML definitions alienate annotated repository plugins and the two methods of definition are therefore
  * mutually exclusive.
  * 
- * @author Alex Silva
- * 
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -41,10 +39,6 @@ public @interface RepositoryPlugin
 	String description() default "";
 	
 	String metaClass();
-	
-	String dialogClass();
-	
-	String versionBrowserClass() default "";
 
 	String i18nPackageName() default "";
 	

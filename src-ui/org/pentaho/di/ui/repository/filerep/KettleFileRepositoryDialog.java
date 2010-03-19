@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repository.dialog;
+package org.pentaho.di.ui.repository.filerep;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -25,10 +25,11 @@ import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
-	private static Class<?> PKG = KettleFileRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label        wlBaseDir;
 	private Button       wbBaseDir;

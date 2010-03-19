@@ -1,6 +1,7 @@
 package org.pentaho.di.core.plugins;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
@@ -530,12 +531,23 @@ public abstract class BasePluginType implements PluginTypeInterface{
       
       classMap.put(mainType.value(), clazz.getName());
       
-      PluginClassTypeMapping extraTypes = clazz.getAnnotation(PluginClassTypeMapping.class);
+      addExtraClasses(classMap, clazz, annotation);
+      
+      /*
+      PluginExtraClassTypes extraTypes = this.getClass().getAnnotation(PluginExtraClassTypes.class);
       if(extraTypes != null){
         for(int i=0; i< extraTypes.classTypes().length; i++){
-          classMap.put(extraTypes.classTypes()[i], extraTypes.implementationClass()[i].getName());
+          Class<?> extraClass = extraTypes.classTypes()[i];
+          // The extra class name is stored in an annotation.
+          // The name of the annotation is known
+          //
+          ((RepositoryPlugin)annotation).dialogClass()
+          String extraClassName = extraTypes.classTypes()[i].getName();
+          
+          classMap.put(extraClass, extraClassName);
         }
       }
+      */
       
       PluginInterface plugin = new Plugin(ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader, nativePluginType, classMap, libraries, null, pluginFolder);
       registry.registerPlugin(this.getClass(), plugin);
@@ -544,4 +556,13 @@ public abstract class BasePluginType implements PluginTypeInterface{
     	  LogChannel.GENERAL.logBasic("Plugin with id ["+ids[0]+"] has "+libraries.size()+" libaries in its private class path");
       }
   }
+	
+	/**
+	 * Extract extra classes information from a plugin annotation.
+	 * 
+	 * @param classMap
+	 * @param clazz
+	 * @param annotation
+	 */
+	protected abstract void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation);
 }

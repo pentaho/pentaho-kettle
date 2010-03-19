@@ -383,7 +383,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   public Repository rep;
 
-  private RepositorySecurityManager securityManager;
+  // private RepositorySecurityManager securityManager;
 
   public RepositoryCapabilities capabilities;
   
@@ -921,19 +921,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     }
   }
   
-  @SuppressWarnings("unchecked")
   public void loadPerspective(int pos) {
-
-    Class clazz;
     try {
-      
-      SpoonPerspectiveManager.getInstance().activatePerspective(
-          SpoonPerspectiveManager.getInstance().getPerspectives().get(pos)
-              .getClass());
+      SpoonPerspectiveManager.getInstance().activatePerspective(SpoonPerspectiveManager.getInstance().getPerspectives().get(pos).getClass());
     } catch (KettleException e) {
-      e.printStackTrace();
+      log.logError("Error loading perspective", e);
     }
-
   }
 
   public Shell getShell() {

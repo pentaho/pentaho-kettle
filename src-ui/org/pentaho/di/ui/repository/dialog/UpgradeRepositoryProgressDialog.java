@@ -46,7 +46,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class UpgradeRepositoryProgressDialog
 {
-	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private Shell shell;
     private KettleDatabaseRepository rep;

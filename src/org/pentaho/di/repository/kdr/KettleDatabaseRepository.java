@@ -1795,7 +1795,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     return serviceMap.containsKey(clazz);
   }
 
-  @Override
   public RepositoryDirectory getDefaultSaveDirectory(RepositoryElementInterface repositoryElement) throws KettleException {
     RepositoryDirectory root = new RepositoryDirectory();
     root.setObjectId(new LongObjectId(0L));

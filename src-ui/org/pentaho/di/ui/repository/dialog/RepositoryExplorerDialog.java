@@ -2984,9 +2984,10 @@ public class RepositoryExplorerDialog extends Dialog
 			public String getName() { return name; }
 		};
 		
+		String className = repository.getRepositoryMeta().getRevisionBrowserDialogClassName();
 		PluginRegistry registry = PluginRegistry.getInstance();
 		PluginInterface plugin = registry.getPlugin(RepositoryPluginType.class, repository.getRepositoryMeta().getId());
-		Class<? extends RepositoryRevisionBrowserDialogInterface> dialogClass = registry.getClass(plugin, RepositoryRevisionBrowserDialogInterface.class);
+		Class<? extends RepositoryRevisionBrowserDialogInterface> dialogClass = registry.getClass(plugin, className);
 		Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, Repository.class, RepositoryElementLocationInterface.class);
 		return (RepositoryRevisionBrowserDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repository, element, });
 	}

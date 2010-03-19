@@ -5,11 +5,14 @@ package org.pentaho.di.core.plugins;
 
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
 
 import org.pentaho.di.core.annotations.LifecyclePlugin;
+import org.pentaho.di.core.annotations.RepositoryPlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.GUIOption;
 import org.pentaho.di.core.lifecycle.LifecycleListener;
+import org.pentaho.di.repository.RepositoryMeta;
 
 /**
  * This class represents the repository plugin type.
@@ -100,5 +103,18 @@ public class LifecyclePluginType extends BasePluginType implements
   protected String extractI18nPackageName(Annotation annotation) {
     return null;
   }
+
+	
+	/**
+	 * Extract extra classes information from a plugin annotation.
+	 * 
+	 * @param classMap
+	 * @param annotation
+	 */
+	public void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation) {
+		// LifecyclePlugin plugin = (LifecyclePlugin) annotation;
+		classMap.put(GUIOption.class, clazz.getName());
+		classMap.put(LifecycleListener.class, clazz.getName());
+	}
 
 }

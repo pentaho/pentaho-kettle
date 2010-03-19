@@ -10,6 +10,10 @@ public interface RepositoryMeta {
 	
 	public static final String XML_TAG = "repository";
 
+	public abstract String getDialogClassName();
+
+	public abstract String getRevisionBrowserDialogClassName();
+
 	public abstract void loadXML(Node repnode, List<DatabaseMeta> databases) throws KettleException;
 
 	public abstract String getXML();

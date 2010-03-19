@@ -17,7 +17,56 @@ public class BaseRepositoryMeta {
 	public BaseRepositoryMeta(String id) {
 		this.id = id;
 	}
+	
+	
+	/**
+	 * This returns the expected name for the dialog that edits this repository metadata object
+	 * The expected name is in the org.pentaho.di.ui tree and has a class name
+	 * that is the name of the job entry with 'Dialog' added to the end.
+	 * 
+	 * e.g. if the repository meta class is org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta
+	 * the dialog would be org.pentaho.di.ui.repository.kdr.KettleDatabaseRepositoryDialog
+	 * 
+	 * If the dialog class does not match this pattern, the RepositoryMeta class should
+	 * override this method and return the appropriate class name
+	 * 
+	 * @return full class name of the dialog
+	 */
+    public String getDialogClassName() 
+    {
+    	String className = getClass().getCanonicalName();
+    	className = className.replaceFirst("\\.di\\.", ".di.ui.");
+    	if( className.endsWith("Meta") ) {
+    		className = className.substring(0, className.length()-4 );
+    	}
+    	className += "Dialog";
+    	return className;
+    }
 
+	/**
+	 * This returns the expected name for the dialog that edits this repository metadata object
+	 * The expected name is in the org.pentaho.di.ui tree and has a class name
+	 * that is the name of the job entry with 'Dialog' added to the end.
+	 * 
+	 * e.g. if the repository meta class is org.pentaho.di.pur.PurRepositoryMeta
+	 * the dialog would be org.pentaho.di.ui.repository.pur.PurRepositoryRevisionBrowserDialog
+	 * 
+	 * If the dialog class does not match this pattern, the RepositoryMeta class should
+	 * override this method and return the appropriate class name
+	 * 
+	 * @return full class name of the dialog
+	 */
+    public String getRevisionBrowserDialogClassName() 
+    {
+    	String className = getClass().getCanonicalName();
+    	className = className.replaceFirst("\\.di\\.", ".di.ui.");
+    	if( className.endsWith("Meta") ) {
+    		className = className.substring(0, className.length()-4 );
+    	}
+    	className += "RevisionBrowserDialog";
+    	return className;
+    }
+    
 	/**
 	 * @param id
 	 * @param name

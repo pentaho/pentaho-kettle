@@ -10,7 +10,7 @@
  * the license for the specific language governing your rights and limitations.*/
 
  
-package org.pentaho.di.ui.repository.dialog;
+package org.pentaho.di.ui.repository.kdr;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -49,6 +49,8 @@ import org.pentaho.di.ui.core.dialog.EnterPasswordDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
+import org.pentaho.di.ui.repository.dialog.UpgradeRepositoryProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -65,7 +67,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 {
-	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label        wlConnection;
 	private Button       wnConnection, weConnection, wdConnection;
@@ -428,8 +430,9 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 							{
 							  // authenticate as admin before upgrade
 							  // disconnect before connecting, we connected above already
+							  // 
 							  rep.disconnect();
-							  rep.connect("admin", pwd);
+							  rep.connect("admin", pwd, true);
 							  goAhead=true;
 							}
 							catch(KettleException e)

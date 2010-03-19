@@ -1155,7 +1155,6 @@ public class KettleFileRepository implements Repository {
     return serviceMap.containsKey(clazz);
   }
 
-  @Override
   public RepositoryDirectory getDefaultSaveDirectory(RepositoryElementInterface repositoryElement)
       throws KettleException {
     RepositoryDirectory root = new RepositoryDirectory();
