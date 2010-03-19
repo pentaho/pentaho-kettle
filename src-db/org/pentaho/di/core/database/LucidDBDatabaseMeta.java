@@ -300,13 +300,6 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return true;
 	}
     
-    public boolean supportsBooleanDataType()
-    {
-        // REVIEW jvs 13-Dec-2008:  LucidDB actually does support BOOLEAN, but
-        // other places in PDI seem to avoid it.
-        return false;
-    }
-    
 	public void setDatabaseName(String databaseName)
 	{
         // ignore parameter, since LucidDB has no concept of database names

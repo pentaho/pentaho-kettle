@@ -362,15 +362,6 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     {
         return "UNLOCK TABLES"; // This unlocks all tables
     }
-
-    /**
-     * @return true if the database supports a boolean, bit, logical, ... datatype
-     * The default is false: map to a string.
-     */
-    public boolean supportsBooleanDataType()
-    {
-        return false;
-    }
     
     public boolean needsToLockAllTables() {
     	return true;
