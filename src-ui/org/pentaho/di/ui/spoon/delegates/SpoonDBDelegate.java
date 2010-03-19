@@ -69,25 +69,16 @@ public class SpoonDBDelegate extends SpoonDelegate
 
 	public void editConnection(DatabaseMeta databaseMeta) {
 		HasDatabasesInterface hasDatabasesInterface = spoon.getActiveHasDatabasesInterface();
-		if (hasDatabasesInterface == null)
+		if (hasDatabasesInterface == null) {
 			return; // program error, exit just to make sure.
+		}
 
-		DatabaseMeta before = (DatabaseMeta) databaseMeta.clone();
-
-		// DatabaseDialog con = new DatabaseDialog(spoon.getShell(),
-		// databaseMeta);
 		XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
 		con.setDatabases(hasDatabasesInterface.getDatabases());
 		String newname = con.open();
 		if (!Const.isEmpty(newname)) // null: CANCEL
 		{
 			databaseMeta = con.getDatabaseMeta();
-			// newname =
-			// db.verifyAndModifyDatabaseName(transMeta.getDatabases(), name);
-
-			// Store undo/redo information
-			DatabaseMeta after = (DatabaseMeta) databaseMeta.clone();
-			spoon.addUndoChange((UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { before }, new DatabaseMeta[] { after }, new int[] { hasDatabasesInterface.indexOfDatabase(databaseMeta) });
 
 			saveConnection(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION);
 
@@ -103,9 +94,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 		if (databaseMeta != null)
 		{
 			DatabaseMeta databaseMetaCopy = (DatabaseMeta) databaseMeta.clone();
-			String dupename = BaseMessages.getString(PKG, "Spoon.Various.DupeName") + name; // "(copy
-			// of)
-			// "
+			String dupename = BaseMessages.getString(PKG, "Spoon.Various.DupeName") + name;
 			databaseMetaCopy.setName(dupename);
 
 			DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMetaCopy);
