@@ -93,7 +93,8 @@ public interface Repository {
     public ObjectId getJobId(String name, RepositoryDirectory repositoryDirectory) throws KettleException;
 
     public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException;
-        
+  
+    public RepositoryDirectory getDefaultSaveDirectory(RepositoryElementInterface repositoryElement) throws KettleException;
   
     // Transformations : Loading & saving objects...
   

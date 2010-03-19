@@ -173,6 +173,7 @@ import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
@@ -386,6 +387,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
   private RepositorySecurityManager securityManager;
 
   public RepositoryCapabilities capabilities;
+  
+  // Save the last directory saved to for new files
+  // TODO: Save the last saved position to the defaulstSaveLocaton
+  private RepositoryDirectory defaultSaveLocation = null;
+  // Associate the defaultSaveLocation with a given repository; We should clear this out on a repo change
+  private Repository defaultSaveLocationRepository = null;
 
   /**
    * This contains a map with all the unnamed transformation (just a filename)
@@ -3921,6 +3928,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
           .getString(PKG, "Spoon.Exception.ErrorReadingSharedObjects.Message"),
           e);
     }
+    
+    // Set the location of the new transMeta to that of the default location or the last saved location
+    transMeta.setRepositoryDirectory(getDefaultSaveLocation(transMeta));
+    
     int nr = 1;
     transMeta.setName(STRING_TRANSFORMATION + " " + nr);
 
@@ -3961,6 +3972,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
             .getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message",
                 delegates.tabs.makeTabName(jobMeta, true)), e);
       }
+      
+      // Set the location of the new jobMeta to that of the default location or the last saved location
+      jobMeta.setRepositoryDirectory(getDefaultSaveLocation(jobMeta));
 
       int nr = 1;
       jobMeta.setName(STRING_JOB + " " + nr);
@@ -7848,6 +7862,29 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   public Object getSelectionObject() {
     return selectionObject;
+  }
+  
+  public RepositoryDirectory getDefaultSaveLocation(RepositoryElementInterface repositoryElement) {
+    try {
+      if(getRepository() != defaultSaveLocationRepository) {
+        // The repository has changed, reset the defaultSaveLocation
+        defaultSaveLocation = null;
+        defaultSaveLocationRepository = null;
+      }
+      
+      if(defaultSaveLocation == null) {
+        if(getRepository() != null) { 
+          defaultSaveLocation = getRepository().getDefaultSaveDirectory(repositoryElement);
+          defaultSaveLocationRepository = getRepository(); 
+        } else {
+          defaultSaveLocation = new RepositoryDirectory();
+        }
+      }
+    } catch(Exception e) {
+      throw new RuntimeException(e);
+    }
+    
+    return defaultSaveLocation;
   }
 
   /* ========================= XulEventSource Methods ========================== */

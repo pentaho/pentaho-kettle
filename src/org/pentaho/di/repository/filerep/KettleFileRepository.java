@@ -1154,4 +1154,12 @@ public class KettleFileRepository implements Repository {
   public boolean hasService(Class<? extends IRepositoryService> clazz) throws KettleException {
     return serviceMap.containsKey(clazz);
   }
+
+  @Override
+  public RepositoryDirectory getDefaultSaveDirectory(RepositoryElementInterface repositoryElement)
+      throws KettleException {
+    RepositoryDirectory root = new RepositoryDirectory();
+    root.setObjectId(null);
+    return loadRepositoryDirectoryTree(root);
+  }
 }
