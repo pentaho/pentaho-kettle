@@ -259,6 +259,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
+import org.pentaho.ui.xul.containers.XulMenu;
 import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -1662,8 +1663,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
                 "Spoon.Dialog.LoadTransformationError.Title"),
                 BaseMessages.getString(PKG,
                     "Spoon.Dialog.LoadTransformationError.Message"), ke);
-          }
     }
+  }
   }
 
   private static final String STRING_SPOON_MAIN_TREE = BaseMessages.getString(
@@ -5623,6 +5624,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     boolean disableMetaMenu = getActiveMeta() == null;
     boolean isRepositoryRunning = rep != null;    
     boolean disablePreviewButton = true;
+    String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
+    boolean etlPerspective = activePerspectiveId.equals("spoon-jobs"); 
+
     TransGraph transGraph = getActiveTransGraph();
     if (transGraph != null) {
       disablePreviewButton = !(transGraph.isRunning() && !transGraph
@@ -5635,6 +5639,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     }
 
     org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
+    XulMenu menu = (XulMenu)doc.getElementById("action");
+    menu.setVisible(etlPerspective);
     
     // Only enable certain menu-items if we need to.
     disableMenuItem(doc, "file-new-database", disableTransMenu && disableJobMenu || !isRepositoryRunning);
