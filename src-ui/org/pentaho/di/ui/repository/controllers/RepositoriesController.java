@@ -137,8 +137,8 @@ public class RepositoriesController extends AbstractXulEventHandler {
       helper.loginToRepository();
       loginDialog.hide();
       getCallback().onSuccess(helper.getConnectedRepository());
-    } catch (KettleException ke) {
-      getCallback().onError(ke);
+    } catch (Throwable th) {
+      getCallback().onError(th);
     }
   }
 

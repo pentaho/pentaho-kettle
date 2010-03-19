@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -200,7 +201,7 @@ public class RepositoriesHelper {
     prefRepositoryName = repname;
   }
   
-  public void loginToRepository() throws KettleException {
+  public void loginToRepository() throws KettleException, KettleSecurityException{
       RepositoryMeta repositoryMeta = input.getRepository(model.getRepositoryIndex(model.getSelectedRepository()));
       repository = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta.getId(), Repository.class);
       repository.init(repositoryMeta);
