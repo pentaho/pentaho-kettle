@@ -406,4 +406,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
     public void resetStepIoMeta() {
     }
 
+    @Override
+    public boolean excludeFromCopyDistributeVerification() {
+    	return true;
+    }
 }

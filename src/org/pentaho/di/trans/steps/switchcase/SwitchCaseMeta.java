@@ -486,4 +486,12 @@ public class SwitchCaseMeta extends BaseStepMeta implements StepMetaInterface
 		this.caseTargets = caseTargets;
 	}
 
+    /**
+     * This method is added to exclude certain steps from copy/distribute checking.  
+     * @since 4.0.0
+     */
+    public boolean excludeFromCopyDistributeVerification() {
+    	return true;
+    }
+	
 }

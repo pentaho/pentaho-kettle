@@ -124,7 +124,13 @@ public interface StepMetaInterface
      * @since 2.5.0
      */
     public boolean excludeFromRowLayoutVerification();
-	
+
+    /**
+     * This method is added to exclude certain steps from copy/distribute checking.  
+     * @since 4.0.0
+     */
+    public boolean excludeFromCopyDistributeVerification();
+    
     /**
      * Get the name of the class that implements the dialog for this job entry
      * JobEntryBase provides a default

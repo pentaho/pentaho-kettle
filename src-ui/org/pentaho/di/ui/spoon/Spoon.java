@@ -3174,9 +3174,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     // don't show it for 3 or more hops, by then you should have had the
     // message
     if (nrNextSteps == 2) {
-      boolean distributes = false;
+      boolean distributes = fr.getStepMetaInterface().excludeFromCopyDistributeVerification();
 
-      if (props.showCopyOrDistributeWarning()) {
+      if (props.showCopyOrDistributeWarning() && !fr.getStepMetaInterface().excludeFromCopyDistributeVerification()) {
         MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
             BaseMessages.getString(PKG, "System.Warning"), null, BaseMessages
                 .getString(PKG, "Spoon.Dialog.CopyOrDistribute.Message", fr

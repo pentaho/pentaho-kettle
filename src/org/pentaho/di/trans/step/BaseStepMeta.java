@@ -263,6 +263,15 @@ public class BaseStepMeta implements Cloneable
     }
     
     /**
+     * This method is added to exclude certain steps from copy/distribute checking.  
+     * @since 4.0.0
+     */
+    public boolean excludeFromCopyDistributeVerification() {
+    	return false;
+    }
+
+    
+    /**
      * Get a list of all the resource dependencies that the step is depending on.
      * 
      * @return a list of all the resource dependencies that the step is depending on
