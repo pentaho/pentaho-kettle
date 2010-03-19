@@ -2461,18 +2461,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     //
     List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
 
-    if (rep == null) {
-      HasDatabasesInterface databasesInterface = getActiveHasDatabasesInterface();
-      if (databasesInterface != null) {
-        databases.addAll(databasesInterface.getDatabases());
-      }
-    } else {
-      try {
-        databases.addAll(rep.readDatabases());
-      } catch (KettleException e) {
-        log.logError("Unexpected repository error", e.getMessage());
-      }
+    // First load the connections from the loaded file
+    //
+    HasDatabasesInterface databasesInterface = getActiveHasDatabasesInterface();
+    if (databasesInterface != null) {
+    	databases.addAll(databasesInterface.getDatabases());
     }
+    
+    // Overwrite the information with the connections from the repository
+    //
+    if (rep!=null) {
+	    try {
+	    	List<DatabaseMeta> list = rep.readDatabases();
+	        for (DatabaseMeta databaseMeta : list) {
+	       	 int index = databases.indexOf(databaseMeta);
+	       	 if (index<0) {
+	       		 databases.add(databaseMeta);
+	       	 } else {
+	       		 databases.set(index, databaseMeta);
+	       	 }
+	       }
+	      } catch (KettleException e) {
+	        log.logError("Unexpected repository error", e.getMessage());
+	      }
+    }
+
 
     if (databases.size() == 0)
       return;
