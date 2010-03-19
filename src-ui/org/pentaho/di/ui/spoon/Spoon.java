@@ -5655,12 +5655,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     XulMenu menu = (XulMenu)doc.getElementById("action");
     menu.setVisible(etlPerspective);
     
+    EngineMetaInterface meta = getActiveMeta();
+    if(meta != null) {
+      disableSave = !meta.canSave();
+    } 
+    
     // Only enable certain menu-items if we need to.
     disableMenuItem(doc, "file-new-database", disableTransMenu && disableJobMenu || !isRepositoryRunning);
     disableMenuItem(doc, "file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
     disableMenuItem(doc, "toolbar-file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
-    disableMenuItem(doc, "file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu);
-    disableMenuItem(doc, "toolbar-file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu);
+    disableMenuItem(doc, "file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
+    disableMenuItem(doc, "toolbar-file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
     disableMenuItem(doc, "file-save-as-vfs", disableTransMenu && disableJobMenu && disableMetaMenu);
     disableMenuItem(doc, "file-close", disableTransMenu && disableJobMenu && disableMetaMenu);    //    ((XulMenuitem) doc.getElementById("file-print")).setDisabled(disableTransMenu && disableJobMenu);
     disableMenuItem(doc, "file-print", disableTransMenu && disableJobMenu);    

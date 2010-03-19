@@ -97,6 +97,7 @@ public class SpoonPerspectiveManager {
         }
       }
     }
+    Spoon.getInstance().enableMenus();
   }
   
   /**
@@ -152,7 +153,7 @@ public class SpoonPerspectiveManager {
     
     sp.setActive(true);
     deck.setSelectedIndex(deck.getChildNodes().indexOf(deck.getElementById("perspective-"+sp.getId())));
-    
+    Spoon.getInstance().enableMenus();
   }
   
   /**
