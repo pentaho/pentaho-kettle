@@ -2667,9 +2667,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
             .getElementById("database-inst-explore");
         if (item != null) {
           final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
-          if (databaseMeta.getDatabaseInterface() instanceof SAPR3DatabaseMeta ) {
-            item.setDisabled(true);
-          }
+          item.setDisabled(!databaseMeta.isExplorable());
         }
         item = (XulMenuitem) mainSpoonContainer.getDocumentRoot()
             .getElementById("database-inst-clear-cache");
