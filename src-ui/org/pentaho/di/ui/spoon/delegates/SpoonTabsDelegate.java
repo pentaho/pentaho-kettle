@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.cluster.SlaveServer;
@@ -189,10 +190,16 @@ public class SpoonTabsDelegate extends SpoonDelegate
 	
 	public boolean addSpoonBrowser(String name, String urlString)
 	{
-		return addSpoonBrowser(name,urlString,true);
+		return addSpoonBrowser(name, urlString, true, null);
 	}
-	
-	public boolean addSpoonBrowser(String name, String urlString,boolean isURL)
+
+	public boolean addSpoonBrowser(String name, String urlString, LocationListener listener)
+	{
+		boolean ok = addSpoonBrowser(name, urlString, true, listener);
+		return ok;
+	}
+
+	public boolean addSpoonBrowser(String name, String urlString, boolean isURL, LocationListener listener)
 	{
 		TabSet tabfolder = spoon.tabfolder;
 
@@ -208,7 +215,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			if (tabMapEntry == null)
 			{
 				CTabFolder cTabFolder = tabfolder.getSwtTabset();
-				SpoonBrowser browser = new SpoonBrowser(cTabFolder, spoon, urlString,isURL);
+				SpoonBrowser browser = new SpoonBrowser(cTabFolder, spoon, urlString, isURL, listener);
 				TabItem tabItem = new TabItem(tabfolder, name, name);
 				tabItem.setImage(GUIResource.getInstance().getImageLogoSmall());
 				tabItem.setControl(browser.getComposite());

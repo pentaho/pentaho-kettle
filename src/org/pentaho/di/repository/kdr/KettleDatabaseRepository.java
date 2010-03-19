@@ -152,7 +152,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     public RepositoryMeta createRepositoryMeta() {
     	return new KettleDatabaseRepositoryMeta();
     }
-    
+
 	/**
 	 * Connect to the repository. 
 	 * 
@@ -160,8 +160,17 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	 * @throws KettleException in case there is a general unexpected error or if we're already connected
 	 */
 	public void connect(String username, String password) throws KettleException {
+		connect(username, password, false);
+	}
+	/**
+	 * Connect to the repository. 
+	 * 
+	 * @throws KettleSecurityException in case the supplied user or password is not valid
+	 * @throws KettleException in case there is a general unexpected error or if we're already connected
+	 */
+	public void connect(String username, String password, boolean upgrade) throws KettleException {
 	  // first disconnect if already connected
-	  connectionDelegate.connect();
+	  connectionDelegate.connect(upgrade, upgrade);
 		try {
 		  IUser userinfo = userDelegate.loadUserInfo(new UserInfo(), username, password);
 		  securityProvider = new KettleDatabaseRepositorySecurityProvider(this, repositoryMeta, userinfo);

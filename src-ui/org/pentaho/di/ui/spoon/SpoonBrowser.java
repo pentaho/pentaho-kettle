@@ -72,10 +72,15 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
   private Text urlText = null;
 
   public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl, boolean isURL) throws SWTError {
-    this(parent, spoon, stringUrl, isURL, true);
+    this(parent, spoon, stringUrl, isURL, true, null);
+  }
+  
+  public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl, boolean isURL, LocationListener listener) throws SWTError {
+	    this(parent, spoon, stringUrl, isURL, true, listener); 
   }
 
-  public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl, boolean isURL, boolean showControls) throws SWTError {
+
+  public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl, boolean isURL, boolean showControls, LocationListener listener) throws SWTError {
     composite = new Composite(parent, SWT.NONE);
 
     this.shell = parent.getShell();
@@ -129,6 +134,10 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
     };
 
     browser.addLocationListener(locationListener);
+    
+    if (listener!=null) {
+    	browser.addLocationListener(listener);
+    }
 
     // Set the text
     if (isURL)
@@ -139,6 +148,10 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
   protected Browser createBrowser() {
     return new Browser(composite, SWT.NONE);
+  }
+  
+  public void addLocationListener(LocationListener listener) {
+	  browser.addLocationListener(listener);
   }
 
   protected void addToolBar() {
