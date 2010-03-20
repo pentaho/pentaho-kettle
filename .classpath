@@ -130,5 +130,6 @@
 	<classpathentry kind="lib" path="libext/jackcess-1.1.21.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/olap4j-0.9.8-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/xercesImpl-2.6.0.jar"/>
+	<classpathentry kind="lib" path="libext/syslog4j-0.9.34.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

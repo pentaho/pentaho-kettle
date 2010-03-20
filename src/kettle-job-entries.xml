@@ -151,7 +151,7 @@
 	<job-entry id="MSGBOX_INFO">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.MsgBoxInfo.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.msgboxinfo.JobEntryMsgBoxInfo</classname>
-		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.MsgBoxInfo.Tooltip</tooltip>
 		<iconfile>ui/images/INF.png</iconfile>
 	</job-entry>
@@ -191,7 +191,7 @@
 	<job-entry id="ABORT">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Abort.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.abort.JobEntryAbort</classname>
-		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Abort.Tooltip</tooltip>
 		<iconfile>ui/images/ABR.png</iconfile>
 	</job-entry>
@@ -207,7 +207,7 @@
 	<job-entry id="PING">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.Ping.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.ping.JobEntryPing</classname>
-		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Ping.Tooltip</tooltip>
 		<iconfile>ui/images/PNG.png</iconfile>
 	</job-entry>
@@ -239,7 +239,7 @@
 	<job-entry id="WRITE_TO_LOG">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.WriteToLog.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.writetolog.JobEntryWriteToLog</classname>
-		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WriteToLog.Tooltip</tooltip>
 		<iconfile>ui/images/WTL.png</iconfile>
 	</job-entry>
@@ -407,7 +407,7 @@
 		<job-entry id="TRUNCATE_TABLES">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.TruncateTables.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.truncatetables.JobEntryTruncateTables</classname>
-		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.TruncateTables.Tooltip</tooltip>
 		<iconfile>ui/images/TRT.png</iconfile>
 	</job-entry>
@@ -428,7 +428,7 @@
 	<job-entry id="WAIT_FOR_SQL">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.WaitForSQL.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.waitforsql.JobEntryWaitForSQL</classname>
-		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WaitForSQL.Tooltip</tooltip>
 		<iconfile>ui/images/WSQL.png</iconfile>
 	</job-entry>
@@ -449,7 +449,7 @@
 	<job-entry id="SNMP_TRAP">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.SNMPTrap.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.snmptrap.JobEntrySNMPTrap</classname>
-		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SNMPTrap.Tooltip</tooltip>
 		<iconfile>ui/images/SNMP.png</iconfile>
 	</job-entry>
@@ -480,5 +480,12 @@
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CheckDbConnections.TypeDesc.Tooltip</tooltip>
 		<iconfile>ui/images/CDBC.png</iconfile>
+	</job-entry>
+		<job-entry id="SYSLOG">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Syslog.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.syslog.JobEntrySyslog</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Syslog.TypeDesc.Tooltip</tooltip>
+		<iconfile>ui/images/SYL.png</iconfile>
 	</job-entry>
 </job-entries>

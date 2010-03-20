@@ -18,7 +18,6 @@ package org.pentaho.di.job.entries.snmptrap;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -26,7 +25,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -70,8 +68,6 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 {
 	private static Class<?> PKG = JobEntrySNMPTrap.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static Logger log4j = Logger.getLogger(JobEntrySNMPTrap.class);
-	
 	private String serverName;
 	private String port;
 	private String timeout;
@@ -393,9 +389,6 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
     
 	public Result execute(Result previousResult, int nr)
 	{		
-		LogWriter log = LogWriter.getInstance();
-		log4j.info(BaseMessages.getString(PKG, "JobEntrySNMPTrap.Started", serverName)); //$NON-NLS-1$
-		
 		Result result = previousResult;
 		result.setNrErrors(1);
 		result.setResult( false );

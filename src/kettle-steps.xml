@@ -1185,5 +1185,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MapValues</tooltip>
 		<iconfile>ui/images/VMP.png</iconfile>
 	</step>
-		
+    <step id="SyslogMessage">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SyslogMessage</description>
+		<classname>org.pentaho.di.trans.steps.syslog.SyslogMessageMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SyslogMessage</tooltip>
+		<iconfile>ui/images/SYL.png</iconfile>
+	</step>
 </steps>
