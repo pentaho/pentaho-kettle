@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
+import org.pentaho.di.trans.steps.sapinput.sap.SAPException;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPFunction;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPFunctionSignature;
@@ -29,7 +30,7 @@ public class SAPConnectionMock implements SAPConnection {
 		sfc.add(new SAPFunction("SAPFunction9", "SAP Testfunction 9", "Group C", "", ""));
 	}
 
-	public void open(DatabaseMeta sapConnection) {
+	public void open(DatabaseMeta sapConnection) throws SAPException {
 		// TODO Auto-generated method stub	
 	}
 	
@@ -37,7 +38,7 @@ public class SAPConnectionMock implements SAPConnection {
 		// TODO Auto-generated method stub
 	}
 
-	public Collection<SAPFunction> getFunctions(String query) {
+	public Collection<SAPFunction> getFunctions(String query) throws SAPException{
 		Collection<SAPFunction> sfc = new Vector<SAPFunction>();
 		for (SAPFunction sapFunction : this.sfc) {
 			// This emulates a longer wait time, showing a wait cursor to notify the user
@@ -51,7 +52,7 @@ public class SAPConnectionMock implements SAPConnection {
 		return sfc;
 	}
 
-	public SAPFunction getFunction(String name) {
+	public SAPFunction getFunction(String name) throws SAPException {
 		for (SAPFunction sapFunction : this.sfc) {
 			if (sapFunction.getName().equals(name)) {
 				return sapFunction;
@@ -60,7 +61,7 @@ public class SAPConnectionMock implements SAPConnection {
 		return null;
 	}
 
-	public SAPFunctionSignature getFunctionSignature(SAPFunction function) {
+	public SAPFunctionSignature getFunctionSignature(SAPFunction function) throws SAPException {
 		SAPFunctionSignature sfs = new SAPFunctionSignature();
 		if (function.getName().equalsIgnoreCase("SearchCustomer")) {
 			sfs.addInput(new SAPField("Name", "", "input_single"));
@@ -88,7 +89,7 @@ public class SAPConnectionMock implements SAPConnection {
 	}
 
 	public SAPResultSet executeFunction(SAPFunction function,
-			Collection<SAPField> input, Collection<SAPField> output) {
+			Collection<SAPField> input, Collection<SAPField> output) throws SAPException{
 		SAPResultSet srs = new SAPResultSet();
 		if (function.getName().equalsIgnoreCase("SearchCustomer")) {
 			for (int i = 1; i <= 9; i++) {
