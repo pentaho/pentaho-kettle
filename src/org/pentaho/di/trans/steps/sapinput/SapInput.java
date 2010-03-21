@@ -134,7 +134,8 @@ public class SapInput extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-	    data.sapConnection.close();
+		if (data.sapConnection != null)
+			data.sapConnection.close();
 		super.dispose(smi, sdi);
 	}
 		
@@ -158,11 +159,10 @@ public class SapInput extends BaseStep implements StepInterface
 				passed=false;
 			}
 			if (!passed) return false;
-
-			data.sapConnection = SAPConnectionFactory.create();
 			
 			try
 			{
+				data.sapConnection = SAPConnectionFactory.create();
 				data.sapConnection.open(meta.getDatabaseMeta());
 				return true;
 			}

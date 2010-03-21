@@ -48,9 +48,6 @@ import org.w3c.dom.Node;
  */
 public class SapInputMeta extends BaseStepMeta implements StepMetaInterface
 {
-	
-	private static final String JCO_EXISTENCE_TEST_CLASS = "com.sap.conn.jco.JCoDestinationManager";
-
 	private static final String	XML_TAG_PARAMETERS	= "parameters";
 
 	private static final String	XML_TAG_PARAMETER	= "parameter";
@@ -392,14 +389,5 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setFunction(SAPFunction function) {
 		this.function = function;
-	}
-
-	public boolean isJCoAvailable() {
-		try {
-			Class.forName(JCO_EXISTENCE_TEST_CLASS);
-			return true;
-		} catch (ClassNotFoundException e1) {
-			return false;
-		}
 	}
 }
