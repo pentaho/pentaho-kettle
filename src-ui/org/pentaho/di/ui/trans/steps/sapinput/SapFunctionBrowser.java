@@ -209,8 +209,9 @@ public class SapFunctionBrowser extends Dialog
 	
 	protected void find(String searchString) {
 		this.searchString = searchString;
-		SAPConnection sc = SAPConnectionFactory.create();
+		SAPConnection sc = null;
 		try {
+			sc = SAPConnectionFactory.create();
 			sc.open(sapConnection);
 			functionList = new ArrayList<SAPFunction>(sc.getFunctions(searchString));
 		} catch(Exception e) {
@@ -220,7 +221,8 @@ public class SapFunctionBrowser extends Dialog
 					e
 				);
 		} finally {
-			sc.close();
+			if (sc != null)
+				sc.close();
 		}
 	}
 

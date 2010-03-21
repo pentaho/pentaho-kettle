@@ -66,6 +66,7 @@ import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPFunction;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPFunctionSignature;
+import org.pentaho.di.trans.steps.sapinput.sap.SAPLibraryTester;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -129,17 +130,27 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
  		props.setLook(shell);
         setShellImage(shell, input);
 
-        if (!this.input.isJCoAvailable()) {
+        if (!SAPLibraryTester.isJCoLibAvailable()) {
         	int style = SWT.ICON_ERROR;
             
             MessageBox messageBox = new MessageBox(shell, style);
-            messageBox.setMessage(BaseMessages.getString(PKG, "SapInputDialog.JCoNotFound"));
+            messageBox.setMessage(BaseMessages.getString(PKG, "SapInputDialog.JCoLibNotFound"));
             messageBox.open();
 
-            dispose();
-            return stepname;
+            // dispose();
+            // return stepname;
         }
-        
+
+        if (!SAPLibraryTester.isJCoImplAvailable()) {
+        	int style = SWT.ICON_ERROR;
+            
+            MessageBox messageBox = new MessageBox(shell, style);
+            messageBox.setMessage(BaseMessages.getString(PKG, "SapInputDialog.JCoImplNotFound"));
+            messageBox.open();
+
+            // dispose();
+            // return stepname;
+        }
         
 		ModifyListener lsMod = new ModifyListener() 
 		{
