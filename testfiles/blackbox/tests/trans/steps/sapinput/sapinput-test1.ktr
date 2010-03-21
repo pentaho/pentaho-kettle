@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>MySAPConnectorTest</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <trans_type>Normal</trans_type>
+    <directory>&#47;</directory>
+    <parameters>
+    </parameters>
+    <log>
+<trans-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
+<perf-log-table><connection/>
+<schema/>
+<table/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>SEQ_NR</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>INPUT_BUFFER_ROWS</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>OUTPUT_BUFFER_ROWS</name></field></perf-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
+<step-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>10000</size_rowset>
+    <sleep_time_empty>50</sleep_time_empty>
+    <sleep_time_full>50</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>50000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user>-</modified_user>
+  <modified_date>2010&#47;02&#47;25 15:16:11.406</modified_date>
+  </info>
+  <notepads>
+    <notepad>
+      <note>Select the dummy steps, right click and select &quot;preview&quot;</note>
+      <xloc>120</xloc>
+      <yloc>390</yloc>
+      <width>429</width>
+      <heigth>29</heigth>
+      <fontname>Lucida Grande</fontname>
+      <fontsize>13</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+  </notepads>
+  <connection>
+    <name>Kinamu</name>
+    <server>192.168.9.50</server>
+    <type>SAPR3</type>
+    <access>Plugin</access>
+    <database/>
+    <port>1521</port>
+    <username>EXT_KUBICKAM</username>
+    <password>Encrypted 2be98afc86aa7f2e4aa0aaa76df81abdc</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <order>
+  <hop> <from>Generate Rows</from><to>RFC_FUNCTION_SEARCH</to><enabled>Y</enabled> </hop>  <hop> <from>RFC_FUNCTION_SEARCH</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 2</from><to>BAPI_BILLINGDOC_GETLIST</to><enabled>Y</enabled> </hop>  <hop> <from>BAPI_BILLINGDOC_GETLIST</from><to>Dummy (do nothing) 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3</from><to>BAPI_BILLINGDOC_GETDETAIL</to><enabled>Y</enabled> </hop>  <hop> <from>BAPI_BILLINGDOC_GETDETAIL</from><to>Dummy (do nothing) 3</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>BAPI_BILLINGDOC_GETDETAIL</name>
+    <type>SapInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>Kinamu</connection>
+    <function>
+    <name>BAPI_BILLINGDOC_GETDETAIL</name>
+    <description>Detailinformationen zur einer Faktura</description>
+    <group>VBRK</group>
+    <application>V</application>
+    <host/>
+    </function>
+    <parameters>
+    <parameter><field_name>BILLINGDOCUMENT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>BILLINGDOCUMENT</parameter_name>    </parameter>
+    </parameters>
+    <fields>
+    <field><field_name>BILLINGDOC</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILLINGDOC</new_name><target_type>String</target_type>    </field>
+    <field><field_name>BILL_TYPE</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILL_TYPE</new_name><target_type>String</target_type>    </field>
+    <field><field_name>BILLCATEG</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILLCATEG</new_name><target_type>String</target_type>    </field>
+    <field><field_name>SD_DOC_CAT</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>SD_DOC_CAT</new_name><target_type>String</target_type>    </field>
+    <field><field_name>CURRENCY</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CURRENCY</new_name><target_type>String</target_type>    </field>
+    <field><field_name>CURRENCY_ISO</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CURRENCY_ISO</new_name><target_type>String</target_type>    </field>
+    <field><field_name>ACCTSTATUS</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>ACCTSTATUS</new_name><target_type>String</target_type>    </field>
+    <field><field_name>NET_VALUE</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>NET_VALUE</new_name><target_type>BigNumber</target_type>    </field>
+    <field><field_name>TAX_VALUE</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>TAX_VALUE</new_name><target_type>BigNumber</target_type>    </field>
+    <field><field_name>CANCELLED</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CANCELLED</new_name><target_type>String</target_type>    </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>630</xloc>
+      <yloc>150</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>BAPI_BILLINGDOC_GETLIST</name>
+    <type>SapInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>Kinamu</connection>
+    <function>
+    <name>BAPI_BILLINGDOC_GETLIST</name>
+    <description>Detailinformationen zur einer Faktura</description>
+    <group>VBRK</group>
+    <application>V</application>
+    <host/>
+    </function>
+    <parameters>
+    <parameter><field_name>SIGN</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>SIGN</parameter_name>    </parameter>
+    <parameter><field_name>OPTION</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>OPTION</parameter_name>    </parameter>
+    <parameter><field_name>REF_DOC_LOW1</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_LOW</parameter_name>    </parameter>
+    <parameter><field_name>REF_DOC_HIGH1</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_HIGH</parameter_name>    </parameter>
+    </parameters>
+    <fields>
+    <field><field_name>BILLINGDOC</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILLINGDOC</new_name><target_type>String</target_type>    </field>
+    <field><field_name>BILL_TYPE</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILL_TYPE</new_name><target_type>String</target_type>    </field>
+    <field><field_name>BILLCATEG</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILLCATEG</new_name><target_type>String</target_type>    </field>
+    <field><field_name>SD_DOC_CAT</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>SD_DOC_CAT</new_name><target_type>String</target_type>    </field>
+    <field><field_name>CURRENCY</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CURRENCY</new_name><target_type>String</target_type>    </field>
+    <field><field_name>CURRENCY_ISO</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CURRENCY_ISO</new_name><target_type>String</target_type>    </field>
+    <field><field_name>ACCTSTATUS</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>ACCTSTATUS</new_name><target_type>String</target_type>    </field>
+    <field><field_name>NET_VALUE</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>NET_VALUE</new_name><target_type>BigNumber</target_type>    </field>
+    <field><field_name>TAX_VALUE</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>TAX_VALUE</new_name><target_type>BigNumber</target_type>    </field>
+    <field><field_name>CANCELLED</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CANCELLED</new_name><target_type>String</target_type>    </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>390</xloc>
+      <yloc>150</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>150</xloc>
+      <yloc>270</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Dummy (do nothing) 2</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>390</xloc>
+      <yloc>270</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Dummy (do nothing) 3</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>630</xloc>
+      <yloc>270</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>FUNCNAME</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>RFC_*</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>GROUPNAME</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>LANGUAGE</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <limit>1</limit>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>150</xloc>
+      <yloc>30</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate Rows 2</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>SIGN</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>I</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>OPTION</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>BT</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>REF_DOC_LOW1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>0010000002</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>REF_DOC_HIGH1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>0080000003</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <limit>1</limit>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>390</xloc>
+      <yloc>30</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate Rows 3</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>BILLINGDOCUMENT</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>0090000025</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <limit>1</limit>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>630</xloc>
+      <yloc>30</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>RFC_FUNCTION_SEARCH</name>
+    <type>SapInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>Kinamu</connection>
+    <function>
+    <name>RFC_FUNCTION_SEARCH</name>
+    <description>Remote aufrufbare Funktionsbausteine suchen</description>
+    <group>RFC1</group>
+    <application>S</application>
+    <host/>
+    </function>
+    <parameters>
+    <parameter><field_name>FUNCNAME</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>FUNCNAME</parameter_name>    </parameter>
+    <parameter><field_name>GROUPNAME</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>GROUPNAME</parameter_name>    </parameter>
+    <parameter><field_name>LANGUAGE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>LANGUAGE</parameter_name>    </parameter>
+    </parameters>
+    <fields>
+    <field><field_name>FUNCNAME</field_name><sap_type>TABLE</sap_type><table_name>FUNCTIONS</table_name><new_name>FUNCNAME</new_name><target_type>String</target_type>    </field>
+    <field><field_name>GROUPNAME</field_name><sap_type>TABLE</sap_type><table_name>FUNCTIONS</table_name><new_name>GROUPNAME</new_name><target_type>String</target_type>    </field>
+    <field><field_name>APPL</field_name><sap_type>TABLE</sap_type><table_name>FUNCTIONS</table_name><new_name>APPL</new_name><target_type>String</target_type>    </field>
+    <field><field_name>HOST</field_name><sap_type>TABLE</sap_type><table_name>FUNCTIONS</table_name><new_name>HOST</new_name><target_type>String</target_type>    </field>
+    <field><field_name>STEXT</field_name><sap_type>TABLE</sap_type><table_name>FUNCTIONS</table_name><new_name>STEXT</new_name><target_type>String</target_type>    </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>150</xloc>
+      <yloc>150</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
+</transformation>
