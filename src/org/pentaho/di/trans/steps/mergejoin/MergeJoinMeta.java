@@ -263,7 +263,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
             List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
 
 			rep.saveStepAttribute(id_transformation, id_step, "step1", infoStreams.get(0).getStepname()); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "step2", infoStreams.get(0).getStepname()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "step2", infoStreams.get(1).getStepname()); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "join_type", getJoinType()); //$NON-NLS-1$
 		}
 		catch(Exception e)
