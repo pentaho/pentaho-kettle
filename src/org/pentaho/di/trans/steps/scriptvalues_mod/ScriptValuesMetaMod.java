@@ -438,7 +438,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "compatible", compatible); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, 0, "compatible", compatible); //$NON-NLS-1$
 
             for (int i = 0; i < jsScripts.length; i++)
             {
