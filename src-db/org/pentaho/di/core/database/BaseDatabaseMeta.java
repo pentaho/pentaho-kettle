@@ -1441,4 +1441,12 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		return true;
 	}
 
+	/**
+	 * @return The name of the XUL overlay file to display extra options.
+	 * This is only used in case of a non-standard plugin.
+	 * Usually this method returns null.
+	 */
+	public String getXulOverlayFile() {
+		return null;
+	}
 }

@@ -414,7 +414,7 @@ public class DatabaseMeta
      */
     public void addOptions()
     {
-    	PluginInterface mySqlPlugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, new MySQLDatabaseMeta());
+    	PluginInterface mySqlPlugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, "MYSQL");
     	PluginInterface infoBrightPlugin = PluginRegistry.getInstance().getPlugin(DatabasePluginType.class, new InfobrightDatabaseMeta());
 
     	String mySQL = mySqlPlugin.getIds()[0];
