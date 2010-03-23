@@ -1482,7 +1482,7 @@ public class EnterOptionsDialog extends Dialog
 		for (final GUIOption<Object> e : PropsUI.getInstance().getRegisteredEditableComponents())
 		{
 			Label wlMaxNrLogLines1 = new Label(wGeneralComp, SWT.RIGHT);
-			wlMaxNrLogLines1.setText(e.getLabelText());
+			wlMaxNrLogLines1.setText(e.getLabelText() == null ? "" : e.getLabelText());
 			props.setLook(wlMaxNrLogLines1);
 			FormData fdlMaxNrLogLinesTemp = new FormData();
 			fdlMaxNrLogLinesTemp.left = new FormAttachment(0, 0);
