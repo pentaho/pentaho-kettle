@@ -1481,8 +1481,11 @@ public class EnterOptionsDialog extends Dialog
 		Button lastbtn = helptipBtn;
 		for (final GUIOption<Object> e : PropsUI.getInstance().getRegisteredEditableComponents())
 		{
+		  if (e.getLabelText() == null) {
+		    continue;
+		  }
 			Label wlMaxNrLogLines1 = new Label(wGeneralComp, SWT.RIGHT);
-			wlMaxNrLogLines1.setText(e.getLabelText() == null ? "" : e.getLabelText());
+			wlMaxNrLogLines1.setText(e.getLabelText());
 			props.setLook(wlMaxNrLogLines1);
 			FormData fdlMaxNrLogLinesTemp = new FormData();
 			fdlMaxNrLogLinesTemp.left = new FormAttachment(0, 0);
