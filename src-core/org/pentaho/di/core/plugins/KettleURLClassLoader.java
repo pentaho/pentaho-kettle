@@ -22,7 +22,7 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleURLClassLoader extends URLClassLoader
 {
-	private static Class<?> PKG = KettleURLClassLoader.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = KettleURLClassLoader.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private String name;
     
@@ -52,6 +52,40 @@ public class KettleURLClassLoader extends URLClassLoader
         return name;
     }
     
+    
+    
+    @Override
+    protected synchronized Class<?> loadClass(String arg0, boolean arg1)
+        throws ClassNotFoundException {
+      Class<?> clz = null;
+      if((clz = findLoadedClass(arg0)) != null){
+        if(arg1){
+          resolveClass(clz);
+        }
+        return clz;
+      }
+      try{
+        if ((clz = findClass(arg0)) != null){
+          if(arg1){
+            resolveClass(clz);
+          }
+          return clz;
+        }
+      } catch(ClassNotFoundException e){
+        
+      } catch(NoClassDefFoundError e){
+        
+      }
+
+      if((clz = getParent().loadClass(arg0)) != null){
+        if(arg1){
+          resolveClass(clz);
+        }
+        return clz; 
+      }
+      throw new ClassNotFoundException("Could not find :"+arg0);
+    }
+
     /*
         Cglib doe's not creates custom class loader (to access package methotds and classes ) it uses reflection to invoke "defineClass", 
         but you can call protected method in subclass without problems:
@@ -89,20 +123,20 @@ public class KettleURLClassLoader extends URLClassLoader
         try
         {
             int a = is.available();
-	        while (a>0)
-	        {
-	            byte[] buffer = new byte[a];
-	            is.read(buffer);
-	            
-	            byte[] newretval = new byte[retval.length+a];
-	            
-	            for (int i=0;i<retval.length;i++) newretval[i] = retval[i]; // old part
-	            for (int i=0;i<a;i++) newretval[retval.length+i] = buffer[i]; // new part
-	            
-	            retval = newretval;
-	            
-	            a = is.available(); // see what's left
-	        }
+          while (a>0)
+          {
+              byte[] buffer = new byte[a];
+              is.read(buffer);
+              
+              byte[] newretval = new byte[retval.length+a];
+              
+              for (int i=0;i<retval.length;i++) newretval[i] = retval[i]; // old part
+              for (int i=0;i<a;i++) newretval[retval.length+i] = buffer[i]; // new part
+              
+              retval = newretval;
+              
+              a = is.available(); // see what's left
+          }
             return retval; 
         }
         catch(Exception e)
