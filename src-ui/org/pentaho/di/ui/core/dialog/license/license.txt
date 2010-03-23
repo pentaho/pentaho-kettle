@@ -1,4 +1,4 @@
-Copyright (C) 2009 Pentaho Corporation. All rights reserved.
+Copyright (C) 2010 Pentaho Corporation. All rights reserved.
 Originally developed by Pentaho Corporation provided under the terms of the
 GNU Lesser General Public License (LGPL), Version 2.1 or any later version.
 You may not use this file except in compliance with the license. If you need
