@@ -4831,25 +4831,48 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
   public void helpAbout() {
     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION
         | SWT.CENTER);
-    String mess = BaseMessages.getString(PKG, "System.ProductInfo")
-        + Const.VERSION + Const.CR + Const.CR + Const.CR;// Kettle
-    // -
-    // Spoon
-    // version
-    mess += BaseMessages.getString(PKG, "System.CompanyInfo") + Const.CR;
-    mess += "         "
-        + BaseMessages.getString(PKG, "System.ProductWebsiteUrl") + Const.CR;
+    
+    //  resolve the release text
+    String releaseText = "";
+    if (Const.RELEASE.equals(Const.ReleaseType.PREVIEW)) {
+        releaseText = "Preview Release";
+    } 
+    else if (    Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)
+              || Const.RELEASE.equals(Const.ReleaseType.MILESTONE)) {
+        releaseText = "Developer Release ";
+    }
+      
+    //  build a message
+    StringBuilder messageBuilder = new StringBuilder();
+    
+    messageBuilder.append(BaseMessages.getString(PKG, "System.ProductInfo"));
+    messageBuilder.append(releaseText);
+    messageBuilder.append(" - ");
+    messageBuilder.append(Const.VERSION);
+    messageBuilder.append(Const.CR);
+    messageBuilder.append(Const.CR);
+    messageBuilder.append(Const.CR);
+    messageBuilder.append(BaseMessages.getString(PKG, "System.CompanyInfo"));
+    messageBuilder.append(Const.CR);
+    messageBuilder.append("         ");
+    messageBuilder.append(BaseMessages.getString(PKG, "System.ProductWebsiteUrl"));
+    messageBuilder.append(Const.CR);
+    messageBuilder.append(Const.CR);
+    messageBuilder.append(Const.CR);
+    messageBuilder.append(Const.CR);
+    messageBuilder.append("Build version : ");
+    messageBuilder.append(BuildVersion.getInstance().getVersion());
+    messageBuilder.append(Const.CR);
+    messageBuilder.append("Build date    : ");
+    messageBuilder.append(BuildVersion.getInstance().getBuildDate());  //  this should be the longest line of text
+    messageBuilder.append("     ");  //  so this is the right margin 
+    messageBuilder.append(Const.CR);
 
-    mess += Const.CR;
-    mess += Const.CR;
-    mess += Const.CR;
-    mess += "         Build version : "
-        + BuildVersion.getInstance().getVersion() + Const.CR;
-    mess += "         Build date    : "
-        + BuildVersion.getInstance().getBuildDate() + Const.CR;
-
-    mb.setMessage(mess);
+    //  set the text in the message box
+    mb.setMessage(messageBuilder.toString());
     mb.setText(APP_NAME);
+
+    //  now open the message bx
     mb.open();
   }
 
