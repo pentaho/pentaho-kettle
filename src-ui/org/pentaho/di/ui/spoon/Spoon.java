@@ -1473,15 +1473,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
 			// file:///home/matt/svn/kettle/trunk/docs/English/welcome/samples/transformations/
 			//
-			if (event.location.contains("samples/transformations")) {
+			if (event.location.contains("samples/transformations") || 
+				event.location.contains("samples/jobs") || 
+				event.location.contains("samples/mapping") 
+				) {
 				try {
 					FileObject fileObject = KettleVFS.getFileObject(event.location);
-					lastDirOpened=KettleVFS.getFilename(fileObject);
-					
-					openFile(true);
-					event.doit=false;
+					if (fileObject.exists()) {
+						if (event.location.endsWith(".ktr") || event.location.endsWith(".kjb")) {
+							openFile(event.location, false);
+						} else {
+							lastDirOpened=KettleVFS.getFilename(fileObject);
+							openFile(true);
+						}
+						event.doit=false;
+					}
 				} catch(Exception e) {
-					log.logError("Error moving to folder: "+event.location, e);
+					log.logError("Error handling samples location: "+event.location, e);
 				}
 			}
 		}
