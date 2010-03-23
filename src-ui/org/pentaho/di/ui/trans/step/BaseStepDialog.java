@@ -123,6 +123,8 @@ public class BaseStepDialog extends Dialog {
 
   protected static int buttonAlignment = BUTTON_ALIGNMENT_CENTER;
   
+  protected DatabaseDialog databaseDialog;
+  
   static {
     // Get the button alignment
     buttonAlignment = getButtonAlignment();
@@ -473,7 +475,8 @@ public class BaseStepDialog extends Dialog {
       public void widgetSelected(SelectionEvent e) {
         DatabaseMeta databaseMeta = new DatabaseMeta();
         databaseMeta.shareVariablesWith(transMeta);
-        DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+        DatabaseDialog cid = getDatabaseDialog(shell);
+        cid.setDatabaseMeta(databaseMeta);
         cid.setModalDialog(true);
         if (cid.open() != null) {
           transMeta.addDatabase(databaseMeta);
@@ -500,7 +503,9 @@ public class BaseStepDialog extends Dialog {
         DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
         if (databaseMeta != null) {
           databaseMeta.shareVariablesWith(transMeta);
-          DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+          
+          DatabaseDialog cid = getDatabaseDialog(shell);
+          cid.setDatabaseMeta(databaseMeta);
           cid.setModalDialog(true);
           if (cid.open() != null) {
             wConnection.removeAll();
@@ -531,6 +536,13 @@ public class BaseStepDialog extends Dialog {
     wConnection.setLayoutData(fdConnection);
 
     return wConnection;
+  }
+  
+  protected DatabaseDialog getDatabaseDialog(Shell shell){
+    if(databaseDialog == null){
+      databaseDialog = new DatabaseDialog(shell);
+    }
+    return databaseDialog;
   }
 
   public void storeScreenSize() {

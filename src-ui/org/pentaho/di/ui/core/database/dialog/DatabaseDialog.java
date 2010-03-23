@@ -37,9 +37,13 @@ public class DatabaseDialog extends XulDatabaseDialog
 {
 	private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	  public DatabaseDialog(Shell parent){
+	    super(parent);
+	  }
     public DatabaseDialog(Shell parent, DatabaseMeta databaseMeta)
     {
-        super(parent, databaseMeta);
+        super(parent);
+        setDatabaseMeta(databaseMeta);
     }
 
     public String open()

@@ -26,6 +26,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.ui.core.database.dialog.DataOverrideHandler;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.ui.database.DatabaseConnectionDialog;
@@ -71,14 +72,13 @@ public class XulDatabaseDialog {
   
   private static final String EXTENDED_WIDGET_ID = "VARIABLETEXTBOX"; //$NON-NLS-1$
   
-  public XulDatabaseDialog(Shell parent, DatabaseMeta dbMeta) {
+  private DatabaseConnectionDialog databaseDialogInstance;
+  
+  private XulDialog xulDialogComponent;
+  
+  public XulDatabaseDialog(Shell parent) {
 
     parentShell = parent;
-    databaseMeta = dbMeta;
-    databaseMetaObjectId = dbMeta.getObjectId();
-    if (dbMeta != null) {
-      databaseName = databaseMeta.getName();
-    }
     databases = null;
     
     log = new LogChannel("XulDatabaseDialog");
@@ -91,12 +91,35 @@ public class XulDatabaseDialog {
   */
   @SuppressWarnings("deprecation")
   public String open() {
+    if(databaseDialogInstance == null){
+      createDialog();
+    }
 
+    try {
+      dataHandler.setData(databaseMeta);
+      xulDialogComponent.show();    //Attention: onload: loadConnectionData() is called here the second time, see above for first time
+                // caught with a HACK in DataHandler.loadConnectionData()
+
+      databaseMeta = (DatabaseMeta) dataHandler.getData();
+      
+      // keep the original id
+      databaseMeta.setObjectId(databaseMetaObjectId);
+      databaseName = Const.isEmpty(databaseMeta.getName()) ? null : databaseMeta.getName();
+      
+    } catch (Exception e) {
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
+    		 BaseMessages.getString("XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
+      return null;
+    }
+    return databaseName;
+  }
+  
+  private void createDialog(){
     XulDomContainer container = null;
     try {
-      DatabaseConnectionDialog dcDialog = new DatabaseConnectionDialog();
-      dcDialog.registerClass(EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME);
-      container = dcDialog.getSwtInstance(shell);  //Attention: onload: loadConnectionData() is called here the first time, see below for second time
+      databaseDialogInstance = new DatabaseConnectionDialog();
+      databaseDialogInstance.registerClass(EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME);
+      container = databaseDialogInstance.getSwtInstance(shell);  //Attention: onload: loadConnectionData() is called here the first time, see below for second time
 
       container.addEventHandler(EVENT_ID, DataOverrideHandler.class.getName());
 
@@ -109,8 +132,8 @@ public class XulDatabaseDialog {
 
     } catch (XulException e) {
       new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
-    		 BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
-      return null;
+         BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
+      return;
     }
 
     try {
@@ -153,37 +176,35 @@ public class XulDatabaseDialog {
 
     } catch (Exception e) {
       new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
-    		  BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
-      return null;
+          BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
+      return;
     }
 
     try {
-      final XulDialog dialog = (XulDialog) container.getDocumentRoot().getRootElement();
-      ((Shell)dialog.getRootObject()).setImage(GUIResource.getInstance().getImageConnection());
+      xulDialogComponent = (XulDialog) container.getDocumentRoot().getRootElement();
+      ((Shell) xulDialogComponent.getRootObject()).setImage(GUIResource.getInstance().getImageConnection());
       
       parentShell.addDisposeListener(new DisposeListener(){
 
         public void widgetDisposed(DisposeEvent arg0) {
-          dialog.hide();
+          xulDialogComponent.hide();
         }
         
       });
-      
-      dialog.show();  	//Attention: onload: loadConnectionData() is called here the second time, see above for first time
-      					// caught with a HACK in DataHandler.loadConnectionData()
-
-      databaseMeta = (DatabaseMeta) dataHandler.getData();
-      
-      // keep the original id
-      databaseMeta.setObjectId(databaseMetaObjectId);
-      databaseName = Const.isEmpty(databaseMeta.getName()) ? null : databaseMeta.getName();
-      
+   
     } catch (Exception e) {
       new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
-    		 BaseMessages.getString("XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
-      return null;
+         BaseMessages.getString("XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
+      return;
     }
-    return databaseName;
+  }
+  
+  public void setDatabaseMeta(DatabaseMeta dbMeta){
+    databaseMeta = dbMeta;
+    databaseMetaObjectId = dbMeta.getObjectId();
+    if (dbMeta != null) {
+      databaseName = databaseMeta.getName();
+    }
   }
 
   public DatabaseMeta getDatabaseMeta() {

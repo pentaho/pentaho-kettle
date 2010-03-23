@@ -55,7 +55,7 @@ import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
 public class SpoonDBDelegate extends SpoonDelegate
 {
 	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
+	private XulDatabaseDialog databaseDialog;
 	public SpoonDBDelegate(Spoon spoon)
 	{
 		super(spoon);
@@ -73,12 +73,15 @@ public class SpoonDBDelegate extends SpoonDelegate
 			return; // program error, exit just to make sure.
 		}
 
-		XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
-		con.setDatabases(hasDatabasesInterface.getDatabases());
-		String newname = con.open();
+		if(databaseDialog == null){
+		  databaseDialog = new XulDatabaseDialog(spoon.getShell());
+		}
+		databaseDialog.setDatabaseMeta(databaseMeta);
+		databaseDialog.setDatabases(hasDatabasesInterface.getDatabases());
+		String newname = databaseDialog.open();
 		if (!Const.isEmpty(newname)) // null: CANCEL
 		{
-			databaseMeta = con.getDatabaseMeta();
+			databaseMeta = databaseDialog.getDatabaseMeta();
 
 			saveConnection(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION);
 
@@ -458,10 +461,13 @@ public class SpoonDBDelegate extends SpoonDelegate
 			databaseMeta.initializeVariablesFrom(null);
 		}
 
-		XulDatabaseDialog con = new XulDatabaseDialog(spoon.getShell(), databaseMeta);
-		String con_name = con.open();
+    if(databaseDialog == null){
+      databaseDialog = new XulDatabaseDialog(spoon.getShell());
+    }
+    databaseDialog.setDatabaseMeta(databaseMeta);
+		String con_name = databaseDialog.open();
 		if (!Const.isEmpty(con_name)) {
-			databaseMeta = con.getDatabaseMeta();
+			databaseMeta = databaseDialog.getDatabaseMeta();
 
 			databaseMeta.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
 			hasDatabasesInterface.addDatabase(databaseMeta);
