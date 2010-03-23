@@ -56,10 +56,15 @@ public class Const
 {
 	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	/**
-	 *  Version number
-	 */
-	public static final String VERSION = "4.0.0-Preview";
+    /**
+     *  Version number
+     */
+    public static final String VERSION = "4.0.0";
+    
+    /**
+     *  Release Type 
+     */ 
+    public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW}
 
 	/**
 	 * Sleep time waiting when buffer is empty
@@ -631,7 +636,11 @@ public class Const
 
     private static String[] emptyPaddedSpacesStrings;
 
-
+    /**
+     * The release type of this compilation
+     */
+    public static final ReleaseType RELEASE = ReleaseType.PREVIEW;
+    
     /** 
      *  rounds double f to any number of places after decimal point
 	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding
