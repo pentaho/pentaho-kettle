@@ -13,6 +13,9 @@ set MOZILLA_FIVE_HOME=/usr/lib/xulrunner-1.8.1/
 set LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
 export MOZILLA_FIVE_HOME LD_LIBRARY_PATH
 
+# Fix for GTK Windows issues with SWT
+export GDK_NATIVE_WINDOWS=1
+
 # **************************************************
 # ** Init BASEDIR                                 **
 # **************************************************
@@ -152,7 +155,7 @@ fi
 # ** Change 256m to higher values in case you run out of memory.  **
 # ******************************************************************
 
-OPT="$OPT -Xmx256m -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
+OPT="$OPT -Xmx512m -Xms512m -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
 
 # ***************
 # ** Run...    **
