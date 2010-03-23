@@ -4,12 +4,14 @@ public class SAPLibraryTester {
 	
 	private static final String JCO_LIB_EXISTENCE_TEST_CLASS = "com.sap.conn.jco.JCoDestinationManager";
 
-	private static final String JCO_IMPL_EXISTENCE_TEST_CLASS = "com.sap.conn.jco.JCo";
+	private static final String JCO_IMPL_EXISTENCE_TEST_CLASS = "com.sap.conn.rfc.driver.CpicDriver";
 
 	public static boolean isJCoLibAvailable() {
 		try {
 			Class.forName(JCO_LIB_EXISTENCE_TEST_CLASS);
 			return true;
+		} catch (NoClassDefFoundError e) {
+			return false;
 		} catch (ClassNotFoundException e) {
 			return false;
 		}
@@ -18,10 +20,12 @@ public class SAPLibraryTester {
 	public static boolean isJCoImplAvailable() {
 		try {
 			Class.forName(JCO_IMPL_EXISTENCE_TEST_CLASS);
-			return true;
+		} catch (NoClassDefFoundError e) {
+			return false;
 		} catch (ClassNotFoundException e) {
 			return false;
 		}
+		return false;
 	}
 
 }
