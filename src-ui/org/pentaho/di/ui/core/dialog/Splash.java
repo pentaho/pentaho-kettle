@@ -95,12 +95,15 @@ public class Splash {
         e.gc.drawImage(kettle_image, 0, 0);
 
         // If this is a Milestone or RC release, warn the user
-        if (Const.VERSION.matches("^(\\d\\.){2}\\d-M\\d+$")) { //$NON-NLS-1$
-          versionText = BaseMessages.getString(PKG, "SplashDialog.DeveloperRelease") + " - " + versionText; //$NON-NLS-1$ //$NON-NLS-2$
+        if (Const.RELEASE.equals(Const.ReleaseType.MILESTONE)) {
+        versionText = BaseMessages.getString(PKG, "SplashDialog.DeveloperRelease") + " - " + versionText; //$NON-NLS-1$ //$NON-NLS-2$
           drawVersionWarning(e);
-        } else if (Const.VERSION.matches("^(\\d\\.){2}\\d-RC\\d+$")) { //$NON-NLS-1$
+        } else if (Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)) {
           versionText = BaseMessages.getString(PKG, "SplashDialog.ReleaseCandidate") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
           drawVersionWarning(e);
+        }
+        else if (Const.RELEASE.equals(Const.ReleaseType.PREVIEW)) {
+            versionText = BaseMessages.getString(PKG, "SplashDialog.PreviewRelease") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
         }
 
         Font verFont = new Font(e.display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$
