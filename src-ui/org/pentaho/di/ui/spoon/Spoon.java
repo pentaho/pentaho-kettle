@@ -6665,7 +6665,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       splash.dispose();
     }
 
-    if (Const.VERSION.contains("M") || Const.VERSION.contains("RC")) {
+    //  If we are a MILESTONE or RELEASE_CANDIDATE    
+    if (       Const.RELEASE.equals(Const.ReleaseType.MILESTONE) 
+            || Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)) {
+        
+      //  display the same warning message
       MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING);
       dialog.setText(BaseMessages.getString(PKG,
           "Spoon.Warning.DevelopmentRelease.Title"));
