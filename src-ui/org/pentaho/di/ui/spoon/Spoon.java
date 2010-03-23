@@ -4278,8 +4278,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
         if ((meta.getObjectId()==null && existingId!=null) || existingId!=null && !meta.getObjectId().equals(existingId)) {
           // In case we support revisions, we can simply overwrite
           // without a problem so we simply don't ask.
+          // However, if we import from a file we should ask.
           //
-          if (!rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions()) {
+          if (!rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions() || meta.getObjectId()==null) {
             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
             
             // There already is a transformation called ... in the repository.
@@ -4293,6 +4294,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
         boolean saved = false;
         if (response == SWT.YES) {
+          
+          if (meta.getObjectId()==null) {
+        	  meta.setObjectId(existingId);
+          }
+        	
           try {
             shell.setCursor(cursor_hourglass);
 
