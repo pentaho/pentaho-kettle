@@ -110,6 +110,31 @@
       <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
     </attributes>
   </connection>
+  <connection>
+    <name>TEST</name>
+    <server>192.168.9.50</server>
+    <type>SAPR3</type>
+    <access>Plugin</access>
+    <database/>
+    <port>1521</port>
+    <username>EXT_KUBICKAM</username>
+    <password>Encrypted 2be98afc86aa7f2e4aa0aaa76df81abdc</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SAPClient</code><attribute>200</attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute>DE</attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute>00</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
   <hop> <from>Generate Rows</from><to>RFC_FUNCTION_SEARCH</to><enabled>Y</enabled> </hop>  <hop> <from>RFC_FUNCTION_SEARCH</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 2</from><to>BAPI_BILLINGDOC_GETLIST</to><enabled>Y</enabled> </hop>  <hop> <from>BAPI_BILLINGDOC_GETLIST</from><to>Dummy (do nothing) 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3</from><to>BAPI_BILLINGDOC_GETDETAIL</to><enabled>Y</enabled> </hop>  <hop> <from>BAPI_BILLINGDOC_GETDETAIL</from><to>Dummy (do nothing) 3</to><enabled>Y</enabled> </hop>  </order>
   <step>
