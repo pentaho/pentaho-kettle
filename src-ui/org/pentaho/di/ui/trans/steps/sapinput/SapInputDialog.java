@@ -132,22 +132,18 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 
         if (!SAPLibraryTester.isJCoLibAvailable()) {
         	int style = SWT.ICON_ERROR;
-            
             MessageBox messageBox = new MessageBox(shell, style);
             messageBox.setMessage(BaseMessages.getString(PKG, "SapInputDialog.JCoLibNotFound"));
             messageBox.open();
-
             // dispose();
             // return stepname;
-        }
-
+        } 
+        
         if (!SAPLibraryTester.isJCoImplAvailable()) {
         	int style = SWT.ICON_ERROR;
-            
             MessageBox messageBox = new MessageBox(shell, style);
             messageBox.setMessage(BaseMessages.getString(PKG, "SapInputDialog.JCoImplNotFound"));
             messageBox.open();
-
             // dispose();
             // return stepname;
         }
