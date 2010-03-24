@@ -16,6 +16,7 @@
  */
 package org.pentaho.di.repositoryexplorer;
 
+import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
@@ -70,7 +71,7 @@ public class ExplorerHarness {
     
     try {
       repository.connect(userInfo.getLogin(), userInfo.getPassword());
-      RepositoryExplorer explorer = new RepositoryExplorer(repository, cb, null);
+      RepositoryExplorer explorer = new RepositoryExplorer(new Shell(), repository, cb, null);
       explorer.show();
     } catch (XulException e) {
       e.printStackTrace();
