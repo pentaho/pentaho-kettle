@@ -1794,8 +1794,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
   public boolean hasService(Class<? extends IRepositoryService> clazz) throws KettleException {
     return serviceMap.containsKey(clazz);
   }
-
+  
   public RepositoryDirectory getDefaultSaveDirectory(RepositoryElementInterface repositoryElement) throws KettleException {
+    return getUserHomeDirectory();
+  }
+
+  public RepositoryDirectory getUserHomeDirectory() throws KettleException {
     RepositoryDirectory root = new RepositoryDirectory();
     root.setObjectId(new LongObjectId(0L));
     directoryDelegate.loadRepositoryDirectory(root, root.getObjectId());

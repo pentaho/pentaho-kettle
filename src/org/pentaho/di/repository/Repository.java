@@ -95,6 +95,8 @@ public interface Repository {
     public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException;
   
     public RepositoryDirectory getDefaultSaveDirectory(RepositoryElementInterface repositoryElement) throws KettleException;
+    
+    public RepositoryDirectory getUserHomeDirectory() throws KettleException;
   
     // Transformations : Loading & saving objects...
   
