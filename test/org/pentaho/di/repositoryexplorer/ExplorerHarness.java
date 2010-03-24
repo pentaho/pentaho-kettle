@@ -16,17 +16,12 @@
  */
 package org.pentaho.di.repositoryexplorer;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
-import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
-import org.pentaho.ui.xul.XulException;
 
 public class ExplorerHarness {
 
@@ -69,10 +64,10 @@ public class ExplorerHarness {
     };
 
     
-    try {
+   /* try {
       repository.connect(userInfo.getLogin(), userInfo.getPassword());
-      RepositoryExplorer explorer = new RepositoryExplorer(new Shell(), repository, cb, null);
-      explorer.show();
+      //RepositoryExplorer explorer = new RepositoryExplorer(new Shell(), repository, cb, null);
+      //explorer.show();
     } catch (XulException e) {
       e.printStackTrace();
     } catch (KettleSecurityException e) {
@@ -80,7 +75,7 @@ public class ExplorerHarness {
     } catch (KettleException e) {
       e.printStackTrace();
     }
-    
+    */
 
   }
 
