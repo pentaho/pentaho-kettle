@@ -296,7 +296,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 				if (length==1) retval+="CHAR(1)";
 				else if (length<     256) retval+="VARCHAR("+length+")";
 				else if (length<   65536) retval+="TEXT";
-				else if (length<16777215) retval+="MEDIUMTEXT";
+				else if (length<16777216) retval+="MEDIUMTEXT";
 				else retval+="LONGTEXT";
 			}
 			else
