@@ -1,23 +1,26 @@
- /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
- * This software was developed by Pentaho Corporation and is provided under the terms 
- * of the GNU Lesser General Public License, Version 2.1. You may not use 
- * this file except in compliance with the license. If you need a copy of the license, 
- * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
- * Data Integration.  The Initial Developer is Pentaho Corporation.
- *
- * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
- * the license for the specific language governing your rights and limitations.*/
- /**********************************************************************
- **                                                                   **
- ** This Script has been modified for higher performance              **
- ** and more functionality in December-2006,                          **
- ** by proconis GmbH / Germany                                        **
- **                                                                   ** 
- ** http://www.proconis.de                                            **
- ** info@proconis.de                                                  **
- **                                                                   **
- **********************************************************************/
+/***** BEGIN LICENSE BLOCK *****
+The contents of this package are subject to the GNU Lesser Public License
+ (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at
+http://www.gnu.org/licenses/lgpl-2.1.txt
+
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+for the specific language governing rights and limitations under the
+License.
+
+The Original Code is Pentaho Data Integration
+
+The Initial Developer of the Original Code is
+Pentaho Corporation
+Portions created by the Initial Developer are Copyright (C) 2010
+the Initial Developer. All Rights Reserved.
+
+Contributor(s):
+Matt Casters mcaster@pentaho.com
+Daniel Einspanjer deinspanjer@mozilla.com
+
+***** END LICENSE BLOCK *****/
 
 package org.pentaho.di.ui.trans.steps.userdefinedjavaclass;
 
@@ -59,13 +62,7 @@ class UserDefinedJavaClassHighlight implements LineStyleListener {
 	public UserDefinedJavaClassHighlight() {
 		initializeColors();
 		scanner = new JavaScanner();
-	}
-	
-	public UserDefinedJavaClassHighlight(String[] strArrETLFunctions) {
-		initializeColors();
-		scanner = new JavaScanner();
-		scanner.setETLKeywords(strArrETLFunctions);
-		scanner.initializeETLFunctions();
+		scanner.initializeUDJCFunctions();
 	}
 
 	Color getColor(int type) {
@@ -91,7 +88,7 @@ class UserDefinedJavaClassHighlight implements LineStyleListener {
 		Display display = Display.getDefault();
 		colors= new Color[] {
 				new Color(display, new RGB(0, 0, 0)),		// black
-				new Color(display, new RGB(63, 127, 95)),		// red
+				new Color(display, new RGB(63, 127, 95)),	// red
 				new Color(display, new RGB(0, 0, 192)),		// green
 				new Color(display, new RGB(127,   0, 85)),	// blue
 				new Color(display, new RGB(255,   102, 0))	// Kettle Functions / Orange
@@ -246,32 +243,10 @@ class UserDefinedJavaClassHighlight implements LineStyleListener {
 		protected int fStartToken;
 		protected boolean fEofSeen= false;
 
-		private String[] kfKeywords ={
-			"String", "Long", "Date", "Boolean", "Double", "BigDecimal", "Byte",
-		};
-		
-		private String[] fgKeywords= { 
-				"abstract", "assert",
-				"boolean", "break", "byte",
-				"case", "catch", "char", "class", "const", "continue",
-				"default", "do", "double",
-				"else", "enum", "extends",
-				"final", "finally", "float", "for",
-				"goto",
-				"if", "implements", "import", "instanceof", "int", "interface",
-				"long",
-				"native", "new",
-				"package", "private", "protected", "public",
-				"return",
-				"short", "static", "strictfp", "super", "switch", "synchronized",
-				"this", "throw", "throws", "transient", "try",
-				"void", "volatile",
-				"while",
-		};
 
 		public JavaScanner() {
 			initialize();
-			initializeETLFunctions();
+			initializeUDJCFunctions();
 		}
 
 		/**
@@ -287,19 +262,15 @@ class UserDefinedJavaClassHighlight implements LineStyleListener {
 		void initialize() {
 			fgKeys= new Hashtable<String, Integer>();
 			Integer k = Integer.valueOf(KEY);
-			for (int i= 0; i < fgKeywords.length; i++)
-				fgKeys.put(fgKeywords[i], k);
+			for (int i= 0; i < JAVA_KEYWORDS.length; i++)
+				fgKeys.put(JAVA_KEYWORDS[i], k);
 		}
 		
-		public void setETLKeywords(String[]kfKeywords ){
-			this.kfKeywords = kfKeywords;
-		}
-		
-		void initializeETLFunctions(){
+		void initializeUDJCFunctions(){
 			kfKeys = new Hashtable<String, Integer>();
 			Integer k = Integer.valueOf(FUNCTIONS);
-			for (int i= 0; i < kfKeywords.length; i++)
-				kfKeys.put(kfKeywords[i], k);
+			for (int i= 0; i < UDJC_FUNCTIONS.length; i++)
+				kfKeys.put(UDJC_FUNCTIONS[i], k);
 		}
 
 		/**
@@ -417,4 +388,58 @@ class UserDefinedJavaClassHighlight implements LineStyleListener {
 				fPos--;
 		}
 	}
+
+	private static final String[] JAVA_KEYWORDS = { 
+			"abstract", "assert",
+			"boolean", "break", "byte",
+			"case", "catch", "char", "class", "const", "continue",
+			"default", "do", "double",
+			"else", "enum", "extends",
+			"final", "finally", "float", "for",
+			"goto",
+			"if", "implements", "import", "instanceof", "int", "interface",
+			"long",
+			"native", "new",
+			"package", "private", "protected", "public",
+			"return",
+			"short", "static", "strictfp", "super", "switch", "synchronized",
+			"this", "throw", "throws", "transient", "try",
+			"void", "volatile",
+			"while",
+	};
+
+	// built from TransformClassBase.java with the following Vim commands:
+	// :v/ *public/d
+	// :%s/.\+\(\<[^(]\+\)(.*/\1/g
+	// :%s/.*/"&",/
+	private static final String[] UDJC_FUNCTIONS = {
+		"addResultFile", "addRowListener", "addStepListener", 
+		"checkFeedback", "cleanup", 
+		"decrementLinesRead", "decrementLinesWritten", "dispose", 
+		"findInputRowSet", "findInputRowSet", "findOutputRowSet", "findOutputRowSet", 
+		"getClusterSize", "getCopy", "getErrorRowMeta", "getErrors", "getFields", 
+		"getInfoSteps", "getInputRowMeta", "getInputRowSets", "getLinesInput", 
+		"getLinesOutput", "getLinesRead", "getLinesRejected", "getLinesSkipped", 
+		"getLinesUpdated", "getLinesWritten", "getOutputRowSets", "getPartitionID", 
+		"getPartitionTargets", "getProcessed", "getRepartitioning", "getResultFiles", 
+		"getRow", "getRowFrom", "getRowListeners", "getRuntime", "getSlaveNr", 
+		"getSocketRepository", "getStatus", "getStatusDescription", "getStepDataInterface", 
+		"getStepID", "getStepListeners", "getStepMeta", "getStepname", 
+		"getTrans", "getTransMeta", "getTypeId", "getUniqueStepCountAcrossSlaves", 
+		"getUniqueStepNrAcrossSlaves", "getVariable", 
+		"incrementLinesInput", "incrementLinesOutput", "incrementLinesRead", 
+		"incrementLinesRejected", "incrementLinesSkipped", "incrementLinesUpdated", 
+		"incrementLinesWritten", "init", "initBeforeStart", "isDistributed", "isInitialising", 
+		"isPartitioned", "isSafeModeEnabled", "isStopped", "isUsingThreadPriorityManagment", 
+		"logBasic", "logDebug", "logDetailed", "logError", "logError", "logMinimal", "logRowlevel", "logSummary", 
+		"markStart", "markStop", 
+		"openRemoteInputStepSocketsOnce", "openRemoteOutputStepSocketsOnce", "outputIsDone", 
+		"processRow", "putError", "putRow", "putRowTo", 
+		"removeRowListener", "rowsetInputSize", "rowsetOutputSize", 
+		"safeModeChecking", "setErrors", "setInputRowMeta", "setInputRowSets", 
+		"setLinesInput", "setLinesOutput", "setLinesRead", "setLinesRejected", 
+		"setLinesSkipped", "setLinesUpdated", "setLinesWritten", "setOutputDone", 
+		"setOutputRowSets", "setStepListeners", "setVariable", "stopAll", "stopRunning", 
+		"toString", 
+        };
 }

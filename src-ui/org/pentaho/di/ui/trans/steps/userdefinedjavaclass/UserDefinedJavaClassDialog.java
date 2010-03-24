@@ -1,24 +1,36 @@
-/*
- * Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
- * This software was developed by Pentaho Corporation and is provided under the terms 
- * of the GNU Lesser General Public License, Version 2.1. You may not use 
- * this file except in compliance with the license. If you need a copy of the license, 
- * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
- * Data Integration.  The Initial Developer is Pentaho Corporation.
- *
- * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
- * the license for the specific language governing your rights and limitations.
- */
+/***** BEGIN LICENSE BLOCK *****
+The contents of this package are subject to the GNU Lesser Public License
+ (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at
+http://www.gnu.org/licenses/lgpl-2.1.txt
+
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+for the specific language governing rights and limitations under the
+License.
+
+The Original Code is Pentaho Data Integration
+
+The Initial Developer of the Original Code is
+Pentaho Corporation
+Portions created by the Initial Developer are Copyright (C) 2010
+the Initial Developer. All Rights Reserved.
+
+Contributor(s):
+Matt Casters mcaster@pentaho.com
+Daniel Einspanjer deinspanjer@mozilla.com
+
+***** END LICENSE BLOCK *****/
+
 package org.pentaho.di.ui.trans.steps.userdefinedjavaclass;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.Vector;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -84,7 +96,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UsageParameter;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassAddedFunctions;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
@@ -99,6 +110,8 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Category;
+import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Snippit;
 
 public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -155,7 +168,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     private String                        strActiveScript;
 
     private UserDefinedJavaClassMeta      input;
-    private UserDefinedJavaClassHelp      scVHelp;
+    private UserDefinedJavaClassCodeSnippits      snippitsHelper;
     private UserDefinedJavaClassHighlight lineStyler  = new UserDefinedJavaClassHighlight();
 
     private TreeItem                      iteminput;
@@ -220,11 +233,11 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
         try
         {
-            scVHelp = new UserDefinedJavaClassHelp("jsFunctionHelp.xml");
+            snippitsHelper = UserDefinedJavaClassCodeSnippits.getSnippitsHelper();
         }
         catch (Exception e)
         {
-            new ErrorDialog(shell, "Unexpected error", "There was an unexpected error reading the javascript functions help", e);
+            new ErrorDialog(shell, "Unexpected error", "There was an unexpected error reading the code snippits file", e);
         }
 
     }
@@ -495,7 +508,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         getData();
 
         // Adding the Rest (Functions, InputItems, etc.) to the Tree
-        buildSpecialFunctionsTree();
+        buildSnippitsTree();
 
         // Input Fields
         iteminput = new TreeItem(wTree, SWT.NULL);
@@ -531,7 +544,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                     try
                     {
                         inputRowMeta = transMeta.getPrevStepFields(stepMeta);
-                        outputRowMeta = transMeta.getThisStepFields(stepMeta, null, inputRowMeta);
+                        outputRowMeta = transMeta.getThisStepFields(stepMeta, null, inputRowMeta.clone());
                         setInputOutputFields();
                     }
                     catch (KettleException e)
@@ -801,24 +814,24 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
             folder.setSelection(getCTabPosition(strName));
     }
 
-    private void addCtab(String cScriptName, String strScript, TabAddActions addType)
+    private void addCtab(String tabName, String tabCode, TabAddActions tabType)
     {
         CTabItem item = new CTabItem(folder, SWT.CLOSE);
 
-        switch (addType)
+        switch (tabType)
         {
             case ADD_DEFAULT:
-                item.setText(cScriptName);
+                item.setText(tabName);
                 break;
             default:
-                item.setText(getNextName(cScriptName));
+                item.setText(getNextName(tabName));
                 break;
         }
         StyledTextComp wScript = new StyledTextComp(item.getParent(), SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL, item.getText());
-        if ((strScript != null) && strScript.length() > 0)
-            wScript.setText(strScript);
+        if ((tabCode != null) && tabCode.length() > 0)
+            wScript.setText(tabCode);
         else
-            wScript.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ScriptHere.Label") + Const.CR + Const.CR);
+            wScript.setText(snippitsHelper.getDefaultCode());
         item.setImage(imageInactiveScript);
         props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
 
@@ -864,7 +877,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         wScript.addModifyListener(lsMod);
 
         // Text Higlighting
-        lineStyler = new UserDefinedJavaClassHighlight(UserDefinedJavaClassAddedFunctions.javaETLFunctionList);
+        lineStyler = new UserDefinedJavaClassHighlight();
         wScript.addLineStyleListener(lineStyler);
         item.setControl(wScript);
 
@@ -1199,7 +1212,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         if (getCTabItemByName(strActiveScript) == null)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_ERROR);
-            mb.setMessage(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.NoActiveScriptSet"));
+            mb.setMessage(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.NoTransformClassSet"));
             mb.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ERROR.Label")); //$NON-NLS-1$
             switch (mb.open())
             {
@@ -1399,105 +1412,30 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         return this.getClass().getName();
     }
 
-    private void buildSpecialFunctionsTree()
+    private void buildSnippitsTree()
     {
 
         TreeItem item = new TreeItem(wTree, SWT.NULL);
         item.setImage(guiresource.getImageBol());
-        item.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TansformConstant.Label"));
-        TreeItem itemT = new TreeItem(item, SWT.NULL);
-        itemT.setImage(imageArrowGreen);
-        itemT.setText("SKIP_TRANSFORMATION");
-        itemT.setData("SKIP_TRANSFORMATION");
-        // itemT = new TreeItem(item, SWT.NULL);
-        // itemT.setText("ABORT_TRANSFORMATION");
-        // itemT.setData("ABORT_TRANSFORMATION");
-        itemT = new TreeItem(item, SWT.NULL);
-        itemT.setImage(imageArrowGreen);
-        itemT.setText("ERROR_TRANSFORMATION");
-        itemT.setData("ERROR_TRANSFORMATION");
-        itemT = new TreeItem(item, SWT.NULL);
-        itemT.setImage(imageArrowGreen);
-        itemT.setText("CONTINUE_TRANSFORMATION");
-        itemT.setData("CONTINUE_TRANSFORMATION");
+        item.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Snippits.Label"));
 
-        item = new TreeItem(wTree, SWT.NULL);
-        item.setImage(guiresource.getImageBol());
-        item.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.TransformFunctions.Label"));
-        String strData = "";
+        Map<Category, TreeItem> categoryTreeItems = new EnumMap<Category, TreeItem>(Category.class);
+        for (Category cat : Category.values()) {
+			TreeItem itemGroup = new TreeItem(item, SWT.NULL);
+			itemGroup.setImage(imageUnderGreen);
+			itemGroup.setText(cat.getDescription());
+			itemGroup.setData("Snippit");
+			categoryTreeItems.put(cat, itemGroup);
+		}
 
-        // Adding the Grouping Items to the Tree
-        TreeItem itemStringFunctionsGroup = new TreeItem(item, SWT.NULL);
-        itemStringFunctionsGroup.setImage(imageUnderGreen);
-        itemStringFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.StringFunctions.Label"));
-        itemStringFunctionsGroup.setData("Function");
-        TreeItem itemNumericFunctionsGroup = new TreeItem(item, SWT.NULL);
-        itemNumericFunctionsGroup.setImage(imageUnderGreen);
-        itemNumericFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.NumericFunctions.Label"));
-        itemNumericFunctionsGroup.setData("Function");
-        TreeItem itemDateFunctionsGroup = new TreeItem(item, SWT.NULL);
-        itemDateFunctionsGroup.setImage(imageUnderGreen);
-        itemDateFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.DateFunctions.Label"));
-        itemDateFunctionsGroup.setData("Function");
-        TreeItem itemLogicFunctionsGroup = new TreeItem(item, SWT.NULL);
-        itemLogicFunctionsGroup.setImage(imageUnderGreen);
-        itemLogicFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.LogicFunctions.Label"));
-        itemLogicFunctionsGroup.setData("Function");
-        TreeItem itemSpecialFunctionsGroup = new TreeItem(item, SWT.NULL);
-        itemSpecialFunctionsGroup.setImage(imageUnderGreen);
-        itemSpecialFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.SpecialFunctions.Label"));
-        itemSpecialFunctionsGroup.setData("Function");
-        TreeItem itemFileFunctionsGroup = new TreeItem(item, SWT.NULL);
-        itemFileFunctionsGroup.setImage(imageUnderGreen);
-        itemFileFunctionsGroup.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.FileFunctions.Label"));
-        itemFileFunctionsGroup.setData("Function");
-
-        // Loading the Default delivered JScript Functions
-        // Method[] methods =
-        // UserDefinedJavaClassAddedFunctions.class.getMethods();
-        // String strClassType =
-        // UserDefinedJavaClassAddedFunctions.class.toString();
-
-        Hashtable<String, String> hatFunctions = scVHelp.getFunctionList();
-
-        Vector<String> v = new Vector<String>(hatFunctions.keySet());
-        Collections.sort(v);
-
-        for (String strFunction : v)
-        {
-            String strFunctionType = (String) hatFunctions.get(strFunction);
-            int iFunctionType = Integer.valueOf(strFunctionType).intValue();
-
-            TreeItem itemFunction = null;
-            switch (iFunctionType)
-            {
-                case UserDefinedJavaClassAddedFunctions.STRING_FUNCTION:
-                    itemFunction = new TreeItem(itemStringFunctionsGroup, SWT.NULL);
-                    break;
-                case UserDefinedJavaClassAddedFunctions.NUMERIC_FUNCTION:
-                    itemFunction = new TreeItem(itemNumericFunctionsGroup, SWT.NULL);
-                    break;
-                case UserDefinedJavaClassAddedFunctions.DATE_FUNCTION:
-                    itemFunction = new TreeItem(itemDateFunctionsGroup, SWT.NULL);
-                    break;
-                case UserDefinedJavaClassAddedFunctions.LOGIC_FUNCTION:
-                    itemFunction = new TreeItem(itemLogicFunctionsGroup, SWT.NULL);
-                    break;
-                case UserDefinedJavaClassAddedFunctions.SPECIAL_FUNCTION:
-                    itemFunction = new TreeItem(itemSpecialFunctionsGroup, SWT.NULL);
-                    break;
-                case UserDefinedJavaClassAddedFunctions.FILE_FUNCTION:
-                    itemFunction = new TreeItem(itemFileFunctionsGroup, SWT.NULL);
-                    break;
-            }
-            if (itemFunction != null)
-            {
-                itemFunction.setText(strFunction);
-                itemFunction.setImage(imageArrowGreen);
-                strData = "jsFunction";
-                itemFunction.setData(strData);
-            }
-        }
+        Collection<Snippit> snippits = snippitsHelper.getSnippits();
+        for (Snippit snippit : snippits) {
+        	TreeItem itemGroup = categoryTreeItems.get(snippit.category);
+        	TreeItem itemSnippit = new TreeItem(itemGroup, SWT.NULL);
+			itemSnippit.setText(snippit.name);
+			itemSnippit.setImage(imageArrowGreen);
+			itemSnippit.setData(snippit.code);
+		}
     }
 
     public boolean TreeItemExist(TreeItem itemToCheck, String strItemName)
@@ -1525,19 +1463,25 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                 String strItemInToAdd = "";
                 String strItemToAddOut = "";
 
+                if (inputRowMeta != null)
+                {
+                    for (int i = 0; i < inputRowMeta.size(); i++)
+                    {
+                        ValueMetaInterface v = inputRowMeta.getValueMeta(i);
+                        strItemInToAdd = v.getName();
+                        TreeItem itemFields = new TreeItem(iteminput, SWT.NULL);
+                        itemFields.setImage(imageArrowOrange);
+                        itemFields.setText(strItemInToAdd);
+                        itemFields.setData(strItemInToAdd);
+                    }
+                }
                 if (outputRowMeta != null)
                 {
                     for (int i = 0; i < outputRowMeta.size(); i++)
                     {
                         ValueMetaInterface v = outputRowMeta.getValueMeta(i);
                         strItemToAddOut = v.getName();
-                        strItemInToAdd = v.getName();
-                        TreeItem itemFields = new TreeItem(iteminput, SWT.NULL);
-                        itemFields.setImage(imageArrowOrange);
-                        itemFields.setText(strItemInToAdd);
-                        itemFields.setData(strItemInToAdd);
-
-                        itemFields = new TreeItem(itemoutput, SWT.NULL);
+                        TreeItem itemFields = new TreeItem(itemoutput, SWT.NULL);
                         itemFields.setImage(imageArrowOrange);
                         itemFields.setText(strItemToAddOut);
                         itemFields.setData(strItemToAddOut);
@@ -1561,7 +1505,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
             {
                 setActiveCtab(item.getText());
             }
-            else if (!item.getData().equals("Function"))
+            else if (!item.getData().equals("Snippit"))
             {
                 int iStart = wScript.getCaretOffset();
                 int selCount = wScript.getSelectionCount(); // this selection
@@ -1571,7 +1515,6 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
                 // we need to subtract the position
                 if (iStart < 0) iStart = 0; // just safety
                 String strInsert = (String) item.getData();
-                if (strInsert.equals("jsFunction")) strInsert = (String) item.getText();
                 wScript.insert(strInsert);
                 wScript.setSelection(iStart, iStart + strInsert.length());
             }
@@ -1603,7 +1546,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         new MenuItem(cMenu, SWT.SEPARATOR);
 
         MenuItem setActiveScriptItem = new MenuItem(cMenu, SWT.PUSH);
-        setActiveScriptItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.SetTransformScript"));
+        setActiveScriptItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.SetTransformClass"));
         setActiveScriptItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e)
             {
@@ -1627,7 +1570,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
         new MenuItem(cMenu, SWT.SEPARATOR);
         MenuItem setRemoveScriptItem = new MenuItem(cMenu, SWT.PUSH);
-        setRemoveScriptItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialogMod.RemoveScriptType"));
+        setRemoveScriptItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.RemoveClassType"));
         setRemoveScriptItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e)
             {
@@ -1684,15 +1627,13 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
         helpItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e)
             {
-                String strFunctionName = wTree.getSelection()[0].getText();
-                String strFunctionNameWithArgs = strFunctionName;
-                strFunctionName = strFunctionName.substring(0, strFunctionName.indexOf('('));
-                String strHelpTabName = strFunctionName + "_Sample";
+                String snippitFullName = wTree.getSelection()[0].getText();
+                String sampleTabName = snippitFullName.substring(0, snippitFullName.indexOf('(')).replace(' ', '_') + "_Sample";
 
-                if (getCTabPosition(strHelpTabName) == -1)
-                    addCtab(strHelpTabName, scVHelp.getSample(strFunctionName, strFunctionNameWithArgs), TabAddActions.ADD_DEFAULT);
+                if (getCTabPosition(sampleTabName) == -1)
+                    addCtab(sampleTabName, snippitsHelper.getSample(snippitFullName), TabAddActions.ADD_DEFAULT);
 
-                if (getCTabPosition(strHelpTabName) != -1) setActiveCtab(strHelpTabName);
+                if (getCTabPosition(sampleTabName) != -1) setActiveCtab(sampleTabName);
             }
         });
 
