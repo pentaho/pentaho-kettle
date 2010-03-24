@@ -61,7 +61,7 @@ import org.pentaho.di.trans.steps.sapinput.SapInputMeta;
 import org.pentaho.di.trans.steps.sapinput.SapOutputField;
 import org.pentaho.di.trans.steps.sapinput.SapParameter;
 import org.pentaho.di.trans.steps.sapinput.SapType;
-import org.pentaho.di.trans.steps.sapinput.mock.SAPConnectionFactory;
+import org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPFunction;
