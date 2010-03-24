@@ -86,12 +86,12 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
       kidElementCache.add(child);
     }
     List<? extends RepositoryContent> transformations;
-    transformations = rep.getTransformationObjects(new StringObjectId(getId()), true);
+    transformations = rep.getTransformationObjects(new StringObjectId(getId()), false);
     for (RepositoryContent child : transformations) {
       kidElementCache.add(new UITransformation(child, this, rep));
     }
     List<? extends RepositoryContent> jobs;
-    jobs = rep.getJobObjects(new StringObjectId(getId()), true);
+    jobs = rep.getJobObjects(new StringObjectId(getId()), false);
     for (RepositoryContent child : jobs) {
       kidElementCache.add(new UIJob(child, this, rep));
     }
