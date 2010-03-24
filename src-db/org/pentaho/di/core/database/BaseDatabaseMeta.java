@@ -197,6 +197,9 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	{
         attributes = new Properties();
         changed = false;
+        if (getAccessTypeList()!=null && getAccessTypeList().length>0) {
+        	accessType = getAccessTypeList()[0];
+        }
 	}
 	
 	/**
@@ -226,6 +229,8 @@ public abstract class BaseDatabaseMeta implements Cloneable
   public void setPluginName(String pluginName) {
     this.pluginName = pluginName;
   }
+  
+  abstract public int[] getAccessTypeList();
 	
 	/**
 	 * @return Returns the accessType.
