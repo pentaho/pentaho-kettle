@@ -56,15 +56,6 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
         }
 
 	}
-  
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_UNIVERSE;
-  }
 	
     public String getURL(String hostname, String port, String databaseName)
     {

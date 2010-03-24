@@ -59,16 +59,7 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         }
 
 	}
-
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_DERBY;
-  }
-    
+	
     public String getURL(String hostname, String port, String databaseName)
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)

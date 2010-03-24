@@ -94,15 +94,7 @@ public class NeoviewDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 			return "com.hp.t4jdbc.HPT4Driver";
 		}
 	}
-	
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_NEOVIEW;
-  }
+
 
 	
     public String getURL(String hostname, String port, String databaseName) throws KettleDatabaseException

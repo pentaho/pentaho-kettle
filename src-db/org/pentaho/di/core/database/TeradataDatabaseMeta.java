@@ -57,15 +57,6 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
         }
 
 	}
-  
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_TERADATA;
-  }
 	
     public String getURL(String hostname, String port, String databaseName)
     {

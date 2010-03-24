@@ -49,15 +49,6 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 			return "com.lucidera.jdbc.LucidDbRmiDriver";
 		}
 	}
-	
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_LUCIDDB;
-  }
 
     public String getURL(String hostname, String port, String databaseName)
     {

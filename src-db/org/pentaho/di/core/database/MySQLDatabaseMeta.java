@@ -88,16 +88,6 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 			return "org.gjt.mm.mysql.Driver";
 		}
 	}
-  
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_MYSQL;
-  }
-    
 
     public String getURL(String hostname, String port, String databaseName)
     {

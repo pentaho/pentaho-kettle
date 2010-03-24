@@ -61,15 +61,6 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return "jdbc:odbc:"+databaseName;
 	}
 
-    /**
-     * @return Returns the databaseType.
-     */
-    @Deprecated
-    public int getDatabaseType()
-    {
-      return DatabaseMeta.TYPE_DATABASE_ACCESS;
-    }
-      
 	/**
 	 * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
 	 * @return true is setFetchSize() is supported!
