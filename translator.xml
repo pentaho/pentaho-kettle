@@ -45,6 +45,7 @@
     <filename>XulHelper.java</filename>
     <filename>XulDatabaseExplorerDialog.java</filename>
     <filename>XulSpoonResourceBundle.java</filename>
+    <filename>BasePluginType.java</filename>
     
   </files-to-avoid>
   

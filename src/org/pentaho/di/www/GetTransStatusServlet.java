@@ -149,8 +149,6 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
             out.print("<p>");
             out.print("<a href=\"" + convertContextPath(PrepareExecutionTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
                 + BaseMessages.getString(PKG, "TransStatusServlet.PrepareTrans") + "</a><br>");
-            // out.print("<a href=\"/kettle/startExec?name="+URLEncoder.encode(transName, "UTF-8")+"\">" + BaseMessages.getString(PKG,
-            // "TransStatusServlet.StartTrans") + "</a><p>");
           } else if (trans.isRunning()) {
             out.print("<a href=\"" + convertContextPath(PauseTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
                 + BaseMessages.getString(PKG, "PauseStatusServlet.PauseResumeTrans") + "</a><br>");
