@@ -19,7 +19,9 @@ package org.pentaho.di.ui.trans.steps.sapinput;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -481,6 +483,22 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 			}
 		}
 		
+		// check tablecount
+		Set<String> tables = new HashSet<String>();
+		int nrParameters = wOutput.nrNonEmpty();
+		for (int i=0;i<nrParameters;i++) {
+			TableItem item = wOutput.getNonEmpty(i);
+			String tableName = item.getText(3);
+			tables.add(tableName);
+		}
+		if (tables.size() > 1)
+		{
+			int answer = showMultipleOutputTablesWarning(true);
+			if (answer==SWT.CANCEL) {
+				return;
+			}
+		}
+		
 		getInfo(input);
 		
 		dispose();
@@ -494,6 +512,13 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		MessageBox mb = new MessageBox(shell, SWT.OK | ( includeCancel ? SWT.CANCEL : SWT.NONE ) | SWT.ICON_ERROR );
 		mb.setMessage(BaseMessages.getString(PKG, "SapInputDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
 		mb.setText(BaseMessages.getString(PKG, "SapInputDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+		return mb.open();
+	}
+
+	private int showMultipleOutputTablesWarning(boolean includeCancel) {
+		MessageBox mb = new MessageBox(shell, SWT.OK | ( includeCancel ? SWT.CANCEL : SWT.NONE ) | SWT.ICON_ERROR );
+		mb.setMessage(BaseMessages.getString(PKG, "SapInputDialog.MultipleOutputTables.DialogMessage")); //$NON-NLS-1$
+		mb.setText(BaseMessages.getString(PKG, "SapInputDialog.MultipleOutputTables.DialogTitle")); //$NON-NLS-1$
 		return mb.open();
 	}
 

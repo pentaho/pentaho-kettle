@@ -6,6 +6,7 @@
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
+    <trans_status>0</trans_status>
     <directory>&#47;</directory>
     <parameters>
     </parameters>
@@ -166,8 +167,8 @@
     <field><field_name>CURRENCY</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CURRENCY</new_name><target_type>String</target_type>    </field>
     <field><field_name>CURRENCY_ISO</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CURRENCY_ISO</new_name><target_type>String</target_type>    </field>
     <field><field_name>ACCTSTATUS</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>ACCTSTATUS</new_name><target_type>String</target_type>    </field>
-    <field><field_name>NET_VALUE</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>NET_VALUE</new_name><target_type>BigNumber</target_type>    </field>
-    <field><field_name>TAX_VALUE</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>TAX_VALUE</new_name><target_type>BigNumber</target_type>    </field>
+    <field><field_name>NET_VALUE</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>NET_VALUE</new_name><target_type>String</target_type>    </field>
+    <field><field_name>TAX_VALUE</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>TAX_VALUE</new_name><target_type>String</target_type>    </field>
     <field><field_name>CANCELLED</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CANCELLED</new_name><target_type>String</target_type>    </field>
     </fields>
      <cluster_schema/>
@@ -199,8 +200,8 @@
     <parameters>
     <parameter><field_name>SIGN</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>SIGN</parameter_name>    </parameter>
     <parameter><field_name>OPTION</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>OPTION</parameter_name>    </parameter>
-    <parameter><field_name>REF_DOC_LOW1</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_LOW</parameter_name>    </parameter>
-    <parameter><field_name>REF_DOC_HIGH1</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_HIGH</parameter_name>    </parameter>
+    <parameter><field_name>REF_DOC_LOW</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_LOW</parameter_name>    </parameter>
+    <parameter><field_name>REF_DOC_HIGH</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_HIGH</parameter_name>    </parameter>
     </parameters>
     <fields>
     <field><field_name>BILLINGDOC</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILLINGDOC</new_name><target_type>String</target_type>    </field>
@@ -210,8 +211,8 @@
     <field><field_name>CURRENCY</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CURRENCY</new_name><target_type>String</target_type>    </field>
     <field><field_name>CURRENCY_ISO</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CURRENCY_ISO</new_name><target_type>String</target_type>    </field>
     <field><field_name>ACCTSTATUS</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>ACCTSTATUS</new_name><target_type>String</target_type>    </field>
-    <field><field_name>NET_VALUE</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>NET_VALUE</new_name><target_type>BigNumber</target_type>    </field>
-    <field><field_name>TAX_VALUE</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>TAX_VALUE</new_name><target_type>BigNumber</target_type>    </field>
+    <field><field_name>NET_VALUE</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>NET_VALUE</new_name><target_type>String</target_type>    </field>
+    <field><field_name>TAX_VALUE</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>TAX_VALUE</new_name><target_type>String</target_type>    </field>
     <field><field_name>CANCELLED</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>CANCELLED</new_name><target_type>String</target_type>    </field>
     </fields>
      <cluster_schema/>
@@ -364,7 +365,7 @@
         <precision>-1</precision>
       </field>
       <field>
-        <name>REF_DOC_LOW1</name>
+        <name>REF_DOC_LOW</name>
         <type>String</type>
         <format/>
         <currency/>
@@ -375,7 +376,7 @@
         <precision>-1</precision>
       </field>
       <field>
-        <name>REF_DOC_HIGH1</name>
+        <name>REF_DOC_HIGH</name>
         <type>String</type>
         <format/>
         <currency/>

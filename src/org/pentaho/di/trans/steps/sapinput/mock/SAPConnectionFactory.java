@@ -41,9 +41,12 @@ public class SAPConnectionFactory implements DatabaseFactoryInterface {
 
 		StringBuffer report = new StringBuffer();
 
-		SAPConnection sc = create();
+		SAPConnection sc = null;
 
 		try {
+
+			sc = create();
+
 			sc.open(databaseMeta);
 
 			// If the connection was successful
