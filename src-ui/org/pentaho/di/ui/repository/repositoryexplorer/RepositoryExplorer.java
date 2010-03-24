@@ -24,6 +24,7 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -99,9 +100,10 @@ public class RepositoryExplorer {
   }
 
   // private Repository repository;
-  public RepositoryExplorer(final Repository rep, RepositoryExplorerCallback callback, VariableSpace variableSpace)
+  public RepositoryExplorer(Shell shell, final Repository rep, RepositoryExplorerCallback callback, VariableSpace variableSpace)
       throws XulException {
     SwtXulLoader swtXulLoader = new SwtXulLoader();
+    swtXulLoader.setOuterContext(shell);
     swtXulLoader.registerClassLoader(getClass().getClassLoader());
     container = swtXulLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
 

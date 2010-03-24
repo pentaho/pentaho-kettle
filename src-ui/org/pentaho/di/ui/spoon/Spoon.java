@@ -3341,7 +3341,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       };
 
       try {
-        RepositoryExplorer explorer = new RepositoryExplorer(rep, cb, Variables
+        RepositoryExplorer explorer = new RepositoryExplorer(shell, rep, cb, Variables
             .getADefaultVariableSpace());
         explorer.show();
       } catch (Throwable e) {
