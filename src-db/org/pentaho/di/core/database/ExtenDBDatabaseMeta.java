@@ -61,6 +61,15 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
             return "com.extendb.connect.XDBDriver";
         }
     }
+    
+    /**
+     * @return Returns the databaseType
+     */
+    @Deprecated
+    public int getDatabaseType()
+    {
+        return DatabaseMeta.TYPE_DATABASE_EXTENDB;
+    }
 
     public String getURL(String hostname, String port, String databaseName)
     {

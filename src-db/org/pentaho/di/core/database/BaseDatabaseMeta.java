@@ -312,6 +312,13 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		return getAttributes().getProperty(ATTRIBUTE_PORT_NUMBER, "-1");
 	}
 	
+	 /**
+   * @return Returns the databaseType.
+   */
+	@Deprecated 
+  abstract int getDatabaseType();
+  
+	
 	/**
 	 * @return Returns the hostname.
 	 */

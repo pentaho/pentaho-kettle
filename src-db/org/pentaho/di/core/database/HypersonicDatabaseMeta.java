@@ -47,6 +47,15 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 			return "org.hsqldb.jdbcDriver";
 		}
 	}
+	
+  /**
+   * @return Returns the databaseType.
+   */
+	@Deprecated
+  public int getDatabaseType()
+  {
+    return DatabaseMeta.TYPE_DATABASE_HYPERSONIC;
+  }
 
     public String getURL(String hostname, String port, String databaseName)
     {

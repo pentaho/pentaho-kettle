@@ -48,12 +48,13 @@ public interface DatabaseInterface extends Cloneable
 	 * @param pluginName set the plugin name of this plugin (after instantiation)
 	 */
 	public void setPluginName(String pluginName);
-	/*
+	
 	/**
 	 * 
 	 * @return The database type
 	 */
-	// public int getDatabaseType();
+	@Deprecated
+	public int getDatabaseType();
 	
 
 	/**

@@ -57,6 +57,16 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 		}
 	}
 
+  
+  /**
+   * @return Returns the databaseType.
+   */
+	@Deprecated
+  public int getDatabaseType()
+  {
+    return DatabaseMeta.TYPE_DATABASE_MSSQL;
+  }
+    
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
