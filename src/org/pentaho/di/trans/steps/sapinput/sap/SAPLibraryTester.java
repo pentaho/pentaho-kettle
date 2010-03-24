@@ -39,12 +39,12 @@ public class SAPLibraryTester {
 	public static boolean isJCoImplAvailable() {
 		try {
 			Class.forName(JCO_IMPL_EXISTENCE_TEST_CLASS);
+			return true;
 		} catch (NoClassDefFoundError e) {
 			return false;
 		} catch (ClassNotFoundException e) {
 			return false;
 		}
-		return false;
 	}
 
 }
