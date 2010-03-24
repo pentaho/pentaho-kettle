@@ -48,6 +48,15 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		}
 	}
 
+  /**
+   * @return Returns the databaseType.
+   */
+	@Deprecated
+  public int getDatabaseType()
+  {
+    return DatabaseMeta.TYPE_DATABASE_INGRES;
+  }
+    
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)

@@ -600,12 +600,14 @@ public class DatabaseMeta
 	 *     TYPE_DATABASE_ORACLE<p>
 	 *     TYPE_DATABASE_...<p>
 	 * 
-	 * @return the database type
+	 * @return the database type 
+	 */
+	@Deprecated
 	public int getDatabaseType()
 	{
 		return databaseInterface.getDatabaseType();
 	}
-	 */
+	 
 	
 	/**
 	 * The plugin ID of the database interface
@@ -1182,7 +1184,7 @@ public class DatabaseMeta
 		return databaseInterface.getMaxTextFieldLength();
 	}
 	
-	/*
+	@Deprecated
 	public final static int getDatabaseType(String dbTypeDesc)
 	{ 
 		// Backward compatibility...
@@ -1198,7 +1200,6 @@ public class DatabaseMeta
 			return TYPE_DATABASE_NONE;
 		}
 	}
-	*/
 
     /*
      * Get a string representing the unqiue database type code
@@ -1214,22 +1215,25 @@ public class DatabaseMeta
     /*
      * Get a string representing the unqiue database type code
      * @param dbtype the database type to get the code of
-     * @return The database type code
- 	public final static String getDatabaseTypeCode(int dbtype)
-	{
-		// Find the DatabaseInterface for this type...
-		DatabaseInterface[] di = getDatabaseInterfaces();
-		
-		for (int i=0;i<di.length;i++)
-		{
-			if (di[i].getDatabaseType() == dbtype) {
-				return di[i].getDatabaseTypeDesc();
-			}
-		}
-		
-		return null;
-	}
+     * @return The database type code 
      */
+  	@Deprecated
+   	public final static String getDatabaseTypeCode(int dbtype)
+  	{
+   	  
+   	  
+  		// Find the DatabaseInterface for this type...
+  		DatabaseInterface[] di = getDatabaseInterfaces();
+  		
+  		for (int i=0;i<di.length;i++)
+  		{
+  			if (di[i].getDatabaseType() == dbtype) {
+  				return di[i].getPluginId();
+  			}
+  		}
+  		
+  		return null;
+  	}
 
     /*
      * Get a description of the database type

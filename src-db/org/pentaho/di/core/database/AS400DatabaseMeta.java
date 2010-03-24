@@ -41,6 +41,15 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 	}
 
+  /**
+   * @return Returns the databaseType.
+   */
+	@Deprecated
+  public int getDatabaseType()
+  {
+    return DatabaseMeta.TYPE_DATABASE_AS400;
+  }
+  
 	/**
 	 * Get the maximum length of a text field for this database connection.
 	 * This includes optional CLOB, Memo and Text fields. (the maximum!)

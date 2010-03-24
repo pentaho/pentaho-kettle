@@ -47,6 +47,14 @@ public class DbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC
 	}
 
+  /**
+   * @return Returns the databaseType.
+   */
+	@Deprecated
+  public int getDatabaseType()
+  {
+    return DatabaseMeta.TYPE_DATABASE_DBASE;
+  }
 	public String getURL(String hostname, String port, String databaseName)
 	{
 		return "jdbc:odbc:"+databaseName;

@@ -57,6 +57,16 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     {
 		return null;
 	}
+    
+  /**
+   * @return Returns the databaseType.
+   */
+  @Deprecated
+  public int getDatabaseType()
+  {
+    return DatabaseMeta.TYPE_DATABASE_SAPR3;
+  }
+    
 
 	/**
 	 * @return true if the database supports bitmap indexes

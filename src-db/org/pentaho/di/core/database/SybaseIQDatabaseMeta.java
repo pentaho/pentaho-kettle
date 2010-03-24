@@ -60,6 +60,15 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 			return "com.sybase.jdbc3.jdbc.SybDriver";
 		}
 	}
+  
+  /**
+   * @return Returns the databaseType.
+   */
+	@Deprecated
+  public int getDatabaseType()
+  {
+    return DatabaseMeta.TYPE_DATABASE_SYBASEIQ;
+  }
 	
     public String getURL(String hostname, String port, String databaseName)
     {
