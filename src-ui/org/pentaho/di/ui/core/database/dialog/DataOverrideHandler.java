@@ -18,7 +18,31 @@ import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulTree;
 
 public class DataOverrideHandler extends DataHandler {
+  boolean cancelPressed = false;
+ 
+  @Override
+  public void onCancel() {
+    super.onCancel();
+    this.cancelPressed = true;
+  }
+
+  @Override
+  public void onOK() {
+    super.onOK();
+    this.cancelPressed = false;
+  }
+
   
+  @Override
+  public Object getData() {
+    if(!cancelPressed) {
+      return super.getData();
+    } else {
+      return null;
+    }
+  }
+
+
   private static Class<?> PKG = DataOverrideHandler.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private java.util.List<DatabaseMeta> databases;

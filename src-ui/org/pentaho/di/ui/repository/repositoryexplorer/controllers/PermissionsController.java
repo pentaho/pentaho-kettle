@@ -101,9 +101,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
 
   private XulListbox selectedRoleList;
 
-  private XulCheckbox createCheckbox;
-
-  private XulCheckbox updateCheckbox;
+  private XulCheckbox writeCheckbox;
 
   private XulCheckbox readCheckbox;
 
@@ -207,8 +205,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     aclDeck = (XulDeck) document.getElementById("acl-deck");//$NON-NLS-1$ 
     // Permission Tab Binding
     userRoleList = (XulListbox) document.getElementById("user-role-list");//$NON-NLS-1$ 
-    createCheckbox = (XulCheckbox) document.getElementById("create-checkbox");//$NON-NLS-1$ 
-    updateCheckbox = (XulCheckbox) document.getElementById("update-checkbox");//$NON-NLS-1$ 
+    writeCheckbox = (XulCheckbox) document.getElementById("write-checkbox");//$NON-NLS-1$ 
     readCheckbox = (XulCheckbox) document.getElementById("read-checkbox");//$NON-NLS-1$ 
     deleteCheckbox = (XulCheckbox) document.getElementById("delete-checkbox");//$NON-NLS-1$ 
 
@@ -423,7 +420,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
         UIRepositoryObject repoObject = (UIRepositoryObject) ro.get(0);
         try {
           repoObject.readAcls(viewAclsModel);
-          fileFolderLabel.setValue(repoObject.getName());
+          fileFolderLabel.setValue(BaseMessages.getString(RepositoryExplorer.class, "PermissionsTab.UserRolePermission", repoObject.getName())); //$NON-NLS-1$
           bf.setBindingType(Binding.Type.ONE_WAY);
           bf.createBinding(viewAclsModel, "acls", userRoleList, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (AccessDeniedException ade) {
@@ -469,8 +466,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
     bf.createBinding(viewAclsModel, "entriesInheriting", addAclButton, "disabled");//$NON-NLS-1$  //$NON-NLS-2$ 
     // Only enable remove Acl button if the entries checkbox is unchecked and acl is selected from the list
     bf.createBinding(viewAclsModel, "removeEnabled", removeAclButton, "!disabled"); //$NON-NLS-1$  //$NON-NLS-2$ 
-    bf.createBinding(viewAclsModel, "removeEnabled", createCheckbox, "!disabled"); //$NON-NLS-1$  //$NON-NLS-2$
-    bf.createBinding(viewAclsModel, "removeEnabled", updateCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
+    bf.createBinding(viewAclsModel, "removeEnabled", writeCheckbox, "!disabled"); //$NON-NLS-1$  //$NON-NLS-2$
     //bf.createBinding(viewAclsModel, "removeEnabled", readCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
     bf.createBinding(viewAclsModel, "removeEnabled", deleteCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
     bf.createBinding(viewAclsModel, "removeEnabled", modifyCheckbox, "!disabled");//$NON-NLS-1$  //$NON-NLS-2$
@@ -607,14 +603,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
    * @param hideDialog
    */
   private void applyOnObjectOnly(List<UIRepositoryObject> roList, boolean hideDialog) {
-    /*String recipients =findRecipientsWithEmptyPermissions();
-    if(recipients != null && recipients.length() > 0) {
-      closeApplyAclConfirmationDialog();
-      messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
-      messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
-      messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class, "PermissionsController.NullRecipients", recipients)); //$NON-NLS-1$
-      messageBox.open();
-    } else {*/
       try {
         if (roList.get(0) instanceof UIRepositoryDirectory) {
           UIRepositoryDirectory rd = (UIRepositoryDirectory) roList.get(0);
@@ -640,7 +628,6 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
         messageBox.setMessage(messages.getString(ade.getLocalizedMessage()));
         messageBox.open();
       }
-    /*}*/
     }
   
   public void setApplyOnly() {
@@ -702,9 +689,7 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
         } else if (permission.equals(ObjectPermission.READ)) {
           readCheckbox.setChecked(true);
         } else if (permission.equals(ObjectPermission.WRITE)) {
-          createCheckbox.setChecked(true);
-        } else if (permission.equals(ObjectPermission.EXECUTE)) {
-          updateCheckbox.setChecked(true);
+          writeCheckbox.setChecked(true);
         } else if (permission.equals(ObjectPermission.WRITE_ACL)) {
           modifyCheckbox.setChecked(true);
         }
@@ -715,48 +700,22 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
   }
 
   private boolean areAllPermissionBoxChecked() {
-    return (deleteCheckbox.isChecked() && readCheckbox.isChecked() && createCheckbox.isChecked()
-        && updateCheckbox.isChecked() && updateCheckbox.isChecked() && modifyCheckbox.isChecked());
+    return (deleteCheckbox.isChecked() && readCheckbox.isChecked() && writeCheckbox.isChecked() && modifyCheckbox.isChecked());
   }
 
   private void uncheckAllPermissionBox() {
     deleteCheckbox.setChecked(false);
     readCheckbox.setChecked(false);
-    createCheckbox.setChecked(false);
-    updateCheckbox.setChecked(false);
+    writeCheckbox.setChecked(false);
     modifyCheckbox.setChecked(false);
   }
 
   private void checkAllPermissionBox() {
     deleteCheckbox.setChecked(true);
     readCheckbox.setChecked(true);
-    createCheckbox.setChecked(true);
-    updateCheckbox.setChecked(true);
+    writeCheckbox.setChecked(true);
     modifyCheckbox.setChecked(true);
   }
-
- /* private String findRecipientsWithEmptyPermissions() {
-    List<UIRepositoryObjectAcl> uiAcls = viewAclsModel.getAcls();
-    StringBuffer recipients = new StringBuffer();
-    boolean firstEntry = true;
-    for (UIRepositoryObjectAcl uiAcl : uiAcls) {
-      if (uiAcl != null && uiAcl.getRecipientName() != null) {
-        EnumSet<ObjectPermission> permissions = uiAcl.getPermissionSet();
-        if (permissions == null || permissions.size() == 0) {
-          if(firstEntry) {
-            recipients.append(NEWLINE);
-          }
-          recipients.append(uiAcl.getRecipientName());
-          recipients.append(NEWLINE);
-          if(firstEntry) {
-            firstEntry = false;
-          }
-        }
-      }
-    }
-    return (recipients != null) ? recipients.toString(): null;
-  }
-*/
   /*
    * updatePermission method is called when the user checks or uncheck any permission checkbox.
    * This method updates the current model with the update value from the UI
@@ -784,15 +743,10 @@ public class PermissionsController extends AbstractXulEventHandler implements Co
         } else {
           permissions.remove(ObjectPermission.READ);
         }
-        if (createCheckbox.isChecked()) {
+        if (writeCheckbox.isChecked()) {
           permissions.add(ObjectPermission.WRITE);
         } else {
           permissions.remove(ObjectPermission.WRITE);
-        }
-        if (updateCheckbox.isChecked()) {
-          permissions.add(ObjectPermission.EXECUTE);
-        } else {
-          permissions.remove(ObjectPermission.EXECUTE);
         }
         if (modifyCheckbox.isChecked()) {
           permissions.add(ObjectPermission.WRITE_ACL);

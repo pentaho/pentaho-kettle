@@ -103,8 +103,12 @@ public class XulDatabaseDialog {
       databaseMeta = (DatabaseMeta) dataHandler.getData();
       
       // keep the original id
-      databaseMeta.setObjectId(databaseMetaObjectId);
-      databaseName = Const.isEmpty(databaseMeta.getName()) ? null : databaseMeta.getName();
+      if(databaseMeta != null) {
+        databaseMeta.setObjectId(databaseMetaObjectId);
+        databaseName = Const.isEmpty(databaseMeta.getName()) ? null : databaseMeta.getName();
+      } else {
+        databaseName = null;
+      }
       
     } catch (Exception e) {
       new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 

@@ -231,6 +231,14 @@ public interface Repository {
     
   public String[] getDatabaseNames(boolean includeDeleted) throws KettleException;
   
+  /**
+   * 
+   * @param id_database
+   * @param newname
+   * @deprecated
+   * @return
+   * @throws KettleException
+   */
   public ObjectId renameDatabase(ObjectId id_database, String newname) throws KettleException;
 
   /**

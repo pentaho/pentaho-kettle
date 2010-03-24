@@ -4,9 +4,7 @@
 	<vbox id="acl-box" flex="1">
 		<vbox>
 			<hbox>
-				<label value="${PermissionsTab.UserRolePermission}" flex="1"/>
-				<label id="file-folder-name" value="" flex="1"/>
-				<label id="spacer-label" flex="4"/>
+				<label id="file-folder-name" />
 			</hbox>
 		</vbox>
 		<hbox flex="1">
@@ -23,14 +21,12 @@
 					<caption label="${PermissionsTab.Priveleges}"/>
 					<hbox id="permissions-hbox" flex="1">
 					    <vbox id="permission-column-1" flex="1">
-							<checkbox id="create-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.Create}" disabled="true"/>
+							<checkbox id="write-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.Write}" disabled="true"/>
 							<checkbox id="read-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.Read}" disabled="true"/>														
-							<checkbox id="update-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.Update}" disabled="true"/>
 						</vbox>																																								
 						<vbox id="permission-column-2" flex="1"> 
 							<checkbox id="delete-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.Delete}" disabled="true"/>
 							<checkbox id="modify-checkbox" command="permissionsController.updatePermission()" flex="1" label="${PermissionsTab.ModifyPermission}" disabled="true"/>
-							<label id="spacer-label" flex="1" />													
 						</vbox>
 					</hbox>
 			</groupbox>												

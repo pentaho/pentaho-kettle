@@ -60,7 +60,7 @@ public class RepositoriesHelper {
       model.setAvailableRepositories(repositoryList);
     } catch (Exception e) {
       log.logDetailed("Error Reading Repositories Data: " + e.getLocalizedMessage());
-      new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", ""), e);
+      new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", ""), e); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
   public void newRepository() {
@@ -97,7 +97,7 @@ public class RepositoriesHelper {
         }
       } catch (Exception e) {
         log.logDetailed("Error creating new repository: " + e.getLocalizedMessage());
-        new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorCreatingRepository", ""), e);
+        new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorCreatingRepository", ""), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       }
     }
   }
@@ -121,7 +121,7 @@ public class RepositoriesHelper {
           }
     } catch (Exception e) {
       log.logDetailed("Error edit repository : " + e.getLocalizedMessage());
-      new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorEditingRepository", e.getLocalizedMessage()), e);
+      new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorEditingRepository", e.getLocalizedMessage()), e); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
 
@@ -146,7 +146,7 @@ public class RepositoriesHelper {
   
           public void onError(XulComponent sender, Throwable t) {
             log.logDetailed("Error deleting repository : " + t.getLocalizedMessage());
-            new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.UnableToDeleteRepository", ""), t);
+            new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.UnableToDeleteRepository", ""), t);//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
           }
         });
         confirmBox.open();
@@ -204,12 +204,17 @@ public class RepositoriesHelper {
   }
   
   public void loginToRepository() throws KettleException, KettleSecurityException{
+    if(model != null && model.getSelectedRepository() != null) {
       RepositoryMeta repositoryMeta = input.getRepository(model.getRepositoryIndex(model.getSelectedRepository()));
       repository = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta.getId(), Repository.class);
       repository.init(repositoryMeta);
       repository.connect(model.getUsername(), model.getPassword());
       props.setLastRepository(repositoryMeta.getName());
       props.setLastRepositoryLogin(model.getUsername());
+    } else {
+      log.logDetailed(BaseMessages.getString(PKG, "RepositoryLogin.ErrorLoginToRepository"));//$NON-NLS-1$
+      throw new KettleException(BaseMessages.getString(PKG, "RepositoryLogin.ErrorLoginToRepository"));//$NON-NLS-1$
+    }
   }
   
   public void updateShowDialogOnStartup(boolean value) {
@@ -220,8 +225,8 @@ public class RepositoriesHelper {
     try {
       input.writeData();
     } catch (Exception e) {
-      log.logDetailed("Error deleting repository : " + e.getLocalizedMessage());
-      new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorSavingRepositoryDefinition", e.getLocalizedMessage()), e);
+      log.logDetailed("Error deleting repository : " + e.getLocalizedMessage()); 
+      new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorSavingRepositoryDefinition", e.getLocalizedMessage()), e); //$NON-NLS-1$ //$NON-NLS-2$
     } 
   }
   
