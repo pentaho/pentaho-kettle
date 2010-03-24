@@ -641,8 +641,8 @@ public class JobEntrySyslogDialog extends JobEntryDialog implements JobEntryDial
         if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Veuillez svp donner un nom à cette entrée tâche!");
-			mb.setText("Entrée tâche non nommée");
+			mb.setMessage(BaseMessages.getString(PKG, "JobEntrySyslog.PleaseGiveJobEntryAName.Message"));
+			mb.setText(BaseMessages.getString(PKG, "JobEntrySyslog.PleaseGiveJobEntryAName.Title"));
 			mb.open(); 
 			return;
         }
