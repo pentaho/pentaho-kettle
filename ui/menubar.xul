@@ -149,6 +149,8 @@
               label="${Spoon.Menu.Repository.DisconnectRepository}" command="spoon.closeRepository()" />
             <menuitem id="repository-explore" acceltext="CTRL-E" accesskey="ctrl-e" disabled="true"
               label="${Spoon.Menu.Repository.ExploreRepository}" command="spoon.exploreRepository()" />
+            <menuitem id="repository-export-all" label="${Spoon.Menu.Repository.ExportAll}" command="spoon.exportRepositoryAll()" />
+            <menuitem id="repository-import-directory" label="${Spoon.Menu.Repository.ImportFiles}" command="spoon.importDirectoryToRepository()" />            
       	  </menupopup>
         </menu>
         <menu id="wizard" label="${Spoon.Menu.Wizard}">

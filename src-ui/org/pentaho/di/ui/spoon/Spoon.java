@@ -230,7 +230,10 @@ import org.pentaho.di.ui.repository.capabilities.BaseRepositoryExplorerUISupport
 import org.pentaho.di.ui.repository.capabilities.ManageUserUISupport;
 import org.pentaho.di.ui.repository.capabilities.RevisionsUISupport;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
+import org.pentaho.di.ui.repository.dialog.RepositoryExportProgressDialog;
+import org.pentaho.di.ui.repository.dialog.RepositoryImportProgressDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
+import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
@@ -4557,6 +4560,60 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     }
   }
 
+  public void exportRepositoryAll()
+  {
+    FileDialog dialog = new FileDialog(shell, SWT.SAVE | SWT.SINGLE);
+    if (dialog.open()!=null)
+    {
+      String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
+      if(log.isBasic()) log.logBasic("Exporting All", "Export objects to file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      
+      RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, null, filename);
+      repd.open();
+    }
+  }
+  
+  public void importDirectoryToRepository()
+  {
+    FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
+    if (dialog.open()!=null)
+    {
+      // Ask for a destination in the repository...
+      //
+      SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
+      RepositoryDirectory baseDirectory = sdd.open();
+      if (baseDirectory!=null)
+      {
+        // Finally before importing, ask for a version comment (if applicable)
+        //
+        String versionComment = null;
+        boolean versionOk = false;
+        while (!versionOk) {
+          versionComment = RepositorySecurityUI.getVersionComment(shell, rep, "Import of files into ["+baseDirectory.getPath()+"]");
+          if (Const.isEmpty(versionComment) && rep.getSecurityProvider().isVersionCommentMandatory()) {
+            if (!RepositorySecurityUI.showVersionCommentMandatoryDialog(shell)) {
+              versionOk = true;
+            }
+          } else {
+            versionOk = true;
+          }
+        }
+  
+        
+        String[] filenames = dialog.getFileNames();
+        if (filenames.length > 0)
+        {
+          RepositoryImportProgressDialog ripd = new RepositoryImportProgressDialog(shell, SWT.NONE, rep, dialog.getFilterPath(), filenames, baseDirectory, versionComment);
+          ripd.open();
+            
+          refreshTree();
+        }
+        
+      }   
+    }
+  }
+
+
   public boolean saveXMLFile(boolean export) {
     TransMeta transMeta = getActiveTransformation();
     if (transMeta != null)
@@ -5677,6 +5734,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     disableMenuItem(doc, "repository-connect", isRepositoryRunning);
     disableMenuItem(doc, "repository-disconnect", !isRepositoryRunning);
     disableMenuItem(doc, "repository-explore", !isRepositoryRunning);
+    disableMenuItem(doc, "repository-export-all", !isRepositoryRunning);
+    disableMenuItem(doc, "repository-import-directory", !isRepositoryRunning);
     disableMenuItem(doc, "trans-last-preview", !isRepositoryRunning || disableTransMenu);
     
     // Wizard
