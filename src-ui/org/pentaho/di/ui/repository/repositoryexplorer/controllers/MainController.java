@@ -26,6 +26,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -120,6 +121,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   public void closeDialog(){
   	lastClicked = CANCELLED;
     this.dialog.hide();
+    Spoon.getInstance().refreshTree();
     
     // listeners may remove themselves, old-style iteration
     for(int i=0; i<listeners.size(); i++){

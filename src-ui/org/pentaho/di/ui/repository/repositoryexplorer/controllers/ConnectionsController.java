@@ -11,8 +11,6 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
