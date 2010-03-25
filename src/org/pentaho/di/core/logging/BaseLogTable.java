@@ -72,7 +72,7 @@ abstract class BaseLogTable {
 		for (int i=0;i<getFields().size();i++) {
 			LogTableField field = getFields().get(i);
 			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_ID+i, field.getId());
-			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_NAME+i, field.getName());
+			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_NAME+i, field.getFieldName());
 			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_ENABLED+i, field.isEnabled());
 		}
 	}

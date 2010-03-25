@@ -766,7 +766,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 									fireTransFinishedListeners();
 								} catch(Exception e) {
 									step.setErrors(step.getErrors()+1L);
-									log.logError(getName(), BaseMessages.getString(PKG, "Trans.Log.UnexpectedErrorAtTransformationEnd")); //$NON-NLS-1$ //$NON-NLS-2$
+									log.logError(getName()+" : "+BaseMessages.getString(PKG, "Trans.Log.UnexpectedErrorAtTransformationEnd"), e); //$NON-NLS-1$ //$NON-NLS-2$
 								}
 							}
 							
@@ -1319,6 +1319,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			    transLogTableDatabaseConnection.shareVariablesWith(this);
 			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
 			    transLogTableDatabaseConnection.connect();
+			    transLogTableDatabaseConnection.setCommit(1);
 				
 				// See if we have to add a batch id...
 				// Do this first, before anything else to lock the complete table exclusively
@@ -1784,26 +1785,26 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		String logTable = transMeta.getTransLogTable().getTableName();
 		if (logcon!=null)
 		{
-			// Let's not reconnect/disconnect all the time for performance reasons!
-			//
 			Database ldb = null;
-			if (transLogTableDatabaseConnection==null) {
-				ldb = new Database(this, logcon);
-				ldb.shareVariablesWith(this);
-			} else {
-				ldb = transLogTableDatabaseConnection;
-			}
 			
 			try
 			{
+				// Let's not reconnect/disconnect all the time for performance reasons!
+				//
 				if (transLogTableDatabaseConnection==null) {
+					ldb = new Database(this, logcon);
+					ldb.shareVariablesWith(this);
 					ldb.connect();
+					ldb.setCommit(1);
+					transLogTableDatabaseConnection=ldb;
+				} else {
+					ldb = transLogTableDatabaseConnection;
 				}
 
 				// Write to the standard transformation log table...
 				//
 				if (!Const.isEmpty(logTable)) {
-                	transLogTableDatabaseConnection.writeLogRecord(transLogTable, status, this);
+                	ldb.writeLogRecord(transLogTable, status, this);
 				}
 				
 				// Also time-out the log records in here...
@@ -1814,7 +1815,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			}
 			catch(Exception e)
 			{
-				throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingLogRecordToTable")+transMeta.getTransLogTable().getTableName()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingLogRecordToTable", transMeta.getTransLogTable().getTableName()), e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			finally
 			{
