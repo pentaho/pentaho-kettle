@@ -105,16 +105,16 @@ public class HTTP extends BaseStep implements StepInterface
 	                	encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim();
 	                }
                 }
-                // Set the default to UTF-8
-                //
-                if (Const.isEmpty(encoding)) {
-                	encoding = "UTF-8";
-                }
                 
                 if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTP.Log.ResponseHeaderEncoding",encoding));
                 
                 // the response
-                InputStreamReader inputStreamReader = new InputStreamReader(method.getResponseBodyAsStream(),encoding); 
+                InputStreamReader inputStreamReader =  null;
+                if (!Const.isEmpty(encoding)) {
+                	inputStreamReader = new InputStreamReader(method.getResponseBodyAsStream(),encoding);
+                } else {
+                	inputStreamReader = new InputStreamReader(method.getResponseBodyAsStream());
+                }
                 StringBuffer bodyBuffer = new StringBuffer(); 
                  
                  int c;
