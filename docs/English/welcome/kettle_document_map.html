@@ -90,8 +90,119 @@ a:hover {
 .button:hover {
 	background-image: url(images/button_bg_over.png);
 }
-.analysis {
+
+#gettingstarted a{
+	background-image: url(images/getting_started.png);
+	background-repeat:no-repeat;
+	display: block;
+	margin:0px;
+	padding:100px 6px 20px 6px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.5em;
+	color: #5c5c5c;
 	line-height: 1em;
+	text-align:center;
+	text-decoration:none;
+}
+#gettingstarted a:hover{
+	background-image: url(images/getting_started_on.png);
+}
+
+#samples a{
+	background-image: url(images/samples.png);
+	background-repeat:no-repeat;
+	display: block;
+	margin:0px;
+	padding:110px 6px 36px 6px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.5em;
+	color: #5c5c5c;
+	line-height: .85em;
+	text-align:center;
+	text-decoration:none;
+}
+#samples a:hover{
+	background-image: url(images/samples_on.png);
+}
+
+#whatsnew a{
+	background-image: url(images/whats_new.png);
+	background-repeat:no-repeat;
+	display: block;
+	margin:0px;
+	padding:100px 6px 20px 6px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.5em;
+	color: #5c5c5c;
+	line-height: 1em;
+	text-align:center;
+	text-decoration:none;
+}
+#whatsnew a:hover{
+	background-image: url(images/whats_new_on.png);
+}
+
+a.docsbutton{
+	background-image: url(images/btn_doc_off.png);
+	background-repeat:no-repeat;
+	display: block;
+	float: left;
+	width: 100px;
+	margin:0px;
+	padding:15px 5px 12px 48px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: #333333;
+	text-decoration:none;
+}
+a:hover.docsbutton{
+	background-image: url(images/btn_doc_on.png);
+}
+a.communitybutton{
+	background-image: url(images/btn_community_off.png);
+	background-repeat:no-repeat;
+	display: block;
+	float: left;
+	width: 100px;
+	margin:0px;
+	padding:15px 7px 12px 55px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: #333333;
+	text-decoration:none;
+}
+a:hover.communitybutton{
+	background-image: url(images/btn_community_on.png);
+}
+a.blogbutton{
+	background-image: url(images/btn_blog_off.png);
+	background-repeat:no-repeat;
+	display: block;
+	float: left;
+	width: 80px;
+	margin:0px;
+	padding:15px 8px 12px 65px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: #333333;
+	text-decoration:none;
+}
+a:hover.blogbutton{
+	background-image: url(images/btn_blog_on.png);
+}
+
+#preview{
+ position: absolute;
+ top: 17px;
+ right: 0px;
+ display: block;
+}
+
+#logo{
+ position: absolute;
+ bottom: 4px;
+ right: 4px;
+ display: block;
 }
 p {
 	margin: 0px 0 0 0;
@@ -339,105 +450,28 @@ function MM_swapImage() { //v3.0
 }
 </script>
 </head>
-<body onLoad="MM_preloadImages('images/btn_doc_on.png','images/btn_community_on.png','images/btn_blog_on.png','images/help_on.png','images/samples_folder_on.png','images/new_app_on.png')">
+<body onLoad="MM_preloadImages('images/btn_doc_on.png','images/btn_community_on.png','images/btn_blog_on.png','images/samples_folder_on.png')">
+<div id="preview"><img src="images/preview.png"></div>
 <div id="container">
   <table width="468" border="0" cellspacing="0" cellpadding="0">
     <tr>
       <td><table width="144" border="0" cellspacing="0" cellpadding="0">
           <tr>
-            <td><table width="144" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td><img src="images/sm_top_left.png" width="9" height="8"></td>
-                  <td><img src="images/sm_top_middle.png" width="126" height="8"></td>
-                  <td><img src="images/sm_top_right.png" width="9" height="8"></td>
-                </tr>
-                <tr>
-                  <td><img src="images/sm_middle_left.png" width="9" height="135"></td>
-                  <td valign="top" background="images/sm_center.png"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-                      <tr>
-                        <td><img src="images/clr.gif" width="18" height="10"></td>
-                      </tr>
-                      <tr>
-                        <td><div align="center"><a href="http://wiki.pentaho.com/display/EAI/Getting+started" target="_Pentaho Data Integration"><img src="images/help.png" alt="Getting Started" name="help" width="122" height="65" border="0" id="Image4" onMouseOver="MM_swapImage('Image4','','images/help_on.png',1)" onMouseOut="MM_swapImgRestore()"></a></div></td>
-                      </tr>
-                      <tr>
-                        <td onMouseOver="MM_swapImage('help','','images/help_on.png',1)" onMouseOut="MM_swapImgRestore()"><h1 align="center"><a href="http://wiki.pentaho.com/display/EAI/Getting+started" target="_Pentaho Data Integration">Getting</a></h1>
-                          <h1 align="center"><a href="http://wiki.pentaho.com/display/EAI/Getting+started" target="_Pentaho Data Integration">Started</a></h1></td>
-                      </tr>
-                    </table></td>
-                  <td><img src="images/sm_middle_right.png" width="9" height="135"></td>
-                </tr>
-                <tr>
-                  <td><img src="images/sm_bottom_left.png" width="9" height="14"></td>
-                  <td><img src="images/sm_bottom_middle.png" width="126" height="14"></td>
-                  <td><img src="images/sm_bottom_right.png" width="9" height="14"></td>
-                </tr>
-              </table></td>
+            <td>
+           	  <div id="gettingstarted"><span title="Getting started with Pentaho Data Integration"><a href="http://wiki.pentaho.com/display/EAI/Getting+started" target="_Pentaho Data Integration">Getting Started</a></span></div>            </td>
           </tr>
         </table></td>
       <td><img src="images/clr.gif" width="18" height="10"></td>
       <td><table width="144" border="0" cellspacing="0" cellpadding="0">
           <tr>
-            <td><img src="images/sm_top_left.png" width="9" height="8"></td>
-            <td><img src="images/sm_top_middle.png" width="126" height="8"></td>
-            <td><img src="images/sm_top_right.png" width="9" height="8"></td>
-          </tr>
-          <tr>
-            <td><img src="images/sm_middle_left.png" width="9" height="135"></td>
-            <td valign="top" background="images/sm_center.png"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td><img src="images/clr.gif" width="18" height="10"></td>
-                </tr>
-                <tr>
-                  <td><div align="center"><a href="javascript:showDiv()"><img src="images/samples_folder.png" alt="Browse Samples" name="sample" width="122" height="66" border="0" id="sample" onMouseOver="MM_swapImage('sample','','images/samples_folder_on.png',1)" onMouseOut="MM_swapImgRestore()"></a></div></td>
-                </tr>
-                <tr>
-                  <td><div align="center" style="margin-top: 6px;">
-                      <h1><a href="javascript:showDiv()" onMouseOver="MM_swapImage('sample','','images/samples_folder_on.png',1)" onMouseOut="MM_swapImgRestore()">Samples</a></h1>
-                    </div></td>
-                </tr>
-              </table></td>
-            <td><img src="images/sm_middle_right.png" width="9" height="135"></td>
-          </tr>
-          <tr>
-            <td><img src="images/sm_bottom_left.png" width="9" height="14"></td>
-            <td><img src="images/sm_bottom_middle.png" width="126" height="14"></td>
-            <td><img src="images/sm_bottom_right.png" width="9" height="14"></td>
+            <td>
+           	  <div id="samples"><span title="View sample Jobs, Mappings, and Transformations"><a href="javascript:showDiv()">Samples</a></span></div>            </td>
           </tr>
         </table></td>
       <td><img src="images/clr.gif" width="18" height="10"></td>
       <td><table width="144" border="0" cellspacing="0" cellpadding="0">
           <tr>
-            <td><table width="144" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td><img src="images/sm_top_left.png" width="9" height="8"></td>
-                  <td><img src="images/sm_top_middle.png" width="126" height="8"></td>
-                  <td><img src="images/sm_top_right.png" width="9" height="8"></td>
-                </tr>
-                <tr>
-                  <td><img src="images/sm_middle_left.png" width="9" height="135"></td>
-                  <td background="images/sm_center.png"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-                      <tr>
-                        <td><img src="images/clr.gif" width="18" height="10"></td>
-                      </tr>
-                      <tr>
-                        <td><div align="center"><a href="whats_new_in_pdi_4_0.pdf" target="_Pentaho Data Integration"><img src="images/new_app.png" alt="What's New" name="app" width="122" height="66" border="0" id="app" onMouseOver="MM_swapImage('app','','images/new_app_on.png',1)" onMouseOut="MM_swapImgRestore()"></a></div></td>
-                      </tr>
-                      <tr>
-                        <td><div align="center" onMouseOver="MM_swapImage('app','','images/new_app_on.png',1)" onMouseOut="MM_swapImgRestore()">
-                            <h1><a href="whats_new_in_pdi_4_0.pdf" target="_Pentaho Data Integration">What's</a></h1>
-                            <h1><a href="whats_new_in_pdi_4_0.pdf" target="_Pentaho Data Integration">New</a></h1>
-                          </div></td>
-                      </tr>
-                    </table></td>
-                  <td><img src="images/sm_middle_right.png" width="9" height="135"></td>
-                </tr>
-                <tr>
-                  <td><img src="images/sm_bottom_left.png" width="9" height="14"></td>
-                  <td><img src="images/sm_bottom_middle.png" width="126" height="14"></td>
-                  <td><img src="images/sm_bottom_right.png" width="9" height="14"></td>
-                </tr>
-              </table></td>
+            <td><div id="whatsnew"><span title="What's new in Pentaho Data Integration 4.0"><a href="whats_new_in_pdi_ee_4_0.pdf" target="_Pentaho Data Integration">What's <br />New</a></span></div></td>
           </tr>
         </table></td>
     </tr>
@@ -448,11 +482,12 @@ function MM_swapImage() { //v3.0
       <td>&nbsp;</td>
       <td>&nbsp;</td>
     </tr>
+     <tr>
+      <td colspan="5"><a onClick="expandcontent(this, 'sc1')" style="cursor:hand; cursor:pointer" class="docsbutton">Documents</a><a  onClick="expandcontent(this, 'sc2')" style="cursor:hand; cursor:pointer" class="communitybutton">Community</a><a onClick="expandcontent(this, 'sc3')" style="cursor:hand; cursor:pointer" class="blogbutton">Blogs</a></td>
+     </tr>
     <tr>
-      <td colspan="5"><img src="images/btn_doc_off.png" name="docs" id="Image1" style="cursor:hand; cursor:pointer" onClick="expandcontent(this, 'sc1')" onMouseOver="MM_swapImage('Image1','','images/btn_doc_on.png',1)" onMouseOut="MM_swapImgRestore()"><span class="showstate"></span><img src="images/btn_community_off.png" name="community" id="Image2" style="cursor:hand; cursor:pointer" onClick="expandcontent(this, 'sc2')" onMouseOver="MM_swapImage('Image2','','images/btn_community_on.png',1)" onMouseOut="MM_swapImgRestore()"><span class="showstate"></span><img src="images/btn_blog_off.png" name="blogs" id="Image3" style="cursor:hand; cursor:pointer" onClick="expandcontent(this, 'sc3')" onMouseOver="MM_swapImage('Image3','','images/btn_blog_on.png',1)" onMouseOut="MM_swapImgRestore()"><span class="showstate"></span></td>
-    </tr>
     <tr>
-      <td colspan="5"><div id="sc1" class="switchcontent" style="margin:0 0 0 6px; padding:6px 6px 12px 6px; background-image:url(images/bg_open_panel.png); background-position:bottom; background-repeat:no-repeat; width: 444px;">
+      <td colspan="5"><div id="sc1" class="switchcontent" style="margin:0px 0 0 6px; padding:6px 6px 12px 6px; background-image:url(images/bg_open_panel.png); background-position:bottom; background-repeat:no-repeat; width: 444px;">
           <table width="100%" border="0" cellspacing="0" cellpadding="4">
             <tr>
               <td colspan="2"><h2>Documents</h2></td>
@@ -473,7 +508,7 @@ function MM_swapImage() { //v3.0
             </tr>
           </table>
         </div>
-        <div id="sc2" class="switchcontent" style="margin:0 0 0 6px; padding:6px 6px 12px 6px; background-image:url(images/bg_open_panel.png); background-position:bottom; background-repeat:no-repeat; width: 444px;">
+        <div id="sc2" class="switchcontent" style="margin:0px 0 0 6px; padding:6px 6px 12px 6px; background-image:url(images/bg_open_panel.png); background-position:bottom; background-repeat:no-repeat; width: 444px;">
           <table width="100%" border="0" cellspacing="0" cellpadding="4">
             <tr>
               <td colspan="2"><h2>Community</h2></td>
@@ -489,7 +524,7 @@ function MM_swapImage() { //v3.0
             </tr>
           </table>
         </div>
-        <div id="sc3" class="switchcontent" style="margin:0 0 0 6px; padding:6px 6px 12px 6px; background-image:url(images/bg_open_panel.png); background-position:bottom; background-repeat:no-repeat; width: 444px;">
+        <div id="sc3" class="switchcontent" style="margin:0px 0 0 6px; padding:6px 6px 12px 6px; background-image:url(images/bg_open_panel.png); background-position:bottom; background-repeat:no-repeat; width: 444px;">
           <table width="100%" border="0" cellspacing="0" cellpadding="4">
             <tr>
               <td colspan="2"><h2>Blogs</h2></td>
@@ -520,13 +555,14 @@ function MM_swapImage() { //v3.0
 <div id="hideshow" style="visibility:hidden;">
   <div id="fade"></div>
   <div class="popup_block">
-    <div class="popup"> <a href="javascript:hideDiv()"><img src="images/icon_close.png" class="cntrl" border="0" width="28" height="31"/></a>
+    <div class="popup"> <a href="javascript:hideDiv()"><img src="images/icon_close.png" alt="Close" class="cntrl" border="0" width="28" height="31"/></a>
       <h3>Samples</h3>
-      <div style="float:right; margin: 0 0 0 30px;"><img src="images/sample_file_open.png"></div><p>Sample job, mapping, and tranformation files are availabe in the Pentaho Data Integration installation directory.</p><p>To view the samples use the File/Open and navigate to ...data-integration\samples.</p>
+      <div style="float:right; margin: 0 0 0 30px;"><img src="images/sample_file_open.png"></div><p>Sample Job, Mapping, and Tranformation files are available in the Pentaho Data Integration installation directory.</p><p>To view the samples, use the File/Open and navigate to ...data-integration\samples.</p>
       
     </div>
   </div>
 </div>
+<div id="logo"><a href="http://www.pentaho.com" target="_Pentaho" border="0"><img src="images/pentaho_logo_rgb_sm.png" border="0"></a></div>
 <script language=javascript type='text/javascript'> 
 function hideDiv() { 
 if (document.getElementById) { // DOM3 = IE5, NS6 
