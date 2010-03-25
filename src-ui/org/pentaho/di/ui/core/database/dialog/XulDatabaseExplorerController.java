@@ -34,6 +34,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
@@ -258,10 +259,29 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				execute = theCallback.getLimit() != -1;
 			}
 
-			if (execute) {
-				XulPreviewRowsDialog thePreviewRowsDialog = new XulPreviewRowsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable(), theCallback.getLimit());
-				thePreviewRowsDialog.open();
-			}
+//			if (execute) {
+//				XulPreviewRowsDialog thePreviewRowsDialog = new XulPreviewRowsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable(), theCallback.getLimit());
+//				thePreviewRowsDialog.open();
+//			}
+			
+			GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(shell, this.model.getDatabaseMeta(), this.model.getTable(), theCallback.getLimit());
+      List<Object[]> rows = pd.open();
+      if (rows!=null) // otherwise an already shown error...
+      {
+      if (rows.size()>0)
+      {
+        PreviewRowsDialog prd = new PreviewRowsDialog(shell, this.model.getDatabaseMeta(), SWT.None, this.model.getTable(), pd.getRowMeta(), rows);
+        prd.open();
+      }
+      else
+      {
+        MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+        mb.setMessage(BaseMessages.getString(PKG,"DatabaseExplorerDialog.NoRows.Message"));
+        mb.setText(BaseMessages.getString(PKG,"DatabaseExplorerDialog.NoRows.Title"));
+        mb.open();
+      }
+      }
+			
 		} catch (Exception e) {
 			logger.error(e);
 		}

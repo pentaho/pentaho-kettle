@@ -46,12 +46,13 @@ public class XulDatabaseExplorerDialog {
 	private List<DatabaseMeta> databases;
 	private static Log logger = LogFactory.getLog(XulDatabaseExplorerDialog.class);
 	private static final String XUL = "org/pentaho/di/ui/core/database/dialog/database_explorer.xul";
-
+	private boolean look;
+	
 	public XulDatabaseExplorerDialog(Shell aShell, DatabaseMeta aDatabaseMeta, List<DatabaseMeta> aDataBases, boolean aLook) {
 		this.shell = aShell;
 		this.databaseMeta = aDatabaseMeta;
 		this.databases = aDataBases;
-		this.controller = new XulDatabaseExplorerController(this.shell, this.databaseMeta, this.databases, aLook);
+		this.look = aLook;
 	}
 
 	public Object open() {
@@ -62,15 +63,18 @@ public class XulDatabaseExplorerDialog {
 
 			this.container = theLoader.loadXul(XUL, new XulDatabaseExplorerResourceBundle());
 
+      XulDialog theExplorerDialog = (XulDialog) this.container.getDocumentRoot().getElementById("databaseExplorerDialog");
+      
 			SpoonPluginManager.getInstance().applyPluginsForContainer("database_dialog", container);
-	    
+
+
+	    this.controller = new XulDatabaseExplorerController((Shell) theExplorerDialog.getRootObject(), this.databaseMeta, this.databases, look);
 			this.container.addEventHandler(this.controller);
 
 			this.runner = new SwtXulRunner();
 			this.runner.addContainer(this.container);
 			this.runner.initialize();
 
-			XulDialog theExplorerDialog = (XulDialog) this.container.getDocumentRoot().getElementById("databaseExplorerDialog");
 			theExplorerDialog.show();
 
 		} catch (Exception e) {
