@@ -542,9 +542,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       //
       t.printStackTrace();
       if (staticSpoon != null) {
-        staticSpoon.log.logError("Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error"))); //$NON-NLS-1$ //$NON-NLS-2$
-        staticSpoon.log.logError(Const.getStackTracker(t));
-      }
+      staticSpoon.log.logError("Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error"))); //$NON-NLS-1$ //$NON-NLS-2$
+      staticSpoon.log.logError(Const.getStackTracker(t));
+    }
     }
 
     // Kill all remaining things in this VM!
@@ -3921,7 +3921,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
       // See if a transformation with the same name isn't already
       // loaded...
-      while (findJob(delegates.tabs.makeTabName(jobMeta, true)) != null) {
+      while (findJob(delegates.tabs.makeTabName(jobMeta, false)) != null) {
         nr++;
         jobMeta.setName(STRING_JOB + " " + nr); // rename
       }
