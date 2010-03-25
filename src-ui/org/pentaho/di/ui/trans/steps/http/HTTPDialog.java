@@ -17,6 +17,7 @@
 
 package org.pentaho.di.ui.trans.steps.http;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -84,6 +86,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	private ComboVar     wUrlField;
 	private FormData     fdlUrlField, fdUrlField;
 
+	private ComboVar     wEncoding;
+
 	private Button wGet;
 	private Listener lsGet;
 
@@ -92,6 +96,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	private ColumnInfo[] colinf;
 	
     private Map<String, Integer> inputFields;
+
+	private boolean gotEncodings = false;
 
 	public HTTPDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -130,6 +136,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		int margin=Const.MARGIN;
 
 		// Stepname line
+		//
 		wlStepname=new Label(shell, SWT.RIGHT);
 		wlStepname.setText(BaseMessages.getString(PKG, "HTTPDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
@@ -147,14 +154,17 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		fdStepname.top  = new FormAttachment(0, margin);
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
+		Control lastControl = wStepname;
 		
+		// The URL to use
+		//
 		wlUrl=new Label(shell, SWT.RIGHT);
 		wlUrl.setText(BaseMessages.getString(PKG, "HTTPDialog.URL.Label")); //$NON-NLS-1$
  		props.setLook(wlUrl);
 		fdlUrl=new FormData();
 		fdlUrl.left = new FormAttachment(0, 0);
 		fdlUrl.right= new FormAttachment(middle, -margin);
-		fdlUrl.top  = new FormAttachment(wStepname, margin*2);
+		fdlUrl.top  = new FormAttachment(lastControl, margin*2);
 		wlUrl.setLayoutData(fdlUrl);
 
 		wUrl=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -162,24 +172,26 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		wUrl.addModifyListener(lsMod);
 		fdUrl=new FormData();
 		fdUrl.left = new FormAttachment(middle, 0);
-		fdUrl.top  = new FormAttachment(wStepname, margin*2);
+		fdUrl.top  = new FormAttachment(lastControl, margin*2);
 		fdUrl.right= new FormAttachment(100, 0);
 		wUrl.setLayoutData(fdUrl);
+		lastControl = wUrl;
 		
 		// UrlInField line
+		//
         wlUrlInField=new Label(shell, SWT.RIGHT);
         wlUrlInField.setText(BaseMessages.getString(PKG, "HTTPDialog.UrlInField.Label"));
         props.setLook(wlUrlInField);
         fdlUrlInField=new FormData();
         fdlUrlInField.left = new FormAttachment(0, 0);
-        fdlUrlInField.top  = new FormAttachment(wUrl, margin);
+        fdlUrlInField.top  = new FormAttachment(lastControl, margin);
         fdlUrlInField.right= new FormAttachment(middle, -margin);
         wlUrlInField.setLayoutData(fdlUrlInField);
         wUrlInField=new Button(shell, SWT.CHECK );
         props.setLook(wUrlInField);
         fdUrlInField=new FormData();
         fdUrlInField.left = new FormAttachment(middle, 0);
-        fdUrlInField.top  = new FormAttachment(wUrl, margin);
+        fdUrlInField.top  = new FormAttachment(lastControl, margin);
         fdUrlInField.right= new FormAttachment(100, 0);
         wUrlInField.setLayoutData(fdUrlInField);
         wUrlInField.addSelectionListener(new SelectionAdapter() 
@@ -191,15 +203,17 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
                 }
             }
         );
-
+        lastControl = wUrlInField;
+        
 		// UrlField Line
+        //
 		wlUrlField=new Label(shell, SWT.RIGHT);
 		wlUrlField.setText(BaseMessages.getString(PKG, "HTTPDialog.UrlField.Label")); //$NON-NLS-1$
  		props.setLook(wlUrlField);
 		fdlUrlField=new FormData();
 		fdlUrlField.left = new FormAttachment(0, 0);
 		fdlUrlField.right= new FormAttachment(middle, -margin);
-		fdlUrlField.top  = new FormAttachment(wUrlInField, margin);
+		fdlUrlField.top  = new FormAttachment(lastControl, margin);
 		wlUrlField.setLayoutData(fdlUrlField);
 
     	wUrlField=new ComboVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -208,52 +222,91 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		wUrlField.addModifyListener(lsMod);
 		fdUrlField=new FormData();
 		fdUrlField.left = new FormAttachment(middle, 0);
-		fdUrlField.top  = new FormAttachment(wUrlInField, margin);
+		fdUrlField.top  = new FormAttachment(lastControl, margin);
 		fdUrlField.right= new FormAttachment(100, 0);
 		wUrlField.setLayoutData(fdUrlField);
 		wUrlField.setEnabled(false);
 		wUrlField.addFocusListener(new FocusListener()
-         {
-            public void focusLost(org.eclipse.swt.events.FocusEvent e)
-             {
-             }
-             public void focusGained(org.eclipse.swt.events.FocusEvent e)
-             {
-                 Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
-                 shell.setCursor(busy);
-                 BaseStepDialog.getFieldsFromPrevious(wUrlField, transMeta, stepMeta);
-                 shell.setCursor(null);
-                 busy.dispose();
-             }
-         }
-     );        
+	         {
+	            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+	             {
+	             }
+	             public void focusGained(org.eclipse.swt.events.FocusEvent e)
+	             {
+	                 Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+	                 shell.setCursor(busy);
+	                 BaseStepDialog.getFieldsFromPrevious(wUrlField, transMeta, stepMeta);
+	                 shell.setCursor(null);
+	                 busy.dispose();
+	             }
+	         }
+	     );      
+		lastControl = wUrlField;
 		
-		
+		// Encoding
+		//
+		Label wlEncoding = new Label(shell, SWT.RIGHT);
+		wlEncoding.setText(BaseMessages.getString(PKG, "HTTPDialog.Encoding.Label")); //$NON-NLS-1$
+ 		props.setLook(wlEncoding);
+		FormData fdlEncoding = new FormData();
+		fdlEncoding.top  = new FormAttachment(lastControl, margin);
+		fdlEncoding.left = new FormAttachment(0, 0);
+		fdlEncoding.right= new FormAttachment(middle, -margin);
+		wlEncoding.setLayoutData(fdlEncoding);
+		wEncoding=new ComboVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wEncoding);
+		wEncoding.addModifyListener(lsMod);
+		FormData fdEncoding = new FormData();
+		fdEncoding.top  = new FormAttachment(lastControl, margin);
+		fdEncoding.left = new FormAttachment(middle, 0);
+		fdEncoding.right= new FormAttachment(100, 0);
+		wEncoding.setLayoutData(fdEncoding);
+		lastControl = wEncoding;
+        wEncoding.addFocusListener(new FocusListener()
+	        {
+	            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+	            {
+	            }
+	        
+	            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+	            {
+	                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+	                shell.setCursor(busy);
+	                setEncodings();
+	                shell.setCursor(null);
+	                busy.dispose();
+	            }
+	        }
+	    );
+
 		// Result line...
+		//
 		wlResult=new Label(shell, SWT.RIGHT);
 		wlResult.setText(BaseMessages.getString(PKG, "HTTPDialog.Result.Label")); //$NON-NLS-1$
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
 		fdlResult.right= new FormAttachment(middle, -margin);
-		fdlResult.top  = new FormAttachment(wUrlField, margin*2);
+		fdlResult.top  = new FormAttachment(lastControl, margin*2);
 		wlResult.setLayoutData(fdlResult);
 		wResult=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wResult);
 		wResult.addModifyListener(lsMod);
 		fdResult=new FormData();
 		fdResult.left = new FormAttachment(middle, 0);
-		fdResult.top  = new FormAttachment(wUrlField, margin*2);
+		fdResult.top  = new FormAttachment(lastControl, margin*2);
 		fdResult.right= new FormAttachment(100, 0);
 		wResult.setLayoutData(fdResult);
-
+		lastControl = wResult;
+		
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText(BaseMessages.getString(PKG, "HTTPDialog.Parameters.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wResult, margin);
+		fdlFields.top  = new FormAttachment(lastControl, margin);
 		wlFields.setLayoutData(fdlFields);
+		lastControl = wlFields;
 		
 		final int FieldsRows=input.getArgumentField().length;
 		
@@ -272,7 +325,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 
 		fdFields=new FormData();
 		fdFields.left  = new FormAttachment(0, 0);
-		fdFields.top   = new FormAttachment(wlFields, margin);
+		fdFields.top   = new FormAttachment(lastControl, margin);
 		fdFields.right = new FormAttachment(100, 0);
 		fdFields.bottom= new FormAttachment(100, -50);
 		wFields.setLayoutData(fdFields);
@@ -361,6 +414,29 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		return stepname;
 	}
+	
+	private void setEncodings()
+    {
+        // Encoding of the text file:
+        if (!gotEncodings)
+        {
+            gotEncodings  = true;
+            
+            wEncoding.removeAll();
+            List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
+            for (int i=0;i<values.size();i++)
+            {
+                Charset charSet = (Charset)values.get(i);
+                wEncoding.add( charSet.displayName() );
+            }
+            
+            // Now select the default!
+            String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
+            int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
+            if (idx>=0) wEncoding.select( idx );
+        }
+    }
+	
 	protected void setComboBoxes()
     {
         // Something was changed in the row.
@@ -390,22 +466,23 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	 */ 
 	public void getData()
 	{
-		int i;
 		logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
-		if (input.getArgumentField()!=null)
-		for (i=0;i<input.getArgumentField().length;i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			if (input.getArgumentField()[i]      !=null) item.setText(1, input.getArgumentField()[i]);
-			if (input.getArgumentParameter()[i]  !=null) item.setText(2, input.getArgumentParameter()[i]);
+		if (input.getArgumentField()!=null) {
+			for (int i=0;i<input.getArgumentField().length;i++)
+			{
+				TableItem item = wFields.table.getItem(i);
+				item.setText(1, Const.NVL(input.getArgumentField()[i], ""));
+				item.setText(2, Const.NVL(input.getArgumentParameter()[i], ""));
+			}
 		}
 		
-		if (input.getUrl() !=null)      wUrl.setText(input.getUrl());
+		wUrl.setText(Const.NVL(input.getUrl(), ""));
         wUrlInField.setSelection(input.isUrlInField());
-        if (input.getUrlField() !=null) wUrlField.setText(input.getUrlField());
+        wUrlField.setText(Const.NVL(input.getUrlField(), ""));
+        wEncoding.setText(Const.NVL(input.getEncoding(), ""));
         
-		if (input.getFieldName()!=null) wResult.setText(input.getFieldName());
+		wResult.setText(Const.NVL(input.getFieldName(), ""));
 
 		wFields.setRowNums();
 		wFields.optWidth(true);

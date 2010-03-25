@@ -61,6 +61,9 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     /** function result: new value name */
     private String  fieldName;
     
+    /** The encoding to use for retrieval of the data */
+    private String encoding;
+    
     private boolean urlInField;
     
     private String urlField;
@@ -203,6 +206,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         }
 
         fieldName = "result"; //$NON-NLS-1$
+        
+        encoding = "UTF-8";
     }
 
     public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException    
@@ -221,6 +226,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("url", url)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    "+XMLHandler.addTagValue("urlInField",  urlInField));
         retval.append("    "+XMLHandler.addTagValue("urlField",  urlField));
+        retval.append("    "+XMLHandler.addTagValue("encoding",  encoding));
         retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
 
         for (int i = 0; i < argumentField.length; i++)
@@ -248,7 +254,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 
             url = XMLHandler.getTagValue(stepnode, "url"); //$NON-NLS-1$
             urlInField="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "urlInField"));
-            urlField       = XMLHandler.getTagValue(stepnode, "urlField");
+            urlField = XMLHandler.getTagValue(stepnode, "urlField");
+            encoding = XMLHandler.getTagValue(stepnode, "encoding");
 			
             Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
             nrargs = XMLHandler.countNodes(lookup, "arg"); //$NON-NLS-1$
@@ -276,8 +283,9 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         try
         {
             url = rep.getStepAttributeString(id_step, "url"); //$NON-NLS-1$
-            urlInField =      rep.getStepAttributeBoolean (id_step, "urlInField");
-            urlField	=	   rep.getStepAttributeString (id_step, "urlField");
+            urlInField = rep.getStepAttributeBoolean (id_step, "urlInField");
+            urlField = rep.getStepAttributeString (id_step, "urlField");
+            encoding = rep.getStepAttributeString (id_step, "encoding");
 			
             int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$
             allocate(nrargs);
@@ -303,6 +311,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "url", url); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "urlInField",   urlInField);
 			rep.saveStepAttribute(id_transformation, id_step, "urlField",   urlField);
+			rep.saveStepAttribute(id_transformation, id_step, "encoding",   encoding);
 			
             for (int i = 0; i < argumentField.length; i++)
             {
@@ -365,4 +374,18 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     {
         return true;
     }
+
+	/**
+	 * @return the encoding
+	 */
+	public String getEncoding() {
+		return encoding;
+	}
+
+	/**
+	 * @param encoding the encoding to set
+	 */
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
 }
