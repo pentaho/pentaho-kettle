@@ -22,7 +22,7 @@ Daniel Einspanjer deinspanjer@mozilla.com
 
  ***** END LICENSE BLOCK *****/
 
-package org.pentaho.di.ui.trans.steps.userdefinedjavaclass;
+package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +34,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClass;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 

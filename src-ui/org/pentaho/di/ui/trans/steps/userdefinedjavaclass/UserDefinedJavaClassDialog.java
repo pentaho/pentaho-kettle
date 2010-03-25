@@ -96,6 +96,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UsageParameter;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
@@ -110,8 +111,8 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Category;
-import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Snippit;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Category;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Snippit;
 
 public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDialogInterface
 {
