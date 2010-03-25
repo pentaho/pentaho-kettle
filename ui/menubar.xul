@@ -90,7 +90,7 @@
         <menu label="${Spoon.Menu.View.Perspectives}">
           <menupopup id="view-perspectives-popup">
             <menuitem label="${Spoon.Perspectives.Main.MenuItem.Label}"
-              command="spoon.loadPerspective('spoon-jobs')"/>
+              command="spoon.loadPerspective('001-spoon-jobs')"/>
           </menupopup>
         </menu>
         <menuseparator />

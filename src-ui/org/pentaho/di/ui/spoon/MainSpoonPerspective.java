@@ -23,6 +23,8 @@ import org.pentaho.xul.swt.tab.TabSet;
 
 public class MainSpoonPerspective implements SpoonPerspective {
 
+  public static final String ID = "001-spoon-jobs"; //$NON-NLS-1$
+  
   private Composite ui;
   private List<SpoonPerspectiveListener> listeners = new ArrayList<SpoonPerspectiveListener>();
   private TabSet tabfolder;
@@ -35,7 +37,7 @@ public class MainSpoonPerspective implements SpoonPerspective {
   
   // Default perspective to support Jobs and Transformations
   public String getId() {
-    return "spoon-jobs";
+    return ID;
   }
 
   public String getDisplayName(Locale l) {

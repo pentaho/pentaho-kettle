@@ -541,8 +541,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       // We do this to (hopefully) also catch Out of Memory Exceptions
       //
       t.printStackTrace();
-      staticSpoon.log.logError("Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error"))); //$NON-NLS-1$ //$NON-NLS-2$
-      staticSpoon.log.logError(Const.getStackTracker(t));
+      if (staticSpoon != null) {
+        staticSpoon.log.logError("Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error"))); //$NON-NLS-1$ //$NON-NLS-2$
+        staticSpoon.log.logError(Const.getStackTracker(t));
+      }
     }
 
     // Kill all remaining things in this VM!
@@ -3414,7 +3416,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
 
   public void openFile(boolean importfile) {
     String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
-    boolean etlPerspective = activePerspectiveId.equals("spoon-jobs"); 
+    boolean etlPerspective = activePerspectiveId.equals(MainSpoonPerspective.ID); 
 
     if (rep == null || importfile || !etlPerspective) // Load from XML
     {
@@ -4127,7 +4129,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.SaveToFileOrRepository"));
 
     String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
-    boolean etlPerspective = activePerspectiveId.equals("spoon-jobs"); 
+    boolean etlPerspective = activePerspectiveId.equals(MainSpoonPerspective.ID); 
     if (rep != null && etlPerspective) {
       saved = saveToRepository(meta);
     } else {
@@ -4364,7 +4366,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
       log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.SaveAs"));// "Save as..."
 
     String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
-    boolean etlPerspective = activePerspectiveId.equals("spoon-jobs"); 
+    boolean etlPerspective = activePerspectiveId.equals(MainSpoonPerspective.ID); 
     if (rep != null && etlPerspective) {
       meta.setObjectId(null);
       saved = saveToRepository(meta, true);
@@ -5609,7 +5611,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener,
     boolean isRepositoryRunning = rep != null;    
     boolean disablePreviewButton = true;
     String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
-    boolean etlPerspective = activePerspectiveId.equals("spoon-jobs"); 
+    boolean etlPerspective = activePerspectiveId.equals(MainSpoonPerspective.ID); 
 
     TransGraph transGraph = getActiveTransGraph();
     if (transGraph != null) {

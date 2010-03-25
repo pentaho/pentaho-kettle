@@ -2,11 +2,13 @@ package org.pentaho.di.ui.spoon;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.TreeSet;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -27,9 +29,16 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 public class SpoonPerspectiveManager {
   private static SpoonPerspectiveManager instance = new SpoonPerspectiveManager();
   private Map<Class<? extends SpoonPerspective>, SpoonPerspective> perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
+  private TreeSet<SpoonPerspective> orderedPerspectives = new TreeSet<SpoonPerspective>(new SpoonPerspectiveComparator());
   private XulDeck deck;
   private SpoonPerspective activePerspective;
   private XulDomContainer domContainer;
+  
+  private static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
+    public int compare(SpoonPerspective o1, SpoonPerspective o2) {
+      return o1.getId().compareTo(o2.getId());
+    }
+  }
   
   private SpoonPerspectiveManager(){
     
@@ -74,6 +83,7 @@ public class SpoonPerspectiveManager {
       activePerspective = perspective;
     }
     perspectives.put(perspective.getClass(), perspective);
+    orderedPerspectives.add(perspective);
   }
   
   /**
@@ -82,7 +92,7 @@ public class SpoonPerspectiveManager {
    * @return
    */
   public List<SpoonPerspective> getPerspectives(){
-    return Collections.unmodifiableList(new ArrayList<SpoonPerspective>(perspectives.values()));
+    return Collections.unmodifiableList(new ArrayList<SpoonPerspective>(orderedPerspectives));
   }
   
   private void unloadPerspective(SpoonPerspective per){
