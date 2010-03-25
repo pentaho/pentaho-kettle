@@ -18,6 +18,9 @@
     <toolbarbutton id="toolbar-file-save-as" image="images/saveas.png"
       tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="spoon.saveFileAs()"/>
     <toolbarseparator />
+    <toolbarbutton id="toolbar-expore-repository" image="images/exploreRepo.png" 
+      tooltiptext="${Spoon.Tooltip.ExploreRepository}" onclick="spoon.exploreRepository()" />
+    <toolbarseparator />
     <toolbarspacer flex="1"/>
     <toolbaritem>
       <label value="${Spoon.Perspectives}:"/>
