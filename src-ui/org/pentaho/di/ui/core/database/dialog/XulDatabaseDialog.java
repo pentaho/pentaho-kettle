@@ -123,7 +123,7 @@ public class XulDatabaseDialog {
     try {
       databaseDialogInstance = new DatabaseConnectionDialog();
       databaseDialogInstance.registerClass(EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME);
-      container = databaseDialogInstance.getSwtInstance(shell);  //Attention: onload: loadConnectionData() is called here the first time, see below for second time
+      container = databaseDialogInstance.getSwtInstance(parentShell);  //Attention: onload: loadConnectionData() is called here the first time, see below for second time
 
       container.addEventHandler(EVENT_ID, DataOverrideHandler.class.getName());
 
