@@ -899,6 +899,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		}
 		
 		spoon.refreshTree();
+		spoon.enableMenus();
 	}
 
 	public void addJobGraph(JobMeta jobMeta)

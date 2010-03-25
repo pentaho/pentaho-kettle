@@ -134,6 +134,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 		
 		spoon.refreshTree();
+		spoon.enableMenus();
 	}
 
 	public void addTransGraph(TransMeta transMeta)
