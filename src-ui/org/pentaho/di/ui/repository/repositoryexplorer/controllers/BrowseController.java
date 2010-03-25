@@ -19,6 +19,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoerCollection;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
@@ -106,6 +108,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected List<UIRepositoryObject> selectedFileItems;
 
   protected List<UIRepositoryDirectory> repositoryDirectories;
+  
+  protected Repository repository;
 
   List<UIRepositoryObject> repositoryObjects;
 
@@ -129,6 +133,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   public void init(Repository repository) throws ControllerInitializationException {
     try {
+      this.repository = repository; 
+      
       mainController = (MainController) this.getXulDomContainer().getEventHandler("mainController");
       this.repositoryDirectory = new UIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
       dirMap = new HashMap<ObjectId, UIRepositoryDirectory>();
@@ -217,7 +223,46 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     if (repositoryDirectory.isRevisionsSupported()) {
       createRevisionBindings();
     }
-
+    
+    try {
+      // Set the initial selected directory as the users home directory
+      RepositoryDirectory homeDir = repository.getUserHomeDirectory();
+      int currentDir = 0;
+      String[] homePath = homeDir.getPathArray();
+      if(homePath != null) {
+        UIRepositoryDirectory tempRoot = repositoryDirectory;
+    
+        // Check to see if the first item in homePath is the root directory
+        if(homePath.length > 0 && tempRoot.getName().equalsIgnoreCase(homePath[currentDir])) {
+          if(homePath.length == 1) {
+            // The home directory is home root
+            setSelectedFolderItems(Arrays.asList(tempRoot));
+          }
+          // We have used the first element. Increment to the next
+          currentDir++;
+        }
+        
+        // Traverse the tree until we find our destination
+        for(; currentDir < homePath.length; currentDir++) {
+          for(UIRepositoryObject uiObj : tempRoot.getChildren()) {
+            if(uiObj instanceof UIRepositoryDirectory) {
+              if(uiObj.getName().equalsIgnoreCase(homePath[currentDir])) {
+                // We have a match. Let's move on to the next
+                tempRoot = (UIRepositoryDirectory)uiObj;
+                break;
+              }
+            }
+          }
+        }
+        // If we have traversed as many directories as there are in the path, we have found the directory
+        if(homePath.length == currentDir) {
+          setSelectedFolderItems(Arrays.asList(tempRoot));
+          folderTree.setSelectedItems(this.selectedFolderItems);
+        }
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
   
   protected void doCreateBindings() {}
