@@ -516,6 +516,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		input.setUrlField(wUrlField.getText() );
 		input.setUrlInField(wUrlInField.getSelection() );
 		input.setFieldName( wResult.getText() );
+		input.setEncoding( wEncoding.getText() );
 
 		stepname = wStepname.getText(); // return value
 
