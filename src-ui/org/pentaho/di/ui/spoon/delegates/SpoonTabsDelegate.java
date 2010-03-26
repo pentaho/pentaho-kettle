@@ -215,7 +215,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			if (tabMapEntry == null)
 			{
 				CTabFolder cTabFolder = tabfolder.getSwtTabset();
-				SpoonBrowser browser = new SpoonBrowser(cTabFolder, spoon, urlString, isURL, false, listener);
+				SpoonBrowser browser = new SpoonBrowser(cTabFolder, spoon, urlString, isURL, true, listener);
 				TabItem tabItem = new TabItem(tabfolder, name, name);
 				tabItem.setImage(GUIResource.getInstance().getImageLogoSmall());
 				tabItem.setControl(browser.getComposite());
