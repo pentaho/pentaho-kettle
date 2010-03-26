@@ -1,13 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Pentaho Data Integration - Welcome</title>
-<!--[if lt IE 7]>
-        <script type="text/javascript" src="unitpngfix.js"></script>
-<![endif]-->
+
 <style type="text/css">
 <!--
+html,body {height:100%}
 body {
 	background-color: #c9dbe9;
 	background-image: url(images/bg_quicklaunch.jpg);
@@ -148,8 +147,9 @@ a.docsbutton{
 	display: block;
 	float: left;
 	width: 100px;
+	height: 28px;
 	margin:0px;
-	padding:15px 5px 12px 48px;
+	padding:15px 5px 2px 48px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 1em;
 	color: #333333;
@@ -164,8 +164,9 @@ a.communitybutton{
 	display: block;
 	float: left;
 	width: 100px;
+	height: 28px;
 	margin:0px;
-	padding:15px 7px 12px 55px;
+	padding:15px 7px 2px 55px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 1em;
 	color: #333333;
@@ -180,8 +181,9 @@ a.blogbutton{
 	display: block;
 	float: left;
 	width: 80px;
+	height: 28px;
 	margin:0px;
-	padding:15px 8px 12px 65px;
+	padding:15px 8px 2px 65px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 1em;
 	color: #333333;
@@ -193,15 +195,15 @@ a:hover.blogbutton{
 
 #preview{
  position: absolute;
- top: 17px;
+ top: 0px;
  right: 0px;
  display: block;
 }
 
 #logo{
  position: absolute;
- bottom: 4px;
- right: 4px;
+ bottom: 20px;
+ right: 20px;
  display: block;
 }
 p {
@@ -215,18 +217,26 @@ p {
 	height: 100%;
 	top: 0;
 	left: 0;
+	min-height: 100%;
 }
 #fade {
 	background: #000;
-	position: fixed;
+	position: absolute;
 	width: 100%;
 	height: 100%;
 	filter:alpha(opacity=80);
 	opacity: .80;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)"; /*--IE 8 Transparency--*/
-	left: 0;
+	left: 0px;
+	top: 0px;
 	z-index: 10;
+	min-height: 100%;
 }
+html, body #fade {
+height: 100%;
+min-height: 100%;
+}
+
 .popup_block {
 	background: #ddd;
 	padding: 10px 20px;
@@ -239,6 +249,7 @@ p {
 	margin: 0 0 0 -250px;
 	z-index: 100;
 }
+
 .popup_block .popup {
 	float: left;
 	width: 100%;
@@ -451,6 +462,7 @@ function MM_swapImage() { //v3.0
 </script>
 </head>
 <body onLoad="MM_preloadImages('images/btn_doc_on.png','images/btn_community_on.png','images/btn_blog_on.png','images/samples_folder_on.png')">
+
 <div id="preview"><img src="images/preview.png"></div>
 <div id="container">
   <table width="468" border="0" cellspacing="0" cellpadding="0">
@@ -458,7 +470,7 @@ function MM_swapImage() { //v3.0
       <td><table width="144" border="0" cellspacing="0" cellpadding="0">
           <tr>
             <td>
-           	  <div id="gettingstarted"><span title="Getting started with Pentaho Data Integration"><a href="http://wiki.pentaho.com/display/EAI/Getting+started" target="_Pentaho Data Integration">Getting Started</a></span></div>            </td>
+           	  <div id="gettingstarted"><span title="Getting started with Pentaho Data Integration"><a href="http://wiki.pentaho.com/display/EAI/Getting+started">Getting Started</a></span></div>            </td>
           </tr>
         </table></td>
       <td><img src="images/clr.gif" width="18" height="10"></td>
@@ -471,7 +483,7 @@ function MM_swapImage() { //v3.0
       <td><img src="images/clr.gif" width="18" height="10"></td>
       <td><table width="144" border="0" cellspacing="0" cellpadding="0">
           <tr>
-            <td><div id="whatsnew"><span title="What's new in Pentaho Data Integration 4.0"><a href="whats_new_in_pdi_ee_4_0.pdf" target="_Pentaho Data Integration">What's <br />New</a></span></div></td>
+            <td><div id="whatsnew"><span title="What's new in Pentaho Data Integration 4.0"><a href="http://www.pentaho.com/docs/whats_new_in_pdi_ee_4_0.php?pdi=y">What's <br />New</a></span></div></td>
           </tr>
         </table></td>
     </tr>
@@ -494,16 +506,16 @@ function MM_swapImage() { //v3.0
             </tr>
             <tr>
               <td valign="top"><ul>
-                  <li><a href="http://wiki.pentaho.com/display/EAI/Spoon+User+Guide" target="_Pentaho Data Integration">Spoon User Guide</a></li>
-                  <li><a href="http://wiki.pentaho.com/display/EAI/Pentaho+Data+Integration+v3.2.+Steps" target="_Pentaho Data Integration">Steps Documentation</a></li>
-                  <li><a href="http://wiki.pentaho.com/display/EAI/Pentaho+Data+Integration+v3.2.+Job+Entries" target="_Pentaho Data Integration">Job Entry Documentation</a></li>
-                  <li><a href="http://wiki.pentaho.com/display/EAI/Pan+User+Documentation" target="_Pentaho Data Integration">Pan User Guide</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Spoon+User+Guide">Spoon User Guide</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Pentaho+Data+Integration+v3.2.+Steps">Steps Documentation</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Pentaho+Data+Integration+v3.2.+Job+Entries">Job Entry Documentation</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Pan+User+Documentation">Pan User Guide</a></li>
                 </ul></td>
               <td valign="top"><ul>
-                  <li><a href="http://wiki.pentaho.com/display/EAI/Kitchen+User+Documentation" target="_Pentaho Data Integration">Kitchen User Guide</a></li>
-                  <li><a href="http://wiki.pentaho.com/display/EAI/Carte+User+Documentation" target="_Pentaho Data Integration">Carte User Guide</a></li>
-                  <li><a href="http://wiki.pentaho.com/display/EAI/List+of+Available+Pentaho+Data+Integration+Plug-Ins" target="_Pentaho Data Integration">Community plug-ins Page</a></li>
-                  <li><a href="http://wiki.pentaho.com/display/EAI/Frequently+Asked+Questions" target="_Pentaho Data Integration">Frequently Asked Questions</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Kitchen+User+Documentation">Kitchen User Guide</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Carte+User+Documentation">Carte User Guide</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/List+of+Available+Pentaho+Data+Integration+Plug-Ins">Community plug-ins Page</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Frequently+Asked+Questions">Frequently Asked Questions</a></li>
                 </ul></td>
             </tr>
           </table>
@@ -515,11 +527,11 @@ function MM_swapImage() { //v3.0
             </tr>
             <tr>
               <td valign="top"><ul>
-                  <li><a href="http://forums.pentaho.org/forumdisplay.php?f=69" target="_Pentaho Data Integration">Community Forum</a></li>
-                  <li><a href="http://kettle.pentaho.org/" target="_Pentaho Data Integration">Pentaho Data Integration Home Page</a></li>
-                  <li><a href="http://www.pentaho.org/download/" target="_Pentaho Data Integration">Downloads</a></li>
-                  <li><a href="http://jira.pentaho.org/browse/PDI" target="_Pentaho Data Integration">Pentaho Data Integration Jira</a></li>
-                  <li><a href="http://wiki.pentaho.org/display/EAI/Latest+Pentaho+Data+Integration+%28aka+Kettle%29+Documentation" target="_Pentaho Data Integration">Wiki – Pentaho Data Integration</a></li>
+                  <li><a href="http://forums.pentaho.org/forumdisplay.php?f=69">Community Forum</a></li>
+                  <li><a href="http://kettle.pentaho.org/">Pentaho Data Integration Home Page</a></li>
+                  <li><a href="http://www.pentaho.org/download/">Downloads</a></li>
+                  <li><a href="http://jira.pentaho.org/browse/PDI">Pentaho Data Integration Jira</a></li>
+                  <li><a href="http://wiki.pentaho.org/display/EAI/Latest+Pentaho+Data+Integration+%28aka+Kettle%29+Documentation">Wiki – Pentaho Data Integration</a></li>
                 </ul></td>
             </tr>
           </table>
@@ -531,20 +543,24 @@ function MM_swapImage() { //v3.0
             </tr>
             <tr>
               <td valign="top"><ul>
-                  <li><a href="http://www.ibridge.be/" target="_Pentaho Data Integration">Matt Casters</a></li>
-                  <li><a href="http://julianhyde.blogspot.com/" target="_Pentaho Data Integration">Julian Hyde</a></li>
-                  <li><a href="http://jamesdixon.wordpress.com//" target="_Pentaho Data Integration">James Dixion</a></li>
-                  <li><a href="http://michaeltarallo.blogspot.com/" target="_Pentaho Data Integration">Mike Tarallo</a></li>
-                  <li><a href="http://arubawayne.blogspot.com/" target="_Pentaho Data Integration">Wayne Johnson</a></li>
-                  <li><a href="http://www.willgorman.com/" target="_Pentaho Data Integration">Will Gorman</a></li>
+              	  <li><a href="http://blog.pentaho.com/">Richard Daley</a></li>
+                  <li><a href="http://www.ibridge.be/">Matt Casters</a></li>
+                  <li><a href="http://julianhyde.blogspot.com/">Julian Hyde</a></li>
+                  <li><a href="http://jamesdixon.wordpress.com//">James Dixion</a></li>
+                  <li><a href="http://michaeltarallo.blogspot.com/">Mike Tarallo</a></li>
+                  <li><a href="http://arubawayne.blogspot.com/">Wayne Johnson</a></li>
+                  <li><a href="http://www.willgorman.com/">Will Gorman</a></li>
+                  <li><a href="http://rpbouman.blogspot.com/">Roland Bouman</a></li>
                 </ul></td>
               <td valign="top"><ul>
-                  <li><a href="http://www.sherito.org/" target="_Pentaho Data Integration">Thomas Morgner</a></li>
-                  <li><a href="http://gretchenmoran.blogspot.com/" target="_Pentaho Data Integration">Gretchen Moran</a></li>
-                  <li><a href="http://www.nicholasgoodman.com/bt/blog/" target="_Pentaho Data Integration">Nicholas Goodman</a></li>
-                  <li><a href="http://aboutosi.wordpress.com/" target="_Pentaho Data Integration">Samatar Hassan</a></li>
-                  <li><a href="http://anchavesb.blogspot.com/" target="_Pentaho Data Integration">Andres Chaves</a></li>
-                  <li><a href="http://blog.devdonkey.org/" target="_Pentaho Data Integration">Luc Boudreau</a></li>
+                  <li><a href="http://www.sherito.org/">Thomas Morgner</a></li>
+                  <li><a href="http://www.prashantraju.com/">Prashant Raju</a></li>
+                  <li><a href="http://www.nicholasgoodman.com/bt/blog/">Nicholas Goodman</a></li>
+                  <li><a href="http://aboutosi.wordpress.com/">Samatar Hassan</a></li>
+                  <li><a href="http://anchavesb.blogspot.com/">Andres Chaves</a></li>
+                  <li><a href="http://pentahomusings.blogspot.com/">Tom Barber</a></li>
+                  <li><a href="http://blog.devdonkey.org/">Luc Boudreau</a></li>
+                  <li><a href="http://pedroalves-bi.blogspot.com/">Pedro Alves</a></li>
                 </ul></td>
             </tr>
           </table>
