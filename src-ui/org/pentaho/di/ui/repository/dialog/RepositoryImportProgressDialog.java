@@ -56,7 +56,6 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.repository.kdr.KettleDatabaseRepositoryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -71,7 +70,7 @@ import org.w3c.dom.Node;
  */
 public class RepositoryImportProgressDialog extends Dialog implements ProgressMonitorListener
 {
-	private static Class<?> PKG = KettleDatabaseRepositoryDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = RepositoryImportProgressDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
     private LogChannelInterface log;
     private Shell shell, parent;
