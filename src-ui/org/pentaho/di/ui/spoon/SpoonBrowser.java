@@ -101,13 +101,6 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
     }
 
     browser = createBrowser();
-
-    // Nick's fix below -------
-    Control toolbarControl = (Control) toolbar.getManagedObject();
-
-    toolbarControl.setLayoutData(new FormData());
-    // ------------------------
-
     FormData fdBrowser = new FormData();
     fdBrowser.left = new FormAttachment(0, 0);
     fdBrowser.right = new FormAttachment(100, 0);
@@ -178,7 +171,8 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
       forward = (XulToolbarbutton) toolbar.getElementById("browse-forward");
       forward.setLabel(BaseMessages.getString(PKG, "SpoonBrowser.Dialog.Forward"));
       forward.setDisabled(false);
-
+      Control toolbarControl = (Control) toolbar.getManagedObject();
+      toolbarControl.setLayoutData(new FormData());
     } catch (Exception e) {
       e.printStackTrace();
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR), e);
