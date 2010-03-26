@@ -12,8 +12,8 @@
 
 							<tabbox id="file-properties-tabs" flex="1">
 								<tabs>
-									<tab id="history" label="Version History" />
-									<tab id="permission" label="Permissions" />
+									<tab id="history" label="${RepositoryExplorerDialog.Tab.VersionHistory}" />
+									<tab id="permission" label="${RepositoryExplorerDialog.Tab.Permissions}" />
 								</tabs>
 								<tabpanels flex="1">
 									<tabpanel id="history-tab">
