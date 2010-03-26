@@ -12,9 +12,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -27,7 +25,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
@@ -44,21 +41,7 @@ import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
 public class ConnectionsController extends AbstractXulEventHandler implements IUISupportController {
 
-  private ResourceBundle messages = new ResourceBundle() {
-
-    @Override
-    public Enumeration<String> getKeys() {
-      return null;
-    }
-
-    @Override
-    protected Object handleGetObject(String key) {
-      return BaseMessages.getString(RepositoryExplorer.class, key);
-    }
-
-  };
-
-  private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = RepositoryExplorer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private XulTree connectionsTable = null;
 
@@ -193,14 +176,11 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
         // See if this user connection exists...
         ObjectId idDatabase = repository.getDatabaseID(dbName);
         if (idDatabase == null) {
-          repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
-              "ConnectionsController.Message.CreatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
+          repository.insertLogEntry(BaseMessages.getString(PKG, "ConnectionsController.Message.CreatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
           repository.save(databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null);
         } else {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb
-              .setMessage(BaseMessages.getString(PKG,
-                  "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message")); //$NON-NLS-1$
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title")); //$NON-NLS-1$
           mb.open();
         }
@@ -208,7 +188,8 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
     } finally {
       refreshConnectionList();
     }
@@ -237,13 +218,11 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
             // Make sure the new name does not already exist
             if (repository.getDatabaseID(dbName) != null) {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-              mb.setMessage(BaseMessages.getString(PKG,
-                  "RepositoryExplorerDialog.Connection.Edit.AlreadyExists.Message", dbName)); //$NON-NLS-1$
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.AlreadyExists.Message", dbName)); //$NON-NLS-1$
               mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.AlreadyExists.Title")); //$NON-NLS-1$
               mb.open();
             } else {
-              repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
-                  "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
+              repository.insertLogEntry(BaseMessages.getString(PKG, "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
               repository.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
             }
           }
@@ -257,7 +236,8 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
     } finally {
       refreshConnectionList();
     }
@@ -275,8 +255,7 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
         ObjectId idDatabase = repository.getDatabaseID(databaseMeta.getName());
         if (idDatabase == null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG,
-              "RepositoryExplorerDialog.Connection.Delete.DoesNotExists.Message", databaseMeta.getName())); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Delete.DoesNotExists.Message", databaseMeta.getName())); //$NON-NLS-1$
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Delete.Title")); //$NON-NLS-1$
           mb.open();
         } else {
@@ -291,7 +270,8 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), 
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
     } finally {
       refreshConnectionList();
     }
