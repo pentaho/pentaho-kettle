@@ -24,4 +24,6 @@ public interface ChangedWarningInterface {
    * @throws Exception 
    */
   public int show() throws Exception;
+  
+  public int show(String fileName) throws Exception;
 }

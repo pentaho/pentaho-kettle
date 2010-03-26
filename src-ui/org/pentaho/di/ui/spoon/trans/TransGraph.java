@@ -142,7 +142,7 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
-import org.pentaho.di.ui.spoon.AbstractChangedWarningDialog;
+import org.pentaho.di.ui.spoon.ChangedWarningDialog;
 import org.pentaho.di.ui.spoon.AbstractGraph;
 import org.pentaho.di.ui.spoon.ChangedWarningInterface;
 import org.pentaho.di.ui.spoon.SWTGC;
@@ -2811,33 +2811,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transMeta.addUndo(obj, null, pos, prev, curr, TransMeta.TYPE_UNDO_POSITION, nextAlso);
     spoon.setUndoMenu(transMeta);
   }
-  
-  public ChangedWarningInterface getChangedWarning() {
-    ChangedWarningInterface retVal = new AbstractChangedWarningDialog() {
-
-      @Override
-      public String getSpoonPluginManagerContainerNamespace() {
-        return "trans-graph-changed-warning-dialog"; //$NON-NLS-1$
-      }
-
-      @Override
-      public String getXulDialogId() {
-        return "trans-graph-changed-warning-dialog"; //$NON-NLS-1$
-      }
-
-      @Override
-      public String getXulResource() {
-       return "ui/trans-graph.xul"; //$NON-NLS-1$
-      }
-      
-      @Override
-      public XulSpoonResourceBundle getXulResourceBundle() {
-        return new XulSpoonResourceBundle();
-      }
-    };
-    
-    return retVal;
-  }
 
   public boolean applyChanges() throws KettleException {
     return spoon.saveToFile(transMeta);
@@ -3921,5 +3894,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 	
   public boolean canHandleSave() {
     return true;
+  }
+  
+  @Override
+  public int showChangedWarning() throws KettleException {
+    return showChangedWarning(transMeta.getName());
   }
 }

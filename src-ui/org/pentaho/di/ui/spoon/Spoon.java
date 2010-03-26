@@ -7651,7 +7651,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public XulDomContainer getXulDomContainer() {
-    return null;
+    return getMainSpoonContainer();
   }
 
   public void setData(Object arg0) {

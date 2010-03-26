@@ -120,7 +120,7 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
-import org.pentaho.di.ui.spoon.AbstractChangedWarningDialog;
+import org.pentaho.di.ui.spoon.ChangedWarningDialog;
 import org.pentaho.di.ui.spoon.AbstractGraph;
 import org.pentaho.di.ui.spoon.ChangedWarningInterface;
 import org.pentaho.di.ui.spoon.JobPainter;
@@ -2654,33 +2654,6 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
   public boolean hasContentChanged() {
     return jobMeta.hasChanged();
   }
-  
-  public ChangedWarningInterface getChangedWarning() {
-    ChangedWarningInterface retVal = new AbstractChangedWarningDialog() {
-
-      @Override
-      public String getSpoonPluginManagerContainerNamespace() {
-        return "job-graph-changed-warning-dialog"; //$NON-NLS-1$
-      }
-
-      @Override
-      public String getXulDialogId() {
-        return "changed-warning-dialog"; //$NON-NLS-1$
-      }
-
-      @Override
-      public String getXulResource() {
-       return "ui/change-warning-dialog.xul"; //$NON-NLS-1$
-      }
-      
-      @Override
-      public XulSpoonResourceBundle getXulResourceBundle() {
-        return new XulSpoonResourceBundle();
-      }
-    };
-    
-    return retVal;
-  }
 
   public static int showChangedWarning(Shell shell, String name) {
     MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING);
@@ -3214,6 +3187,11 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 	    // It's better to store the indexes of the objects, not the objects itself!
 	    jobMeta.addUndo(obj, null, pos, prev, curr, TransMeta.TYPE_UNDO_POSITION, nextAlso);
 	    spoon.setUndoMenu(jobMeta);
+	  }
+	  
+	  @Override
+	  public int showChangedWarning() throws KettleException {
+	    return showChangedWarning(jobMeta.getName());
 	  }
 
 }

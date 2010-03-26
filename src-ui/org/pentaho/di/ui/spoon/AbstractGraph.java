@@ -141,7 +141,7 @@ public abstract class AbstractGraph extends Composite {
    * @return ChangedWarningInterface The class that provides the dialog and return value
    */
   public ChangedWarningInterface getChangedWarning() {
-    return null;
+    return ChangedWarningDialog.getInstance();
   }
   
   /**
@@ -149,17 +149,21 @@ public abstract class AbstractGraph extends Composite {
    * 
    * @return int Value of SWT.YES, SWT.NO, SWT.CANCEL
    */
-  public int showChangedWarning() throws KettleException{
+  public int showChangedWarning(String fileName) throws KettleException{
     ChangedWarningInterface changedWarning = getChangedWarning();
 
     if(changedWarning != null) {
       try {
-        return changedWarning.show();
+        return changedWarning.show(fileName);
       } catch (Exception e) {
         throw new KettleException(e);
       }
     }
     
     return 0;
+  }
+  
+  public int showChangedWarning() throws KettleException {
+    return showChangedWarning(null);
   }
 }
