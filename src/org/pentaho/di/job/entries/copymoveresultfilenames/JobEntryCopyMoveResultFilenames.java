@@ -507,6 +507,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 				{
 					try {
 						file.close();
+						file=null;
 					}catch ( Exception ex ) {};
 				}
 			}
@@ -582,6 +583,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
          	{
          		try  {
          			folder.close();
+         			folder=null;
          		}
          		catch (Exception ex ) {};
          	}

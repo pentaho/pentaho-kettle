@@ -21,7 +21,6 @@ import java.net.URL;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.VFS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
@@ -37,7 +36,7 @@ public class ImageUtil
     {
     	try
     	{
-    		base = VFS.getManager().resolveFile(System.getProperty("user.dir"));    		
+    		base = KettleVFS.getInstance().getFileSystemManager().resolveFile(System.getProperty("user.dir"));    		
     	}
     	catch(FileSystemException e)
     	{
@@ -71,7 +70,7 @@ public class ImageUtil
 			}
 		}
 		try {
-			FileObject imageFileObject = VFS.getManager().resolveFile(base,location);
+			FileObject imageFileObject = KettleVFS.getInstance().getFileSystemManager().resolveFile(base,location);
 			return new Image(display,KettleVFS.getInputStream(imageFileObject));
 		} catch (FileSystemException e) {
 			throw new RuntimeException("Unable to load image with name ["+location+"]", e);

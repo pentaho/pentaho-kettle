@@ -243,13 +243,6 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     try {
       filefolder = KettleVFS.getFileObject(realFilefoldername, this);
 
-      // Here gc() is explicitly called if e.g. createfile is used in the same
-      // job for the same file. The problem is that after creating the file the
-      // file object is not properly garbaged collected and thus the file cannot
-      // be deleted anymore. This is a known problem in the JVM.
-
-      System.gc();
-
       if (filefolder.exists()) {
         // the file or folder exists
         if (filefolder.getType() == FileType.FOLDER) 
@@ -287,6 +280,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       if (filefolder != null) {
         try {
           filefolder.close();
+          filefolder=null;
         } catch (IOException ex) {
         }
         ;
@@ -377,7 +371,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 					try  
 					{
 						file_name.close();
-						
+						file_name=null;
 					}
 					catch ( IOException ex ) {};
 				}

@@ -577,13 +577,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 									FileObject fileObjectd = KettleVFS.getFileObject(localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i], this);
 									if(f.isFile()) fileObjectd = KettleVFS.getFileObject(localSourceFilename, this);		
 									
-									// Here gc() is explicitly called if e.g. createfile is used in the same
-									// job for the same file. The problem is that after creating the file the
-									// file object is not properly garbaged collected and thus the file cannot
-									// be deleted anymore. This is a known problem in the JVM.
-									
-									System.gc();
-									
 									// Here we can move, delete files
 									if (afterzip == 1)
 									{						

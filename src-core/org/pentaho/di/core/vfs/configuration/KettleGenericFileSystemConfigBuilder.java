@@ -17,9 +17,9 @@ import java.io.IOException;
 import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
-import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.util.DelegatingFileSystemOptionsBuilder;
 import org.mortbay.log.Log;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
  * A generic FileSystemConfigBuilder that inserts parameters and values as literally specified.
@@ -96,7 +96,7 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
     // This must be done to assure the correct VFS FileSystem drivers will process the parameters
     String scheme = extractScheme(fullParameterName);
     try {
-      DelegatingFileSystemOptionsBuilder delegateFSOptionsBuilder = new DelegatingFileSystemOptionsBuilder(VFS.getManager());
+      DelegatingFileSystemOptionsBuilder delegateFSOptionsBuilder = new DelegatingFileSystemOptionsBuilder(KettleVFS.getInstance().getFileSystemManager());
       if(scheme != null) {
         delegateFSOptionsBuilder.setConfigString(opts, scheme, name, value);
       } else {

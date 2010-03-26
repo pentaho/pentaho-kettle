@@ -331,11 +331,15 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 		{
 			try 
 			{
-			    if ( xmlfile != null )
+			    if ( xmlfile != null ) {
 			    	xmlfile.close();
+			    	xmlfile=null;
+			    }
 			    
-			    if ( DTDfile != null )
+			    if ( DTDfile != null ) {
 			    	DTDfile.close();
+			    	DTDfile=null;
+			    }
 				
 		    }
 			catch ( IOException e ) { }			

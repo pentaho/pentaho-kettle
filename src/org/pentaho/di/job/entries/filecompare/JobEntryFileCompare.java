@@ -254,11 +254,15 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		{
 			try
 			{
-			    if ( file1 != null )
+			    if ( file1 != null ) {
 			    	file1.close();
+			    	file1=null;
+			    }
 
-			    if ( file2 != null )
+			    if ( file2 != null ) {
 			    	file2.close();
+			    	file2=null;
+			    }
 		    }
 			catch ( IOException e ) { }
 		}

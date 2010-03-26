@@ -212,7 +212,7 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 		            }
 		    	  	finally
 		    	  	{
-		    	  		if (file != null) {try {file.close();} catch (IOException ex) {};}
+		    	  		if (file != null) {try {file.close();file=null;} catch (IOException ex) {};}
 		    	  	}
 		      }
 		        

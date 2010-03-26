@@ -499,10 +499,22 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 		{
 			try 
 			{
-			    if ( folder1 != null )  	folder1.close();
-			    if ( folder2 != null )   	folder2.close();		
-			    if ( filefolder1 != null )  filefolder1.close();
-			    if ( filefolder2 != null )  filefolder2.close();	
+			    if ( folder1 != null ) {
+			    	folder1.close();
+			    	folder1=null;
+			    }
+			    if ( folder2 != null ) {
+			    	folder2.close();
+			    	folder2=null;
+			    }
+			    if ( filefolder1 != null ) {
+			    	filefolder1.close();
+			    	filefolder1=null;
+			    }
+			    if ( filefolder2 != null ) {
+			    	filefolder2.close();
+			    	filefolder2=null;
+			    }
 		    }
 			catch ( IOException e ) { }			
 		}

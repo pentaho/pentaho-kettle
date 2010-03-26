@@ -414,9 +414,6 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			    	xslfile.close();
 				if ( outputfile != null )
 					outputfile.close();
-				// file object is not properly garbaged collected and thus the file cannot
-				// be deleted anymore. This is a known problem in the JVM.
-				System.gc();
 		    }
 			catch ( IOException e ) { }
 		}

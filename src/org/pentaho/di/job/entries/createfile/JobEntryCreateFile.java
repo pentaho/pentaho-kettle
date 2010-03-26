@@ -204,6 +204,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
           try
           {
             fileObject.close();
+            fileObject=null;
           } catch (IOException ex)
           {
           }

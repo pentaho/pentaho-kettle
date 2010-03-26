@@ -18,7 +18,6 @@ package org.pentaho.di.ui.job.entries.fileexists;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.VFS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -38,6 +37,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.fileexists.JobEntryFileExists;
@@ -200,14 +200,14 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 						String curFile = wFilename.getText();
 						
 						if (curFile.trim().length()>0)
-							fileName = VFS.getManager().resolveFile(
+							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(
 									jobMeta.environmentSubstitute(wFilename.getText()));
 						else
-							fileName = VFS.getManager().resolveFile(Const.USER_HOME_DIRECTORY);
+							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
 							
 					} catch (FileSystemException ex)
 					{
-						fileName = VFS.getManager().resolveFile(Const.USER_HOME_DIRECTORY);
+						fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
 					}
 
 					

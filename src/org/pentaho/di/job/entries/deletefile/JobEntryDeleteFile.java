@@ -178,12 +178,6 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 				}
 				else
 				{
-					// Here gc() is explicitly called if e.g. createfile is used in the same
-					// job for the same file. The problem is that after creating the file the
-					// file object is not properly garbaged collected and thus the file cannot
-					// be deleted anymore. This is a known problem in the JVM.
-					System.gc();
-
 				    boolean deleted = fileObject.delete();
 				    if ( ! deleted )
 				    {
@@ -205,6 +199,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
             	{
             		try  {
             		     fileObject.close();
+            		     fileObject=null;
             		}
             		catch ( IOException ex ) {};
             	}

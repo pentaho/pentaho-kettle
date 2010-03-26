@@ -155,16 +155,16 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 		if (foldername!=null)
 		{
             String realFoldername = getRealFoldername();
-            FileObject FolderObject = null;
+            FileObject folderObject = null;
 			try {
-				FolderObject = KettleVFS.getFileObject(realFoldername, this);
+				folderObject = KettleVFS.getFileObject(realFoldername, this);
 
-				if ( FolderObject.exists() )
+				if ( folderObject.exists() )
 				{
 					boolean isFolder=false;
 					
 					//Check if it's a folder
-					if(FolderObject.getType() == FileType.FOLDER)  isFolder=true;
+					if(folderObject.getType() == FileType.FOLDER)  isFolder=true;
 					
 						if ( isFailOfFolderExists() )
 						{
@@ -188,7 +188,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 				else
 				{
 					//  No Folder yet, create an empty Folder.
-					FolderObject.createFolder();
+					folderObject.createFolder();
 					if(log.isDetailed())
 						logDetailed("Folder ["+realFoldername+"] created!");
 					result.setResult( true );
@@ -199,10 +199,11 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
 				result.setNrErrors(1);					
 			}
             finally {
-            	if ( FolderObject != null )
+            	if ( folderObject != null )
             	{
             		try  {
-            		     FolderObject.close();
+            		     folderObject.close();
+            		     folderObject=null;
             		}
             		catch ( IOException ex ) {};
             	}

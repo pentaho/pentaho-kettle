@@ -27,8 +27,9 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.FileSystemOptions;
-import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.cache.WeakRefFilesCache;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
+import org.apache.commons.vfs.impl.StandardFileSystemManager;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -42,34 +43,34 @@ public class KettleVFS
 {
 	private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static KettleVFS kettleVFS;
+	private static final KettleVFS kettleVFS = new KettleVFS();
+	private final DefaultFileSystemManager fsm;
   
     private KettleVFS()
     {
+    	fsm = new StandardFileSystemManager();
+    	try {
+			fsm.setFilesCache(new WeakRefFilesCache());
+			fsm.init();
+		} catch (FileSystemException e) {
+			e.printStackTrace();
+		}
+		
     	// Install a shutdown hook to make sure that the file system manager is closed
     	// This will clean up temporary files in vfs_cache
-    	//
-        Thread thread = new Thread(new Runnable(){
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
         	public void run() {
-		        try
-		        {
-		            FileSystemManager mgr = VFS.getManager();
-		            if (mgr instanceof DefaultFileSystemManager)
-		            {
-		                ((DefaultFileSystemManager)mgr).close();
-		            }
-		        }
-		        catch (FileSystemException e)
-		        {
-		            e.printStackTrace();
-		        }
+        		fsm.close();
 	        }
-        });
-        Runtime.getRuntime().addShutdownHook(thread); 
+        })); 
     }
     
-    private synchronized static void checkHook() {
-    	if (kettleVFS==null) kettleVFS=new KettleVFS(); 
+    public FileSystemManager getFileSystemManager() {
+		return fsm;
+	}
+    
+    public static KettleVFS getInstance() {
+    	return kettleVFS;
     }
     
     public static FileObject getFileObject(String vfsFilename) throws KettleFileException {
@@ -83,10 +84,8 @@ public class KettleVFS
     
     public static FileObject getFileObject(String vfsFilename, VariableSpace space, FileSystemOptions fsOptions) throws KettleFileException
     {
-    	checkHook();
-    	
     	try {
-	        FileSystemManager fsManager = VFS.getManager();
+	        FileSystemManager fsManager = getInstance().getFileSystemManager();
 	        
 	        // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
 	        // In that case, VFS doesn't parse the file correctly.
@@ -97,7 +96,7 @@ public class KettleVFS
 	        // If not, we are going to assume it's a file.
 	        //
 	        boolean relativeFilename=true;
-	        String[] schemes = VFS.getManager().getSchemes();
+	        String[] schemes = fsManager.getSchemes();
 	        for (int i=0;i<schemes.length && relativeFilename;i++)
 	        {
 	            if (vfsFilename.startsWith(schemes[i]+":")) { //$NON-NLS-1$

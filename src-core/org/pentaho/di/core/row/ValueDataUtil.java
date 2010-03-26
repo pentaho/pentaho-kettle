@@ -220,7 +220,7 @@ public class ValueDataUtil
         } catch (Exception e) {
 	    }finally
 	    {
-	    	if(file!=null) try{file.close();}catch(Exception e){};
+	    	if(file!=null) try{file.close();file=null;}catch(Exception e){};
 	    }
         return checksum;
     }
@@ -244,7 +244,7 @@ public class ValueDataUtil
 	    	//throw new Exception(e);
 	    }finally
 	    {
-	    	if(file!=null) try{file.close();}catch(Exception e){};
+	    	if(file!=null) try{file.close();file=null;}catch(Exception e){};
 	    }
     return checksum;
 }
@@ -317,8 +317,8 @@ public class ValueDataUtil
         finally
 	    {
 	    	try{
-	    		if(file!=null) file.close();
-	    		if(fis!=null) fis.close();
+	    		if(fis!=null) fis.close(); fis=null;
+	    		if(file!=null) file.close(); file=null;
 	    	}catch(Exception e){};
 	    }
     }

@@ -247,6 +247,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
             	{
             		try  {
             		     folderObject.close();
+            		     folderObject=null;
             		}
             		catch ( IOException ex ) {};
             	}
@@ -329,6 +330,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 					try  
 					{
 						file_name.close();
+						file_name=null;
 					}
 					catch ( IOException ex ) {};
 				}

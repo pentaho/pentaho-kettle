@@ -526,14 +526,6 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		String realWildcard=environmentSubstitute(wildcard);
 
 		try{
-			
-		     // Here gc() is explicitly called if e.g. createfile is used in the same
-		     // job for the same file. The problem is that after creating the file the
-		     // file object is not properly garbaged collected and thus the file cannot
-		     // be deleted anymore. This is a known problem in the JVM.
-
-		     System.gc();
-		      
 			sourcefilefolder = KettleVFS.getFileObject(realSourceFilefoldername, this);
 			destinationfilefolder = KettleVFS.getFileObject(realDestinationFilefoldername, this);
 			if(!Const.isEmpty(MoveToFolder)) movetofolderfolder  =KettleVFS.getFileObject(MoveToFolder, this);

@@ -33,7 +33,6 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.VFS;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -757,7 +756,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 					  }
 					  // Close file object
 					  // close() does not release resources!
-					  VFS.getManager().closeFileSystem(item.getFileSystem()); 
+					  KettleVFS.getInstance().getFileSystemManager().closeFileSystem(item.getFileSystem()); 
 					  if(items!=null) items=null;
 				  }
 	         }// End for
