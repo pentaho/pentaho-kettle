@@ -40,7 +40,7 @@
 										</deck>
 								    </tabpanel>	
 									<tabpanel id="acl-tab">
-										<deck id="acl-deck">
+										<deck id="acl-deck"  flex="1">
 											<vbox id="no-acl-box" flex="1">
 												<label value="${PermissionsTab.NoPermission}"/> 
 											</vbox>
