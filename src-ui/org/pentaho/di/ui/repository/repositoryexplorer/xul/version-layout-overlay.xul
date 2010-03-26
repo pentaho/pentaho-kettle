@@ -3,7 +3,7 @@
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul">
 	<vbox flex="1"  id="revision-box" visible="true">
 		<hbox>
-			<label id="revision-label" value="Version History:" />
+			<label id="revision-label" value="" />
 			<label id="spacer-label" flex="1" />
 			<button id="revision-restore" image="images/restore.png" onclick="browseController.restoreRevision()"/>
 			<button id="revision-open" image="images/open.png" onclick="browseController.openRevision()"/>
@@ -12,8 +12,8 @@
 
 							<tabbox id="file-properties-tabs" flex="1">
 								<tabs>
-									<tab id="history" label="History" />
-									<tab id="permission" label="Permission" />
+									<tab id="history" label="Version History" />
+									<tab id="permission" label="Permissions" />
 								</tabs>
 								<tabpanels flex="1">
 									<tabpanel id="history-tab">
