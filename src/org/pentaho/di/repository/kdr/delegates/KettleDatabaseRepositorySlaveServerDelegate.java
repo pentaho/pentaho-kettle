@@ -76,8 +76,7 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
 
     RowMetaAndData row = getSlaveServer(id_slave_server);
     if (row == null) {
-      throw new KettleDatabaseException(BaseMessages.getString(PKG,
-          "SlaveServer.SlaveCouldNotBeFound", id_slave_server.toString())); //$NON-NLS-1$
+      throw new KettleDatabaseException(BaseMessages.getString(PKG, "SlaveServer.SlaveCouldNotBeFound", id_slave_server.toString())); //$NON-NLS-1$
     }
 
     slaveServer.setName(row.getString(KettleDatabaseRepository.FIELD_SLAVE_NAME, null)); //$NON-NLS-1$
