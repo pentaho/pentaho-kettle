@@ -16,8 +16,6 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -145,7 +143,7 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
           ClusterSchemaDialog csd = new ClusterSchemaDialog(shell, clusterSchema, repository.getSlaveServers());
           if(csd.open()) {
             if(clusterSchema.getName() != null  && !clusterSchema.getName().equals("")) {//$NON-NLS-1$
-              repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class, "ClusterController.Message.UpdatingCluster", clusterSchema.getName())); //$NON-NLS-1$
+              repository.insertLogEntry(BaseMessages.getString(PKG, "ClusterController.Message.UpdatingCluster", clusterSchema.getName())); //$NON-NLS-1$
               repository.save(clusterSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
             } else {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
