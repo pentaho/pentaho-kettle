@@ -184,6 +184,7 @@ import org.pentaho.di.repository.VersionRepository;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
+import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -3078,9 +3079,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           rep.disconnect();
           SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
         }
-
         RepositoryDirectory directoryTree = null;
-
         try {
           setRepository(repository);
           directoryTree = rep.loadRepositoryDirectoryTree();
@@ -4730,165 +4729,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   /**
-   * updates global shared objects to the transMeta & jobMeta only if the user is connected to the repository
-   */
-
-  private void updateFromRepository() throws KettleException {
-    // Get the ids for all the shared objects
-    ObjectId[] dbIdList = rep.getDatabaseIDs(false);
-    ObjectId[] partitionIdList = rep.getPartitionSchemaIDs(false);
-    ObjectId[] clusterIdList = rep.getClusterIDs(false);
-    ObjectId[] slaveIdList = rep.getSlaveIDs(false);
-
-    List<DatabaseMeta> databaseMetas = new ArrayList<DatabaseMeta>();
-    List<SlaveServer> slaveServers = new ArrayList<SlaveServer>();
-    List<PartitionSchema> partitions = new ArrayList<PartitionSchema>();
-    List<ClusterSchema> clusters = new ArrayList<ClusterSchema>();
-
-    // Load all the shared object into their respective list
-    for (ObjectId dbId : dbIdList) {
-      databaseMetas.add(rep.loadDatabaseMeta(dbId, null));
-    }
-    for (ObjectId slaveId : slaveIdList) {
-      slaveServers.add(rep.loadSlaveServer(slaveId, null));
-    }
-    for (ObjectId partitionId : partitionIdList) {
-      partitions.add(rep.loadPartitionSchema(partitionId, null));
-    }
-    for (ObjectId clusterId : clusterIdList) {
-      clusters.add(rep.loadClusterSchema(clusterId, rep.getSlaveServers(), null));
-    }
-    
-    for (TabMapEntry entry : delegates.tabs.getTabs()) {
-      Object managedObject = entry.getObject().getManagedObject();
-      if (managedObject instanceof TransMeta) {
-        TransMeta transMeta = (TransMeta) managedObject;
-        for(int i=0;i<transMeta.nrDatabases();i++) {
-          DatabaseMeta dbMeta = transMeta.getDatabase(i);
-          if(!dbMeta.isShared()) {
-            transMeta.removeDatabase(i);
-          }
-        }
-        // Remove all but the shared slave server from transformation
-        List<SlaveServer> slaveList = transMeta.getSlaveServers();
-        if(slaveList != null) {
-          int index = 0;
-          SlaveServer[] slavesToRemove = new SlaveServer[slaveList.size()];
-          for(int i=0;i<slaveList.size();i++) {
-            SlaveServer slave = slaveList.get(i);
-            if(!slave.isShared()) {
-              slavesToRemove[index++] = slave;
-            }
-          }
-          for(SlaveServer slaveToRemove:slavesToRemove) {
-            slaveList.remove(slaveToRemove);
-          }
-        }
-        
-        // Remove all but the shared partitions from transformation
-        List<PartitionSchema> partitionList = transMeta.getPartitionSchemas();
-        if(partitionList != null) {
-          int index = 0;
-          PartitionSchema[] partitionsToRemove = new PartitionSchema[partitionList.size()];
-          for(int i=0;i<partitionList.size();i++) {
-            PartitionSchema partition = partitionList.get(i);
-            if(!partition.isShared()) {
-              partitionsToRemove[index++] = partition;
-            }
-          }
-          for(PartitionSchema partitionToRemove:partitionsToRemove) {
-            partitionList.remove(partitionToRemove);
-          }
-        }
-
-        // Remove all but the shared clusters from transformation
-        List<ClusterSchema> clusterList = transMeta.getClusterSchemas();
-        if(clusterList != null) {
-          int index = 0;
-          ClusterSchema[] clustersToRemove = new ClusterSchema[clusterList.size()];
-          for(int i=0;i<clusterList.size();i++) {
-            ClusterSchema cluster = clusterList.get(i);
-            if(!cluster.isShared()) {
-              clustersToRemove[index++] = cluster;
-            }
-          }
-          for(ClusterSchema clusterToRemove:clustersToRemove) {
-            clusterList.remove(clusterToRemove);
-          }
-        }
-        // Add these shared objects(partition, cluster, slave and database) to the transformation only if they are not already there
-        for (DatabaseMeta databaseMeta : databaseMetas) {
-          if (databaseMeta != null && !contains(databaseMeta.getName(), transMeta.getDatabaseNames())) {
-            transMeta.addDatabase(databaseMeta);
-          }
-        }
-        for (SlaveServer slaveServer : slaveServers) {
-          if (slaveServer != null && !contains(slaveServer.getName(), transMeta.getSlaveServerNames())) {
-            transMeta.addOrReplaceSlaveServer(slaveServer);
-          }
-        }
-        for (PartitionSchema partition : partitions) {
-          if (partition != null && !contains(partition.getName(), transMeta.getPartitionSchemasNames())) {
-            transMeta.addOrReplacePartitionSchema(partition);
-          }
-        }
-        for (ClusterSchema cluster : clusters) {
-          if (cluster != null && !contains(cluster.getName(), transMeta.getClusterSchemaNames())) {
-            transMeta.addOrReplaceClusterSchema(cluster);
-          }
-        }
-      } else if (managedObject instanceof JobMeta) {
-        JobMeta jobMeta = (JobMeta) managedObject;
-        // Remove all but the shared database from job
-        for(int i=0;i<jobMeta.nrDatabases();i++) {
-          DatabaseMeta dbMeta = jobMeta.getDatabase(i);
-          if(!dbMeta.isShared()) {
-            jobMeta.removeDatabase(i);
-          }
-        }
-        
-        // Remove all but the shared slave server from job
-        List<SlaveServer> slaveList = jobMeta.getSlaveServers();
-        if(slaveList != null) {
-          int index = 0;
-          SlaveServer[] slavesToRemove = new SlaveServer[slaveList.size()];
-          for(int i=0;i<slaveList.size();i++) {
-            SlaveServer slave = slaveList.get(i);
-            if(!slave.isShared()) {
-              slavesToRemove[index++] = slave;
-            }
-          }
-          for(SlaveServer slaveToRemove:slavesToRemove) {
-            slaveList.remove(slaveToRemove);
-          }
-        }
-        // Add these shared objects(slave and database) to the jobs only if they are not already there        
-        for (DatabaseMeta databaseMeta : databaseMetas) {
-          if (databaseMeta != null && !contains(databaseMeta.getName(), jobMeta.getDatabaseNames())) {
-            jobMeta.addDatabase(databaseMeta);
-          }
-        }
-        for (SlaveServer slaveServer : slaveServers) {
-          if (slaveServer != null && !contains(slaveServer.getName(), jobMeta.getSlaveServerNames())) {
-            jobMeta.addOrReplaceSlaveServer(slaveServer);
-          }
-        }
-      }
-
-    }
-  }
-
-  /**
    * Refresh the object selection tree (on the left of the screen)
    */
   public void refreshTree() {
-    try {
-      if (rep != null) {
-        updateFromRepository();
-      }
-    } catch (KettleException ke) {
-      throw new RuntimeException(ke);
-    }
     if (shell.isDisposed())
       return;
 
@@ -7665,18 +7508,5 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public RepositorySecurityManager getSecurityManager() {
     return rep.getSecurityManager();
-  }
-
-  /*
-   * ========================= End XulEventHandler Methods
-   * ==========================
-   */
-  private boolean contains(String name, String[] names) {
-    for (String n : names) {
-      if (n != null && n.equals(name)) {
-        return true;
-      }
-    }
-    return false;
   }
 }
