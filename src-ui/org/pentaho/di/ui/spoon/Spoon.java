@@ -3911,11 +3911,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     return exit;
   }
 
-  public boolean saveFile() throws KettleException {
-
-    EngineMetaInterface meta = getActiveMeta();
-    if (meta != null) {
-      return saveToFile(meta);
+  public boolean saveFile() {
+    try {
+      EngineMetaInterface meta = getActiveMeta();
+      if (meta != null) {
+        return saveToFile(meta);
+      }
+    } catch(Exception e) {
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.File.Save.Fail.Title"), BaseMessages.getString(PKG, "Spoon.File.Save.Fail.Message"), e);
     }
     return false;
   }
