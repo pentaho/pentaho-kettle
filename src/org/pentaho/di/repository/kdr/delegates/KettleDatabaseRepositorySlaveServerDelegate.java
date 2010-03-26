@@ -82,6 +82,7 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
     slaveServer.setName(row.getString(KettleDatabaseRepository.FIELD_SLAVE_NAME, null)); //$NON-NLS-1$
     slaveServer.setHostname(row.getString(KettleDatabaseRepository.FIELD_SLAVE_HOST_NAME, null)); //$NON-NLS-1$
     slaveServer.setPort(row.getString(KettleDatabaseRepository.FIELD_SLAVE_PORT, null)); //$NON-NLS-1$
+    slaveServer.setWebAppName(row.getString(KettleDatabaseRepository.FIELD_SLAVE_WEB_APP_NAME, null)); //$NON-NLS-1$
     slaveServer.setUsername(row.getString(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, null)); //$NON-NLS-1$
     slaveServer.setPassword(Encr.decryptPasswordOptionallyEncrypted(row.getString(
         KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, null))); //$NON-NLS-1$
@@ -111,6 +112,8 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
         slaveServer.getHostname());
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING),
         slaveServer.getPort());
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_WEB_APP_NAME, ValueMetaInterface.TYPE_STRING),
+        slaveServer.getWebAppName());
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING),
         slaveServer.getUsername());
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING), Encr
@@ -141,6 +144,8 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
         slaveServer.getHostname());
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PORT, ValueMetaInterface.TYPE_STRING),
         slaveServer.getPort());
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_WEB_APP_NAME, ValueMetaInterface.TYPE_STRING),
+        slaveServer.getWebAppName());
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_USERNAME, ValueMetaInterface.TYPE_STRING),
         slaveServer.getUsername());
     table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_SLAVE_PASSWORD, ValueMetaInterface.TYPE_STRING), Encr

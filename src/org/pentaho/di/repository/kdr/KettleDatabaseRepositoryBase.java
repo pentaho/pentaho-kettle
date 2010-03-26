@@ -319,6 +319,7 @@ public class KettleDatabaseRepositoryBase {
 	public static final String FIELD_SLAVE_PROXY_PORT = "PROXY_PORT";
 	public static final String FIELD_SLAVE_NON_PROXY_HOSTS = "NON_PROXY_HOSTS";
 	public static final String FIELD_SLAVE_MASTER = "MASTER";
+  public static final String FIELD_SLAVE_WEB_APP_NAME = "WEB_APP_NAME";
 
 	public static final String TABLE_R_CLUSTER_SLAVE          = "R_CLUSTER_SLAVE";
 	public static final String FIELD_CLUSTER_SLAVE_ID_CLUSTER_SLAVE = "ID_CLUSTER_SLAVE";
