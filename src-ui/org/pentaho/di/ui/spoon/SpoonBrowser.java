@@ -24,7 +24,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.logging.LogWriter;
@@ -33,6 +32,7 @@ import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulLoader;
+import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
@@ -68,8 +68,9 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
   private XulToolbarbutton back = null;
 
   private XulToolbarbutton forward = null;
+  
+  private XulTextbox location;
 
-  private Text urlText = null;
 
   public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl, boolean isURL) throws SWTError {
     this(parent, spoon, stringUrl, isURL, true, null);
@@ -95,9 +96,12 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
       // HACK ALERT : setting this in some sort of property would be far nicer
       //
       // TODO figure out what this was supposed to do.
-      //          Control swtToolBar = (Control)toolbar.getManagedObject();
-      //          FormData fdToolBar= (FormData) swtToolBar.getLayoutData();
-      //          fdToolBar.right = null;
+                Control swtToolBar = (Control)toolbar.getManagedObject();
+                FormData fdToolBar= (FormData) swtToolBar.getLayoutData();
+                fdToolBar.left = new FormAttachment(0, 0);
+                fdToolBar.right = new FormAttachment(100, 0);
+                fdToolBar.top = new FormAttachment(0, 0);
+                
     }
 
     browser = createBrowser();
@@ -118,7 +122,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
         if (back != null) {
           back.setDisabled(!browser.isBackEnabled());
           forward.setDisabled(!browser.isForwardEnabled());
-          urlText.setText(browser.getUrl());
+          location.setValue(browser.getUrl());
         }
       }
 
@@ -159,20 +163,16 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
 
       // Add a URL
-      urlText = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.READ_ONLY | SWT.BORDER);
-      FormData fdUrlText = new FormData();
-      fdUrlText.top = new FormAttachment(swtToolBar, 0, SWT.CENTER);
-      fdUrlText.left = new FormAttachment(swtToolBar, 20);
-      fdUrlText.right = new FormAttachment(100, 0);
-      urlText.setLayoutData(fdUrlText);
 
       back = (XulToolbarbutton) toolbar.getElementById("browse-back");
       back.setDisabled(true);
       forward = (XulToolbarbutton) toolbar.getElementById("browse-forward");
       forward.setLabel(BaseMessages.getString(PKG, "SpoonBrowser.Dialog.Forward"));
       forward.setDisabled(false);
+      location = (XulTextbox) toolbar.getElementById("browser-address");
       Control toolbarControl = (Control) toolbar.getManagedObject();
       toolbarControl.setLayoutData(new FormData());
+      toolbarControl.setParent(composite);
     } catch (Exception e) {
       e.printStackTrace();
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR), e);
