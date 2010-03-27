@@ -1,0 +1,991 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>Sample Transformation</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <trans_type>Normal</trans_type>
+    <trans_status>0</trans_status>
+    <directory>&#47;home&#47;joe</directory>
+    <parameters>
+    </parameters>
+    <log>
+<trans-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>Batch ID</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>Channel ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>Transformation name</name></field><field><id>STATUS</id><enabled>Y</enabled><name>Status</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>Read</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>Written</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>Updated</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>Input</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>Output</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>Rejected</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>Errors</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>Date range start</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>Date range end</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>Log date</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>Dependency date</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>Start time</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>Log field</name></field></trans-log-table>
+<perf-log-table><connection/>
+<schema/>
+<table/>
+<interval/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>Batch ID</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>Nr</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>Log date</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>Transformation name</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>Step name</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>Copy</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>Read</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>Written</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>Updated</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>Input</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>Output</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>Rejected</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>Errors</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>Input buffer</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>Output buffer</name></field></perf-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>Batch ID</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>Channel ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>Log date</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>Type</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>Name</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>Copy</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>Directory</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>File name</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>Revision</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>Parent channel ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>Root channel ID</name></field></channel-log-table>
+<step-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>Batch ID</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>Channel ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>Log date</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>Transformation name</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>Step name</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>Copy</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>Read</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>Written</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>Updated</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>Input</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>Output</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>Rejected</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>Errors</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>Log field</name></field></step-log-table>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>10000</size_rowset>
+    <sleep_time_empty>50</sleep_time_empty>
+    <sleep_time_full>50</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>50000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user>joe</modified_user>
+  <modified_date>2010&#47;03&#47;27 11:27:17.796</modified_date>
+  </info>
+  <notepads>
+    <notepad>
+      <note>To test this transformation, you will need to:
+
+  - Make sure the Hypersonic sample database is running 
+    (.\pdi-ee\data-integration-server\data\start_hypersonic.bat)
+  - Open the Table Output step and click the SQL button to 
+    create the target output table</note>
+      <xloc>441</xloc>
+      <yloc>148</yloc>
+      <width>312</width>
+      <heigth>85</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+  </notepads>
+  <connection>
+    <name>sampledata</name>
+    <server>localhost</server>
+    <type>HYPERSONIC</type>
+    <access>Native</access>
+    <database>sampledata</database>
+    <port>9001</port>
+    <username>pentaho_admin</username>
+    <password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>9001</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <order>
+  <hop> <from>Filter Missing Zips</from><to>Lookup Missing Zips</to><enabled>Y</enabled> </hop>  <hop> <from>Read Postal Codes</from><to>Lookup Missing Zips</to><enabled>Y</enabled> </hop>  <hop> <from>Lookup Missing Zips</from><to>Prepare Field Layout</to><enabled>Y</enabled> </hop>  <hop> <from>Filter Missing Zips</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Prepare Field Layout</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Read Sales Data</from><to>Filter Missing Zips</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper</from><to>Select values</to><enabled>Y</enabled> </hop>  <hop> <from>Select values</from><to>Number range</to><enabled>Y</enabled> </hop>  <hop> <from>Number range</from><to>Write to Database</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Filter Missing Zips</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+<send_true_to>Value Mapper</send_true_to>
+<send_false_to>Lookup Missing Zips</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>POSTALCODE</leftvalue>
+ <function>IS NOT NULL</function>
+ <rightvalue/>
+ </condition>
+    </compare>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>197</xloc>
+      <yloc>44</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Lookup Missing Zips</name>
+    <type>StreamLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <from>Read Postal Codes</from>
+    <input_sorted>N</input_sorted>
+    <preserve_memory>Y</preserve_memory>
+    <sorted_list>N</sorted_list>
+    <integer_pair>N</integer_pair>
+    <lookup>
+      <key>
+        <name>CITY</name>
+        <field>CITY</field>
+      </key>
+      <key>
+        <name>STATE</name>
+        <field>STATE</field>
+      </key>
+      <value>
+        <name>POSTALCODE</name>
+        <rename>ZIP_RESOLVED</rename>
+        <default/>
+        <type>String</type>
+      </value>
+    </lookup>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>197</xloc>
+      <yloc>171</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Number range</name>
+    <type>NumberRange</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <inputField>SALES</inputField>
+    <outputField>DEALSIZE</outputField>
+    <fallBackValue>unknown</fallBackValue>
+    <rules>
+      <rule>
+        <lower_bound>-1.7976931348623157E308</lower_bound>
+        <upper_bound>3000.0</upper_bound>
+        <value>Small</value>
+      </rule>
+      <rule>
+        <lower_bound>3000.0</lower_bound>
+        <upper_bound>7000.0</upper_bound>
+        <value>Medium</value>
+      </rule>
+      <rule>
+        <lower_bound>7000.0</lower_bound>
+        <upper_bound>1.7976931348623157E308</upper_bound>
+        <value>Large</value>
+      </rule>
+    </rules>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>607</xloc>
+      <yloc>42</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Prepare Field Layout</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>      <field>        <name>ORDERNUMBER</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>QUANTITYORDERED</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>PRICEEACH</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>ORDERLINENUMBER</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>SALES</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>ORDERDATE</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>STATUS</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>QTR_ID</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>MONTH_ID</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>YEAR_ID</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>PRODUCTLINE</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>MSRP</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>PRODUCTCODE</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>CUSTOMERNAME</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>PHONE</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>ADDRESSLINE1</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>ADDRESSLINE2</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>CITY</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>STATE</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>ZIP_RESOLVED</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>COUNTRY</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>TERRITORY</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>CONTACTLASTNAME</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>CONTACTFIRSTNAME</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>        <select_unspecified>N</select_unspecified>
+      <meta>        <name>ZIP_RESOLVED</name>
+        <rename>POSTALCODE</rename>
+        <type>String</type>
+        <length>8</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>291</xloc>
+      <yloc>111</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Read Postal Codes</name>
+    <type>TextFileInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <accept_filenames>N</accept_filenames>
+    <passing_through_fields>N</passing_through_fields>
+    <accept_field/>
+    <accept_stepname/>
+    <separator>,</separator>
+    <enclosure>&quot;</enclosure>
+    <enclosure_breaks>N</enclosure_breaks>
+    <escapechar/>
+    <header>Y</header>
+    <nr_headerlines>1</nr_headerlines>
+    <footer>N</footer>
+    <nr_footerlines>1</nr_footerlines>
+    <line_wrapped>N</line_wrapped>
+    <nr_wraps>1</nr_wraps>
+    <layout_paged>N</layout_paged>
+    <nr_lines_per_page>80</nr_lines_per_page>
+    <nr_lines_doc_header>0</nr_lines_doc_header>
+    <noempty>Y</noempty>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <rownumByFile>N</rownumByFile>
+    <rownum_field/>
+    <format>DOS</format>
+    <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
+    <file>
+      <name>${Internal.Transformation.Filename.Directory}\files\Zipssortedbycitystate.csv</name>
+      <filemask/>
+      <file_required>N</file_required>
+      <include_subfolders>N</include_subfolders>
+      <type>CSV</type>
+      <compression>None</compression>
+    </file>
+    <filters>
+    </filters>
+    <fields>
+      <field>
+        <name>CITY</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>23</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>STATE</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>2</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>POSTALCODE</name>
+        <type>Integer</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>5</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+    </fields>
+    <limit>0</limit>
+    <error_ignored>N</error_ignored>
+    <error_line_skipped>N</error_line_skipped>
+    <error_count_field/>
+    <error_fields_field/>
+    <error_text_field/>
+    <bad_line_files_destination_directory/>
+    <bad_line_files_extension>warning</bad_line_files_extension>
+    <error_line_files_destination_directory/>
+    <error_line_files_extension>error</error_line_files_extension>
+    <line_number_files_destination_directory/>
+    <line_number_files_extension>line</line_number_files_extension>
+    <date_format_lenient>Y</date_format_lenient>
+    <date_format_locale>en_us</date_format_locale>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>57</xloc>
+      <yloc>171</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Read Sales Data</name>
+    <type>TextFileInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <accept_filenames>N</accept_filenames>
+    <passing_through_fields>N</passing_through_fields>
+    <accept_field/>
+    <accept_stepname/>
+    <separator>,</separator>
+    <enclosure>&quot;</enclosure>
+    <enclosure_breaks>N</enclosure_breaks>
+    <escapechar/>
+    <header>Y</header>
+    <nr_headerlines>1</nr_headerlines>
+    <footer>N</footer>
+    <nr_footerlines>1</nr_footerlines>
+    <line_wrapped>N</line_wrapped>
+    <nr_wraps>1</nr_wraps>
+    <layout_paged>N</layout_paged>
+    <nr_lines_per_page>80</nr_lines_per_page>
+    <nr_lines_doc_header>0</nr_lines_doc_header>
+    <noempty>Y</noempty>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <rownumByFile>N</rownumByFile>
+    <rownum_field/>
+    <format>DOS</format>
+    <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
+    <file>
+      <name>${Internal.Transformation.Filename.Directory}\files\sales_data.csv</name>
+      <filemask/>
+      <file_required>N</file_required>
+      <include_subfolders>N</include_subfolders>
+      <type>CSV</type>
+      <compression>None</compression>
+    </file>
+    <filters>
+    </filters>
+    <fields>
+      <field>
+        <name>ORDERNUMBER</name>
+        <type>Integer</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>5</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>QUANTITYORDERED</name>
+        <type>Integer</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>2</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>PRICEEACH</name>
+        <type>Number</type>
+        <format>#,##0.###</format>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>9</length>
+        <precision>3</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>ORDERLINENUMBER</name>
+        <type>Integer</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>2</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>SALES</name>
+        <type>Number</type>
+        <format>#,##0.###</format>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>11</length>
+        <precision>3</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>ORDERDATE</name>
+        <type>Date</type>
+        <format>dd&#47;MM&#47;yyyy</format>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>10</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>STATUS</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>10</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>QTR_ID</name>
+        <type>Integer</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>1</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>MONTH_ID</name>
+        <type>Integer</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>2</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>YEAR_ID</name>
+        <type>Integer</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>4</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>PRODUCTLINE</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>16</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>MSRP</name>
+        <type>Integer</type>
+        <format/>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>3</length>
+        <precision>0</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>PRODUCTCODE</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>9</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>CUSTOMERNAME</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>34</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>PHONE</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>17</length>
+        <precision>-1</precision>
+        <trim_type>left</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>ADDRESSLINE1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>42</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>ADDRESSLINE2</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>11</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>CITY</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>14</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>STATE</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>13</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>POSTALCODE</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>9</length>
+        <precision>-1</precision>
+        <trim_type>left</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>COUNTRY</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>13</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>TERRITORY</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>5</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>CONTACTLASTNAME</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>11</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>CONTACTFIRSTNAME</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>-</nullif>
+        <ifnull/>
+        <position>-1</position>
+        <length>10</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+    </fields>
+    <limit>0</limit>
+    <error_ignored>N</error_ignored>
+    <error_line_skipped>N</error_line_skipped>
+    <error_count_field/>
+    <error_fields_field/>
+    <error_text_field/>
+    <bad_line_files_destination_directory/>
+    <bad_line_files_extension>warning</bad_line_files_extension>
+    <error_line_files_destination_directory/>
+    <error_line_files_extension>error</error_line_files_extension>
+    <line_number_files_destination_directory/>
+    <line_number_files_extension>line</line_number_files_extension>
+    <date_format_lenient>Y</date_format_lenient>
+    <date_format_locale>en_us</date_format_locale>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>56</xloc>
+      <yloc>44</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Select values</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>        <select_unspecified>N</select_unspecified>
+      <meta>        <name>SALES</name>
+        <rename>SALES</rename>
+        <type>Number</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask>#.#</conversion_mask>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>496</xloc>
+      <yloc>43</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Value Mapper</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <field_to_use>COUNTRY</field_to_use>
+    <target_field/>
+    <non_match_default/>
+    <fields>
+      <field>
+        <source_value>United States</source_value>
+        <target_value>USA</target_value>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>396</xloc>
+      <yloc>44</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Write to Database</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>sampledata</connection>
+    <schema/>
+    <table>SALES_DATA</table>
+    <commit>1000</commit>
+    <truncate>Y</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>N</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <fields>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>732</xloc>
+      <yloc>42</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
+</transformation>
