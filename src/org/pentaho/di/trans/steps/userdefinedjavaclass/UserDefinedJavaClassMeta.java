@@ -61,7 +61,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
-import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits;
 import org.w3c.dom.Node;
 
 public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaInterface
@@ -303,14 +302,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
     public void setDefault()
     {
-        try {
-        	// Note the tab name isn't i18n because it is a Java Class name and i18n characters might make it choke.
-			definitions.add(new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor",
-			        UserDefinedJavaClassCodeSnippits.getSnippitsHelper().getDefaultCode()));
-		} catch (KettleXMLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	// Moved the default code generation out of Meta since the Snippits class is in the UI package which isn't in the classpath.
     }
     
     private boolean checkClassCookings(LogChannelInterface logChannel) {

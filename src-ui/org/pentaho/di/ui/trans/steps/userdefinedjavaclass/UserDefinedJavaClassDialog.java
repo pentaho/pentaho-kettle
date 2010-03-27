@@ -81,6 +81,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -1007,14 +1008,23 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		}
 
 		List<UserDefinedJavaClassDef> definitions = input.getDefinitions();
-		if (definitions.size() > 0) {
-			for (UserDefinedJavaClassDef def : definitions) {
-				if (def.isTransformClass()) strActiveScript = def.getClassName();
-				addCtab(def.getClassName(), def.getSource(), TabAddActions.ADD_DEFAULT);
+		if (definitions.size() == 0) {
+	        try {
+	        	definitions = new ArrayList<UserDefinedJavaClassDef>();
+	        	// Note the tab name isn't i18n because it is a Java Class name and i18n characters might make it choke.
+				definitions.add(new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor",
+				        UserDefinedJavaClassCodeSnippits.getSnippitsHelper().getDefaultCode()));
+				input.replaceDefinitions(definitions);
+			} catch (KettleXMLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} else {
-			addCtab("", "", TabAddActions.ADD_DEFAULT);
 		}
+		for (UserDefinedJavaClassDef def : definitions) {
+			if (def.isTransformClass()) strActiveScript = def.getClassName();
+			addCtab(def.getClassName(), def.getSource(), TabAddActions.ADD_DEFAULT);
+		}
+
 		setActiveCtab(strActiveScript);
 		refresh();
 
@@ -1389,11 +1399,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 						itemField.setText(itemName);
 						itemField.setData(itemData);
 						TreeItem itemFieldGet = new TreeItem(itemField, SWT.NULL);
-						itemFieldGet.setImage(imageArrowOrange);
 						itemFieldGet.setText(String.format("get%s()",v.getTypeDesc()));
 						itemFieldGet.setData(FieldHelper.getGetSignature(itemData, v));
 						TreeItem itemFieldSet = new TreeItem(itemField, SWT.NULL);
-						itemFieldSet.setImage(imageArrowOrange);
 						itemFieldSet.setText("setValue()");
 						itemFieldSet.setData(itemData+".setValue(r, value);");
 					}
@@ -1408,11 +1416,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 						itemField.setText(itemName);
 						itemField.setData(itemData);
 						TreeItem itemFieldGet = new TreeItem(itemField, SWT.NULL);
-						itemFieldGet.setImage(imageArrowOrange);
 						itemFieldGet.setText(String.format("get%s()",v.getTypeDesc()));
 						itemFieldGet.setData(FieldHelper.getGetSignature(itemData, v));
 						TreeItem itemFieldSet = new TreeItem(itemField, SWT.NULL);
-						itemFieldSet.setImage(imageArrowOrange);
 						itemFieldSet.setText("setValue()");
 						itemFieldSet.setData(itemData+".setValue(r, value);");
 					}
