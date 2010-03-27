@@ -53,6 +53,7 @@ import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.components.XulTab;
 import org.pentaho.ui.xul.containers.XulDeck;
+import org.pentaho.ui.xul.containers.XulTabbox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -89,15 +90,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   protected XulTree revisionTable;
 
-  protected XulDeck historyDeck;
-
   protected UIRepositoryDirectory repositoryDirectory;
 
   protected ContextChangeVetoerCollection contextChangeVetoers;
-
-  protected static final int NO_HISTORY = 0;
-
-  protected static final int HISTORY = 1;
 
   protected BindingFactory bf;
 
@@ -120,6 +115,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
    */
   protected Map<ObjectId, UIRepositoryDirectory> dirMap;
 
+  private XulTabbox  filePropertiesTabbox;
+  
   public BrowseController() {
   }
 
@@ -153,7 +150,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     historyTab = (XulTab) document.getElementById("history"); //$NON-NLS-1$     
     folderTree = (XulTree) document.getElementById("folder-tree"); //$NON-NLS-1$
     fileTable = (XulTree) document.getElementById("file-table"); //$NON-NLS-1$ 
-
+    filePropertiesTabbox = (XulTabbox) document.getElementById("file-properties-tabs"); //$NON-NLS-1$
+    
     if (!repositoryDirectory.isVisible()) {
       folderTree.setHiddenrootnode(true);
     } else {
@@ -274,8 +272,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   private void createRevisionBindings() {
     revisionTable = (XulTree) document.getElementById("revision-table"); //$NON-NLS-1$
-    historyDeck = (XulDeck) document.getElementById("history-deck");//$NON-NLS-1$ 
-
     bf.setBindingType(Binding.Type.ONE_WAY);
     Binding revisionTreeBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-table", //$NON-NLS-1$ //$NON-NLS-2$
         "!disabled"); //$NON-NLS-1$
@@ -301,7 +297,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     Binding revisionBinding = null;
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(folderTree, "selectedItems", this, "noHistoryDeck"); //$NON-NLS-1$  //$NON-NLS-2$
+    bf.createBinding(folderTree, "selectedItems", this, "historyTabVisibility"); //$NON-NLS-1$  //$NON-NLS-2$
 
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -319,7 +315,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
             }
             if (ro.get(0) instanceof UIRepositoryDirectory) {
               historyTab.setVisible(false);
-              historyDeck.setSelectedIndex(NO_HISTORY);
+              filePropertiesTabbox.setSelectedIndex(0);
               return null;
             }
             try {
@@ -333,7 +329,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
               throw new RuntimeException(e);
             }
             historyTab.setVisible(true);
-            historyDeck.setSelectedIndex(HISTORY);
             return revisions;
           }
 
@@ -355,11 +350,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   }
 
-  public <T> void setNoHistoryDeck(Collection<T> items) {
-    if (historyDeck != null) {
+  public <T> void setHistoryTabVisibility(Collection<T> items) {
       historyTab.setVisible(false);
-      historyDeck.setSelectedIndex(NO_HISTORY);
-    }
+      filePropertiesTabbox.setSelectedIndex(0);
   }
 
   public String getName() {
