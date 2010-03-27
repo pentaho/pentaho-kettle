@@ -42,6 +42,7 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.custom.CTabFolder;
@@ -1193,8 +1194,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     cursor_hand.dispose();
     cursor_hourglass.dispose();
 
-    if (destroy && !display.isDisposed())
-      display.dispose();
+    if (destroy && !display.isDisposed()){
+      try{
+        display.dispose();
+      } catch(SWTException e){
+        // dispose errors
+      }
+    }
   }
 
   public boolean isDisposed() {
