@@ -27,7 +27,9 @@ public class SAPLibraryTester {
 
 	public static boolean isJCoLibAvailable() {
 		try {
-			Class.forName(JCO_LIB_EXISTENCE_TEST_CLASS);
+			Object c = Class.forName(JCO_LIB_EXISTENCE_TEST_CLASS);
+			if (c == null)
+				return false;
 			return true;
 		} catch (NoClassDefFoundError e) {
 			return false;
@@ -38,8 +40,12 @@ public class SAPLibraryTester {
 
 	public static boolean isJCoImplAvailable() {
 		try {
-			Class.forName(JCO_IMPL_EXISTENCE_TEST_CLASS);
+			Object c = Class.forName(JCO_IMPL_EXISTENCE_TEST_CLASS);
+			if (c == null)
+				return false;
 			return true;
+		} catch (UnsatisfiedLinkError e) {
+			return false;
 		} catch (NoClassDefFoundError e) {
 			return false;
 		} catch (ClassNotFoundException e) {
