@@ -116,13 +116,8 @@ import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCo
 import org.pentaho.di.ui.trans.steps.userdefinedjavaclass.UserDefinedJavaClassCodeSnippits.Snippit;
 
 public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDialogInterface {
-	private static Class<?>	PKG					= UserDefinedJavaClassMeta.class;	// for
-	// i18n
-	// purposes,
-	// needed by
-	// Translator2!!
-	// $NON-NLS-1$
-
+	private static Class<?>	PKG					= UserDefinedJavaClassMeta.class;
+	
 	private ModifyListener	lsMod;
 	private SashForm		wSash;
 
@@ -139,26 +134,16 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 	private Tree			wTree;
 	private TreeItem		wTreeClassesItem;
-	private TreeItem		wTreeClassesitem;
 	private Listener		lsTree;
 
-	private Image			imageActiveScript	= null;
-	private Image			imageInactiveScript	= null;
-	private Image			imageInputFields	= null;
-	private Image			imageOutputFields	= null;
-	private Image			imageArrowOrange	= null;
-	private Image			imageArrowGreen		= null;
-	private Image			imageUnderGreen		= null;
+	private Image			imageActiveScript, imageInactiveScript, imageInputFields, imageOutputFields, imageArrowOrange, imageArrowGreen, imageUnderGreen;
 
-	private CTabFolder		folder;
-	private Menu			cMenu;
-	private Menu			tMenu;
+	private CTabFolder		folder, wTabFolder;
+	private Menu			cMenu, tMenu;
 
 	// Suport for Rename Tree
 	private TreeItem[]		lastItem;
 	private TreeEditor		editor;
-
-	private CTabFolder		wTabFolder;
 
 	private enum TabActions {
 		DELETE_ITEM, ADD_ITEM, RENAME_ITEM, SET_ACTIVE_ITEM
@@ -174,37 +159,24 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 	private UserDefinedJavaClassCodeSnippits	snippitsHelper;
 	private UserDefinedJavaClassHighlight		lineStyler	= new UserDefinedJavaClassHighlight();
 
-	private TreeItem							iteminput;
+	private static GUIResource					guiResource	= GUIResource.getInstance();
 
-	private TreeItem							itemoutput;
+	private TreeItem							itemInput, itemInfo, itemOutput;
 
-	private static GUIResource					guiresource	= GUIResource.getInstance();
+	private TreeItem							itemWaitFieldsIn, itemWaitFieldsInfo, itemWaitFieldsOut;
 
-	private TreeItem							itemWaitFieldsIn, itemWaitFieldsOut;
-
-	private RowMetaInterface					inputRowMeta;
-	private RowMetaInterface					outputRowMeta;
+	private RowMetaInterface					inputRowMeta, infoRowMeta, outputRowMeta;
 
 	private RowGeneratorMeta					genMeta;
 
 	private CTabItem							fieldsTab;
 
-	private int									middle;
+	private int									middle, margin;
 
-	private int									margin;
+	private CTabItem							infoTab, targetTab, parametersTab;
+	private TableView							wInfoSteps, wTargetSteps, wParameters;
 
-	private CTabItem							infoTab;
-	private TableView							wInfoSteps;
-
-	private String[]							prevStepNames;
-
-	private String[]							nextStepNames;
-
-	private CTabItem							targetTab;
-	private TableView							wTargetSteps;
-
-	private CTabItem							parametersTab;
-	private TableView							wParameters;
+	private String[]							prevStepNames, nextStepNames;
 
 	public UserDefinedJavaClassDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
 
@@ -213,13 +185,13 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		genMeta = null;
 		try {
 			// ImageLoader xl = new ImageLoader();
-			imageUnderGreen = guiresource.getImage("ui/images/underGreen.png");
-			imageArrowGreen = guiresource.getImage("ui/images/arrowGreen.png");
-			imageArrowOrange = guiresource.getImage("ui/images/arrowOrange.png");
-			imageInputFields = guiresource.getImage("ui/images/inSmall.png");
-			imageOutputFields = guiresource.getImage("ui/images/outSmall.png");
-			imageActiveScript = guiresource.getImage("ui/images/faScript.png");
-			imageInactiveScript = guiresource.getImage("ui/images/fScript.png");
+			imageUnderGreen = guiResource.getImage("ui/images/underGreen.png");
+			imageArrowGreen = guiResource.getImage("ui/images/arrowGreen.png");
+			imageArrowOrange = guiResource.getImage("ui/images/arrowOrange.png");
+			imageInputFields = guiResource.getImage("ui/images/inSmall.png");
+			imageOutputFields = guiResource.getImage("ui/images/outSmall.png");
+			imageActiveScript = guiResource.getImage("ui/images/faScript.png");
+			imageInactiveScript = guiResource.getImage("ui/images/fScript.png");
 		} catch (Exception e) {
 			imageActiveScript = new Image(parent.getDisplay(), 16, 16);
 			imageInactiveScript = new Image(parent.getDisplay(), 16, 16);
@@ -470,7 +442,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 									"UserDefinedJavaClassDialog.ConfirmDeleteItem.Label", cItem.getText()));
 					switch (messageBox.open()) {
 						case SWT.YES:
-							modifyScriptTree(cItem, TabActions.DELETE_ITEM);
+							modifyTabTree(cItem, TabActions.DELETE_ITEM);
 							event.doit = true;
 							break;
 					}
@@ -485,7 +457,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 		// Adding the Default Transform Class Item to the Tree
 		wTreeClassesItem = new TreeItem(wTree, SWT.NULL);
-		wTreeClassesItem.setImage(guiresource.getImageBol());
+		wTreeClassesItem.setImage(guiResource.getImageBol());
 		wTreeClassesItem.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Classes.Label"));
 
 		// Set the shell size, based upon previous time...
@@ -496,27 +468,38 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		buildSnippitsTree();
 
 		// Input Fields
-		iteminput = new TreeItem(wTree, SWT.NULL);
-		iteminput.setImage(imageInputFields);
-		iteminput.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.InputFields.Label"));
-		iteminput.setData("Field Helpers");
+		itemInput = new TreeItem(wTree, SWT.NULL);
+		itemInput.setImage(imageInputFields);
+		itemInput.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.InputFields.Label"));
+		itemInput.setData("Field Helpers");
+		// Info Fields
+		itemInfo = new TreeItem(wTree, SWT.NULL);
+		itemInfo.setImage(imageInputFields);
+		itemInfo.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.InfoFields.Label"));
+		itemInfo.setData("Field Helpers");
 		// Output Fields
-		itemoutput = new TreeItem(wTree, SWT.NULL);
-		itemoutput.setImage(imageOutputFields);
-		itemoutput.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.OutputFields.Label"));
-		itemoutput.setData("Field Helpers");
+		itemOutput = new TreeItem(wTree, SWT.NULL);
+		itemOutput.setImage(imageOutputFields);
+		itemOutput.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.OutputFields.Label"));
+		itemOutput.setData("Field Helpers");
 
 		// Display waiting message for input
-		itemWaitFieldsIn = new TreeItem(iteminput, SWT.NULL);
+		itemWaitFieldsIn = new TreeItem(itemInput, SWT.NULL);
 		itemWaitFieldsIn.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.GettingFields.Label"));
-		itemWaitFieldsIn.setForeground(guiresource.getColorDirectory());
-		iteminput.setExpanded(true);
+		itemWaitFieldsIn.setForeground(guiResource.getColorDirectory());
+		itemInput.setExpanded(true);
+
+		// Display waiting message for info
+		itemWaitFieldsInfo = new TreeItem(itemInfo, SWT.NULL);
+		itemWaitFieldsInfo.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.GettingFields.Label"));
+		itemWaitFieldsInfo.setForeground(guiResource.getColorDirectory());
+		itemInfo.setExpanded(true);
 
 		// Display waiting message for output
-		itemWaitFieldsOut = new TreeItem(itemoutput, SWT.NULL);
+		itemWaitFieldsOut = new TreeItem(itemOutput, SWT.NULL);
 		itemWaitFieldsOut.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.GettingFields.Label"));
-		itemWaitFieldsOut.setForeground(guiresource.getColorDirectory());
-		itemoutput.setExpanded(true);
+		itemWaitFieldsOut.setForeground(guiResource.getColorDirectory());
+		itemOutput.setExpanded(true);
 
 		// 
 		// Search the fields in the background
@@ -528,8 +511,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 				if (stepMeta != null) {
 					try {
 						inputRowMeta = transMeta.getPrevStepFields(stepMeta);
+						infoRowMeta = transMeta.getPrevInfoFields(stepMeta);
 						outputRowMeta = transMeta.getThisStepFields(stepMeta, null, inputRowMeta.clone());
-						setInputOutputFields();
+						populateFieldsTree();
 					} catch (KettleException e) {
 						log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
 					}
@@ -860,10 +844,10 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		item.setControl(wScript);
 
 		// Adding new Item to Tree
-		modifyScriptTree(item, TabActions.ADD_ITEM);
+		modifyTabTree(item, TabActions.ADD_ITEM);
 	}
 
-	private void modifyScriptTree(CTabItem ctabitem, TabActions action) {
+	private void modifyTabTree(CTabItem ctabitem, TabActions action) {
 
 		switch (action) {
 			case DELETE_ITEM:
@@ -1193,19 +1177,19 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		String scriptStepName = wStepname.getText();
 
 		// Create a step with the information in this dialog
-		UserDefinedJavaClassMeta scriptMeta = new UserDefinedJavaClassMeta();
-		getInfo(scriptMeta);
+		UserDefinedJavaClassMeta udjcMeta = new UserDefinedJavaClassMeta();
+		getInfo(udjcMeta);
 
 		try {
 			// First, before we get into the trial run, just see if the classes
 			// all compile.
-			scriptMeta.cookClasses();
-			if (scriptMeta.cookErrors.size() == 1) {
-				Exception e = scriptMeta.cookErrors.get(0);
+			udjcMeta.cookClasses();
+			if (udjcMeta.cookErrors.size() == 1) {
+				Exception e = udjcMeta.cookErrors.get(0);
 				new ErrorDialog(shell, "Error during class compilation", e.toString(), e); //$NON-NLS-1$ //$NON-NLS-2$
 				return false;
-			} else if (scriptMeta.cookErrors.size() > 1) {
-				Exception e = scriptMeta.cookErrors.get(0);
+			} else if (udjcMeta.cookErrors.size() > 1) {
+				Exception e = udjcMeta.cookErrors.get(0);
 				new ErrorDialog(
 								shell,
 								"Errors during class compilation", String.format("Multiple errors during class compilation. First error:\n%s", e.toString()), e); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1279,8 +1263,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 								genMeta);
 				genStep.setLocation(50, 50);
 
-				StepMeta scriptStep = new StepMeta(registry.getPluginId(StepPluginType.class, scriptMeta), Const.NVL(
-								scriptStepName, "## SCRIPT ##"), scriptMeta);
+				StepMeta scriptStep = new StepMeta(registry.getPluginId(StepPluginType.class, udjcMeta), Const.NVL(
+								scriptStepName, "## SCRIPT ##"), udjcMeta);
 				scriptStepName = scriptStep.getName();
 				scriptStep.setLocation(150, 50);
 
@@ -1350,7 +1334,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 	private void buildSnippitsTree() {
 
 		TreeItem item = new TreeItem(wTree, SWT.NULL);
-		item.setImage(guiresource.getImageBol());
+		item.setImage(guiResource.getImageBol());
 		item.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.Snippits.Label"));
 
 		Map<Category, TreeItem> categoryTreeItems = new EnumMap<Category, TreeItem>(Category.class);
@@ -1383,18 +1367,36 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		return bRC;
 	}
 
-	private void setInputOutputFields() {
+	private void populateFieldsTree() {
 		shell.getDisplay().syncExec(new Runnable() {
 			public void run() {
-				iteminput.removeAll();
-				itemoutput.removeAll();
+				itemInput.removeAll();
+				itemInfo.removeAll();
+				itemOutput.removeAll();
 
 				if (inputRowMeta != null) {
 					for (int i = 0; i < inputRowMeta.size(); i++) {
 						ValueMetaInterface v = inputRowMeta.getValueMeta(i);
 						String itemName = v.getName();
 						String itemData = FieldHelper.getAccessor(true, itemName);
-						TreeItem itemField = new TreeItem(iteminput, SWT.NULL);
+						TreeItem itemField = new TreeItem(itemInput, SWT.NULL);
+						itemField.setImage(imageArrowOrange);
+						itemField.setText(itemName);
+						itemField.setData(itemData);
+						TreeItem itemFieldGet = new TreeItem(itemField, SWT.NULL);
+						itemFieldGet.setText(String.format("get%s()",v.getTypeDesc()));
+						itemFieldGet.setData(FieldHelper.getGetSignature(itemData, v));
+						TreeItem itemFieldSet = new TreeItem(itemField, SWT.NULL);
+						itemFieldSet.setText("setValue()");
+						itemFieldSet.setData(itemData+".setValue(r, value);");
+					}
+				}
+				if (infoRowMeta != null) {
+					for (int i = 0; i < infoRowMeta.size(); i++) {
+						ValueMetaInterface v = infoRowMeta.getValueMeta(i);
+						String itemName = v.getName();
+						String itemData = FieldHelper.getAccessor(true, itemName);
+						TreeItem itemField = new TreeItem(itemInfo, SWT.NULL);
 						itemField.setImage(imageArrowOrange);
 						itemField.setText(itemName);
 						itemField.setData(itemData);
@@ -1411,7 +1413,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 						ValueMetaInterface v = outputRowMeta.getValueMeta(i);
 						String itemName = v.getName();
 						String itemData = FieldHelper.getAccessor(false, itemName);
-						TreeItem itemField = new TreeItem(itemoutput, SWT.NULL);
+						TreeItem itemField = new TreeItem(itemOutput, SWT.NULL);
 						itemField.setImage(imageArrowOrange);
 						itemField.setText(itemName);
 						itemField.setData(itemData);
@@ -1487,7 +1489,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 						folder.getItem(i).setImage(imageInactiveScript);
 					}
 				}
-				modifyScriptTree(item, TabActions.SET_ACTIVE_ITEM);
+				modifyTabTree(item, TabActions.SET_ACTIVE_ITEM);
 			}
 		});
 
@@ -1570,7 +1572,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 							tMenu.getItem(0).setEnabled(false);
 						tMenu.getItem(1).setEnabled(true);
 						tMenu.getItem(3).setEnabled(false);
-					} else if (tItem.equals(wTreeClassesitem)) {
+					} else if (tItem.equals(wTreeClassesItem)) {
 						tMenu.getItem(0).setEnabled(false);
 						tMenu.getItem(1).setEnabled(false);
 						tMenu.getItem(3).setEnabled(false);

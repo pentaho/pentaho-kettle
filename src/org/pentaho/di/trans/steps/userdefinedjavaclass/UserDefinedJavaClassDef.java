@@ -23,6 +23,8 @@ Matt Casters mcaster@pentaho.com
 
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
+import org.pentaho.di.core.exception.KettleStepException;
+
 public class UserDefinedJavaClassDef
 {
     public enum ClassType
@@ -59,22 +61,23 @@ public class UserDefinedJavaClassDef
         return this.source;
     }
 
-    public String getTransformedSource()
+    public String getTransformedSource() throws KettleStepException
     {
-        String retval = appendConstructor();
-        return retval;
+        StringBuilder sb = new StringBuilder(getSource());
+        appendConstructor(sb);
+        return sb.toString();
     }
     public void setSource(String source)
     {
         this.source = source;
     }
 
-    private static final String CONSTRUCTOR = "\n\npublic ~CLASSNAME~(UserDefinedJavaClass parent, UserDefinedJavaClassMeta meta, UserDefinedJavaClassData data) throws KettleStepException { super(parent,meta,data);}";
-    private String appendConstructor()
+    private static final String CONSTRUCTOR = "\n\npublic %s(UserDefinedJavaClass parent, UserDefinedJavaClassMeta meta, UserDefinedJavaClassData data) throws KettleStepException { super(parent,meta,data);}";
+    private void appendConstructor(StringBuilder sb)
     {
-        return source + CONSTRUCTOR.replace("~CLASSNAME~", className);
+        sb.append(String.format(CONSTRUCTOR, className));
     }
-
+    
     public String getClassName()
     {
         return className;

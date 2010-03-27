@@ -23,6 +23,8 @@ Matt Casters mcaster@pentaho.com
 
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -38,11 +40,13 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.www.SocketRepository;
 
 public class UserDefinedJavaClass extends BaseStep implements StepInterface
@@ -513,14 +517,34 @@ public class UserDefinedJavaClass extends BaseStep implements StepInterface
         }
     }
 
+    public void populateFieldHelpers(StreamType type, RowMetaInterface rowMetaInterface)
+    {
+    	if (child != null) {
+    		child.populateFieldHelpers(type, rowMetaInterface);
+    	}
+    }
+    
     public Object[] getRowFromImpl(RowSet rowSet) throws KettleStepException
     {
-        return super.getRowFrom(rowSet);
+        Object[] rowFrom = super.getRowFrom(rowSet);
+        if (first && child != null) {
+        	StreamType type = StreamType.INPUT;
+        	StepIOMetaInterface stepIOMeta = TransformClassBase.getStepIOMeta((UserDefinedJavaClassMeta)getStepMetaInterface());
+        	if (Collections.frequency(Arrays.asList(stepIOMeta.getInfoStepnames()), rowSet.getOriginStepName()) != 0) {
+        		type = StreamType.INFO;
+        	}
+        	populateFieldHelpers(type, rowSet.getRowMeta());
+        }
+		return rowFrom;
     }
 
     public Object[] getRowImpl() throws KettleException
     {
-        return super.getRow();
+        Object[] row = super.getRow();
+        if (first) {
+        	populateFieldHelpers(StreamType.INPUT, getInputRowMetaImpl());
+        }
+		return row;
     }
 
     public List<RowListener> getRowListeners()

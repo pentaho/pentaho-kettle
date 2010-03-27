@@ -124,7 +124,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         usageParameters=new ArrayList<UsageParameter>();
     }
 
-    private Class<?> cookClass(UserDefinedJavaClassDef def) throws CompileException, ParseException, ScanException, IOException, RuntimeException {
+    private Class<?> cookClass(UserDefinedJavaClassDef def) throws CompileException, ParseException, ScanException, IOException, RuntimeException, KettleStepException {
     	
         ClassBodyEvaluator cbe = new ClassBodyEvaluator();
         cbe.setClassName(def.getClassName());
@@ -378,7 +378,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         try
         {
             Method getFieldsMethod = cookedTransformClass.getMethod("getFields", boolean.class, RowMetaInterface.class, String.class, RowMetaInterface[].class, StepMeta.class, VariableSpace.class, List.class);
-            getFieldsMethod.invoke(null, clearingResultFields, row, originStepname, info, nextStep, space, fields);
+            getFieldsMethod.invoke(null, isClearingResultFields(), row, originStepname, info, nextStep, space, getFieldInfo());
         }
         catch (Exception e)
         {

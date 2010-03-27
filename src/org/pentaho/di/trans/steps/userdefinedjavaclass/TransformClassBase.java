@@ -51,6 +51,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta.FieldInfo;
 import org.pentaho.di.www.SocketRepository;
@@ -256,6 +257,25 @@ public abstract class TransformClassBase
     public Map<String, ResultFile> getResultFiles()
     {
         return parent.getResultFilesImpl();
+    }
+
+    public void populateFieldHelpers(StreamInterface.StreamType type, RowMetaInterface rowMetaInterface)
+    {
+    	Map<String, FieldHelper> map = new HashMap<String, FieldHelper>();
+    	for (String name : rowMetaInterface.getFieldNames()) {
+			map.put(name, new FieldHelper(rowMetaInterface, name));
+		}
+    	switch (type) {
+    		case INPUT:
+    			Fields.In.putAll(map);
+    			break;
+    		case INFO:
+    			Fields.Info.putAll(map);
+    			break;
+    		default:
+    			Fields.Out.putAll(map);
+    			break;
+    	}
     }
 
     public Object[] getRow() throws KettleException
@@ -686,5 +706,53 @@ public abstract class TransformClassBase
     		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindTargetRowSetForStep", stepname));
     	}
     	return rowSet;
+    }
+
+    public static class Fields {
+    	public static class In {
+        	private static final Map<String, FieldHelper> fieldHelpers = new HashMap<String, FieldHelper>();
+        	public static void put(String fieldName, FieldHelper fieldHelper) {
+        		fieldHelpers.put(fieldName, fieldHelper);
+        	}
+        	public static void putAll(Map<String, FieldHelper> map) {
+				fieldHelpers.putAll(map);
+			}
+			public static FieldHelper get(String fieldName) throws KettleException {
+        		FieldHelper fieldHelper = fieldHelpers.get(fieldName);
+        		if (fieldHelper == null)
+            		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", "Input", fieldName));
+				return fieldHelper;
+        	}
+    	}
+    	public static class Info {
+        	private static final Map<String, FieldHelper> fieldHelpers = new HashMap<String, FieldHelper>();
+        	public static void put(String fieldName, FieldHelper fieldHelper) {
+        		fieldHelpers.put(fieldName, fieldHelper);
+        	}
+        	public static void putAll(Map<String, FieldHelper> map) {
+				fieldHelpers.putAll(map);
+			}
+        	public static FieldHelper get(String fieldName) throws KettleException {
+        		FieldHelper fieldHelper = fieldHelpers.get(fieldName);
+        		if (fieldHelper == null)
+            		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", "Info", fieldName));
+				return fieldHelper;
+        	}
+    	}
+    	public static class Out {
+        	private static final Map<String, FieldHelper> fieldHelpers = new HashMap<String, FieldHelper>();
+        	public static void put(String fieldName, FieldHelper fieldHelper) {
+        		fieldHelpers.put(fieldName, fieldHelper);
+        	}
+        	public static void putAll(Map<String, FieldHelper> map) {
+				fieldHelpers.putAll(map);
+			}
+        	public static FieldHelper get(String fieldName) throws KettleException {
+        		FieldHelper fieldHelper = fieldHelpers.get(fieldName);
+        		if (fieldHelper == null)
+            		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", "Output", fieldName));
+				return fieldHelper;
+        	}
+    	}
     }
 }

@@ -98,13 +98,7 @@ public class FieldHelper {
 	public static String getAccessor(boolean isIn, String fieldName) {
 		StringBuilder sb = new StringBuilder("Fields.");
 		sb.append(isIn ? "In" : "Out").append('.');
-
-		if (validJavaIdentifier.matcher(fieldName).matches()) {
-			sb.append(fieldName);
-		} else {
-			sb.append(String.format("get(\"%s\")", fieldName.replace("\\", "\\\\").replace("\"", "\\\"")));
-		}
-
+		sb.append(String.format("get(\"%s\")", fieldName.replace("\\", "\\\\").replace("\"", "\\\"")));
 		return sb.toString();
 	}
 	
