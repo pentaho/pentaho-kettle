@@ -648,7 +648,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 						item.setText(colnr++, type==null ? "" : type.getDescription());
 						item.setText(colnr++, Const.NVL(field.getTable(), ""));
 						item.setText(colnr++, Const.NVL(field.getName(), ""));
-						item.setText(colnr++, ValueMeta.getTypeDesc(ValueMetaInterface.TYPE_STRING)); // TODO: where do we get a data type from?
+						item.setText(colnr++, field.getTypePentaho());
 					}
 					wOutput.setRowNums();
 					wOutput.optWidth(true);
