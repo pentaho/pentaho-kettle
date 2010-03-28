@@ -265,9 +265,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		}
 
 		public static TransformationType getTransformationTypeByCode(String transTypeCode) {
-			for (TransformationType type : values()) {
-				if (type.code.equalsIgnoreCase(transTypeCode)) {
-					return type;
+			if (transTypeCode!=null) {
+				for (TransformationType type : values()) {
+					if (type.code.equalsIgnoreCase(transTypeCode)) {
+						return type;
+					}
 				}
 			}
 			return Normal;
