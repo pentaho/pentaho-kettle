@@ -218,6 +218,9 @@ public class SlaveServer
     
     public boolean equals(Object obj)
     {
+        if (!(obj instanceof SlaveServer)) {
+          return false;
+        }
         SlaveServer slave = (SlaveServer) obj;
         return name.equalsIgnoreCase(slave.getName());
     }

@@ -268,11 +268,15 @@ public class SpoonTabsDelegate extends SpoonDelegate
 	{
 		for (TabMapEntry entry : tabMap)
 		{
-			if (entry.getTabItem().isDisposed())
+			if (entry.getTabItem().isDisposed()) {
 				continue;
-			if (entry.getObject().getManagedObject().equals(managedObject))
-			{
-				return entry;
+			}
+			Object entryManagedObj = entry.getObject().getManagedObject();
+			// make sure they are the same class before comparing them
+			if (entryManagedObj.getClass().equals(managedObject.getClass())) {
+			  if (entryManagedObj.equals(managedObject)) {
+			    return entry;
+			  }
 			}
 		}
 		return null;
