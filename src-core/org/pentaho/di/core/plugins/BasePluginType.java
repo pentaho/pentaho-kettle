@@ -203,7 +203,6 @@ public abstract class BasePluginType implements PluginTypeInterface{
 					//
 					FileObject[] fileObjects = pluginFolder.findJarFiles();
 					if (fileObjects!=null) {
-						System.out.println("Found "+fileObjects.length+" jar files in folder "+pluginFolder);
 						for (FileObject fileObject : fileObjects) {
 							
 							// These are the jar files : find annotations in it...
@@ -553,7 +552,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
       registry.registerPlugin(this.getClass(), plugin);
       
       if (libraries!=null && libraries.size()>0) {
-    	  LogChannel.GENERAL.logBasic("Plugin with id ["+ids[0]+"] has "+libraries.size()+" libaries in its private class path");
+    	  LogChannel.GENERAL.logDetailed("Plugin with id ["+ids[0]+"] has "+libraries.size()+" libaries in its private class path");
       }
   }
 	
