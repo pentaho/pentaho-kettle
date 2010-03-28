@@ -64,9 +64,9 @@ public class ChangedWarningDialog implements ChangedWarningInterface {
     messageBox.setTitle(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Title")); //$NON-NLS-1$
     
     if(fileName != null) {
-      messageBox.setMessage(BaseMessages.getString("Spoon.Dialog.PromptToSave.Message", fileName)); //$NON-NLS-1$
+      messageBox.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptToSave.Message", fileName)); //$NON-NLS-1$
     } else {
-      messageBox.setMessage(BaseMessages.getString("Spoon.Dialog.PromptSave.Message")); //$NON-NLS-1$
+      messageBox.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.PromptSave.Message")); //$NON-NLS-1$
     }
     
     messageBox.setButtons(new Integer[] {SWT.YES, SWT.NO, SWT.CANCEL});
