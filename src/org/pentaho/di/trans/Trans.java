@@ -917,7 +917,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	}
     
 	protected void addStepPerformanceSnapShot() {
-    	if (transMeta.isCapturingStepPerformanceSnapShots())
+		
+		boolean pausedAndNotEmpty = isPaused() && !stepPerformanceSnapShots.isEmpty(); 
+		boolean stoppedAndNotEmpty = isStopped() && !stepPerformanceSnapShots.isEmpty(); 
+		
+    	if (transMeta.isCapturingStepPerformanceSnapShots() && !pausedAndNotEmpty && !stoppedAndNotEmpty)
     	{
 	        // get the statistics from the steps and keep them...
 	    	//
