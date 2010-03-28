@@ -10,10 +10,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.CentralLogStore;
@@ -22,9 +29,14 @@ import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.spoon.Spoon;
 
 public class LogBrowser {
+	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private StyledText	text;
 	private LogParentProvidedInterface	logProvider;
 	private List<String> childIds = new ArrayList<String>();
@@ -146,7 +158,27 @@ public class LogBrowser {
 				logRefreshTimer.cancel();
 			}
 		});
+		
+		final Menu menu = new Menu(text);
+		MenuItem item = new MenuItem(menu, SWT.NONE);
+		item.setText(BaseMessages.getString(PKG, "LogBrowser.CopySelectionToClipboard.MenuItem"));
+		item.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				String selection = text.getSelectionText();
+				if (!Const.isEmpty(selection)) {
+					GUIResource.getInstance().toClipboard(selection);
+				}
+			}
+		});
+		text.setMenu(menu);
 
+		text.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent event) {
+				if (event.button==3) {
+					ConstUI.displayMenu(menu, text);
+				}
+			}
+		});
 	}
 	
 	
