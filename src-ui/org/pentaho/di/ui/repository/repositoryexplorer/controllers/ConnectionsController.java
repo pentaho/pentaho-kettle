@@ -184,12 +184,17 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title")); //$NON-NLS-1$
           mb.open();
         }
+      } else {
+        MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
+        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
+        mb.open();
       }
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), 
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"),  //$NON-NLS-1$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshConnectionList();
     }
@@ -215,16 +220,13 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
           String dbName = dd.open();
           if (dbName != null && !dbName.equals("")) //$NON-NLS-1$
           {
-            // Make sure the new name does not already exist
-            if (repository.getDatabaseID(dbName) != null) {
-              MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.AlreadyExists.Message", dbName)); //$NON-NLS-1$
-              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.AlreadyExists.Title")); //$NON-NLS-1$
-              mb.open();
-            } else {
-              repository.insertLogEntry(BaseMessages.getString(PKG, "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
-              repository.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
-            }
+            repository.insertLogEntry(BaseMessages.getString(PKG, "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
+            repository.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
+          } else {
+            MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
+            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
+            mb.open();            
           }
         }
       } else {
@@ -236,8 +238,8 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), 
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), //$NON-NLS-1$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshConnectionList();
     }
@@ -270,8 +272,8 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), 
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"),  //$NON-NLS-1$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshConnectionList();
     }
