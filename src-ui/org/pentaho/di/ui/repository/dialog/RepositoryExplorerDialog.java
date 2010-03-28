@@ -2661,6 +2661,14 @@ public class RepositoryExplorerDialog extends Dialog
 				boolean versionOk = false;
 				while (!versionOk) {
 					versionComment = RepositorySecurityUI.getVersionComment(shell, rep, "Import of files into ["+baseDirectory.getPath()+"]");
+
+					// if the version comment is null, the user hit cancel, exit.
+				  if (rep != null && rep.getSecurityProvider() != null && 
+				      rep.getSecurityProvider().allowsVersionComments() && 
+				      versionComment == null) 
+				  {
+				    return;
+					}
 					if (Const.isEmpty(versionComment) && rep.getSecurityProvider().isVersionCommentMandatory()) {
 						if (!RepositorySecurityUI.showVersionCommentMandatoryDialog(shell)) {
 							versionOk = true;

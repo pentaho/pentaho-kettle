@@ -4085,6 +4085,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             boolean versionOk = false;
             while (!versionOk) {
               versionComment = RepositorySecurityUI.getVersionComment(shell, rep, meta.getName());
+              
+              // if the version comment is null, the user hit cancel, exit.
+              if (rep != null && rep.getSecurityProvider() != null && 
+                  rep.getSecurityProvider().allowsVersionComments() && 
+                  versionComment == null) 
+              {
+                return false;
+              }
+              
               if (Const.isEmpty(versionComment) && rep.getSecurityProvider().isVersionCommentMandatory()) {
                 if (!RepositorySecurityUI.showVersionCommentMandatoryDialog(shell)) {
                   return false; // no, I don't want to enter a
@@ -4368,6 +4377,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         while (!versionOk) {
           versionComment = RepositorySecurityUI.getVersionComment(shell, rep, "Import of files into ["
               + baseDirectory.getPath() + "]");
+          // if the version comment is null, the user hit cancel, exit.
+          if (rep != null && rep.getSecurityProvider() != null && 
+              rep.getSecurityProvider().allowsVersionComments() && 
+              versionComment == null) 
+          {
+            return;
+          }
+
           if (Const.isEmpty(versionComment) && rep.getSecurityProvider().isVersionCommentMandatory()) {
             if (!RepositorySecurityUI.showVersionCommentMandatoryDialog(shell)) {
               versionOk = true;
