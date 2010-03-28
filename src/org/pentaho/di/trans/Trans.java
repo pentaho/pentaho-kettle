@@ -918,6 +918,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     
 	protected void addStepPerformanceSnapShot() {
 		
+		if (stepPerformanceSnapShots==null) return; // Race condition somewhere?
+		
 		boolean pausedAndNotEmpty = isPaused() && !stepPerformanceSnapShots.isEmpty(); 
 		boolean stoppedAndNotEmpty = isStopped() && !stepPerformanceSnapShots.isEmpty(); 
 		
