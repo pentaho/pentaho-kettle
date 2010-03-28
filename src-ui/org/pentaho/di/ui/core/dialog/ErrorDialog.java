@@ -205,8 +205,10 @@ public class ErrorDialog extends Dialog
 
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+		if (showCancelButton) {
+  		wCancel=new Button(shell, SWT.PUSH);
+  		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+		}
         wDetails=new Button(shell, SWT.PUSH);
         wDetails.setText(BaseMessages.getString(PKG, "System.Button.Details"));
 
@@ -221,8 +223,10 @@ public class ErrorDialog extends Dialog
 
 		// Add listeners
 		wOK.addListener     (SWT.Selection, new Listener() { public void handleEvent(Event e) { ok(); } });
-		wCancel.addListener     (SWT.Selection, new Listener() { public void handleEvent(Event e) { cancel(); } });
-        wDetails.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { showDetails(details.toString()); } });
+		if (showCancelButton) {
+		  wCancel.addListener     (SWT.Selection, new Listener() { public void handleEvent(Event e) { cancel(); } });
+		}
+		wDetails.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { showDetails(details.toString()); } });
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		wDesc.addSelectionListener(lsDef);
