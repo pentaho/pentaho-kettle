@@ -196,12 +196,15 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title")); //$NON-NLS-1$
           mb.open();
         }
-      } else {
-        MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
-        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
-        mb.open();
       }
+//    We should be able to tell the difference between a cancel and an empty database name
+//
+//      else {
+//        MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+//        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
+//        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
+//        mb.open();
+//      }
     } catch (KettleException e) {
       new ErrorDialog(
           shell,
