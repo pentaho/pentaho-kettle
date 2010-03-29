@@ -1408,7 +1408,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (getActiveTransformation() != null) {
       editTransformationProperties();
     } else if (getActiveJob() != null) {
-
+      editJobProperties("job-settings");
     }
   }
 
