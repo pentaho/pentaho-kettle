@@ -13,7 +13,10 @@
 		<version-browser-classname/>
 	</repository>
 	
-	
+	<!--
+  
+      Disabled KettleFileRepository for preview release due to PDI-3428 and PDI-3467
+   
 	<repository id="KettleFileRepository">
 		<description>i18n:org.pentaho.di.repository:RepositoryType.Name.KettleFileRepository</description>
 		<tooltip>i18n:org.pentaho.di.repository:RepositoryType.Description.KettleFileRepository</tooltip>
@@ -22,6 +25,6 @@
 		<dialog-classname>org.pentaho.di.ui.repository.dialog.KettleFileRepositoryDialog</dialog-classname>
 		<version-browser-classname/>
 	</repository>
-	
+	 -->
 
 </repositories>
