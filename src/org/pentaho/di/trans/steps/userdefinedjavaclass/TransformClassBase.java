@@ -34,6 +34,7 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -51,7 +52,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
-import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta.FieldInfo;
 import org.pentaho.di.www.SocketRepository;
@@ -257,25 +257,6 @@ public abstract class TransformClassBase
     public Map<String, ResultFile> getResultFiles()
     {
         return parent.getResultFilesImpl();
-    }
-
-    public void populateFieldHelpers(StreamInterface.StreamType type, RowMetaInterface rowMetaInterface)
-    {
-    	Map<String, FieldHelper> map = new HashMap<String, FieldHelper>();
-    	for (String name : rowMetaInterface.getFieldNames()) {
-			map.put(name, new FieldHelper(rowMetaInterface, name));
-		}
-    	switch (type) {
-    		case INPUT:
-    			Fields.In.putAll(map);
-    			break;
-    		case INFO:
-    			Fields.Info.putAll(map);
-    			break;
-    		default:
-    			Fields.Out.putAll(map);
-    			break;
-    	}
     }
 
     public Object[] getRow() throws KettleException
@@ -708,51 +689,61 @@ public abstract class TransformClassBase
     	return rowSet;
     }
 
-    public static class Fields {
-    	public static class In {
-        	private static final Map<String, FieldHelper> fieldHelpers = new HashMap<String, FieldHelper>();
-        	public static void put(String fieldName, FieldHelper fieldHelper) {
-        		fieldHelpers.put(fieldName, fieldHelper);
-        	}
-        	public static void putAll(Map<String, FieldHelper> map) {
-				fieldHelpers.putAll(map);
-			}
-			public static FieldHelper get(String fieldName) throws KettleException {
-        		FieldHelper fieldHelper = fieldHelpers.get(fieldName);
-        		if (fieldHelper == null)
-            		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", "Input", fieldName));
-				return fieldHelper;
-        	}
-    	}
-    	public static class Info {
-        	private static final Map<String, FieldHelper> fieldHelpers = new HashMap<String, FieldHelper>();
-        	public static void put(String fieldName, FieldHelper fieldHelper) {
-        		fieldHelpers.put(fieldName, fieldHelper);
-        	}
-        	public static void putAll(Map<String, FieldHelper> map) {
-				fieldHelpers.putAll(map);
-			}
-        	public static FieldHelper get(String fieldName) throws KettleException {
-        		FieldHelper fieldHelper = fieldHelpers.get(fieldName);
-        		if (fieldHelper == null)
-            		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", "Info", fieldName));
-				return fieldHelper;
-        	}
-    	}
-    	public static class Out {
-        	private static final Map<String, FieldHelper> fieldHelpers = new HashMap<String, FieldHelper>();
-        	public static void put(String fieldName, FieldHelper fieldHelper) {
-        		fieldHelpers.put(fieldName, fieldHelper);
-        	}
-        	public static void putAll(Map<String, FieldHelper> map) {
-				fieldHelpers.putAll(map);
-			}
-        	public static FieldHelper get(String fieldName) throws KettleException {
-        		FieldHelper fieldHelper = fieldHelpers.get(fieldName);
-        		if (fieldHelper == null)
-            		throw new KettleException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", "Output", fieldName));
-				return fieldHelper;
-        	}
-    	}
+	private final Map<String, FieldHelper> inFieldHelpers = new HashMap<String, FieldHelper>();
+	private final Map<String, FieldHelper> infoFieldHelpers = new HashMap<String, FieldHelper>();
+	private final Map<String, FieldHelper> outFieldHelpers = new HashMap<String, FieldHelper>();
+    public enum Fields { In, Out, Info; }
+    
+    public FieldHelper get(Fields type, String name) throws KettleStepException
+    {
+    	FieldHelper fh;
+    	switch (type) {
+    		case In:
+    			fh = inFieldHelpers.get(name);
+    			if (fh == null) {
+    				RowMetaInterface rmi = getTransMeta().getPrevStepFields(getStepname());
+    				try {
+						fh = new FieldHelper(rmi, name);
+					} catch (IllegalArgumentException e) {
+						throw new KettleStepException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name));
+					}
+					inFieldHelpers.put(name, fh);
+    			}
+    			break;
+    		case Out:
+    			fh = outFieldHelpers.get(name);
+    			if (fh == null) {
+    				RowMetaInterface rmi = getTransMeta().getStepFields(getStepname());
+    				try {
+						fh = new FieldHelper(rmi, name);
+					} catch (IllegalArgumentException e) {
+						throw new KettleStepException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name));
+					}
+					outFieldHelpers.put(name, fh);
+    			}
+    			break;
+    		case Info:
+    			fh = infoFieldHelpers.get(name);
+    			if (fh == null) {
+    				RowMetaInterface rmi = getTransMeta().getPrevInfoFields(getStepname());
+    				try {
+						fh = new FieldHelper(rmi, name);
+					} catch (IllegalArgumentException e) {
+						throw new KettleStepException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name));
+					}
+					infoFieldHelpers.put(name, fh);
+    			}
+    			break;
+    		default:
+    			throw new KettleStepException(BaseMessages.getString(PKG, "TransformClassBase.Exception.InvalidFieldsType", type.name(), name));    	}
+    	return fh;
+    }
+    
+    public Object[] createOutputRow(Object[] inputRow, int outputRowSize)
+    {
+    	if (meta.isClearingResultFields()) 
+    		return RowDataUtil.allocateRowData(outputRowSize);
+    	else
+    		return RowDataUtil.resizeArray(inputRow, outputRowSize);
     }
 }

@@ -191,6 +191,9 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         }
         catch (Exception e)
         {
+        	if (log.isDebug()) {
+        		log.logError("Full debugging stacktrace of UserDefinedJavaClass instanciation exception:", e.getCause());
+        	}
             KettleException kettleException = new KettleException(e.getMessage());
             kettleException.setStackTrace(new StackTraceElement[] {});
             cookErrors.add(kettleException);
@@ -257,6 +260,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
                         Const.toInt(XMLHandler.getTagValue(fnode, ElementNames.field_length.name()), -1),
                         Const.toInt(XMLHandler.getTagValue(fnode, ElementNames.field_precision.name()), -1)));
             }
+            
+            setClearingResultFields(!"N".equals(XMLHandler.getTagValue(stepnode, ElementNames.clear_result_fields.name())));
             
             infoStepDefinitions.clear();
             Node infosNode = XMLHandler.getSubNode(stepnode, ElementNames.info_steps.name());

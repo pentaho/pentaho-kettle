@@ -515,7 +515,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 						outputRowMeta = transMeta.getThisStepFields(stepMeta, null, inputRowMeta.clone());
 						populateFieldsTree();
 					} catch (KettleException e) {
-						log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+						log.logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), e);
 					}
 				}
 			}
@@ -1147,6 +1147,16 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 		boolean bInputOK = false;
 
+		bInputOK = checkForTransformClass();
+
+		if (bInputOK) {
+			getInfo(input);
+			dispose();
+		}
+	}
+
+	private boolean checkForTransformClass() {
+		boolean hasTransformClass = true;
 		// Check if Active Script has set, otherwise Ask
 		if (getCTabItemByName(strActiveScript) == null) {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_ERROR);
@@ -1156,26 +1166,22 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 				case SWT.OK:
 					strActiveScript = folder.getItem(0).getText();
 					refresh();
-					bInputOK = true;
+					hasTransformClass = true;
 					break;
 				case SWT.CANCEL:
-					bInputOK = false;
+					hasTransformClass = false;
 					break;
 			}
-		} else {
-			bInputOK = true;
 		}
-
-		if (bInputOK) {
-			getInfo(input);
-			dispose();
-		}
+		return hasTransformClass;
 	}
 
 	private boolean test() {
 		PluginRegistry registry = PluginRegistry.getInstance();
 		String scriptStepName = wStepname.getText();
 
+		if (!checkForTransformClass()) return false;
+		
 		// Create a step with the information in this dialog
 		UserDefinedJavaClassMeta udjcMeta = new UserDefinedJavaClassMeta();
 		getInfo(udjcMeta);
@@ -1547,7 +1553,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		helpItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				String snippitFullName = wTree.getSelection()[0].getText();
-				String sampleTabName = snippitFullName.substring(0, snippitFullName.indexOf('(')).replace(' ', '_')
+				String sampleTabName = snippitFullName.replace("Implement ", "").replace(' ', '_')
 								+ "_Sample";
 
 				if (getCTabPosition(sampleTabName) == -1)
@@ -1576,7 +1582,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 						tMenu.getItem(0).setEnabled(false);
 						tMenu.getItem(1).setEnabled(false);
 						tMenu.getItem(3).setEnabled(false);
-					} else if (tItem.getText() != null && tItem.getText().equals("Snippit")) {
+					} else if (pItem != null && pItem.getData() != null && pItem.getData().equals("Snippits Category")) {
 						tMenu.getItem(0).setEnabled(false);
 						tMenu.getItem(1).setEnabled(false);
 						tMenu.getItem(3).setEnabled(true);

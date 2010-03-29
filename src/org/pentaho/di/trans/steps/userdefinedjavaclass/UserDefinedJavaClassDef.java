@@ -51,9 +51,9 @@ public class UserDefinedJavaClassDef
         return classType;
     }
 
-    public void setClassType(ClassType iScriptType)
+    public void setClassType(ClassType classType)
     {
-        this.classType = iScriptType;
+        this.classType = classType;
     }
 
     public String getSource()

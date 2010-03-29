@@ -41,7 +41,7 @@ public class FieldHelper {
 		this.index = rowMeta.indexOfValue(fieldName);
 		if (this.index == -1) {
 			throw new IllegalArgumentException(String.format(
-							"FieldHelper could not be initialized. The field named '%s' not found.", fieldName));
+							"FieldHelper could not be initialized. The field named '%s' not found in RowMeta: %s", fieldName, rowMeta.toStringMeta()));
 		}
 	}
 
