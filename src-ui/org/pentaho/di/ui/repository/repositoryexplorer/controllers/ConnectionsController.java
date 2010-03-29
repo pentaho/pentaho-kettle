@@ -218,16 +218,20 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
         } else {
           DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
           String dbName = dd.open();
+          
           if (dbName != null && !dbName.equals("")) //$NON-NLS-1$
           {
             repository.insertLogEntry(BaseMessages.getString(PKG, "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
             repository.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
-          } else {
-            MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
-            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
-            mb.open();            
           }
+//          We should be able to tell the difference between a cancel and an empty database name 
+//          
+//          else {
+//            MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+//            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
+//            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
+//            mb.open();            
+//          }
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
