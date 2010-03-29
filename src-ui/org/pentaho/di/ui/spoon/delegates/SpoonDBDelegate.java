@@ -55,7 +55,7 @@ import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
 public class SpoonDBDelegate extends SpoonDelegate
 {
 	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-	private XulDatabaseDialog databaseDialog;
+	private DatabaseDialog databaseDialog;
 	public SpoonDBDelegate(Spoon spoon)
 	{
 		super(spoon);
@@ -73,21 +73,26 @@ public class SpoonDBDelegate extends SpoonDelegate
 			return; // program error, exit just to make sure.
 		}
 
-		if(databaseDialog == null){
-		  databaseDialog = new XulDatabaseDialog(spoon.getShell());
-		}
-		databaseDialog.setDatabaseMeta(databaseMeta);
-		databaseDialog.setDatabases(hasDatabasesInterface.getDatabases());
-		String newname = databaseDialog.open();
+		getDatabaseDialog().setDatabaseMeta(databaseMeta);
+		getDatabaseDialog().setDatabases(hasDatabasesInterface.getDatabases());
+		String newname = getDatabaseDialog().open();
 		if (!Const.isEmpty(newname)) // null: CANCEL
 		{
-			databaseMeta = databaseDialog.getDatabaseMeta();
+			databaseMeta = getDatabaseDialog().getDatabaseMeta();
 
 			saveConnection(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION);
 
 			spoon.refreshTree();
 		}
 		spoon.setShellText();
+	}
+	
+	private DatabaseDialog getDatabaseDialog(){
+	  if(databaseDialog != null){
+	    return databaseDialog;
+	  }
+	  databaseDialog = new DatabaseDialog(spoon.getShell());
+	  return databaseDialog;
 	}
 
 	public void dupeConnection(HasDatabasesInterface hasDatabasesInterface, DatabaseMeta databaseMeta)
@@ -100,8 +105,9 @@ public class SpoonDBDelegate extends SpoonDelegate
 			String dupename = BaseMessages.getString(PKG, "Spoon.Various.DupeName") + name;
 			databaseMetaCopy.setName(dupename);
 
-			DatabaseDialog con = new DatabaseDialog(spoon.getShell(), databaseMetaCopy);
-			String newname = con.open();
+			getDatabaseDialog().setDatabaseMeta(databaseMetaCopy);
+			
+			String newname = getDatabaseDialog().open();
 			if (newname != null) // null: CANCEL
 			{
 				databaseMetaCopy.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), name);
@@ -461,13 +467,11 @@ public class SpoonDBDelegate extends SpoonDelegate
 			databaseMeta.initializeVariablesFrom(null);
 		}
 
-    if(databaseDialog == null){
-      databaseDialog = new XulDatabaseDialog(spoon.getShell());
-    }
-    databaseDialog.setDatabaseMeta(databaseMeta);
-		String con_name = databaseDialog.open();
+
+		getDatabaseDialog().setDatabaseMeta(databaseMeta);
+		String con_name = getDatabaseDialog().open();
 		if (!Const.isEmpty(con_name)) {
-			databaseMeta = databaseDialog.getDatabaseMeta();
+			databaseMeta = getDatabaseDialog().getDatabaseMeta();
 
 			databaseMeta.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
 			hasDatabasesInterface.addDatabase(databaseMeta);

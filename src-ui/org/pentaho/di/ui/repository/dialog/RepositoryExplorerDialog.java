@@ -234,6 +234,8 @@ public class RepositoryExplorerDialog extends Dialog
 	private boolean	includeDeleted;
 	private Map<String, RepositoryObject>	objectMap;
 
+  DatabaseDialog databaseDialog;
+  
 	private RepositoryExplorerDialog(Shell par, int style, Repository rep, VariableSpace variableSpace)
 	{
 		super(par, style);
@@ -265,6 +267,15 @@ public class RepositoryExplorerDialog extends Dialog
 	
     private static final String STRING_REPOSITORY_EXPLORER_TREE_NAME = "Repository Exporer Tree Name";
 
+
+  private DatabaseDialog getDatabaseDialog(){
+    if(databaseDialog != null){
+      return databaseDialog;
+    }
+    databaseDialog = new DatabaseDialog(shell);
+    return databaseDialog;
+  }
+    
 	public RepositoryObjectReference open() 
 	{
         debug="opening repository explorer"; //$NON-NLS-1$
@@ -652,7 +663,7 @@ public class RepositoryExplorerDialog extends Dialog
     		BaseStepDialog.setSize(shell, 400, 480, true);
     
     		setSort(0); // refreshes too.
-    
+    		
     		shell.open();
     		while (!shell.isDisposed()) 
     		{
@@ -2194,13 +2205,14 @@ public class RepositoryExplorerDialog extends Dialog
 			ObjectId idDatabase = rep.getDatabaseID(databasename);
 			DatabaseMeta databaseMeta = rep.loadDatabaseMeta(idDatabase, null);  // reads last version
 
-			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
-			String name = dd.open();
+      getDatabaseDialog().setDatabaseMeta(databaseMeta);
+
+      String name = getDatabaseDialog().open();
 			if (name!=null)
 			{
 				if (!readonly)
 				{
-                    rep.insertLogEntry("Updating database connection '"+databaseMeta.getName()+"'");
+                    rep.insertLogEntry("Updating database connection '"+getDatabaseDialog().getDatabaseMeta().getName()+"'");
                     rep.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
 				}
 				else
@@ -2225,8 +2237,9 @@ public class RepositoryExplorerDialog extends Dialog
 		{
 			DatabaseMeta databaseMeta = new DatabaseMeta();
 			databaseMeta.initializeVariablesFrom(null);
-			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
-			String name = dd.open();
+			getDatabaseDialog().setDatabaseMeta(databaseMeta);
+
+			String name = getDatabaseDialog().open();
 			if (name!=null)
 			{
 				// See if this user already exists...

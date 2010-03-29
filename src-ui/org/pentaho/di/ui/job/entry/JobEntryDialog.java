@@ -47,6 +47,8 @@ public class JobEntryDialog extends Dialog {
 	protected Shell shell;
 	protected PropsUI props;
     protected Shell parent;
+
+    protected DatabaseDialog databaseDialog;
 	
     public JobEntryDialog(Shell parent, JobEntryInterface jobEntry, Repository rep, JobMeta jobMeta)
     {
@@ -57,9 +59,17 @@ public class JobEntryDialog extends Dialog {
         this.rep = rep;
         this.jobMeta = jobMeta;
         this.shell=parent;
-        
     }
  
+
+  private DatabaseDialog getDatabaseDialog(){
+    if(databaseDialog != null){
+      return databaseDialog;
+    }
+    databaseDialog = new DatabaseDialog(shell);
+    return databaseDialog;
+  }
+  
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin) {
     return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH));
   }
@@ -94,13 +104,12 @@ public class JobEntryDialog extends Dialog {
         DatabaseMeta databaseMeta = new DatabaseMeta();
         databaseMeta.shareVariablesWith(jobMeta);
         
-        DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
-        cid.setModalDialog(true);
-        if (cid.open() != null) {
-        	jobMeta.addDatabase(databaseMeta);
+        getDatabaseDialog().setDatabaseMeta(databaseMeta);
+        if (getDatabaseDialog().open() != null) {
+        	jobMeta.addDatabase(getDatabaseDialog().getDatabaseMeta());
           wConnection.removeAll();
           addDatabases(wConnection);
-          selectDatabase(wConnection, databaseMeta.getName());
+          selectDatabase(wConnection, getDatabaseDialog().getDatabaseMeta().getName());
         }
         
       }
@@ -122,9 +131,8 @@ public class JobEntryDialog extends Dialog {
         DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());
         if (databaseMeta != null) {
           databaseMeta.shareVariablesWith(jobMeta);
-          DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
-          cid.setModalDialog(true);
-          if (cid.open() != null) {
+          getDatabaseDialog().setDatabaseMeta(databaseMeta);
+          if (getDatabaseDialog().open() != null) {
             wConnection.removeAll();
             addDatabases(wConnection);
             selectDatabase(wConnection, databaseMeta.getName());

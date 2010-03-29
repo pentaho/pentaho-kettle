@@ -188,6 +188,9 @@ public class JobDialog extends Dialog
 	private JobLogTable jobLogTable;
 	private JobEntryLogTable jobEntryLogTable;
 	private ChannelLogTable channelLogTable;
+	
+	private DatabaseDialog databaseDialog;
+  
 
 
 	public JobDialog(Shell parent, int style, JobMeta jobMeta, Repository rep)
@@ -289,6 +292,15 @@ public class JobDialog extends Dialog
 		}
 		return jobMeta;
 	}
+
+
+  private DatabaseDialog getDatabaseDialog(){
+    if(databaseDialog != null){
+      return databaseDialog;
+    }
+    databaseDialog = new DatabaseDialog(shell);
+    return databaseDialog;
+  }
 	
 	private void addJobTab()
 	{
@@ -777,11 +789,13 @@ public class JobDialog extends Dialog
             {
                 DatabaseMeta databaseMeta = new DatabaseMeta();
                 databaseMeta.shareVariablesWith(jobMeta);
-                DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
-                if (cid.open()!=null)
+                
+                getDatabaseDialog().setDatabaseMeta(databaseMeta);
+                
+                if (getDatabaseDialog().open()!=null)
                 {
-                    jobMeta.addDatabase(databaseMeta);
-                    wLogconnection.add(databaseMeta.getName());
+                    jobMeta.addDatabase(getDatabaseDialog().getDatabaseMeta());
+                    wLogconnection.add(getDatabaseDialog().getDatabaseMeta().getName());
                     wLogconnection.select(wLogconnection.getItemCount()-1);
                 }
             }

@@ -62,6 +62,8 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
   private boolean initComplete = false;
 
   private UIDatabaseConnections dbConnectionList = new UIDatabaseConnections();
+  
+  private DatabaseDialog databaseDialog;
 
   public ConnectionsController() {
   }
@@ -84,9 +86,18 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
       createBindings();
     }
     setEnableButtons(false);
+
     initComplete = true;
   }
 
+  private DatabaseDialog getDatabaseDialog(){
+    if(databaseDialog != null){
+      return databaseDialog;
+    }
+    databaseDialog = new DatabaseDialog(shell);
+    return databaseDialog;
+  }
+  
   private void createBindings() {
     connectionsTable = (XulTree) document.getElementById("connections-table"); //$NON-NLS-1$
 
@@ -169,15 +180,16 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
     try {
       DatabaseMeta databaseMeta = new DatabaseMeta();
       databaseMeta.initializeVariablesFrom(null);
-      DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
-      String dbName = dd.open();
+      getDatabaseDialog().setDatabaseMeta(databaseMeta);
+      
+      String dbName = getDatabaseDialog().open();
       if (dbName != null && !dbName.equals(""))//$NON-NLS-1$
       {
         // See if this user connection exists...
         ObjectId idDatabase = repository.getDatabaseID(dbName);
         if (idDatabase == null) {
-          repository.insertLogEntry(BaseMessages.getString(PKG, "ConnectionsController.Message.CreatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
-          repository.save(databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null);
+          repository.insertLogEntry(BaseMessages.getString(PKG, "ConnectionsController.Message.CreatingDatabase", getDatabaseDialog().getDatabaseMeta().getName()));//$NON-NLS-1$
+          repository.save(getDatabaseDialog().getDatabaseMeta(), Const.VERSION_COMMENT_INITIAL_VERSION, null);
         } else {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
           mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message")); //$NON-NLS-1$
@@ -216,9 +228,8 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.DoesNotExists.Title")); //$NON-NLS-1$
           mb.open();
         } else {
-          DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
-          String dbName = dd.open();
-          
+          getDatabaseDialog().setDatabaseMeta(databaseMeta);
+          String dbName = getDatabaseDialog().open();
           if (dbName != null && !dbName.equals("")) //$NON-NLS-1$
           {
             repository.insertLogEntry(BaseMessages.getString(PKG, "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName()));//$NON-NLS-1$

@@ -207,6 +207,7 @@ public class TransDialog extends Dialog
 	private PerformanceLogTable	performanceLogTable;
 	private ChannelLogTable	channelLogTable;
 	private StepLogTable stepLogTable;
+	private DatabaseDialog databaseDialog;
 	
   public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep, Tabs currentTab)
   {
@@ -342,6 +343,14 @@ public class TransDialog extends Dialog
 		return transMeta;
 	}
 
+	private DatabaseDialog getDatabaseDialog(){
+	  if(databaseDialog != null){
+	    return databaseDialog;
+	  }
+	  databaseDialog = new DatabaseDialog(shell);
+	  return databaseDialog;
+	}
+	
 	private void addTransTab()
     {
         //////////////////////////
@@ -840,11 +849,12 @@ public class TransDialog extends Dialog
             {
                 DatabaseMeta databaseMeta = new DatabaseMeta();
                 databaseMeta.shareVariablesWith(transMeta);
-                DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
-                if (cid.open()!=null)
+                getDatabaseDialog().setDatabaseMeta(databaseMeta);
+                
+                if (getDatabaseDialog().open()!=null)
                 {
-                    transMeta.addDatabase(databaseMeta);
-                    wLogconnection.add(databaseMeta.getName());
+                    transMeta.addDatabase(getDatabaseDialog().getDatabaseMeta());
+                    wLogconnection.add(getDatabaseDialog().getDatabaseMeta().getName());
                     wLogconnection.select(wLogconnection.getItemCount()-1);
                 }
             }

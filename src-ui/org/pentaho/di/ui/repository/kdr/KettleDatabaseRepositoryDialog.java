@@ -91,6 +91,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 	
 	private KettleDatabaseRepositoryMeta   input;
 	private RepositoriesMeta repositories;
+	private DatabaseDialog databaseDialog;
 	
 	public KettleDatabaseRepositoryDialog(Shell parent, int style, RepositoryMeta repositoryMeta, RepositoriesMeta repositoriesMeta)
 	{
@@ -101,6 +102,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 		
 		shell = new Shell(parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
 		shell.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Main.Title")); //$NON-NLS-1$
+
 	}
 
 	public KettleDatabaseRepositoryMeta open()
@@ -169,13 +171,14 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 				public void widgetSelected(SelectionEvent arg0) 
 				{
 					DatabaseMeta databaseMeta = new DatabaseMeta();
-					DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
-					if (dd.open()!=null)
+					getDatabaseDialog().setDatabaseMeta(databaseMeta);
+					
+					if (getDatabaseDialog().open()!=null)
 					{
-						repositories.addDatabase(databaseMeta);
+						repositories.addDatabase(getDatabaseDialog().getDatabaseMeta());
 						fillConnections();
 						
-						int idx = repositories.indexOfDatabase(databaseMeta);
+						int idx = repositories.indexOfDatabase(getDatabaseDialog().getDatabaseMeta());
 						wConnection.select(idx);
 						
 					}
@@ -191,11 +194,11 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 					DatabaseMeta databaseMeta = repositories.searchDatabase(wConnection.getText());
 					if (databaseMeta!=null)
 					{
-						DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
-						if (dd.open()!=null)
+					  getDatabaseDialog().setDatabaseMeta(databaseMeta);
+						if (getDatabaseDialog().open()!=null)
 						{
 							fillConnections();
-							int idx = repositories.indexOfDatabase(databaseMeta);
+							int idx = repositories.indexOfDatabase(getDatabaseDialog().getDatabaseMeta());
 							wConnection.select(idx);
 						}
 					}
@@ -292,6 +295,14 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
 		return input;
 	}
 
+  private DatabaseDialog getDatabaseDialog(){
+    if(databaseDialog != null){
+      return databaseDialog;
+    }
+    databaseDialog = new DatabaseDialog(shell);
+    return databaseDialog;
+  }
+  
 	public void dispose()
 	{
 		props.setScreen(new WindowProperty(shell));
