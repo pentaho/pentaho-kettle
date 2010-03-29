@@ -273,10 +273,12 @@ public class SpoonTabsDelegate extends SpoonDelegate
 			}
 			Object entryManagedObj = entry.getObject().getManagedObject();
 			// make sure they are the same class before comparing them
-			if (entryManagedObj.getClass().equals(managedObject.getClass())) {
-			  if (entryManagedObj.equals(managedObject)) {
-			    return entry;
-			  }
+			if (entryManagedObj != null && managedObject != null) {
+  			if (entryManagedObj.getClass().equals(managedObject.getClass())) {
+  			  if (entryManagedObj.equals(managedObject)) {
+  			    return entry;
+  			  }
+  			}
 			}
 		}
 		return null;
