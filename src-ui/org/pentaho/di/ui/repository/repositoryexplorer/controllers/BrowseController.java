@@ -313,7 +313,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       }
     };
     bf.createBinding(fileTable, "selectedItems", "file-context-rename", "!disabled", checkIfMultipleItemsAreSelected); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    bf.createBinding(fileTable, "selectedItems", "file-context-delete", "!disabled", checkIfMultipleItemsAreSelected); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
     revisionBinding = bf.createBinding(this, "repositoryObjects", revisionTable, "elements", //$NON-NLS-1$ //$NON-NLS-2$
         new BindingConvertor<List<UIRepositoryObject>, UIRepositoryObjectRevisions>() {
@@ -427,11 +426,17 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void deleteContent() throws Exception {
-    Collection<UIRepositoryObject> content = fileTable.getSelectedItems();
-    UIRepositoryObject toDelete = content.iterator().next();
-    toDelete.delete();
-    if (toDelete instanceof UIRepositoryDirectory) {
-      directoryBinding.fireSourceChanged();
+    for(Object object:fileTable.getSelectedItems()) {
+      UIRepositoryObject repoObject = null;
+      if(object instanceof UIRepositoryObject) {
+        repoObject = (UIRepositoryObject) object;
+        if(repoObject != null) {
+          repoObject.delete();
+          if (repoObject instanceof UIRepositoryDirectory) {
+            directoryBinding.fireSourceChanged();
+          }
+        }
+      }
     }
   }
 
@@ -517,10 +522,16 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void deleteFolder() throws Exception {
-    Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
-    UIRepositoryDirectory toDelete = directory.iterator().next();
-    toDelete.delete();
-    directoryBinding.fireSourceChanged();
+    for(Object object:folderTree.getSelectedItems()) {
+      UIRepositoryDirectory repoDir = null;
+      if(object instanceof UIRepositoryDirectory) {
+        repoDir = (UIRepositoryDirectory) object;
+        if(repoDir != null) {
+          repoDir.delete();
+           directoryBinding.fireSourceChanged();
+        }
+      }
+    }
   }
 
   public void renameFolder() throws Exception {
