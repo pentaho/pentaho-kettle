@@ -300,6 +300,20 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     bf.createBinding(folderTree, "selectedItems", this, "historyTabVisibility"); //$NON-NLS-1$  //$NON-NLS-2$
 
     bf.setBindingType(Binding.Type.ONE_WAY);
+    BindingConvertor<List<UIRepositoryObject>, Boolean> checkIfMultipleItemsAreSelected = new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
+
+      @Override
+      public Boolean sourceToTarget(List<UIRepositoryObject> value) {
+        return value != null && value.size() == 1 && value.get(0) != null;
+      }
+
+      @Override
+      public List<UIRepositoryObject> targetToSource(Boolean value) {
+        return null;
+      }
+    };
+    bf.createBinding(fileTable, "selectedItems", "file-context-rename", "!disabled", checkIfMultipleItemsAreSelected); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    bf.createBinding(fileTable, "selectedItems", "file-context-delete", "!disabled", checkIfMultipleItemsAreSelected); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
     revisionBinding = bf.createBinding(this, "repositoryObjects", revisionTable, "elements", //$NON-NLS-1$ //$NON-NLS-2$
         new BindingConvertor<List<UIRepositoryObject>, UIRepositoryObjectRevisions>() {
