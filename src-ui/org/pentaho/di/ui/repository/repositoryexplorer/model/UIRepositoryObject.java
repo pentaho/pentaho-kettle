@@ -58,7 +58,12 @@ public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryO
   }
 
   public String getId() {
-    return obj.getObjectId().getId();
+    if(obj != null && obj.getObjectId() != null) {
+      return obj.getObjectId().getId();  
+    } else {
+      return null;
+    }
+    
   }
 
   public ObjectId getObjectId() {

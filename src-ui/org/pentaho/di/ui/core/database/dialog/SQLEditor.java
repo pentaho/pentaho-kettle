@@ -29,8 +29,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -67,7 +65,7 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
  * @since 13-10-2003
  * 
  */
-public class SQLEditor extends Dialog
+public class SQLEditor 
 {
 	private static Class<?> PKG = SQLEditor.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -92,23 +90,23 @@ public class SQLEditor extends Dialog
 	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
 
 	private LogChannelInterface log;
+	private int style = SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN;
+	private Shell parentShell;
 	
 	public SQLEditor(Shell parent, int style, DatabaseMeta ci, DBCache dbc, String sql)
 	{
-			super(parent, style);
 			props=PropsUI.getInstance();
 			log=new LogChannel(ci);
 			input=sql;
 			connection=ci;
 			dbcache=dbc;
+			this.parentShell = parent;
+			this.style = (style != SWT.None) ? style : this.style;
 	}
 
 	public void open()
 	{
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
-
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+		shell = new Shell(parentShell, style);
  		props.setLook(shell);
 		shell.setImage(GUIResource.getInstance().getImageConnection());
 
@@ -210,10 +208,6 @@ public class SQLEditor extends Dialog
 		getData();
 		
 		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
 	}
 	public void setPosition(){
 		

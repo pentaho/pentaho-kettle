@@ -3,7 +3,6 @@ package org.pentaho.di.ui.repository.controllers;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.repository.ILoginCallback;
 import org.pentaho.di.ui.repository.RepositoriesHelper;
@@ -12,7 +11,6 @@ import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationE
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulCheckbox;
 import org.pentaho.ui.xul.components.XulConfirmBox;
@@ -44,6 +42,8 @@ public class RepositoriesController extends AbstractXulEventHandler {
   private RepositoriesModel loginModel;
   
   private XulButton okButton;
+  
+  private XulButton cancelButton;
   
   private XulMessageBox messageBox;
 
@@ -84,6 +84,7 @@ public class RepositoriesController extends AbstractXulEventHandler {
     availableRepositories = (XulListbox) document.getElementById("available-repository-list");//$NON-NLS-1$
     showAtStartup = (XulCheckbox) document.getElementById("show-login-dialog-at-startup");//$NON-NLS-1$
     okButton = (XulButton) document.getElementById("repository-login-dialog_accept"); //$NON-NLS-1$
+    cancelButton = (XulButton) document.getElementById("repository-login-dialog_cancel"); //$NON-NLS-1$
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     bf.createBinding(loginModel, "username", username, "value");//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(loginModel, "password", userPassword, "value");//$NON-NLS-1$ //$NON-NLS-2$
@@ -134,11 +135,17 @@ public class RepositoriesController extends AbstractXulEventHandler {
    */
   public void login() {
     try {
+      okButton.setDisabled(true);
+      cancelButton.setDisabled(true);
       helper.loginToRepository();
+      okButton.setDisabled(false);
+      cancelButton.setDisabled(false);
       loginDialog.hide();
       getCallback().onSuccess(helper.getConnectedRepository());
     } catch (Throwable th) {
       getCallback().onError(th);
+      okButton.setDisabled(false);
+      cancelButton.setDisabled(false);
     }
   }
 
