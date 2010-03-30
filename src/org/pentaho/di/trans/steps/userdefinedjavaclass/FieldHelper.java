@@ -96,9 +96,9 @@ public class FieldHelper {
 	private static final Pattern	validJavaIdentifier	= Pattern.compile("^[\\w&&\\D]\\w*");
 
 	public static String getAccessor(boolean isIn, String fieldName) {
-		StringBuilder sb = new StringBuilder("Fields.");
-		sb.append(isIn ? "In" : "Out").append('.');
-		sb.append(String.format("get(\"%s\")", fieldName.replace("\\", "\\\\").replace("\"", "\\\"")));
+		StringBuilder sb = new StringBuilder("get(Fields.");
+		sb.append(isIn ? "In" : "Out");
+		sb.append(String.format(", \"%s\")", fieldName.replace("\\", "\\\\").replace("\"", "\\\"")));
 		return sb.toString();
 	}
 	
