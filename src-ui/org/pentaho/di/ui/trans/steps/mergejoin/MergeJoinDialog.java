@@ -443,14 +443,14 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     
     private void getKeys1()
     {
-        MergeJoinMeta meta = new MergeJoinMeta();
-        getMeta(meta);
+        MergeJoinMeta joinMeta = new MergeJoinMeta();
+        getMeta(joinMeta);
         
         try
         {
-            List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
+            List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
 
-            StepMeta stepMeta = transMeta.findStep(infoStreams.get(0).getStepname());
+            StepMeta stepMeta = infoStreams.get(0).getStepMeta();
             if (stepMeta!=null)
             {
                 RowMetaInterface prev = transMeta.getStepFields(stepMeta);
@@ -468,14 +468,14 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     
     private void getKeys2()
     {
-        MergeJoinMeta meta = new MergeJoinMeta();
-        getMeta(meta);
+        MergeJoinMeta joinMeta = new MergeJoinMeta();
+        getMeta(joinMeta);
 
         try
         {
-            List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
+            List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
 
-            StepMeta stepMeta = transMeta.findStep(infoStreams.get(1).getStepname());
+            StepMeta stepMeta = infoStreams.get(1).getStepMeta();
             if (stepMeta!=null)
             {
                 RowMetaInterface prev = transMeta.getStepFields(stepMeta);

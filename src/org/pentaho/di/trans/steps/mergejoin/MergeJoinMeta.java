@@ -329,4 +329,8 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
     	
     	return ioMeta;
     }
+    
+    public void resetStepIoMeta() {
+    	// Don't reset!
+    }
 }
