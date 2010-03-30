@@ -372,14 +372,14 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wlUseCache.setLayoutData(fdlUseCache);
         wUseCache=new Button(shell, SWT.CHECK);
         props.setLook(wUseCache);
-        wUseCache.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setFlags(); }});
+        wUseCache.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setFlags(); input.setChanged(); }});
         FormData fdUseCache=new FormData();
         fdUseCache.left = new FormAttachment(middle, 0);
         fdUseCache.top  = new FormAttachment(wCommit, margin);
         fdUseCache.right= new FormAttachment(100, 0);
         wUseCache.setLayoutData(fdUseCache);
 
-        // Cache size ...
+        // Preload cache?
         wlPreloadCache=new Label(shell, SWT.RIGHT);
         wlPreloadCache.setText(Messages.getString("DimensionLookupDialog.PreloadCache.Label")); //$NON-NLS-1$
         props.setLook(wlPreloadCache);
@@ -390,7 +390,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wlPreloadCache.setLayoutData(fdlPreloadCache);
         wPreloadCache=new Button(shell, SWT.CHECK);
         props.setLook(wPreloadCache);
-        wPreloadCache.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setFlags(); }});
+        wPreloadCache.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setFlags(); input.setChanged(); }});
         FormData fdPreloadCache=new FormData();
         fdPreloadCache.left = new FormAttachment(middle, 0);
         fdPreloadCache.top  = new FormAttachment(wUseCache, margin);
@@ -675,7 +675,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdUseAltStartDate.left = new FormAttachment(middle, 0);
 		fdUseAltStartDate.bottom  = new FormAttachment(wTodate, -2 * margin);
 		wUseAltStartDate.setLayoutData(fdUseAltStartDate);
-        wUseAltStartDate.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setFlags(); } });
+        wUseAltStartDate.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setFlags(); input.setChanged(); } });
         
 		// The choice...
 		//
