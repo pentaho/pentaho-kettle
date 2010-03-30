@@ -396,7 +396,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				// Only take non-SAP R/3 connections....
 				List<DatabaseMeta> dbs = new ArrayList<DatabaseMeta>();
 				for (int i = 0; i < databases.size(); i++) {
-					if (((databases.get(i)).getDatabaseInterface() instanceof SAPR3DatabaseMeta)) {
+					if (((databases.get(i)).getDatabaseInterface().isExplorable())) {
 						dbs.add(databases.get(i));
 					}
 				}
