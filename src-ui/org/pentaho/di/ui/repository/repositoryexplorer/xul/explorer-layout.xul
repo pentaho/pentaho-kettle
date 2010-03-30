@@ -392,7 +392,7 @@
     		ondialogcancel="iSecurityController.cancelAddUserDialog()" 
     		buttons="accept, cancel" buttonalign="right" title="${AddUserDialog.Title}"
     		appicon="ui/images/spoon.ico" 
-    		height="230" width="350">
+    		height="260" width="350">
        <vbox>
 			<label value="${AddUserDialog.UserName}" />
 			<hbox id="user-name-box">
