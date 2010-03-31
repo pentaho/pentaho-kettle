@@ -6,7 +6,6 @@
 
 <style type="text/css">
 <!--
-html,body {height:100%}
 body {
 	background-color: #c9dbe9;
 	background-image: url(images/bg_quicklaunch.jpg);
@@ -219,7 +218,15 @@ p {
 	left: 0;
 	min-height: 100%;
 }
-#fade {
+#hideshow2 {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        min-height: 100%;
+}
+#fade,#fade2 {
 	background: #000;
 	position: absolute;
 	width: 100%;
@@ -232,7 +239,7 @@ p {
 	z-index: 10;
 	min-height: 100%;
 }
-html, body #fade {
+html, body #fade, body #fade2 {
 height: 100%;
 min-height: 100%;
 }
@@ -250,7 +257,7 @@ min-height: 100%;
 	z-index: 100;
 }
 
-.popup_block .popup {
+.popup {
 	float: left;
 	width: 100%;
 	background: #fff;
@@ -276,7 +283,7 @@ min-height: 100%;
 }
 /*--Making IE6 Understand Fixed Positioning--*/
 
-*html #fade {
+*html #fade, *html #fade2 {
 	position: absolute;
  top:expression(eval(document.compatMode &&  document.compatMode=='CSS1Compat') ?  documentElement.scrollTop : document.body.scrollTop);
 }
@@ -471,7 +478,7 @@ function MM_swapImage() { //v3.0
       <td><table width="144" border="0" cellspacing="0" cellpadding="0">
           <tr>
             <td>
-           	  <div id="gettingstarted"><span title="Getting started with Pentaho Data Integration"><a href="../getting_started_with_pdi.pdf">Getting Started</a></span></div>            </td>
+           	  <div id="gettingstarted"><span title="Getting started with Pentaho Data Integration"><a href="javascript:showDiv2()">Getting Started</a></span></div>            </td>
           </tr>
         </table></td>
       <td><img src="images/clr.gif" width="18" height="10"></td>
@@ -574,7 +581,7 @@ function MM_swapImage() { //v3.0
   <div class="popup_block">
     <div class="popup"> <a href="javascript:hideDiv()"><img src="images/icon_close.png" alt="Close" class="cntrl" border="0" width="28" height="31"/></a>
       <h3>Samples</h3>
-      <div style="float:right; margin: 0 0 0 30px;"><img src="images/sample_file_open.png"></div><p>Sample Job, Mapping, and Tranformation files are available in the Pentaho Data Integration installation directory.</p><p>To view the samples, use the File/Open and navigate to ...data-integration\samples.</p>
+      <div style="float:right; margin: 0 0 0 30px;"><img src="images/sample_file_import.png"></div><p>Sample Job, Mapping, and Tranformation files are available in the Pentaho Data Integration installation directory.</p><p>To view the samples, use the File/Import from an XML File and navigate to <br>...data-integration\samples.</p>
       
     </div>
   </div>
@@ -607,6 +614,52 @@ else { // IE 4
 document.all.hideshow.style.visibility = 'visible'; 
 } 
 } 
+} 
+</script>
+<div id="hideshow2" style="visibility:hidden;">
+  <div id="fade2"></div>
+  <div class="popup_block">
+    <div class="popup"> <a href="javascript:hideDiv2()"><img src="images/icon_close.png" alt="Close" class="cntrl" border="0" width="28" height="31"/></a>
+      <h3>Getting Started</h3>
+      <div style="float:right; margin: 0 0 0 30px;"><img src="images/getting_started_file.png"></div>
+
+<p>To view the Getting Started Guide, open the PDF document found in<br> ...pdi-ee/getting_started_with_pdi.pdf</p>
+
+    </div>
+  </div>
+</div>
+<div id="logo"><a href="http://www.pentaho.com" target="_Pentaho" border="0"><img src="images/pentaho_logo_rgb_sm.png" border="0"></a></div>
+<script language=javascript type='text/javascript'> 
+function hideDiv2() { 
+  if (document.getElementById) { // DOM3 = IE5, NS6 
+    document.getElementById('hideshow2').style.visibility = 'hidden'; 
+  } 
+  else { 
+    if (document.layers) { // Netscape 4 
+      document.hideshow2.visibility = 'hidden'; 
+    } 
+    else { // IE 4 
+      document.all.hideshow2.style.visibility = 'hidden'; 
+    } 
+  } 
+}
+
+function showDiv2() {
+  if (navigator.platform != null && navigator.platform.indexOf("Win") >= 0) {
+    location.href='../getting_started_with_pdi.pdf';
+    return;
+  }
+  if (document.getElementById) { // DOM3 = IE5, NS6 
+    document.getElementById('hideshow2').style.visibility = 'visible'; 
+  }
+  else { 
+    if (document.layers) { // Netscape 4 
+      document.hideshow2.visibility = 'visible'; 
+    }
+    else { // IE 4 
+      document.all.hideshow2.style.visibility = 'visible'; 
+    } 
+  } 
 } 
 </script>
 </body>
