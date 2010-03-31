@@ -487,6 +487,17 @@ public class XMLHandler
 			throw new KettleXMLException("Unable to read file ["+fileObject.toString()+"]", e);
 		}
     }
+
+    /**
+     * Read in an XML file from the passed input stream and return an XML document
+     * @param inputStream The filename input stream to read the document from
+     * @return the Document if all went well, null if an error occurred!
+     */
+    public static final Document loadXMLFile(InputStream inputStream) throws KettleXMLException
+    {
+        return loadXMLFile(inputStream, null, false, false);
+    }
+
     
     /**
      * Load a file into an XML document
