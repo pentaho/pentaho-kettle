@@ -8,6 +8,7 @@
 
 	<dialog id="repository-explorer-dialog" 
 		title="${RepositoryExplorerDialog.Title}"
+		resizable="true"
 	    height="600" width="800"
 		appicon="ui/images/spoon.ico"
 		buttons="accept"
@@ -342,6 +343,7 @@
 	    		ondialogcancel="permissionsController.closeManageAclsDialog()" 
 	    		buttons="accept, cancel" buttonalign="right" title="${ManageAclsDialog.Title}"
 	    		appicon="ui/images/spoon.ico" 
+	    		resizable="true"
 	    		height="500" width="400">
 	    	<vbox flex="1">
 		    	<groupbox id="user-section" flex="1">
@@ -392,6 +394,7 @@
     		ondialogcancel="iSecurityController.cancelAddUserDialog()" 
     		buttons="accept, cancel" buttonalign="right" title="${AddUserDialog.Title}"
     		appicon="ui/images/spoon.ico" 
+    		resizable="true"
     		height="260" width="350">
        <vbox>
 			<label value="${AddUserDialog.UserName}" />
