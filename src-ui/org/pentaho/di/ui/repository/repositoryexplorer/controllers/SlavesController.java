@@ -11,8 +11,6 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -36,7 +34,6 @@ import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlaves;
 import org.pentaho.ui.xul.binding.Binding;
-import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
@@ -80,7 +77,7 @@ public class SlavesController extends AbstractXulEventHandler  implements IUISup
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog)document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
     
-    setEnableButtons(false);
+    enableButtons(true, false, false);
     bf = new DefaultBindingFactory();
     bf.setDocument(this.getXulDomContainer().getDocumentRoot());
 
@@ -99,22 +96,7 @@ public class SlavesController extends AbstractXulEventHandler  implements IUISup
       slavesTable = (XulTree) document.getElementById("slaves-table"); //$NON-NLS-1$
       bf.setBindingType(Binding.Type.ONE_WAY);
       bf.createBinding(slaveList, "children", slavesTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(slavesTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
-        new BindingConvertor<List<UISlave>, Boolean>() {
-          @Override
-          public Boolean sourceToTarget(List<UISlave> slaves) {
-            // Enable / Disable New,Edit,Remove buttons
-            if(slaves != null && slaves.size() > 0) {
-              return true;
-            }
-            
-            return false;
-          }
-          @Override
-          public List<UISlave> targetToSource(Boolean enabled) {
-            return null;
-          }
-      });
+      bf.createBinding(slavesTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
     } catch (Exception e) {
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
@@ -232,21 +214,23 @@ public class SlavesController extends AbstractXulEventHandler  implements IUISup
     try
     {
       Collection<UISlave> slaves = slavesTable.getSelectedItems();
-      
       if(slaves != null && !slaves.isEmpty()) {
-        // Grab the first item in the list for deleting
-        SlaveServer slaveServer = ((UISlave)slaves.toArray()[0]).getSlaveServer();
-        slaveServerName = slaveServer.getName();
-        // Make sure the slave to delete exists in the repository
-        ObjectId slaveId = repository.getSlaveID(slaveServer.getName());
-        if(slaveId == null) {
-          MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message")); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title")); //$NON-NLS-1$
-          mb.open();
-        } else {
-          repository.deleteSlave(slaveId);
-          refreshSlaves();
+        for(Object obj:slaves) {
+          if(obj != null && obj instanceof UISlave) {
+            UISlave slave = (UISlave) obj;
+            SlaveServer slaveServer = slave.getSlaveServer();
+            slaveServerName = slaveServer.getName();
+            // Make sure the slave to delete exists in the repository
+            ObjectId slaveId = repository.getSlaveID(slaveServer.getName());
+            if(slaveId == null) {
+              MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message")); //$NON-NLS-1$
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title")); //$NON-NLS-1$
+              mb.open();
+            } else {
+              repository.deleteSlave(slaveId);
+            }
+          }
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -259,12 +243,22 @@ public class SlavesController extends AbstractXulEventHandler  implements IUISup
     {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title"),  //$NON-NLS-1$
           BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message")+slaveServerName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
+    } finally {
+      refreshSlaves();
     }
   }
   
-  public void setEnableButtons(boolean enable) {
+  public void setEnableButtons(List<UISlave> slaves) {
+    boolean enableEdit = false;
+    boolean enableRemove = false;
+    if(slaves != null && slaves.size() > 0) {
+      enableRemove = true;
+      if(slaves.size() == 1) {
+        enableEdit = true;
+      }
+    }
     // Convenience - Leave 'new' enabled, modify 'edit' and 'remove'
-    enableButtons(true, enable, enable);
+    enableButtons(true, enableEdit, enableRemove);
   }
   
   public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {

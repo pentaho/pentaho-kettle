@@ -28,6 +28,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UICluster;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnection;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIDatabaseConnections;
 import org.pentaho.ui.xul.binding.Binding;
@@ -62,7 +63,7 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
   private boolean initComplete = false;
 
   private UIDatabaseConnections dbConnectionList = new UIDatabaseConnections();
-  
+
   private DatabaseDialog databaseDialog;
 
   public ConnectionsController() {
@@ -85,19 +86,19 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
     if (bf != null) {
       createBindings();
     }
-    setEnableButtons(false);
+    enableButtons(true, false, false);
 
     initComplete = true;
   }
 
-  private DatabaseDialog getDatabaseDialog(){
-    if(databaseDialog != null){
+  private DatabaseDialog getDatabaseDialog() {
+    if (databaseDialog != null) {
       return databaseDialog;
     }
     databaseDialog = new DatabaseDialog(shell);
     return databaseDialog;
   }
-  
+
   private void createBindings() {
     connectionsTable = (XulTree) document.getElementById("connections-table"); //$NON-NLS-1$
 
@@ -111,22 +112,7 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
       (bindButtonRemove = bf.createBinding(this, "repReadOnly", "connections-remove", "disabled")).fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
       if (repository != null) {
-        bf.createBinding(connectionsTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
-            new BindingConvertor<List<UIDatabaseConnection>, Boolean>() {
-              @Override
-              public Boolean sourceToTarget(List<UIDatabaseConnection> dbConnList) {
-                // Enable / Disable New,Edit,Remove buttons
-                if (dbConnList != null && dbConnList.size() > 0) {
-                  return true;
-                }
-                return false;
-              }
-
-              @Override
-              public List<UIDatabaseConnection> targetToSource(Boolean enable) {
-                return null;
-              }
-            });
+        bf.createBinding(connectionsTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
       }
     } catch (Exception ex) {
       // convert to runtime exception so it bubbles up through the UI
@@ -181,34 +167,36 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
       DatabaseMeta databaseMeta = new DatabaseMeta();
       databaseMeta.initializeVariablesFrom(null);
       getDatabaseDialog().setDatabaseMeta(databaseMeta);
-      
+
       String dbName = getDatabaseDialog().open();
       if (dbName != null && !dbName.equals(""))//$NON-NLS-1$
       {
         // See if this user connection exists...
         ObjectId idDatabase = repository.getDatabaseID(dbName);
         if (idDatabase == null) {
-          repository.insertLogEntry(BaseMessages.getString(PKG, "ConnectionsController.Message.CreatingDatabase", getDatabaseDialog().getDatabaseMeta().getName()));//$NON-NLS-1$
+          repository.insertLogEntry(BaseMessages.getString(PKG,
+              "ConnectionsController.Message.CreatingDatabase", getDatabaseDialog().getDatabaseMeta().getName()));//$NON-NLS-1$
           repository.save(getDatabaseDialog().getDatabaseMeta(), Const.VERSION_COMMENT_INITIAL_VERSION, null);
         } else {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message")); //$NON-NLS-1$
+          mb
+              .setMessage(BaseMessages.getString(PKG,
+                  "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message")); //$NON-NLS-1$
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title")); //$NON-NLS-1$
           mb.open();
         }
       }
-//    We should be able to tell the difference between a cancel and an empty database name
-//
-//      else {
-//        MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-//        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
-//        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
-//        mb.open();
-//      }
+      //    We should be able to tell the difference between a cancel and an empty database name
+      //
+      //      else {
+      //        MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+      //        mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
+      //        mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
+      //        mb.open();
+      //      }
     } catch (KettleException e) {
-      new ErrorDialog(
-          shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"),  //$NON-NLS-1$
+      new ErrorDialog(shell, BaseMessages.getString(PKG,
+          "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), //$NON-NLS-1$
           BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshConnectionList();
@@ -235,17 +223,18 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
           String dbName = getDatabaseDialog().open();
           if (dbName != null && !dbName.equals("")) //$NON-NLS-1$
           {
-            repository.insertLogEntry(BaseMessages.getString(PKG, "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
+            repository.insertLogEntry(BaseMessages.getString(PKG,
+                "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName()));//$NON-NLS-1$
             repository.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
           }
-//          We should be able to tell the difference between a cancel and an empty database name 
-//          
-//          else {
-//            MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-//            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
-//            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
-//            mb.open();            
-//          }
+          //          We should be able to tell the difference between a cancel and an empty database name 
+          //          
+          //          else {
+          //            MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+          //            mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Message")); //$NON-NLS-1$
+          //            mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.MissingName.Title")); //$NON-NLS-1$
+          //            mb.open();            
+          //          }
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -254,9 +243,8 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
         mb.open();
       }
     } catch (KettleException e) {
-      new ErrorDialog(
-          shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), //$NON-NLS-1$
+      new ErrorDialog(shell, BaseMessages.getString(PKG,
+          "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), //$NON-NLS-1$
           BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshConnectionList();
@@ -268,18 +256,24 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
       Collection<UIDatabaseConnection> connections = connectionsTable.getSelectedItems();
 
       if (connections != null && !connections.isEmpty()) {
-        // Grab the first item in the list & send it to the database dialog
-        DatabaseMeta databaseMeta = ((UIDatabaseConnection) connections.toArray()[0]).getDatabaseMeta();
+        for (Object obj : connections) {
+          if (obj != null && obj instanceof UIDatabaseConnection) {
+            UIDatabaseConnection connection = (UIDatabaseConnection) obj;
 
-        // Make sure this connection already exists and store its id for updating
-        ObjectId idDatabase = repository.getDatabaseID(databaseMeta.getName());
-        if (idDatabase == null) {
-          MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Delete.DoesNotExists.Message", databaseMeta.getName())); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Delete.Title")); //$NON-NLS-1$
-          mb.open();
-        } else {
-          repository.deleteDatabaseMeta(databaseMeta.getName());
+            DatabaseMeta databaseMeta = connection.getDatabaseMeta();
+
+            // Make sure this connection already exists and store its id for updating
+            ObjectId idDatabase = repository.getDatabaseID(databaseMeta.getName());
+            if (idDatabase == null) {
+              MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+              mb.setMessage(BaseMessages.getString(PKG,
+                  "RepositoryExplorerDialog.Connection.Delete.DoesNotExists.Message", databaseMeta.getName())); //$NON-NLS-1$
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Delete.Title")); //$NON-NLS-1$
+              mb.open();
+            } else {
+              repository.deleteDatabaseMeta(databaseMeta.getName());
+            }
+          }
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -288,20 +282,26 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
         mb.open();
       }
     } catch (KettleException e) {
-      new ErrorDialog(
-          shell,
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"),  //$NON-NLS-1$
+      new ErrorDialog(shell, BaseMessages.getString(PKG,
+          "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), //$NON-NLS-1$
           BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshConnectionList();
     }
   }
 
-  public void setEnableButtons(boolean enable) {
+  public void setEnableButtons(List<UIDatabaseConnection> connections) {
+    boolean enableEdit = false;
+    boolean enableRemove = false;
+    if(connections != null && connections.size() > 0) {
+      enableRemove = true;
+      if(connections.size() == 1) {
+        enableEdit = true;
+      }
+    }
     // Convenience - Leave 'new' enabled, modify 'edit' and 'remove'
-    enableButtons(true, enable, enable);
+    enableButtons(true, enableEdit, enableRemove);
   }
-
   public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
     XulButton bNew = (XulButton) document.getElementById("connections-new"); //$NON-NLS-1$
     XulButton bEdit = (XulButton) document.getElementById("connections-edit"); //$NON-NLS-1$

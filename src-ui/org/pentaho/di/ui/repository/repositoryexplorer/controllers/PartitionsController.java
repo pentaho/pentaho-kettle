@@ -16,8 +16,6 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -42,6 +40,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartition;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartitions;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -51,7 +50,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class PartitionsController extends AbstractXulEventHandler  implements IUISupportController {
+public class PartitionsController extends AbstractXulEventHandler implements IUISupportController {
 
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -64,9 +63,9 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
     protected Object handleGetObject(String key) {
       return BaseMessages.getString(RepositoryExplorer.class, key);
     }
-    
-  };  
-  
+
+  };
+
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   protected BindingFactory bf = null;
@@ -91,10 +90,10 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
     // Load the SWT Shell from the explorer dialog
     shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
 
-    setEnableButtons(false);
+    enableButtons(true, false, false);
     bf = new DefaultBindingFactory();
     bf.setDocument(this.getXulDomContainer().getDocumentRoot());
-    
+
     if (bf != null) {
       createBindings();
     }
@@ -105,22 +104,7 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
       partitionsTable = (XulTree) document.getElementById("partitions-table"); //$NON-NLS-1$
       bf.setBindingType(Binding.Type.ONE_WAY);
       bf.createBinding(partitionList, "children", partitionsTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(partitionsTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
-          new BindingConvertor<List<UIPartition>, Boolean>() {
-            @Override
-            public Boolean sourceToTarget(List<UIPartition> partitions) {
-              // Enable / Disable New,Edit,Remove buttons
-              if(partitions != null && partitions.size() > 0) {
-                return true;
-              }
-              
-              return false;
-            }
-            @Override
-            public List<UIPartition> targetToSource(Boolean enabled) {
-              return null;
-            }
-        });
+      bf.createBinding(partitionsTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
     } catch (Exception e) {
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
@@ -149,11 +133,12 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title")); //$NON-NLS-1$
           mb.open();
         } else {
-          PartitionSchemaDialog partitionDialog = new PartitionSchemaDialog(shell, partitionSchema, repository.readDatabases(), variableSpace);
+          PartitionSchemaDialog partitionDialog = new PartitionSchemaDialog(shell, partitionSchema, repository
+              .readDatabases(), variableSpace);
           if (partitionDialog.open()) {
-            if(partitionSchema.getName() != null && !partitionSchema.getName().equals("")) {//$NON-NLS-1$
+            if (partitionSchema.getName() != null && !partitionSchema.getName().equals("")) {//$NON-NLS-1$
               repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
-                  "PartitionsController.Message.UpdatingPartition",partitionSchema.getName()));//$NON-NLS-1$
+                  "PartitionsController.Message.UpdatingPartition", partitionSchema.getName()));//$NON-NLS-1$
               repository.save(partitionSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
             } else {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -182,13 +167,15 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
   public void createPartition() {
     try {
       PartitionSchema partition = new PartitionSchema();
-      PartitionSchemaDialog partitionDialog = new PartitionSchemaDialog(shell, partition, repository.readDatabases(), variableSpace);
+      PartitionSchemaDialog partitionDialog = new PartitionSchemaDialog(shell, partition, repository.readDatabases(),
+          variableSpace);
       if (partitionDialog.open()) {
         // See if this partition already exists...
         ObjectId idPartition = repository.getPartitionSchemaID(partition.getName());
         if (idPartition == null) {
-          if(partition.getName() != null && !partition.getName().equals("")) {//$NON-NLS-1$
-            repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class, "PartitionsController.Message.CreatingPartition",partition.getName()));//$NON-NLS-1$
+          if (partition.getName() != null && !partition.getName().equals("")) {//$NON-NLS-1$
+            repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
+                "PartitionsController.Message.CreatingPartition", partition.getName()));//$NON-NLS-1$
             repository.save(partition, Const.VERSION_COMMENT_INITIAL_VERSION, null);
           } else {
             MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -204,7 +191,8 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
         }
       }
     } catch (KettleException e) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG,"RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title"), //$NON-NLS-1$
+      new ErrorDialog(shell, BaseMessages.getString(PKG,
+          "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title"), //$NON-NLS-1$
           BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshPartitions();
@@ -217,18 +205,22 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
       Collection<UIPartition> partitions = partitionsTable.getSelectedItems();
 
       if (partitions != null && !partitions.isEmpty()) {
-        // Grab the first item in the list for deleting
-        PartitionSchema partitionSchema = ((UIPartition) partitions.toArray()[0]).getPartitionSchema();
-        partitionSchemaName = partitionSchema.getName();
-        // Make sure the partition to delete exists in the repository
-        ObjectId partitionId = repository.getPartitionSchemaID(partitionSchema.getName());
-        if (partitionId == null) {
-          MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message")); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.Title")); //$NON-NLS-1$
-          mb.open();
-        } else {
-          repository.deletePartitionSchema(partitionId);
+        for (Object obj : partitions) {
+          if (obj != null && obj instanceof UIPartition) {
+            UIPartition partition = (UIPartition) obj;
+            PartitionSchema partitionSchema = partition.getPartitionSchema();
+            partitionSchemaName = partitionSchema.getName();
+            // Make sure the partition to delete exists in the repository
+            ObjectId partitionId = repository.getPartitionSchemaID(partitionSchema.getName());
+            if (partitionId == null) {
+              MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message")); //$NON-NLS-1$
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.Title")); //$NON-NLS-1$
+              mb.open();
+            } else {
+              repository.deletePartitionSchema(partitionId);
+            }
+          }
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -263,20 +255,26 @@ public class PartitionsController extends AbstractXulEventHandler  implements IU
     }
   }
 
-  public void setEnableButtons(boolean enable) {
+  public void setEnableButtons(List<UIPartition> partitions) {
+    boolean enableEdit = false;
+    boolean enableRemove = false;
+    if(partitions != null && partitions.size() > 0) {
+      enableRemove = true;
+      if(partitions.size() == 1) {
+        enableEdit = true;
+      }
+    }
     // Convenience - Leave 'new' enabled, modify 'edit' and 'remove'
-    enableButtons(true, enable, enable);
+    enableButtons(true, enableEdit, enableRemove);
   }
-  
   public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
     XulButton bNew = (XulButton) document.getElementById("partitions-new"); //$NON-NLS-1$
     XulButton bEdit = (XulButton) document.getElementById("partitions-edit"); //$NON-NLS-1$
     XulButton bRemove = (XulButton) document.getElementById("partitions-remove"); //$NON-NLS-1$
-    
+
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
   }
-  
-  
+
 }

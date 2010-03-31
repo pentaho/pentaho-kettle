@@ -39,7 +39,6 @@ import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UICluster;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIClusters;
 import org.pentaho.ui.xul.binding.Binding;
-import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
@@ -47,7 +46,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class ClustersController extends AbstractXulEventHandler   implements IUISupportController {
+public class ClustersController extends AbstractXulEventHandler implements IUISupportController {
 
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -60,9 +59,9 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
     protected Object handleGetObject(String key) {
       return BaseMessages.getString(RepositoryExplorer.class, key);
     }
-    
-  };  
-  
+
+  };
+
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   protected BindingFactory bf = null;
@@ -86,9 +85,7 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
     shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
     bf = new DefaultBindingFactory();
     bf.setDocument(this.getXulDomContainer().getDocumentRoot());
-
-    setEnableButtons(false);
-    
+    enableButtons(true, false, false);
     if (bf != null) {
       createBindings();
     }
@@ -99,22 +96,7 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
       clustersTable = (XulTree) document.getElementById("clusters-table"); //$NON-NLS-1$
       bf.setBindingType(Binding.Type.ONE_WAY);
       bf.createBinding(clusterList, "children", clustersTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(clustersTable, "selectedItems", this, "enableButtons", //$NON-NLS-1$ //$NON-NLS-2$
-          new BindingConvertor<List<UICluster>, Boolean>() {
-            @Override
-            public Boolean sourceToTarget(List<UICluster> clusters) {
-              // Enable / Disable New,Edit,Remove buttons
-              if(clusters != null && clusters.size() > 0) {
-                return true;
-              }
-              
-              return false;
-            }
-            @Override
-            public List<UICluster> targetToSource(Boolean enabled) {
-              return null;
-            }
-        });
+      bf.createBinding(clustersTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
     } catch (Exception e) {
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
@@ -124,26 +106,26 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
 
   public void editCluster() {
     String clusterSchemaName = ""; //$NON-NLS-1$
-    try
-    {
+    try {
       Collection<UICluster> clusters = clustersTable.getSelectedItems();
-      
-      if(clusters != null && !clusters.isEmpty()) {
+
+      if (clusters != null && !clusters.isEmpty()) {
         // Grab the first item in the list & send it to the cluster schema dialog
-        ClusterSchema clusterSchema = ((UICluster)clusters.toArray()[0]).getClusterSchema();
+        ClusterSchema clusterSchema = ((UICluster) clusters.toArray()[0]).getClusterSchema();
         clusterSchemaName = clusterSchema.getName();
         // Make sure the cluster already exists
         ObjectId clusterId = repository.getClusterID(clusterSchema.getName());
-        if(clusterId == null) {
+        if (clusterId == null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
           mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.DoesNotExists.Message")); //$NON-NLS-1$
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); //$NON-NLS-1$
           mb.open();
         } else {
           ClusterSchemaDialog csd = new ClusterSchemaDialog(shell, clusterSchema, repository.getSlaveServers());
-          if(csd.open()) {
-            if(clusterSchema.getName() != null  && !clusterSchema.getName().equals("")) {//$NON-NLS-1$
-              repository.insertLogEntry(BaseMessages.getString(PKG, "ClusterController.Message.UpdatingCluster", clusterSchema.getName())); //$NON-NLS-1$
+          if (csd.open()) {
+            if (clusterSchema.getName() != null && !clusterSchema.getName().equals("")) {//$NON-NLS-1$
+              repository.insertLogEntry(BaseMessages.getString(PKG,
+                  "ClusterController.Message.UpdatingCluster", clusterSchema.getName())); //$NON-NLS-1$
               repository.save(clusterSchema, Const.VERSION_COMMENT_EDIT_VERSION, null);
             } else {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -159,12 +141,12 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
         mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title")); //$NON-NLS-1$
         mb.open();
       }
-      
+
       refreshClusters();
-    }
-    catch(KettleException e)
-    {
-        new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message")+clusterSchemaName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    } catch (KettleException e) {
+      new ErrorDialog(
+          shell,
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message") + clusterSchemaName + "]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
   }
 
@@ -176,8 +158,9 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
         // See if this cluster already exists...
         ObjectId idCluster = repository.getClusterID(cluster.getName());
         if (idCluster == null) {
-          if(cluster.getName() != null && !cluster.getName().equals("")) {//$NON-NLS-1$
-            repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class, "ClusterController.Message.CreatingNewCluster", cluster.getName())); //$NON-NLS-1$
+          if (cluster.getName() != null && !cluster.getName().equals("")) {//$NON-NLS-1$
+            repository.insertLogEntry(BaseMessages.getString(RepositoryExplorer.class,
+                "ClusterController.Message.CreatingNewCluster", cluster.getName())); //$NON-NLS-1$
             repository.save(cluster, Const.VERSION_COMMENT_INITIAL_VERSION, null);
           } else {
             MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -193,8 +176,9 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
         }
       }
     } catch (KettleException e) {
-      new ErrorDialog(shell, BaseMessages.getString(PKG,"RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title"), //$NON-NLS-1$
-    		  BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
+      new ErrorDialog(shell, BaseMessages.getString(PKG,
+          "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title"), //$NON-NLS-1$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshClusters();
     }
@@ -202,23 +186,27 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
 
   public void removeCluster() {
     String clusterSchemaName = ""; //$NON-NLS-1$
-    try
-    {
+    try {
       Collection<UICluster> clusters = clustersTable.getSelectedItems();
-      
-      if(clusters != null && !clusters.isEmpty()) {
-        // Grab the first item in the list for deleting
-        ClusterSchema clusterSchema = ((UICluster)clusters.toArray()[0]).getClusterSchema();
-        clusterSchemaName = clusterSchema.getName();
-        // Make sure the cluster to delete exists in the repository
-        ObjectId clusterId = repository.getClusterID(clusterSchema.getName());
-        if(clusterId == null) {
-          MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.DoesNotExists.Message", clusterSchema.getName())); //$NON-NLS-1$
-          mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title")); //$NON-NLS-1$
-          mb.open();
-        } else {
-          repository.deleteClusterSchema(clusterId);
+
+      if (clusters != null && !clusters.isEmpty()) {
+        for (Object obj : clusters) {
+          if (obj != null && obj instanceof UICluster) {
+            UICluster cluster = (UICluster) obj;
+            ClusterSchema clusterSchema = cluster.getClusterSchema();
+            clusterSchemaName = clusterSchema.getName();
+            // Make sure the cluster to delete exists in the repository
+            ObjectId clusterId = repository.getClusterID(clusterSchema.getName());
+            if (clusterId == null) {
+              MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+              mb.setMessage(BaseMessages.getString(PKG,
+                  "RepositoryExplorerDialog.Cluster.DoesNotExists.Message", clusterSchema.getName())); //$NON-NLS-1$
+              mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title")); //$NON-NLS-1$
+              mb.open();
+            } else {
+              repository.deleteClusterSchema(clusterId);
+            }
+          }
         }
       } else {
         MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
@@ -226,10 +214,10 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
         mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title")); //$NON-NLS-1$
         mb.open();
       }
-    }
-    catch(KettleException e)
-    {
-      new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message")+clusterSchemaName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    } catch (KettleException e) {
+      new ErrorDialog(
+          shell,
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message") + clusterSchemaName + "]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     } finally {
       refreshClusters();
     }
@@ -252,19 +240,28 @@ public class ClustersController extends AbstractXulEventHandler   implements IUI
       }
     }
   }
-  
-  public void setEnableButtons(boolean enable) {
+
+  public void setEnableButtons(List<UICluster> clusters) {
+    boolean enableEdit = false;
+    boolean enableRemove = false;
+    if(clusters != null && clusters.size() > 0) {
+      enableRemove = true;
+      if(clusters.size() == 1) {
+        enableEdit = true;
+      }
+    }
     // Convenience - Leave 'new' enabled, modify 'edit' and 'remove'
-    enableButtons(true, enable, enable);
+    enableButtons(true, enableEdit, enableRemove);
   }
-  
+
   public void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
     XulButton bNew = (XulButton) document.getElementById("clusters-new"); //$NON-NLS-1$
     XulButton bEdit = (XulButton) document.getElementById("clusters-edit"); //$NON-NLS-1$
     XulButton bRemove = (XulButton) document.getElementById("clusters-remove"); //$NON-NLS-1$
-    
+
     bNew.setDisabled(!enableNew);
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
   }
+  
 }
