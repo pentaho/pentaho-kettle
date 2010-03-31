@@ -469,11 +469,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		} 
 		catch(SQLException e) 
 		{
-			throw new KettleDatabaseException("Error connecting to database: (using class "+classname+")", e);
+			throw new KettleDatabaseException("Error connecting to database: (using class "+classname+"); Reason - " + e.getMessage(), e);
 		}
         catch(Throwable e)
         {
-            throw new KettleDatabaseException("Error connecting to database: (using class "+classname+")", e);
+            throw new KettleDatabaseException("Error connecting to database: (using class "+classname+");  Reason - " + e.getMessage(), e);
         }
 	}
 
