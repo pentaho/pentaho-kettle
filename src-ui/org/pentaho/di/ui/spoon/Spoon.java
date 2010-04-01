@@ -262,8 +262,10 @@ import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
+import org.pentaho.ui.xul.components.WaitBoxRunnable;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
+import org.pentaho.ui.xul.components.XulWaitBox;
 import org.pentaho.ui.xul.containers.XulMenu;
 import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
@@ -3211,7 +3213,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void exploreRepository() {
     if (rep != null) {
-      RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
+      final RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
 
         public boolean open(RepositoryElementLocationInterface element, String revision) {
           String objname = element.getName();
@@ -3224,12 +3226,46 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
       };
 
+      
       try {
-        RepositoryExplorer explorer = new RepositoryExplorer(shell, rep, cb, Variables.getADefaultVariableSpace());
-        explorer.show();
+        final XulWaitBox box = (XulWaitBox) this.mainSpoonContainer.getDocumentRoot().createElement("waitbox");
+        box.setIndeterminate(true);
+        box.setCanCancel(false);
+        box.setTitle(BaseMessages.getString(RepositoryDialogInterface.class, "RepositoryExplorerDialog.Connection.Wait.Title"));
+        box.setMessage(BaseMessages.getString(RepositoryDialogInterface.class, "RepositoryExplorerDialog.Explorer.Wait.Message"));
+        box.setDialogParent(shell);
+        box.setRunnable(new WaitBoxRunnable(box){
+          @Override
+          public void run() {
+              
+              shell.getDisplay().syncExec(new Runnable(){
+                public void run() {
+                  try{
+                    RepositoryExplorer explorer = new RepositoryExplorer(shell, rep, cb, Variables.getADefaultVariableSpace());
+                    box.stop();
+                    explorer.show();
+                    
+                  } catch (final Throwable e) {
+                    shell.getDisplay().asyncExec(new Runnable(){
+                      public void run() {
+                        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Error"), e.getMessage(), e);  
+                      }
+                    });
+                  }
+                }
+              });
+          }
+
+          @Override
+          public void cancel() {
+          }
+          
+        });
+        box.start();
       } catch (Throwable e) {
         new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Error"), e.getMessage(), e);
       }
+      
     }
   }
 
