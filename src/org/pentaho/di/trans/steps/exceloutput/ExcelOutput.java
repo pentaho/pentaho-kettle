@@ -482,7 +482,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
                 	data.sheet = data.workbook.createSheet(data.realSheetname,data.workbook.getNumberOfSheets());
             	}else{
             		// Create a new Workbook
-    				data.workbook = Workbook.createWorkbook(KettleVFS.getOutputStream(data.file, false), ws);
+    				data.outputStream = KettleVFS.getOutputStream(data.file, false);
+					data.workbook = Workbook.createWorkbook(data.outputStream, ws);
     				
     				// Create a sheet?
     				String sheetname = "Sheet1";
