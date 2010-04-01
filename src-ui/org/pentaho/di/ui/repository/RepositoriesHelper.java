@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
@@ -22,6 +23,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
+import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface.MODE;
 import org.pentaho.di.ui.repository.model.RepositoriesModel;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.components.XulConfirmBox;
@@ -88,12 +90,21 @@ public class RepositoriesHelper {
         //
         RepositoryMeta repositoryMeta = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, id, RepositoryMeta.class);
         RepositoryDialogInterface dialog = getRepositoryDialog(plugin, repositoryMeta, input, this.shell);
-        RepositoryMeta meta = dialog.open();
+        RepositoryMeta meta = dialog.open(MODE.ADD);
         if (meta != null) {
-          input.addRepository(meta);
-          fillRepositories();
-          model.setSelectedRepository(meta);
-          writeData();
+          // First check is the repository name does not in the repositories list. 
+          // If it does then display a error to the user
+          if(input.searchRepository(meta.getName()) == null) {
+            input.addRepository(meta);
+            fillRepositories();
+            model.setSelectedRepository(meta);
+            writeData();            
+          } else {
+            MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+            box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorIdExist.Message")); //$NON-NLS-1$
+            box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); //$NON-NLS-1$
+            box.open();                   
+          }
         }
       } catch (Exception e) {
         log.logDetailed("Error creating new repository: " + e.getLocalizedMessage());
@@ -113,7 +124,7 @@ public class RepositoriesHelper {
           }
         }
           RepositoryDialogInterface dd = getRepositoryDialog(plugin, ri, input, this.shell);
-          if (dd.open() != null) {
+          if (dd.open(MODE.EDIT) != null) {
             fillRepositories();
             int idx = input.indexOfRepository(ri);
             model.setSelectedRepository(input.getRepository(idx));

@@ -20,7 +20,7 @@
 			<button id="repository-add" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="repositoryLoginController.newRepository()"/>
 			<button id="repository-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="repositoryLoginController.deleteRepository()" disabled="true"/>
 		</hbox>
-       	<listbox id="available-repository-list" pen:binding="name" disabled="false" flex="1"/>
+       	<listbox id="available-repository-list" pen:binding="description" disabled="false" flex="1"/>
 		<label value="${RepositoryLoginDialog.UserName}" />
 		<textbox id="user-name" multiline="false" command="repositoryLoginController.login()"/>
 		<label value="${RepositoryLoginDialog.Password}"/>
