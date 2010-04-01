@@ -21,7 +21,6 @@ import java.util.ResourceBundle;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.ObjectRecipient;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityManager;
@@ -44,7 +43,6 @@ import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
-import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
@@ -82,6 +80,8 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
 
   private XulTextbox userDescription;
 
+  private XulButton userAddButton;
+  
   private XulButton userEditButton;
 
   private XulButton userRemoveButton;
@@ -96,6 +96,8 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
 
   protected XulMessageBox messageBox = null;
   
+  protected boolean managed = false;
+  
   public SecurityController() {
   }
 
@@ -104,6 +106,7 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
       // Get the service from the repository
       if(rep != null && rep.hasService(RepositorySecurityManager.class)) {
         service = (RepositorySecurityManager) rep.getService(RepositorySecurityManager.class);
+        managed = service.isManaged();
       } else {
         throw new ControllerInitializationException(BaseMessages.getString(RepositoryExplorer.class,
             "SecurityController.ERROR_0001_UNABLE_TO_INITIAL_REPOSITORY_SERVICE", RepositorySecurityManager.class)); //$NON-NLS-1$
@@ -117,6 +120,9 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
     }
     if (bf != null) {
       createBindings();
+    }
+    if(!managed) {
+      enableButtons(false, false, false);
     }
     setInitialDeck();
   }
@@ -145,7 +151,7 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
   }
   protected void createBindings() {
     //User Details Binding
-
+    userAddButton =  (XulButton) document.getElementById("user-add");//$NON-NLS-1$
     userEditButton = (XulButton) document.getElementById("user-edit");//$NON-NLS-1$
     userRemoveButton = (XulButton) document.getElementById("user-remove");//$NON-NLS-1$
     userDialog = (XulDialog) document.getElementById("add-user-dialog");//$NON-NLS-1$
@@ -164,27 +170,7 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
     bf.createBinding(security, "selectedUserIndex", userListBox, "selectedIndex");//$NON-NLS-1$ //$NON-NLS-2$
     bf.setBindingType(Binding.Type.ONE_WAY);
     try {
-      BindingConvertor<Integer, Boolean> buttonConverter = new BindingConvertor<Integer, Boolean>() {
-
-        @Override
-        public Boolean sourceToTarget(Integer value) {
-          if (value != null && value >= 0) {
-            return false;
-          }
-          return true;
-        }
-
-        @Override
-        public Integer targetToSource(Boolean value) {
-          // TODO Auto-generated method stub
-          return null;
-        }
-      };
-      bf.createBinding(userListBox, "selectedIndex", userEditButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
-      bf.createBinding(userListBox, "selectedIndex", userRemoveButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
-
-      bf.setBindingType(Binding.Type.ONE_WAY);
-      // Action based security permissions
+      bf.createBinding(userListBox, "selectedIndex", this, "enableButtons");//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(userListBox, "selectedItem", security, "selectedUser");//$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(security, "userList", userListBox, "elements").fireSourceChanged();//$NON-NLS-1$ //$NON-NLS-2$
 
@@ -349,5 +335,29 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
     } else {
       updateUser();
     }
+  }
+  
+  public void setEnableButtons(int selectedIndex) {
+    boolean enableAdd = true;
+    boolean enableEdit = false;
+    boolean enableRemove = false;
+    if(managed) {
+      if(selectedIndex >= 0) {
+        enableRemove = true;
+        enableEdit = true;
+      } else {
+        enableRemove = false;
+        enableEdit = false;
+      }
+    } else {
+      enableAdd = false;
+    }
+    enableButtons(enableAdd, enableEdit, enableRemove);
+  }
+
+  protected void enableButtons(boolean enableNew, boolean enableEdit, boolean enableRemove) {
+    userAddButton.setDisabled(!enableNew);
+    userEditButton.setDisabled(!enableEdit);
+    userRemoveButton.setDisabled(!enableRemove);
   }
 }

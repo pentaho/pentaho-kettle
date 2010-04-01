@@ -34,4 +34,6 @@ public interface RepositorySecurityManager extends IRepositoryService {
   public void deleteUsers(List<IUser> users) throws KettleException;
   
   public IUser loadUserInfo(String username) throws KettleException;
+  
+  public boolean isManaged() throws KettleException;
 }

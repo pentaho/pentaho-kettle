@@ -136,4 +136,8 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     // TODO Auto-generated method stub
     return null;
   }
+
+  public boolean isManaged() throws KettleException {
+    return true;
+  }
 }
