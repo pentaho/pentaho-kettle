@@ -32,23 +32,40 @@ public class SAPLibraryTester {
 				return false;
 			return true;
 		} catch (NoClassDefFoundError e) {
+			e.printStackTrace();
 			return false;
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
 
 	public static boolean isJCoImplAvailable() {
+		// we simply skip the test because it does not work for sapjco3 >=3.0.2
+		return true;
+	}
+
+	
+	public static boolean isJCoImplAvailableNotUsed() {
 		try {
 			Object c = Class.forName(JCO_IMPL_EXISTENCE_TEST_CLASS);
 			if (c == null)
 				return false;
 			return true;
 		} catch (UnsatisfiedLinkError e) {
+			e.printStackTrace();
 			return false;
 		} catch (NoClassDefFoundError e) {
+			e.printStackTrace();
 			return false;
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} catch (Throwable e) {
+			e.printStackTrace();
 			return false;
 		}
 	}

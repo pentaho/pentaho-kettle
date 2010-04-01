@@ -67,6 +67,10 @@ public class SAPConnectionFactory implements DatabaseFactoryInterface {
 			report.append("Unable to connect to the SAP R/3 server: ").append(
 					e.getMessage()).append(Const.CR);
 			report.append(Const.getStackTracker(e));
+		} catch (Throwable e) {
+			report.append("Unable to connect to the SAP R/3 server: ").append(
+					e.getMessage()).append(Const.CR);
+			report.append(Const.getStackTracker(e));
 		} finally {
 			if (sc != null)
 				sc.close();
