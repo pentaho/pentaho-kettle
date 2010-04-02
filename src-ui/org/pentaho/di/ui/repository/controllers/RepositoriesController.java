@@ -142,66 +142,83 @@ public class RepositoriesController extends AbstractXulEventHandler {
    * Executed when the user clicks the ok button in the Repository Login Dialog
    */
   public void login() {
-    XulWaitBox box;
-    try {
-      box = (XulWaitBox) document.createElement("waitbox");
-      box.setIndeterminate(true);
-      box.setCanCancel(false);
-      box.setTitle(BaseMessages.getString(RepositoryDialogInterface.class, "RepositoryExplorerDialog.Connection.Wait.Title"));
-      box.setMessage(BaseMessages.getString(RepositoryDialogInterface.class, "RepositoryExplorerDialog.Connection.Wait.Message"));
-      final Shell loginShell = (Shell) loginDialog.getRootObject();
-      final Display display = loginShell.getDisplay();
-      box.setDialogParent(loginShell);
-      box.setRunnable(new WaitBoxRunnable(box){
-        @Override
-        public void run() {
-          try {
-            helper.loginToRepository();
-
-            waitBox.stop();
-            display.syncExec(new Runnable(){
-              public void run() {
-                loginDialog.hide();
-                okButton.setDisabled(false);
-                cancelButton.setDisabled(false);
-                getCallback().onSuccess(helper.getConnectedRepository());
-              }
-            });
-            
-          } catch (final Throwable th) {
-
-            waitBox.stop();
-            
-            try {
-              display.syncExec(new Runnable(){
-                public void run() {
-                  
-                  getCallback().onError(th);
-                  okButton.setDisabled(false);
-                  cancelButton.setDisabled(false);
-                }
-              });
-            } catch (Exception e) {
-              e.printStackTrace();
-            }
-              
-          }
-        }
-
-        @Override
-        public void cancel() {
-        }
-        
-      });
+    try{
+      helper.loginToRepository();
+      loginDialog.hide();
+      okButton.setDisabled(false);
+      cancelButton.setDisabled(false);
+      getCallback().onSuccess(helper.getConnectedRepository());
+           
+    } catch (final Throwable th) {
+      getCallback().onError(th);
+      okButton.setDisabled(false);
+      cancelButton.setDisabled(false);
+    } finally{
       okButton.setDisabled(true);
       cancelButton.setDisabled(true);
-      box.start();
-    } catch (XulException e1) {
-      getCallback().onError(e1);
     }
-    
-    
+  
   }
+  //TODO: uncomment this out once the ThreadLocal issues are resolved with the JCR repository.
+//  public void login() {
+//    XulWaitBox box;
+//    try {
+//      box = (XulWaitBox) document.createElement("waitbox");
+//      box.setIndeterminate(true);
+//      box.setCanCancel(false);
+//      box.setTitle(BaseMessages.getString(RepositoryDialogInterface.class, "RepositoryExplorerDialog.Connection.Wait.Title"));
+//      box.setMessage(BaseMessages.getString(RepositoryDialogInterface.class, "RepositoryExplorerDialog.Connection.Wait.Message"));
+//      final Shell loginShell = (Shell) loginDialog.getRootObject();
+//      final Display display = loginShell.getDisplay();
+//      box.setDialogParent(loginShell);
+//      box.setRunnable(new WaitBoxRunnable(box){
+//        @Override
+//        public void run() {
+//          try {
+//            helper.loginToRepository();
+//
+//            waitBox.stop();
+//            display.syncExec(new Runnable(){
+//              public void run() {
+//                loginDialog.hide();
+//                okButton.setDisabled(false);
+//                cancelButton.setDisabled(false);
+//                getCallback().onSuccess(helper.getConnectedRepository());
+//              }
+//            });
+//            
+//          } catch (final Throwable th) {
+//
+//            waitBox.stop();
+//            
+//            try {
+//              display.syncExec(new Runnable(){
+//                public void run() {
+//                  
+//                  getCallback().onError(th);
+//                  okButton.setDisabled(false);
+//                  cancelButton.setDisabled(false);
+//                }
+//              });
+//            } catch (Exception e) {
+//              e.printStackTrace();
+//            }
+//              
+//          }
+//        }
+//
+//        @Override
+//        public void cancel() {
+//        }
+//        
+//      });
+//      okButton.setDisabled(true);
+//      cancelButton.setDisabled(true);
+//      box.start();
+//    } catch (XulException e1) {
+//      getCallback().onError(e1);
+//    }
+//  }
 
   /**
    * Executed when the user clicks the new repository image from the Repository Login Dialog
