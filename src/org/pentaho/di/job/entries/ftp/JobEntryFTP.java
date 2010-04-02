@@ -295,6 +295,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	  {
 	    try
 	    {
+			super.loadRep(rep, id_jobentry, databases, slaveServers);
 	      	port          = rep.getJobEntryAttributeString(id_jobentry, "port");
 			serverName          = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			userName            = rep.getJobEntryAttributeString(id_jobentry, "username");
@@ -363,6 +364,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		try
 		{
+			super.saveRep(rep, id_job);
 			rep.saveJobEntryAttribute(id_job, getID(), "port",      port);
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
