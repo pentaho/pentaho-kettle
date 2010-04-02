@@ -215,6 +215,7 @@ public class RepositoriesMeta
 			// Handle repositories...
 			int nrreps = XMLHandler.countNodes(repsnode, RepositoryMeta.XML_TAG);
 			log.logDebug("We have "+nrreps+" repositories...");
+			KettleException kettleException = null;
 			for (int i=0;i<nrreps;i++)
 			{
 				Node repnode = XMLHandler.getSubNodeByNr(repsnode, RepositoryMeta.XML_TAG, i);
@@ -238,6 +239,7 @@ public class RepositoriesMeta
 				} catch (KettleException ex) {
 				  // Get to the root cause
 				  Throwable cause = ex;
+				  kettleException = ex;
 				  while(cause.getCause() != null) {
 				    cause = cause.getCause();
 				  }
@@ -245,16 +247,15 @@ public class RepositoriesMeta
 				  if(cause instanceof KettleRepositoryNotSupportedException) {
 				    // If the root cause is a KettleRepositoryNotSupportedException, do not fail
 				    log.logDebug("Repository type [" + id + "] is unrecognized");
-				  } else {
-				    // Unexpected exception, pass it up
-				    throw ex;
 				  }
 				}
+			}
+			if(kettleException != null) {
+			  throw kettleException;
 			}
 		}
 		catch(Exception e)
 		{
-			clear();
 			throw new KettleException("Error reading information from file : ", e);
 		}
 		
