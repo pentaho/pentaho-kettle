@@ -80,7 +80,7 @@
 	<classpathentry kind="lib" path="libext/salesforce/commons-discovery-0.2.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/jaxrpc.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/saaj.jar"/>
-	<classpathentry kind="lib" path="libext/janino.jar"/>
+	<classpathentry kind="lib" path="libext/janino.jar" sourcepath="libext-src/janino-2.5.16-src.zip"/>
 	<classpathentry kind="lib" path="libext/SNMP4J.jar"/>
 	<classpathentry kind="lib" path="libext/jcifs-1.3.3.jar"/>
 	<classpathentry kind="lib" path="libext/jfree/jcommon-1.0.14.jar"/>
