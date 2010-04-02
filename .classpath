@@ -73,7 +73,6 @@
 	<classpathentry kind="lib" path="libext/feeds/rome-0.9.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/feed4j.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/nekohtml.jar"/>
-	<classpathentry kind="lib" path="libext/feeds/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/xml-apis.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/LucidDbClient.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/axis.jar"/>
