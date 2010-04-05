@@ -1427,8 +1427,6 @@ public class SpoonJobDelegate extends SpoonDelegate
 			// addJobLog(jobMeta);
 			JobGraph jobGraph = spoon.getActiveJobGraph();
 
-			LogWriter.getInstance().setLogLevel(executionConfiguration.getLogLevel());
-
 			// Set the variables that where specified...
 			//
 			for (String varName : executionConfiguration.getVariables().keySet())

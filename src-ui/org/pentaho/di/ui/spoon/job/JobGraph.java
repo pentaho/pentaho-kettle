@@ -2962,7 +2962,7 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 			}
 		    
 			job = new Job(spoon.rep, runJobMeta);
-        	  
+        	  job.setLogLevel(executionConfiguration.getLogLevel());
             // job = new Job(jobMeta.getName(), jobMeta.getFilename(), null);
             // job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), spoon);
             job.getJobMeta().setArguments(jobMeta.getArguments());

@@ -84,7 +84,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   {
     name = null;
     description = null;
-    log = LogChannel.GENERAL;
+    log = new LogChannel(this, logLevel);
   }
 
   public JobEntryBase(String name, String description)
@@ -93,7 +93,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     setDescription(description);
     setObjectId(null);
 
-    log = LogChannel.GENERAL;
+    log = new LogChannel(this, logLevel);
   }
   
   @Override
@@ -481,7 +481,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     
     public void setParentJob(Job parentJob) {
     	this.parentJob = parentJob;
-    	this.log = new LogChannel(this);
+    	this.log = new LogChannel(this, logLevel);
     }
     
     public Job getParentJob() {

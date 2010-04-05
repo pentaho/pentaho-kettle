@@ -181,7 +181,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         
         result = null;
         
-		this.log=new LogChannel(this);
+		this.log=new LogChannel(this, logLevel);
 	}
 
 	public Job(Repository repository, JobMeta jobMeta)
@@ -199,13 +199,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         
         jobTracker = new JobTracker(jobMeta);
 
-        this.log = new LogChannel(this);
+        this.log = new LogChannel(this, logLevel);
 	}
 
     // Empty constructor, for Class.newInstance()
     public Job()
     {
-    	this.log = LogChannel.GENERAL;
+    	this.log = new LogChannel(this, logLevel);
     	init();
     }
     
@@ -1543,6 +1543,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   public void setLogLevel(int logLevel) {
     this.logLevel = logLevel;
+    log = new LogChannel(this, this.logLevel);
   }
 	
 	public List<LoggingHierarchy> getLoggingHierarchy() {
