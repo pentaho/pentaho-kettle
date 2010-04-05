@@ -59,6 +59,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableInterface;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.PerformanceLogTable;
@@ -242,6 +243,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private RepositoryLock repositoryLock;
     
     private LogChannelInterface log;
+    
+    private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
     
     public enum TransformationType {
     	Normal("Normal", BaseMessages.getString(PKG, "TransMeta.TransformationType.Normal")),
@@ -5724,6 +5727,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public LoggingObjectInterface getParent() {
 		return null; // TODO, we could also keep a link to the parent and job metadata
 	}
+	
+	public int getLogLevel() {
+    return logLevel;
+  }
+
+  public void setLogLevel(int logLevel) {
+    this.logLevel = logLevel;
+    log = new LogChannel(STRING_TRANSMETA, this.logLevel);
+  }
 
 	/**
 	 * @return the transLogTable

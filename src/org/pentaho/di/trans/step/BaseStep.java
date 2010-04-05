@@ -40,6 +40,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -77,6 +78,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     private String                       stepname;
 
     protected LogChannelInterface        log;
+    
+    private int                          logLevel = LogWriter.LOG_LEVEL_DEFAULT;
 
     private Trans                        trans;
 
@@ -2957,4 +2960,17 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 	public String getObjectCopy() {
 		return Integer.toString(stepcopy);
 	}
+
+  @Override
+  public int getLogLevel() {
+    return logLevel;
+  }
+
+  @Override
+  public void setLogLevel(int logLevel) {
+    this.logLevel = logLevel;
+    // Replace the current log channel to use the new log level. The loggingObject in the loggingRegistry does not use
+    // the logLevel property of this object.
+    log = new LogChannel(this, this.logLevel);
+  }
 }

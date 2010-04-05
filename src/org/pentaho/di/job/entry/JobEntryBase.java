@@ -25,6 +25,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
@@ -76,6 +77,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   protected Job parentJob;
   
   protected LogChannelInterface log;
+  
+  private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
  
   public JobEntryBase()
   {
@@ -534,4 +537,13 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 	public RepositoryDirectory getRepositoryDirectory() {
 		return null;
 	}
+
+	public int getLogLevel() {
+    return logLevel;
+  }
+
+  public void setLogLevel(int logLevel) {
+    this.logLevel = logLevel;
+    log = new LogChannel(this, logLevel);
+  }
 }

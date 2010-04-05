@@ -69,6 +69,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -119,7 +120,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	private int written;
 	
 	private LogChannelInterface log;
-    private LoggingObjectInterface parentLoggingObject;
+  private LoggingObjectInterface parentLoggingObject;
+  private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
 
     /**
      * Number of times a connection was opened using this object.
@@ -4745,4 +4747,14 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	public RepositoryDirectory getRepositoryDirectory() {
 		return null;
 	}
+
+  @Override
+  public int getLogLevel() {
+    return logLevel;
+  }
+
+  @Override
+  public void setLogLevel(int logLevel) {
+   this.logLevel = logLevel;
+  }
 }

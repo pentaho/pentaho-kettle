@@ -48,8 +48,9 @@ public class LogWriter
 
 	private static LogWriter logWriter;
 	
+	public static final int LOG_LEVEL_DEFAULT    = -1;
 	public static final int LOG_LEVEL_NOTHING    =  0;
-    public static final int LOG_LEVEL_ERROR      =  1;
+  public static final int LOG_LEVEL_ERROR      =  1;
 	public static final int LOG_LEVEL_MINIMAL    =  2;
 	public static final int LOG_LEVEL_BASIC      =  3;
 	public static final int LOG_LEVEL_DETAILED   =  4;
@@ -58,8 +59,9 @@ public class LogWriter
 	
 	public static final String logLevelDescription[] = 
 		{
+	    "Default",
 			"Nothing",
-            "Error",
+      "Error",
 			"Minimal",
 			"Basic",
 			"Detailed",
@@ -69,6 +71,7 @@ public class LogWriter
 
 	public static final String log_level_desc_long[] = 
 		{
+	          BaseMessages.getString(PKG, "LogWriter.Level.Default.LongDesc"),
             BaseMessages.getString(PKG, "LogWriter.Level.Nothing.LongDesc"),
             BaseMessages.getString(PKG, "LogWriter.Level.Error.LongDesc"),
             BaseMessages.getString(PKG, "LogWriter.Level.Minimal.LongDesc"),
@@ -387,25 +390,31 @@ public class LogWriter
 	
 	public void println(LogMessageInterface logMessage)
 	{
+	  String subject = null;
+	  
+	  int printLogLevel = filteredLogLevel;
+	  
+	  LoggingObjectInterface loggingObject = registry.getLoggingObject( logMessage.getLogChannelId() );
+	  if(loggingObject != null) {
+	    // Use the logging channel's logging level if one is provided
+	    if(loggingObject.getLogLevel() != LogWriter.LOG_LEVEL_DEFAULT) {
+	      printLogLevel = loggingObject.getLogLevel();
+	      subject = loggingObject.getObjectName();
+	    }
+	  }
+	  
 		// do cheapest filtering checks first
 		//
-		if (filteredLogLevel==LOG_LEVEL_NOTHING) return;  // Nothing, not even errors...
+		if (printLogLevel==LOG_LEVEL_NOTHING) return;  // Nothing, not even errors...
 		
 		int logLevel = logMessage.getLevel();
 		
-		if (filteredLogLevel<logLevel) return; // not for our eyes.
+		if (printLogLevel<logLevel) return; // not for our eyes.
 		
-		LoggingObjectInterface loggingObject = registry.getLoggingObject( logMessage.getLogChannelId() );
-		String subject = null;
-		// TODO: figure out in which situations we cleaned the logging channel and where we still need it here...
-		//
-		if (loggingObject!=null) { 
-			subject = loggingObject.getObjectName();
-		}
 		if (subject==null) subject="Kettle";
         
 		// Are the message filtered?
-        //
+    //
 		if (logLevel!=LOG_LEVEL_ERROR && !Const.isEmpty(filter))
         {
             if (subject.indexOf(filter)<0 && logMessage.toString().indexOf(filter)<0)
@@ -510,14 +519,26 @@ public class LogWriter
         return new FileInputStream( ((Log4jFileAppender)appender).getFile().getName().getPathDecoded() );
     }
     
+    public boolean isBasic(String logChannelId) {
+      return getLoggingObjectLogLevel(logChannelId)>=LOG_LEVEL_BASIC;
+    }
+    
     public boolean isBasic()
     {
         return filteredLogLevel>=LOG_LEVEL_BASIC;
+    }
+    
+    public boolean isDetailed(String logChannelId) {
+      return getLoggingObjectLogLevel(logChannelId)>=LOG_LEVEL_DETAILED;
     }
 
     public boolean isDetailed()
     {
         return filteredLogLevel>=LOG_LEVEL_DETAILED;
+    }
+    
+    public boolean isDebug(String logChannelId) {
+      return getLoggingObjectLogLevel(logChannelId)>=LOG_LEVEL_DEBUG;
     }
 
     public boolean isDebug()
@@ -525,9 +546,21 @@ public class LogWriter
         return filteredLogLevel>=LOG_LEVEL_DEBUG;
     }
 
+    public boolean isRowLevel(String logChannelId) {
+      return getLoggingObjectLogLevel(logChannelId)>=LOG_LEVEL_ROWLEVEL;
+    }
+    
     public boolean isRowLevel()
     {
         return filteredLogLevel>=LOG_LEVEL_ROWLEVEL;
+    }
+
+    protected int getLoggingObjectLogLevel(String logChannelId) {
+      LoggingObjectInterface loggingObject = registry.getLoggingObject(logChannelId);
+      if((loggingObject != null) && (loggingObject.getLogLevel() != LOG_LEVEL_DEFAULT)) {
+        return loggingObject.getLogLevel();
+      }
+      return filteredLogLevel;
     }
 
     /**

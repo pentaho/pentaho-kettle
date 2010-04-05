@@ -49,4 +49,14 @@ public interface LoggingObjectInterface {
 	 * @return A string identifying a copy in a series of steps...
 	 */
 	public String getObjectCopy();
+	
+	/**
+	 * @return The log level for this logging object
+	 */
+	public int getLogLevel();
+	
+	/**
+	 * @Param The LogWriter log level for this logging object
+	 */
+	public void setLogLevel(int logLevel);
 }

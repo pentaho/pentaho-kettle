@@ -50,6 +50,7 @@ import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingHierarchy;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -114,6 +115,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
     
 	private LogChannelInterface log;
+	private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
 	
 	/**
 	 * The transformation metadata to execute
@@ -555,6 +557,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					// Save the step too
 					combi.step = step;
 
+					if(combi.step instanceof LoggingObjectInterface) {
+					  ((LoggingObjectInterface)combi.step).setLogLevel(logLevel);
+					}
+					
 					// Add to the bunch...
 					steps.add(combi);
 
@@ -3382,6 +3388,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		if (transMeta==null) return null;
 		return transMeta.getRepositoryDirectory();
 	}
+	
+	public int getLogLevel() {
+    return logLevel;
+  }
+
+  public void setLogLevel(int logLevel) {
+    this.logLevel = logLevel;
+    log = new LogChannel(this, this.logLevel);
+  }
 	
 	public List<LoggingHierarchy> getLoggingHierarchy() {
 		List<LoggingHierarchy> hierarchy = new ArrayList<LoggingHierarchy>();

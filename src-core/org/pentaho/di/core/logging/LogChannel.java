@@ -11,7 +11,11 @@ public class LogChannel implements LogChannelInterface {
 	private String logChannelId;
 	
 	public LogChannel(Object subject) {
-		logChannelId = LoggingRegistry.getInstance().registerLoggingSource(subject);
+	  this(subject, LogWriter.LOG_LEVEL_DEFAULT);
+	}
+	
+	public LogChannel(Object subject, int logLevel) {
+		logChannelId = LoggingRegistry.getInstance().registerLoggingSource(subject, logLevel);
 	}
 	
 	@Override
@@ -86,18 +90,18 @@ public class LogChannel implements LogChannelInterface {
 	}
 
 	public boolean isBasic() {
-		return log.isBasic();
+		return log.isBasic(logChannelId);
 	}
 
 	public boolean isDebug() {
-		return log.isDebug();
+		return log.isDebug(logChannelId);
 	}
 
 	public boolean isDetailed() {
-		return log.isDetailed();
+		return log.isDetailed(logChannelId);
 	}
 
 	public boolean isRowLevel() {
-		return log.isRowLevel();
+		return log.isRowLevel(logChannelId);
 	}
 }

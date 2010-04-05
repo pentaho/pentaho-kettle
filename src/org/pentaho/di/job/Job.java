@@ -43,6 +43,7 @@ import org.pentaho.di.core.logging.Log4jBufferAppender;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingHierarchy;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -89,6 +90,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	public static final String	CONFIGURATION_IN_EXPORT_FILENAME	= "__job_execution_configuration__.xml";
 	
 	private LogChannelInterface log;
+	private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
 	private JobMeta jobMeta;
 	private Repository rep;
     private AtomicInteger errors;
@@ -421,6 +423,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		
 		// What entry is next?
 		JobEntryInterface jobEntryInterface = jobEntryCopy.getEntry();
+
+		    // Set the Job Entry's log level to the jobs
+		    if(jobEntryInterface instanceof LoggingObjectInterface) {
+		      ((LoggingObjectInterface)jobEntryInterface).setLogLevel(getLogLevel());
+		    }
 
         // Track the fact that we are going to launch the next job entry...
         JobEntryResult jerBefore = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), reason, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
@@ -1529,6 +1536,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		if (jobMeta==null) return null;
 		return jobMeta.getRepositoryDirectory();
 	}
+	
+  public int getLogLevel() {
+    return logLevel;
+  }
+
+  public void setLogLevel(int logLevel) {
+    this.logLevel = logLevel;
+  }
 	
 	public List<LoggingHierarchy> getLoggingHierarchy() {
 		List<LoggingHierarchy> hierarchy = new ArrayList<LoggingHierarchy>();

@@ -137,6 +137,8 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	private class LogWriterObject implements LoggingObjectInterface {
 
 		private LogChannelInterface log;
+		private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
+		
 		private LoggingObjectInterface	parent;
 		private String	subject;
 		
@@ -185,6 +187,14 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		public LogChannelInterface getLogChannel() {
 			return log;
 		}
+		
+		public int getLogLevel() {
+	    return logLevel;
+	  }
+
+	  public void setLogLevel(int logLevel) {
+	    this.logLevel = logLevel;
+	  }
 	}
 
 	/**

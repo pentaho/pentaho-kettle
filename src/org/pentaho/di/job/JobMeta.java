@@ -46,6 +46,7 @@ import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableInterface;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.parameters.DuplicateParamException;
@@ -105,6 +106,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.JOB;
 
 	protected ObjectId objectId;
+	
+	private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
 
 	protected String name;
 
@@ -2659,6 +2662,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return null; // TODO return parent job metadata
 	}
 
+	public int getLogLevel() {
+    return logLevel;
+  }
+
+  public void setLogLevel(int logLevel) {
+    this.logLevel = logLevel;
+  }
+	
 	/**
 	 * @return the channelLogTable
 	 */

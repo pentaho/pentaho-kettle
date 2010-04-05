@@ -9,6 +9,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 	private String					objectName;
 	private LoggingObjectType		objectType;
 	private LoggingObjectInterface	parent;
+	private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
 
 	/**
 	 * @param objectName
@@ -89,4 +90,14 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 	public RepositoryDirectory getRepositoryDirectory() {
 		return null;
 	}
+
+  @Override
+  public int getLogLevel() {
+    return logLevel;
+  }
+
+  @Override
+  public void setLogLevel(int logLevel) {
+    this.logLevel = logLevel;
+  }
 }
