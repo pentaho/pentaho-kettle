@@ -83,7 +83,7 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
       TransConfiguration transConfiguration = TransConfiguration.fromXML(xml.toString());
       TransMeta transMeta = transConfiguration.getTransMeta();
       TransExecutionConfiguration transExecutionConfiguration = transConfiguration.getTransExecutionConfiguration();
-      log.setLogLevel(transExecutionConfiguration.getLogLevel());
+      transMeta.setLogLevel(transExecutionConfiguration.getLogLevel());
       if (log.getLogLevel() >= LogWriter.LOG_LEVEL_DETAILED) {
         logDetailed("Logging level set to " + log.getLogLevelDesc());
       }
@@ -111,6 +111,7 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
       // Create the transformation and store in the list...
       //
       final Trans trans = new Trans(transMeta);
+      trans.setLogLevel(transExecutionConfiguration.getLogLevel());
       trans.setRepository(repository);
       trans.setSocketRepository(getSocketRepository());
 

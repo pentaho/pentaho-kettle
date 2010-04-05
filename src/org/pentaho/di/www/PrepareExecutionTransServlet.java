@@ -76,7 +76,6 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
         TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
         // Set the appropriate logging, variables, arguments, replay date, ...
         // etc.
-        log.setLogLevel(executionConfiguration.getLogLevel());
         trans.getTransMeta().setArguments(executionConfiguration.getArgumentStrings());
         trans.setReplayDate(executionConfiguration.getReplayDate());
         trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());

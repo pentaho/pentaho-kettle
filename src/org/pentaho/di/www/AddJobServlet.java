@@ -86,7 +86,7 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
       JobConfiguration jobConfiguration = JobConfiguration.fromXML(xml.toString());
       JobMeta jobMeta = jobConfiguration.getJobMeta();
       JobExecutionConfiguration jobExecutionConfiguration = jobConfiguration.getJobExecutionConfiguration();
-      log.setLogLevel(jobExecutionConfiguration.getLogLevel());
+      jobMeta.setLogLevel(jobExecutionConfiguration.getLogLevel());
       jobMeta.setArguments(jobExecutionConfiguration.getArgumentStrings());
       jobMeta.injectVariables(jobExecutionConfiguration.getVariables());
 
@@ -112,6 +112,7 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
       // Create the transformation and store in the list...
       //
       final Job job = new Job(repository, jobMeta);
+      job.setLogLevel(jobExecutionConfiguration.getLogLevel());
 
       job.setSocketRepository(getSocketRepository());
 

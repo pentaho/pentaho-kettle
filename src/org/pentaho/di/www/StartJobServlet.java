@@ -92,6 +92,7 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
           synchronized (getJobMap()) {
             JobConfiguration jobConfiguration = getJobMap().getConfiguration(jobName);
             Job newJob = new Job(job.getRep(), job.getJobMeta());
+            newJob.setLogLevel(job.getLogLevel());
 
             getJobMap().removeJob(jobName);
 
