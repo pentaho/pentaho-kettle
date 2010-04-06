@@ -2961,12 +2961,10 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 		return Integer.toString(stepcopy);
 	}
 
-  @Override
   public int getLogLevel() {
     return logLevel;
   }
 
-  @Override
   public void setLogLevel(int logLevel) {
     this.logLevel = logLevel;
     // Replace the current log channel to use the new log level. The loggingObject in the loggingRegistry does not use

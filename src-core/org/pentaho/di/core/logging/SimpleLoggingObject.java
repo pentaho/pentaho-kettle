@@ -91,12 +91,10 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 		return null;
 	}
 
-  @Override
   public int getLogLevel() {
     return logLevel;
   }
 
-  @Override
   public void setLogLevel(int logLevel) {
     this.logLevel = logLevel;
   }

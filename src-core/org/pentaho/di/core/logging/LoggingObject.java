@@ -239,12 +239,10 @@ public class LoggingObject implements LoggingObjectInterface {
 		this.objectCopy = objectCopy;
 	}
 
-  @Override
   public int getLogLevel() {
     return logLevel;
   }
 
-  @Override
   public void setLogLevel(int logLevel) {
     this.logLevel = logLevel;
   }
