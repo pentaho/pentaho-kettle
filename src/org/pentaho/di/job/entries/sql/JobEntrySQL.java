@@ -266,25 +266,28 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 						if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSQL.SQLFileExists",realfilename));
 						
 						InputStream IS = KettleVFS.getInputStream(SQLfile);
-						InputStreamReader BIS = new InputStreamReader(new BufferedInputStream(IS, 500));
-						
-						StringBuffer lineStringBuffer = new StringBuffer(256);
-						lineStringBuffer.setLength(0);
-						
-						BufferedReader buff = new BufferedReader(BIS);
-						String sLine = null;
-						mySQL=Const.CR;;
-
-						while((sLine=buff.readLine())!=null) 
-						{
-							if(Const.isEmpty(sLine))
-							{
-								mySQL= mySQL +  Const.CR;	
-							}
-							else
-							{
-								mySQL=mySQL+  Const.CR + sLine;
-							}
+            try {
+						  InputStreamReader BIS = new InputStreamReader(new BufferedInputStream(IS, 500));
+  						StringBuffer lineStringBuffer = new StringBuffer(256);
+  						lineStringBuffer.setLength(0);
+  						
+  						BufferedReader buff = new BufferedReader(BIS);
+  						String sLine = null;
+  						mySQL=Const.CR;;
+  
+  						while((sLine=buff.readLine())!=null) 
+  						{
+  							if(Const.isEmpty(sLine))
+  							{
+  								mySQL= mySQL +  Const.CR;	
+  							}
+  							else
+  							{
+  								mySQL=mySQL+  Const.CR + sLine;
+  							}
+  						}
+						} finally {
+						  IS.close();
 						}
 					}catch (Exception e)
 					{

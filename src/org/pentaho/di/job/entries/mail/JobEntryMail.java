@@ -1073,12 +1073,15 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
                   // Now put the content of this file into this archive...
                   BufferedInputStream inputStream = new BufferedInputStream(KettleVFS.getInputStream(file));
-                  int c;
-                  while ((c = inputStream.read()) >= 0)
-                  {
-                    zipOutputStream.write(c);
+                  try {
+                    int c;
+                    while ((c = inputStream.read()) >= 0)
+                    {
+                      zipOutputStream.write(c);
+                    }
+                  } finally {
+                    inputStream.close();
                   }
-                  inputStream.close();
                   zipOutputStream.closeEntry();
                   nrattachedFiles++;
                   logBasic("Added file '" + file.getName().getURI()

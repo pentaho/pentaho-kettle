@@ -177,24 +177,29 @@ public class Xslt extends BaseStep implements StepInterface
 				
 			}
 			
-			// Use the factory to create a template containing the xsl file
-			Templates template = factory.newTemplates(new StreamSource(	new FileInputStream(data.xslfilename)));
-			// Use the template to create a transformer
-			Transformer xformer = template.newTransformer();
-			Source source = new StreamSource(new StringReader(Fieldvalue));			
-		    StreamResult resultat = new StreamResult(new StringWriter());	   
-			xformer.transform(source, resultat);
-			xmlString = resultat.getWriter().toString();	
-			if(log.isDetailed()) 
-			{
-				logDetailed(BaseMessages.getString(PKG, "Xslt.Log.FileResult"));
-				logDetailed(xmlString);		
-			}
-			Object[] outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),xmlString);
-			
-			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "Xslt.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
-			 //	add new values to the row.
-	        putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+      FileInputStream xslInputStream = new FileInputStream(data.xslfilename);
+      try {
+  			// Use the factory to create a template containing the xsl file
+  			Templates template = factory.newTemplates(new StreamSource(	xslInputStream ) );
+  			// Use the template to create a transformer
+  			Transformer xformer = template.newTransformer();
+  			Source source = new StreamSource(new StringReader(Fieldvalue));			
+  		    StreamResult resultat = new StreamResult(new StringWriter());	   
+  			xformer.transform(source, resultat);
+  			xmlString = resultat.getWriter().toString();	
+  			if(log.isDetailed()) 
+  			{
+  				logDetailed(BaseMessages.getString(PKG, "Xslt.Log.FileResult"));
+  				logDetailed(xmlString);		
+  			}
+  			Object[] outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),xmlString);
+  			
+  			if (log.isRowLevel()) { logRowlevel(BaseMessages.getString(PKG, "Xslt.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); } 
+  			//	add new values to the row.
+  	    putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+      } finally {
+        BaseStep.closeQuietly(xslInputStream);
+      }
 		} 
 		catch (Exception e) {
 			if (getStepMeta().isDoingErrorHandling())

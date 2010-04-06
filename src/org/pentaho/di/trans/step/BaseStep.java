@@ -16,6 +16,7 @@
 
 package org.pentaho.di.trans.step;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.text.DecimalFormat;
@@ -2971,4 +2972,15 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // the logLevel property of this object.
     log = new LogChannel(this, this.logLevel);
   }
+  
+  public static void closeQuietly(Closeable cl) {
+    if (cl != null) {
+      try {
+        cl.close();
+      } catch (IOException ignored) {
+        // Ignore IOException on close
+      }
+    }
+  }
+  
 }

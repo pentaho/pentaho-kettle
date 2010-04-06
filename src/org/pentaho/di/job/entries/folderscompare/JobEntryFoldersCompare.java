@@ -249,11 +249,14 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
     protected boolean equalFileContents(FileObject file1, FileObject file2)
         throws KettleFileException
     {
+   	    // Really read the contents and do comparisons
+        DataInputStream in1 = null;
+        DataInputStream in2 = null;
     	try {
 	   	    // Really read the contents and do comparisons
 	    		
-	        DataInputStream in1 = new DataInputStream(new BufferedInputStream(KettleVFS.getInputStream(KettleVFS.getFilename(file1), this)));
-	        DataInputStream in2 = new DataInputStream(new BufferedInputStream(KettleVFS.getInputStream(KettleVFS.getFilename(file2), this)));
+	        in1 = new DataInputStream(new BufferedInputStream(KettleVFS.getInputStream(KettleVFS.getFilename(file1), this)));
+	        in2 = new DataInputStream(new BufferedInputStream(KettleVFS.getInputStream(KettleVFS.getFilename(file2), this)));
 	        
 	        char ch1, ch2;
 	        while ( in1.available() != 0 && in2.available() != 0 )
@@ -273,7 +276,22 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 	        }
     	} catch(IOException e) {
     		throw new KettleFileException(e);
-    	}
+      } finally {
+          if (in1 != null) {
+            try {
+              in1.close();
+            } catch (IOException ignored) {
+              // Nothing to see here...
+            }
+          }
+          if (in2 != null) {
+            try {
+              in2.close();
+            } catch (Exception ignored) {
+              // We can't do anything else here...
+            }
+        }
+      }
    	}
 
 	public Result execute(Result previousResult, int nr)

@@ -14,6 +14,7 @@
 
 package org.pentaho.di.trans.steps.getxmldata;
 
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.List;
@@ -136,7 +137,12 @@ public class GetXMLData extends BaseStep implements StepInterface
 				// get encoding. By default UTF-8
 				String encoding="UTF-8";
 				if (!Const.isEmpty(meta.getEncoding())) encoding=meta.getEncoding();
-				data.document = reader.read( KettleVFS.getInputStream(file),encoding);		
+        InputStream is = KettleVFS.getInputStream(file);
+        try {
+          data.document = reader.read( is, encoding);
+        } finally {
+          BaseStep.closeQuietly(is);
+        }
 			}
 
 			if(meta.isNamespaceAware())	prepareNSMap(data.document.getRootElement());	    

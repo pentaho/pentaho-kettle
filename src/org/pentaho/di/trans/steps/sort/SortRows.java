@@ -528,7 +528,18 @@ public class SortRows extends BaseStep implements StepInterface
 		//
 		data.buffer = null;
 		data.rowbuffer = null;
-		
+    // close any open DataInputStream objects
+    if ( (data.dis != null) && (data.dis.size() > 0) ) {
+      for (DataInputStream dis : data.dis) {
+        BaseStep.closeQuietly(dis);
+      }
+    }
+    // close any open InputStream objects
+    if ( (data.fis != null) && (data.fis.size() > 0) ) {
+      for (InputStream is : data.fis) {
+        BaseStep.closeQuietly(is);
+      }
+    }
 		super.dispose(smi, sdi);
 	}
 

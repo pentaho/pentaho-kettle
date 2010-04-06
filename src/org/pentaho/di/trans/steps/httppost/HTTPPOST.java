@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.httppost;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -66,6 +67,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 		// get dynamic url ?
 		if(meta.isUrlInField()) data.realUrl=data.inputRowMeta.getString(rowData,data.indexOfUrlField);
  
+        FileInputStream fis = null;
       	try
         {
       		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTPPOST.Log.ConnectingToURL",data.realUrl));
@@ -138,7 +140,8 @@ public class HTTPPOST extends BaseStep implements StepInterface
             	if(meta.isPostAFile())
             	{
      		       File input = new File(tmp);
-     		       post.setRequestEntity(new InputStreamRequestEntity(new FileInputStream(input), input.length()));
+               fis = new FileInputStream(input);
+     		       post.setRequestEntity(new InputStreamRequestEntity(fis, input.length()));
             	}
             	else
             	{
@@ -203,6 +206,10 @@ public class HTTPPOST extends BaseStep implements StepInterface
         {
             throw new KettleException(BaseMessages.getString(PKG, "HTTPPOST.Error.CanNotReadURL",data.realUrl), e);
 
+        } finally {
+          if (fis != null) {
+            BaseStep.closeQuietly(fis);
+          }
         }
     }
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException

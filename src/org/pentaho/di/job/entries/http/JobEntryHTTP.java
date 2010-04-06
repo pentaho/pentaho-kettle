@@ -453,21 +453,24 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
           // Grab an output stream to upload data to web server
           uploadStream = connection.getOutputStream();
-
           fileStream = new BufferedInputStream(new FileInputStream(new File(realUploadFilename)));
-
-          int c;
-          while ((c = fileStream.read()) >= 0)
-          {
-            uploadStream.write(c);
+          try {
+            int c;
+            while ((c = fileStream.read()) >= 0)
+            {
+              uploadStream.write(c);
+            }
+          } finally {
+            // Close upload and file
+            if (uploadStream != null) {
+              uploadStream.close();
+              uploadStream = null;
+            }
+            if (fileStream != null) {
+              fileStream.close();
+              fileStream = null;
+            }
           }
-
-          // Close upload and file
-          uploadStream.close();
-          uploadStream = null;
-          fileStream.close();
-          fileStream = null;
-
           if(log.isDetailed()) logDetailed(BaseMessages.getString("JobHTTP.Log.FinishedSendingFile"));
         }
 

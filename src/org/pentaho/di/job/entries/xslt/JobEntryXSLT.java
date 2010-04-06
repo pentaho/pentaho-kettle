@@ -18,6 +18,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExis
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.transform.Source;
@@ -352,32 +353,47 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactoryInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactory",factory.getClass().getName()));
 			
 							
-					// Use the factory to create a template containing the xsl file
-					Templates template = factory.newTemplates(new StreamSource(	KettleVFS.getInputStream(xslfile))); 
-
-					// Use the template to create a transformer
-					Transformer xformer = template.newTransformer();
-					
-					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClassInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
-										
-					
-					// Prepare the input and output files
-					Source source = new StreamSource(KettleVFS.getInputStream(xmlfile));
-					StreamResult resultat = new StreamResult(KettleVFS.getOutputStream(outputfile, false));
-
-					// Apply the xsl file to the source file and write the result to the output file
-					xformer.transform(source, resultat);
-					
-					if (isAddFileToResult())
-					{
-						// Add output filename to output files
-	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(outputfilename, this), parentJob.getJobname(), toString());
-	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+					InputStream xslInputStream = KettleVFS.getInputStream(xslfile);
+					InputStream xmlInputStream = KettleVFS.getInputStream(xmlfile);
+					try {
+  					// Use the factory to create a template containing the xsl file
+    						Templates template = factory.newTemplates(new StreamSource(	xslInputStream )); 
+  
+  					// Use the template to create a transformer
+  					Transformer xformer = template.newTransformer();
+  					
+  					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClassInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
+  										
+  					
+  					// Prepare the input and output files
+    						Source source = new StreamSource( xmlInputStream );
+  					StreamResult resultat = new StreamResult(KettleVFS.getOutputStream(outputfile, false));
+  
+  					// Apply the xsl file to the source file and write the result to the output file
+  					xformer.transform(source, resultat);
+  					
+  					if (isAddFileToResult())
+  					{
+  						// Add output filename to output files
+  	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(outputfilename, this), parentJob.getJobname(), toString());
+  	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+  					}
+  					
+  
+  					// Everything is OK
+  					retval=true;
+					} finally {
+					  try {
+					    xslInputStream.close();
+					  } catch (IOException ignored) {
+					    // ignore IO Exception on close
+					  }
+					  try {
+					    xmlInputStream.close();
+					  } catch (IOException ignored) {
+					    // ignore IO Exception on close
+					  }
 					}
-					
-
-					// Everything is OK
-					retval=true;
 				}
 			}
 			else

@@ -409,8 +409,12 @@ public class PropertyInput extends BaseStep implements StepInterface
 			 {
 				 // load properties file
 				 data.pro=new Properties();
-		         data.pro.load(new FileInputStream(f));
-		         
+				 FileInputStream fis = new FileInputStream(f);
+				 try {
+		         data.pro.load(fis);
+				 } finally {
+				   BaseStep.closeQuietly(fis);
+				 }
 		         data.it = data.pro.keySet().iterator();
 			 }else
 			 {

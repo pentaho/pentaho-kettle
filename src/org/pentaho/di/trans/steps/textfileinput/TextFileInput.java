@@ -1462,6 +1462,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.file = null;
 			}catch (Exception e){}
 		}
+    if (data.fr != null) {
+      BaseStep.closeQuietly(data.fr);
+      data.fr = null;
+    }
 		super.dispose(smi, sdi);
 	}
 
