@@ -27,7 +27,6 @@ import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -1392,18 +1391,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 	    		for (Object[] r : rows)
 	            {
 	                ObjectId id = new LongObjectId( rowMeta.getInteger(r, 4) );
-	                RepositoryLock lock = null;
-	                if (RepositoryObjectType.TRANSFORMATION.equals(objectType)) {
-	                	lock = repository.getTransformationLock(id);
-	                } else {
-	                	lock = repository.getJobLock(id);
-	                }
-	                String lockMessage = "";
-	                if (lock!=null) {
-	                	lockMessage = lock.getLogin()+"("+lock.getUsername()+") : "+lock.getMessage(); // TODO fix this up a bit.
-	                }
-	                
-	                repositoryObjects.add(new RepositoryObject(id, rowMeta.getString(r, 0), repositoryDirectory, rowMeta.getString(r, 1), rowMeta.getDate(r, 2), objectType, rowMeta.getString(r, 3), lockMessage, false));
+	                repositoryObjects.add(new RepositoryObject(id, rowMeta.getString(r, 0), repositoryDirectory, rowMeta.getString(r, 1), rowMeta.getDate(r, 2), objectType, rowMeta.getString(r, 3), false));
 	            }          
 	        }
 	

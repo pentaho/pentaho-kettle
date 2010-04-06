@@ -52,7 +52,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -254,22 +253,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
       return id_transformation; // The same in our case.
 	}
 
-	public void lockTransformation(ObjectId id_transformation, String message) throws KettleException {
-		transDelegate.lockTransformation(id_transformation, message);
-	}
-
-	public void unlockTransformation(ObjectId id_transformation) throws KettleException {
-		transDelegate.unlockTransformation(id_transformation);
-	}
-
-	public List<RepositoryLock> getTransformationLocks() throws KettleException {
-		return transDelegate.getTransformationLocks();
-	}
-	
-	public RepositoryLock getTransformationLock(ObjectId id_transformation) throws KettleDatabaseException {
-		return transDelegate.getTransformationLock(id_transformation);
-	}
-
     // JobMeta
     
 	
@@ -296,22 +279,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     	jobDelegate.renameJob(id_job, dir, newname);
     	
       return id_job; // Same in this case
-	}
-
-	public void lockJob(ObjectId id_job, String message) throws KettleException {
-		jobDelegate.lockJob(id_job, message);
-	}
-	
-	public void unlockJob(ObjectId id_job) throws KettleException {
-		jobDelegate.unlockJob(id_job);
-	}
-
-	public List<RepositoryLock> getJobLocks() throws KettleException {
-		return jobDelegate.getJobLocks();
-	}
-
-	public RepositoryLock getJobLock(ObjectId id_job) throws KettleDatabaseException {
-		return jobDelegate.getJobLock(id_job);
 	}
 
 	// Common methods...

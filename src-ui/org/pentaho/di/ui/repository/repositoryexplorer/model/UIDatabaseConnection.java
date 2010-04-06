@@ -50,7 +50,7 @@ public class UIDatabaseConnection extends XulEventSourceAdapter {
     }
     return null;
   }
-  
+ /* 
   public UIRepositoryObjectRevisions getRevisions() {
     if(revHistory == null || revHistory.size() <= 0) {
       // Revision history does not exist for this database connection
@@ -65,7 +65,7 @@ public class UIDatabaseConnection extends XulEventSourceAdapter {
     
     return revisions;
   }
-
+*/
   public String getDateModified() {
     if(revHistory != null && revHistory.size() > 0) {
       return revHistory.get(revHistory.size() - 1).getCreationDate().toString();

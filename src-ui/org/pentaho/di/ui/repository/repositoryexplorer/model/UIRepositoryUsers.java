@@ -38,7 +38,7 @@ public class UIRepositoryUsers extends AbstractModelNode<IUIUser>{
     try {
       logins = rsp.getUserLogins();
       for (String login : logins) {
-        this.add(UIObjectRegistery.getInstance().constructUIRepositoryUser(rsm.loadUserInfo(login)));
+        this.add(UIObjectRegistry.getInstance().constructUIRepositoryUser(rsm.loadUserInfo(login)));
       }
     } catch (Exception e) {
       // TODO: handle exception; can't get users???

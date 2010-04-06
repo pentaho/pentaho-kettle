@@ -63,7 +63,11 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     }
 
     for (Directory child : rd.getChildren()) {
-      kidDirectoryCache.add(new UIRepositoryDirectory(child, this, rep));
+      try {
+        kidDirectoryCache.add(UIObjectRegistry.getInstance().constructUIRepositoryDirectory(child, this, rep));
+      } catch (UIObjectCreationException e) {
+        kidDirectoryCache.add(new UIRepositoryDirectory(child, this, rep));
+      }
     }
     return kidDirectoryCache;
   }
@@ -88,20 +92,24 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     List<? extends RepositoryContent> transformations;
     transformations = rep.getTransformationObjects(new StringObjectId(getId()), false);
     for (RepositoryContent child : transformations) {
-      kidElementCache.add(new UITransformation(child, this, rep));
+      try {
+        kidElementCache.add(UIObjectRegistry.getInstance().constructUITransformation(child, this, rep));
+      } catch (UIObjectCreationException e) {
+        kidElementCache.add(new UITransformation(child, this, rep));
+      }
     }
     List<? extends RepositoryContent> jobs;
     jobs = rep.getJobObjects(new StringObjectId(getId()), false);
     for (RepositoryContent child : jobs) {
-      kidElementCache.add(new UIJob(child, this, rep));
+      try {
+        kidElementCache.add(UIObjectRegistry.getInstance().constructUIJob(child, this, rep));
+      } catch (UIObjectCreationException e) {
+        kidElementCache.add(new UIJob(child, this, rep));
+      }      
     }
     return kidElementCache;
   }
 
-  public boolean isRevisionsSupported(){
-    return rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions();
-  }
- 
   public String toString(){
     return getName();
   }
@@ -169,7 +177,12 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   
   public UIRepositoryDirectory createFolder(String name) throws Exception{
     Directory dir = getRepository().createRepositoryDirectory(getDirectory(), name);
-    UIRepositoryDirectory newDir = new UIRepositoryDirectory(dir, this, rep);
+    UIRepositoryDirectory newDir = null;
+    try {
+      newDir = UIObjectRegistry.getInstance().constructUIRepositoryDirectory(dir, this, rep);
+    }  catch(UIObjectCreationException uoe) {
+      newDir = new UIRepositoryDirectory(dir, this, rep);
+    }
     getChildren().add(newDir);
     kidElementCache=null; // rebuild the element cache for correct positioning.
     return newDir;

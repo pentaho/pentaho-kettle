@@ -17,7 +17,6 @@ import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -36,7 +35,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -784,7 +782,7 @@ public class KettleFileRepository implements Repository {
 						
 						ObjectId id = new StringObjectId(calcObjectId(directory, transName, EXT_TRANSFORMATION));
 						Date date = new Date(child.getContent().getLastModifiedTime());
-						list.add( new RepositoryObject(id, transName, directory, "-", date, RepositoryObjectType.TRANSFORMATION, "", "", false) );
+						list.add( new RepositoryObject(id, transName, directory, "-", date, RepositoryObjectType.TRANSFORMATION, "", false) );
 					}
 				}
 			}
@@ -816,7 +814,7 @@ public class KettleFileRepository implements Repository {
 						ObjectId id = new StringObjectId(calcObjectId(directory, folderName, EXT_JOB));
 						String jobName = name.substring(0, name.length()-4);
 						Date date = new Date(child.getContent().getLastModifiedTime());
-						list.add( new RepositoryObject(id, jobName, directory, "-", date, RepositoryObjectType.JOB, "", "", false) );
+						list.add( new RepositoryObject(id, jobName, directory, "-", date, RepositoryObjectType.JOB, "", false) );
 					}
 				}
 			}
@@ -1085,23 +1083,6 @@ public class KettleFileRepository implements Repository {
 	public void setRepositoryMeta(KettleFileRepositoryMeta repositoryMeta) {
 		this.repositoryMeta = repositoryMeta;
 	}
-
-	public List<RepositoryLock> getTransformationLocks() throws KettleException {
-		return new ArrayList<RepositoryLock>();
-	}
-	
-	public List<RepositoryLock> getJobLocks() throws KettleException {
-		return new ArrayList<RepositoryLock>();
-	}
-
-	public RepositoryLock getJobLock(ObjectId id_job) throws KettleDatabaseException {
-	  throw new UnsupportedOperationException();
-	}
-
-	public RepositoryLock getTransformationLock(ObjectId id_transformation) throws KettleDatabaseException {
-	  throw new UnsupportedOperationException();
-	}
-
 	public void lockJob(ObjectId id_job, String message) throws KettleException {
     throw new UnsupportedOperationException();
   }

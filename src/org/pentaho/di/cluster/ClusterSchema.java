@@ -29,7 +29,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.www.SlaveServerDetection;
@@ -513,11 +512,6 @@ public class ClusterSchema
 		this.objectRevision = objectRevision;
 	}
 
-	// Clusters can't be locked
-	public RepositoryLock getRepositoryLock() {
-		return null;
-	}
-	
 	public String getDescription() {
 		// NOT USED
 		return null;

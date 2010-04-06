@@ -24,7 +24,6 @@ import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
@@ -67,18 +66,6 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			// Before saving the job, see if it's not locked by someone else...
 			//
 			IUser userInfo = repository.getUserInfo();
-			if (!"admin".equals(userInfo.getLogin())) {
-				ObjectId objectId = getJobID(jobMeta.getName(), jobMeta.getRepositoryDirectory().getObjectId());
-				if (objectId!=null) {
-					RepositoryLock lock = getJobLock(objectId);
-					if (!lock.getLogin().equals(userInfo.getLogin())) {
-						// This object is locked by someone else
-						//
-						throw new KettleDatabaseException("Unable to save this job since it's locked by user ["+lock.getLogin()+"] with message : "+lock.getMessage());
-					}
-				}
-			}
-			
 			int nrWorks = 2 + jobMeta.nrDatabases() + jobMeta.nrNotes() + jobMeta.nrJobEntries() + jobMeta.nrJobHops();
 			if (monitor != null)
 				monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingTransformation") + jobMeta.getRepositoryDirectory() + Const.FILE_SEPARATOR + jobMeta.getName(), nrWorks); //$NON-NLS-1$
@@ -397,10 +384,6 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					}
 
 					loadRepParameters(jobMeta);
-					
-	                // Load the lock object if any...
-	                //
-	                jobMeta.setRepositoryLock( getJobLock(jobMeta.getObjectId()) );
 					
 					// Finally, clear the changed flags...
 					jobMeta.clearChanged();
@@ -850,79 +833,4 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
   		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
 	  }
 	}
-	
-	public List<RepositoryLock> getJobLocks() throws KettleDatabaseException {
-		try {
-			List<RepositoryLock> list = new ArrayList<RepositoryLock>();
-			
-			String sql = "SELECT * FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_LOCK);
-			
-			List<Object[]> rows = repository.connectionDelegate.getRows(sql, 0);
-			RowMetaInterface rowMeta = repository.connectionDelegate.getReturnRowMeta();
-			for (Object[] row : rows) {
-				list.add(getRepositoryLock(rowMeta, row));
-			}
-				
-			return list;
-		}
-		catch(Exception e) {
-			throw new KettleDatabaseException("Unable to get job lock list", e);
-		}		
-	}
-	
-	public RepositoryLock getJobLock(ObjectId id_job) throws KettleDatabaseException {
-		try {
-			String sql = "SELECT * FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_LOCK)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_LOCK_ID_JOB)+" = "+id_job;
-			RowMetaAndData row = repository.connectionDelegate.getOneRow(sql);
-			if (row==null || row.getData()==null || row.getRowMeta()==null) {
-				return null;
-			}
-			return getRepositoryLock(row.getRowMeta(), row.getData());
-		} catch(Exception e) {
-			throw new KettleDatabaseException("Unable to get lock state from job with id="+id_job, e);
-		}
-	}
-	
-	private RepositoryLock getRepositoryLock(RowMetaInterface rowMeta, Object[] row) throws KettleException {
-		ObjectId objectId = new LongObjectId( rowMeta.getInteger(row, KettleDatabaseRepository.FIELD_JOB_LOCK_ID_JOB, 0L) );
-		String message = rowMeta.getString(row, KettleDatabaseRepository.FIELD_JOB_LOCK_LOCK_MESSAGE, "");
-		ObjectId userId = new LongObjectId( rowMeta.getInteger(row, KettleDatabaseRepository.FIELD_JOB_LOCK_ID_USER, 0L) );
-		RowMetaAndData userRow = repository.userDelegate.getUser(userId);
-		String login = userRow.getString(KettleDatabaseRepository.FIELD_USER_LOGIN, "");
-		String username = userRow.getString(KettleDatabaseRepository.FIELD_USER_NAME, "");
-		Date lockDate = rowMeta.getDate(row, KettleDatabaseRepository.FIELD_JOB_LOCK_LOCK_DATE, null);
-		
-		RepositoryLock lock = new RepositoryLock(objectId, message, login, username, lockDate);
-		return lock;
-	}
-
-	
-	public void lockJob(ObjectId id_job, String message) throws KettleDatabaseException {
-		try {
-			String tablename = KettleDatabaseRepository.TABLE_R_JOB_LOCK;
-			LongObjectId id = repository.connectionDelegate.getNextID(tablename, KettleDatabaseRepository.FIELD_JOB_LOCK_ID_JOB_LOCK);
-			
-			RowMetaAndData table = new RowMetaAndData();
-			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_LOCK_ID_JOB_LOCK,  ValueMetaInterface.TYPE_INTEGER), id);
-			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_LOCK_ID_JOB,  ValueMetaInterface.TYPE_INTEGER), id_job);
-			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_LOCK_ID_USER,  ValueMetaInterface.TYPE_INTEGER), repository.getUserInfo().getObjectId());
-			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_LOCK_LOCK_MESSAGE,  ValueMetaInterface.TYPE_STRING), message);
-			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_LOCK_LOCK_DATE,  ValueMetaInterface.TYPE_DATE), new Date());
-			repository.connectionDelegate.insertTableRow(tablename, table);
-		} catch(Exception e) {
-			throw new KettleDatabaseException("Unable to insert lock into the database repository for transformation with id="+id_job, e);
-		}
-	}
-	
-	public void unlockJob(ObjectId id_job) throws KettleDatabaseException {
-		try {
-			String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_LOCK)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_LOCK_ID_JOB)+" = " + id_job;
-			repository.connectionDelegate.getDatabase().execStatement(sql);
-		} catch(Exception e) {
-			throw new KettleDatabaseException("Unable to remove the lock on job with id="+id_job, e);
-		}
-	}
-
-	
-
 }

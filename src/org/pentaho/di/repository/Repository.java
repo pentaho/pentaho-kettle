@@ -132,31 +132,6 @@ public interface Repository {
    * @throws KettleException
    */
   public void deleteTransformation(ObjectId id_transformation) throws KettleException;
-  
-  /**
-   * Locks this transformation for exclusive use by the current user of the repository
-   * @param id_transformation the id of the transformation to lock
-   * @param isSessionScoped If isSessionScoped is true then this lock will expire upon the expiration of the current session (either through an automatic or explicit Session.logout); if false, this lock does not expire until explicitly unlocked or automatically unlocked due to a implementation-specific limitation, such as a timeout. 
-   * @param message the lock message 
-   * @throws KettleException in case something goes wrong or the transformation is already locked by someone else.
-   */
-  public void lockTransformation(ObjectId id_transformation, String message) throws KettleException;
-
-  /**
-   * Unlocks a transformation, allowing other people to modify it again.
-   * @param id_transformation the id of the transformation to unlock
-   * @throws KettleException in case something goes wrong with the database or connection
-   */
-  public void unlockTransformation(ObjectId id_transformation) throws KettleException;
-
-  /**
-   * Return the lock object for this transformation.  Returns null if there is no lock present.
-   * 
-   * @param id_transformation
-   * @return the lock object for this transformation, null if no lock is present.
-   * @throws KettleDatabaseException
-   */
-  public RepositoryLock getTransformationLock(ObjectId id_transformation) throws KettleException;
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Jobs: Loading & saving objects...
@@ -185,30 +160,6 @@ public interface Repository {
     public ObjectId renameJob(ObjectId id_job, RepositoryDirectory newDirectory, String newName) throws KettleException;
 
   public void deleteJob(ObjectId id_job) throws KettleException;
-    
-  /**
-   * Locks this job for exclusive use by the current user of the repository
-   * @param id_job the id of the job to lock 
-   * @param message the lock message
-   * @throws KettleException in case something goes wrong or the job is already locked by someone else.
-   */
-  public void lockJob(ObjectId id_job, String message) throws KettleException;
-  
-  /**
-   * Unlocks a job, allowing other people to modify it again.
-   * @param id_job the id of the transformation to unlock
-   * @throws KettleException in case something goes wrong with the database or connection
-   */
-  public void unlockJob(ObjectId id_job) throws KettleException;
-
-  /**
-   * Return the lock object for this job.  Returns null if there is no lock present.
-   * 
-   * @param id_job
-   * @return the lock object for this job, null if no lock is present.
-   * @throws KettleDatabaseException
-   */
-  public RepositoryLock getJobLock(ObjectId id_job) throws KettleException;
   
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Databases : loading, saving, renaming, etc.
@@ -482,28 +433,6 @@ public interface Repository {
    * @param database
    */
   public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode, DatabaseMeta database) throws KettleException;
-
-  /**
-   * Get the revision history of a repository element.
-   * If the capabilities of this repositories do not include revision support, this method can return null.
-   * 
-   * @param element the element.  If the ID is specified, this will be taken.  Otherwise it will be looked up.
-   * 
-   * @return The revision history, sorted from first to last.
-   * @throws KettleException in case something goes horribly wrong
-   */
-  public List<ObjectRevision> getRevisions(RepositoryElementLocationInterface element) throws KettleException;
-
-  /**
-   * Get the revision history of a repository element.
-   * If the capabilities of this repositories do not include revision support, this method can return null.
-   * 
-   * @param element the element.  If the ID is specified, this will be taken.  Otherwise it will be looked up.
-   * 
-   * @return The revision history, sorted from first to last.
-   * @throws KettleException in case something goes horribly wrong
-   */
-  public List<ObjectRevision> getRevisions(ObjectId id) throws KettleException;
 
   /**
    * Removes he deleted flag from a repository element in the repository.  

@@ -22,13 +22,7 @@
 			<menuitem id="folder-context-rename" label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameFolder()"/>
 			<menuitem id="folder-context-delete" label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteFolder()"/>
 		</menupopup>
-	
-		<menupopup id="revisionContextMenu">
-			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openRevision()"/>
-			<menuitem label="${RepositoryExplorerDialog.ContextMenu.Restore}" command="browseController.restoreRevision()"/>
-			<!-- <menuitem label="Delete" /> -->
-		</menupopup>
-	
+
 		<menupopup id="fileContextMenu">
 			<menuitem id="file-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
 			<menuitem id="file-context-rename" label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameContent()"/>
@@ -38,13 +32,6 @@
 			<menuitem id="file-context-locknotes" label="${RepositoryExplorerDialog.ContextMenu.LockNotes}" command="browseController.viewLockNote()"/>
 			-->
 		</menupopup>
-		
-		<!--
-		<menupopup id="lockContextMenu">
-			<menuitem id="lock-context-lock" type="checkbox" label="${RepositoryExplorerDialog.ContextMenu.Lock}" command="browseController.lockContent()"/>
-			<menuitem id="lock-context-locknotes" label="${RepositoryExplorerDialog.ContextMenu.LockNotes}" command="browseController.viewLockNote()"/>
-		</menupopup>
-		-->
 	
 		<tabbox id="repositoryExplorerTabs" flex="1">
 	

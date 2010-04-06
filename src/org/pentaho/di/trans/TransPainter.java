@@ -29,7 +29,6 @@ import org.pentaho.di.core.gui.GCInterface.EFont;
 import org.pentaho.di.core.gui.GCInterface.EImage;
 import org.pentaho.di.core.gui.GCInterface.ELineStyle;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;

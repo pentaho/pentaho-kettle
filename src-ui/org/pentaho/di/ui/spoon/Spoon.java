@@ -167,7 +167,6 @@ import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
-import org.pentaho.di.repository.IAclManager;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -175,17 +174,14 @@ import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
-import org.pentaho.di.repository.VersionRepository;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
-import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -211,7 +207,6 @@ import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterOptionsDialog;
 import org.pentaho.di.ui.core.dialog.EnterSearchDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
-import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterStringsDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -227,10 +222,8 @@ import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.ILoginCallback;
 import org.pentaho.di.ui.repository.RepositoriesDialog;
 import org.pentaho.di.ui.repository.RepositorySecurityUI;
-import org.pentaho.di.ui.repository.capabilities.AclUISupport;
 import org.pentaho.di.ui.repository.capabilities.BaseRepositoryExplorerUISupport;
 import org.pentaho.di.ui.repository.capabilities.ManageUserUISupport;
-import org.pentaho.di.ui.repository.capabilities.RevisionsUISupport;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
 import org.pentaho.di.ui.repository.dialog.RepositoryExportProgressDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryImportProgressDialog;
@@ -7140,11 +7133,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     UISupportRegistery.getInstance().registerUISupport(RepositorySecurityProvider.class,
         BaseRepositoryExplorerUISupport.class);
     UISupportRegistery.getInstance().registerUISupport(RepositorySecurityManager.class, ManageUserUISupport.class);
-    UISupportRegistery.getInstance().registerUISupport(VersionRepository.class, RevisionsUISupport.class);
-    UISupportRegistery.getInstance().registerUISupport(IAclManager.class, AclUISupport.class);
     if (rep != null) {
       SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
     }
+    delegates.update(this);
   }
 
   public void addMenuListener(String id, Object listener, String methodName) {
@@ -7394,72 +7386,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       } catch (Exception e) {
         // ignore this
       }
-    }
-  }
-
-  public void lockRepositoryFile() {
-    try {
-      if (rep == null)
-        return;
-
-      TransMeta transMeta = getActiveTransformation();
-      if (transMeta != null) {
-        if (transMeta.getObjectId() != null) {
-          EnterStringDialog dialog = new EnterStringDialog(shell, "Transformation locked by "
-              + rep.getUserInfo().getName(), "Lock message", "Enter lock message");
-          String message = dialog.open();
-          rep.lockTransformation(transMeta.getObjectId(), message);
-          transMeta.setRepositoryLock(new RepositoryLock(transMeta.getObjectId(), message,
-              rep.getUserInfo().getLogin(), rep.getUserInfo().getName()));
-          enableMenus();
-          refreshGraph();
-        }
-      }
-
-      JobMeta jobMeta = getActiveJob();
-      if (jobMeta != null) {
-        if (jobMeta.getObjectId() != null) {
-          EnterStringDialog dialog = new EnterStringDialog(shell, "Job locked by " + rep.getUserInfo().getName(),
-              "Lock message", "Enter lock message");
-          String message = dialog.open();
-          rep.lockJob(jobMeta.getObjectId(), message);
-          jobMeta.setRepositoryLock(new RepositoryLock(jobMeta.getObjectId(), message, rep.getUserInfo().getLogin(),
-              rep.getUserInfo().getName()));
-          enableMenus();
-          refreshGraph();
-        }
-      }
-    } catch (Exception e) {
-      new ErrorDialog(shell, "Error locking file", "There was an unexpected error locking a file", e);
-    }
-  }
-
-  public void unlockRepositoryFile() {
-    try {
-      if (rep == null)
-        return;
-
-      TransMeta transMeta = getActiveTransformation();
-      if (transMeta != null) {
-        if (transMeta.getObjectId() != null) {
-          rep.unlockTransformation(transMeta.getObjectId());
-          transMeta.setRepositoryLock(null);
-          enableMenus();
-          refreshGraph();
-        }
-      }
-
-      JobMeta jobMeta = getActiveJob();
-      if (jobMeta != null) {
-        if (jobMeta.getObjectId() != null) {
-          rep.unlockJob(jobMeta.getObjectId());
-          jobMeta.setRepositoryLock(null);
-          enableMenus();
-          refreshGraph();
-        }
-      }
-    } catch (Exception e) {
-      new ErrorDialog(shell, "Error unlocking file", "There was an unexpected error unlocking a file", e);
     }
   }
 

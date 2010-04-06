@@ -180,17 +180,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName(transMeta, showLocation)); //$NON-NLS-1$
 				if (!Const.isEmpty(transMeta.getFilename())) toolTipText+=Const.CR+Const.CR+transMeta.getFilename();
 				tabItem.setToolTipText(toolTipText);
-				try {
-  				if((spoon.getRepository() != null) && (transMeta.getObjectId() != null) && (spoon.getRepository().getTransformationLock(transMeta.getObjectId()) != null)) {
-  				  tabItem.setImage(GUIResource.getInstance().getImageLocked());
-  				} else {
-  				  tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
-  				}
-				} catch(Exception e) {
-				  throw new RuntimeException(e);
-				}
-				tabItem.setControl(transGraph);
-
+        tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
+        tabItem.setControl(transGraph);
 				TransLogTable logTable = transMeta.getTransLogTable();
 				
 				// OK, also see if we need to open a new history window.

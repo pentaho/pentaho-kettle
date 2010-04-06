@@ -39,11 +39,9 @@ import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
-import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
-import org.pentaho.ui.xul.swt.custom.DialogConstant;
 
 /**
  *
@@ -74,31 +72,6 @@ public class RepositoryExplorer {
     }
 
   };
-
-  public static XulPromptBox promptCommitComment(org.pentaho.ui.xul.dom.Document document, ResourceBundle messages,
-      String defaultMessage) throws XulException {
-    XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
-
-    prompt.setTitle(messages.getString("RepositoryExplorer.CommitTitle"));//$NON-NLS-1$
-    prompt.setButtons(new DialogConstant[] { DialogConstant.OK, DialogConstant.CANCEL });
-
-    prompt.setMessage(messages.getString("RepositoryExplorer.CommitLabel"));//$NON-NLS-1$
-    prompt
-        .setValue(defaultMessage == null ? messages.getString("RepositoryExplorer.DefaultCommitMessage") : defaultMessage); //$NON-NLS-1$
-    return prompt;
-  }
-  
-  public static XulPromptBox promptLockMessage(org.pentaho.ui.xul.dom.Document document, ResourceBundle messages, String defaultMessage) throws XulException {
-    XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
-    
-    prompt.setTitle(messages.getString("RepositoryExplorer.LockMessage.Title"));//$NON-NLS-1$
-    prompt.setButtons(new DialogConstant[] { DialogConstant.OK, DialogConstant.CANCEL });
-
-    prompt.setMessage(messages.getString("RepositoryExplorer.LockMessage.Label"));//$NON-NLS-1$
-    prompt.setValue(defaultMessage == null ? messages.getString("RepositoryExplorer.DefaultLockMessage") : defaultMessage); //$NON-NLS-1$
-    return prompt;
-  }
-
   // private Repository repository;
   public RepositoryExplorer(Shell shell, final Repository rep, RepositoryExplorerCallback callback, VariableSpace variableSpace)
       throws XulException {

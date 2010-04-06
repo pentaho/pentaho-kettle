@@ -142,7 +142,6 @@ public class RepositoryDirectoryUI {
 	                tiObject.setText(2, Const.NVL(repositoryObject.getModifiedUser(), ""));
 	                tiObject.setText(3, repositoryObject.getModifiedDate()!=null ? simpleDateFormat.format(repositoryObject.getModifiedDate()) : "");
 	                tiObject.setText(4, Const.NVL(repositoryObject.getDescription(), ""));
-	                tiObject.setText(5, Const.NVL(repositoryObject.getLockMessage(), ""));
 	                
 	                if (repositoryObject.isDeleted()) {
 	                	tiObject.setForeground(GUIResource.getInstance().getColorRed());

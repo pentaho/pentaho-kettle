@@ -89,7 +89,6 @@ import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
@@ -239,9 +238,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private List<FilenameChangedListener> filenameChangedListeners;
     
     private NamedParams namedParams = new NamedParamsDefault();
-    
-    private RepositoryLock repositoryLock;
-    
+   
     private LogChannelInterface log;
     
     private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
@@ -5680,20 +5677,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	
 	public RepositoryObjectType getRepositoryElementType() {
 		return REPOSITORY_ELEMENT_TYPE;
-	}
-
-	/**
-	 * @return the repositoryLock
-	 */
-	public RepositoryLock getRepositoryLock() {
-		return repositoryLock;
-	}
-
-	/**
-	 * @param repositoryLock the repositoryLock to set
-	 */
-	public void setRepositoryLock(RepositoryLock repositoryLock) {
-		this.repositoryLock = repositoryLock;
 	}
 
 	public void setObjectRevision(ObjectRevision objectRevision) {

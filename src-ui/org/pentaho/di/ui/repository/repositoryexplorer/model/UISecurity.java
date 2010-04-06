@@ -28,7 +28,7 @@ public class UISecurity extends XulEventSourceAdapter {
     this();
     if (rsm != null && rsm.getUsers() != null) {
       for (IUser user : rsm.getUsers()) {
-        userList.add(UIObjectRegistery.getInstance().constructUIRepositoryUser(user));
+        userList.add(UIObjectRegistry.getInstance().constructUIRepositoryUser(user));
       }
       this.firePropertyChange("userList", null, userList); //$NON-NLS-1$
     }

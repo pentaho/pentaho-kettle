@@ -101,11 +101,9 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.lineage.TransDataLineage;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
@@ -142,9 +140,7 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
-import org.pentaho.di.ui.spoon.ChangedWarningDialog;
 import org.pentaho.di.ui.spoon.AbstractGraph;
-import org.pentaho.di.ui.spoon.ChangedWarningInterface;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
@@ -2343,11 +2339,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 				to = (StepMeta) areaOwner.getOwner();
 				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.InfoStepCopies", from.getName(), to.getName(), Const.CR)); //$NON-NLS-1$
 				tipImage = GUIResource.getInstance().getImageStepError();
-				break;
-			case REPOSITORY_LOCK_IMAGE:
-				RepositoryLock lock = (RepositoryLock) areaOwner.getOwner();
-				tip.append(BaseMessages.getString(PKG, "TransGraph.Locked.Tooltip", Const.CR, lock.getLogin(), lock.getUsername(), lock.getMessage(), XMLHandler.date2string(lock.getLockDate()))); //$NON-NLS-1$
-				tipImage = GUIResource.getInstance().getImageLocked();
 				break;
 			case STEP_INPUT_HOP_ICON:
 				// StepMeta subjectStep = (StepMeta) (areaOwner.getParent());

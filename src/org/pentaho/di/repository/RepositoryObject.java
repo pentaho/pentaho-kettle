@@ -37,9 +37,8 @@ public class RepositoryObject implements RepositoryContent
     private Date   modifiedDate;
     private RepositoryObjectType objectType; 
     private String description;
-    private String lockMessage;
     private boolean deleted;
-	private ObjectId	objectId;
+    private ObjectId	objectId;
     
     public RepositoryObject()
     {
@@ -50,7 +49,7 @@ public class RepositoryObject implements RepositoryContent
      * @param modifiedUser
      * @param modifiedDate
      */
-    public RepositoryObject(ObjectId objectId, String name, RepositoryDirectory repositoryDirectory, String modifiedUser, Date modifiedDate, RepositoryObjectType objectType, String description, String lockMessage, boolean deleted)
+    public RepositoryObject(ObjectId objectId, String name, RepositoryDirectory repositoryDirectory, String modifiedUser, Date modifiedDate, RepositoryObjectType objectType, String description, boolean deleted)
     {
         this();
         this.objectId = objectId;
@@ -60,7 +59,6 @@ public class RepositoryObject implements RepositoryContent
         this.modifiedDate = modifiedDate;
         this.objectType = objectType;
         this.description = description;
-        this.lockMessage = lockMessage;
         this.deleted = deleted;
     }
 
@@ -185,19 +183,6 @@ public class RepositoryObject implements RepositoryContent
         this.description = description;
     }
 
-	/**
-	 * @return the lockMessage
-	 */
-	public String getLockMessage() {
-		return lockMessage;
-	}
-
-	/**
-	 * @param lockMessage the lockMessage to set
-	 */
-	public void setLockMessage(String lockMessage) {
-		this.lockMessage = lockMessage;
-	}
 
 	/**
 	 * @return the deleted

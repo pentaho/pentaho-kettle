@@ -51,7 +51,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.ConstUI;
@@ -850,10 +849,6 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
 			}
 
-			public RepositoryLock getRepositoryLock() {
-				return null;
-			}
-			
 			public String getDescription() {
 				return null;
 			}

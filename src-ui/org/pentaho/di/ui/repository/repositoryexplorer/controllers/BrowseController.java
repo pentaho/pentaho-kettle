@@ -38,11 +38,11 @@ import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationE
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer.TYPE;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectCreationException;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistry;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevision;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjectRevisions;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjects;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -52,13 +52,13 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.components.XulTab;
-import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulTabbox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.custom.DialogConstant;
 import org.pentaho.ui.xul.util.XulDialogCallback;
+import org.pentaho.ui.xul.util.XulDialogCallback.Status;
 
 /**
  *
@@ -82,13 +82,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   };
 
-  private XulTab historyTab;
   
   protected XulTree folderTree;
 
   protected XulTree fileTable;
-
-  protected XulTree revisionTable;
 
   protected UIRepositoryDirectory repositoryDirectory;
 
@@ -115,8 +112,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
    */
   protected Map<ObjectId, UIRepositoryDirectory> dirMap;
 
-  private XulTabbox  filePropertiesTabbox;
-  
   public BrowseController() {
   }
 
@@ -133,7 +128,11 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       this.repository = repository; 
       
       mainController = (MainController) this.getXulDomContainer().getEventHandler("mainController");
-      this.repositoryDirectory = new UIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
+      try {
+        this.repositoryDirectory = UIObjectRegistry.getInstance().constructUIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
+      } catch(UIObjectCreationException uoe) {
+        this.repositoryDirectory = new UIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
+      }
       dirMap = new HashMap<ObjectId, UIRepositoryDirectory>();
       populateDirMap(repositoryDirectory);
 
@@ -147,16 +146,28 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   protected void createBindings() {
-    historyTab = (XulTab) document.getElementById("history"); //$NON-NLS-1$     
     folderTree = (XulTree) document.getElementById("folder-tree"); //$NON-NLS-1$
     fileTable = (XulTree) document.getElementById("file-table"); //$NON-NLS-1$ 
-    filePropertiesTabbox = (XulTabbox) document.getElementById("file-properties-tabs"); //$NON-NLS-1$
     
     if (!repositoryDirectory.isVisible()) {
       folderTree.setHiddenrootnode(true);
     } else {
       folderTree.setHiddenrootnode(false);
     }
+    BindingConvertor<List<UIRepositoryObject>, Boolean> checkIfMultipleItemsAreSelected = new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
+
+      @Override
+      public Boolean sourceToTarget(List<UIRepositoryObject> value) {
+        return value != null && value.size() == 1 && value.get(0) != null;
+      }
+
+      @Override
+      public List<UIRepositoryObject> targetToSource(Boolean value) {
+        return null;
+      }
+    };
+    bf.createBinding(fileTable, "selectedItems", "file-context-rename", "!disabled", checkIfMultipleItemsAreSelected); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
     
     // begin PDI-3326 hack
     
@@ -218,10 +229,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       throw new RuntimeException(e);
     }
 
-    if (repositoryDirectory.isRevisionsSupported()) {
-      createRevisionBindings();
-    }
-    
     try {
       // Set the initial selected directory as the users home directory
       RepositoryDirectory homeDir = repository.getUserHomeDirectory();
@@ -268,104 +275,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected Binding createDirectoryBinding() {
     bf.setBindingType(Binding.Type.ONE_WAY);
     return bf.createBinding(this, "repositoryDirectory", folderTree, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
-  }
-
-  private void createRevisionBindings() {
-    revisionTable = (XulTree) document.getElementById("revision-table"); //$NON-NLS-1$
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    Binding revisionTreeBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-table", //$NON-NLS-1$ //$NON-NLS-2$
-        "!disabled"); //$NON-NLS-1$
-    Binding revisionLabelBinding = bf.createBinding(repositoryDirectory, "revisionsSupported", "revision-label", //$NON-NLS-1$ //$NON-NLS-2$
-        "!disabled"); //$NON-NLS-1$
-
-    BindingConvertor<int[], Boolean> forButtons = new BindingConvertor<int[], Boolean>() {
-
-      @Override
-      public Boolean sourceToTarget(int[] value) {
-        return value != null && !(value.length <= 0);
-      }
-
-      @Override
-      public int[] targetToSource(Boolean value) {
-        return null;
-      }
-    };
-
-    Binding buttonBinding = bf.createBinding(revisionTable, "selectedRows", "revision-open", "!disabled", forButtons); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    //bf.createBinding(revisionTable,"selectedRows", "revision-remove", "!disabled", forButtons);
-
-    Binding revisionBinding = null;
-
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(folderTree, "selectedItems", this, "historyTabVisibility"); //$NON-NLS-1$  //$NON-NLS-2$
-
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    BindingConvertor<List<UIRepositoryObject>, Boolean> checkIfMultipleItemsAreSelected = new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
-
-      @Override
-      public Boolean sourceToTarget(List<UIRepositoryObject> value) {
-        return value != null && value.size() == 1 && value.get(0) != null;
-      }
-
-      @Override
-      public List<UIRepositoryObject> targetToSource(Boolean value) {
-        return null;
-      }
-    };
-    bf.createBinding(fileTable, "selectedItems", "file-context-rename", "!disabled", checkIfMultipleItemsAreSelected); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
-    revisionBinding = bf.createBinding(this, "repositoryObjects", revisionTable, "elements", //$NON-NLS-1$ //$NON-NLS-2$
-        new BindingConvertor<List<UIRepositoryObject>, UIRepositoryObjectRevisions>() {
-          @Override
-          public UIRepositoryObjectRevisions sourceToTarget(List<UIRepositoryObject> ro) {
-            UIRepositoryObjectRevisions revisions = new UIRepositoryObjectRevisions();
-
-            if (ro == null) {
-              return null;
-            }
-            if (ro.size() <= 0) {
-              return null;
-            }
-            if (ro.get(0) instanceof UIRepositoryDirectory) {
-              historyTab.setVisible(false);
-              filePropertiesTabbox.setSelectedIndex(0);
-              return null;
-            }
-            try {
-              UIRepositoryContent rc = (UIRepositoryContent) ro.get(0);
-              revisions = rc.getRevisions();
-              bf.setBindingType(Binding.Type.ONE_WAY);
-              bf.createBinding(revisions, "children", revisionTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
-
-            } catch (KettleException e) {
-              // convert to runtime exception so it bubbles up through the UI
-              throw new RuntimeException(e);
-            }
-            historyTab.setVisible(true);
-            return revisions;
-          }
-
-          @Override
-          public List<UIRepositoryObject> targetToSource(UIRepositoryObjectRevisions elements) {
-            return null;
-          }
-        });
-
-    try {
-      revisionTreeBinding.fireSourceChanged();
-      revisionLabelBinding.fireSourceChanged();
-      buttonBinding.fireSourceChanged();
-      revisionBinding.fireSourceChanged();
-    } catch (Exception e) {
-      // convert to runtime exception so it bubbles up through the UI
-      throw new RuntimeException(e);
-    }
-
-  }
-
-  public <T> void setHistoryTabVisibility(Collection<T> items) {
-      historyTab.setVisible(false);
-      filePropertiesTabbox.setSelectedIndex(0);
   }
 
   public String getName() {
@@ -440,54 +349,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     }
   }
 
-  public void openRevision() {
-    Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
-    UIRepositoryContent contentToOpen = content.iterator().next();
-
-    Collection<UIRepositoryObjectRevision> revision = revisionTable.getSelectedItems();
-
-    // TODO: Is it a requirement to allow opening multiple revisions? 
-    UIRepositoryObjectRevision revisionToOpen = revision.iterator().next();
-    if (mainController != null && mainController.getCallback() != null) {
-      if (mainController.getCallback().open(contentToOpen, revisionToOpen.getName())) {
-        //TODO: fire request to close dialog
-      }
-    }
-  }
-
-  public void restoreRevision() {
-    try {
-      Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
-      final UIRepositoryContent contentToRestore = content.iterator().next();
-
-      Collection<UIRepositoryObjectRevision> versions = revisionTable.getSelectedItems();
-      final UIRepositoryObjectRevision versionToRestore = versions.iterator().next();
-
-      XulPromptBox commitPrompt = RepositoryExplorer.promptCommitComment(document, messages, null);
-
-      commitPrompt.addDialogCallback(new XulDialogCallback<String>() {
-        public void onClose(XulComponent component, Status status, String value) {
-
-          if (!status.equals(Status.CANCEL)) {
-            try {
-              contentToRestore.restoreVersion(versionToRestore, value);
-            } catch (Exception e) {
-              // convert to runtime exception so it bubbles up through the UI
-              throw new RuntimeException(e);
-            }
-          }
-        }
-
-        public void onError(XulComponent component, Throwable err) {
-          throw new RuntimeException(err);
-        }
-      });
-
-      commitPrompt.open();
-    } catch (Exception e) {
-      throw new RuntimeException(new KettleException(e));
-    }
-  }
 
   private String newName = null;
 
@@ -545,18 +406,18 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     XulPromptBox prompt = promptForName(object);
     prompt.addDialogCallback(new XulDialogCallback<String>() {
       public void onClose(XulComponent component, Status status, String value) {
-
+        if (status == Status.ACCEPT) {
         try {
-          object.setName(value);
-        } catch (Exception e) {
-          // convert to runtime exception so it bubbles up through the UI
-          throw new RuntimeException(e);
+            object.setName(value);
+          } catch (Exception e) {
+            // convert to runtime exception so it bubbles up through the UI
+            throw new RuntimeException(e);
+          }
+          System.out.println("Component: " + component.getName());
+          System.out.println("Status: " + status.name());
+          System.out.println("Value: " + value);
         }
-        System.out.println("Component: " + component.getName());
-        System.out.println("Status: " + status.name());
-        System.out.println("Value: " + value);
       }
-
       public void onError(XulComponent component, Throwable err) {
         // TODO: Deal with errors
         System.out.println(err.getMessage());
@@ -728,8 +589,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         return false;
       }
       for (int i = 0; i < rd1.size(); i++) {
-        if (!rd1.get(i).getName().equals(rd2.get(i).getName())) {
-          return false;
+        if(rd1.get(i) != null && rd2.get(i) != null) {
+          if (!rd1.get(i).getName().equals(rd2.get(i).getName())) {
+            return false;
+          }
         }
       }
     } else {
@@ -744,8 +607,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         return false;
       }
       for (int i = 0; i < ro1.size(); i++) {
-        if (!ro1.get(i).getName().equals(ro2.get(i).getName())) {
-          return false;
+        if(ro1.get(i) != null && ro2.get(i) != null) {
+          if (!ro1.get(i).getName().equals(ro2.get(i).getName())) {
+            return false;
+          }
         }
       }
     } else {

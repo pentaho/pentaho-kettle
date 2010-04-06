@@ -943,15 +943,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 				String toolTipText = BaseMessages.getString(PKG, "Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeTabName(jobMeta, showLocation)); //$NON-NLS-1$
 				if (!Const.isEmpty(jobMeta.getFilename())) toolTipText+=Const.CR+Const.CR+jobMeta.getFilename();
 				tabItem.setToolTipText(toolTipText);
-				try {
-          if((spoon.getRepository() != null) && (jobMeta.getObjectId() != null) && (spoon.getRepository().getJobLock(jobMeta.getObjectId()) != null)) {
-            tabItem.setImage(GUIResource.getInstance().getImageLocked());
-          } else {
-            tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
-          }
-        } catch(Exception e) {
-          throw new RuntimeException(e);
-        }
+				tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
 				tabItem.setControl(jobGraph);
 
 				// OK, also see if we need to open a new history window.

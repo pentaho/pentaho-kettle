@@ -73,7 +73,6 @@ import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
@@ -196,10 +195,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     
     
 	private ObjectRevision objectRevision;
-	
-    private RepositoryLock repositoryLock;
-
-
 	public JobMeta() {
 		clear();
 		initializeVariablesFrom(null);
@@ -2610,20 +2605,6 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	public void setObjectRevision(ObjectRevision objectRevision) {
 		this.objectRevision = objectRevision;
-	}
-
-	/**
-	 * @return the repositoryLock
-	 */
-	public RepositoryLock getRepositoryLock() {
-		return repositoryLock;
-	}
-
-	/**
-	 * @param repositoryLock the repositoryLock to set
-	 */
-	public void setRepositoryLock(RepositoryLock repositoryLock) {
-		this.repositoryLock = repositoryLock;
 	}
 	
 	/**

@@ -19,6 +19,7 @@ import org.pentaho.di.ui.spoon.delegates.SpoonStepsDelegate;
 import org.pentaho.di.ui.spoon.delegates.SpoonTabsDelegate;
 import org.pentaho.di.ui.spoon.delegates.SpoonTransformationDelegate;
 import org.pentaho.di.ui.spoon.delegates.SpoonTreeDelegate;
+import org.pentaho.di.ui.spoon.InstanceCreationException;
 import org.pentaho.di.ui.spoon.Spoon;
 
 public class SpoonDelegates
@@ -39,13 +40,24 @@ public class SpoonDelegates
 
 	public SpoonDelegates(Spoon spoon)
 	{
-		jobs = new SpoonJobDelegate(spoon);
 		tabs = new SpoonTabsDelegate(spoon);
-		trans = new SpoonTransformationDelegate(spoon);
 		tree = new SpoonTreeDelegate(spoon);
 		slaves = new SpoonSlaveDelegate(spoon);
 		steps = new SpoonStepsDelegate(spoon);
 		db = new SpoonDBDelegate(spoon);
+		update(spoon);
 	}
 
+	public void update(Spoon spoon) {
+    try {
+      jobs = (SpoonJobDelegate)SpoonDelegateRegistry.getInstance().constructSpoonJobDelegate(spoon);
+    } catch (InstanceCreationException e) {
+      jobs = new SpoonJobDelegate(spoon);
+    }
+    try {
+      trans = (SpoonTransformationDelegate)SpoonDelegateRegistry.getInstance().constructSpoonTransDelegate(spoon);
+    } catch (InstanceCreationException e) {
+      trans = new SpoonTransformationDelegate(spoon);
+    }  
+	}
 }

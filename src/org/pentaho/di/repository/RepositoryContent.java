@@ -12,8 +12,6 @@ public interface RepositoryContent extends RepositoryElement {
 
   public String getDescription();
 
-  public String getLockMessage();
-  
   public boolean isDeleted();
   
   public void setName(String name);

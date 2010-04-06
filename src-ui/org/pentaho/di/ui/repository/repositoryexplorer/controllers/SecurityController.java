@@ -28,7 +28,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationE
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.IUIUser;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistery;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistry;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurityUser;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
@@ -223,7 +223,7 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
     if (service != null) {
       try {
         service.saveUserInfo(securityUser.getUserInfo());
-        security.addUser(UIObjectRegistery.getInstance().constructUIRepositoryUser(securityUser.getUserInfo()));
+        security.addUser(UIObjectRegistry.getInstance().constructUIRepositoryUser(securityUser.getUserInfo()));
       } catch (KettleException ke) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
         messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$

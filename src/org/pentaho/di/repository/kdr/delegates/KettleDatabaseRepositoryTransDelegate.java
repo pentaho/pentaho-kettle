@@ -1,7 +1,6 @@
 package org.pentaho.di.repository.kdr.delegates;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -21,12 +20,10 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
@@ -106,21 +103,6 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     {
         try
         {
-			// Before saving the job, see if it's not locked by someone else...
-			//
-			IUser userInfo = repository.getUserInfo();
-			if (!"admin".equals(userInfo.getLogin())) {
-				ObjectId objectId = getTransformationID(transMeta.getName(), transMeta.getRepositoryDirectory().getObjectId());
-				if (objectId!=null) {
-					RepositoryLock lock = getTransformationLock(objectId);
-					if (!lock.getLogin().equals(userInfo.getLogin())) {
-						// This object is locked by someone else
-						//
-						throw new KettleDatabaseException("Unable to save this transformation since it's locked by user ["+lock.getLogin()+"] with message : "+lock.getMessage());
-					}
-				}
-			}
-
         	if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.LockingRepository")); //$NON-NLS-1$
 
         	repository.lockRepository(); // make sure we're they only one using the repository at the moment
@@ -482,10 +464,6 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                        stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.                        
 	                    }
 	                }
-	                
-	                // Finally, load the lock object if any...
-	                //
-	                transMeta.setRepositoryLock( getTransformationLock(transMeta.getObjectId()) );
 	                
 	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SortingStepsTask.Title")); //$NON-NLS-1$
 	                transMeta.sortSteps();
@@ -1239,75 +1217,5 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       
       repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
 	  }
-	}
-
-	public List<RepositoryLock> getTransformationLocks() throws KettleDatabaseException {
-		try {
-			List<RepositoryLock> list = new ArrayList<RepositoryLock>();
-			
-			String sql = "SELECT * FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_LOCK);
-			List<Object[]> rows = repository.connectionDelegate.getRows(sql, 0);
-			RowMetaInterface rowMeta = repository.connectionDelegate.getReturnRowMeta();
-			for (Object[] row : rows) {
-				list.add(getRepositoryLock(rowMeta, row));
-			}
-				
-			return list;
-		}
-		catch(Exception e) {
-			throw new KettleDatabaseException("Unable to get transformation lock list", e);
-		}		
-	}
-	
-	public RepositoryLock getTransformationLock(ObjectId id_transformation) throws KettleDatabaseException {
-		try {
-			String sql = "SELECT * FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_LOCK)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_TRANSFORMATION)+" = "+id_transformation;
-			RowMetaAndData row = repository.connectionDelegate.getOneRow(sql);
-			if (row==null || row.getData()==null || row.getRowMeta()==null) {
-				return null;
-			}
-			return getRepositoryLock(row.getRowMeta(), row.getData());
-		} catch(Exception e) {
-			throw new KettleDatabaseException("Unable to get lock state from transformation with id="+id_transformation, e);
-		}
-	}
-	
-	private RepositoryLock getRepositoryLock(RowMetaInterface rowMeta, Object[] row) throws KettleException {
-		ObjectId objectId = new LongObjectId( rowMeta.getInteger(row, KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_TRANSFORMATION, 0L) );
-		String message = rowMeta.getString(row, KettleDatabaseRepository.FIELD_TRANS_LOCK_LOCK_MESSAGE, "");
-		ObjectId userId = new LongObjectId( rowMeta.getInteger(row, KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_USER, 0L) );
-		RowMetaAndData userRow = repository.userDelegate.getUser(userId);
-		String login = userRow.getString(KettleDatabaseRepository.FIELD_USER_LOGIN, "");
-		String username = userRow.getString(KettleDatabaseRepository.FIELD_USER_NAME, "");
-		Date lockDate = rowMeta.getDate(row, KettleDatabaseRepository.FIELD_TRANS_LOCK_LOCK_DATE, null);
-		
-		RepositoryLock lock = new RepositoryLock(objectId, message, login, username, lockDate);
-		return lock;
-	}
-
-	public void lockTransformation(ObjectId id_transformation, String message) throws KettleDatabaseException {
-		try {
-			String tablename = KettleDatabaseRepository.TABLE_R_TRANS_LOCK;
-			LongObjectId id = repository.connectionDelegate.getNextID(tablename, KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_TRANS_LOCK);
-			
-			RowMetaAndData table = new RowMetaAndData();
-			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_TRANS_LOCK,  ValueMetaInterface.TYPE_INTEGER), id);
-			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_TRANSFORMATION,  ValueMetaInterface.TYPE_INTEGER), id_transformation);
-			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_USER,  ValueMetaInterface.TYPE_INTEGER), repository.getUserInfo().getObjectId());
-			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_LOCK_LOCK_MESSAGE,  ValueMetaInterface.TYPE_STRING), message);
-			table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_LOCK_LOCK_DATE,  ValueMetaInterface.TYPE_DATE), new Date());
-			repository.connectionDelegate.insertTableRow(tablename, table);
-		} catch(Exception e) {
-			throw new KettleDatabaseException("Unable to insert lock into the database repository for transformation with id="+id_transformation, e);
-		}
-	}
-
-	public void unlockTransformation(ObjectId id_transformation) throws KettleDatabaseException {
-		try {
-			String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_LOCK)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_LOCK_ID_TRANSFORMATION)+" = " + id_transformation;
-			repository.connectionDelegate.getDatabase().execStatement(sql);
-		} catch(Exception e) {
-			throw new KettleDatabaseException("Unable to remove the lock on transformation with id="+id_transformation, e);
-		}
 	}
 }

@@ -24,7 +24,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceHolderInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -324,12 +323,7 @@ public class PartitionSchema
 	public void setObjectRevision(ObjectRevision objectRevision) {
 		this.objectRevision = objectRevision;
 	}
-	
-	// partition schemas can't be locked
-	public RepositoryLock getRepositoryLock() {
-		return null;
-	}
-	
+
 	public void setDescription(String description) {
 		// NOT USED
 	}

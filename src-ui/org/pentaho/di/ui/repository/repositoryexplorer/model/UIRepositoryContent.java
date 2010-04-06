@@ -18,23 +18,16 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.IAclManager;
-import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryContent;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementLocationInterface;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 
 public abstract class UIRepositoryContent extends UIRepositoryObject implements RepositoryElementLocationInterface{
 
-  private RepositoryContent rc;
-  private UIRepositoryObjectRevisions revisions;
+  protected RepositoryContent rc;
   protected UIRepositoryDirectory uiParent;
   
   public UIRepositoryContent() {
@@ -78,26 +71,6 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
     return str;
   }
 
-  public UIRepositoryObjectRevisions getRevisions() throws KettleException {
-    if (revisions != null){
-      return revisions;
-    }
-    
-    revisions = new UIRepositoryObjectRevisions();
-    
-    List <ObjectRevision> or = getRepository().getRevisions(getObjectId());
-
-    for (ObjectRevision rev : or) {
-      revisions.add(new UIRepositoryObjectRevision(rev));
-    }
-    return revisions;
-  }
-  
-  protected void refreshRevisions() throws KettleException {
-    revisions = null;
-    getRevisions();
-  }
-
   // TODO: Remove references to the Kettle object RepositoryDirectory
   public RepositoryDirectory getRepositoryDirectory() {
     return (RepositoryDirectory) uiParent.getDirectory();
@@ -131,46 +104,12 @@ public abstract class UIRepositoryContent extends UIRepositoryObject implements 
     throw new UnsupportedOperationException();
   }
 
-  public void readAcls(UIRepositoryObjectAcls acls) throws AccessDeniedException{
-    try {
-      acls.setObjectAcl(((IAclManager)getRepositoryService()).getAcl(getObjectId(), false));
-    } catch(KettleException ke) {
-      throw new AccessDeniedException(ke);
-    }
-  }
-
-  public void setAcls(UIRepositoryObjectAcls security) throws AccessDeniedException{
-    try {
-      ((IAclManager)getRepositoryService()).setAcl(getObjectId(), security.getObjectAcl());
-    } catch (KettleException e) {
-      throw new AccessDeniedException(e);
-    }
-  }
-
   @Override
   public int getCategory() {
     return 20;
   }
   
-  public abstract void lock(String lockNote) throws KettleException;
-  
-  public abstract void unlock() throws KettleException;
-  
-  @Override
-  public String getLockMessage() throws KettleException {
-    return rc.getLockMessage();
-  }
-  
-  public abstract RepositoryLock getRepositoryLock() throws KettleException;
-  
-  public boolean isLocked() throws KettleException {
-    return false;
-  }
-  
-  
   public UIRepositoryDirectory getParent() {
     return uiParent;
   }
-  
-  public abstract void restoreVersion(UIRepositoryObjectRevision revision, String commitMessage) throws KettleException;
 }

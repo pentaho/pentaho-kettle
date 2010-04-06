@@ -26,8 +26,6 @@ public interface RepositoryElementInterface extends RepositoryElementLocationInt
 	public void setObjectId(ObjectId id);
 	public ObjectId getObjectId();
 			
-	public RepositoryLock getRepositoryLock();
-	
 	/**
 	 * Clears the changed flag
 	 */

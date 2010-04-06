@@ -91,7 +91,6 @@ import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryListener;
@@ -105,7 +104,6 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryLock;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -120,9 +118,7 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
-import org.pentaho.di.ui.spoon.ChangedWarningDialog;
 import org.pentaho.di.ui.spoon.AbstractGraph;
-import org.pentaho.di.ui.spoon.ChangedWarningInterface;
 import org.pentaho.di.ui.spoon.JobPainter;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -1990,12 +1986,6 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 			tipImage = GUIResource.getInstance().getImageParallelHop();
 			break;
 
-		case REPOSITORY_LOCK_IMAGE:
-			RepositoryLock lock = (RepositoryLock) areaOwner.getOwner();
-			tip.append(BaseMessages.getString(PKG, "JobGraph.Locked.Tooltip", Const.CR, lock.getLogin(), lock.getUsername(), lock.getMessage(), XMLHandler.date2string(lock.getLockDate())));
-			tipImage = GUIResource.getInstance().getImageLocked();
-			break;
-			
 		case JOB_ENTRY_MINI_ICON_INPUT:
 			tip.append(BaseMessages.getString(PKG, "JobGraph.EntryInputConnector.Tooltip"));
 			tipImage = GUIResource.getInstance().getImageHopInput();
