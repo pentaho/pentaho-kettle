@@ -15,6 +15,7 @@ package org.pentaho.di.core.plugins;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -306,7 +307,13 @@ public class PluginLoader
 	{
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document doc = db.parse(KettleVFS.getInputStream(xml));
+		InputStream xmlInputStream = KettleVFS.getInputStream(xml);
+		Document doc = null;
+		try {
+		  doc = db.parse( xmlInputStream );
+		} finally {
+		  xmlInputStream.close();
+		}
 		Node plugin = XMLHandler.getSubNode(doc, Plugin.PLUGIN);
 		String id = XMLHandler.getTagAttribute(plugin, Plugin.ID);
 		String description = XMLHandler.getTagAttribute(plugin, Plugin.DESCRIPTION);

@@ -1458,6 +1458,11 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.file.close();
 			}catch (Exception e){}
 		}
+		if (data.fr != null) {
+		  BaseStep.closeQuietly(data.fr);
+		  data.fr = null;
+		}
+		
 		super.dispose(smi, sdi);
 		
 		// This is for bug #5797 : it tries to assure that the file handle

@@ -16,6 +16,7 @@
 
 package org.pentaho.di.trans.step;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.text.DecimalFormat;
@@ -2976,5 +2977,17 @@ public class BaseStep extends Thread implements VariableSpace, StepInterface
 	public void setSocketRepository(SocketRepository socketRepository) {
 		this.socketRepository = socketRepository;
 	}
+	
+	 public static void closeQuietly(Closeable cl) {
+	    if (cl != null) {
+	      try {
+	        cl.close();
+	      } catch (IOException ignored) {
+	        // Ignore IOException on close
+	      }
+	    }
+	  }
+	  
+
 	
 }

@@ -242,6 +242,16 @@ public class ParGzipCsvInput extends BaseStep implements StepInterface
 		logBasic(Messages.getString("ParGzipCsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length)));
 	}
 
+	 public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+	 {
+	   try {
+	     closeFile(); // close the final file
+	   } catch (Exception ignored) {
+	     // Exceptions on stream / file closing should be ignored.
+	   }
+	   super.dispose(smi, sdi);
+	 }
+	
 	private boolean openNextFile() throws KettleException {
 		try {
 			

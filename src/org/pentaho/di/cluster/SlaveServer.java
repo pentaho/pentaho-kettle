@@ -479,60 +479,69 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         // Request content will be retrieved directly from the input stream
         // 
     	FileObject fileObject = KettleVFS.getFileObject(filename);
-        RequestEntity entity = new InputStreamRequestEntity(KettleVFS.getInputStream(fileObject));
-        
-        putMethod.setRequestEntity(entity);
-        putMethod.setDoAuthentication(true);
-        putMethod.addRequestHeader(new Header("Content-Type", "binary/zip"));
-    	
-        // Get HTTP client
-        // 
-        HttpClient client = new HttpClient();
-        addCredentials(client);
-        
-        // Execute request
-        // 
-        try
-        {
-            int result = client.executeMethod(putMethod);
-            
-            // The status code
-            log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
-            
-            // the response
-            InputStream inputStream = new BufferedInputStream(putMethod.getResponseBodyAsStream(), 1000);
-            
-            StringBuffer bodyBuffer = new StringBuffer();
-            int c;
-            while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
-            inputStream.close();
-            String bodyTmp = bodyBuffer.toString();
-            
-            switch(result)
-            {
-            case 401: // Security problem: authentication required
-              // Non-internationalized message
-                String message = "Authentication failed"+Const.DOSCR+Const.DOSCR+bodyTmp; //$NON-NLS-1$
-                WebResult webResult = new WebResult(WebResult.STRING_ERROR, message);
-                bodyBuffer.setLength(0);
-                bodyBuffer.append(webResult.getXML());
-                break;
-            }
-
-            String body = bodyBuffer.toString();
-            
-
-            // String body = post.getResponseBodyAsString(); 
-            log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
-            
-            return body;
-        }
-        finally
-        {
-            // Release current connection to the connection pool once you are done
-            putMethod.releaseConnection();
-            log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
-        }
+    	InputStream fileInputStream = KettleVFS.getInputStream(fileObject);
+    	try {
+          RequestEntity entity = new InputStreamRequestEntity(fileInputStream);
+          
+          putMethod.setRequestEntity(entity);
+          putMethod.setDoAuthentication(true);
+          putMethod.addRequestHeader(new Header("Content-Type", "binary/zip"));
+      	
+          // Get HTTP client
+          // 
+          HttpClient client = new HttpClient();
+          addCredentials(client);
+          
+          // Execute request
+          // 
+          try
+          {
+              int result = client.executeMethod(putMethod);
+              
+              // The status code
+              log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+              
+              // the response
+              InputStream inputStream = new BufferedInputStream(putMethod.getResponseBodyAsStream(), 1000);
+              
+              StringBuffer bodyBuffer = new StringBuffer();
+              int c;
+              while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
+              inputStream.close();
+              String bodyTmp = bodyBuffer.toString();
+              
+              switch(result)
+              {
+              case 401: // Security problem: authentication required
+                // Non-internationalized message
+                  String message = "Authentication failed"+Const.DOSCR+Const.DOSCR+bodyTmp; //$NON-NLS-1$
+                  WebResult webResult = new WebResult(WebResult.STRING_ERROR, message);
+                  bodyBuffer.setLength(0);
+                  bodyBuffer.append(webResult.getXML());
+                  break;
+              }
+  
+              String body = bodyBuffer.toString();
+              
+  
+              // String body = post.getResponseBodyAsString(); 
+              log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+              
+              return body;
+          }
+          finally
+          {
+              // Release current connection to the connection pool once you are done
+              putMethod.releaseConnection();
+              log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
+          }
+    	} finally {
+    	  try {
+    	    fileInputStream.close();
+    	  } catch (IOException ignored) {
+    	    // Ignore close exceptions
+    	  }
+    	}
     }
 
     public void addCredentials(HttpClient client)

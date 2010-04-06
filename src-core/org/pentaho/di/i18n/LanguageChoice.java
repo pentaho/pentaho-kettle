@@ -97,7 +97,16 @@ public class LanguageChoice
     private void loadSettings() throws IOException
     {
         Properties properties = new Properties();
-        properties.load(new FileInputStream(getSettingsFilename()));
+        FileInputStream fis = new FileInputStream(getSettingsFilename());
+        try {
+          properties.load(fis);
+        } finally {
+          try {
+            fis.close();
+          } catch (IOException ignored) {
+            // Ignore closure exceptions
+          }
+        }
         defaultLocale  = new Locale( properties.getProperty(STRING_DEFAULT_LOCALE,  Const.DEFAULT_LOCALE.toString()) );
         failoverLocale = new Locale( properties.getProperty(STRING_FAILOVER_LOCALE, "en_US") );
     }

@@ -273,32 +273,35 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 						if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSQL.SQLFileExists",realfilename));
 						
 						InputStream IS = KettleVFS.getInputStream(SQLfile);
-						InputStreamReader BIS = new InputStreamReader(new BufferedInputStream(IS, 500));
-						
-						StringBuffer lineStringBuffer = new StringBuffer(256);
-						lineStringBuffer.setLength(0);
-						
-						BufferedReader buff = new BufferedReader(BIS);
-						String sLine = null;
-						String SFullLine=Const.CR;;
-
-						while((sLine=buff.readLine())!=null) 
-						{
-							if(Const.isEmpty(sLine))
-							{
-								SFullLine= SFullLine +  Const.CR;	
-							}
-							else
-							{
-								SFullLine=SFullLine+  Const.CR + sLine;
-							}
-						}
-						
-						if(!Const.isEmpty(SFullLine))
-						{
-							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSQL.Log.SQlStatement",SFullLine));
-							db.execStatements(SFullLine);
-						}
+						try {
+  						InputStreamReader BIS = new InputStreamReader(new BufferedInputStream(IS, 500));
+  						
+  						StringBuffer lineStringBuffer = new StringBuffer(256);
+  						lineStringBuffer.setLength(0);
+  						
+  						BufferedReader buff = new BufferedReader(BIS);
+  						String sLine = null;
+  						String SFullLine=Const.CR;;
+  
+  						while((sLine=buff.readLine())!=null) 
+  						{
+  							if(Const.isEmpty(sLine))
+  							{
+  								SFullLine= SFullLine +  Const.CR;	
+  							}
+  							else
+  							{
+  								SFullLine=SFullLine+  Const.CR + sLine;
+  							}
+  						}
+  						if(!Const.isEmpty(SFullLine))
+  						{
+  							if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("JobSQL.Log.SQlStatement",SFullLine));
+  							db.execStatements(SFullLine);
+  						}
+            } finally {
+              IS.close();
+            }
 					}catch (Exception e)
 					{
 						throw new KettleDatabaseException(Messages.getString("JobSQL.ErrorRunningSQLfromFile"),e);

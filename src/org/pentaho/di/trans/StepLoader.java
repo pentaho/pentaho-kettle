@@ -13,6 +13,7 @@ package org.pentaho.di.trans;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -364,8 +365,16 @@ public class StepLoader implements LoaderInputStreamProvider
 		                        /*
 		                         * Now read the xml file containing the jars etc.
 		                         */
-
-		            			readPluginFromResource( new FileInputStream(fpixml), pi.getPath(), dirs[i], StepPlugin.TYPE_PLUGIN );
+		                      FileInputStream fpixmlInputStream = new FileInputStream(fpixml);
+		                      try {
+		                        readPluginFromResource( fpixmlInputStream, pi.getPath(), dirs[i], StepPlugin.TYPE_PLUGIN );
+		                      } finally {
+		                        try {
+		                          fpixmlInputStream.close();
+		                        } catch (IOException ignored) {
+		                          // Nothing to do on an exception during close
+		                        }
+		                      }
 		                    }
 		                    else
 		                    {

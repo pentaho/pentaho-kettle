@@ -327,15 +327,22 @@ public class PropertyInput extends BaseStep implements StepInterface
 
 			 File f = new File(KettleVFS.getFilename(data.file));
 			 FileInputStream in = new FileInputStream(f);
+			 try { 
 	         data.pro.load(in);
-	         
-	         if (log.isDetailed()) 
-	         {
-	        	 logDetailed(Messages.getString("PropertyInput.Log.FileOpened", data.file.toString()));
-	        	 logDetailed(Messages.getString("PropertyInput.log.TotalKey", ""+data.pro.keySet().size(),KettleVFS.getFilename(data.file)));
-	         } 
+			 } finally {
+			   try {
+			     in.close();
+			   } catch (Exception ignored) {
+			     // No respone to close exception
+			   }
+			 }
+       if (log.isDetailed()) 
+       {
+      	 logDetailed(Messages.getString("PropertyInput.Log.FileOpened", data.file.toString()));
+      	 logDetailed(Messages.getString("PropertyInput.log.TotalKey", ""+data.pro.keySet().size(),KettleVFS.getFilename(data.file)));
+       } 
 
-	         data.it = data.pro.keySet().iterator();
+       data.it = data.pro.keySet().iterator();
 		}
 		catch(Exception e)
 		{

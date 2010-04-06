@@ -172,27 +172,36 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
         throws IOException
     {
    	    // Really read the contents and do comparisons
-
-        DataInputStream in1 = new DataInputStream(new BufferedInputStream(
-            		                                       KettleVFS.getInputStream(KettleVFS.getFilename(file1), this)));
-        DataInputStream in2 = new DataInputStream(new BufferedInputStream(
-            		                                       KettleVFS.getInputStream(KettleVFS.getFilename(file2), this)));
-
-        char ch1, ch2;
-        while ( in1.available() != 0 && in2.available() != 0 )
-        {
-          	ch1 = (char)in1.readByte();
-       		ch2 = (char)in2.readByte();
-       		if ( ch1 != ch2 )
-       			return false;
-        }
-        if ( in1.available() != in2.available() )
-        {
-          	return false;
-        }
-        else
-        {
-          	return true;
+        DataInputStream in1 = null;
+        DataInputStream in2 = null;
+        try {
+          in1 = new DataInputStream(new BufferedInputStream(
+                                                       KettleVFS.getInputStream(KettleVFS.getFilename(file1), this)));
+          in2 = new DataInputStream(new BufferedInputStream(
+                                                       KettleVFS.getInputStream(KettleVFS.getFilename(file2), this)));
+          char ch1, ch2;
+          while ( in1.available() != 0 && in2.available() != 0 )
+          {
+            	ch1 = (char)in1.readByte();
+         		ch2 = (char)in2.readByte();
+         		if ( ch1 != ch2 )
+         			return false;
+          }
+          if ( in1.available() != in2.available() )
+          {
+            	return false;
+          }
+          else
+          {
+            	return true;
+          }
+        } finally {
+          if (in1 != null) {
+            in1.close();
+          }
+          if (in2 != null) {
+            in2.close();
+          }
         }
    	}
 

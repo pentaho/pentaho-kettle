@@ -27,6 +27,7 @@ import org.dom4j.Namespace;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.AbstractNode;
+import java.io.InputStream;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -133,7 +134,12 @@ public class GetXMLData extends BaseStep implements StepInterface
 				// get encoding. By default UTF-8
 				String encoding="UTF-8";
 				if (!Const.isEmpty(meta.getEncoding())) encoding=meta.getEncoding();
-				data.document = reader.read( KettleVFS.getInputStream(file),encoding);		
+				InputStream is = KettleVFS.getInputStream(file);
+				try {
+				  data.document = reader.read( is, encoding);
+				} finally {
+          BaseStep.closeQuietly(is);
+				}
 			}
 
 			if(meta.isNamespaceAware())	prepareNSMap(data.document.getRootElement());	    

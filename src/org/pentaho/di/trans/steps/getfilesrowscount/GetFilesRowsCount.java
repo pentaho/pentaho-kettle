@@ -113,6 +113,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		 return true;
 	
 	}		
+
 	private void getRowNumber() throws KettleException
 	{
 		try
@@ -120,27 +121,29 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 			if (data.file.getType() == FileType.FILE)
 			{
 				data.fr = KettleVFS.getInputStream(data.file);
-				data.isr = new InputStreamReader(new BufferedInputStream(data.fr, BUFFER_SIZE_INPUT_STREAM));
-					
-				int c = 0;				
-				data.lineStringBuffer.setLength(0);
-				
-				 while (c >= 0)
-		         {
-				     c = data.isr.read();
-		
-		             if (c == data.separator)
-		             {
-		                 // Move Row number pointer ahead
-		               	 data.rownr ++;	
-					 }	                        
-		         }
+				// Avoid method calls - see here:
+				// http://java.sun.com/developer/technicalArticles/Programming/PerfTuning/
+				byte buf[] = new byte[8192]; // BufferedaInputStream default buffer size
+        int n;
+        while ((n = data.fr.read(buf)) != -1) {
+          for (int i = 0; i < n; i++) {
+            if (buf[i] == data.separator) {
+              data.rownr++;
+            }
+          }
+        }
 			}
 			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetFilesRowsCount.Log.RowsInFile", data.file.toString(), ""+data.rownr));
 		}
 		catch (Exception e)
 		{
 			throw new KettleException(e);
+		} finally {
+		  // Close inputstream - not used except for counting
+		  if (data.fr != null) {
+		    BaseStep.closeQuietly(data.fr);
+		    data.fr = null;
+		  }
 		}
 	  
 	}
@@ -326,26 +329,11 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 			{
 			}
 		}
-		if(data.is!=null) 
-		{
-			try
-			{
-				data.is.close();
-				data.is=null;
-			}catch  (Exception e)
-			{
-			}
+		if (data.fr != null) {
+		  BaseStep.closeQuietly(data.fr);
+		  data.fr = null;
 		}
-		if(data.isr!=null) 
-		{
-			try
-			{
-				data.isr.close();
-				data.isr=null;
-			}catch  (Exception e)
-			{
-			}
-		}
+
 		if(data.lineStringBuffer!=null) data.lineStringBuffer=null;
 
 		super.dispose(smi, sdi);

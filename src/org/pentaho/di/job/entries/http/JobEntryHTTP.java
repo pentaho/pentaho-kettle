@@ -443,18 +443,23 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           uploadStream = connection.getOutputStream();
 
           fileStream = new BufferedInputStream(new FileInputStream(new File(realUploadFilename)));
-
-          int c;
-          while ((c = fileStream.read()) >= 0)
-          {
-            uploadStream.write(c);
+          try {
+            int c;
+            while ((c = fileStream.read()) >= 0)
+            {
+              uploadStream.write(c);
+            }
+          } finally {
+            try {
+              fileStream.close();
+            } catch (IOException ignored) {
+              // Nothing to do here.
+            }
+            fileStream = null;
           }
-
           // Close upload and file
           uploadStream.close();
           uploadStream = null;
-          fileStream.close();
-          fileStream = null;
 
           if(log.isDetailed()) log.logDetailed(toString(), "Finished sending content to server.");
         }

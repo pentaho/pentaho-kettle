@@ -356,7 +356,16 @@ public class Props implements Cloneable
 	{
 		try
 		{
-			properties.load(new FileInputStream(filename));
+		  FileInputStream fis = new FileInputStream(filename);
+		  try {
+		    properties.load(fis);
+		  } finally {
+		    try {
+		      fis.close();
+		    } catch (IOException ignored) {
+		      // Ignore close exception
+		    }
+		  }
 		}
 		catch(Exception e)
 		{
