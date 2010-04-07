@@ -259,14 +259,16 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 	            }
 	            else
 	            {
-		            if (meta.getRowSeparatorFormat().equals("CR"))
+	              // Checking for 'LF' for backwards compatibility.
+		            if (meta.getRowSeparatorFormat().equals("CARRIAGERETURN") || meta.getRowSeparatorFormat().equals("LF"))
 		    		{
-		    			data.separator='\n';
+		    			data.separator='\r';
 		    			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
 		    		}
-		            else if (meta.getRowSeparatorFormat().equals("LF"))
+		            // Checking for 'CR' for backwards compatibility.
+		            else if (meta.getRowSeparatorFormat().equals("LINEFEED") || meta.getRowSeparatorFormat().equals("CR"))
 		    		{
-		            	data.separator='\r';
+		            	data.separator='\n';
 		    			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
 		    		}
 		            else if (meta.getRowSeparatorFormat().equals("TAB"))

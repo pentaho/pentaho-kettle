@@ -976,11 +976,13 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		if (in.getRowSeparatorFormat()!=null)
 		{
-			if (in.getRowSeparatorFormat().equals("CR"))
+		  // Checking for 'CR' for backwards compatibility
+			if (in.getRowSeparatorFormat().equals("CARRIAGERETURN") || in.getRowSeparatorFormat().equals("CR"))
 			{
 				wRowSeparatorFormat.select(0);
 			}
-			else if (in.getRowSeparatorFormat().equals("LF"))
+			// Checking for 'LF' for backwards compatibility
+			else if (in.getRowSeparatorFormat().equals("LINEFEED") || in.getRowSeparatorFormat().equals("LF"))
 			{
 				wRowSeparatorFormat.select(1);
 			}
@@ -1045,11 +1047,11 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		
 		if (wRowSeparatorFormat.getSelectionIndex()==0)
 		{
-			in.setRowSeparatorFormat("CR");
+			in.setRowSeparatorFormat("CARRIAGERETURN");
 		}
 		else if (wRowSeparatorFormat.getSelectionIndex()==1)
 		{
-			in.setRowSeparatorFormat("LF");
+			in.setRowSeparatorFormat("LINEFEED");
 		}
 
 		else if (wRowSeparatorFormat.getSelectionIndex()==2)
