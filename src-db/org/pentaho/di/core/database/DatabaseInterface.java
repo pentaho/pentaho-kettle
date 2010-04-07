@@ -50,14 +50,6 @@ public interface DatabaseInterface extends Cloneable
 	public void setPluginName(String pluginName);
 	
 	/**
-	 * 
-	 * @return The database type
-	 */
-	@Deprecated
-	public int getDatabaseType();
-	
-
-	/**
 	 * @return Returns the accessType.
 	 */
 	public int getAccessType();

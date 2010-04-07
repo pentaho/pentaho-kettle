@@ -61,15 +61,6 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		}
 	}
   
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_SYBASEIQ;
-  }
-	
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)

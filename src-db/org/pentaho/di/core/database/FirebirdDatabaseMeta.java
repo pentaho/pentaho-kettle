@@ -55,15 +55,6 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 			return "org.firebirdsql.jdbc.FBDriver";
 		}
 	}
-	
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_FIREBIRD;
-  }
 
     public String getURL(String hostname, String port, String databaseName)
     {

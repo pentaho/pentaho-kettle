@@ -50,15 +50,6 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
         }
 
 	}
-
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_H2;
-  }
     
     public String getURL(String hostname, String port, String databaseName)
     {

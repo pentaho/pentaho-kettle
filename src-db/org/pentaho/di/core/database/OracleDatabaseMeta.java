@@ -98,16 +98,6 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 			return "oracle.jdbc.driver.OracleDriver";
 		}
 	}
-  
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_ORACLE;
-  }
-
 
 	
     public String getURL(String hostname, String port, String databaseName) throws KettleDatabaseException

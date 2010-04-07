@@ -60,13 +60,6 @@ public class SybaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		}
 	}
   
-  /**
-   * @return Returns the databaseType.
-   */
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_SYBASE;
-  }
 	
     public String getURL(String hostname, String port, String databaseName)
     {

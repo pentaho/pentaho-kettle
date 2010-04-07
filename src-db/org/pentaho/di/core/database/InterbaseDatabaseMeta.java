@@ -55,15 +55,6 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 			return "interbase.interclient.Driver";
 		}
 	}
-	
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_INTERBASE;
-  }
 
 	public String getURL(String hostname, String port, String databaseName)
 	{

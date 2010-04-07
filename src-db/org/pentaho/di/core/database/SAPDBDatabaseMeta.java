@@ -67,15 +67,6 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		    return "jdbc:sapdb://"+hostname+"/"+databaseName;
 		}
 	}
-    
-    /**
-     * @return Returns the databaseType.
-     */
-    @Deprecated
-    public int getDatabaseType()
-    {
-      return DatabaseMeta.TYPE_DATABASE_SAPDB;
-    }
 
 	/**
 	 * @return true if the database supports bitmap indexes

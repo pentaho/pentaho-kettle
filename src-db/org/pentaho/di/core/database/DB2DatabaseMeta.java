@@ -52,16 +52,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 			return "com.ibm.db2.jcc.DB2Driver";
 		}
 	}
-  
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_DB2;
-  }
-
+	
     public String getURL(String hostname, String port, String databaseName)
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)

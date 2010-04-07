@@ -66,15 +66,6 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		}
 	}
   
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_NETEZZA;
-  }
-  
     public String getURL(String hostname, String port, String databaseName)
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)

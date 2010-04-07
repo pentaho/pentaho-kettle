@@ -54,15 +54,6 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         }
 
 	}
-
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_MONETDB;
-  }
   
     public String getURL(String hostname, String port, String databaseName)
     {

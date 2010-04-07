@@ -47,15 +47,6 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 			return "com.ingres.jdbc.IngresDriver";
 		}
 	}
-
-  /**
-   * @return Returns the databaseType.
-   */
-	@Deprecated
-  public int getDatabaseType()
-  {
-    return DatabaseMeta.TYPE_DATABASE_INGRES;
-  }
     
     public String getURL(String hostname, String port, String databaseName)
     {
