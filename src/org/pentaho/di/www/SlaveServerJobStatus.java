@@ -31,6 +31,7 @@ public class SlaveServerJobStatus
     public static final String XML_TAG = "jobstatus";
     
     private String jobName;
+    private String id;
     private String statusDescription;
     private String errorDescription;
     private String loggingString;
@@ -47,10 +48,11 @@ public class SlaveServerJobStatus
      * @param transName
      * @param statusDescription
      */
-    public SlaveServerJobStatus(String transName, String statusDescription)
+    public SlaveServerJobStatus(String transName, String id, String statusDescription)
     {
         this();
         this.jobName = transName;
+        this.id = id;
         this.statusDescription = statusDescription;
     }
     
@@ -60,6 +62,7 @@ public class SlaveServerJobStatus
         
         xml.append("<"+XML_TAG+">").append(Const.CR);
         xml.append(XMLHandler.addTagValue("jobname", jobName));                
+        xml.append(XMLHandler.addTagValue("id", id));                
         xml.append(XMLHandler.addTagValue("status_desc", statusDescription));                
         xml.append(XMLHandler.addTagValue("error_desc", errorDescription));          
         
@@ -86,6 +89,7 @@ public class SlaveServerJobStatus
     {
         this();
         jobName = XMLHandler.getTagValue(jobStatusNode, "jobname");
+        id = XMLHandler.getTagValue(jobStatusNode, "id");
         statusDescription = XMLHandler.getTagValue(jobStatusNode, "status_desc");
         errorDescription = XMLHandler.getTagValue(jobStatusNode, "error_desc");
         
@@ -251,5 +255,19 @@ public class SlaveServerJobStatus
 	 */
 	public void setLastLoggingLineNr(int lastLoggingLineNr) {
 		this.lastLoggingLineNr = lastLoggingLineNr;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(String id) {
+		this.id = id;
 	}
 }

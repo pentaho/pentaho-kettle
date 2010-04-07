@@ -52,6 +52,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -91,10 +92,8 @@ public class SpoonSlave extends Composite implements TabItemInterface
 	private Shell shell;
 	private Display display;
     private SlaveServer slaveServer;
-    private Map<String, Integer> lastLineTransMap;
-    private Map<String, Integer> lastLineJobMap;
-    private Map<String, String> transLoggingMap;
-    private Map<String, String> jobLoggingMap;
+    private Map<String, Integer> lastLineMap;
+    private Map<String, String> loggingMap;
     
     private Spoon spoon;
 
@@ -102,10 +101,12 @@ public class SpoonSlave extends Composite implements TabItemInterface
 
 	private Tree wTree;
 	private Text wText;
-
+	
 	private Button wError;
     private Button wStart;
+    private Button wPause;
     private Button wStop;
+    private Button wRemove;
     private Button wSniff;
     private Button wRefresh;
 
@@ -121,6 +122,38 @@ public class SpoonSlave extends Composite implements TabItemInterface
 	private TreeItem jobParentItem;
 
 	private LogChannelInterface	log;
+	
+	private class TreeEntry {
+		String itemType; // Transformation or Job
+		String name;
+		String status;
+		String id;
+		int length;
+		
+		public TreeEntry(TreeItem treeItem) {
+            String[] path = ConstUI.getTreeStrings(treeItem);
+            this.length = path.length;
+            if (path.length>0) {
+	            itemType = path[0];
+            }
+            if (path.length>1) {
+	            name = path[1];
+            }
+            if (path.length==3) {
+            	treeItem = treeItem.getParentItem();
+            }
+            status = treeItem.getText(9);
+            id = treeItem.getText(13);
+		}
+		
+		boolean isTransformation() { return itemType.equals(transParentItem.getText()); }
+		boolean isJob() { return itemType.equals(jobParentItem.getText()); }
+		boolean isRunning() { return Trans.STRING_RUNNING.equals(status); }
+		boolean isStopped() { return Trans.STRING_STOPPED.equals(status); }
+		boolean isFinished() { return Trans.STRING_FINISHED.equals(status); }
+		boolean isPaused() { return Trans.STRING_PAUSED.equals(status); }
+		boolean isWaiting() { return Trans.STRING_WAITING.equals(status); }
+	}
 
 	public SpoonSlave(Composite parent, int style, final Spoon spoon, SlaveServer slaveServer)
 	{
@@ -131,10 +164,8 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		this.slaveServer = slaveServer;
 		this.log = spoon.getLog();
 
-		lastLineTransMap = new HashMap<String, Integer>();
-		transLoggingMap = new HashMap<String, String>();
-		lastLineJobMap = new HashMap<String, Integer>();
-		jobLoggingMap = new HashMap<String, String>();
+		lastLineMap = new HashMap<String, Integer>();
+		loggingMap = new HashMap<String, String>();
 		
 		FormLayout formLayout = new FormLayout();
 		formLayout.marginWidth = Const.FORM_MARGIN;
@@ -163,6 +194,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+				new ColumnInfo(BaseMessages.getString(PKG, "SpoonSlave.Column.CarteObjectId"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 		};
 
 		colinf[1].setAllignement(SWT.RIGHT);
@@ -192,16 +224,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
         wTree.addSelectionListener(new SelectionAdapter() {
         	@Override
         	public void widgetSelected(SelectionEvent e) {
-                TreeItem ti[] = wTree.getSelection();
-                if (ti.length==1)
-                {
-                    TreeItem treeItem = ti[0];
-                    String[] path = ConstUI.getTreeStrings(treeItem);
-                    
-                    // Make sure we're positioned on a step
-                    //
-                    wSniff.setEnabled(path.length>2);
-                }
+        		enableButtons();
         	}
 		});
 
@@ -246,12 +269,22 @@ public class SpoonSlave extends Composite implements TabItemInterface
         wStart.setEnabled(false);
         wStart.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { start(); } });
 
+        wPause= new Button(this, SWT.PUSH);
+        wPause.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.Pause"));
+        wPause.setEnabled(false);
+        wPause.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { pause(); } });
+
         wStop= new Button(this, SWT.PUSH);
         wStop.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.Stop"));
         wStop.setEnabled(false);
         wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stop(); } });
 
-        BaseStepDialog.positionBottomButtons(this, new Button[] { wRefresh, wSniff, wStart, wStop, wError }, Const.MARGIN, null);
+        wRemove= new Button(this, SWT.PUSH);
+        wRemove.setText(BaseMessages.getString(PKG, "SpoonSlave.Button.Remove"));
+        wRemove.setEnabled(false);
+        wRemove.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { remove(); } });
+
+        BaseStepDialog.positionBottomButtons(this, new Button[] { wRefresh, wSniff, wStart, wPause, wStop, wRemove, wError }, Const.MARGIN, null);
         
         // Put tree on top
         fdTree = new FormData();
@@ -306,7 +339,26 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { timer.cancel(); } } );
 	}
     
-    protected void refreshViewAndLog()
+    protected void enableButtons() {
+    	TreeEntry treeEntry = getTreeEntry();
+    	boolean isTrans = treeEntry!=null && treeEntry.isTransformation();
+    	boolean isJob = treeEntry!=null && treeEntry.isJob();
+    	boolean hasId = treeEntry!=null && !Const.isEmpty(treeEntry.id);
+    	boolean isRunning = treeEntry!=null && treeEntry.isRunning();
+    	boolean isStopped = treeEntry!=null && treeEntry.isStopped();
+    	boolean isFinished = treeEntry!=null && treeEntry.isFinished();
+    	boolean isPaused = treeEntry!=null && treeEntry.isPaused();
+    	boolean isWaiting = treeEntry!=null && treeEntry.isWaiting();
+    	boolean isStep = treeEntry!=null && treeEntry.length==3;
+    	
+		wStart.setEnabled((isTrans||isJob) && hasId && !isRunning && (isFinished || isStopped || isWaiting)  );
+		wPause.setEnabled(isTrans && hasId && (isRunning || isPaused));
+		wStop.setEnabled((isTrans||isJob) && hasId && (isRunning || isPaused));
+		wRemove.setEnabled((isTrans||isJob) && hasId && (isFinished || isStopped || isWaiting));
+		wSniff.setEnabled(isTrans && hasId && isRunning && isStep);
+	}
+
+	protected void refreshViewAndLog()
     {
         String[] selectionPath = null;
         if (wTree.getSelectionCount()==1)
@@ -341,199 +393,258 @@ public class SpoonSlave extends Composite implements TabItemInterface
      */
     public void showLog()
     {
-        boolean stopEnabled=false;
-        TreeItem ti[] = wTree.getSelection();
-        if (ti.length==1)
+    	TreeEntry treeEntry = getTreeEntry();
+    	if (treeEntry==null) return;
+
+        if (treeEntry.length<=1) return;
+        	
+        if (treeEntry.isTransformation()) 
         {
-        	TreeItem treeItem = ti[0];
-        	String[] path = ConstUI.getTreeStrings(treeItem);
-        	
-        	if (path.length<=1) {
-        		return;
-        	}
-        	
-            if (path[0].equals(transParentItem.getText())) 
-            {
-            	// It's a transformation that we clicked on...
-            	//
-            	SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(path[1]);
-                stopEnabled = transStatus.isRunning();
-                
-                StringBuffer message = new StringBuffer();
-                String errorDescription = transStatus.getErrorDescription();
-                if (!Const.isEmpty(errorDescription))
-                {
-                    message.append(errorDescription).append(Const.CR).append(Const.CR);
-                }
+        	SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(treeEntry.name, treeEntry.id);
+	        StringBuffer message = new StringBuffer();
+	        String errorDescription = transStatus.getErrorDescription();
+	        if (!Const.isEmpty(errorDescription))
+	        {
+	            message.append(errorDescription).append(Const.CR).append(Const.CR);
+	        }
+	
+	        String logging = loggingMap.get(transStatus.getId());
+	        if (!Const.isEmpty(logging))
+	        {
+	            message.append(logging).append(Const.CR);
+	        }
+	            
+	        wText.setText(message.toString());
+	        wText.setSelection(wText.getText().length());
+	        wText.showSelection();
+	        // wText.setTopIndex(wText.getLineCount());
+	    }
 
-                String logging = transLoggingMap.get(transStatus.getTransName());
-                if (!Const.isEmpty(logging))
-                {
-                    message.append(logging).append(Const.CR);
-                }
-                    
-                wText.setText(message.toString());
-                wText.setSelection(wText.getText().length());
-                wText.showSelection();
-                // wText.setTopIndex(wText.getLineCount());
-            }
-
-            if (path[0].equals(jobParentItem.getText()))
+        if (treeEntry.isJob())
+        {
+        	// We clicked on a job line item
+        	//
+        	SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name);
+            StringBuffer message = new StringBuffer();
+            String errorDescription = jobStatus.getErrorDescription();
+            if (!Const.isEmpty(errorDescription))
             {
-            	// We clicked on a job line item
-            	//
-            	SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(path[1]);
-                stopEnabled = jobStatus.isRunning();
-                
-                StringBuffer message = new StringBuffer();
-                String errorDescription = jobStatus.getErrorDescription();
-                if (!Const.isEmpty(errorDescription))
-                {
-                    message.append(errorDescription).append(Const.CR).append(Const.CR);
-                }
-                
-                String logging = jobLoggingMap.get(jobStatus.getJobName());
-                if (!Const.isEmpty(logging))
-                {
-                    message.append(logging).append(Const.CR);
-                }
-                    
-                wText.setText(message.toString());
-                wText.setSelection(wText.getText().length());
-                wText.showSelection();
-                // wText.setTopIndex(wText.getLineCount());
+                message.append(errorDescription).append(Const.CR).append(Const.CR);
             }
+            
+            String logging = loggingMap.get(jobStatus.getId());
+            if (!Const.isEmpty(logging))
+            {
+                message.append(logging).append(Const.CR);
+            }
+                
+            wText.setText(message.toString());
+            wText.setSelection(wText.getText().length());
+            wText.showSelection();
         }
-        wStop.setEnabled(stopEnabled);
-        wStart.setEnabled(!stopEnabled);
     }
     
     
     protected void start()
     {
+    	TreeEntry treeEntry = getTreeEntry();
+    	if (treeEntry==null) return;
+
+        if (treeEntry.isTransformation()) 
+        {
+        	SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(treeEntry.name, treeEntry.id);
+        	if (transStatus!=null)
+        	{
+        		if (!transStatus.isRunning())
+        		{
+        			try
+        			{
+        				WebResult webResult = slaveServer.startTransformation(treeEntry.name, transStatus.getId());
+        				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+        				{
+        					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Message"), webResult.getMessage());
+        					dialog.setReadOnly();
+        					dialog.open();
+        				}
+        			}
+        			catch(Exception e)
+        			{
+        				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Message"), e);
+        			}
+        		}
+        	}
+        }
+        
+        if (treeEntry.isJob()) 
+        {
+        	SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name);
+        	if (jobStatus!=null)
+        	{
+        		if (!jobStatus.isRunning())
+        		{
+        			try
+        			{
+        				WebResult webResult = slaveServer.startJob(treeEntry.name, treeEntry.id);
+        				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+        				{
+        					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Message"), webResult.getMessage());
+        					dialog.setReadOnly();
+        					dialog.open();
+        				}
+        			}
+        			catch(Exception e)
+        			{
+        				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Message"), e);
+        			}
+        		}
+        	}
+        }
+    }
+    
+    private TreeEntry getTreeEntry() {
         TreeItem ti[] = wTree.getSelection();
         if (ti.length==1)
         {
-            TreeItem treeItem = ti[0];
-            String[] path = ConstUI.getTreeStrings(treeItem);
-            if (path.length<=1) {
-            	return;
-            }
-            
-            if (path[0].equals(transParentItem.getText())) 
-            {
-            	SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(path[1]);
-            	if (transStatus!=null)
-            	{
-            		if (!transStatus.isRunning())
-            		{
-            			try
-            			{
-            				WebResult webResult = slaveServer.startTransformation(path[1]);
-            				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-            				{
-            					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Message"), webResult.getMessage());
-            					dialog.setReadOnly();
-            					dialog.open();
-            				}
-            			}
-            			catch(Exception e)
-            			{
-            				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingTrans.Message"), e);
-            			}
-            		}
-            	}
-            }
-            
-            if (path[0].equals(jobParentItem.getText())) 
-            {
-            	SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(path[1]);
-            	if (jobStatus!=null)
-            	{
-            		if (!jobStatus.isRunning())
-            		{
-            			try
-            			{
-            				WebResult webResult = slaveServer.startJob(path[1]);
-            				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-            				{
-            					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Message"), webResult.getMessage());
-            					dialog.setReadOnly();
-            					dialog.open();
-            				}
-            			}
-            			catch(Exception e)
-            			{
-            				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Message"), e);
-            			}
-            		}
-            	}
-            }
+            TreeEntry treeEntry = new TreeEntry(ti[0]);
+            if (treeEntry.length<=1) return null;
+            return treeEntry;
+        }
+        else 
+        {
+        	return null;
         }
     }
 
     protected void stop()
     {
-        TreeItem ti[] = wTree.getSelection();
-        if (ti.length==1)
+    	TreeEntry treeEntry = getTreeEntry();
+    	if (treeEntry==null) return;
+
+    	// Transformations
+    	//
+        if (treeEntry.isTransformation()) 
         {
-            TreeItem treeItem = ti[0];
-            String[] path = ConstUI.getTreeStrings(treeItem);
-            if (path.length<=1) {
-            	return;
-            }
-            
-            String name = path[1];
-            
-            if (path[0].equals(transParentItem.getText())) 
-            {
-            	SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(name);
-            	if (transStatus!=null)
-            	{
-            		if (transStatus.isRunning())
-            		{
-            			try
-            			{
-            				WebResult webResult = slaveServer.stopTransformation(name);
-            				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-            				{
-            					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Message"), webResult.getMessage());
-            					dialog.setReadOnly();
-            					dialog.open();
-            				}
-            			}
-            			catch(Exception e)
-            			{
-            				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Message"), e);
-            			}
-            		}
-            	}
-            }
-            
-            if (path[0].equals(jobParentItem.getText())) 
-            {
-            	SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(name);
-            	if (jobStatus!=null)
-            	{
-            		if (jobStatus.isRunning())
-            		{
-            			try
-            			{
-            				WebResult webResult = slaveServer.stopJob(name);
-            				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-            				{
-            					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Message"), webResult.getMessage());
-            					dialog.setReadOnly();
-            					dialog.open();
-            				}
-            			}
-            			catch(Exception e)
-            			{
-            				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Message"), e);
-            			}
-            		}
-            	}
-            }
+        	SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(treeEntry.name, treeEntry.id);
+        	if (transStatus!=null)
+        	{
+        		if (transStatus.isRunning() || transStatus.isPaused())
+        		{
+        			try
+        			{
+        				WebResult webResult = slaveServer.stopTransformation(treeEntry.name, transStatus.getId());
+        				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+        				{
+        					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Message"), webResult.getMessage());
+        					dialog.setReadOnly();
+        					dialog.open();
+        				}
+        			}
+        			catch(Exception e)
+        			{
+        				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingTrans.Message"), e);
+        			}
+        		}
+        	}
+        }
+        
+        // Jobs
+        //
+        if (treeEntry.isJob()) 
+        {
+        	SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name);
+        	if (jobStatus!=null)
+        	{
+        		if (jobStatus.isRunning())
+        		{
+        			try
+        			{
+        				WebResult webResult = slaveServer.stopJob(treeEntry.name, treeEntry.id);
+        				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+        				{
+        					EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Message"), webResult.getMessage());
+        					dialog.setReadOnly();
+        					dialog.open();
+        				}
+        			}
+        			catch(Exception e)
+        			{
+        				new ErrorDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Title"), BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Message"), e);
+        			}
+        		}
+        	}
+        }
+    }
+
+    protected void remove()
+    {
+    	TreeEntry treeEntry = getTreeEntry();
+    	if (treeEntry==null) return;
+
+    	// Transformations
+    	//
+        if (treeEntry.isTransformation()) 
+        {
+        	SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(treeEntry.name, treeEntry.id);
+        	if (transStatus!=null)
+        	{
+        		if (!transStatus.isRunning() && !transStatus.isPaused() && !transStatus.isStopped())
+        		{
+        			try
+        			{
+        				WebResult webResult = slaveServer.removeTransformation(treeEntry.name, transStatus.getId());
+        				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+        				{
+        					EnterTextDialog dialog = new EnterTextDialog(shell, 
+        							BaseMessages.getString(PKG, "SpoonSlave.ErrorRemovingTrans.Title"), 
+        							BaseMessages.getString(PKG, "SpoonSlave.ErrorRemovingTrans.Message"), 
+        						webResult.getMessage());
+        					dialog.setReadOnly();
+        					dialog.open();
+        				}
+        			}
+        			catch(Exception e)
+        			{
+        				new ErrorDialog(shell, 
+    							BaseMessages.getString(PKG, "SpoonSlave.ErrorRemovingTrans.Title"), 
+    							BaseMessages.getString(PKG, "SpoonSlave.ErrorRemovingTrans.Message"), 
+        					e);
+        			}
+        		}
+        	}
+        }
+
+        // TODO: support for jobs
+    }
+
+    protected void pause()
+    {
+    	TreeEntry treeEntry = getTreeEntry();
+    	if (treeEntry==null) return;
+
+    	// Transformations
+    	//
+        if (treeEntry.isTransformation()) 
+        {
+			try
+			{
+				WebResult webResult = slaveServer.pauseResumeTransformation(treeEntry.name, treeEntry.id);
+				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+				{
+					EnterTextDialog dialog = new EnterTextDialog(shell, 
+							BaseMessages.getString(PKG, "SpoonSlave.ErrorPausingOrResumingTrans.Title"), 
+							BaseMessages.getString(PKG, "SpoonSlave.ErrorPausingOrResumingTrans.Message"), 
+						webResult.getMessage());
+					dialog.setReadOnly();
+					dialog.open();
+				}
+			}
+			catch(Exception e)
+			{
+				new ErrorDialog(shell, 
+						BaseMessages.getString(PKG, "SpoonSlave.ErrorPausingOrResumingTrans.Title"), 
+						BaseMessages.getString(PKG, "SpoonSlave.ErrorPausingOrResumingTrans.Message"), 
+					e);
+			}
         }
     }
 
@@ -567,28 +678,29 @@ public class SpoonSlave extends Composite implements TabItemInterface
             TreeItem transItem = new TreeItem(transParentItem, SWT.NONE);
             transItem.setText(0, transStatus.getTransName());
             transItem.setText(9, transStatus.getStatusDescription());
+            transItem.setText(13, Const.NVL(transStatus.getId(), ""));
             transItem.setImage(GUIResource.getInstance().getImageTransGraph());
             
             try
             {
                 log.logDetailed("Getting transformation status for [{0}] on server [{1}]", transStatus.getTransName(), slaveServer);
                 
-                Integer lastLine = lastLineTransMap.get(transStatus.getTransName());
+                Integer lastLine = lastLineMap.get(transStatus.getId());
                 int lastLineNr = lastLine==null ? 0 : lastLine.intValue();
                 
-                SlaveServerTransStatus ts = slaveServer.getTransStatus(transStatus.getTransName(), lastLineNr);
+                SlaveServerTransStatus ts = slaveServer.getTransStatus(transStatus.getTransName(), transStatus.getId(), lastLineNr);
                 log.logDetailed("Finished receiving transformation status for [{0}] from server [{1}]", transStatus.getTransName(), slaveServer);
                 List<StepStatus> stepStatusList = ts.getStepStatusList();
                 transStatus.setStepStatusList(stepStatusList);
                 
-                lastLineTransMap.put(transStatus.getTransName(), transStatus.getLastLoggingLineNr());
-                String logging = transLoggingMap.get(transStatus.getTransName());
+                lastLineMap.put(transStatus.getId(), ts.getLastLoggingLineNr());
+                String logging = loggingMap.get(transStatus.getId());
                 if (logging==null) {
                 	logging = ts.getLoggingString();
                 } else {
                 	logging = new StringBuffer(logging).append(ts.getLoggingString()).toString();
                 }
-                transLoggingMap.put(transStatus.getTransName(), logging);
+                loggingMap.put(transStatus.getId(), logging);
                 
                 for (int s=0;s<stepStatusList.size();s++)
                 {
@@ -609,27 +721,28 @@ public class SpoonSlave extends Composite implements TabItemInterface
             TreeItem jobItem = new TreeItem(jobParentItem, SWT.NONE);
             jobItem.setText(0, jobStatus.getJobName());
             jobItem.setText(9, jobStatus.getStatusDescription());
+            jobItem.setText(13, Const.NVL(jobStatus.getId(), ""));
             jobItem.setImage(GUIResource.getInstance().getImageJobGraph());
             
             try
             {
                 log.logDetailed("Getting job status for [{0}] on server [{1}]", jobStatus.getJobName(), slaveServer);
                 
-                Integer lastLine = lastLineJobMap.get(jobStatus.getJobName());
+                Integer lastLine = lastLineMap.get(jobStatus.getId());
                 int lastLineNr = lastLine==null ? 0 : lastLine.intValue();
 
-                SlaveServerJobStatus ts = slaveServer.getJobStatus(jobStatus.getJobName(), lastLineNr);
+                SlaveServerJobStatus ts = slaveServer.getJobStatus(jobStatus.getJobName(), jobStatus.getId(), lastLineNr);
                 
                 log.logDetailed("Finished receiving job status for [{0}] from server [{1}]", jobStatus.getJobName(), slaveServer);
 
-                lastLineJobMap.put(jobStatus.getJobName(), jobStatus.getLastLoggingLineNr());
-                String logging = jobLoggingMap.get(jobStatus.getJobName());
+                lastLineMap.put(jobStatus.getId(), ts.getLastLoggingLineNr());
+                String logging = loggingMap.get(jobStatus.getId());
                 if (logging==null) {
                 	logging = ts.getLoggingString();
                 } else {
                 	logging = new StringBuffer(logging).append(ts.getLoggingString()).toString();
                 }
-                jobLoggingMap.put(jobStatus.getJobName(), logging);
+                loggingMap.put(jobStatus.getId(), logging);
                 
                 Result result = ts.getResult();
                 if (result!=null)

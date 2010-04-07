@@ -62,8 +62,8 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 			Node repsNode = XMLHandler.getSubNode(document, "database-types");
 			List<Node> repsNodes = XMLHandler.getNodes(repsNode, "database-type");
 			for (Node repNode : repsNodes) {
-				registerPluginFromXmlResource(repNode, null, this.getClass(), true, null);
-			}			
+				registerPluginFromXmlResource(repNode, "./", this.getClass(), true, null);
+			}	
 		} catch (KettleXMLException e) {
 			throw new KettlePluginException("Unable to read the kettle database types XML config file: "+xmlFile, e);
 		}
@@ -75,7 +75,6 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 	public String[] getNaturalCategoriesOrder() {
 		return new String[0];
 	}
-
 
   @Override
   protected String extractCategory(Annotation annotation) {
@@ -94,7 +93,7 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
 
   @Override
   protected String extractName(Annotation annotation) {
-    return ((DatabaseMetaPlugin) annotation).type();
+    return ((DatabaseMetaPlugin) annotation).typeDescription();
   }
 
   @Override

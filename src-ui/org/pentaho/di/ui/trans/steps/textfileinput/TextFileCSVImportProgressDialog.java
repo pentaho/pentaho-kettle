@@ -23,8 +23,9 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -36,8 +37,9 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringEvaluationResult;
+import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
@@ -260,6 +262,8 @@ public class TextFileCSVImportProgressDialog
         }
         int linenr = 1;
 
+        List<StringEvaluator> evaluators = new ArrayList<StringEvaluator>();
+        
         // Allocate number and date parsers
         DecimalFormat df2 = (DecimalFormat) NumberFormat.getInstance();
         DecimalFormatSymbols dfs2 = new DecimalFormatSymbols();
@@ -291,285 +295,69 @@ public class TextFileCSVImportProgressDialog
             rownumber++;
             for (int i = 0; i < nrfields && i < r.length; i++)
             {
-                TextFileInputField field = meta.getInputFields()[i];
-
-                if (log.isDebug()) debug = "Start of for loop, get new value " + i;
-                ValueMetaInterface v = rowMeta.getValueMeta(i);
-                if (log.isDebug()) debug = "Start of for loop over " + r.length + " elements in Row r, now at #" + i + " containing value : [" + v.toString() + "]";
-                if (r[i]!=null)
-                {
-                    String fieldValue = rowMeta.getString(r, i);
-
-                    int trimthis = ValueMetaInterface.TRIM_TYPE_NONE;
-
-                    boolean spacesBefore = Const.nrSpacesBefore(fieldValue) > 0;
-                    boolean spacesAfter = Const.nrSpacesAfter(fieldValue) > 0;
-
-                    fieldValue = Const.trim(fieldValue);
-
-                    if (spacesBefore) trimthis |= ValueMetaInterface.TRIM_TYPE_LEFT;
-                    if (spacesAfter) trimthis |= ValueMetaInterface.TRIM_TYPE_RIGHT;
-
-                    if (log.isDebug()) debug = "change trim type[" + i + "]";
-                    field.setTrimType(field.getTrimType() | trimthis);
-
-                    if (log.isDebug()) debug = "Field #" + i + " has type : " + ValueMeta.getTypeDesc(field.getType());
-
-                    // See if the field has only numeric fields
-                    if (isNumber[i])
-                    {
-                        if (log.isDebug()) debug = "Number checking of [" + fieldValue + "] on line #" + linenr;
-
-                        boolean containsDot = false;
-                        boolean containsComma = false;
-
-                        for (int x = 0; x < fieldValue.length() && field.getType() == ValueMetaInterface.TYPE_NUMBER; x++)
-                        {
-                            char ch = fieldValue.charAt(x);
-                            if (!Character.isDigit(ch) && ch != '.' && ch != ',' && (ch != '-' || x > 0) && ch != 'E' && ch != 'e' // exponential
-                            )
-                            {
-                                isNumber[i] = false;
-                            } else
-                            {
-                                if (ch == '.') containsDot = true;
-                                if (ch == ',') containsComma = true;
-                            }
-                        }
-                        // If it's still a number, try to parse it as a double
-                        if (isNumber[i])
-                        {
-                            if (containsDot && !containsComma) // american 174.5
-                            {
-                                dfs2.setDecimalSeparator('.');
-                                field.setDecimalSymbol(".");
-                                dfs2.setGroupingSeparator(',');
-                                field.setGroupSymbol(",");
-                            } else
-                                if (!containsDot && containsComma) // Belgian 174,5
-                                {
-                                    dfs2.setDecimalSeparator(',');
-                                    field.setDecimalSymbol(",");
-                                    dfs2.setGroupingSeparator('.');
-                                    field.setGroupSymbol(".");
-                                } else
-                                    if (containsDot && containsComma) // Both appear!
-                                    {
-                                        // What's the last occurance: decimal point!
-                                        int indexDot = fieldValue.indexOf('.');
-                                        int indexComma = fieldValue.indexOf(',');
-                                        if (indexDot > indexComma)
-                                        {
-                                            dfs2.setDecimalSeparator('.');
-                                            field.setDecimalSymbol(".");
-                                            dfs2.setGroupingSeparator(',');
-                                            field.setGroupSymbol(",");
-                                        } else
-                                        {
-                                            dfs2.setDecimalSeparator(',');
-                                            field.setDecimalSymbol(",");
-                                            dfs2.setGroupingSeparator('.');
-                                            field.setGroupSymbol(".");
-                                        }
-                                    }
-
-                            // Try the remaining possible number formats!
-                            for (int x = 0; x < Const.getNumberFormats().length; x++)
-                            {
-                                if (numberFormat[i][x])
-                                {
-                                    try
-                                    {
-                                        df2.setDecimalFormatSymbols(dfs2);
-                                        df2.applyPattern(Const.getNumberFormats()[x]);
-                                        double d = df2.parse(fieldValue).doubleValue();
-
-                                        // System.out.println("("+i+","+x+") : Converted ["+field.toString()+"]
-                                        // to ["+d+"] with format ["+numberFormats[x]+"] and dfs2
-                                        // ["+dfs2.getDecimalSeparator()+dfs2.getGroupingSeparator()+"]");
-
-                                        // After everything, still a number?
-                                        // Then guess the precision
-                                        int prec = TextFileInputDialog.guessPrecision(d);
-                                        if (prec > numberPrecision[i][x]) numberPrecision[i][x] = prec;
-
-                                        int leng = TextFileInputDialog.guessLength(d) + prec; // add precision!
-                                        if (leng > numberLength[i][x]) numberLength[i][x] = leng;
-
-                                        if (d < minValue[i][x]) minValue[i][x] = d;
-                                        if (d > maxValue[i][x]) maxValue[i][x] = d;
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        numberFormat[i][x] = false; // Don't try it again in the future.
-                                        numberFormatCount[i]--; // One less that works..
-                                    }
-                                }
-                            }
-
-                            // Still not found: just a string
-                            if (numberFormatCount[i] == 0)
-                            {
-                                isNumber[i] = false;
-                            }
-                        }
-                    }
-
-                    if (log.isDebug()) debug = "Check max length on field #" + i + " called " + field.getName() + " : [" + fieldValue + "]";
-                    // Capture the maximum length of the field (trimmed)
-                    if (fieldValue.length() > field.getLength()) field.setLength(fieldValue.length());
-
-                    // So is it really a string or a date field?
-                    // Check it as long as we found a format that works...
-                    if (isDate[i])
-                    {
-                        for (int x = 0; x < Const.getDateFormats().length; x++)
-                        {
-                            if (dateFormat[i][x])
-                            {
-                                try
-                                {
-                                    daf2.applyPattern(Const.getDateFormats()[x]);
-                                    Date date = daf2.parse(fieldValue);
-
-                                    Calendar cal = Calendar.getInstance();
-                                    cal.setTime(date);
-                                    int year = cal.get(Calendar.YEAR);
-
-                                    if (year < 1800 || year > 2200)
-                                    {
-                                        dateFormat[i][x] = false; // Don't try it again in the future.
-                                        dateFormatCount[i]--; // One less that works..
-                                        // System.out.println("Field #"+i+", pattern ["+dateFormats[x]+"],
-                                        // year="+year+", field=["+field+"] : year<1800 or year>2200!! not a
-                                        // date!");
-                                    }
-
-                                    if (minDate[i][x].compareTo(date) > 0) minDate[i][x] = date;
-                                    if (maxDate[i][x].compareTo(date) < 0) maxDate[i][x] = date;
-                                }
-                                catch (Exception e)
-                                {
-                                    dateFormat[i][x] = false; // Don't try it again in the future.
-                                    dateFormatCount[i]--; // One less that works..
-                                    // System.out.println("field ["+field+"] is not a date,
-                                    // format=["+dateFormats[x]+", x="+x+", error: ("+e.toString()+")");
-                                }
-                            }
-                        }
-
-                        // Still not found: just a string
-                        if (dateFormatCount[i] == 0)
-                        {
-                            isDate[i] = false;
-                            // System.out.println("Field #"+i+" is not a date!");
-                        }
-                    }
-
-                    // Determine maximum & minimum string values...
-                    if (firststr[i])
-                    {
-                        firststr[i] = false;
-                        minstr[i] = fieldValue;
-                        maxstr[i] = fieldValue;
-                    }
-                    if (minstr[i].compareTo(fieldValue) > 0) minstr[i] = fieldValue;
-                    if (maxstr[i].compareTo(fieldValue) < 0) maxstr[i] = fieldValue;
-
-                    debug = "End of for loop";
-                } else
-                {
-                    nrnull[i]++;
-                }
+            	StringEvaluator evaluator;
+            	if (i>=evaluators.size()) {
+            		evaluator=new StringEvaluator(true);
+            		evaluators.add(evaluator);
+            	} else {
+            		evaluator=evaluators.get(i);
+            	}
+            	
+                String string = rowMeta.getString(r, i);
+                evaluator.evaluateString(string);
             }
 
             fileLineNumber++;
-            if (r!=null)
+            if (r!=null) {
                 linenr++;
-            else
+            }
+            else {
                 rownumber--;
+            }
 
             // Grab another line...
-            debug = "Grab another line";
+            //
             line = TextFileInput.getLine(log, reader, fileFormatType, lineBuffer);
-            debug = "End of while loop";
         }
 
         monitor.worked(1);
         monitor.setTaskName(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Task.AnalyzingResults"));
         
-        // Include the results from the number, date & string search!
-        // some cleanup of format fields for strings...
+        // Show information on items using a dialog box
+        //
+        StringBuilder message = new StringBuilder();
+        message.append(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.ResultAfterScanning", ""+(linenr-1)));
+        message.append(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.HorizontalLine"));
+        
         for (int i = 0; i < nrfields; i++)
         {
             TextFileInputField field = meta.getInputFields()[i];
-
-            if (field.getType() == ValueMetaInterface.TYPE_STRING)
-            {
-            	if (nrnull[i] != linenr - 1)
-            	{
-            		// If all values in a column where "null"/empty it makes more sense
-            		// to keep the field as a string, previously it would be seen as a date.
-                    if (isDate[i])
-                    {
-                        field.setType(ValueMetaInterface.TYPE_DATE);
-                        for (int x = Const.getDateFormats().length - 1; x >= 0; x--)
-                        {
-                            if (dateFormat[i][x])
-                            {
-                                field.setFormat(Const.getDateFormats()[x]);
-                                field.setLength(TextFileInputDialog.dateLengths[x]);
-                                field.setPrecision(-1);
-                            }
-                        }
-                    } else
-                        if (isNumber[i])
-                        {
-                            field.setType(ValueMetaInterface.TYPE_NUMBER);
-                            for (int x = Const.getNumberFormats().length - 1; x >= 0; x--)
-                            {
-                                if (numberFormat[i][x])
-                                {
-                                    field.setFormat(Const.getNumberFormats()[x]);
-                                    field.setLength(numberLength[i][x]);
-                                    field.setPrecision(numberPrecision[i][x]);
-
-                                    if (field.getPrecision() == 0 && field.getLength() < 18)
-                                    {
-                                        field.setType(ValueMetaInterface.TYPE_INTEGER);
-                                        field.setFormat("");
-                                    }
-                                }
-                            }
-                        } else
-                        {
-                            field.setDecimalSymbol("");
-                            field.setGroupSymbol("");
-                            field.setCurrencySymbol("");
-                        }
-            	    }
-            	    else
-                    {
-                        field.setDecimalSymbol("");
-                        field.setGroupSymbol("");
-                        field.setCurrencySymbol("");
-                    }
+            StringEvaluator evaluator = evaluators.get(i);
+            List<StringEvaluationResult> evaluationResults = evaluator.getStringEvaluationResults();
+            
+            // If we didn't find any matching result, it's a String...
+            //
+            if (evaluationResults.isEmpty()) {
+            	field.setType(ValueMetaInterface.TYPE_STRING);
+            	field.setLength(evaluator.getMaxLength());
+            } else {
+            	// Take the first option we find, list the others below...
+            	//
+            	StringEvaluationResult result = evaluator.getAdvicedResult();
+            	ValueMetaInterface conversionMeta = result.getConversionMeta();
+            	field.setType(conversionMeta.getType());
+            	field.setTrimType(conversionMeta.getTrimType());
+            	field.setFormat(conversionMeta.getConversionMask());
+            	field.setDecimalSymbol(conversionMeta.getDecimalSymbol());
+            	field.setGroupSymbol(conversionMeta.getGroupingSymbol());
+            	field.setLength(conversionMeta.getLength());
             }
-        }
-        
-        
-        // Show information on items using dialog box
-        String message = "";
-        message += BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.ResultAfterScanning", ""+(linenr-1));
-        message += BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.HorizontalLine");
-        for (int i = 0; i < nrfields; i++)
-        {
-            TextFileInputField field = meta.getInputFields()[i];
 
-            message += BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.FieldNumber", ""+(i + 1));
+            /*
+            message.append(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.FieldNumber", ""+(i + 1)));
 
-            message += BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.FieldName", field.getName());
-            message += BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.FieldType", field.getTypeDesc());
+            message.append(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.FieldName", field.getName()));
+            message.append(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.FieldType", field.getTypeDesc()));
 
             switch (field.getType())
             {
@@ -654,12 +442,13 @@ public class TextFileCSVImportProgressDialog
                 message += BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.AllNullValues");
             }
             message += Const.CR;
+            */
         }
         
         monitor.worked(1);
         monitor.done();
         
-        return message;
+        return message.toString();
 
     }
 }

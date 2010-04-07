@@ -64,6 +64,8 @@ public class TransSplitter
 	private boolean compressingSocketStreams;
     
     private Map<String, Integer> portCache;
+    
+    private Map<TransMeta, String> carteObjectMap;
 
     public TransSplitter()
     {
@@ -74,6 +76,7 @@ public class TransSplitter
         slaveTransMap = new Hashtable<SlaveServer,TransMeta>();
         slaveStepPartitionFlag = new Hashtable<TransMeta,Map<StepMeta,String>>();
         portCache = new Hashtable<String, Integer>();
+        carteObjectMap = new Hashtable<TransMeta, String>();
     }
 
 
@@ -1410,5 +1413,8 @@ public class TransSplitter
         }
         // System.out.println("We have "+(slaveServerPartitionsMap.size())+" entries in the slave server partitions map");
     }
- 
+
+    public Map<TransMeta, String> getCarteObjectMap() {
+		return carteObjectMap;
+	}
 }

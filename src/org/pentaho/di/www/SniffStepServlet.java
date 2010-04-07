@@ -64,12 +64,13 @@ public class SniffStepServlet extends BaseHttpServlet implements CarteServletInt
     	logDebug(BaseMessages.getString(PKG, "TransStatusServlet.Log.SniffStepRequested"));
     }
 
-    final String transName = request.getParameter("trans");
-    final String stepName = request.getParameter("step");
-    final int copyNr = Const.toInt(request.getParameter("copy"), 0);
+    String transName = request.getParameter("trans");
+    String id = request.getParameter("id");
+    String stepName = request.getParameter("step");
+    int copyNr = Const.toInt(request.getParameter("copynr"), 0);
     final int nrLines = Const.toInt(request.getParameter("lines"), 0);
-    final String type = Const.NVL(request.getParameter("type"), TYPE_OUTPUT);
-    final boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
+    String type = Const.NVL(request.getParameter("type"), TYPE_OUTPUT);
+    boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
 
     response.setStatus(HttpServletResponse.SC_OK);
 
@@ -82,7 +83,26 @@ public class SniffStepServlet extends BaseHttpServlet implements CarteServletInt
 
     PrintWriter out = response.getWriter();
 
-    Trans trans = getTransformationMap().getTransformation(transName);
+    // ID is optional...
+    //
+    Trans trans;
+    CarteObjectEntry entry;
+    if (Const.isEmpty(id)) {
+    	// get the first transformation that matches...
+    	//
+    	entry = getTransformationMap().getFirstCarteObjectEntry(transName);
+    	if (entry==null) {
+    		trans = null;
+    	} else {
+    		id = entry.getId();
+    		trans = getTransformationMap().getTransformation(entry);
+    	}
+    } else {
+    	// Take the ID into account!
+    	//
+    	entry = new CarteObjectEntry(transName, id);
+    	trans = getTransformationMap().getTransformation(entry);
+    }
 
     if (trans != null) {
 
@@ -183,7 +203,7 @@ public class SniffStepServlet extends BaseHttpServlet implements CarteServletInt
 	        out.println("<HTML>");
 	        out.println("<HEAD>");
 	        out.println("<TITLE>" + BaseMessages.getString(PKG, "SniffStepServlet.SniffResults") + "</TITLE>");
-	        out.println("<META http-equiv=\"Refresh\" content=\"10;url=" + convertContextPath(CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">");
+	        out.println("<META http-equiv=\"Refresh\" content=\"10;url=" + convertContextPath(CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">");
 	        out.println("</HEAD>");
 	        out.println("<BODY>");
 	        out.println("<H1>" + BaseMessages.getString(PKG, "SniffStepServlet.SniffResultsForStep", stepName) + "</H1>");
@@ -191,27 +211,29 @@ public class SniffStepServlet extends BaseHttpServlet implements CarteServletInt
 	        try {
 	          out.println("<table border=\"1\">");
 	          
-	          // Print a header row containing all the field names...
-	          //
-	          out.print("<tr><th>#</th>");
-	          for (ValueMetaInterface valueMeta : metaData.bufferRowMeta.getValueMetaList()) {
-	        	  out.print("<th>" + valueMeta.getName()+"</th>" );
-	          }
-	          out.println("</tr>");
+		      if (metaData.bufferRowMeta!=null) {
+		          // Print a header row containing all the field names...
+		          //
+		          out.print("<tr><th>#</th>");
+		          for (ValueMetaInterface valueMeta : metaData.bufferRowMeta.getValueMetaList()) {
+		        	  out.print("<th>" + valueMeta.getName()+"</th>" );
+		          }
+		          out.println("</tr>");
 	          
-	          // Now output the data rows...
-	          //
-	          for (int r=0;r<metaData.bufferRowData.size();r++) {
-		    		Object[] rowData = metaData.bufferRowData.get(r);
-			          out.print("<tr>");
-			          out.println("<td>"+(r+1)+"</td>");
-			          for (int v=0;v<metaData.bufferRowMeta.size();v++) {
-			        	  ValueMetaInterface valueMeta = metaData.bufferRowMeta.getValueMeta(v);
-			        	  Object valueData = rowData[v];
-				          out.println("<td>"+valueMeta.getString(valueData)+"</td>");
-			          }
-			          out.println("</tr>");
-	          }
+		          // Now output the data rows...
+		          //
+		          for (int r=0;r<metaData.bufferRowData.size();r++) {
+			    		Object[] rowData = metaData.bufferRowData.get(r);
+				          out.print("<tr>");
+				          out.println("<td>"+(r+1)+"</td>");
+				          for (int v=0;v<metaData.bufferRowMeta.size();v++) {
+				        	  ValueMetaInterface valueMeta = metaData.bufferRowMeta.getValueMeta(v);
+				        	  Object valueData = rowData[v];
+					          out.println("<td>"+valueMeta.getString(valueData)+"</td>");
+				          }
+				          out.println("</tr>");
+		          }
+		      }
 	          
 	          out.println("</table>");
 	

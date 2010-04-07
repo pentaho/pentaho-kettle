@@ -49,6 +49,7 @@ public class StopJobServlet extends BaseHttpServlet implements CarteServletInter
       logDebug(BaseMessages.getString(PKG, "StopJobServlet.log.StopJobRequested"));
 
     String jobName = request.getParameter("name");
+    String id = request.getParameter("id");
     boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
 
     PrintWriter out = response.getWriter();
@@ -68,7 +69,27 @@ public class StopJobServlet extends BaseHttpServlet implements CarteServletInter
         out.println("<BODY>");
       }
 
-      Job job = getJobMap().getJob(jobName);
+      // ID is optional...
+      //
+      Job job;
+      CarteObjectEntry entry;
+      if (Const.isEmpty(id)) {
+        	// get the first job that matches...
+        	//
+        	entry = getJobMap().getFirstCarteObjectEntry(jobName);
+        	if (entry==null) {
+        		job = null;
+        	} else {
+        		id = entry.getId();
+        		job = getJobMap().getJob(entry);
+        	}
+      } else {
+        	// Take the ID into account!
+        	//
+        	entry = new CarteObjectEntry(jobName, id);
+        	job = getJobMap().getJob(entry);
+      }
+
       if (job != null) {
         job.stopAll();
 
@@ -77,7 +98,7 @@ public class StopJobServlet extends BaseHttpServlet implements CarteServletInter
           out.println(new WebResult(WebResult.STRING_OK, message).getXML());
         } else {
           out.println("<H1>" + message + "</H1>");
-          out.println("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "\">"
+          out.println("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">"
               + BaseMessages.getString(PKG, "JobStatusServlet.BackToJobStatusPage") + "</a><p>");
         }
       } else {

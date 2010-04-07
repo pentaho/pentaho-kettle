@@ -13,6 +13,7 @@
 package org.pentaho.di.partition;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
@@ -54,11 +55,14 @@ public class PartitionSchema
 	private String  numberOfPartitionsPerSlave;
 
 	private ObjectRevision objectRevision;
+	
+	private Date changedDate;
 
 	public PartitionSchema()
 	{
-		partitionIDs=new ArrayList<String>();
-		}
+		this.partitionIDs=new ArrayList<String>();
+		this.changedDate = new Date();
+	}
     
 	/**
 	 * @param name
@@ -68,6 +72,7 @@ public class PartitionSchema
 	{
 		this.name = name;
 		this.partitionIDs = partitionIDs;
+		this.changedDate = new Date();
 	}
 
 	public Object clone()
@@ -162,6 +167,7 @@ public class PartitionSchema
     
 	public PartitionSchema(Node partitionSchemaNode)
 	{
+		changedDate = new Date();
 		name = XMLHandler.getTagValue(partitionSchemaNode, "name");
         
 		int nrIDs = XMLHandler.countNodes(partitionSchemaNode, "partition");
@@ -175,9 +181,6 @@ public class PartitionSchema
 		dynamicallyDefined = "Y".equalsIgnoreCase(XMLHandler.getTagValue(partitionSchemaNode, "dynamic"));
 		numberOfPartitionsPerSlave = XMLHandler.getTagValue(partitionSchemaNode, "partitions_per_slave");
 	}
-
-    
-
 
 	/**
 	 * @return the shared
@@ -326,5 +329,19 @@ public class PartitionSchema
 
 	public void setDescription(String description) {
 		// NOT USED
+	}
+
+	/**
+	 * @return the changedDate
+	 */
+	public Date getChangedDate() {
+		return changedDate;
+	}
+
+	/**
+	 * @param changedDate the changedDate to set
+	 */
+	public void setChangedDate(Date changedDate) {
+		this.changedDate = changedDate;
 	}
 }

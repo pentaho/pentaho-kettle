@@ -166,7 +166,7 @@ public class CarteTest {
       Assert.assertEquals(WebResult.STRING_OK, nodes.item(0).getTextContent());
 
       SlaveServerStatus status = getStatus();
-      SlaveServerTransStatus transStatus = status.findTransStatus(trans.getName());
+      SlaveServerTransStatus transStatus = status.findTransStatus(trans.getName(), null); // find the first one
       Assert.assertNotNull(transStatus);
       Assert.assertFalse(transStatus.isPaused());
       Assert.assertFalse(transStatus.isRunning());
@@ -198,7 +198,7 @@ public class CarteTest {
       Assert.assertEquals(WebResult.STRING_OK, nodes.item(0).getTextContent());
 
       SlaveServerStatus status = getStatus();
-      SlaveServerTransStatus transStatus = status.findTransStatus("CarteUnitTest");
+      SlaveServerTransStatus transStatus = status.findTransStatus("CarteUnitTest", null);
       Assert.assertNotNull(transStatus);
       Assert.assertFalse(transStatus.isPaused());
       Assert.assertTrue(transStatus.isRunning());
@@ -226,7 +226,7 @@ public class CarteTest {
     try {
       
       SlaveServerStatus status = getStatus();
-      SlaveServerTransStatus transStatus = status.findTransStatus("CarteUnitTest");
+      SlaveServerTransStatus transStatus = status.findTransStatus("CarteUnitTest", null);
       Assert.assertNotNull(transStatus);
       // let's make sure that it is not paused
       Assert.assertFalse(transStatus.isPaused());
@@ -240,7 +240,7 @@ public class CarteTest {
       Assert.assertEquals(WebResult.STRING_OK, nodes.item(0).getTextContent());
 
       status = getStatus();
-      transStatus = status.findTransStatus("CarteUnitTest");
+      transStatus = status.findTransStatus("CarteUnitTest", null);
       Assert.assertNotNull(transStatus);
       // now check to be sure it is paused
       Assert.assertTrue(transStatus.isPaused());

@@ -328,6 +328,21 @@ public class MessagesSourceCrawler {
 		String line = reader.readLine();
 		while (line != null) {
 			row++;
+			String line2=line;
+			boolean extraLine;
+			do {
+				extraLine = false;
+				for (String scanPhrase : scanPhrases) {
+					if (line2.endsWith(scanPhrase)) {
+						extraLine=true;
+						break;
+					}
+				}
+				if (extraLine) {
+					line2 = reader.readLine();
+					line+=line2;
+				}
+			} while (extraLine);
 			
 			// Examine the line...
 

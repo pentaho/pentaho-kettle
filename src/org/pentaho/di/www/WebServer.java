@@ -176,6 +176,11 @@ public class WebServer
         Context addTrans = new Context(contexts, AddTransServlet.CONTEXT_PATH, Context.SESSIONS);
         addTrans.addServlet(new ServletHolder(new AddTransServlet(transformationMap, socketRepository)), "/*");
 
+        // Remove Transformation
+        //
+        Context removeTrans = new Context(contexts, RemoveTransServlet.CONTEXT_PATH, Context.SESSIONS);
+        removeTrans.addServlet(new ServletHolder(new RemoveTransServlet(transformationMap)), "/*");
+
         // Step port reservation
         //
         Context getPort = new Context(contexts, AllocateServerSocketServlet.CONTEXT_PATH, Context.SESSIONS);
@@ -210,6 +215,11 @@ public class WebServer
         //
         Context addJob= new Context(contexts, AddJobServlet.CONTEXT_PATH, Context.SESSIONS);
         addJob.addServlet(new ServletHolder(new AddJobServlet(jobMap, socketRepository)), "/*");
+
+        // Remove Job
+        //
+        Context removeJob = new Context(contexts, RemoveJobServlet.CONTEXT_PATH, Context.SESSIONS);
+        removeJob.addServlet(new ServletHolder(new RemoveJobServlet(jobMap)), "/*");
 
         
         ///////////////////////////////////////////////////////////////////////////////////////////////////////

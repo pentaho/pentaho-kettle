@@ -58,12 +58,7 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
 {
 	private static Class<?> PKG = JobEntryAbort.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    private Label wlName;
-
     private Text wName;
-
-    private FormData fdlName, fdName;
-
   
     private Button wOK, wCancel;
 
@@ -77,11 +72,7 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
 
     private boolean changed;
 
-	private Label wlMessageAbort;
-
 	private TextVar wMessageAbort;
-	
-	private FormData fdlMessageAbort, fdMessageAbort;
 	
     public JobEntryAbortDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -121,10 +112,10 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
 
         
         // Filename line
-        wlName = new Label(shell, SWT.RIGHT);
+        Label wlName = new Label(shell, SWT.RIGHT);
         wlName.setText(BaseMessages.getString(PKG, "JobEntryAbortDialog.Label"));
         props.setLook(wlName);
-        fdlName = new FormData();
+        FormData fdlName = new FormData();
         fdlName.left = new FormAttachment(0, 0);
 		fdlName.right = new FormAttachment(middle, -margin);
         fdlName.top = new FormAttachment(0, margin);
@@ -132,17 +123,17 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
         wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wName);
         wName.addModifyListener(lsMod);
-        fdName = new FormData();
+        FormData fdName = new FormData();
         fdName.left = new FormAttachment(middle, 0);
         fdName.top = new FormAttachment(0, margin);
         fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
 
 		// Message line
-		wlMessageAbort = new Label(shell, SWT.RIGHT);
+		Label wlMessageAbort = new Label(shell, SWT.RIGHT);
 		wlMessageAbort.setText(BaseMessages.getString(PKG, "JobEntryAbortDialog.MessageAbort.Label"));
 		props.setLook(wlMessageAbort);
-		fdlMessageAbort = new FormData();
+		FormData fdlMessageAbort = new FormData();
 		fdlMessageAbort.left = new FormAttachment(0, 0);
 		fdlMessageAbort.right = new FormAttachment(middle, 0);
 		fdlMessageAbort.top = new FormAttachment(wName, margin);
@@ -152,7 +143,7 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
 		props.setLook(wMessageAbort);
 		wMessageAbort.setToolTipText(BaseMessages.getString(PKG, "JobEntryAbortDialog.MessageAbort.Tooltip"));
 		wMessageAbort.addModifyListener(lsMod);
-		fdMessageAbort = new FormData();
+		FormData fdMessageAbort = new FormData();
 		fdMessageAbort.left = new FormAttachment(middle, 0);
 		fdMessageAbort.top = new FormAttachment(wName, margin);
 		fdMessageAbort.right = new FormAttachment(100, 0);

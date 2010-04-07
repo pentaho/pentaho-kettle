@@ -1316,8 +1316,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         return message;
     }
     
-	public static void sendToSlaveServer(JobMeta jobMeta, JobExecutionConfiguration executionConfiguration, Repository repository) throws KettleException
+	public static String sendToSlaveServer(JobMeta jobMeta, JobExecutionConfiguration executionConfiguration, Repository repository) throws KettleException
 	{
+		String carteObjectId;
 		SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
 		if (slaveServer == null)
@@ -1346,7 +1347,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 				if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 				{
 					throw new KettleException("There was an error passing the exported job to the remote server: " + Const.CR+ webResult.getMessage());
-				}				
+				}
+				carteObjectId = webResult.getId();
 			} else {
 				String xml = new JobConfiguration(jobMeta, executionConfiguration).getXML();
 				
@@ -1356,16 +1358,18 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 				{
 					throw new KettleException("There was an error posting the job on the remote server: " + Const.CR+ webResult.getMessage());
 				}
+				carteObjectId = webResult.getId();
 			}
 
 			// Start the job
 			//
-			String reply = slaveServer.execService(StartJobServlet.CONTEXT_PATH + "/?name="+ URLEncoder.encode(jobMeta.getName(), "UTF-8") + "&xml=Y");
+			String reply = slaveServer.execService(StartJobServlet.CONTEXT_PATH + "/?name="+ URLEncoder.encode(jobMeta.getName(), "UTF-8") + "&xml=Y&id="+carteObjectId);
 			WebResult webResult = WebResult.fromXMLString(reply);
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 			{
 				throw new KettleException("There was an error starting the job on the remote server: " + Const.CR + webResult.getMessage());
 			}
+			return carteObjectId;
 		} 
 		catch (Exception e)
 		{

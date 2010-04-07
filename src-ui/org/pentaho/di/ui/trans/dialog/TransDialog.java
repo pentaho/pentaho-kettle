@@ -208,6 +208,7 @@ public class TransDialog extends Dialog
 	private ChannelLogTable	channelLogTable;
 	private StepLogTable stepLogTable;
 	private DatabaseDialog databaseDialog;
+	private SelectionAdapter	lsModSel;
 	
   public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep, Tabs currentTab)
   {
@@ -246,13 +247,8 @@ public class TransDialog extends Dialog
 		shell.setImage((Image) GUIResource.getInstance().getImageTransGraph());
 	
 		
-		lsMod = new ModifyListener() 
-		{
-			public void modifyText(ModifyEvent e) 
-			{
-				changed=true;
-			}
-		};
+		lsMod = new ModifyListener() { public void modifyText(ModifyEvent e) { changed=true; } };
+		lsModSel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { changed=true; } };
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -1714,6 +1710,7 @@ public class TransDialog extends Dialog
         wlUniqueConnections.setLayoutData(fdlUniqueConnections);
         wUniqueConnections=new Button(wMiscComp, SWT.CHECK);
         props.setLook(wUniqueConnections);
+        wUniqueConnections.addSelectionListener(lsModSel);
         FormData fdUniqueConnections = new FormData();
         fdUniqueConnections.left = new FormAttachment(middle, 0);
         fdUniqueConnections.top  = new FormAttachment(wFeedbackSize, margin);
@@ -1757,6 +1754,7 @@ public class TransDialog extends Dialog
         fdlManageThreads.right= new FormAttachment(middle, -margin);
         wlManageThreads.setLayoutData(fdlManageThreads);
         wManageThreads=new Button(wMiscComp, SWT.CHECK);
+        wManageThreads.addSelectionListener(lsModSel);
         props.setLook(wManageThreads);
         FormData fdManageThreads = new FormData();
         fdManageThreads.left = new FormAttachment(middle, 0);
@@ -1776,6 +1774,7 @@ public class TransDialog extends Dialog
 		wlSerialSingleThreaded.setLayoutData(fdlSerialSingleThreaded);
 		wSerialSingleThreaded = new Button(wMiscComp, SWT.CHECK);
 		wSerialSingleThreaded.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SerialSingleThreaded.Tooltip", Const.CR)); //$NON-NLS-1$
+        wSerialSingleThreaded.addSelectionListener(lsModSel);
 		props.setLook(wSerialSingleThreaded);
 		FormData fdSerialSingleThreaded = new FormData();
 		fdSerialSingleThreaded.left = new FormAttachment(middle, 0);

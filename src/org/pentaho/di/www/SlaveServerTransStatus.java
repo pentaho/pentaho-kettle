@@ -35,6 +35,7 @@ public class SlaveServerTransStatus
 {
     public static final String XML_TAG = "transstatus";
     
+    private String id;
     private String transName;
     private String statusDescription;
     private String errorDescription;
@@ -56,10 +57,11 @@ public class SlaveServerTransStatus
      * @param transName
      * @param statusDescription
      */
-    public SlaveServerTransStatus(String transName, String statusDescription)
+    public SlaveServerTransStatus(String transName, String id, String statusDescription)
     {
         this();
         this.transName = transName;
+        this.id = id;
         this.statusDescription = statusDescription;
     }
     
@@ -69,6 +71,7 @@ public class SlaveServerTransStatus
         
         xml.append("<"+XML_TAG+">").append(Const.CR);
         xml.append(XMLHandler.addTagValue("transname", transName));                
+        xml.append(XMLHandler.addTagValue("id", id));                
         xml.append(XMLHandler.addTagValue("status_desc", statusDescription));                
         xml.append(XMLHandler.addTagValue("error_desc", errorDescription));          
         xml.append(XMLHandler.addTagValue("paused", paused));          
@@ -81,7 +84,6 @@ public class SlaveServerTransStatus
         }
         xml.append("  </stepstatuslist>").append(Const.CR);
 
-        xml.append(XMLHandler.addTagValue("logging_string", XMLHandler.buildCDATA(loggingString)));          
         xml.append(XMLHandler.addTagValue("first_log_line_nr", firstLoggingLineNr));          
         xml.append(XMLHandler.addTagValue("last_log_line_nr", lastLoggingLineNr));          
 
@@ -95,6 +97,8 @@ public class SlaveServerTransStatus
 			}
         }
 
+        xml.append(XMLHandler.addTagValue("logging_string", XMLHandler.buildCDATA(loggingString)));          
+
         xml.append("</"+XML_TAG+">");
         
         return xml.toString();
@@ -103,6 +107,7 @@ public class SlaveServerTransStatus
     public SlaveServerTransStatus(Node transStatusNode)
     {
         this();
+        id = XMLHandler.getTagValue(transStatusNode, "id");
         transName = XMLHandler.getTagValue(transStatusNode, "transname");
         statusDescription = XMLHandler.getTagValue(transStatusNode, "status_desc");
         errorDescription = XMLHandler.getTagValue(transStatusNode, "error_desc");
@@ -248,6 +253,16 @@ public class SlaveServerTransStatus
         return getStatusDescription().equalsIgnoreCase(Trans.STRING_RUNNING) || getStatusDescription().equalsIgnoreCase(Trans.STRING_INITIALIZING);
     }
 
+    public boolean isStopped()
+    {
+        return getStatusDescription().equalsIgnoreCase(Trans.STRING_STOPPED);
+    }
+
+    public boolean isWaiting()
+    {
+        return getStatusDescription().equalsIgnoreCase(Trans.STRING_WAITING);
+    }
+
     public long getNrStepErrors()
     {
         long errors = 0L;
@@ -349,5 +364,19 @@ public class SlaveServerTransStatus
 	 */
 	public void setFirstLoggingLineNr(int firstLoggingLineNr) {
 		this.firstLoggingLineNr = firstLoggingLineNr;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(String id) {
+		this.id = id;
 	}
 }

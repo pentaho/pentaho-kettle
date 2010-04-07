@@ -39,6 +39,7 @@ import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 
 /**
  * Wsdl abstraction.
@@ -159,7 +160,7 @@ public final class Wsdl implements java.io.Serializable {
 	            return wop;
         	}
         	catch(Exception e) {
-        		throw new KettleException("Could not retrieve WSDL Operator for operation name: "+operationName, e);
+        		LogChannel.GENERAL.logError("Could not retrieve WSDL Operator for operation name: "+operationName, e);
         	}
         }
         return null;

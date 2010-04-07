@@ -29,10 +29,10 @@ import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 
 public class PrepareExecutionTransServlet extends BaseHttpServlet implements CarteServletInterface {
-  private static Class<?> PKG = PrepareExecutionTransServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?>    PKG              = PrepareExecutionTransServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private static final long serialVersionUID = 3634806745372015720L;
-  public static final String CONTEXT_PATH = "/kettle/prepareExec";
+  private static final long  serialVersionUID = 3634806745372015720L;
+  public static final String CONTEXT_PATH     = "/kettle/prepareExec";
 
   public PrepareExecutionTransServlet() {
   }
@@ -49,6 +49,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
       logDebug(BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecutionRequested"));
 
     String transName = request.getParameter("name");
+    String id = request.getParameter("id");
     boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
 
     response.setStatus(HttpServletResponse.SC_OK);
@@ -63,14 +64,33 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
       out.println("<HTML>");
       out.println("<HEAD>");
       out.println("<TITLE>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecution") + "</TITLE>");
-      out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name="
-          + URLEncoder.encode(transName, "UTF-8") + "\">");
+      out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">");
       out.println("</HEAD>");
       out.println("<BODY>");
     }
 
     try {
-      Trans trans = getTransformationMap().getTransformation(transName);
+      // ID is optional...
+      //
+      Trans trans;
+      CarteObjectEntry entry;
+      if (Const.isEmpty(id)) {
+        // get the first transformation that matches...
+        //
+        entry = getTransformationMap().getFirstCarteObjectEntry(transName);
+        if (entry == null) {
+          trans = null;
+        } else {
+          id = entry.getId();
+          trans = getTransformationMap().getTransformation(entry);
+        }
+      } else {
+        // Take the ID into account!
+        //
+        entry = new CarteObjectEntry(transName, id);
+        trans = getTransformationMap().getTransformation(entry);
+      }
+
       TransConfiguration transConfiguration = getTransformationMap().getConfiguration(transName);
       if (trans != null && transConfiguration != null) {
         TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
@@ -89,15 +109,13 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
           } else {
 
             out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepared", transName) + "</H1>");
-            out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
-                + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
+            out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
           }
         } catch (Exception e) {
 
           String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true).toString();
           if (useXML) {
-            out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed", Const.CR
-                + logText + Const.CR + e.getLocalizedMessage())));
+            out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed", Const.CR + logText + Const.CR + e.getLocalizedMessage())));
           } else {
             out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Log.TransNotInit", transName) + "</H1>");
 
@@ -105,8 +123,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
             out.println(logText);
             out.println(e.getLocalizedMessage());
             out.println("</pre>");
-            out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
-                + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
+            out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
           }
         }
       } else {
@@ -114,14 +131,12 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
           out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName)));
         } else {
           out.println("<H1>" + BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName) + "</H1>");
-          out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">"
-              + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
+          out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
         }
       }
     } catch (Exception ex) {
       if (useXML) {
-        out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.UnexpectedError", Const.CR
-            + Const.getStackTracker(ex))));
+        out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker(ex))));
 
       } else {
         out.println("<p>");

@@ -40,22 +40,21 @@ public class CentralLogStore {
 			public void run() {
 				if (!busy.get()) {
 					busy.set(true);
-					int nrRemovedLines = 0;
-					long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes*60*1000;
-					synchronized(appender) {
-						Iterator<BufferLine> i = appender.getBufferIterator();
-						while (i.hasNext()) {
-							BufferLine bufferLine = i.next();
-
-							if (bufferLine.getEvent().timeStamp < minTimeBoundary) {
-								i.remove();
-								nrRemovedLines++;
-							} else {
-								break;
+					if (maxLogTimeoutMinutes>0) {
+						long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes*60*1000;
+						synchronized(appender) {
+							Iterator<BufferLine> i = appender.getBufferIterator();
+							while (i.hasNext()) {
+								BufferLine bufferLine = i.next();
+	
+								if (bufferLine.getEvent().timeStamp < minTimeBoundary) {
+									i.remove();
+								} else {
+									break;
+								}
 							}
 						}
 					}
-					// System.out.println("Nr of purged log lines: "+nrRemovedLines);
 					busy.set(false);
 				}
 			}

@@ -485,8 +485,9 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
     // Now, we're going to display the data in the table view
     //
-    if (wFields.get(tabIndex).isDisposed())
+    if (tabIndex>=wFields.size() || wFields.get(tabIndex).isDisposed()) {
       return;
+    }
 
     int selectionIndex = wFields.get(tabIndex).getSelectionIndex();
 
@@ -553,7 +554,8 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       wFields.get(tabIndex).setRowNums();
       wFields.get(tabIndex).optWidth(true);
     } else {
-      new TableItem(wFields.get(tabIndex).table, SWT.NONE); // Give it an item to prevent errors on various platforms.
+      wFields.clear();
+      // new TableItem(wFields.get(tabIndex).table, SWT.NONE); // Give it an item to prevent errors on various platforms.
     }
 
     if (selectionIndex >= 0 && selectionIndex < wFields.get(tabIndex).getItemCount()) {

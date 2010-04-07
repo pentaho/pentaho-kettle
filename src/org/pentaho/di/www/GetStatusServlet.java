@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -62,30 +64,32 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
 
     PrintStream out = new PrintStream(response.getOutputStream());
 
-    String[] transNames = getTransformationMap().getTransformationNames();
-    String[] jobNames = getJobMap().getJobNames();
+    List<CarteObjectEntry> transEntries = getTransformationMap().getTransformationObjects();
+    List<CarteObjectEntry> jobEntries = getJobMap().getJobObjects();
 
     if (useXML) {
       out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
       SlaveServerStatus serverStatus = new SlaveServerStatus();
       serverStatus.setStatusDescription("Online");
 
-      for (int i = 0; i < transNames.length; i++) {
-        String name = transNames[i];
-        Trans trans = getTransformationMap().getTransformation(name);
+      for (CarteObjectEntry entry : transEntries) {
+        String name = entry.getName();
+        String id = entry.getId();
+        Trans trans = getTransformationMap().getTransformation(entry);
         String status = trans.getStatus();
 
-        SlaveServerTransStatus sstatus = new SlaveServerTransStatus(name, status);
+        SlaveServerTransStatus sstatus = new SlaveServerTransStatus(name, id, status);
         sstatus.setPaused(trans.isPaused());
         serverStatus.getTransStatusList().add(sstatus);
       }
 
-      for (int i = 0; i < jobNames.length; i++) {
-        String name = jobNames[i];
+      for (CarteObjectEntry entry : jobEntries) {
+        String name = entry.getName();
+        String id = entry.getId();
         Job job = getJobMap().getJob(name);
         String status = job.getStatus();
 
-        serverStatus.getJobStatusList().add(new SlaveServerJobStatus(name, status));
+        serverStatus.getJobStatusList().add(new SlaveServerJobStatus(name, id, status));
       }
 
       try {
@@ -101,37 +105,67 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
 
       try {
         out.println("<table border=\"1\">");
-        out.print("<tr> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.TransName") + "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Status") + "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.LastLogDate") + "</th> </tr>");
+        out.print("<tr> <th>" + 
+        		BaseMessages.getString(PKG, "GetStatusServlet.TransName") + "</th> <th>" + 
+        		BaseMessages.getString(PKG, "GetStatusServlet.CarteId") + "</th> <th>" + 
+        		BaseMessages.getString(PKG, "GetStatusServlet.Status") + "</th> <th>" + 
+        		BaseMessages.getString(PKG, "GetStatusServlet.LastLogDate") + "</th> <th>" +
+        		BaseMessages.getString(PKG, "GetStatusServlet.Remove") + "</th> </tr>"
+        	);
 
-        Arrays.sort(transNames);
+        Collections.sort(transEntries);
         
-        for (int i = 0; i < transNames.length; i++) {
-          String name = transNames[i];
-          Trans trans = getTransformationMap().getTransformation(name);
+        for (CarteObjectEntry entry : transEntries) {
+          String name = entry.getName();
+          String id = entry.getId();
+          Trans trans = getTransformationMap().getTransformation(entry);
           String status = trans.getStatus();
-
+          String removeText = "";
+          // Finished, Stopped, Waiting : allow the user to remove the transformation
+          //
+          if (trans.isFinished() || trans.isStopped() || (!trans.isInitializing() && !trans.isRunning())) {
+        	  removeText = "<a href=\"" + convertContextPath(RemoveTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(name, "UTF-8") + "&id="+id+"\"> Remove </a>"; 
+          }
+          
           out.print("<tr>");
-          out.print("<td><a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(name, "UTF-8") + "\">" + name + "</a></td>");
+          out.print("<td><a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(name, "UTF-8") + "&id="+id+"\">" + name + "</a></td>");
+          out.print("<td>" + id + "</td>");
           out.print("<td>" + status + "</td>");
           out.print("<td>"+( trans.getLogDate()==null ? "-" : XMLHandler.date2string( trans.getLogDate() ))+"</td>");
+          out.print("<td>"+removeText+"</td>");
           out.print("</tr>");
         }
         out.print("</table><p>");
 
         out.println("<table border=\"1\">");
-        out.print("<tr> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.JobName") + "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Status")+ "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.LastLogDate") + "</th> </tr>");
+        out.print("<tr> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.JobName") + 
+        		"</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.CarteId")+ 
+        		"</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Status")+ 
+        		"</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.LastLogDate") + 
+        		"</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Remove")+ 
+        		"</th> </tr>");
 
-        Arrays.sort(jobNames);
+        Collections.sort(jobEntries);
 
-        for (int i = 0; i < jobNames.length; i++) {
-          String name = jobNames[i];
+        for (CarteObjectEntry entry : jobEntries) {
+          String name = entry.getName();
+          String id = entry.getId();
           Job job = getJobMap().getJob(name);
           String status = job.getStatus();
 
+          String removeText;
+          if (job.isFinished() || job.isStopped()) {
+        	  removeText = "<a href=\"" + convertContextPath(RemoveJobServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(name, "UTF-8") + "&id="+id+"\"> Remove </a>"; 
+          } else {
+        	  removeText = "";
+          }
+
           out.print("<tr>");
-          out.print("<td><a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(name, "UTF-8") + "\">" + name + "</a></td>");
+          out.print("<td><a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(name, "UTF-8") + "&id="+id+"\">" + name + "</a></td>");
+          out.print("<td>" + id + "</td>");
           out.print("<td>" + status + "</td>");
           out.print("<td>"+( job.getLogDate()==null ? "-" : XMLHandler.date2string( job.getLogDate() ))+"</td>");
+          out.print("<td>"+removeText+"</td>");
           out.print("</tr>");
         }
         out.print("</table>");

@@ -26,105 +26,125 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 public class CleanupTransServlet extends BaseHttpServlet implements CarteServletInterface {
-  private static Class<?> PKG = CleanupTransServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+	private static Class<?>		PKG					= CleanupTransServlet.class;	// for
+																					// i18n
+																					// purposes,
+																					// needed
+																					// by
+																					// Translator2!!
+																					// $NON-NLS-1$
 
-  private static final long serialVersionUID = -5879200987669847357L;
+	private static final long	serialVersionUID	= -5879200987669847357L;
 
-  public static final String CONTEXT_PATH = "/kettle/cleanupTrans";
+	public static final String	CONTEXT_PATH		= "/kettle/cleanupTrans";
 
-  public CleanupTransServlet() {
-  }
-  
-  public CleanupTransServlet(TransformationMap transformationMap) {
-    super(transformationMap);
-  }
+	public CleanupTransServlet() {
+	}
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
-      return;
-    }
+	public CleanupTransServlet(TransformationMap transformationMap) {
+		super(transformationMap);
+	}
 
-    if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "TransStatusServlet.Log.TransCleanupRequested"));
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
+			return;
+		}
 
-    String transName = request.getParameter("name");
-    String sockets = request.getParameter("sockets");
+		if (log.isDebug())
+			logDebug(BaseMessages.getString(PKG, "TransStatusServlet.Log.TransCleanupRequested"));
 
-    boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
+		String transName = request.getParameter("name");
+		String id = request.getParameter("id");
+		boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
 
-    response.setStatus(HttpServletResponse.SC_OK);
+		response.setStatus(HttpServletResponse.SC_OK);
 
-    PrintWriter out = response.getWriter();
-    if (useXML) {
-      response.setContentType("text/xml");
-      response.setCharacterEncoding(Const.XML_ENCODING);
-      out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
-    } else {
-      response.setContentType("text/html");
-      out.println("<HTML>");
-      out.println("<HEAD>");
-      out.println("<TITLE>Transformation cleanup</TITLE>");
-      out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name="
-          + URLEncoder.encode(transName, "UTF-8") + "\">");
-      out.println("</HEAD>");
-      out.println("<BODY>");
-    }
+		PrintWriter out = response.getWriter();
+		if (useXML) {
+			response.setContentType("text/xml");
+			response.setCharacterEncoding(Const.XML_ENCODING);
+			out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
+		} else {
+			response.setContentType("text/html");
+			out.println("<HTML>");
+			out.println("<HEAD>");
+			out.println("<TITLE>Transformation cleanup</TITLE>");
+			out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">");
+			out.println("</HEAD>");
+			out.println("<BODY>");
+		}
 
-    try {
-      String message;
+		try {
+			String message;
 
-      if ("Y".equalsIgnoreCase(sockets)) {
-        getTransformationMap().deallocateServerSocketPorts(transName);
-        message = BaseMessages.getString(PKG, "TransStatusServlet.Log.TransServerSocketPortsReleased", transName);
-      } else {
-        Trans trans = getTransformationMap().getTransformation(transName);
-        if (trans != null) {
-          trans.cleanup();
+			getTransformationMap().deallocateServerSocketPorts(transName, id);
+			message = BaseMessages.getString(PKG, "TransStatusServlet.Log.TransServerSocketPortsReleased", transName);
 
-          // Also release the server sockets
-          message = BaseMessages.getString(PKG, "TransStatusServlet.Log.TransCleanednup", transName);
-        } else {
-          message = "The specified transformation [" + transName + "] could not be found";
-          if (useXML) {
-            out.println(new WebResult(WebResult.STRING_ERROR, message));
-          } else {
-            out.println("<H1>" + message + "</H1>");
-            out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">"
-                + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
-          }
-        }
-      }
+			// ID is optional...
+			//
+			Trans trans;
+			CarteObjectEntry entry;
+			if (Const.isEmpty(id)) {
+				// get the first transformation that matches...
+				//
+				entry = getTransformationMap().getFirstCarteObjectEntry(transName);
+				if (entry == null) {
+					trans = null;
+				} else {
+					id = entry.getId();
+					trans = getTransformationMap().getTransformation(entry);
+				}
+			} else {
+				// Take the ID into account!
+				//
+				entry = new CarteObjectEntry(transName, id);
+				trans = getTransformationMap().getTransformation(entry);
+			}
 
-      if (useXML) {
-        out.println(new WebResult(WebResult.STRING_OK, message).getXML());
-      } else {
-        out.println("<H1>" + message + "</H1>");
-        out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
-            + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
-      }
-    } catch (Exception ex) {
-      if (useXML) {
-        out.println(new WebResult(WebResult.STRING_ERROR, "Unexpected error during transformations cleanup:" + Const.CR + Const.getStackTracker(ex)));
-      } else {
-        out.println("<p>");
-        out.println("<pre>");
-        ex.printStackTrace(out);
-        out.println("</pre>");
-      }
-    }
+			if (trans != null) {
+				trans.cleanup();
 
-    if (!useXML) {
-      out.println("<p>");
-      out.println("</BODY>");
-      out.println("</HTML>");
-    }
-  }
+				// Also release the server sockets
+				message = BaseMessages.getString(PKG, "TransStatusServlet.Log.TransCleanednup", transName);
+			} else {
+				message = "The specified transformation [" + transName + "] could not be found";
+				if (useXML) {
+					out.println(new WebResult(WebResult.STRING_ERROR, message));
+				} else {
+					out.println("<H1>" + message + "</H1>");
+					out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
+				}
+			}
 
-  public String toString() {
-    return "Transformation cleanup";
-  }
+			if (useXML) {
+				out.println(new WebResult(WebResult.STRING_OK, message).getXML());
+			} else {
+				out.println("<H1>" + message + "</H1>");
+				out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
+			}
+		} catch (Exception ex) {
+			if (useXML) {
+				out.println(new WebResult(WebResult.STRING_ERROR, "Unexpected error during transformations cleanup:" + Const.CR + Const.getStackTracker(ex)));
+			} else {
+				out.println("<p>");
+				out.println("<pre>");
+				ex.printStackTrace(out);
+				out.println("</pre>");
+			}
+		}
 
-  public String getService() {
-    return CONTEXT_PATH + " (" + toString() + ")";
-  }
+		if (!useXML) {
+			out.println("<p>");
+			out.println("</BODY>");
+			out.println("</HTML>");
+		}
+	}
+
+	public String toString() {
+		return "Transformation cleanup";
+	}
+
+	public String getService() {
+		return CONTEXT_PATH + " (" + toString() + ")";
+	}
 }

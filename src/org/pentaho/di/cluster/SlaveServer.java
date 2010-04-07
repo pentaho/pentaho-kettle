@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,9 @@ import org.pentaho.di.www.GetJobStatusServlet;
 import org.pentaho.di.www.GetSlavesServlet;
 import org.pentaho.di.www.GetStatusServlet;
 import org.pentaho.di.www.GetTransStatusServlet;
+import org.pentaho.di.www.PauseTransServlet;
+import org.pentaho.di.www.RemoveJobServlet;
+import org.pentaho.di.www.RemoveTransServlet;
 import org.pentaho.di.www.SlaveServerDetection;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.di.www.SlaveServerStatus;
@@ -74,8 +78,7 @@ import org.pentaho.di.www.WebResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class SlaveServer 
-	extends ChangedFlag 
+public class SlaveServer  extends ChangedFlag 
 	implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface, XMLInterface
 {
 	private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -107,12 +110,15 @@ public class SlaveServer
     private VariableSpace variables = new Variables();
 
 	private ObjectRevision objectRevision;
+	
+	private Date changedDate;
     
     public SlaveServer()
     {
     	initializeVariablesFrom(null);
         id=null;
         this.log = new LogChannel(STRING_SLAVESERVER);
+        this.changedDate = new Date();
     }
     
     public SlaveServer(String name, String hostname, String port, String username, String password)
@@ -635,51 +641,63 @@ public class SlaveServer
         return detections;
     }
 
-    public SlaveServerTransStatus getTransStatus(String transName, int startLogLineNr) throws Exception
+    public SlaveServerTransStatus getTransStatus(String transName, String carteObjectId, int startLogLineNr) throws Exception
     {
-        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerTransStatus.fromXML(xml);
     }
     
-    public SlaveServerJobStatus getJobStatus(String jobName, int startLogLineNr) throws Exception
+    public SlaveServerJobStatus getJobStatus(String jobName, String carteObjectId, int startLogLineNr) throws Exception
     {
-        String xml = execService(GetJobStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetJobStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&id="+carteObjectId+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerJobStatus.fromXML(xml);
     }
     
-    public WebResult stopTransformation(String transName) throws Exception
+    public WebResult stopTransformation(String transName, String carteObjectId) throws Exception
     {
-        String xml = execService(StopTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
-        return WebResult.fromXMLString(xml);
-    }
-    
-    public WebResult stopJob(String transName) throws Exception
-    {
-        String xml = execService(StopJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
-        return WebResult.fromXMLString(xml);
-    }
-    
-    public WebResult startTransformation(String transName) throws Exception
-    {
-        String xml = execService(StartTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
-        return WebResult.fromXMLString(xml);
-    }
-    
-    public WebResult startJob(String transName) throws Exception
-    {
-        String xml = execService(StartJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
+        String xml = execService(StopTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
 
-    public WebResult cleanupTransformation(String transName) throws Exception
+    public WebResult pauseResumeTransformation(String transName, String carteObjectId) throws Exception
     {
-        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(PauseTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        return WebResult.fromXMLString(xml);
+    }
+
+    public WebResult removeTransformation(String transName, String carteObjectId) throws Exception
+    {
+        String xml = execService(RemoveTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        return WebResult.fromXMLString(xml);
+    }
+
+    public WebResult removeJob(String jobName, String carteObjectId) throws Exception
+    {
+        String xml = execService(RemoveJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&id="+carteObjectId+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        return WebResult.fromXMLString(xml);
+    }
+
+    public WebResult stopJob(String transName, String carteObjectId) throws Exception
+    {
+        String xml = execService(StopJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y&id="+carteObjectId); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
     
-    public WebResult deallocatePorts(String transName) throws Exception
+    public WebResult startTransformation(String transName, String carteObjectId) throws Exception
     {
-        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?sockets=Y&name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(StartTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
+        return WebResult.fromXMLString(xml);
+    }
+    
+    public WebResult startJob(String jobName, String carteObjectId) throws Exception
+    {
+        String xml = execService(StartJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&xml=Y&id="+carteObjectId);  //$NON-NLS-1$ //$NON-NLS-2$
+        return WebResult.fromXMLString(xml);
+    }
+
+    public WebResult cleanupTransformation(String transName, String carteObjectId) throws Exception
+    {
+        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
     
@@ -888,10 +906,24 @@ public class SlaveServer
 		String xml = execService(
 				SniffStepServlet.CONTEXT_PATH+"/?trans="+URLEncoder.encode(transName, "UTF-8")+
 				"&step="+URLEncoder.encode(stepName, "UTF-8")+
-				"&copy="+copyNr+
+				"&copynr="+copyNr+
 				"&type="+type+
 				"&lines="+lines+
 				"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
 		return xml;
+	}
+
+	/**
+	 * @return the changedDate
+	 */
+	public Date getChangedDate() {
+		return changedDate;
+	}
+
+	/**
+	 * @param changedDate the changedDate to set
+	 */
+	public void setChangedDate(Date changedDate) {
+		this.changedDate = changedDate;
 	}
 }

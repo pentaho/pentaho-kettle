@@ -549,6 +549,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		// Open the transformation...
 		// Default directory for now...
         // XXX: This seems a bit odd here.  These three log messages all work off of getFilename().  Why are there three?
+        //
         if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningFile",environmentSubstitute(getFilename())));
         if (!Const.isEmpty(getFilename()))
         {
@@ -829,7 +830,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 	// Send the XML over to the slave server
                 	// Also start the transformation over there...
                 	//
-                	Trans.sendToSlaveServer(transMeta, transExecutionConfiguration, rep);
+                	String carteObjectId = Trans.sendToSlaveServer(transMeta, transExecutionConfiguration, rep);
                 	
                 	// Now start the monitoring...
                 	//
@@ -838,7 +839,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 	{
                 		try 
                 		{
-							transStatus = remoteSlaveServer.getTransStatus(transMeta.getName(), 0);
+							transStatus = remoteSlaveServer.getTransStatus(transMeta.getName(), carteObjectId, 0);
 							if (!transStatus.isRunning())
 							{
 								// The transformation is finished, get the result...
@@ -855,7 +856,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			                    
 			                    // Make sure to clean up : write a log record etc, close any left-over sockets etc.
 			                    //
-			                    remoteSlaveServer.cleanupTransformation(transMeta.getName());
+			                    remoteSlaveServer.cleanupTransformation(transMeta.getName(), carteObjectId);
 			                    
 								break;
 							}
@@ -876,11 +877,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 		if (transStatus==null || transStatus.isRunning()) {
                 			// Try a remote abort ...
                 			//
-                			remoteSlaveServer.stopTransformation(transMeta.getName());
+                			remoteSlaveServer.stopTransformation(transMeta.getName(), transStatus.getId());
                 			
                 			// And a cleanup...
                 			//
-                			remoteSlaveServer.cleanupTransformation(transMeta.getName());
+                			remoteSlaveServer.cleanupTransformation(transMeta.getName(), transStatus.getId());
                 			
                 			// Set an error state!
                 			//

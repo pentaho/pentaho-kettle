@@ -9,7 +9,6 @@
 		<tooltip>i18n:org.pentaho.di.repository:RepositoryType.Description.KettleDatabaseRepository</tooltip>
 		<classname>org.pentaho.di.repository.kdr.KettleDatabaseRepository</classname>
 		<meta-classname>org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta</meta-classname>
-		<dialog-classname>org.pentaho.di.ui.repository.dialog.KettleDatabaseRepositoryDialog</dialog-classname>
 		<version-browser-classname/>
 	</repository>
 	
@@ -22,7 +21,6 @@
 		<tooltip>i18n:org.pentaho.di.repository:RepositoryType.Description.KettleFileRepository</tooltip>
 		<classname>org.pentaho.di.repository.filerep.KettleFileRepository</classname>
 		<meta-classname>org.pentaho.di.repository.filerep.KettleFileRepositoryMeta</meta-classname>
-		<dialog-classname>org.pentaho.di.ui.repository.dialog.KettleFileRepositoryDialog</dialog-classname>
 		<version-browser-classname/>
 	</repository>
 	 -->

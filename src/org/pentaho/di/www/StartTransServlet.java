@@ -27,98 +27,122 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 public class StartTransServlet extends BaseHttpServlet implements CarteServletInterface {
- 
-  private static Class<?> PKG = StartTransServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
-  private static final long serialVersionUID = -5879200987669847357L;
-  
-  public static final String CONTEXT_PATH = "/kettle/startTrans";
 
-  public StartTransServlet() {
-  }
+	private static Class<?>		PKG					= StartTransServlet.class;	// for
+																				// i18n
+																				// purposes,
+																				// needed
+																				// by
+																				// Translator2!!
+																				// $NON-NLS-1$
+	private static final long	serialVersionUID	= -5879200987669847357L;
 
-  public StartTransServlet(TransformationMap transformationMap) {
-    super(transformationMap);
-  }
+	public static final String	CONTEXT_PATH		= "/kettle/startTrans";
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
-      return;
-    }
+	public StartTransServlet() {
+	}
 
-    if (log.isDebug())
-      logDebug(BaseMessages.getString(PKG, "StartTransServlet.Log.StartTransRequested"));
+	public StartTransServlet(TransformationMap transformationMap) {
+		super(transformationMap);
+	}
 
-    String transName = request.getParameter("name");
-    if (StringUtils.isEmpty(transName)) {
-      transName = "";
-    }
-    boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
+			return;
+		}
 
-    response.setStatus(HttpServletResponse.SC_OK);
+		if (log.isDebug())
+			logDebug(BaseMessages.getString(PKG, "StartTransServlet.Log.StartTransRequested"));
 
-    PrintWriter out = response.getWriter();
-    if (useXML) {
-      response.setContentType("text/xml");
-      response.setCharacterEncoding(Const.XML_ENCODING);
-      out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
-    } else {
-      response.setContentType("text/html");
-      out.println("<HTML>");
-      out.println("<HEAD>");
-      out.println("<TITLE>" + BaseMessages.getString(PKG, "StartTransServlet.Log.StartOfTrans") + "</TITLE>");
-      out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8")
-          + "\">");
-      out.println("</HEAD>");
-      out.println("<BODY>");
-    }
+		String transName = request.getParameter("name");
+		String id = request.getParameter("id");
+		if (StringUtils.isEmpty(transName)) {
+			transName = "";
+		}
+		boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
 
-    try {
-      Trans trans = getTransformationMap().getTransformation(transName);
-      if (trans != null) {
-        trans.execute(null);
+		response.setStatus(HttpServletResponse.SC_OK);
 
-        String message = BaseMessages.getString(PKG, "StartTransServlet.Log.TransStarted", transName);
-        if (useXML) {
-          out.println(new WebResult(WebResult.STRING_OK, message).getXML());
-        } else {
+		PrintWriter out = response.getWriter();
+		if (useXML) {
+			response.setContentType("text/xml");
+			response.setCharacterEncoding(Const.XML_ENCODING);
+			out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
+		} else {
+			response.setContentType("text/html");
+			out.println("<HTML>");
+			out.println("<HEAD>");
+			out.println("<TITLE>" + BaseMessages.getString(PKG, "StartTransServlet.Log.StartOfTrans") + "</TITLE>");
+			out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">");
+			out.println("</HEAD>");
+			out.println("<BODY>");
+		}
 
-          out.println("<H1>" + message + "</H1>");
-          out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
-              + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
-        }
-      } else {
-        String message = BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName);
-        if (useXML) {
-          out.println(new WebResult(WebResult.STRING_ERROR, message));
-        } else {
-          out.println("<H1>" + message + "</H1>");
-          out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
-        }
-      }
-    } catch (Exception ex) {
-      if (useXML) {
-        out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "StartTransServlet.Error.UnexpectedError", Const.CR
-            + Const.getStackTracker(ex))));
-      } else {
-        out.println("<p>");
-        out.println("<pre>");
-        ex.printStackTrace(out);
-        out.println("</pre>");
-      }
-    }
+		try {
+			// ID is optional...
+			//
+			Trans trans;
+			CarteObjectEntry entry;
+			if (Const.isEmpty(id)) {
+				// get the first transformation that matches...
+				//
+				entry = getTransformationMap().getFirstCarteObjectEntry(transName);
+				if (entry == null) {
+					trans = null;
+				} else {
+					id = entry.getId();
+					trans = getTransformationMap().getTransformation(entry);
+				}
+			} else {
+				// Take the ID into account!
+				//
+				entry = new CarteObjectEntry(transName, id);
+				trans = getTransformationMap().getTransformation(entry);
+			}
 
-    if (!useXML) {
-      out.println("<p>");
-      out.println("</BODY>");
-      out.println("</HTML>");
-    }
-  }
+			if (trans != null) {
+				trans.execute(null);
 
-  public String toString() {
-    return "Start transformation";
-  }
+				String message = BaseMessages.getString(PKG, "StartTransServlet.Log.TransStarted", transName);
+				if (useXML) {
+					out.println(new WebResult(WebResult.STRING_OK, message).getXML());
+				} else {
 
-  public String getService() {
-    return CONTEXT_PATH + " (" + toString() + ")";
-  }
+					out.println("<H1>" + message + "</H1>");
+					out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
+				}
+			} else {
+				String message = BaseMessages.getString(PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName);
+				if (useXML) {
+					out.println(new WebResult(WebResult.STRING_ERROR, message, id));
+				} else {
+					out.println("<H1>" + message + "</H1>");
+					out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
+				}
+			}
+		} catch (Exception ex) {
+			if (useXML) {
+				out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "StartTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker(ex))));
+			} else {
+				out.println("<p>");
+				out.println("<pre>");
+				ex.printStackTrace(out);
+				out.println("</pre>");
+			}
+		}
+
+		if (!useXML) {
+			out.println("<p>");
+			out.println("</BODY>");
+			out.println("</HTML>");
+		}
+	}
+
+	public String toString() {
+		return "Start transformation";
+	}
+
+	public String getService() {
+		return CONTEXT_PATH + " (" + toString() + ")";
+	}
 }

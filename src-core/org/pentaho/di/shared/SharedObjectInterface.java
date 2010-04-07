@@ -12,6 +12,8 @@
 */
 package org.pentaho.di.shared;
 
+import java.util.Date;
+
 import org.pentaho.di.core.exception.KettleException;
 
 public interface SharedObjectInterface
@@ -21,4 +23,6 @@ public interface SharedObjectInterface
     
     public String getName();
     public String getXML() throws KettleException;
+    
+    public Date getChangedDate();
 }

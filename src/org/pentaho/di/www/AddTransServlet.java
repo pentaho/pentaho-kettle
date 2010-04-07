@@ -72,6 +72,7 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
 
     try {
       // First read the complete transformation in memory from the request
+      //
       StringBuilder xml = new StringBuilder(request.getContentLength());
       int c;
       while ((c = in.read()) != -1) {
@@ -101,13 +102,6 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
       //
       final Repository repository = transConfiguration.getTransExecutionConfiguration().getRepository();
 
-      Trans oldTrans = getTransformationMap().getTransformation(transMeta.getName());
-      if (oldTrans != null) {
-        // To prevent serious memory leaks in the logging sub-system, we clear out the rows from the previous execution...
-        //
-        CentralLogStore.discardLines(oldTrans.getLogChannelId(), true);
-      }
-
       // Create the transformation and store in the list...
       //
       final Trans trans = new Trans(transMeta);
@@ -117,14 +111,17 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
 
       Trans oldOne = getTransformationMap().getTransformation(trans.getName());
       if (oldOne != null) {
-        if (!oldOne.isStopped() && !oldOne.isFinished()) {
-          if (oldOne.isRunning() || oldOne.isPreparing() || oldOne.isInitializing()) {
-            throw new Exception("A transformation with the same name exists and is not idle." + Const.CR + "Please stop the transformation first.");
-          }
+        if (oldOne.isStopped() || oldOne.isFinished()) {
+        	
+            // To prevent serious memory leaks in the logging sub-system, we clear out the rows from the previous execution...
+            // As such, every time we add a new one we clean out a used old one.
+        	// Please note that it's better to configure automatic cleanup after a certain period.
+        	//
+            CentralLogStore.discardLines(oldOne.getLogChannelId(), true);
         }
       }
 
-      getTransformationMap().addTransformation(transMeta.getName(), trans, transConfiguration);
+      String carteObjectId = getTransformationMap().addTransformation(transMeta.getName(), trans, transConfiguration);
 
       if (repository != null) {
         // The repository connection is open: make sure we disconnect from the repository once we
@@ -137,22 +134,16 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
         });
       }
 
-      String message;
-      if (oldOne != null) {
-        message = "Transformation '" + trans.getName() + "' was replaced in the list.";
-      } else {
-        message = "Transformation '" + trans.getName() + "' was added to the list.";
-      }
-      // message+=" (session id = "+request.getSession(true).getId()+")";
+      String message = "Transformation '" + trans.getName() + "' was added to the list with id "+carteObjectId;
 
       if (useXML) {
         // Return the log channel id as well
         //
-        out.println(new WebResult(WebResult.STRING_OK, message, trans.getLogChannelId()));
+        out.println(new WebResult(WebResult.STRING_OK, message, carteObjectId));
       } else {
         out.println("<H1>" + message + "</H1>");
-        out.println("<p><a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "?name=" + trans.getName()
-            + "\">Go to the transformation status page</a><p>");
+        out.println("<p><a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + trans.getName()
+            + "&id="+carteObjectId+"\">Go to the transformation status page</a><p>");
       }
     } catch (Exception ex) {
       if (useXML) {

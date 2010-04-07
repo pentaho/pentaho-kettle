@@ -36,6 +36,9 @@ import javax.wsdl.extensions.soap12.SOAP12Address;
 import javax.wsdl.extensions.soap12.SOAP12Binding;
 import javax.wsdl.extensions.soap12.SOAP12Header;
 import javax.wsdl.extensions.soap12.SOAP12Operation;
+import javax.xml.ws.http.HTTPBinding;
+
+import org.pentaho.di.core.exception.KettleException;
 
 import com.ibm.wsdl.extensions.soap12.SOAP12BodyImpl;
 
@@ -87,12 +90,12 @@ final class WsdlUtils {
     }
 
     /**
-     * Get the SOAPBinding style for the specifed WSDL Port.
+     * Get the SOAPBinding style for the specified WSDL Port.
      *
      * @param binding A WSDL Binding instance.
      * @return String either 'document' or 'rpc', if not found in WSDL defaults to 'document'.
      */
-    protected static String getSOAPBindingStyle(Binding binding) {
+    protected static String getSOAPBindingStyle(Binding binding) throws KettleException {
         String style = SOAP_BINDING_DEFAULT;
         ExtensibilityElement soapBindingElem =
                 findExtensibilityElement(binding, SOAP_BINDING_ELEMENT_NAME);
@@ -100,8 +103,10 @@ final class WsdlUtils {
         if (soapBindingElem != null) {
         	if (soapBindingElem instanceof SOAP12Binding) {
         		style = ((SOAP12Binding) soapBindingElem).getStyle(); 
-        	} else {
+        	} else if (soapBindingElem instanceof SOAPBinding) {
         		style = ((SOAPBinding) soapBindingElem).getStyle(); 
+        	} else {
+        		throw new KettleException("Binding type "+soapBindingElem+" encountered. The Web Service Lookup step only supports SOAP Bindings!");
         	} 
         }
         return style;

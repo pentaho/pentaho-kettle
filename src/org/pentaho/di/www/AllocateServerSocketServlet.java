@@ -37,6 +37,7 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
 
   public static final String PARAM_RANGE_START = "rangeStart";
   public static final String PARAM_HOSTNAME = "host";
+  public static final String PARAM_ID = "id";
   public static final String PARAM_TRANSFORMATION_NAME = "trans";
   public static final String PARAM_SOURCE_SLAVE = "sourceSlave";
   public static final String PARAM_SOURCE_STEPNAME = "sourceStep";
@@ -66,6 +67,7 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
 
     String rangeStart = request.getParameter(PARAM_RANGE_START);
     String hostname = request.getParameter(PARAM_HOSTNAME);
+    String id = request.getParameter(PARAM_ID);
     String transName = request.getParameter(PARAM_TRANSFORMATION_NAME);
     String sourceSlaveName = request.getParameter(PARAM_SOURCE_SLAVE);
     String sourceStepName = request.getParameter(PARAM_SOURCE_STEPNAME);
@@ -81,7 +83,7 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
       response.setContentType("text/html");
     }
 
-    SocketPortAllocation port = getTransformationMap().allocateServerSocketPort(Const.toInt(rangeStart, 40000), hostname, transName, sourceSlaveName,
+    SocketPortAllocation port = getTransformationMap().allocateServerSocketPort(Const.toInt(rangeStart, 40000), hostname, id, transName, sourceSlaveName,
         sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
 
     PrintStream out = new PrintStream(response.getOutputStream());

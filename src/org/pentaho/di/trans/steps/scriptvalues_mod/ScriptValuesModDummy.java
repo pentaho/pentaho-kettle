@@ -23,6 +23,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
@@ -245,7 +246,11 @@ import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 		public Trans getTrans() {
 			return null;
 		}
-		
+
+		public TransMeta getTransMeta() {
+			return null;
+		}
+
 		public LogChannelInterface getLogChannel() {
 			return null;
 		}

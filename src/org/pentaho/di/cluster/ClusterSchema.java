@@ -13,6 +13,7 @@
 package org.pentaho.di.cluster;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -83,6 +84,8 @@ public class ClusterSchema
     
     private ObjectRevision objectRevision;
     
+    private Date changedDate;
+    
     public ClusterSchema()
     {
         id=null;
@@ -92,6 +95,7 @@ public class ClusterSchema
         socketsCompressed = true;
         basePort = "40000"; //$NON-NLS-1$
         dynamic = false;
+        this.changedDate=new Date();
     }
     
     /**
@@ -102,6 +106,7 @@ public class ClusterSchema
     {
         this.name = name;
         this.slaveServers = slaveServers;
+        this.changedDate=new Date();
     }
 
     public ClusterSchema clone() 
@@ -520,5 +525,18 @@ public class ClusterSchema
 	public void setDescription(String description) {
 		// NOT USED
 	}
-	
+
+	/**
+	 * @return the changedDate
+	 */
+	public Date getChangedDate() {
+		return changedDate;
+	}
+
+	/**
+	 * @param changedDate the changedDate to set
+	 */
+	public void setChangedDate(Date changedDate) {
+		this.changedDate = changedDate;
+	}	
 }

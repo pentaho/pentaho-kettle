@@ -120,8 +120,8 @@ public class Carte
     					try {
 	    					// Check all transformations...
 	    					//
-	    					for (String transformationName : transformationMap.getTransformationNames()) {
-	    						Trans trans = transformationMap.getTransformation(transformationName);
+	    					for (CarteObjectEntry entry : transformationMap.getTransformationObjects()) {
+	    						Trans trans = transformationMap.getTransformation(entry);
 	    						
 	    						// See if the transformation is finished or stopped.
 	    						//
@@ -132,16 +132,16 @@ public class Carte
 	    							if (diffInMinutes>=config.getObjectTimeoutMinutes()) {
 	    								// Let's remove this from the transformation map...
 	    								//
-	    								transformationMap.removeTransformation(transformationName);
-    									transformationMap.deallocateServerSocketPorts(transformationName);
+	    								transformationMap.removeTransformation(entry);
+    									transformationMap.deallocateServerSocketPorts(entry);
 	    							}
 	    						}
 	    					}
 	    					
 	    					// And the jobs...
 	    					//
-	    					for (String jobName : jobMap.getJobNames()) {
-	    						Job job = jobMap.getJob(jobName);
+	    					for (CarteObjectEntry entry : jobMap.getJobObjects()) {
+	    						Job job = jobMap.getJob(entry);
 	    						
 	    						// See if the job is finished or stopped.
 	    						//
@@ -152,7 +152,7 @@ public class Carte
 	    							if (diffInMinutes>=config.getObjectTimeoutMinutes()) {
 	    								// Let's remove this from the job map...
 	    								//
-	    								jobMap.removeJob(jobName);
+	    								jobMap.removeJob(entry);
 	    							}
 	    						}
 	    					}

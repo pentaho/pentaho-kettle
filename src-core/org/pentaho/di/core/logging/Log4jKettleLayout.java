@@ -84,21 +84,23 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
                 {
                     BuildVersion buildVersion = BuildVersion.getInstance();
                     line.append(ERROR_STRING);
-                    line.append(" (version ");
-                    line.append(buildVersion.getVersion());
-                    if (!Const.isEmpty(buildVersion.getRevision())) {
-                    	line.append(", build ");
-                    	line.append(buildVersion.getRevision());
+                    if (i==0) {
+	                    line.append(" (version ");
+	                    line.append(buildVersion.getVersion());
+	                    if (!Const.isEmpty(buildVersion.getRevision())) {
+	                    	line.append(", build ");
+	                    	line.append(buildVersion.getRevision());
+	                    }
+	                    if (!Const.isEmpty(buildVersion.getBuildDate())) {
+		                    line.append(" from ");
+		                    line.append( buildVersion.getBuildDate() );
+	                    }
+	                    if (!Const.isEmpty(buildVersion.getBuildUser())) {
+	                    	line.append(" by ");
+	                    	line.append(buildVersion.getBuildUser());
+	                    }
+	                    line.append(") : ");
                     }
-                    if (!Const.isEmpty(buildVersion.getBuildDate())) {
-	                    line.append(" from ");
-	                    line.append( buildVersion.getBuildDate() );
-                    }
-                    if (!Const.isEmpty(buildVersion.getBuildUser())) {
-                    	line.append(" by ");
-                    	line.append(buildVersion.getBuildUser());
-                    }
-                    line.append(") : ");                
                  }
                 
                 line.append(parts[i]);

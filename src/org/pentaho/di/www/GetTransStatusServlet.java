@@ -55,6 +55,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
       logDebug(BaseMessages.getString(PKG, "TransStatusServlet.Log.TransStatusRequested"));
 
     String transName = request.getParameter("name");
+    String id = request.getParameter("id");
     boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
     int startLineNr = Const.toInt(request.getParameter("from"), 0);
 
@@ -69,8 +70,27 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
 
     PrintWriter out = response.getWriter();
 
-    Trans trans = getTransformationMap().getTransformation(transName);
-
+    // ID is optional...
+    //
+    Trans trans;
+    CarteObjectEntry entry;
+    if (Const.isEmpty(id)) {
+    	// get the first transformation that matches...
+    	//
+    	entry = getTransformationMap().getFirstCarteObjectEntry(transName);
+    	if (entry==null) {
+    		trans = null;
+    	} else {
+    		id = entry.getId();
+    		trans = getTransformationMap().getTransformation(entry);
+    	}
+    } else {
+    	// Take the ID into account!
+    	//
+    	entry = new CarteObjectEntry(transName, id);
+    	trans = getTransformationMap().getTransformation(entry);
+    }
+    
     if (trans != null) {
       String status = trans.getStatus();
       int lastLineNr = CentralLogStore.getLastBufferLineNr();
@@ -81,7 +101,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
         response.setCharacterEncoding(Const.XML_ENCODING);
         out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
 
-        SlaveServerTransStatus transStatus = new SlaveServerTransStatus(transName, status);
+        SlaveServerTransStatus transStatus = new SlaveServerTransStatus(transName, entry.getId(), status);
         transStatus.setFirstLoggingLineNr(startLineNr);
         transStatus.setLastLoggingLineNr(lastLineNr);
 
@@ -132,11 +152,15 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
 
         try {
           out.println("<table border=\"1\">");
-          out.print("<tr> <th>" + BaseMessages.getString(PKG, "TransStatusServlet.TransName") + "</th> <th>"
-              + BaseMessages.getString(PKG, "TransStatusServlet.TransStatus") + "</th> </tr>");
+          out.print("<tr> <th>" + 
+        		BaseMessages.getString(PKG, "TransStatusServlet.TransName") + "</th> <th>" + 
+        		BaseMessages.getString(PKG, "TransStatusServlet.CarteObjectId") + "</th> <th>" +
+        		BaseMessages.getString(PKG, "TransStatusServlet.TransStatus") + "</th> </tr>"
+        	);
 
           out.print("<tr>");
           out.print("<td>" + transName + "</td>");
+          out.print("<td>" + id + "</td>");
           out.print("<td>" + status + "</td>");
           out.print("</tr>");
           out.print("</table>");
@@ -144,19 +168,19 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
           out.print("<p>");
 
           if ((trans.isFinished() && trans.isRunning()) || (!trans.isRunning() && !trans.isPreparing() && !trans.isInitializing())) {
-            out.print("<a href=\"" + convertContextPath(StartTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
+            out.print("<a href=\"" + convertContextPath(StartTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">"
                 + BaseMessages.getString(PKG, "TransStatusServlet.StartTrans") + "</a>");
             out.print("<p>");
-            out.print("<a href=\"" + convertContextPath(PrepareExecutionTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
+            out.print("<a href=\"" + convertContextPath(PrepareExecutionTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">"
                 + BaseMessages.getString(PKG, "TransStatusServlet.PrepareTrans") + "</a><br>");
           } else if (trans.isRunning()) {
-            out.print("<a href=\"" + convertContextPath(PauseTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
+            out.print("<a href=\"" + convertContextPath(PauseTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">"
                 + BaseMessages.getString(PKG, "PauseStatusServlet.PauseResumeTrans") + "</a><br>");
-            out.print("<a href=\"" + convertContextPath(StopTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
+            out.print("<a href=\"" + convertContextPath(StopTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">"
                 + BaseMessages.getString(PKG, "TransStatusServlet.StopTrans") + "</a>");
             out.print("<p>");
           }
-          out.print("<a href=\"" + convertContextPath(CleanupTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
+          out.print("<a href=\"" + convertContextPath(CleanupTransServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.CleanupTrans") + "</a>");
           out.print("<p>");
 
@@ -175,16 +199,30 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
             StepInterface step = trans.getRunThread(i);
             if ((step.isRunning()) || step.getStatus() != StepExecutionStatus.STATUS_EMPTY) {
               StepStatus stepStatus = new StepStatus(step);
+              
+              if (step.isRunning() && !step.isStopped() && !step.isPaused()) {
+	              String sniffLink = " <a href=\""+
+	              						convertContextPath(SniffStepServlet.CONTEXT_PATH) + 
+	              						"?trans=" + URLEncoder.encode(transName, "UTF-8") + 
+	              						"&id="+id+
+	              						"&lines=50"+
+	              						"&copynr="+step.getCopy()+
+	              						"&type="+SniffStepServlet.TYPE_OUTPUT+
+	              						"&step=" + URLEncoder.encode(step.getStepname(), "UTF-8") + 
+	              						"\">"+stepStatus.getStepname()+"</a>";
+	              stepStatus.setStepname(sniffLink);
+              }
+              
               out.print(stepStatus.getHTMLTableRow());
             }
           }
           out.println("</table>");
           out.println("<p>");
 
-          out.print("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&xml=y\">"
+          out.print("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"&xml=y\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.ShowAsXml") + "</a><br>");
           out.print("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><br>");
-          out.print("<p><a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">"
+          out.print("<p><a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.Refresh") + "</a>");
 
           // Put the logging below that.

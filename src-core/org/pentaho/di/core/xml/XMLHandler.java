@@ -430,8 +430,10 @@ public class XMLHandler
 	
 	public static final String getTagAttribute(Node node, String attribute)
 	{
+		if (node==null) return null;
+		
 		String retval = null;
-
+		
 		NamedNodeMap nnm = node.getAttributes();
 		if (nnm!=null)
 		{

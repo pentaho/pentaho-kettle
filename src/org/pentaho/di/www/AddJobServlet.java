@@ -102,13 +102,6 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
       //
       final Repository repository = jobConfiguration.getJobExecutionConfiguration().getRepository();
 
-      Job oldJob = getJobMap().getJob(jobMeta.getName());
-      if (oldJob != null) {
-        // To prevent serious memory leaks in the logging sub-system, we clear out the rows from the previous execution...
-        //
-        CentralLogStore.discardLines(oldJob.getLogChannelId(), true);
-      }
-
       // Create the transformation and store in the list...
       //
       final Job job = new Job(repository, jobMeta);
@@ -118,18 +111,18 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
 
       Job oldOne = getJobMap().getJob(job.getJobname());
       if (oldOne != null) {
-        if (oldOne.isActive() || (oldOne.isInitialized() && !oldOne.isFinished())) {
-          throw new Exception("A job with the same name exists and is not idle." + Const.CR + "Please stop this job first.");
+        if (oldOne.isStopped() || oldOne.isFinished()) {
+        	CentralLogStore.discardLines(oldOne.getLogChannelId(), true);
         }
       }
+      
+      String id = getJobMap().addJob(job.getJobname(), job, jobConfiguration);
 
       // Setting variables
       //
       job.initializeVariablesFrom(null);
       job.getJobMeta().setInternalKettleVariables(job);
       job.injectVariables(jobConfiguration.getJobExecutionConfiguration().getVariables());
-
-      getJobMap().addJob(jobMeta.getName(), job, jobConfiguration);
 
       // Make sure to disconnect from the repository when the job finishes.
       // 
@@ -141,19 +134,13 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
         });
       }
 
-      String message;
-      if (oldOne != null) {
-        message = "Job '" + job.getJobname() + "' was replaced in the list.";
-      } else {
-        message = "Job '" + job.getJobname() + "' was added to the list.";
-      }
-      // message+=" (session id = "+request.getSession(true).getId()+")";
+      String message = "Job '" + job.getJobname() + "' was added to the list with id "+id;
 
       if (useXML) {
-        out.println(new WebResult(WebResult.STRING_OK, message));
+        out.println(new WebResult(WebResult.STRING_OK, message, id));
       } else {
         out.println("<H1>" + message + "</H1>");
-        out.println("<p><a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "?name=" + job.getJobname() + "\">Go to the job status page</a><p>");
+        out.println("<p><a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + job.getJobname() + "&id="+id+"\">Go to the job status page</a><p>");
       }
     } catch (Exception ex) {
       if (useXML) {

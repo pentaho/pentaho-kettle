@@ -8,6 +8,7 @@ public class SocketPortAllocation {
 	private Date	lastRequested;
 	
 	private String  transformationName;
+	private String  carteObjectId;
 	private String  sourceSlaveName;
 	private String  sourceStepName;
 	private String  sourceStepCopy;
@@ -23,11 +24,11 @@ public class SocketPortAllocation {
 	 * @param sourceStepName
 	 * @param sourceStepCopy
 	 */
-	public SocketPortAllocation(int port, Date lastRequested, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) {
+	public SocketPortAllocation(int port, Date lastRequested, String carteObjectId, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) {
 		this.port = port;
 		this.lastRequested = lastRequested;
+		this.carteObjectId = carteObjectId;
 		this.transformationName = transformationName;
-
 		this.sourceSlaveName = sourceSlaveName;
 		this.sourceStepName = sourceStepName;
 		this.sourceStepCopy = sourceStepCopy;
@@ -191,6 +192,20 @@ public class SocketPortAllocation {
 	 */
 	public void setTargetSlaveName(String targetSlaveName) {
 		this.targetSlaveName = targetSlaveName;
+	}
+
+	/**
+	 * @return the carteObjectId
+	 */
+	public String getCarteObjectId() {
+		return carteObjectId;
+	}
+
+	/**
+	 * @param carteObjectId the carteObjectId to set
+	 */
+	public void setCarteObjectId(String carteObjectId) {
+		this.carteObjectId = carteObjectId;
 	}
 
 }

@@ -17,9 +17,8 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
-import org.apache.log4j.Appender;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 
@@ -32,80 +31,105 @@ import org.pentaho.di.trans.TransConfiguration;
  */
 public class TransformationMap
 {
-	private Map<String, Trans> transformationMap;
-    private Map<String, TransConfiguration> configurationMap;
-    private Map<String, Appender> loggingMap;
+	private Map<CarteObjectEntry, Trans> transformationMap;
+    private Map<CarteObjectEntry, TransConfiguration> configurationMap;
     
     private Map<String, List<SocketPortAllocation>> hostServerSocketPortsMap; 
     
     public TransformationMap()
     {
-        transformationMap = new Hashtable<String, Trans>();
-        configurationMap  = new Hashtable<String, TransConfiguration>();
-        loggingMap        = new Hashtable<String, Appender>();
+        transformationMap = new Hashtable<CarteObjectEntry, Trans>();
+        configurationMap  = new Hashtable<CarteObjectEntry, TransConfiguration>();
         
         hostServerSocketPortsMap = new Hashtable<String, List<SocketPortAllocation>>();
     }
     
-    public synchronized void addTransformation(String transformationName, Trans trans, TransConfiguration transConfiguration)
+    /**
+     * Add a transformation to the map
+     * @param transformationName The name of the transformation to add
+     * @param trans The transformation to add
+     * @param transConfiguration the transformation configuration to add
+     * @return The carte object id
+     */
+    public synchronized String addTransformation(String transformationName, Trans trans, TransConfiguration transConfiguration)
     {
-        transformationMap.put(transformationName, trans);
-        configurationMap.put(transformationName, transConfiguration);
-    }
-    
-    public synchronized Trans getTransformation(String transformationName)
-    {
-        return transformationMap.get(transformationName);
-    }
-    
-    public synchronized TransConfiguration getConfiguration(String transformationName)
-    {
-        return configurationMap.get(transformationName);
-    }
-
-    public synchronized void removeTransformation(String transformationName)
-    {
-        transformationMap.remove(transformationName);
-        configurationMap.remove(transformationName);
+    	String id = UUID.randomUUID().toString();
+    	
+    	CarteObjectEntry entry = new CarteObjectEntry(transformationName, id);
+        transformationMap.put(entry, trans);
+        configurationMap.put(entry, transConfiguration);
+        
+        return id;
     }
     
     /**
-     * @deprecated please approach the CentralLogStore directly
-	 */
-    public synchronized Appender getAppender(String transformationName)
-    {
-        return loggingMap.get(transformationName);
-    }
-    
-    /**
-     * @deprecated please approach the CentralLogStore directly
+     * Find the first transformation in the list that comes to mind!
      * 
      * @param transformationName
-     * @param appender
+     * @return the first transformation with the specified name
      */
-    public synchronized void addAppender(String transformationName, Appender appender)
+    public synchronized Trans getTransformation(String transformationName)
     {
-        loggingMap.put(transformationName, appender);
+    	for (CarteObjectEntry entry : transformationMap.keySet()) {
+    		if (entry.getName().equals(transformationName)) {
+    			return transformationMap.get(entry);
+    		}
+    	}
+        return null;
+    }
+    
+    /**
+     * @param entry The Carte transformation object
+     * @return the transformation with the specified entry
+     */
+    public synchronized Trans getTransformation(CarteObjectEntry entry)
+    {
+    	return transformationMap.get(entry);
+    }
+
+    
+    /**
+     * @param transformationName
+     * @return The first transformation configuration with the specified name
+     */
+    public synchronized TransConfiguration getConfiguration(String transformationName)
+    {
+    	for (CarteObjectEntry entry : configurationMap.keySet()) {
+    		if (entry.getName().equals(transformationName)) {
+    			return configurationMap.get(entry);
+    		}
+    	}
+        return null;
     }
 
     /**
-     * @deprecated please approach the CentralLogStore directly
-	*/
-    public synchronized void removeAppender(String transformationName)
+     * @param entry The Carte transformation object
+     * @return the transformation configuration with the specified entry
+     */
+    public synchronized TransConfiguration getConfiguration(CarteObjectEntry entry)
     {
-        loggingMap.remove(transformationName);
+    	return configurationMap.get(entry);
     }
-    
-    public String[] getTransformationNames()
+
+    /**
+     * 
+     * @param entry the Carte object entry
+     */
+    public synchronized void removeTransformation(CarteObjectEntry entry)
     {
-        Set<String> keySet = transformationMap.keySet();
-        return keySet.toArray(new String[keySet.size()]);
+    	transformationMap.remove(entry);
+        configurationMap.remove(entry);
+    }
+
+    public List<CarteObjectEntry> getTransformationObjects()
+    {
+        return new ArrayList<CarteObjectEntry>(transformationMap.keySet());
     }
 
     /**
      * @return the configurationMap
      */
-    public Map<String, TransConfiguration> getConfigurationMap()
+    public Map<CarteObjectEntry, TransConfiguration> getConfigurationMap()
     {
         return configurationMap;
     }
@@ -113,7 +137,7 @@ public class TransformationMap
     /**
      * @param configurationMap the configurationMap to set
      */
-    public void setConfigurationMap(Map<String, TransConfiguration> configurationMap)
+    public void setConfigurationMap(Map<CarteObjectEntry, TransConfiguration> configurationMap)
     {
         this.configurationMap = configurationMap;
     }
@@ -124,13 +148,14 @@ public class TransformationMap
      * 1) Search for the right map in the hostPortMap
      * 
      * @param portRangeStart the start of the port range as described in the used cluster schema
-     * @param hostname the hostname to allocate this address for
+     * @param hostname the host name to allocate this address for
+     * @param carteObjectId
      * @param transformationName
      * @param sourceStepName
      * @param sourceStepCopy
      * @return
      */
-    public synchronized SocketPortAllocation allocateServerSocketPort(int portRangeStart, String hostname, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) {
+    public synchronized SocketPortAllocation allocateServerSocketPort(int portRangeStart, String hostname, String carteObjectId, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) {
     	
     	synchronized(hostServerSocketPortsMap) {
 	    	// Look up the sockets list for the given host
@@ -153,6 +178,7 @@ public class TransformationMap
 	
 	    		if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && 
 		    			spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) &&
+		    			spa.getCarteObjectId().equalsIgnoreCase(carteObjectId) &&
 		    			spa.getTransformationName().equalsIgnoreCase(transformationName) &&
 		    			spa.getSourceStepName().equalsIgnoreCase(sourceStepName) &&
 		    			spa.getSourceStepCopy().equalsIgnoreCase(sourceStepCopy) &&
@@ -174,11 +200,10 @@ public class TransformationMap
 		    			// However, that is ONLY possible if the port belongs to the same slave server couple.
 		    			// Otherwise, we keep on searching.
 		    			//
-		    			if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName)) {
-			    			socketPortAllocation = new SocketPortAllocation(spa.getPort(), new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
+		    			if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && 
+		    				spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName)) {
+			    			socketPortAllocation = new SocketPortAllocation(spa.getPort(), new Date(), carteObjectId, transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
 			    			serverSocketPortsMap.set(index, socketPortAllocation);
-
-				    		// LogWriter.getInstance().logBasic("MASTER", "Port "+hostname+":"+socketPortAllocation.getPort()+" REUSED for slave ["+sourceSlaveName+"], transformation=["+transformationName+"]");
 			    			break;
 		    			}
 		    		}
@@ -189,10 +214,8 @@ public class TransformationMap
 	    		// Allocate a new port and add it to the back of the list
 	    		// Normally this list should stay sorted on port number this way
 	    		//
-	    		socketPortAllocation = new SocketPortAllocation(maxPort+1, new Date(), transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
+	    		socketPortAllocation = new SocketPortAllocation(maxPort+1, new Date(), carteObjectId, transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
 	    		serverSocketPortsMap.add(socketPortAllocation);
-	    		
-	    		// LogWriter.getInstance().logBasic("MASTER", "Port "+hostname+":"+socketPortAllocation.getPort()+" allocated for slave ["+sourceSlaveName+"], transformation=["+transformationName+"]");
 	    	}
 	    	
 	    	// DEBUG : Do a verification on the content of the list.
@@ -204,7 +227,7 @@ public class TransformationMap
 	    				SocketPortAllocation one = serverSocketPortsMap.get(i);
 	    				SocketPortAllocation two = serverSocketPortsMap.get(j);
 	    				if (one.getPort() == two.getPort()) {
-	    					System.out.println("WTF!!! Identical ports discovered in the ports list.");
+	    					System.out.println("!! Error detected !! Identical ports discovered in the ports list.");
 	    				}
 	    			}
 	    		}
@@ -217,13 +240,30 @@ public class TransformationMap
     }
     
     /**
-     * Deallocate all the ports for the given transformation name, accross all hosts. 
+     * Deallocate all the ports for the given transformation name, accross all hosts.
      * @param transName the transformation name to release
+     * @param carteObjectId the carte object ID to reference
      */
-    public void deallocateServerSocketPorts(String transName) {
+    public void deallocateServerSocketPorts(String transName, String carteObjectId) {
     	for (String hostname : hostServerSocketPortsMap.keySet()) {
     		for (SocketPortAllocation spa : hostServerSocketPortsMap.get(hostname)) {
-    			if (spa.getTransformationName().equalsIgnoreCase(transName)) {
+    			if (spa.getTransformationName().equalsIgnoreCase(transName) && 
+    				spa.getCarteObjectId().equals(carteObjectId)
+    			    ) {
+    				spa.setAllocated(false);
+    			}
+    		}
+    	}
+    }
+
+    /**
+     * Deallocate all the ports for the given transformation entry, across all hosts.
+     * @param entry the transformation object entry name to release the sockets for
+     */
+    public void deallocateServerSocketPorts(CarteObjectEntry entry) {
+    	for (String hostname : hostServerSocketPortsMap.keySet()) {
+    		for (SocketPortAllocation spa : hostServerSocketPortsMap.get(hostname)) {
+    			if (spa.getTransformationName().equalsIgnoreCase(entry.getName())) { // TODO: also include the carte object ID?
     				spa.setAllocated(false);
     			}
     		}
@@ -247,5 +287,12 @@ public class TransformationMap
     			return;
     		}
     	}
+	}
+
+	public CarteObjectEntry getFirstCarteObjectEntry(String transName) {
+		for (CarteObjectEntry key : transformationMap.keySet()) {
+			if (key.getName().equals(transName)) return key;
+		}
+		return null;
 	}
 }

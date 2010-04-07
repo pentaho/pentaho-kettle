@@ -820,8 +820,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	// Send the XML over to the slave server
                 	// Also start the job over there...
                 	//
+                	String carteObjectId = null;
                 	try {
-                		Job.sendToSlaveServer(jobMeta, jobExecutionConfiguration, rep);
+                		carteObjectId = Job.sendToSlaveServer(jobMeta, jobExecutionConfiguration, rep);
                 	} catch(KettleException e) {
                 		// Perhaps the job exists on the remote server, carte is down, etc.
                 		// This is an abort situation, stop the parent job...
@@ -841,7 +842,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	{
                 		try 
                 		{
-							jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName(), 0);
+							jobStatus = remoteSlaveServer.getJobStatus(jobMeta.getName(), carteObjectId, 0);
 							if (jobStatus.getResult()!=null)
 							{
 								// The job is finished, get the result...
@@ -874,7 +875,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                		if (jobStatus==null || jobStatus.isRunning()) {
 	                			// Try a remote abort ...
 	                			//
-	                			remoteSlaveServer.stopJob(jobMeta.getName());
+	                			remoteSlaveServer.stopJob(jobMeta.getName(), carteObjectId);
 	                		}
                 		}
                 		catch (Exception e1) {

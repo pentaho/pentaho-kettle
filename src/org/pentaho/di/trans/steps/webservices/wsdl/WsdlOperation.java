@@ -30,6 +30,8 @@ import javax.wsdl.Output;
 import javax.wsdl.Part;
 import javax.xml.namespace.QName;
 
+import org.pentaho.di.core.exception.KettleException;
+
 /**
  * WSDL operation abstraction.
  */
@@ -80,7 +82,7 @@ public final class WsdlOperation implements java.io.Serializable {
      * @param op        The operation.
      * @param wsdlTypes WSDL type information.
      */
-    protected WsdlOperation(Binding binding, Operation op, WsdlTypes wsdlTypes) {
+    protected WsdlOperation(Binding binding, Operation op, WsdlTypes wsdlTypes) throws KettleException {
 
         _operationQName = new QName(wsdlTypes.getTargetNamespace(), op.getName());
         _oneway = true;

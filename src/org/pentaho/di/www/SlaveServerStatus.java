@@ -165,12 +165,14 @@ public class SlaveServerStatus
         this.errorDescription = errorDescription;
     }
 
-    public SlaveServerTransStatus findTransStatus(String transName)
+    public SlaveServerTransStatus findTransStatus(String transName, String id)
     {
         for (int i=0;i<transStatusList.size();i++)
         {
             SlaveServerTransStatus transStatus = (SlaveServerTransStatus) transStatusList.get(i);
-            if (transStatus.getTransName().equalsIgnoreCase(transName)) return transStatus;
+            if (transStatus.getTransName().equalsIgnoreCase(transName) && 
+            	(Const.isEmpty(id) || transStatus.getId().equals(id))
+            ) return transStatus;
         }
         return null;
     }

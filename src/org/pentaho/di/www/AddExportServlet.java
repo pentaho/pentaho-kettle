@@ -102,6 +102,8 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
 
       String archiveUrl = tempFile.getName().toString();
       String fileUrl = null;
+      
+      String carteObjectId = null;
 
       // Now open the top level resource...
       //
@@ -157,13 +159,13 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
 
           // store it all in the map...
           //
-          getTransformationMap().addTransformation(trans.getName(), trans, new TransConfiguration(transMeta, executionConfiguration));
+          carteObjectId = getTransformationMap().addTransformation(trans.getName(), trans, new TransConfiguration(transMeta, executionConfiguration));
         }
       } else {
         fileUrl = archiveUrl;
       }
 
-      out.println(new WebResult(WebResult.STRING_OK, fileUrl));
+      out.println(new WebResult(WebResult.STRING_OK, fileUrl, carteObjectId));
     } catch (Exception ex) {
       out.println(new WebResult(WebResult.STRING_ERROR, Const.getStackTracker(ex)));
     } finally {

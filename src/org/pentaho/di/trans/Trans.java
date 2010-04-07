@@ -192,6 +192,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     public static final String STRING_FINISHED     = "Finished";
     public static final String STRING_RUNNING      = "Running";
+    public static final String STRING_PAUSED       = "Paused";
     public static final String STRING_PREPARING    = "Preparing executing";
     public static final String STRING_INITIALIZING = "Initializing";
     public static final String STRING_WAITING      = "Waiting";
@@ -2352,6 +2353,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            {
 	                message = STRING_FINISHED;
 	                if (getResult().getNrErrors()>0) message+=" (with errors)";
+	            } 
+	            else if (isPaused()) {
+	            	message = STRING_PAUSED;
 	            }
 	            else
 	            {
@@ -2459,6 +2463,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             final SlaveServer[] slaves = transSplitter.getSlaveTargets();
             final Thread[]      threads = new Thread[slaves.length];
             final Throwable[]   errors = new Throwable[slaves.length];
+            
+            // Keep track of the various Carte object IDs
+            //
+            final Map<TransMeta, String> carteObjectMap = transSplitter.getCarteObjectMap();
+            
             //
             // Send them all on their way...
             //
@@ -2489,6 +2498,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     {
                         throw new KettleException("An error occurred sending the master transformation: "+webResult.getMessage());
                     }
+                    carteObjectMap.put(master, webResult.getId());
                 }
             }
             
@@ -2532,6 +2542,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                               {
                                   throw new KettleException("An error occurred sending a slave transformation: "+webResult.getMessage());
                               }
+                              carteObjectMap.put(slaveTrans, webResult.getId());
                           }
                           catch(Throwable t) {
                               errors[index] = t;
@@ -2668,6 +2679,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         //
         SlaveServer[] slaveServers = transSplitter.getSlaveTargets(); // <-- ask these guys
         TransMeta[] slaves = transSplitter.getSlaves();
+        Map<TransMeta, String> carteObjectMap = transSplitter.getCarteObjectMap();
 
         SlaveServer masterServer;
 		try {
@@ -2678,7 +2690,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			errors++;
 		}
         TransMeta masterTransMeta = transSplitter.getMaster();
-        TransMeta transMeta = transSplitter.getOriginalTransformation();
+        // TransMeta transMeta = transSplitter.getOriginalTransformation();
 
         boolean allFinished = false;
         while (!allFinished && errors==0 && ( parentJob==null || !parentJob.isStopped()) )
@@ -2692,7 +2704,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
                 try
                 {
-                    SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName(), 0);
+                	String carteObjectId = carteObjectMap.get(slaves[s]);
+                    SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName(), carteObjectId, 0); 
                     if (transStatus.isRunning()) {
                     	if(log.isDetailed()) log.logDetailed("Slave transformation on '"+slaveServers[s]+"' is still running.");
                     	allFinished = false;
@@ -2714,7 +2727,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
                 try
                 {
-                    SlaveServerTransStatus transStatus = masterServer.getTransStatus(masterTransMeta.getName(), 0);
+                	String carteObjectId = carteObjectMap.get(masterTransMeta);
+                    SlaveServerTransStatus transStatus = masterServer.getTransStatus(masterTransMeta.getName(), carteObjectId, 0);
                     if (transStatus.isRunning()) {
                     	if(log.isDetailed()) log.logDetailed("Master transformation is still running.");
                     	allFinished = false;
@@ -2741,7 +2755,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 {
                     try
                     {
-                        WebResult webResult = slaveServers[s].stopTransformation(slaves[s].getName());
+                    	String carteObjectId = carteObjectMap.get(slaves[s]);
+                    	WebResult webResult = slaveServers[s].stopTransformation(slaves[s].getName(), carteObjectId);
                         if (!WebResult.STRING_OK.equals(webResult.getResult()))
                         {
                             log.logError("Unable to stop slave transformation '"+slaves[s].getName()+"' : "+webResult.getMessage());
@@ -2756,7 +2771,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
                 try
                 {
-                    WebResult webResult = masterServer.stopTransformation(masterTransMeta.getName());
+                	String carteObjectId = carteObjectMap.get(masterTransMeta);
+                	WebResult webResult = masterServer.stopTransformation(masterTransMeta.getName(), carteObjectId);
                     if (!WebResult.STRING_OK.equals(webResult.getResult()))
                     {
                         log.logError("Unable to stop master transformation '"+masterServer.getName()+"' : "+webResult.getMessage());
@@ -2792,7 +2808,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         {
             try
             {
-                WebResult webResult = slaveServers[s].cleanupTransformation(slaves[s].getName());
+            	String carteObjectId = carteObjectMap.get(slaves[s]);
+                WebResult webResult = slaveServers[s].cleanupTransformation(slaves[s].getName(), carteObjectId);
                 if (!WebResult.STRING_OK.equals(webResult.getResult()))
                 {
                     log.logError("Unable to run clean-up on slave transformation '"+slaves[s].getName()+"' : "+webResult.getMessage());
@@ -2812,20 +2829,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         {
             try
             {
-                WebResult webResult = masterServer.cleanupTransformation(masterTransMeta.getName());
+            	String carteObjectId = carteObjectMap.get(masterTransMeta);
+            	WebResult webResult = masterServer.cleanupTransformation(masterTransMeta.getName(), carteObjectId);
                 if (!WebResult.STRING_OK.equals(webResult.getResult()))
                 {
                     log.logError("Unable to run clean-up on master transformation '"+masterTransMeta.getName()+"' : "+webResult.getMessage());
                     errors+=1;
                 }
-
-                webResult = masterServer.deallocatePorts(transMeta.getName()); // registered under the original name?
-                if (!WebResult.STRING_OK.equals(webResult.getResult()))
-                {
-                    log.logError("Unable to run clean-up on master transformation '"+masterTransMeta.getName()+"' : "+webResult.getMessage());
-                    errors+=1;
-                }
-
             }
             catch(Exception e)
             {
@@ -2866,7 +2876,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
             	// Get the detailed status of the slave transformation...
             	//
-            	SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName(), 0);
+            	SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName(), "", 0);
             	Result transResult = transStatus.getResult(slaves[s]);
             	
             	result.add(transResult);
@@ -2886,7 +2896,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
             	// Get the detailed status of the slave transformation...
             	//
-            	SlaveServerTransStatus transStatus = masterServer.getTransStatus(master.getName(), 0);
+            	SlaveServerTransStatus transStatus = masterServer.getTransStatus(master.getName(), "", 0);
             	Result transResult = transStatus.getResult(master);
             	
             	result.add(transResult);
@@ -2903,7 +2913,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
     
 	
-	public static void sendToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration, Repository repository) throws KettleException
+    /**
+     * Send the transformation for execution to a carte slave server
+     * @param transMeta
+     * @param executionConfiguration
+     * @param repository
+     * @return The carte object ID on the server.
+     * @throws KettleException
+     */
+	public static String sendToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration, Repository repository) throws KettleException
 	{
 		SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
@@ -2966,6 +2984,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			{
 				throw new KettleException( "There was an error starting the transformation on the remote server: " + Const.CR + webResult.getMessage());
 			}
+			
+			return webResult.getId();
 		} 
 		catch (Exception e)
 		{
@@ -3184,11 +3204,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		return stopped.get();
 	}
 
-	public static void monitorRemoteTransformation(LogChannelInterface log, String transName, SlaveServer remoteSlaveServer) {
-		monitorRemoteTransformation(log, transName, remoteSlaveServer, 5);
+	public static void monitorRemoteTransformation(LogChannelInterface log, String carteObjectId, String transName, SlaveServer remoteSlaveServer) {
+		monitorRemoteTransformation(log, carteObjectId, transName, remoteSlaveServer, 5);
 	}
 	
-	public static void monitorRemoteTransformation(LogChannelInterface log, String transName, SlaveServer remoteSlaveServer, int sleepTimeSeconds) {
+	public static void monitorRemoteTransformation(LogChannelInterface log, String carteObjectId, String transName, SlaveServer remoteSlaveServer, int sleepTimeSeconds) {
 		long errors=0;
         boolean allFinished = false;
         while (!allFinished && errors==0 )
@@ -3201,7 +3221,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
                 try
                 {
-                    SlaveServerTransStatus transStatus = remoteSlaveServer.getTransStatus(transName, 0);
+                    SlaveServerTransStatus transStatus = remoteSlaveServer.getTransStatus(transName, carteObjectId, 0);
                     if (transStatus.isRunning()) {
                     	if(log.isDetailed()) log.logDetailed(transName, "Remote transformation is still running.");
                     	allFinished = false;
@@ -3236,7 +3256,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         //
         try
         {
-            WebResult webResult = remoteSlaveServer.cleanupTransformation(transName);
+            WebResult webResult = remoteSlaveServer.cleanupTransformation(transName, carteObjectId);
             if (!WebResult.STRING_OK.equals(webResult.getResult()))
             {
                 log.logError(transName, "Unable to run clean-up on remote transformation '"+transName+"' : "+webResult.getMessage());

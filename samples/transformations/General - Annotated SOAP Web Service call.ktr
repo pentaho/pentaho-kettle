@@ -433,11 +433,11 @@ var responseText = responseBody.VerifyEmailResult.ResponseText;
 var responseCode = responseBody.VerifyEmailResult.ResponseCode;
 var goodEmail = responseBody.VerifyEmailResult.GoodEmail;
 
-&#47;*
 responseBody.removeNamespace(ws);
 responseBody.removeNamespace(soap);
-responseBody.setNamespace(null);
-*&#47;
+
+var xmlns = new Namespace(&quot;http:&#47;&#47;ws.cdyne.com&#47;&quot;);
+responseBody.removeNamespace(xmlns);
 
 Alert(responseBody.toXMLString());
 

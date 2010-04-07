@@ -915,8 +915,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			//
 			} else if (executionConfiguration.isExecutingRemotely()) {
 				if (executionConfiguration.getRemoteServer() != null) {
-					Trans.sendToSlaveServer(transMeta, executionConfiguration, spoon.rep);
-					monitorRemoteTrans(transMeta, executionConfiguration.getRemoteServer());
+					String carteObjectId = Trans.sendToSlaveServer(transMeta, executionConfiguration, spoon.rep);
+					monitorRemoteTrans(transMeta, carteObjectId, executionConfiguration.getRemoteServer());
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 					
 				} else {
@@ -934,13 +934,13 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 	}
   
-  private void monitorRemoteTrans(final TransMeta transMeta, final SlaveServer remoteSlaveServer) {
+  private void monitorRemoteTrans(final TransMeta transMeta, final String carteObjectId, final SlaveServer remoteSlaveServer) {
       // There is a transformation running in the background.  When it finishes, clean it up and log the result on the console.
       // Launch in a separate thread to prevent GUI blocking...
       //
       new Thread(new Runnable() {
 				public void run() {
-					Trans.monitorRemoteTransformation(spoon.getLog(), transMeta.toString(), remoteSlaveServer);
+					Trans.monitorRemoteTransformation(spoon.getLog(), carteObjectId, transMeta.toString(), remoteSlaveServer);
 				}
 			}).start();
 	

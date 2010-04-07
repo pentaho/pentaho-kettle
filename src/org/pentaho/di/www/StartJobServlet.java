@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -51,6 +52,7 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
       logDebug(BaseMessages.getString(PKG, "StartJobServlet.Log.StartJobRequested"));
 
     String jobName = request.getParameter("name");
+    String id = request.getParameter("id");
     boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
 
     response.setStatus(HttpServletResponse.SC_OK);
@@ -72,7 +74,27 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
     }
 
     try {
-      Job job = getJobMap().getJob(jobName);
+      // ID is optional...
+      //
+      Job job;
+      CarteObjectEntry entry;
+      if (Const.isEmpty(id)) {
+        	// get the first job that matches...
+        	//
+        	entry = getJobMap().getFirstCarteObjectEntry(jobName);
+        	if (entry==null) {
+        		job = null;
+        	} else {
+        		id = entry.getId();
+        		job = getJobMap().getJob(entry);
+        	}
+      } else {
+        	// Take the ID into account!
+        	//
+        	entry = new CarteObjectEntry(jobName, id);
+        	job = getJobMap().getJob(entry);
+      }
+
       if (job != null) {
         // First see if this job already ran to completion.
         // If so, we get an exception is we try to start() the job thread
@@ -80,7 +102,7 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
         if (job.isInitialized() && !job.isActive()) {
           // Re-create the job from the jobMeta
           //
-          // We might need to re-connect to the database
+          // We might need to re-connect to the repository
           //
           if (job.getRep() != null && !job.getRep().isConnected()) {
             job.getRep().connect(job.getRep().getUserInfo().getLogin(), job.getRep().getUserInfo().getPassword());
@@ -94,9 +116,11 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
             Job newJob = new Job(job.getRep(), job.getJobMeta());
             newJob.setLogLevel(job.getLogLevel());
 
-            getJobMap().removeJob(jobName);
-
-            getJobMap().addJob(jobName, newJob, jobConfiguration);
+            // Discard old log lines from the old job
+            //
+            CentralLogStore.discardLines(job.getLogChannelId(), true);
+            
+            getJobMap().replaceJob(entry, newJob, jobConfiguration);
             job = newJob;
           }
         }
@@ -105,11 +129,11 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
 
         String message = BaseMessages.getString(PKG, "StartJobServlet.Log.JobStarted", jobName);
         if (useXML) {
-          out.println(new WebResult(WebResult.STRING_OK, message).getXML());
+          out.println(new WebResult(WebResult.STRING_OK, message, id).getXML());
         } else {
 
           out.println("<H1>" + message + "</H1>");
-          out.println("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "\">"
+          out.println("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">"
               + BaseMessages.getString(PKG, "JobStatusServlet.BackToJobStatusPage") + "</a><p>");
         }
       } else {

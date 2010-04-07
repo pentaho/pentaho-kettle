@@ -4,19 +4,6 @@
     <!-- NOTE i18n arguments are : i18n package and key separated by colon (:)
     --> 
 
-
-	<!--
-		I commented this out because this is being loaded using the Step
-		annotation. Just to test it. 
-	
-	  <step id="RowGenerator"> 
-	    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GenerateRows</description>
-		<classname>org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
-		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GenerateRows</tooltip> 
-		<iconfile>ui/images/GEN.png</iconfile> 
-	  </step>
-	-->
 	<step id="Dummy">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Dummy</description>
 		<classname>org.pentaho.di.trans.steps.dummytrans.DummyTransMeta</classname>

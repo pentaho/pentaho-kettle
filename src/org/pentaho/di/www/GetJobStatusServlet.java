@@ -52,6 +52,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CarteServlet
       logDebug(BaseMessages.getString(PKG, "GetJobStatusServlet.Log.JobStatusRequested"));
 
     String jobName = request.getParameter("name");
+    String id = request.getParameter("id");
     boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
     int startLineNr = Const.toInt(request.getParameter("from"), 0);
 
@@ -66,7 +67,27 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CarteServlet
 
     PrintWriter out = response.getWriter();
 
-    Job job = getJobMap().getJob(jobName);
+    // ID is optional...
+    //
+    Job job;
+    CarteObjectEntry entry;
+    if (Const.isEmpty(id)) {
+    	// get the first job that matches...
+    	//
+    	entry = getJobMap().getFirstCarteObjectEntry(jobName);
+    	if (entry==null) {
+    		job = null;
+    	} else {
+    		id = entry.getId();
+    		job = getJobMap().getJob(entry);
+    	}
+    } else {
+    	// Take the ID into account!
+    	//
+    	entry = new CarteObjectEntry(jobName, id);
+    	job = getJobMap().getJob(entry);
+    }
+    
     if (job != null) {
       String status = job.getStatus();
       int lastLineNr = CentralLogStore.getLastBufferLineNr();
@@ -77,7 +98,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CarteServlet
         response.setCharacterEncoding(Const.XML_ENCODING);
         out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
 
-        SlaveServerJobStatus jobStatus = new SlaveServerJobStatus(jobName, status);
+        SlaveServerJobStatus jobStatus = new SlaveServerJobStatus(jobName, id, status);
         jobStatus.setFirstLoggingLineNr(startLineNr);
         jobStatus.setLastLoggingLineNr(lastLineNr);
 
@@ -108,7 +129,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CarteServlet
         out.println("<HEAD>");
         out.println("<TITLE>" + BaseMessages.getString(PKG, "GetJobStatusServlet.KettleJobStatus") + "</TITLE>");
         out.println("<META http-equiv=\"Refresh\" content=\"10;url=" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name="
-            + URLEncoder.encode(jobName, "UTF-8") + "\">");
+            + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">");
         out.println("</HEAD>");
         out.println("<BODY>");
         out.println("<H1>" + BaseMessages.getString(PKG, "GetJobStatusServlet.JobStatus") + "</H1>");
@@ -127,22 +148,22 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CarteServlet
           out.print("<p>");
 
           if (job.isFinished()) {
-            out.print("<a href=\"" + convertContextPath(StartJobServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "\">"
+            out.print("<a href=\"" + convertContextPath(StartJobServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">"
                 + BaseMessages.getString(PKG, "GetJobStatusServlet.StartJob") + "</a>");
             out.print("<p>");
           } else {
-            out.print("<a href=\"" + convertContextPath(StopJobServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "\">"
+            out.print("<a href=\"" + convertContextPath(StopJobServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">"
                 + BaseMessages.getString(PKG, "GetJobStatusServlet.StopJob") + "</a>");
             out.print("<p>");
           }
 
           out.println("<p>");
 
-          out.print("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&xml=y\">"
+          out.print("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&xml=y&id="+id+"\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.ShowAsXml") + "</a><br>");
           out.print("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><br>");
-          out.print("<p><a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "\">"
+          out.print("<p><a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.Refresh") + "</a>");
 
           // Put the logging below that.
@@ -167,7 +188,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CarteServlet
       }
     } else {
       if (useXML) {
-        out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName)));
+        out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "StartJobServlet.Log.SpecifiedJobNotFound", jobName, id)));
       } else {
         out.println("<H1>Job '" + jobName + "' could not be found.</H1>");
         out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">"

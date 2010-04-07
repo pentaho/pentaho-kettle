@@ -12,10 +12,17 @@
 */
 package org.pentaho.di.shared;
 
+import java.util.Date;
+
 public class SharedObjectBase
 {
     private boolean shared;
+    private Date    changedDate;
         
+    public SharedObjectBase() {
+		changedDate = new Date();
+	}
+    
     public boolean isShared()
     {
         return shared;
@@ -25,4 +32,12 @@ public class SharedObjectBase
     {
         this.shared = shared;
     }
+    
+    public Date getChangedDate() {
+		return changedDate;
+	}
+    
+    public void setChangedDate(Date changedDate) {
+		this.changedDate = changedDate;
+	}
 }
