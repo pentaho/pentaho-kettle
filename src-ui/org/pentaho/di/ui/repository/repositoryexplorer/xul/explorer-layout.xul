@@ -24,7 +24,8 @@
 		</menupopup>
 
 		<menupopup id="fileContextMenu">
-			<menuitem id="file-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
+			<menuitem id="folder-context-create" label="${RepositoryExplorerDialog.ContextMenu.NewFolder}" command="browseController.createFolder()"/>
+      <menuitem id="file-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
 			<menuitem id="file-context-rename" label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameContent()"/>
 			<menuitem id="file-context-delete" label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteContent()"/>
 			<!--
