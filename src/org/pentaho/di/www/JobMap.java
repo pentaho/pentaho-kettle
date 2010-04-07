@@ -16,14 +16,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Appender;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransConfiguration;
 
 
 /**

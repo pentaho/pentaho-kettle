@@ -15,7 +15,6 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
