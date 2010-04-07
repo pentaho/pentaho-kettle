@@ -11,29 +11,6 @@
     <parameters>
     </parameters>
     <log>
-<trans-log-table><connection/>
-<schema/>
-<table/>
-<size_limit_lines/>
-<interval/>
-<timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>Batch ID</name></field><field><id>CHANNEL_ID</id><enabled>N</enabled><name>Channel ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>Transformation name</name></field><field><id>STATUS</id><enabled>Y</enabled><name>Status</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>Read</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>Written</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>Updated</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>Input</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>Output</name><subject/></field><field><id>LINES_REJECTED</id><enabled>N</enabled><name>Rejected</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>Errors</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>Date range start</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>Date range end</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>Log date</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>Dependency date</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>Start time</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>Log field</name></field></trans-log-table>
-<perf-log-table><connection/>
-<schema/>
-<table/>
-<interval/>
-<timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>Batch ID</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>Nr</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>Log date</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>Transformation name</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>Step name</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>Copy</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>Read</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>Written</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>Updated</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>Input</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>Output</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>Rejected</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>Errors</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>Input buffer</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>Output buffer</name></field></perf-log-table>
-<channel-log-table><connection/>
-<schema/>
-<table/>
-<timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>Batch ID</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>Channel ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>Log date</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>Type</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>Name</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>Copy</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>Directory</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>File name</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>Revision</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>Parent channel ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>Root channel ID</name></field></channel-log-table>
-<step-log-table><connection/>
-<schema/>
-<table/>
-<timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>Batch ID</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>Channel ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>Log date</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>Transformation name</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>Step name</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>Copy</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>Read</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>Written</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>Updated</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>Input</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>Output</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>Rejected</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>Errors</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>Log field</name></field></step-log-table>
     </log>
     <maxdate>
       <connection/>
