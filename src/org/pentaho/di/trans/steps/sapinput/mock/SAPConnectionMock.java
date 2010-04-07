@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
+import org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionParams;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPException;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPFunction;
@@ -50,6 +51,10 @@ public class SAPConnectionMock implements SAPConnection {
 	}
 
 	public void open(DatabaseMeta sapConnection) throws SAPException {
+		// TODO Auto-generated method stub	
+	}
+
+	public void open(SAPConnectionParams params) throws SAPException {
 		// TODO Auto-generated method stub	
 	}
 	
