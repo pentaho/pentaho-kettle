@@ -186,16 +186,18 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 	}
     
     /** Stop the running query */
-    public synchronized void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+    public void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
     {
         meta=(DatabaseJoinMeta)smi;
         data=(DatabaseJoinData)sdi;
 
         if (data.db!=null && !data.isCanceled)
         {
+          synchronized(data.db) {
             data.db.cancelStatement(data.pstmt);
-            setStopped(true);
-            data.isCanceled=true;
+          }
+          setStopped(true);
+          data.isCanceled=true;
         }
     }
 
