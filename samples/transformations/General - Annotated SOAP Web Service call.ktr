@@ -314,7 +314,7 @@ See also: https:&#47;&#47;developer.mozilla.org&#47;En&#47;E4X
     </attributes>
   </connection>
   <order>
-  <hop> <from>email address</from><to>Generate SOAP request</to><enabled>Y</enabled> </hop>  <hop> <from>Generate SOAP request</from><to>SOAP Call</to><enabled>Y</enabled> </hop>  <hop> <from>SOAP Call</from><to>Parse SOAP Response</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>email address</from><to>Generate SOAP request</to><enabled>Y</enabled> </hop>  <hop> <from>Generate SOAP request</from><to>HTTP Post</to><enabled>Y</enabled> </hop>  <hop> <from>HTTP Post</from><to>Parse SOAP Response</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Generate SOAP request</name>
     <type>ScriptValueMod</type>
@@ -364,7 +364,37 @@ var requestXml=request.toXMLString();
         <replace>N</replace>
       </field>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>301</xloc>
+      <xloc>297</xloc>
+      <yloc>57</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>HTTP Post</name>
+    <type>HTTPPOST</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <postafile>N</postafile>
+    <encoding>UTF-8</encoding>
+    <url>http:&#47;&#47;ws.cdyne.com&#47;emailverify&#47;Emailvernotestemail.asmx?wsdl</url>
+    <urlInField>N</urlInField>
+    <urlField/>
+    <requestEntity>requestXml</requestEntity>
+    <lookup>
+      </lookup>
+    <result>
+      <name>responseXml</name>
+      <code>statusCode</code>
+      </result>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>490</xloc>
       <yloc>57</yloc>
       <draw>Y</draw>
       </GUI>
@@ -462,7 +492,7 @@ Alert(responseBody.toXMLString());
         <replace>N</replace>
       </field>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>685</xloc>
+      <xloc>683</xloc>
       <yloc>57</yloc>
       <draw>Y</draw>
       </GUI>
@@ -495,32 +525,6 @@ Alert(responseBody.toXMLString());
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>104</xloc>
-      <yloc>57</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>SOAP Call</name>
-    <type>SoapCall</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <url>http:&#47;&#47;ws.cdyne.com&#47;emailverify&#47;Emailvernotestemail.asmx?wsdl</url>
-    <request_xml_field>requestXml</request_xml_field>
-    <response_xml_field>responseXml</response_xml_field>
-    <response_code_field>responseCode</response_code_field>
-    <proxyHost/>
-    <proxyPort/>
-    <httpLogin/>
-    <httpPassword>Encrypted </httpPassword>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>489</xloc>
       <yloc>57</yloc>
       <draw>Y</draw>
       </GUI>
