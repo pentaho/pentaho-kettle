@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DomainObjectCreationException;
+import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
@@ -20,8 +22,6 @@ import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.DomainObjectCreationException;
-import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;

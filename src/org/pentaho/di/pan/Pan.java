@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DomainObjectCreationException;
+import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
@@ -36,8 +38,6 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.DomainObjectCreationException;
-import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;

@@ -1,8 +1,9 @@
-package org.pentaho.di.repository;
+package org.pentaho.di.core;
 
 import java.lang.reflect.Constructor;
 
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectCreationException;
 

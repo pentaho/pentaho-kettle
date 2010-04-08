@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DomainObjectCreationException;
+import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -33,8 +35,6 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.repository.DomainObjectCreationException;
-import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;

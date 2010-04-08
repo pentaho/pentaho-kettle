@@ -15,10 +15,10 @@ package org.pentaho.di.trans;
 import java.io.IOException;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.DomainObjectCreationException;
+import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.repository.DomainObjectCreationException;
-import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

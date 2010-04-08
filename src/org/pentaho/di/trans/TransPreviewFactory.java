@@ -12,11 +12,11 @@
 */
 package org.pentaho.di.trans;
 
+import org.pentaho.di.core.DomainObjectCreationException;
+import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.repository.DomainObjectCreationException;
-import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;

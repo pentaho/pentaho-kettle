@@ -1,4 +1,4 @@
-package org.pentaho.di.repository;
+package org.pentaho.di.core;
 
 public class DomainObjectCreationException extends Exception {
   private static final long serialVersionUID = -2151267602926525247L;
