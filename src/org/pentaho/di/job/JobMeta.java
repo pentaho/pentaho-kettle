@@ -42,11 +42,12 @@ import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.parameters.DuplicateParamException;
@@ -106,7 +107,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	protected ObjectId objectId;
 	
-	private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
+	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 
 	protected String name;
 
@@ -2643,11 +2644,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return null; // TODO return parent job metadata
 	}
 
-	public int getLogLevel() {
+	public LogLevel getLogLevel() {
     return logLevel;
   }
 
-  public void setLogLevel(int logLevel) {
+  public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
   }
 	

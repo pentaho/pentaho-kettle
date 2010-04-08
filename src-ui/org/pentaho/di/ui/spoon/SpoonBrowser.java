@@ -160,6 +160,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar");
 
+      @SuppressWarnings("unused")
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
 
       // Add a URL

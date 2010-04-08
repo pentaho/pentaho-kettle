@@ -34,7 +34,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.Log4JLayoutInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -45,8 +47,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class LogSettingsDialog extends Dialog
 {
 	private static Class<?> PKG = LogSettingsDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
-	private LogWriter    log;
 
 	private Label        wlLoglevel;
 	private CCombo       wLoglevel;
@@ -68,17 +68,16 @@ public class LogSettingsDialog extends Dialog
 
     private Log4JLayoutInterface layout;
 	
-	public LogSettingsDialog(Shell par, int style, LogWriter l, PropsUI pr)
+	public LogSettingsDialog(Shell par, int style, PropsUI pr)
 	{
 			super(par, style);
 			parent=par;
-			log=l;
 			props=pr;
             
             layout = (Log4JLayoutInterface) LogWriter.getLayout();
 	}
 
-	public Object open()
+	public void open()
 	{
 		Display display = parent.getDisplay();
 
@@ -125,10 +124,7 @@ public class LogSettingsDialog extends Dialog
 		fdlLoglevel.top  = new FormAttachment(wFilter, margin);
 		wlLoglevel.setLayoutData(fdlLoglevel);
 		wLoglevel=new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		for (int i=0;i<LogWriter.log_level_desc_long.length;i++) 
-			wLoglevel.add(LogWriter.log_level_desc_long[i]);
-		wLoglevel.select( log.getLogLevel()+1); //+1: starts at -1	
-		
+		wLoglevel.setItems(LogLevel.getLogLevelDescriptions());
  		props.setLook(wLoglevel);
 		fdLoglevel=new FormData();
 		fdLoglevel.left = new FormAttachment(middle, 0);
@@ -183,7 +179,6 @@ public class LogSettingsDialog extends Dialog
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return log;
 	}
 
 	public void dispose()
@@ -197,34 +192,31 @@ public class LogSettingsDialog extends Dialog
 	 */ 
 	public void getData()
 	{	
-		String filter = Const.NVL(log.getFilter(), props.getLogFilter());
+	  LogWriter logWriter = LogWriter.getInstance();
+		String filter = Const.NVL(logWriter.getFilter(), props.getLogFilter());
 		if (filter!=null) 
 		{
 			wFilter.setText(filter);
 		}
 		
-		wLoglevel.select(log.getLogLevel());
+		wLoglevel.select( DefaultLogLevel.getLogLevel().getLevel() );
 		wTime.setSelection(layout.isTimeAdded());
 	}
 	
 	private void cancel()
 	{
-		log=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
 		int idx=wLoglevel.getSelectionIndex();
-		log.setLogLevel(idx);
+		DefaultLogLevel.setLogLevel(LogLevel.values()[idx]);
 		String filter = wFilter.getText();
-		if (filter!=null && filter.length()>0)
-		{
-			log.setFilter(wFilter.getText());
-		}
-		else
-		{
-			log.setFilter(null); // clear filter
+		if (Const.isEmpty(filter)) {
+		  LogWriter.getInstance().setFilter(null); // clear filter
+		} else {
+		  LogWriter.getInstance().setFilter(wFilter.getText());
 		}
 		layout.setTimeAdded(wTime.getSelection());
         

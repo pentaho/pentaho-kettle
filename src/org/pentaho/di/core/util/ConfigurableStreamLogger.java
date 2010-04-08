@@ -27,7 +27,7 @@ import java.io.InputStreamReader;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 
 /**
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
@@ -38,7 +38,7 @@ public class ConfigurableStreamLogger implements Runnable {
 
     private InputStream is;
     private String type;
-    private int logLevel;
+    private LogLevel logLevel;
     private LogChannelInterface log;
         
     /**
@@ -49,7 +49,7 @@ public class ConfigurableStreamLogger implements Runnable {
      * @param type
      *        the label for logger entries.
      */
-    public ConfigurableStreamLogger(LogChannelInterface logChannel, final InputStream in, final int logLevel, final String type) {
+    public ConfigurableStreamLogger(LogChannelInterface logChannel, final InputStream in, final LogLevel logLevel, final String type) {
     	this.log = logChannel;
         this.is = in;
         this.type = type;
@@ -67,24 +67,19 @@ public class ConfigurableStreamLogger implements Runnable {
             String line = null;
             while ((line = br.readLine()) != null)
             {
-                if (this.logLevel == LogWriter.LOG_LEVEL_MINIMAL) {
-                    log.logMinimal(this.type, line);
-                } else if (this.logLevel == LogWriter.LOG_LEVEL_BASIC) {
-                    log.logBasic(this.type, line);
-                } else if (this.logLevel == LogWriter.LOG_LEVEL_DETAILED) {
-                    log.logDetailed(this.type, line);
-                } else if (this.logLevel == LogWriter.LOG_LEVEL_DEBUG) {
-                    log.logDebug(this.type, line);
-                } else if (this.logLevel == LogWriter.LOG_LEVEL_ROWLEVEL) {
-                    log.logRowlevel(this.type, line);
-                } else if (this.logLevel == LogWriter.LOG_LEVEL_ERROR) {
-                    log.logError(this.type, line);
-                }
+              switch(this.logLevel) {
+              case MINIMAL: log.logMinimal(this.type, line); break;
+              case BASIC: log.logBasic(this.type, line); break;
+              case DETAILED: log.logDetailed(this.type, line); break;
+              case DEBUG: log.logDebug(this.type, line); break;
+              case ROWLEVEL: log.logRowlevel(this.type, line); break;
+              case ERROR: log.logError(this.type, line); break; 
+              }
             }
         }
         catch (IOException ioe)
         {
-            if (this.logLevel >= LogWriter.LOG_LEVEL_ERROR) {
+            if (log.isError()) {
                 log.logError(this.type, Const.getStackTracker(ioe));
             }
         }

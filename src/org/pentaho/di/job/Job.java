@@ -37,13 +37,14 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.Log4jBufferAppender;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingHierarchy;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -90,7 +91,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	public static final String	CONFIGURATION_IN_EXPORT_FILENAME	= "__job_execution_configuration__.xml";
 	
 	private LogChannelInterface log;
-	private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
+	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 	private JobMeta jobMeta;
 	private Repository rep;
     private AtomicInteger errors;
@@ -161,28 +162,27 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		init();
     }
     
-	public void init()
-	{        
-    	jobListeners = new ArrayList<JobListener>();
-    	jobEntryListeners = new ArrayList<JobEntryListener>();
-    	
-		activeJobEntryTransformations = new HashMap<JobEntryCopy, JobEntryTrans>();
-		activeJobEntryJobs = new HashMap<JobEntryCopy, JobEntryJob>();
-		
-		active=new AtomicBoolean(false);
-		stopped=new AtomicBoolean(false);
-        jobTracker = new JobTracker(jobMeta);
-        jobEntryResults = new ArrayList<JobEntryResult>();
-        initialized=new AtomicBoolean(false);
-        finished = new AtomicBoolean(false);
-        errors = new AtomicInteger(0);
-        batchId = -1;
-        passedBatchId = -1;
-        
-        result = null;
-        
-		this.log=new LogChannel(this, logLevel);
-	}
+  public void init() {
+    jobListeners = new ArrayList<JobListener>();
+    jobEntryListeners = new ArrayList<JobEntryListener>();
+
+    activeJobEntryTransformations = new HashMap<JobEntryCopy, JobEntryTrans>();
+    activeJobEntryJobs = new HashMap<JobEntryCopy, JobEntryJob>();
+
+    active = new AtomicBoolean(false);
+    stopped = new AtomicBoolean(false);
+    jobTracker = new JobTracker(jobMeta);
+    jobEntryResults = new ArrayList<JobEntryResult>();
+    initialized = new AtomicBoolean(false);
+    finished = new AtomicBoolean(false);
+    errors = new AtomicInteger(0);
+    batchId = -1;
+    passedBatchId = -1;
+
+    result = null;
+
+    this.log = new LogChannel(this);
+  }
 
 	public Job(Repository repository, JobMeta jobMeta)
 	{
@@ -199,14 +199,18 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         
         jobTracker = new JobTracker(jobMeta);
 
-        this.log = new LogChannel(this, logLevel);
+        this.log = new LogChannel(this, parentJob);
+        this.logLevel = log.getLogLevel();
 	}
 
-    // Empty constructor, for Class.newInstance()
+    /**
+     *  Empty constructor, for Class.newInstance()
+     */
     public Job()
     {
-    	this.log = new LogChannel(this, logLevel);
-    	init();
+      init();
+    	this.log = new LogChannel(this);
+    	this.logLevel = log.getLogLevel();
     }
     
     @Override
@@ -423,11 +427,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		
 		// What entry is next?
 		JobEntryInterface jobEntryInterface = jobEntryCopy.getEntry();
-
-		    // Set the Job Entry's log level to the jobs
-		    if(jobEntryInterface instanceof LoggingObjectInterface) {
-		      ((LoggingObjectInterface)jobEntryInterface).setLogLevel(getLogLevel());
-		    }
+		jobEntryInterface.getLogChannel().setLogLevel(logLevel);
 
         // Track the fact that we are going to launch the next job entry...
         JobEntryResult jerBefore = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), reason, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
@@ -1106,7 +1106,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
      */
     public void setParentJob(Job parentJob)
     {
-        this.parentJob = parentJob;
+      this.logLevel = parentJob.getLogLevel();
+      this.log.setLogLevel(logLevel);
+      this.parentJob = parentJob;
     }
 
     public Result getResult()
@@ -1541,13 +1543,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		return jobMeta.getRepositoryDirectory();
 	}
 	
-  public int getLogLevel() {
+  public LogLevel getLogLevel() {
     return logLevel;
   }
 
-  public void setLogLevel(int logLevel) {
+  public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
-    log = new LogChannel(this, this.logLevel);
+    log.setLogLevel(logLevel);
   }
 	
 	public List<LoggingHierarchy> getLoggingHierarchy() {

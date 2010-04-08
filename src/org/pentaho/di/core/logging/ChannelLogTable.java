@@ -111,6 +111,7 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 		table.fields.add( new LogTableField(ID.ROOT_CHANNEL_ID.id, true, false, "ROOT_CHANNEL_ID", BaseMessages.getString(PKG, "ChannelLogTable.FieldName.RootChannelId"), BaseMessages.getString(PKG, "ChannelLogTable.FieldDescription.RootChannelId"), ValueMetaInterface.TYPE_STRING, 255) );
 		
 		table.findField(ID.LOG_DATE.id).setLogDateField(true);
+    table.findField(ID.ID_BATCH.id).setKey(true);
 
 		return table;
 	}

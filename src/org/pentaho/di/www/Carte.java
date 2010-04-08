@@ -26,7 +26,6 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -58,7 +57,9 @@ public class Carte
 		boolean allOK=true;
 		
         final TransformationMap transformationMap = new TransformationMap();
+        transformationMap.setSlaveServerConfig(config);
         final JobMap jobMap = new JobMap();
+        jobMap.setSlaveServerConfig(config);
         List<SlaveServerDetection> detections = Collections.synchronizedList(new ArrayList<SlaveServerDetection>());
         SocketRepository socketRepository = new SocketRepository(log);
         
@@ -184,6 +185,7 @@ public class Carte
     		Document document = XMLHandler.loadXMLFile(file);
     		Node configNode = XMLHandler.getSubNode(document, SlaveServerConfig.XML_TAG); 
     		config = new SlaveServerConfig(new LogChannel("Slave server config"), configNode);
+    		config.setFilename(args[0]);
     	}
     	if (args.length==2  && !Const.isEmpty(args[0])  && !Const.isEmpty(args[1])) {
     		String hostname = args[0];
@@ -228,7 +230,6 @@ public class Carte
 	private static void init() throws Exception
     {
 	    KettleEnvironment.init();
-	    LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
 	}
     
     public static Trans generateTestTransformation()

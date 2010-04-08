@@ -33,7 +33,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -178,8 +177,6 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   }
 
   public Result execute(Result result, int nr) throws KettleException {
-    LogWriter log = LogWriter.getInstance();
-
     List<RowMetaAndData> rows = result.getRows();
     RowMetaAndData resultRow = null;
 
@@ -290,8 +287,6 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 		return retval;
 	}
   private boolean deleteFolder(String foldername) {
-    LogWriter log = LogWriter.getInstance();
-
     boolean rcode = false;
     FileObject filefolder = null;
 

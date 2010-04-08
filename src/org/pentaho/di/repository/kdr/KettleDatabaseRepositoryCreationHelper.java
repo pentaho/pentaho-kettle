@@ -13,7 +13,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -1330,8 +1330,9 @@ public class KettleDatabaseRepositoryCreationHelper {
 			//
 			// Populate with data...
 			//
-			code = LogWriter.logLevelDescription;
-			desc = LogWriter.log_level_desc_long;
+			code = LogLevel.logLogLevelCodes();
+			desc = LogLevel.getLogLevelDescriptions();
+
 
 			if (!dryrun) {
 				database.prepareInsert(table, null, tablename);

@@ -6,14 +6,12 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobMeta;
 
 public class ResourceExportTest extends TestCase {
 
 	public void testJobExport() throws Exception {
 	    KettleEnvironment.init();
-        LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
                 
         // Load the job metadata
         //

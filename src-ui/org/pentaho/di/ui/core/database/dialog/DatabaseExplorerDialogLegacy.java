@@ -51,8 +51,11 @@ import org.pentaho.di.core.database.MSSQLServerDatabaseMeta;
 import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.core.database.Schema;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransProfileFactory;
@@ -68,8 +71,6 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.core.logging.LoggingObject;
 
 
 
@@ -87,7 +88,7 @@ import org.pentaho.di.core.logging.LoggingObject;
 @Deprecated
 public class DatabaseExplorerDialogLegacy extends Dialog 
 {
-	private LogWriter log;
+	private LogChannelInterface log;
 	private PropsUI props;
 	private DatabaseMeta dbMeta;
 	private DBCache dbcache;
@@ -153,7 +154,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog
         selectedTable=null;
     
         props=PropsUI.getInstance();
-        log=LogWriter.getInstance();
+        log=new LogChannel("DBExplorer");
         dbcache = DBCache.getInstance();
     }
 

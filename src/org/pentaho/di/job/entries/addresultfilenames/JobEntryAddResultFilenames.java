@@ -40,7 +40,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -188,7 +187,6 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
   }
 
   public Result execute(Result result, int nr) throws KettleException {
-    LogWriter log = LogWriter.getInstance();
     List<RowMetaAndData> rows = result.getRows();
     RowMetaAndData resultRow = null;
 
@@ -225,7 +223,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
          // ok we can process this file/folder
         if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.ProcessingRow", filefolder_previous, fmasks_previous)); //$NON-NLS-1$
 
-          if (!ProcessFile(filefolder_previous, fmasks_previous,parentJob,result, log)) {
+          if (!processFile(filefolder_previous, fmasks_previous,parentJob,result)) {
         	  nrErrFiles++;
           }
        
@@ -236,7 +234,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         
           // ok we can process this file/folder
     	  if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryAddResultFilenames.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
-          if (!ProcessFile(arguments[i], filemasks[i],parentJob,result, log)) {
+          if (!processFile(arguments[i], filemasks[i],parentJob,result)) {
         	  nrErrFiles++;
           }
       }
@@ -253,7 +251,7 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     return result;
   }
 
-  private boolean ProcessFile(String filename, String wildcard, Job parentJob,Result result, LogWriter log) {
+  private boolean processFile(String filename, String wildcard, Job parentJob,Result result) {
 
     boolean rcode = true;
     FileObject filefolder = null;

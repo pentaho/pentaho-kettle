@@ -562,7 +562,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 }
 
                 data.db=new Database(this, meta.getDatabaseMeta());
-				data.db.shareVariablesWith(this);
+                data.db.shareVariablesWith(this);
 				
                 if (getTransMeta().isUsingUniqueConnections())
                 {

@@ -9,6 +9,7 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
@@ -43,6 +44,10 @@ public class KettleEnvironment {
 			// Initialize the logging back-end.
 			//
 			CentralLogStore.init();
+			
+			// Set the console log level to debug
+			//
+			LogWriter.setConsoleAppenderDebug();
 			
 			// Configure Simple JNDI when we run in stand-alone mode (spoon, pan, kitchen, carte, ... NOT on the platform
 			//

@@ -25,12 +25,10 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.Priority;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.i18n.BaseMessages;
 
 
 
@@ -44,49 +42,15 @@ import org.pentaho.di.i18n.BaseMessages;
  */
 public class LogWriter 
 {
-	private static Class<?> PKG = LogWriter.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	// private static Class<?> PKG = LogWriter.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private static LogWriter logWriter;
-	
-	public static final int LOG_LEVEL_DEFAULT    = -1;
-	public static final int LOG_LEVEL_NOTHING    =  0;
-  public static final int LOG_LEVEL_ERROR      =  1;
-	public static final int LOG_LEVEL_MINIMAL    =  2;
-	public static final int LOG_LEVEL_BASIC      =  3;
-	public static final int LOG_LEVEL_DETAILED   =  4;
-	public static final int LOG_LEVEL_DEBUG      =  5;
-	public static final int LOG_LEVEL_ROWLEVEL   =  6;
-	
-	public static final String logLevelDescription[] = 
-		{
-	    "Default",
-			"Nothing",
-      "Error",
-			"Minimal",
-			"Basic",
-			"Detailed",
-			"Debug",
-			"Rowlevel",
-		};
-
-	public static final String log_level_desc_long[] = 
-		{
-	          BaseMessages.getString(PKG, "LogWriter.Level.Default.LongDesc"),
-            BaseMessages.getString(PKG, "LogWriter.Level.Nothing.LongDesc"),
-            BaseMessages.getString(PKG, "LogWriter.Level.Error.LongDesc"),
-            BaseMessages.getString(PKG, "LogWriter.Level.Minimal.LongDesc"),
-            BaseMessages.getString(PKG, "LogWriter.Level.Basic.LongDesc"),
-            BaseMessages.getString(PKG, "LogWriter.Level.Detailed.LongDesc"),
-            BaseMessages.getString(PKG, "LogWriter.Level.Debug.LongDesc"),
-            BaseMessages.getString(PKG, "LogWriter.Level.Rowlevel.LongDesc"),
-		};
-	
+		
 	public static final String STRING_PENTAHO_DI_LOGGER_NAME = "org.pentaho.di";
 	public static final String STRING_PENTAHO_DI_CONSOLE_APPENDER = "ConsoleAppender:"+STRING_PENTAHO_DI_LOGGER_NAME;
 	
 	// String...
 	private int type;
-	private int filteredLogLevel;
 	private String filter;
     
     // Log4j
@@ -95,26 +59,16 @@ public class LogWriter
     
     private File realFilename;
 
-	private LoggingRegistry	registry;
-
     private static Layout layout;
 
-    public static final LogWriter getInstance()
-	{
-		if (logWriter!=null) return logWriter;
-		
-        return getInstance(LOG_LEVEL_BASIC);
-	}
-	
-	public static final LogWriter getInstance(int lvl)
+	public static final LogWriter getInstance()
 	{
 		if (logWriter != null)
         {
-            logWriter.setLogLevel(lvl);
             return logWriter;
         }
 		
-		logWriter = new LogWriter(lvl);
+		logWriter = new LogWriter();
 		
 		return logWriter;
 	}
@@ -130,8 +84,6 @@ public class LogWriter
         pentahoLogger.setLevel(Level.ALL); 
 
         layout = new Log4jKettleLayout();
-        
-        registry = LoggingRegistry.getInstance();
         
         // Add a console logger to see something on the console as well...
         //
@@ -156,30 +108,16 @@ public class LogWriter
         
     }
 
-	// Default: screen --> out
-	private LogWriter(int lvl)
-	{
-        this();
-
-		filteredLogLevel  = lvl;
-		filter = null;
-	}
-
 	/**
 	 * Get a new log instance for the specified file if it is not open yet! 
 	 * @param filename The log file to open
      * @param exact is this an exact filename (false: prefix of name in temp directory)
-	 * @param level The log level
 	 * @return the LogWriter object
 	 */
-	public static final LogWriter getInstance(String filename, boolean exact, int level) throws KettleException
+	public static final LogWriter getInstance(String filename, boolean exact) throws KettleException
 	{
 		if (logWriter != null) 
 	    {
-			// Set the logging level as requested.
-			//
-			logWriter.setLogLevel(level);
-			
 			// OK, see if we have a file appender already for this 
 			//
 			if (logWriter.pentahoLogger.getAppender(LogWriter.createFileAppenderName(filename, exact))==null)
@@ -190,7 +128,7 @@ public class LogWriter
 			return logWriter;
 	    }
 		
-		logWriter = new LogWriter(filename, exact, level);
+		logWriter = new LogWriter(filename, exact);
 		return logWriter;
 	}
 	
@@ -204,12 +142,10 @@ public class LogWriter
 		}
 	}
 	
-	private LogWriter(String filename, boolean exact, int level)
+	private LogWriter(String filename, boolean exact)
 	{
         this();
         
-		this.filteredLogLevel = level;
-                
 		try
 		{
             fileAppender = createFileAppender(filename, exact); 
@@ -323,7 +259,7 @@ public class LogWriter
             Object appender = appenders.nextElement();
             if (appender instanceof ConsoleAppender || appender instanceof Log4jConsoleAppender) {
                 if(appender instanceof ConsoleAppender) {
-                    ((ConsoleAppender)appender).setThreshold(Priority.DEBUG);
+                    ((ConsoleAppender)appender).setThreshold(Level.DEBUG);
                 }
             }
         }
@@ -363,59 +299,26 @@ public class LogWriter
 		return retval;
 	}
 	
-	public void setLogLevel(int lvl)
-	{
-		filteredLogLevel = lvl;
-	}
-
-	public void setLogLevel(String lvl)
-	{
-		filteredLogLevel = getLogLevel(lvl);
-	}
-	
-	public int getLogLevel()
-	{
-		return filteredLogLevel;
-	}
-
-	public String getLogLevelDesc()
-	{
-		return logLevelDescription[filteredLogLevel];
-	}
-	
-	public String getLogLevelLongDesc()
-	{
-		return log_level_desc_long[filteredLogLevel];
-	}
-	
-	public void println(LogMessageInterface logMessage)
+	/**
+	 * 
+	 * @param logMessage
+	 * @param channelLogLevel
+	 */
+	public void println(LogMessageInterface logMessage, LogLevel channelLogLevel)
 	{
 	  String subject = null;
 	  
-	  int printLogLevel = filteredLogLevel;
+	  LogLevel logLevel = logMessage.getLevel();
 	  
-	  LoggingObjectInterface loggingObject = registry.getLoggingObject( logMessage.getLogChannelId() );
-	  if(loggingObject != null) {
-	    // Use the logging channel's logging level if one is provided
-	    if(loggingObject.getLogLevel() != LogWriter.LOG_LEVEL_DEFAULT) {
-	      printLogLevel = loggingObject.getLogLevel();
-	      subject = loggingObject.getObjectName();
-	    }
-	  }
-	  
-		// do cheapest filtering checks first
-		//
-		if (printLogLevel==LOG_LEVEL_NOTHING) return;  // Nothing, not even errors...
-		
-		int logLevel = logMessage.getLevel();
-		
-		if (printLogLevel<logLevel) return; // not for our eyes.
+		if (!logLevel.isVisible(channelLogLevel)) {
+		  return; // not for our eyes.
+		}
 		
 		if (subject==null) subject="Kettle";
         
 		// Are the message filtered?
     //
-		if (logLevel!=LOG_LEVEL_ERROR && !Const.isEmpty(filter))
+		if (!logLevel.isError() && !Const.isEmpty(filter))
         {
             if (subject.indexOf(filter)<0 && logMessage.toString().indexOf(filter)<0)
             {
@@ -425,33 +328,19 @@ public class LogWriter
 		        
         switch(logLevel)
         {
-        case LOG_LEVEL_ERROR:    pentahoLogger.error(logMessage); break;
-        case LOG_LEVEL_ROWLEVEL: 
-        case LOG_LEVEL_DEBUG:    pentahoLogger.debug(logMessage); break;
-        default:                 pentahoLogger.info(logMessage); break;
+        case ERROR:    pentahoLogger.error(logMessage); break;
+        case ROWLEVEL: 
+        case DEBUG:    pentahoLogger.debug(logMessage); break;
+        default:       pentahoLogger.info(logMessage); break;
         }
 	}
-	
-	/*
-	public void logMinimal(LogMessageInterface message)  { println(LOG_LEVEL_MINIMAL, message) ; }
-	public void logDetailed(LogMessageInterface message) { println(LOG_LEVEL_DETAILED, message); }
-	public void logDebug(LogMessageInterface message)    { println(LOG_LEVEL_DEBUG, message); }
-	public void logRowlevel(LogMessageInterface message) { println(LOG_LEVEL_ROWLEVEL, message); }
-	public void logError(LogMessageInterface message)    { println(LOG_LEVEL_ERROR, message); }
-	*/
 
-	@Deprecated  //temporarily needed for Version Checker
-    public void logBasic(String subject, String message, Object[] arguments) {
-    	LogChannel log = new LogChannel(subject);
-    	log.logBasic(message, arguments);
-    }
-	
-	public void println(LogMessageInterface message, Throwable e) { 
-		println(message); 
+	public void println(LogMessageInterface message, Throwable e, LogLevel channelLogLevel) { 
+		println(message, channelLogLevel); 
 
 		String stackTrace = Const.getStackTracker(e);
-		LogMessage traceMessage = new LogMessage(stackTrace, message.getLogChannelId(), LOG_LEVEL_ERROR);
-		println(traceMessage); 
+		LogMessage traceMessage = new LogMessage(stackTrace, message.getLogChannelId(), LogLevel.ERROR);
+		println(traceMessage, channelLogLevel); 
 	}
 	
 	public void setFilter(String filter)
@@ -464,27 +353,6 @@ public class LogWriter
 		return filter;
 	}
 
-	public static final int getLogLevel(String lvl)
-	{
-		if (lvl==null) return LOG_LEVEL_ERROR;
-		for (int i=0;i<logLevelDescription.length;i++)
-		{
-			if (logLevelDescription[i].equalsIgnoreCase(lvl)) return i;
-		}
-		for (int i=0;i<log_level_desc_long.length;i++)
-		{
-			if (log_level_desc_long[i].equalsIgnoreCase(lvl)) return i;
-		}
-		
-		return LOG_LEVEL_BASIC;
-	}
-
-	public static final String getLogLevelDesc(int l)
-	{
-		if (l<0 || l>=logLevelDescription.length) return logLevelDescription[LOG_LEVEL_BASIC];
-		return logLevelDescription[l];
-	}
-	
     /**
      * This is not thread safe: please try to get the file appender yourself using the static constructor and work from there
      */
@@ -517,50 +385,6 @@ public class LogWriter
             throw new IOException("Unable to find appender for file: "+filename+" (exact="+exact+")");
         }
         return new FileInputStream( ((Log4jFileAppender)appender).getFile().getName().getPathDecoded() );
-    }
-    
-    public boolean isBasic(String logChannelId) {
-      return getLoggingObjectLogLevel(logChannelId)>=LOG_LEVEL_BASIC;
-    }
-    
-    public boolean isBasic()
-    {
-        return filteredLogLevel>=LOG_LEVEL_BASIC;
-    }
-    
-    public boolean isDetailed(String logChannelId) {
-      return getLoggingObjectLogLevel(logChannelId)>=LOG_LEVEL_DETAILED;
-    }
-
-    public boolean isDetailed()
-    {
-        return filteredLogLevel>=LOG_LEVEL_DETAILED;
-    }
-    
-    public boolean isDebug(String logChannelId) {
-      return getLoggingObjectLogLevel(logChannelId)>=LOG_LEVEL_DEBUG;
-    }
-
-    public boolean isDebug()
-    {
-        return filteredLogLevel>=LOG_LEVEL_DEBUG;
-    }
-
-    public boolean isRowLevel(String logChannelId) {
-      return getLoggingObjectLogLevel(logChannelId)>=LOG_LEVEL_ROWLEVEL;
-    }
-    
-    public boolean isRowLevel()
-    {
-        return filteredLogLevel>=LOG_LEVEL_ROWLEVEL;
-    }
-
-    protected int getLoggingObjectLogLevel(String logChannelId) {
-      LoggingObjectInterface loggingObject = registry.getLoggingObject(logChannelId);
-      if((loggingObject != null) && (loggingObject.getLogLevel() != LOG_LEVEL_DEFAULT)) {
-        return loggingObject.getLogLevel();
-      }
-      return filteredLogLevel;
     }
 
     /**

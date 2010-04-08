@@ -36,7 +36,6 @@ import javax.wsdl.extensions.soap12.SOAP12Address;
 import javax.wsdl.extensions.soap12.SOAP12Binding;
 import javax.wsdl.extensions.soap12.SOAP12Header;
 import javax.wsdl.extensions.soap12.SOAP12Operation;
-import javax.xml.ws.http.HTTPBinding;
 
 import org.pentaho.di.core.exception.KettleException;
 

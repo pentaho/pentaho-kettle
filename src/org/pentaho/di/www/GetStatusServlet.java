@@ -177,6 +177,48 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
       }
 
       out.println("<p>");
+      out.println("<H1>"+BaseMessages.getString(PKG, "GetStatusServlet.ConfigurationDetails.Title")+"</H1><p>");
+      out.println("<table border=\"1\">");
+      out.print("<tr> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Parameter.Title") + 
+          "</th> <th>" + BaseMessages.getString(PKG, "GetStatusServlet.Value.Title")+ 
+          "</th> </tr>");
+      
+      // The max number of log lines in the back-end
+      //
+      SlaveServerConfig serverConfig = getTransformationMap().getSlaveServerConfig();
+      String maxLines = serverConfig.getMaxLogLines()+BaseMessages.getString(PKG, "GetStatusServlet.Lines");
+      if (serverConfig.getMaxLogLines()==0) {
+        maxLines += BaseMessages.getString(PKG, "GetStatusServlet.NoLimit");
+      }
+      out.print("<tr> <td>" + BaseMessages.getString(PKG, "GetStatusServlet.Parameter.MaxLogLines") + 
+          "</td> <td>" + maxLines + "</td> </tr>");
+      
+      // The max age of log lines 
+      //
+      String maxAge = serverConfig.getMaxLogLines()+BaseMessages.getString(PKG, "GetStatusServlet.Minutes");
+      if (serverConfig.getMaxLogTimeoutMinutes()==0) {
+        maxAge += BaseMessages.getString(PKG, "GetStatusServlet.NoLimit");
+      }
+      out.print("<tr> <td>" + BaseMessages.getString(PKG, "GetStatusServlet.Parameter.MaxLogLinesAge") + 
+          "</td> <td>" + maxAge + "</td> </tr>");
+      
+      // The max age of stale objects
+      //
+      String maxObjAge = serverConfig.getObjectTimeoutMinutes()+BaseMessages.getString(PKG, "GetStatusServlet.Minutes");
+      if (serverConfig.getObjectTimeoutMinutes()==0) {
+        maxObjAge += BaseMessages.getString(PKG, "GetStatusServlet.NoLimit");
+      }
+      out.print("<tr> <td>" + BaseMessages.getString(PKG, "GetStatusServlet.Parameter.MaxObjectsAge") + 
+          "</td> <td>" + maxObjAge + "</td> </tr>");
+      
+      out.print("</table>");
+      
+      String filename = serverConfig.getFilename();
+      if (filename==null) {
+        filename = BaseMessages.getString(PKG, "GetStatusServlet.ConfigurationDetails.UsingDefaults");
+      }
+      out.println("<i>"+BaseMessages.getString(PKG, "GetStatusServlet.ConfigurationDetails.Advice", filename)+"</i><br>");
+      
       out.println("</BODY>");
       out.println("</HTML>");
     }

@@ -23,9 +23,10 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
@@ -78,13 +79,13 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   
   protected LogChannelInterface log;
   
-  private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
+  private LogLevel logLevel = DefaultLogLevel.getLogLevel();
  
   public JobEntryBase()
   {
     name = null;
     description = null;
-    log = new LogChannel(this, logLevel);
+    log = new LogChannel(this);
   }
 
   public JobEntryBase(String name, String description)
@@ -93,7 +94,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     setDescription(description);
     setObjectId(null);
 
-    log = new LogChannel(this, logLevel);
+    log = new LogChannel(this);
   }
   
   @Override
@@ -481,7 +482,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     
     public void setParentJob(Job parentJob) {
     	this.parentJob = parentJob;
-    	this.log = new LogChannel(this, logLevel);
+    	this.logLevel = parentJob.getLogLevel();
+    	this.log = new LogChannel(this, parentJob);
     }
     
     public Job getParentJob() {
@@ -538,12 +540,12 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 		return null;
 	}
 
-	public int getLogLevel() {
+	public LogLevel getLogLevel() {
     return logLevel;
   }
 
-  public void setLogLevel(int logLevel) {
+  public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
-    log = new LogChannel(this, logLevel);
+    log.setLogLevel(logLevel);
   }
 }

@@ -23,7 +23,6 @@ import org.apache.axis.transport.http.HTTPConstants;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 
 import com.sforce.soap.partner.DeleteResult;
@@ -46,7 +45,6 @@ import com.sforce.soap.partner.sobject.SObject;
 public class SalesforceConnection {
 	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
-	private LogWriter log;
 	private String url;
 	private String username;
 	private String password;
@@ -72,15 +70,14 @@ public class SalesforceConnection {
 
 
 
-	private LogChannelInterface	logInterface;
+	private LogChannelInterface	log;
 	
 	
 	/**
 	 * Construct a new Salesforce Connection
 	 */
 	public SalesforceConnection(LogChannelInterface logInterface, String url, String username, String password) throws KettleException {
-		this.log=LogWriter.getInstance();
-		this.logInterface = logInterface;
+		this.log = logInterface;
 		this.url=url;
 		setUsername(username);
 		setPassword(password);
@@ -184,12 +181,12 @@ public class SalesforceConnection {
 
 		try{
 			this.binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
-			if (log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL", binding._getProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY)));
+			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL", binding._getProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY)));
 		      
 	        //  Set timeout
 	      	if(getTimeOut()>0) {
 	      		binding.setTimeout(getTimeOut());
-	      		 if (log.isDebug())  logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SettingTimeout",""+this.timeout));
+	      		 if (log.isDebug())  log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SettingTimeout",""+this.timeout));
 	      	}
 	        
 	      	
@@ -204,21 +201,21 @@ public class SalesforceConnection {
 	        
 	        // Attempt the login giving the user feedback
 	        if (log.isDetailed()) {
-	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginNow"));
-	        	logInterface.logDetailed("----------------------------------------->");
-	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL",getURL()));
-	        	logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginUsername",getUsername()));
-	        	if(getModule()!=null) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginModule", getModule()));
-	        	if(getCondition()!=null) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginCondition",getCondition()));
-	        	logInterface.logDetailed("<-----------------------------------------");
+	        	log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginNow"));
+	        	log.logDetailed("----------------------------------------->");
+	        	log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginURL",getURL()));
+	        	log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginUsername",getUsername()));
+	        	if(getModule()!=null) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginModule", getModule()));
+	        	if(getCondition()!=null) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginCondition",getCondition()));
+	        	log.logDetailed("<-----------------------------------------");
 	        }
 	        
 	        // Login
 	        this.loginResult = this.binding.login(getUsername(), getPassword());
 	        
 	        if (log.isDebug()) {
-	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SessionId") + " : " + this.loginResult.getSessionId());
-	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.NewServerURL") + " : " + this.loginResult.getServerUrl());
+	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SessionId") + " : " + this.loginResult.getSessionId());
+	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.NewServerURL") + " : " + this.loginResult.getServerUrl());
 	        }
 	        
 	        // set the session header for subsequent call authentication
@@ -233,19 +230,19 @@ public class SalesforceConnection {
 	        // Return the user Infos
 	        this.userInfo = this.binding.getUserInfo();
 	        if (log.isDebug()) {
-	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserInfos") + " : " + this.userInfo.getUserFullName());
-	        	logInterface.logDebug("----------------------------------------->");
-	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserName") + " : " + this.userInfo.getUserFullName());
-	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserEmail") + " : " + this.userInfo.getUserEmail());
-	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserLanguage") + " : " + this.userInfo.getUserLanguage());
-	        	logInterface.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserOrganization") + " : " + this.userInfo.getOrganizationName());    
-	        	logInterface.logDebug("<-----------------------------------------");
+	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserInfos") + " : " + this.userInfo.getUserFullName());
+	        	log.logDebug("----------------------------------------->");
+	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserName") + " : " + this.userInfo.getUserFullName());
+	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserEmail") + " : " + this.userInfo.getUserEmail());
+	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserLanguage") + " : " + this.userInfo.getUserLanguage());
+	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.UserOrganization") + " : " + this.userInfo.getOrganizationName());    
+	        	log.logDebug("<-----------------------------------------");
 	        }
 	        
 	    	this.serverTimestamp= this.binding.getServerTimestamp().toString();
 	 		if(log.isDebug()) BaseMessages.getString(PKG, "SalesforceInput.Log.ServerTimestamp",""+this.serverTimestamp);
 	 		
-	       if(log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));
+	       if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));
 		
 		}catch(Exception e){
 			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.Connection"), e);
@@ -264,7 +261,7 @@ public class SalesforceConnection {
 			    if(!describeSObjectResult.isQueryable()) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ObjectNotQueryable",module));
 		    }
 		    			        
-		    if (getSQL()!=null && log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.SQLString") + " : " +  getSQL());        
+		    if (getSQL()!=null && log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.SQLString") + " : " +  getSQL());        
 		  
 			switch (this.recordsFilter) {
 				case SalesforceConnectionUtils.RECORDS_FILTER_UPDATED:
@@ -316,7 +313,7 @@ public class SalesforceConnection {
 				if(this.loginResult!=null) this.loginResult=null;
 				if(this.userInfo!=null) this.userInfo=null;
 
-				if(log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.ConnectionClosed"));
+				if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.ConnectionClosed"));
 			}catch(Exception e){
 				throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.ClosingConnection"),e);
 			};

@@ -49,7 +49,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -821,10 +821,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdlLoglevel.top = new FormAttachment(wAddTime, margin);
 		wlLoglevel.setLayoutData(fdlLoglevel);
 		wLoglevel = new CCombo(wLogging, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		for (int i = 0; i < LogWriter.log_level_desc_long.length; i++)
-			wLoglevel.add(LogWriter.log_level_desc_long[i]);
-		wLoglevel.select(jobEntry.loglevel);
-
+    wLoglevel.setItems(LogLevel.getLogLevelDescriptions());
 		props.setLook(wLoglevel);
 		FormData fdLoglevel = new FormData();
 		fdLoglevel.left = new FormAttachment(middle, 0);
@@ -1237,7 +1234,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		wFollowingAbortRemotely.setSelection(jobEntry.isFollowingAbortRemotely());
 		wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
 		wCreateParentFolder.setSelection(jobEntry.createParentFolder);
-		wLoglevel.select(jobEntry.loglevel);
+		wLoglevel.select(jobEntry.logFileLevel.getLevel());
 	}
 
 	private void cancel()
@@ -1327,7 +1324,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		
 		jobEntry.logfile = wLogfile.getText();
 		jobEntry.logext = wLogext.getText();
-		jobEntry.loglevel = wLoglevel.getSelectionIndex();
+		jobEntry.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
 
 		jobEntry.argFromPrevious = wPrevious.getSelection();
         jobEntry.paramsFromPrevious = wPrevToParams.getSelection();

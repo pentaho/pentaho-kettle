@@ -49,8 +49,8 @@ import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingHierarchy;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -115,7 +115,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
     
 	private LogChannelInterface log;
-	private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
+	private LogLevel logLevel = LogLevel.BASIC;
 	
 	/**
 	 * The transformation metadata to execute
@@ -138,17 +138,17 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     /**
      * The parent logging object interface (this could be a transformation or a job
      */
-	private LoggingObjectInterface	parent;
+	  private LoggingObjectInterface	parent;
 
     /**
      * The name of the mapping step that executes this transformation in case this is a mapping 
      */
     private String mappingStepName;
 
-	/**
-	 * Indicates that we want to monitor the running transformation in a GUI
-	 */
-	private boolean monitored;
+	  /**
+	   * Indicates that we want to monitor the running transformation in a GUI
+	   */
+	  private boolean monitored;
 	
 	/**
 	 * Indicates that we are running in preview mode...
@@ -277,7 +277,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		this.transMeta = transMeta;
 		this.parent = parent;
 		
-		this.log = new LogChannel(this);
+		this.log = new LogChannel(this, parent);
+		this.logLevel = log.getLogLevel();
 		
 		if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
 		if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -559,7 +560,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					combi.step = step;
 
 					if(combi.step instanceof LoggingObjectInterface) {
-					  ((LoggingObjectInterface)combi.step).setLogLevel(logLevel);
+					  combi.step.getLogChannel().setLogLevel(logLevel);
 					}
 					
 					// Add to the bunch...
@@ -2225,7 +2226,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
      */
     public void setParentJob(Job parentJob)
     {
-        this.parentJob = parentJob;
+      this.logLevel = parentJob.getLogLevel();
+      this.log.setLogLevel(logLevel);
+      this.parentJob = parentJob;
     }
 
     /**
@@ -3344,6 +3347,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	 * @param parentTrans the parentTrans to set
 	 */
 	public void setParentTrans(Trans parentTrans) {
+    this.logLevel = parentTrans.getLogLevel();
+    this.log.setLogLevel(logLevel);
 		this.parentTrans = parentTrans;
 	}
 
@@ -3409,13 +3414,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		return transMeta.getRepositoryDirectory();
 	}
 	
-	public int getLogLevel() {
+	public LogLevel getLogLevel() {
     return logLevel;
   }
 
-  public void setLogLevel(int logLevel) {
+  public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
-    log = new LogChannel(this, this.logLevel);
+    log.setLogLevel(logLevel);
   }
 	
 	public List<LoggingHierarchy> getLoggingHierarchy() {

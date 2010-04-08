@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -34,7 +34,7 @@ public class BaseCluster extends TestCase {
 		config.setClusterPosting(true);
 		config.setClusterPreparing(true);
 		config.setClusterStarting(true);
-		config.setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+		config.setLogLevel(LogLevel.BASIC);
 		
 		// LogWriter.getInstance().setFilter(" server socket ");
 		
@@ -70,7 +70,6 @@ public class BaseCluster extends TestCase {
     	//
     	KettleEnvironment.init();
     	CentralLogStore.init(0, 60); // Keep all log rows for at least 60 minutes
-        LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR);
 	}
 
 	protected String loadFileContent(VariableSpace space, String filename) throws Exception {

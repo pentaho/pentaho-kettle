@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 
@@ -35,6 +36,8 @@ public class TransformationMap
     private Map<CarteObjectEntry, TransConfiguration> configurationMap;
     
     private Map<String, List<SocketPortAllocation>> hostServerSocketPortsMap; 
+    
+    private SlaveServerConfig slaveServerConfig;
     
     public TransformationMap()
     {
@@ -178,7 +181,6 @@ public class TransformationMap
 	
 	    		if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && 
 		    			spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) &&
-		    			spa.getCarteObjectId().equalsIgnoreCase(carteObjectId) &&
 		    			spa.getTransformationName().equalsIgnoreCase(transformationName) &&
 		    			spa.getSourceStepName().equalsIgnoreCase(sourceStepName) &&
 		    			spa.getSourceStepCopy().equalsIgnoreCase(sourceStepCopy) &&
@@ -240,7 +242,7 @@ public class TransformationMap
     }
     
     /**
-     * Deallocate all the ports for the given transformation name, accross all hosts.
+     * Deallocate all the ports for the given transformation name, across all hosts.
      * @param transName the transformation name to release
      * @param carteObjectId the carte object ID to reference
      */
@@ -248,7 +250,7 @@ public class TransformationMap
     	for (String hostname : hostServerSocketPortsMap.keySet()) {
     		for (SocketPortAllocation spa : hostServerSocketPortsMap.get(hostname)) {
     			if (spa.getTransformationName().equalsIgnoreCase(transName) && 
-    				spa.getCarteObjectId().equals(carteObjectId)
+    				(Const.isEmpty(carteObjectId) || spa.getCarteObjectId().equals(carteObjectId))
     			    ) {
     				spa.setAllocated(false);
     			}
@@ -295,4 +297,18 @@ public class TransformationMap
 		}
 		return null;
 	}
+
+  /**
+   * @return the slaveServerConfig
+   */
+  public SlaveServerConfig getSlaveServerConfig() {
+    return slaveServerConfig;
+  }
+
+  /**
+   * @param slaveServerConfig the slaveServerConfig to set
+   */
+  public void setSlaveServerConfig(SlaveServerConfig slaveServerConfig) {
+    this.slaveServerConfig = slaveServerConfig;
+  }
 }

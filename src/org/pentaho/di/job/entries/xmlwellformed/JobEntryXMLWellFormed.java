@@ -39,7 +39,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -243,7 +242,6 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 
 	public Result execute(Result previousResult, int nr) throws KettleException 
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setNrErrors(1);
 		result.setResult(false);
@@ -295,7 +293,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 				if(log.isDetailed())
 					logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ProcessingRow",vsourcefilefolder_previous,vwildcard_previous));
 
-				ProcessFileFolder(vsourcefilefolder_previous, vwildcard_previous,parentJob,result);
+				processFileFolder(vsourcefilefolder_previous, vwildcard_previous,parentJob,result);
 			}
 		}
 		else if (vsourcefilefolder!=null)
@@ -318,7 +316,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 				if(log.isDetailed())
 					logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ProcessingRow",vsourcefilefolder[i],vwildcard[i]));
 					
-				ProcessFileFolder(vsourcefilefolder[i], vwildcard[i],parentJob,result);
+				processFileFolder(vsourcefilefolder[i], vwildcard[i],parentJob,result);
 				
 			}
 		}	
@@ -333,11 +331,11 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			result.setResult(true);
 		}
 		
-		displayResults(log);
+		displayResults();
 		
 		return result;
 	}
-	private void displayResults(LogWriter log)
+	private void displayResults()
 	{
 		if(log.isDetailed())
 		{
@@ -389,7 +387,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	 public static class XMLTreeHandler extends DefaultHandler {
 		   
 	 }
-	private boolean CheckWellFormed(FileObject file,LogWriter log)
+	private boolean checkWellFormed(FileObject file)
 	{
 		boolean retval=false;
 		try{
@@ -408,9 +406,8 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	  
 	      return retval; 
 	}
-	private boolean ProcessFileFolder(String sourcefilefoldername,String wildcard,Job parentJob,Result result)
+	private boolean processFileFolder(String sourcefilefoldername,String wildcard,Job parentJob,Result result)
 	{
-		LogWriter log = LogWriter.getInstance();
 		boolean entrystatus = false ;
 		FileObject sourcefilefolder = null;
 		FileObject CurrentFile = null;
@@ -436,7 +433,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 				 if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.FileExists",sourcefilefolder.toString()));
 				 if(sourcefilefolder.getType() == FileType.FILE)
 				 {
-					 entrystatus=checkOneFile(sourcefilefolder,log,result,parentJob);
+					 entrystatus=checkOneFile(sourcefilefolder,result,parentJob);
 					 
 				 }else if(sourcefilefolder.getType() == FileType.FOLDER)
 				 {
@@ -498,7 +495,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
                 				 {
                 					if(GetFileWildcard(CurrentFile.toString(),realWildcard))
                 					{
-                						checkOneFile(CurrentFile,log,result,parentJob);
+                						checkOneFile(CurrentFile,result,parentJob);
                 					}
                 				 }
                             	 
@@ -507,7 +504,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
                 				 // In the base folder
                 				if (GetFileWildcard(CurrentFile.toString(),realWildcard))
           						{	
-                					checkOneFile(CurrentFile,log,result,parentJob);
+                					checkOneFile(CurrentFile,result,parentJob);
           						}
                 			 }        
                          }
@@ -552,20 +549,20 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		return entrystatus;
 	}
 	
-	private boolean checkOneFile(FileObject file, LogWriter log,Result result,Job parentJob)
+	private boolean checkOneFile(FileObject file, Result result,Job parentJob)
 	{
 		boolean retval=false;
 		try
 		{
 		 // We deal with a file..so let's check if it's well formed
-		 boolean retformed=CheckWellFormed(file,log);
+		 boolean retformed=checkWellFormed(file);
 		 if(!retformed)
 		 {
 			 logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.FileBadFormed",file.toString()));					
 			 // Update Bad formed files number
 			 updateBadFormed(); 
 			 if(resultfilenames.equals(ADD_ALL_FILENAMES) || resultfilenames.equals(ADD_BAD_FORMED_FILES_ONLY))
-				 addFileToResultFilenames(KettleVFS.getFilename(file),log,result,parentJob);
+				 addFileToResultFilenames(KettleVFS.getFilename(file),result,parentJob);
 		 }else
 		 {
 			 if(log.isDetailed())
@@ -576,7 +573,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 			 // Update Well formed files number
 			 updateWellFormed(); 
 			 if(resultfilenames.equals(ADD_ALL_FILENAMES) || resultfilenames.equals(ADD_WELL_FORMED_FILES_ONLY))
-					 addFileToResultFilenames(KettleVFS.getFilename(file),log,result,parentJob);
+					 addFileToResultFilenames(KettleVFS.getFilename(file),result,parentJob);
 		 }
 		
 		}catch (Exception e){}
@@ -592,7 +589,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		NrBadFormed++;
 		updateAllErrors();
 	}
-	private void addFileToResultFilenames(String fileaddentry,LogWriter log,Result result,Job parentJob)
+	private void addFileToResultFilenames(String fileaddentry,Result result,Job parentJob)
 	{	
 		try
 		{

@@ -37,7 +37,6 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -45,8 +44,8 @@ import org.pentaho.di.job.entries.ftpsget.FTPSConnection;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -605,7 +604,6 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	@SuppressWarnings("unchecked") // Needed for the Vector coming from sshclient.ls()
 	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		log4j.info(BaseMessages.getString(PKG, "JobEntryFTPDelete.Started", serverName)); //$NON-NLS-1$
 		RowMetaAndData resultRow = null;
 		Result result = previousResult;
@@ -652,7 +650,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			if(protocol.equals(PROTOCOL_FTP))
 			{
 				// establish the connection
-				 FTPConnect(log,realservername,realUsername, realPassword,
+				 FTPConnect(realservername,realUsername, realPassword,
 						 realserverport,realFtpDirectory, realproxyhost,realproxyusername, realproxypassword,realproxyport,
 							timeout);
 				
@@ -677,14 +675,14 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			else if(protocol.equals(PROTOCOL_FTPS))
 			{
 				// establish the secure connection
-				FTPSConnect(log,realservername,realUsername,realserverport,realPassword, realFtpDirectory, timeout);
+				FTPSConnect(realservername,realUsername,realserverport,realPassword, realFtpDirectory, timeout);
 				// Get all the files in the current directory...
 				filelist = ftpsclient.getFileNames();
 			}
 			else if(protocol.equals(PROTOCOL_SFTP))
 			{
 				// establish the secure connection
-				SFTPConnect(log,realservername,realUsername,realserverport,realPassword, realFtpDirectory);
+				SFTPConnect(realservername,realUsername,realserverport,realPassword, realFtpDirectory);
 				
 				// Get all the files in the current directory...
 				filelist = sftpclient.dir();
@@ -692,7 +690,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			else if(protocol.equals(PROTOCOL_SSH))
 			{
 				// establish the secure connection
-				SSHConnect(log,realservername, realserverpassword, realserverport,
+				SSHConnect(realservername, realserverpassword, realserverport,
 						realUsername, realPassword,
 						realproxyhost,realproxyusername, realproxypassword, realproxyport,
 						realkeyFilename, realkeyPass);
@@ -900,7 +898,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		return false;
 	}
 	
-	private void SSHConnect(LogWriter log,String realservername, String realserverpassword, int realserverport,
+	private void SSHConnect(String realservername, String realserverpassword, int realserverport,
 			String realUsername, String realPassword,
 			String realproxyhost,String realproxyusername, String realproxypassword, int realproxyport,
 			String realkeyFilename, String realkeyPass) throws Exception
@@ -954,7 +952,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		
 		
 	}
-	private void SFTPConnect(LogWriter log,String realservername,String realusername,int realport,
+	private void SFTPConnect(String realservername,String realusername,int realport,
 			String realpassword, String realFTPDirectory) throws Exception
 	{
 		// Create sftp client to host ...
@@ -972,7 +970,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		}
 
 	}
-	private void FTPSConnect(LogWriter log,String realservername,String realusername,int realport,
+	private void FTPSConnect(String realservername,String realusername,int realport,
 			String realpassword, String realFTPDirectory, int realtimeout) throws Exception
 	{
 		// Create ftps client to host ...
@@ -1029,7 +1027,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			if(log.isDetailed()) logDetailed("Changed to directory ["+realFTPDirectory+"]");
 		}
 	}
-	private void FTPConnect(LogWriter log,String realServername,String realusername, String realpassword,
+	private void FTPConnect(String realServername,String realusername, String realpassword,
 			int realport,String realFtpDirectory, String realProxyhost,String realproxyusername, 
 			String realproxypassword,int realproxyport,
 			int realtimeout) throws Exception

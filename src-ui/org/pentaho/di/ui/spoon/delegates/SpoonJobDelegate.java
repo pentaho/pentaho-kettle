@@ -33,7 +33,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -1412,7 +1412,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		executionConfiguration.setRepository(spoon.rep);
 		executionConfiguration.setSafeModeEnabled(safe);
 
-		executionConfiguration.setLogLevel(LogWriter.getInstance().getLogLevel());
+		executionConfiguration.setLogLevel(DefaultLogLevel.getLogLevel());
 
 		JobExecutionConfigurationDialog dialog = new JobExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, jobMeta);
 		if (dialog.open()) {

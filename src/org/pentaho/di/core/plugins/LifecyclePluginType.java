@@ -8,11 +8,9 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import org.pentaho.di.core.annotations.LifecyclePlugin;
-import org.pentaho.di.core.annotations.RepositoryPlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.GUIOption;
 import org.pentaho.di.core.lifecycle.LifecycleListener;
-import org.pentaho.di.repository.RepositoryMeta;
 
 /**
  * This class represents the repository plugin type.

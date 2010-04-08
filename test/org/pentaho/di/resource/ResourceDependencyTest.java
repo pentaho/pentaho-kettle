@@ -5,7 +5,6 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.TransMeta;
@@ -35,7 +34,6 @@ public class ResourceDependencyTest extends TestCase {
 
   public void testJobDependencyList() throws Exception {
     KettleEnvironment.init();
-    LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
     
     // Load the first job metadata
     JobMeta jobMeta = new JobMeta("test/org/pentaho/di/resource/processchangelog.kjb", null, null); //$NON-NLS-1$
@@ -81,7 +79,6 @@ public class ResourceDependencyTest extends TestCase {
   
   public void testTransformationDependencyList() throws Exception {
     KettleEnvironment.init();
-    LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         
     TransMeta transMeta = new TransMeta("test/org/pentaho/di/resource/trans/General - Change log processing.ktr"); //$NON-NLS-1$
     List<ResourceReference> resourceReferences = transMeta.getResourceDependencies();

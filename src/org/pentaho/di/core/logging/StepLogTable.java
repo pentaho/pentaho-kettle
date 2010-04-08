@@ -116,6 +116,7 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 		table.fields.add( new LogTableField(ID.LOG_FIELD.id, false, false, "LOG_FIELD", BaseMessages.getString(PKG, "StepLogTable.FieldName.LogField"), BaseMessages.getString(PKG, "StepLogTable.FieldDescription.LogField"), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH) );
 		
 		table.findField(ID.LOG_DATE.id).setLogDateField(true);
+    table.findField(ID.ID_BATCH.id).setKey(true);
 		table.findField(ID.CHANNEL_ID.id).setVisible(false);
 		table.findField(ID.LOG_FIELD.id).setLogField(true);
 		table.findField(ID.ERRORS.id).setErrorsField(true);

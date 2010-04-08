@@ -2,7 +2,8 @@ package org.pentaho.di.trans.steps.infobrightoutput;
 
 import java.util.ArrayList;
 
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.DefaultLogLevel;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -24,13 +25,13 @@ public abstract class AbstractMessages {
       // failed message search. Since we are searching over multiple
       // packages, we don't want this message generated unless we
       // cannot find the message in any of the packages.
-      int logLevel = LogWriter.getInstance().getLogLevel();
-      LogWriter.getInstance().setLogLevel(0);
+      LogLevel logLevel = DefaultLogLevel.getLogLevel();
+      DefaultLogLevel.setLogLevel(LogLevel.NOTHING);
       try {
         res = BaseMessages.getString(pName, key);
       }
       finally {
-        LogWriter.getInstance().setLogLevel(logLevel);
+        DefaultLogLevel.setLogLevel(logLevel);
       }
       if (!res.equals(notFoundKey)) {
         return res;

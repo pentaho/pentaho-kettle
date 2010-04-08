@@ -33,7 +33,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -42,8 +41,8 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import com.healthmarketscience.jackcess.Database;
@@ -238,7 +237,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 			throw new KettleException(BaseMessages.getString(PKG, "JobEntryMSAccessBulkLoad.Meta.UnableLoadRep",""+id_jobentry,dbe.getMessage()), dbe);
 		}
 	}
-	private void displayResults(LogWriter log)
+	private void displayResults()
 	{
 		if(log.isDetailed()){
 			logDetailed("=======================================");
@@ -327,7 +326,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
         }
 		return getIt;
 	}
-	private boolean processOneRow(LogWriter log, String sourceFileFolder, String SourceWildcard,
+	private boolean processOneRow(String sourceFileFolder, String SourceWildcard,
 			String Delimiter,String targetDb, String targetTable, Job parentJob,Result result)
 	{
 		boolean retval=false;
@@ -366,7 +365,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 					}else {
 						// let's run process for this folder
 						if(include_subfolders){
-							processOneRow(log, childFullName, SourceWildcard, Delimiter, targetDb, targetTable, parentJob, result);
+							processOneRow(childFullName, SourceWildcard, Delimiter, targetDb, targetTable, parentJob, result);
 						}
 						
 					}
@@ -471,7 +470,6 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 
 	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
  
 	    List<RowMetaAndData> rows = result.getRows();
@@ -511,7 +509,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 					String vTargetDb_previous = resultRow.getString(3,null);
 					String vTargetTable_previous = resultRow.getString(4,null);
 					
-					processOneRow(log, vSourceFileFolder_previous, vSourceWildcard_previous,vDelimiter_previous,
+					processOneRow(vSourceFileFolder_previous, vSourceWildcard_previous,vDelimiter_previous,
 							vTargetDb_previous, vTargetTable_previous, parentJob,result);
 					
 				}
@@ -527,7 +525,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 					String realTargetDb=environmentSubstitute(targetDb[i]);
 					String realTargetTable=environmentSubstitute(targetTable[i]);
 					
-					processOneRow(log, realSourceFileFolder, realSourceWildcard,realSourceDelimiter,
+					processOneRow(realSourceFileFolder, realSourceWildcard,realSourceDelimiter,
 							realTargetDb, realTargetTable, parentJob,result);
 				}
 			}
@@ -543,7 +541,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 		result.setNrLinesWritten(NrSuccess);
 		if(getSuccessStatus())	result.setResult(true);
 		
-		displayResults(log);
+		displayResults();
 		return result;
 	}
 	private boolean getSuccessStatus()

@@ -8,6 +8,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowListener;
@@ -16,7 +17,7 @@ import org.pentaho.di.trans.step.StepInterface;
 public class TimedTransRunner
 {
     private String filename;
-    private int logLevel;
+    private LogLevel logLevel;
     private long records;
     private double runTime;
     private double speed;
@@ -29,7 +30,7 @@ public class TimedTransRunner
     private TransMeta transMeta;
     private DatabaseMeta targetDatabaseMeta;
     
-    public TimedTransRunner(String filename, int logLevel, DatabaseMeta newTargetDatabaseMeta, long records)
+    public TimedTransRunner(String filename, LogLevel logLevel, DatabaseMeta newTargetDatabaseMeta, long records)
     {
         this.filename = filename;
         this.logLevel = logLevel;
@@ -82,6 +83,7 @@ public class TimedTransRunner
         
         // OK, now run this transFormation.
         Trans trans = new Trans(transMeta);
+        trans.setLogLevel(logLevel);
         
         try {
         	trans.prepareExecution(null);
@@ -140,7 +142,7 @@ public class TimedTransRunner
     /**
      * @return the logLevel
      */
-    public int getLogLevel()
+    public LogLevel getLogLevel()
     {
         return logLevel;
     }
@@ -148,7 +150,7 @@ public class TimedTransRunner
     /**
      * @param logLevel the logLevel to set
      */
-    public void setLogLevel(int logLevel)
+    public void setLogLevel(LogLevel logLevel)
     {
         this.logLevel = logLevel;
     }

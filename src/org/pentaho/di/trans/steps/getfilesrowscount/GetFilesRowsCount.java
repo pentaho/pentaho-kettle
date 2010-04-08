@@ -12,9 +12,6 @@
 
 package org.pentaho.di.trans.steps.getfilesrowscount;
 
-import java.io.BufferedInputStream;
-import java.io.InputStreamReader;
-
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
@@ -45,7 +42,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 	private GetFilesRowsCountMeta meta;
 	private GetFilesRowsCountData data;
 	
-	private static final int BUFFER_SIZE_INPUT_STREAM = 500;
+	// private static final int BUFFER_SIZE_INPUT_STREAM = 500;
 	
 	public GetFilesRowsCount(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{

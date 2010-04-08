@@ -55,7 +55,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.JobTracker;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -63,8 +62,8 @@ import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -816,7 +815,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     if (!Const.isEmpty(port))
       props.put("mail." + protocol + ".port", environmentSubstitute(port));
 
-    if (LogWriter.getInstance().isDebug())
+    if (log.isDebug())
       props.put("mail.debug", "true");
 
     if (usingAuthentication)
@@ -838,7 +837,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     }
 
     Session session = Session.getInstance(props);
-    session.setDebug(LogWriter.getInstance().isDebug());
+    session.setDebug(log.isDebug());
 
     try
     {

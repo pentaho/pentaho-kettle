@@ -28,6 +28,8 @@ public class SlaveServerConfig {
 	
 	private int objectTimeoutMinutes;
 	
+	private String filename;
+	
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
 	}
@@ -220,5 +222,19 @@ public class SlaveServerConfig {
 	public void setObjectTimeoutMinutes(int objectTimeoutMinutes) {
 		this.objectTimeoutMinutes = objectTimeoutMinutes;
 	}
+
+  /**
+   * @return the filename
+   */
+  public String getFilename() {
+    return filename;
+  }
+
+  /**
+   * @param filename the filename to set
+   */
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
 
 }

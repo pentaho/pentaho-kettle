@@ -38,7 +38,6 @@ public class SpoonPluginManager {
   
   private static SpoonPluginManager instance = new SpoonPluginManager();
   private List<SpoonPluginInterface> plugins = new ArrayList<SpoonPluginInterface>();
-  private final String PLUGIN_FILE_NAME = "plugin.xml";
   
   private Map<String, List<SpoonPluginInterface>> pluginCategoryMap = new HashMap<String, List<SpoonPluginInterface>>();
   

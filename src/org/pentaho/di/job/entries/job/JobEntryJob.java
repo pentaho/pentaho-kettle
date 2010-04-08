@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
@@ -90,7 +91,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	public  boolean setLogfile;
 	public  String  logfile, logext;
 	public  boolean addDate, addTime;
-	public  int     loglevel;
+	public  LogLevel     logFileLevel;
 
 	public  boolean parallel;
     private String directoryPath;
@@ -227,7 +228,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		retval.append("      ").append(XMLHandler.addTagValue("logext",            logext));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date",          addDate));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
-		retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
+		retval.append("      ").append(XMLHandler.addTagValue("loglevel",          logFileLevel.getCode()));
 		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
 		retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished",     waitingToFinish));
 		retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote",     followingAbortRemotely));
@@ -280,7 +281,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			addTime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_time"));
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
 			logext = XMLHandler.getTagValue(entrynode, "logext");
-			loglevel = LogWriter.getLogLevel(XMLHandler.getTagValue(entrynode, "loglevel"));
+			logFileLevel = LogLevel.getLogLevelForCode(XMLHandler.getTagValue(entrynode, "loglevel"));
 			setAppendLogfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "set_append_logfile"));
 			remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
 	        passingExport = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "pass_export"));
@@ -344,7 +345,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			addTime = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
 			logfile = rep.getJobEntryAttributeString(id_jobentry, "logfile");
 			logext = rep.getJobEntryAttributeString(id_jobentry, "logext");
-			loglevel = LogWriter.getLogLevel(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
+			logFileLevel = LogLevel.getLogLevelForCode(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
 			setAppendLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
 			remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
 			passingExport = rep.getJobEntryAttributeBoolean(id_jobentry, "pass_export");
@@ -417,7 +418,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logext", logext);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_append_logfile", setAppendLogfile);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", logFileLevel.getCode());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "slave_server_name", remoteSlaveServerName);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "pass_export", passingExport);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wait_until_finished", waitingToFinish);
@@ -457,7 +458,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	    result.setEntryNr( nr );
         
         Log4jFileAppender appender = null;
-        int backupLogLevel = LogWriter.getInstance().getLogLevel();
+        LogLevel jobLogLevel = parentJob.getLogLevel();
         if (setLogfile)
         {
         	String realLogFilename=environmentSubstitute(getLogFilename());
@@ -482,9 +483,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 return result;
             }
             LogWriter.getInstance().addAppender(appender);
-            LogWriter.getInstance().setLogLevel(loglevel);
-
-            LogWriter.getInstance(environmentSubstitute(getLogFilename()), true, loglevel);
+            jobLogLevel= logFileLevel;
         }
 
         // Figure out the remote slave server...
@@ -720,7 +719,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	                // Create a new job
                 	// 
 	                job = new Job(rep, jobMeta, parentJob);
-	
+	                job.setLogLevel(jobLogLevel);
 	                job.shareVariablesWith(this);
 	                job.setInternalKettleVariables(this);
 	                job.copyParametersFrom(jobMeta);
@@ -814,7 +813,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 	jobExecutionConfiguration.setVariables(this);
                 	jobExecutionConfiguration.setRemoteServer(remoteSlaveServer);
                 	jobExecutionConfiguration.setRepository(rep);
-                	jobExecutionConfiguration.setLogLevel(LogWriter.getInstance().getLogLevel());
+                	jobExecutionConfiguration.setLogLevel(jobLogLevel);
                 	jobExecutionConfiguration.setPassingExport(passingExport);
 
                 	// Send the XML over to the slave server
@@ -921,7 +920,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, appender.getFile(), parentJob.getJobname(), getName());
                 result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
             }
-            LogWriter.getInstance().setLogLevel(backupLogLevel);
         }
 
         if (result.getNrErrors() > 0)

@@ -38,6 +38,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -79,7 +80,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
 	public boolean addDate, addTime;
 
-	public int loglevel;
+	public LogLevel logFileLevel;
 
 	public boolean execPerRow;
 	
@@ -88,6 +89,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public boolean insertScript;
 	
 	public String script;
+	
+	private LogLevel logLevel;
 
 	public JobEntryShell(String name)
 	{
@@ -126,8 +129,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("script", script));
 		
 		
-		retval.append("      ").append(
-				XMLHandler.addTagValue("loglevel", LogWriter.getLogLevelDesc(loglevel)));
+		retval.append("      ").append(XMLHandler.addTagValue("loglevel", logFileLevel.getCode()));
 
 		if (arguments != null)
 			for (int i = 0; i < arguments.length; i++)
@@ -156,7 +158,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			addTime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_time"));
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
 			logext = XMLHandler.getTagValue(entrynode, "logext");
-			loglevel = LogWriter.getLogLevel(XMLHandler.getTagValue(entrynode, "loglevel"));
+			logFileLevel = LogLevel.getLogLevelForCode(XMLHandler.getTagValue(entrynode, "loglevel"));
 			insertScript = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "insertScript"));
 			
 			script= XMLHandler.getTagValue(entrynode, "script");
@@ -195,7 +197,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			addTime = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
 			logfile = rep.getJobEntryAttributeString(id_jobentry, "logfile");
 			logext = rep.getJobEntryAttributeString(id_jobentry, "logext");
-			loglevel = LogWriter.getLogLevel(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
+			logFileLevel = LogLevel.getLogLevelForCode(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
 			insertScript = rep.getJobEntryAttributeBoolean(id_jobentry, "insertScript");
 			
 			script = rep.getJobEntryAttributeString(id_jobentry, "script");
@@ -232,7 +234,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logext", logext);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", logFileLevel.getCode());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "insertScript", insertScript);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "script", script);
 			
@@ -331,15 +333,14 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
 	public Result execute(Result result, int nr) throws KettleException
 	{
-		LogWriter log = LogWriter.getInstance();
-
 		Log4jFileAppender appender = null;
-		int backupLogLevel = log.getLogLevel();
+		LogLevel shellLogLevel = parentJob.getLogLevel();
 		if (setLogfile)
 		{
 			try
 			{
 				appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true,setAppendLogfile);
+				LogWriter.getInstance().addAppender(appender);
 			} catch (KettleException e)
 			{
 				logError(BaseMessages.getString(PKG, "JobEntryShell.Error.UnableopenAppenderFile",getLogFilename(), e.toString()));
@@ -348,9 +349,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 				result.setResult(false);
 				return result;
 			}
-			log.addAppender(appender);
-			log.setLogLevel(loglevel);
+			shellLogLevel = logLevel;
 		}
+		
+		log.setLogLevel(shellLogLevel);
 
 		result.setEntryNr(nr);
 
@@ -371,8 +373,9 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		boolean first = true;
 		List<RowMetaAndData> rows = result.getRows();
 		
-		if(log.isDetailed())
+		if(log.isDetailed()) {
 			logDetailed(BaseMessages.getString(PKG, "JobEntryShell.Log.FoundPreviousRows",""+(rows != null ? rows.size() : 0)));
+		}
 		
 
 		while ((first && !execPerRow)
@@ -442,10 +445,9 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		{
 			if (appender != null)
 			{
-				log.removeAppender(appender);
+				LogWriter.getInstance().removeAppender(appender);
 				appender.close();
 			}
-			log.setLogLevel(backupLogLevel);
 
 		}
 

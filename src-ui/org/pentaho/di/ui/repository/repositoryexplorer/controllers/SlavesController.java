@@ -43,7 +43,7 @@ import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
 public class SlavesController extends AbstractXulEventHandler  implements IUISupportController {
 
-  private ResourceBundle messages = new ResourceBundle() {
+  protected ResourceBundle messages = new ResourceBundle() {
 
     @Override
     public Enumeration<String> getKeys() {

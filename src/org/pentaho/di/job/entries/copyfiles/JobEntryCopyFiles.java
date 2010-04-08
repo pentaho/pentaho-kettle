@@ -37,7 +37,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -245,7 +244,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
 	public Result execute(Result previousResult, int nr) throws KettleException 
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 
 	    List<RowMetaAndData> rows = result.getRows();

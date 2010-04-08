@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.shell.JobEntryShell;
@@ -490,10 +490,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         fdlLoglevel.top = new FormAttachment(wAddTime, margin);
         wlLoglevel.setLayoutData(fdlLoglevel);
         wLoglevel = new CCombo(wLogging, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-        for (int i = 0; i < LogWriter.log_level_desc_long.length; i++)
-            wLoglevel.add(LogWriter.log_level_desc_long[i]);
-        wLoglevel.select(jobEntry.loglevel + 1); // +1: starts at -1
-
+        wLoglevel.setItems(LogLevel.getLogLevelDescriptions());
         props.setLook(wLoglevel);
         fdLoglevel = new FormData();
         fdLoglevel.left = new FormAttachment(middle, 0);
@@ -852,7 +849,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         wAddDate.setSelection(jobEntry.addDate);
         wAddTime.setSelection(jobEntry.addTime);
         wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
-        wLoglevel.select(jobEntry.loglevel + 1);
+        wLoglevel.select(jobEntry.logFileLevel.getLevel());
         
         wInsertScript.setSelection(jobEntry.insertScript);
         if (jobEntry.getScript() != null)
@@ -906,7 +903,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
 
         jobEntry.logfile = wLogfile.getText();
         jobEntry.logext = wLogext.getText();
-        jobEntry.loglevel = wLoglevel.getSelectionIndex() - 1;
+        jobEntry.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
         jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
         jobEntry.setScript(wScript.getText());
         jobEntry.insertScript=wInsertScript.getSelection();

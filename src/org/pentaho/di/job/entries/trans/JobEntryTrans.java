@@ -37,6 +37,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -100,7 +101,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public  boolean setAppendLogfile;
 	public  String  logfile, logext;
 	public  boolean addDate, addTime;
-	public  int     loglevel;
+	public  LogLevel  logFileLevel;
 	
     private String  directoryPath;
 
@@ -231,7 +232,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("logext",            logext));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date",          addDate));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
-        retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
+        retval.append("      ").append(XMLHandler.addTagValue("loglevel",          logFileLevel.getCode()));
         retval.append("      ").append(XMLHandler.addTagValue("cluster",           clustering));
 		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
 		retval.append("      ").append(XMLHandler.addTagValue("set_append_logfile",     setAppendLogfile));
@@ -292,7 +293,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
 			logext = XMLHandler.getTagValue(entrynode, "logext");
-			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
+			logFileLevel = LogLevel.getLogLevelForCode( XMLHandler.getTagValue(entrynode, "loglevel"));
             clustering = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "cluster") );
         	createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "create_parent_folder") );
         	
@@ -362,7 +363,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			addTime = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
 			logfile = rep.getJobEntryAttributeString(id_jobentry, "logfile");
 			logext = rep.getJobEntryAttributeString(id_jobentry, "logext");
-			loglevel = LogWriter.getLogLevel(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
+			logFileLevel = LogLevel.getLogLevelForCode(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
 			clustering = rep.getJobEntryAttributeBoolean(id_jobentry, "cluster");
 			createParentFolder       = rep.getJobEntryAttributeBoolean(id_jobentry, "create_parent_folder");
 
@@ -432,7 +433,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logext", logext);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", logFileLevel.getCode());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "cluster", clustering);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "slave_server_name", remoteSlaveServerName);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_append_logfile", setAppendLogfile);
@@ -505,10 +506,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		result.setEntryNr( nr );
 
 		Log4jFileAppender appender = null;
-        int backupLogLevel = LogWriter.getInstance().getLogLevel();
+		
+		LogLevel transLogLevel = parentJob.getLogLevel();
+		
         String realLogFilename="";
         if (setLogfile)
         {
+          transLogLevel = logFileLevel;
+          
         	realLogFilename=environmentSubstitute(getLogFilename());
         	
         	// create parent folder?
@@ -521,6 +526,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             try
             {
                 appender = LogWriter.createFileAppender(realLogFilename, true,setAppendLogfile);
+                LogWriter.getInstance().addAppender(appender);
             }
             catch(KettleException e)
             {
@@ -531,8 +537,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 result.setResult(false);
                 return result;
             }
-            LogWriter.getInstance().addAppender(appender);
-            LogWriter.getInstance().setLogLevel(loglevel);
         }
 
         // Figure out the remote slave server...
@@ -788,7 +792,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     executionConfiguration.setClusterShowingTransformation(false);
                     executionConfiguration.setSafeModeEnabled(false);
                     executionConfiguration.setRepository(rep);
-                    executionConfiguration.setLogLevel(LogWriter.getInstance().getLogLevel());
+                    executionConfiguration.setLogLevel(transLogLevel);
                     
                     // Also pass the variables from the transformation into the execution configuration
                     // That way it can go over the HTTP connection to the slave server.
@@ -825,7 +829,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 	transExecutionConfiguration.setArgumentStrings(args);
                 	transExecutionConfiguration.setVariables(this);
                 	transExecutionConfiguration.setRemoteServer(remoteSlaveServer);
-                	transExecutionConfiguration.setLogLevel(LogWriter.getInstance().getLogLevel());
+                	transExecutionConfiguration.setLogLevel(transLogLevel);
                 	
                 	// Send the XML over to the slave server
                 	// Also start the transformation over there...
@@ -896,6 +900,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 	// Create the transformation from meta-data
 	                //
                     trans = new Trans(transMeta, parentJob);
+                    trans.setLogLevel(transLogLevel);
 
                     // Pass the socket repository as early as possible...
                     //
@@ -980,7 +985,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, appender.getFile(), parentJob.getJobname(), getName());
                 result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
             }
-            LogWriter.getInstance().setLogLevel(backupLogLevel);
         }
 
 		if (result.getNrErrors()==0)

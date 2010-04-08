@@ -26,8 +26,10 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -50,6 +52,8 @@ public class Kitchen
 	private static Class<?> PKG = Kitchen.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public static final String STRING_KITCHEN = "Kitchen";
+
+  private static Log4jFileAppender fileAppender;
 	
 	public static void main(String[] a) throws KettleException
 	{
@@ -95,7 +99,6 @@ public class Kitchen
 		    exitJVM(9);
 		}
         
-        LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         LogChannelInterface log = new LogChannel(STRING_KITCHEN);
         
         CommandLineOption.parseArguments(args, options, log);
@@ -108,8 +111,6 @@ public class Kitchen
         if (!Const.isEmpty(kettleUsername)) optionUsername = new StringBuffer(kettleUsername);
         if (!Const.isEmpty(kettlePassword)) optionPassword = new StringBuffer(kettlePassword);
         
-        LogWriter.setConsoleAppenderDebug();
-        
         if (Const.isEmpty(optionLogfile) && !Const.isEmpty(optionLogfileOld))
         {
            // if the old style of logging name is filled in, and the new one is not
@@ -117,20 +118,18 @@ public class Kitchen
            optionLogfile = optionLogfileOld;
         }
         
-        if (Const.isEmpty(optionLogfile))
-        {
-            LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
-        }
-        else
-        {
-            LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
+        if (!Const.isEmpty(optionLogfile)) {
+          fileAppender = LogWriter.createFileAppender(optionLogfile.toString(), true);
+          LogWriter.getInstance().addAppender(fileAppender);
+        } else {
+          fileAppender = null;
         }
         
         if (!Const.isEmpty(optionLoglevel)) 
         {
-            LogWriter.getInstance().setLogLevel(optionLoglevel.toString());
-            log.logMinimal(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.LogLevel", LogWriter.getInstance().getLogLevelLongDesc()));
-        } 
+          log.setLogLevel( LogLevel.getLogLevelForCode(optionLoglevel.toString()) );
+          log.logMinimal(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.LogLevel", log.getLogLevel().getDescription()));
+        }
 		
         if (!Const.isEmpty(optionVersion))
         {
@@ -376,6 +375,9 @@ public class Kitchen
 		finally
         {
             if (repository!=null) repository.disconnect();
+            if (fileAppender!=null) {
+              LogWriter.getInstance().removeAppender(fileAppender);
+            }
         }
         
 		log.logMinimal(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.Finished"));

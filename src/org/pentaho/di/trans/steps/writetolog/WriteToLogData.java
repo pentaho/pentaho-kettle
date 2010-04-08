@@ -11,6 +11,7 @@
 
 package org.pentaho.di.trans.steps.writetolog;
 
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -27,7 +28,7 @@ public class WriteToLogData extends BaseStepData implements StepDataInterface
 	 */
 	public int     fieldnrs[]; 
 	public int     fieldnr;
-	public int 	   loglevel;
+	public LogLevel loglevel;
 	
 	public WriteToLogData()
 	{

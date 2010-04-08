@@ -16,7 +16,6 @@ import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.vfs.KettleVFS;
 
 public class SwingGUIResource {
 	private static SwingGUIResource instance;

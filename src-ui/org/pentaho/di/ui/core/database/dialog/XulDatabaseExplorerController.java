@@ -29,9 +29,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
@@ -51,7 +51,6 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtButton;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 import org.pentaho.ui.xul.util.XulDialogCallback;
-import org.pentaho.di.i18n.BaseMessages;
 
 @SuppressWarnings("unchecked")
 public class XulDatabaseExplorerController extends AbstractXulEventHandler {
@@ -248,7 +247,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	public void preview(boolean askLimit) {
 		try {
 			PromptCallback theCallback = new PromptCallback();
-			boolean execute = true;
+			@SuppressWarnings("unused")
+      boolean execute = true;
 			if (askLimit) {
 				XulPromptBox thePromptBox = (XulPromptBox) this.document.createElement("promptbox");
 				thePromptBox.setModalParent(this.dbExplorerDialog.getShell());

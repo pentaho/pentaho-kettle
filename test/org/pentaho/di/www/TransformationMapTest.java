@@ -16,7 +16,7 @@ public class TransformationMapTest extends TestCase {
 		
 		// B : Different host: give back start of range...
 		//
-		port = map.allocateServerSocketPort(40000, "host2", "id1", "trans1", "slave-2", "source1", "0", "slave-3", "target1", "0");
+		port = map.allocateServerSocketPort(40000, "host2", "id2", "trans1", "slave-2", "source1", "0", "slave-3", "target1", "0");
 		assertEquals(40000, port.getPort());
 
 		// C : Same host, different slave, new port
@@ -41,7 +41,11 @@ public class TransformationMapTest extends TestCase {
 		assertEquals(40001, map.allocateServerSocketPort(40000, "host1", "id1", "trans1", "slave-2", "source1", "0", "slave-3", "target1", "0").getPort());
 		assertEquals(40002, map.allocateServerSocketPort(40000, "host1", "id2", "trans2", "slave-2", "source1", "0", "slave-3", "target1", "0").getPort());
 		assertEquals(40003, map.allocateServerSocketPort(40000, "host1", "id2", "trans2", "slave-2", "source1", "1", "slave-3", "target1", "1").getPort());
-		
+
+		// Ignore the carte object ID!
+		//
+    assertEquals(40000, map.allocateServerSocketPort(40000, "host1", "id2", "trans1", "slave-1", "source1", "0", "slave-2", "target1", "0").getPort());
+
 		// Remove 40002 from the map...
 		//
 		map.deallocateServerSocketPort(40002, "host1");

@@ -30,10 +30,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
@@ -41,7 +41,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -80,7 +80,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     protected LogChannelInterface        log;
     
-    private int                          logLevel = LogWriter.LOG_LEVEL_DEFAULT;
+    private LogLevel                     logLevel;
 
     private Trans                        trans;
 
@@ -289,7 +289,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             throw new RuntimeException("A step in transformation [" + transMeta.toString() + "] doesn't have a name.  A step should always have a name to identify it by.");
         }
 
-        log = new LogChannel(this);
+        log = new LogChannel(this, trans);
+        logLevel = log.getLogLevel();
         
         first = true;
         clusteredPartitioningFirst=true;
@@ -2803,65 +2804,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 		openRemoteOutputStepSocketsOnce();
 	}
 
-	
-	public static void runStepThread(StepInterface stepInterface, StepMetaInterface meta, StepDataInterface data) {
-		BaseStep baseStep = (BaseStep) stepInterface;
-		LogChannelInterface log = baseStep.log; 
-		try
-		{
-			if (log.isDetailed()) baseStep.logDetailed(BaseMessages.getString(PKG, "System.Log.StartingToRun")); //$NON-NLS-1$
-
-			while (stepInterface.processRow(meta, data) && !stepInterface.isStopped());
-		}
-		catch(Throwable t)
-		{
-		    try
-		    {
-		        //check for OOME
-		        if(t instanceof OutOfMemoryError) {
-		            // Handle this different with as less overhead as possible to get an error message in the log.
-		            // Otherwise it crashes likely with another OOME in Me$$ages.getString() and does not log
-		            // nor call the setErrors() and stopAll() below.
-		        	baseStep.logError("UnexpectedError: ", t); //$NON-NLS-1$
-		        } else {
-		        	baseStep.logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError")+" : ", t); //$NON-NLS-1$ //$NON-NLS-2$
-		        }
-		        // baseStep.logError(Const.getStackTracker(t));
-		    }
-		    catch(OutOfMemoryError e)
-		    {
-		        e.printStackTrace();
-		    }
-		    finally
-		    {
-		        stepInterface.setErrors(1);
-		        stepInterface.stopAll();
-		    }
-		}
-		finally
-		{
-			stepInterface.dispose(meta, data);
-			try {
-	            long li = stepInterface.getLinesInput();
-	            long lo = stepInterface.getLinesOutput();
-	            long lr = stepInterface.getLinesRead();
-	            long lw = stepInterface.getLinesWritten();
-	            long lu = stepInterface.getLinesUpdated();
-	            long lj = stepInterface.getLinesRejected();
-	            long e = stepInterface.getErrors();
-	            if (li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || e > 0)
-	            	baseStep.logBasic(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lu), String.valueOf(e+lj)));
-	            else
-	            	baseStep.logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lu), String.valueOf(e+lj)));
-			} catch(Throwable t) {
-				// it's likely an OOME, thus no overhead by Me$$ages.getString(), see above
-				baseStep.logError("UnexpectedError: " + t.toString()); //$NON-NLS-1$
-			} finally {
-				stepInterface.markStop();
-			}
-		}
-	}
-
 	/**
 	 * @return the stepListeners
 	 */
@@ -2962,15 +2904,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 		return Integer.toString(stepcopy);
 	}
 
-  public int getLogLevel() {
+  public LogLevel getLogLevel() {
     return logLevel;
   }
 
-  public void setLogLevel(int logLevel) {
+  public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
-    // Replace the current log channel to use the new log level. The loggingObject in the loggingRegistry does not use
-    // the logLevel property of this object.
-    log = new LogChannel(this, this.logLevel);
+    log.setLogLevel(logLevel);
   }
   
   public static void closeQuietly(Closeable cl) {

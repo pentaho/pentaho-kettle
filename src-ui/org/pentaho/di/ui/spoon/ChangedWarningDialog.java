@@ -16,10 +16,7 @@ import org.eclipse.swt.SWT;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.components.XulMessageBox;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
-import org.pentaho.ui.xul.swt.SwtXulRunner;
 
 public class ChangedWarningDialog implements ChangedWarningInterface {
   

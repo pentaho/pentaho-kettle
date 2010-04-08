@@ -127,8 +127,11 @@ import org.pentaho.di.core.lifecycle.LifeEventInfo;
 import org.pentaho.di.core.lifecycle.LifecycleException;
 import org.pentaho.di.core.lifecycle.LifecycleSupport;
 import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.DefaultLogLevel;
+import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -332,7 +335,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   private static Spoon staticSpoon;
 
-  private LogChannelInterface log;
+  private static LogChannelInterface log;
 
   private Display display;
 
@@ -508,8 +511,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       PropsUI.init(display, Props.TYPE_PROPERTIES_SPOON);
 
-      CentralLogStore.init(PropsUI.getInstance().getMaxNrLinesInLog(), PropsUI.getInstance()
-          .getMaxLogLineTimeoutMinutes());
+      CentralLogStore.init(
+          PropsUI.getInstance().getMaxNrLinesInLog(), 
+          PropsUI.getInstance().getMaxLogLineTimeoutMinutes());
 
       // remember...
 
@@ -538,9 +542,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       //
       t.printStackTrace();
       if (staticSpoon != null) {
-        staticSpoon.log
-            .logError("Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error"))); //$NON-NLS-1$ //$NON-NLS-2$
-        staticSpoon.log.logError(Const.getStackTracker(t));
+        log.logError("Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error"))); //$NON-NLS-1$ //$NON-NLS-2$
+        log.logError(Const.getStackTracker(t));
       }
     }
 
@@ -555,24 +558,22 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     // Set default Locale:
     Locale.setDefault(Const.DEFAULT_LOCALE);
 
-    LogWriter.setConsoleAppenderDebug();
-    LogWriter logWriter;
-    LogChannel log = new LogChannel(APP_NAME);
+    Log4jFileAppender fileAppender;
     if (Const.isEmpty(optionLogfile)) {
-      logWriter = LogWriter.getInstance(Const.SPOON_LOG_FILE, false, LogWriter.LOG_LEVEL_BASIC);
+      fileAppender = LogWriter.createFileAppender(Const.SPOON_LOG_FILE, false);
     } else {
-      logWriter = LogWriter.getInstance(optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC);
+      fileAppender = LogWriter.createFileAppender(optionLogfile.toString(), true);
     }
+    LogWriter.getInstance().addAppender(fileAppender);
 
-    if (logWriter.getRealFilename() != null) {
-      if (log.isBasic())
-        log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.LoggingToFile") + logWriter.getRealFilename());// "Logging goes to "
+    if (log.isBasic()) {
+      log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.LoggingToFile") + fileAppender.getFile().toString());// "Logging goes to "
     }
 
     if (!Const.isEmpty(optionLoglevel)) {
-      logWriter.setLogLevel(optionLoglevel.toString());
+      log.setLogLevel(LogLevel.getLogLevelForCode(optionLoglevel.toString()));
       if (log.isBasic())
-        log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.LoggingAtLevel") + logWriter.getLogLevelDesc());// "Logging is at level : "
+        log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.LoggingAtLevel") + log.getLogLevel().getDescription());// "Logging is at level : "
     }
   }
 
@@ -585,7 +586,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public Spoon(Display d, Repository rep) {
-    this.log = new LogChannel(APP_NAME);
+    log = new LogChannel(APP_NAME);
     SpoonFactory.setSpoonInstance(this);
     setRepository(rep);
 
@@ -5573,7 +5574,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (menuItem != null) {
       menuItem.setDisabled(disable);
     } else {
-      staticSpoon.log.logError("Non-Fatal error : Menu Item with id = " + itemId
+      log.logError("Non-Fatal error : Menu Item with id = " + itemId
           + " does not exist!  Check 'menubar.xul'");
     }
   }
@@ -5727,7 +5728,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     winprop.setName(APPL_TITLE);
     props.setScreen(winprop);
 
-    props.setLogLevel(LogWriter.getInstance().getLogLevelDesc());
+    props.setLogLevel(DefaultLogLevel.getLogLevel().getCode());
     props.setLogFilter(LogWriter.getInstance().getFilter());
     props.setSashWeights(sashform.getWeights());
 
@@ -5765,7 +5766,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void loadSettings() {
-    LogWriter.getInstance().setLogLevel(props.getLogLevel());
+    LogLevel logLevel = LogLevel.getLogLevelForCode(props.getLogLevel());
+    DefaultLogLevel.setLogLevel(logLevel);
+    log.setLogLevel(logLevel);
     LogWriter.getInstance().setFilter(props.getLogFilter());
     CentralLogStore.getAppender().setMaxNrLines(props.getMaxNrLinesInLog());
 
@@ -6478,10 +6481,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         new CommandLineOption("log", "The logging file to write to (deprecated)", new StringBuffer(), false, true), };
 
     // start with the default logger until we find out otherwise
-    LogWriter.setConsoleAppenderDebug();
-    LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
-
-    LogChannel log = new LogChannel(APP_NAME);
+    //
+    log = new LogChannel(APP_NAME);
 
     // Parse the options...
     if (!CommandLineOption.parseArguments(args, clOptions, log)) {
@@ -7340,8 +7341,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void setLog() {
-    LogSettingsDialog lsd = new LogSettingsDialog(shell, SWT.NONE, LogWriter.getInstance(), props);
+    LogSettingsDialog lsd = new LogSettingsDialog(shell, SWT.NONE, props);
     lsd.open();
+    log.setLogLevel(DefaultLogLevel.getLogLevel());
   }
 
   /**

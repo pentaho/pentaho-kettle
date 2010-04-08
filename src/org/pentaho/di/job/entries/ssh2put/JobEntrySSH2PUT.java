@@ -40,7 +40,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -76,8 +75,6 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 {
 	private static Class<?> PKG = JobEntrySSH2PUT.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	LogWriter log = LogWriter.getInstance();
-	
 	private String serverName;
 	private String userName;
 	private String password;
@@ -666,7 +663,6 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 	
 	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult( false );
 		
@@ -884,7 +880,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 								{
 									nbfilestoput++;
 									
-									boolean putok=putFile(myFile, remoteFilename, client,log);
+									boolean putok=putFile(myFile, remoteFilename, client);
 									if(!putok) {
 										nbrerror++;
 										logError(BaseMessages.getString(PKG, "JobSSH2PUT.Log.Error.CanNotPutFile",localFilename));
@@ -956,7 +952,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		
 		return connnect;
 	}
-	private boolean putFile(FileObject localFile, String remotefilename, SFTPv3Client sftpClient,LogWriter log)
+	private boolean putFile(FileObject localFile, String remotefilename, SFTPv3Client sftpClient)
 	{
 		long filesize=-1;
 		InputStream in = null;

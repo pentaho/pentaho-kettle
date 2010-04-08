@@ -39,7 +39,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -376,8 +375,6 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		boolean useFieldSeparator=false;
 		String UseCodepage=""; 
 		String ErrorfileName="";
-
-		LogWriter log = LogWriter.getInstance();
 
 		Result result = previousResult;
 		result.setResult(false);

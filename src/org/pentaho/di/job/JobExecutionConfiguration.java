@@ -27,7 +27,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -54,7 +54,7 @@ public class JobExecutionConfiguration implements Cloneable
     
     private Date     replayDate;
     private boolean  safeModeEnabled;
-    private int      logLevel;
+    private LogLevel logLevel;
     private boolean  clearingLog;
     
     private Result previousResult;
@@ -72,7 +72,7 @@ public class JobExecutionConfiguration implements Cloneable
         params = new HashMap<String, String>();
         variables = new HashMap<String, String>();
         
-        logLevel = LogWriter.LOG_LEVEL_BASIC;
+        logLevel = LogLevel.BASIC;
         
         clearingLog = true;
     }
@@ -291,7 +291,7 @@ public class JobExecutionConfiguration implements Cloneable
     /**
      * @return the logLevel
      */
-    public int getLogLevel()
+    public LogLevel getLogLevel()
     {
         return logLevel;
     }
@@ -299,7 +299,7 @@ public class JobExecutionConfiguration implements Cloneable
     /**
      * @param logLevel the logLevel to set
      */
-    public void setLogLevel(int logLevel)
+    public void setLogLevel(LogLevel logLevel)
     {
         this.logLevel = logLevel;
     }
@@ -363,7 +363,7 @@ public class JobExecutionConfiguration implements Cloneable
 
         xml.append("    ").append(XMLHandler.addTagValue("replay_date", replayDate));
         xml.append("    ").append(XMLHandler.addTagValue("safe_mode", safeModeEnabled));
-        xml.append("    ").append(XMLHandler.addTagValue("log_level", LogWriter.getLogLevelDesc(logLevel)));
+        xml.append("    ").append(XMLHandler.addTagValue("log_level", logLevel.getCode()));
         xml.append("    ").append(XMLHandler.addTagValue("clear_log", clearingLog));
 
         // The source rows...
@@ -443,7 +443,7 @@ public class JobExecutionConfiguration implements Cloneable
         
         replayDate = XMLHandler.stringToDate( XMLHandler.getTagValue(trecNode, "replay_date") );
         safeModeEnabled = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "safe_mode"));
-        logLevel = LogWriter.getLogLevel( XMLHandler.getTagValue(trecNode, "log_level") );
+        logLevel = LogLevel.getLogLevelForCode( XMLHandler.getTagValue(trecNode, "log_level") );
         clearingLog = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "clear_log"));
 
         Node resultNode = XMLHandler.getSubNode(trecNode, Result.XML_TAG);

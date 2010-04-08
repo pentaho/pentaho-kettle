@@ -56,6 +56,7 @@ public class CleanupTransServlet extends BaseHttpServlet implements CarteServlet
 		String transName = request.getParameter("name");
 		String id = request.getParameter("id");
 		boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
+    boolean onlySockets = "Y".equalsIgnoreCase(request.getParameter("sockets"));
 
 		response.setStatus(HttpServletResponse.SC_OK);
 
@@ -75,53 +76,60 @@ public class CleanupTransServlet extends BaseHttpServlet implements CarteServlet
 		}
 
 		try {
-			String message;
-
+			String message="";
+			boolean error=false;
+			
 			getTransformationMap().deallocateServerSocketPorts(transName, id);
 			message = BaseMessages.getString(PKG, "TransStatusServlet.Log.TransServerSocketPortsReleased", transName);
 
-			// ID is optional...
-			//
-			Trans trans;
-			CarteObjectEntry entry;
-			if (Const.isEmpty(id)) {
-				// get the first transformation that matches...
-				//
-				entry = getTransformationMap().getFirstCarteObjectEntry(transName);
-				if (entry == null) {
-					trans = null;
-				} else {
-					id = entry.getId();
-					trans = getTransformationMap().getTransformation(entry);
-				}
-			} else {
-				// Take the ID into account!
-				//
-				entry = new CarteObjectEntry(transName, id);
-				trans = getTransformationMap().getTransformation(entry);
+			if (!onlySockets) {
+  			// ID is optional...
+  			//
+  			Trans trans;
+  			CarteObjectEntry entry;
+  			if (Const.isEmpty(id)) {
+  				// get the first transformation that matches...
+  				//
+  				entry = getTransformationMap().getFirstCarteObjectEntry(transName);
+  				if (entry == null) {
+  					trans = null;
+  				} else {
+  					id = entry.getId();
+  					trans = getTransformationMap().getTransformation(entry);
+  				}
+  			} else {
+  				// Take the ID into account!
+  				//
+  				entry = new CarteObjectEntry(transName, id);
+  				trans = getTransformationMap().getTransformation(entry);
+  			}
+  
+        // Also clean up the transformation itself (anything left to do for the API)
+        //
+  			if (trans != null) {
+  				trans.cleanup();
+  				message += Const.CR+BaseMessages.getString(PKG, "TransStatusServlet.Log.TransCleanednup", transName);
+  			} else {
+  			  error=true;
+  				message = "The specified transformation [" + transName + "] could not be found";
+  				if (useXML) {
+  					out.println(new WebResult(WebResult.STRING_ERROR, message));
+  				} else {
+  					out.println("<H1>" + message + "</H1>");
+  					out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
+  				}
+  			}
+			}
+			
+			if (!error) {
+        if (useXML) {
+          out.println(new WebResult(WebResult.STRING_OK, message).getXML());
+        } else {
+          out.println("<H1>" + message + "</H1>");
+          out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
+        }
 			}
 
-			if (trans != null) {
-				trans.cleanup();
-
-				// Also release the server sockets
-				message = BaseMessages.getString(PKG, "TransStatusServlet.Log.TransCleanednup", transName);
-			} else {
-				message = "The specified transformation [" + transName + "] could not be found";
-				if (useXML) {
-					out.println(new WebResult(WebResult.STRING_ERROR, message));
-				} else {
-					out.println("<H1>" + message + "</H1>");
-					out.println("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
-				}
-			}
-
-			if (useXML) {
-				out.println(new WebResult(WebResult.STRING_OK, message).getXML());
-			} else {
-				out.println("<H1>" + message + "</H1>");
-				out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><p>");
-			}
 		} catch (Exception ex) {
 			if (useXML) {
 				out.println(new WebResult(WebResult.STRING_ERROR, "Unexpected error during transformations cleanup:" + Const.CR + Const.getStackTracker(ex)));

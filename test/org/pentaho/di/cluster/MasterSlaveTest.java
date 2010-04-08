@@ -1,6 +1,7 @@
 package org.pentaho.di.cluster;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -24,6 +25,51 @@ public class MasterSlaveTest extends BaseCluster {
 		}
 	}
 	
+  public void testAllocatePorts() throws Exception {
+    init();
+
+    ClusterGenerator clusterGenerator = new ClusterGenerator();
+    try {
+      clusterGenerator.launchSlaveServers();
+      
+      ClusterSchema clusterSchema = clusterGenerator.getClusterSchema();
+      SlaveServer master = clusterSchema.findMaster();
+      List<SlaveServer> slaves = clusterSchema.getSlaveServersFromMasterOrLocal();
+      SlaveServer slave1 = slaves.get(0);
+      SlaveServer slave2 = slaves.get(1);
+      SlaveServer slave3 = slaves.get(2);
+      
+      int port1 = master.allocateServerSocket(40000, "localhost", "trans1", 
+          master.getName(), "A", "0", 
+          slave1.getName(), "B", "0");
+      assertEquals(40000, port1);
+      
+      int port1b = master.allocateServerSocket(40000, "localhost", "trans1", 
+          master.getName(), "A", "0", 
+          slave1.getName(), "B", "0");
+      assertEquals(port1, port1b);
+      
+      int port2 = master.allocateServerSocket(40000, "localhost", "trans1", 
+          master.getName(), "A", "0", 
+          slave2.getName(), "B", "0");
+      assertEquals(40001, port2);
+
+      int port3 = master.allocateServerSocket(40000, "localhost", "trans1", 
+          master.getName(), "A", "0", 
+          slave3.getName(), "B", "0");
+      assertEquals(40002, port3);
+      
+      master.deAllocateServerSockets("trans1", null);
+      
+      port1 = master.allocateServerSocket(40000, "localhost", "trans2", 
+          master.getName(), "A", "0", 
+          slave1.getName(), "B", "0");
+      assertEquals(40000, port1);
+
+    } finally {
+      clusterGenerator.stopSlaveServers();
+    }
+  }	
 
 	/**
 	 * This test reads a CSV file in parallel on the master in 1 copy.<br>
@@ -200,6 +246,10 @@ public class MasterSlaveTest extends BaseCluster {
     	init();
     	
     	ClusterGenerator clusterGenerator = new ClusterGenerator();
+    	// Set the base port to a different value.
+    	// The OS probably hasn't released the server sockets allocated by previous unit tests.
+    	//
+    	clusterGenerator.getClusterSchema().setBasePort("40100");
     	try {
     		clusterGenerator.launchSlaveServers();
     		
@@ -233,6 +283,10 @@ public class MasterSlaveTest extends BaseCluster {
 		init();
 		
 		ClusterGenerator clusterGenerator = new ClusterGenerator();
+    // Set the base port to a different value.
+    // The OS probably hasn't released the server sockets allocated by previous unit tests.
+    //
+    clusterGenerator.getClusterSchema().setBasePort("40200");
 		try {
 			clusterGenerator.launchSlaveServers();
 			

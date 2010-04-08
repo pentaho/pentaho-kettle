@@ -42,7 +42,6 @@ import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -444,14 +443,13 @@ public class Mail extends BaseStep implements StepInterface
 	      }
 	      data.props.put("mail." + protocol + ".host", server);
 	      if (port!=-1) data.props.put("mail." + protocol + ".port", port);
-	      boolean debug = LogWriter.getInstance().getLogLevel() >= LogWriter.LOG_LEVEL_DEBUG;
-
-	      if (debug) data.props.put("mail.debug", "true");
+	      
+	      if (log.isDebug()) data.props.put("mail.debug", "true");
 
 	      if (meta.isUsingAuthentication())  data.props.put("mail." + protocol + ".auth", "true");
 
 	      Session session = Session.getInstance(data.props);
-	      session.setDebug(debug);
+	      session.setDebug(log.isDebug());
 
 	      // create a message
 	      Message msg = new MimeMessage(session);

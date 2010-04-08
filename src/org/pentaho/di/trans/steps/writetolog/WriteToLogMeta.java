@@ -21,6 +21,7 @@ import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -74,24 +75,24 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
 		loglevel=logLevelCodes[i];
 	}
 
-	public int getLogLevelByDesc()
+	public LogLevel getLogLevelByDesc()
 	{
-		if(loglevel==null) return 3;
-		int retval;
+		if(loglevel==null) return LogLevel.BASIC;
+		LogLevel retval;
 		if(loglevel.equals(logLevelCodes[0]))
-			retval=0;
+			retval=LogLevel.NOTHING;
 		else if(loglevel.equals(logLevelCodes[1]))
-			retval=1;
+			retval=LogLevel.ERROR;
 		else if(loglevel.equals(logLevelCodes[2]))
-			retval=2;
+			retval=LogLevel.MINIMAL;
 		else if(loglevel.equals(logLevelCodes[3]))
-			retval=3;
+			retval=LogLevel.BASIC;
 		else if(loglevel.equals(logLevelCodes[4]))
-			retval=4;
+			retval=LogLevel.DETAILED;
 		else if(loglevel.equals(logLevelCodes[5]))
-			retval=5;
+			retval=LogLevel.DEBUG;
 		else
-			retval=6;
+			retval=LogLevel.ROWLEVEL;
 		return retval;
 	}
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String,Counter> counters)

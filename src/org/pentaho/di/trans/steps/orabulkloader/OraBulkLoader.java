@@ -67,7 +67,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	Process sqlldrProcess = null;
 	
 	private OraBulkLoaderMeta meta;
-	private OraBulkLoaderData data;
+	protected OraBulkLoaderData data;
 	private OraBulkDataOutput output = null;
 		
 	/*

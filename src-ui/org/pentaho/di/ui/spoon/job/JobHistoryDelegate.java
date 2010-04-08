@@ -32,6 +32,8 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.ChannelLogTable;
+import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
@@ -513,15 +515,25 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         // Do we need to limit the amount of data?
         //
         LogTableField nameField = logTable.getNameField();
-        if (nameField != null) {
-          sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$//$NON-NLS-2$
-          params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), jobMeta.getName()); //$NON-NLS-1$
+        LogTableField keyField = logTable.getKeyField();
+        if (keyField!=null && (
+            logTable instanceof JobEntryLogTable || 
+            logTable instanceof ChannelLogTable)
+            ) {
+          String keyFieldName = logConnection.quoteField(keyField.getFieldName());
 
-          sql += " OR    " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$//$NON-NLS-2$
-          params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), jobMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
+          // Get the max batch ID if any...
+          //
+          String maxSql = "SELECT MAX("+keyFieldName+") FROM "+schemaTable;
+          RowMetaAndData maxRow = database.getOneRow(maxSql);
+          Long lastId = maxRow.getInteger(0);
+          
+          sql += " WHERE " + keyFieldName + " = "+(lastId==null?0:lastId.longValue()); //$NON-NLS-1$ //$NON-NLS-2$
+        } else if (nameField != null) {
+            sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
+            params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), jobMeta.getName()); //$NON-NLS-1$
         }
 
-        LogTableField keyField = logTable.getKeyField();
         if (keyField != null) {
           sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; //$NON-NLS-1$ //$NON-NLS-2$
         }

@@ -32,9 +32,12 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
+import org.pentaho.di.core.logging.PerformanceLogTable;
+import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -441,15 +444,29 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         // Do we need to limit the amount of data?
         //
         LogTableField nameField = logTable.getNameField();
-        if (nameField != null) {
-          sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
-          params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
+        LogTableField keyField = logTable.getKeyField();
+        if (keyField!=null && (
+            logTable instanceof StepLogTable || 
+            logTable instanceof PerformanceLogTable || 
+            logTable instanceof ChannelLogTable)
+            ) {
+          String keyFieldName = logConnection.quoteField(keyField.getFieldName());
 
-          sql += " OR    " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
-          params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
+          // Get the max batch ID if any...
+          //
+          String maxSql = "SELECT MAX("+keyFieldName+") FROM "+schemaTable;
+          RowMetaAndData maxRow = database.getOneRow(maxSql);
+          Long lastId = maxRow.getInteger(0);
+          
+          sql += " WHERE " + keyFieldName + " = "+(lastId==null?0:lastId.longValue()); //$NON-NLS-1$ //$NON-NLS-2$
+        } else if (nameField != null) {
+            sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
+            params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
+
+            sql += " OR    " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
+            params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
-        LogTableField keyField = logTable.getKeyField();
         if (keyField != null) {
           sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; //$NON-NLS-1$//$NON-NLS-2$
         }
@@ -554,7 +571,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       wFields.get(tabIndex).setRowNums();
       wFields.get(tabIndex).optWidth(true);
     } else {
-      wFields.clear();
+      wFields.get(tabIndex).clearAll(false);
       // new TableItem(wFields.get(tabIndex).table, SWT.NONE); // Give it an item to prevent errors on various platforms.
     }
 
@@ -598,12 +615,16 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       LogTableField logField = logTables.get(tabIndex).getLogField();
       if (logField != null) {
         int index = fields.indexOf(logField);
-        String logText = row[index].toString();
-
-        text.setText(Const.NVL(logText, "")); //$NON-NLS-1$
-
-        text.setSelection(text.getText().length());
-        text.showSelection();
+        if (index>=0) {
+          String logText = row[index].toString();
+  
+          text.setText(Const.NVL(logText, "")); //$NON-NLS-1$
+  
+          text.setSelection(text.getText().length());
+          text.showSelection();
+        } else {
+          text.setText(BaseMessages.getString(PKG, "TransHistory.HistoryConfiguration.NoLoggingFieldDefined"));
+        }
       }
     }
   }

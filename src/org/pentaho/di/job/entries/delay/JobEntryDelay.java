@@ -26,7 +26,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -129,7 +128,6 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
    */
   public Result execute(Result previousResult, int nr)
   {
-    LogWriter log = LogWriter.getInstance();
     Result result = previousResult;
     result.setResult(false);
     int Multiple;

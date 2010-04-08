@@ -49,7 +49,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -152,9 +152,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
         fdlLoglevel.top = new FormAttachment(wStepname, margin);
         wlLoglevel.setLayoutData(fdlLoglevel);
         wLoglevel = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-        for (int i = 0; i < LogWriter.log_level_desc_long.length; i++)
-            wLoglevel.add(LogWriter.log_level_desc_long[i]);
-        wLoglevel.select(3); //Basic
+        wLoglevel.setItems(LogLevel.getLogLevelDescriptions());
         props.setLook(wLoglevel);
         fdLoglevel = new FormData();
         fdLoglevel.left = new FormAttachment(middle, 0);
@@ -327,7 +325,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 	 */ 
 	public void getData()
 	{
-		wLoglevel.select(input.getLogLevelByDesc());
+		wLoglevel.select(input.getLogLevelByDesc().getLevel());
 
 		wPrintHeader.setSelection(input.isdisplayHeader());
 		Table table = wFields.table;

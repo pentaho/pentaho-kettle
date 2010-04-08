@@ -35,7 +35,7 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.AbstractStep;
@@ -270,8 +270,8 @@ public class TeraFast extends AbstractStep implements StepInterface {
         this.logBasic("About to execute: " + command);
         try {
             this.process = Runtime.getRuntime().exec(command);
-            new Thread(new ConfigurableStreamLogger(getLogChannel(), this.process.getErrorStream(), LogWriter.LOG_LEVEL_ERROR, "ERROR")).start();
-            new Thread(new ConfigurableStreamLogger(getLogChannel(), this.process.getInputStream(), LogWriter.LOG_LEVEL_DETAILED, "OUTPUT")).start();
+            new Thread(new ConfigurableStreamLogger(getLogChannel(), this.process.getErrorStream(), LogLevel.ERROR, "ERROR")).start();
+            new Thread(new ConfigurableStreamLogger(getLogChannel(), this.process.getInputStream(), LogLevel.DETAILED, "OUTPUT")).start();
             this.fastload = this.process.getOutputStream();
         } catch (Exception e) {
             throw new KettleException("Error while setup: " + command, e);

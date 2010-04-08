@@ -19,7 +19,6 @@ import java.util.MissingResourceException;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.laf.BasePropertyHandler;
 
 /**
@@ -116,7 +115,7 @@ public class LAFMessageHandler extends GlobalMessages {
         if (string != null) return string;
         
         string = "!"+key+"!";
-        if(LogWriter.getInstance().isDetailed()) {
+        if(log.isDetailed()) {
         	String message = "Message not found in the preferred and failover locale: key=["+key+"], package="+packageName;
         	log.logDetailed(Const.getStackTracker(new KettleException(message)));
         }

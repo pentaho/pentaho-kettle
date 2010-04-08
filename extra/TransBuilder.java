@@ -9,6 +9,8 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -198,7 +200,8 @@ public class TransBuilder
         
     	// Init the logging...
     	//
-        LogWriter.getInstance("TransBuilder.log", true, LogWriter.LOG_LEVEL_DETAILED);
+        Log4jFileAppender fileAppender = LogWriter.createFileAppender("TransBuilder.log", true);
+        LogWriter.getInstance().addAppender(fileAppender);
                 
         // The parameters we want, optionally this can be 
         String fileName = "NewTrans.xml";
@@ -266,6 +269,7 @@ public class TransBuilder
         
         // Now execute the transformation...
         Trans trans = new Trans(transMeta);
+        trans.setLogLevel(LogLevel.DETAILED);
         trans.execute(null);
         trans.waitUntilFinished();
         

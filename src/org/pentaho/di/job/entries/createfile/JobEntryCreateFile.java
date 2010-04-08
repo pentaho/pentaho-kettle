@@ -30,7 +30,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -154,7 +153,6 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 
   public Result execute(Result previousResult, int nr) throws KettleException
   {
-    LogWriter log = LogWriter.getInstance();
     Result result = previousResult;
     result.setResult(false);
 
@@ -180,8 +178,9 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
             logBasic("File [" + realFilename + "] already exists, not recreating.");
           }
           // add filename to result filenames if needed
-          if(isAddFilenameToResult())
-        	  addFilenameToResult(realFilename,log,result, parentJob);
+          if(isAddFilenameToResult()) {
+        	  addFilenameToResult(realFilename,result, parentJob);
+          }
         } else
         {
           //  No file yet, create an empty file.
@@ -189,7 +188,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
           logBasic("File [" + realFilename + "] created!");
           // add filename to result filenames if needed
           if(isAddFilenameToResult())
-        	  addFilenameToResult(realFilename,log,result, parentJob);
+        	  addFilenameToResult(realFilename,result, parentJob);
           result.setResult(true);
         }
       } catch (IOException e)
@@ -218,7 +217,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 
     return result;
   }
-private void addFilenameToResult(String targetFilename,LogWriter log,Result result, Job parentJob) throws  KettleException
+private void addFilenameToResult(String targetFilename,Result result, Job parentJob) throws  KettleException
 {
 	FileObject targetFile=null;
 	try

@@ -55,11 +55,12 @@ import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.PerformanceLogTable;
@@ -241,7 +242,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    
     private LogChannelInterface log;
     
-    private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
+    private LogLevel logLevel = DefaultLogLevel.getLogLevel();
     
     public enum TransformationType {
     	Normal("Normal", BaseMessages.getString(PKG, "TransMeta.TransformationType.Normal")),
@@ -5711,13 +5712,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		return null; // TODO, we could also keep a link to the parent and job metadata
 	}
 	
-	public int getLogLevel() {
+	public LogLevel getLogLevel() {
     return logLevel;
   }
 
-  public void setLogLevel(int logLevel) {
+  public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
-    log = new LogChannel(STRING_TRANSMETA, this.logLevel);
+    log.setLogLevel(logLevel);
   }
 
 	/**

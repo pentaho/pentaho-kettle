@@ -9,7 +9,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 	private String					objectName;
 	private LoggingObjectType		objectType;
 	private LoggingObjectInterface	parent;
-	private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
+	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 
 	/**
 	 * @param objectName
@@ -91,11 +91,11 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 		return null;
 	}
 
-  public int getLogLevel() {
+  public LogLevel getLogLevel() {
     return logLevel;
   }
 
-  public void setLogLevel(int logLevel) {
+  public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
   }
 }

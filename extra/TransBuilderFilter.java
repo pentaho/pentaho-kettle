@@ -2,6 +2,8 @@
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -157,7 +159,8 @@ public class TransBuilderFilter
         
     	// Init the logging...
     	//
-        LogWriter.getInstance("TransBuilderFilter.log", true, LogWriter.LOG_LEVEL_DETAILED);
+        Log4jFileAppender fileAppender = LogWriter.createFileAppender("TransBuilderFilter.log", true);
+        LogWriter.getInstance().addAppender(fileAppender);
                 
         // The parameters we want, optionally this can be 
         String transformationName = "Filter test Transformation";
@@ -167,9 +170,9 @@ public class TransBuilderFilter
         
         // Now execute the transformation...
         Trans trans = new Trans(transMeta);
+        trans.setLogLevel(LogLevel.DETAILED);
         trans.execute(null);
         trans.waitUntilFinished();
-        
     }
 
 

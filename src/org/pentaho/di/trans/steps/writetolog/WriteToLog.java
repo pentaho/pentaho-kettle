@@ -13,7 +13,7 @@ package org.pentaho.di.trans.steps.writetolog;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -113,46 +113,45 @@ public class WriteToLog extends BaseStep implements StepInterface
 
 		return true;
 	}
-	private void setLog(int loglevel, StringBuffer msg)
-	{
-		switch (loglevel) {
-		case LogWriter.LOG_LEVEL_ERROR:
-			// Output message to log
-			// Log level = ERREUR	
-			logError(msg.toString());
-			break;
-		case LogWriter.LOG_LEVEL_MINIMAL:
-			// Output message to log
-			// Log level = MINIMAL	
-			logMinimal(msg.toString());
-			break;
-		case LogWriter.LOG_LEVEL_BASIC:
-			// Output message to log
-			// Log level = BASIC	
-			logBasic(msg.toString());
-			break;
-		case LogWriter.LOG_LEVEL_DETAILED:
-			// Output message to log
-			// Log level = DETAILED	
-			logDetailed(msg.toString());
-			break;
-		case LogWriter.LOG_LEVEL_DEBUG:
-			// Output message to log
-			// Log level = DEBUG	
-			logDebug(msg.toString());
-			break;
-		case LogWriter.LOG_LEVEL_ROWLEVEL:
-			// Output message to log
-			// Log level = ROW LEVEL	
-			logRowlevel(msg.toString());
-			break;
-			default:
-				// Output message to log
-				// Log level = BASIC	
-				logBasic(msg.toString());
-				break;
-		}
-	}
+
+  private void setLog(LogLevel loglevel, StringBuffer msg) {
+    switch (loglevel) {
+    case ERROR:
+      // Output message to log
+      // Log level = ERREUR
+      logError(msg.toString());
+      break;
+    case MINIMAL:
+      // Output message to log
+      // Log level = MINIMAL
+      logMinimal(msg.toString());
+      break;
+    case BASIC:
+      // Output message to log
+      // Log level = BASIC
+      logBasic(msg.toString());
+      break;
+    case DETAILED:
+      // Output message to log
+      // Log level = DETAILED
+      logDetailed(msg.toString());
+      break;
+    case DEBUG:
+      // Output message to log
+      // Log level = DEBUG
+      logDebug(msg.toString());
+      break;
+    case ROWLEVEL:
+      // Output message to log
+      // Log level = ROW LEVEL
+      logRowlevel(msg.toString());
+      break;
+    case NOTHING:
+      // Output nothing to log
+      // Log level = NOTHING
+      break;
+    }
+  }
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{

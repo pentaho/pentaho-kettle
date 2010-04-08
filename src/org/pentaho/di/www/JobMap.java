@@ -35,6 +35,8 @@ public class JobMap
     private Map<CarteObjectEntry, Job> jobMap;
     private Map<CarteObjectEntry, JobConfiguration> configurationMap;
         
+    private SlaveServerConfig slaveServerConfig;
+    
     public JobMap()
     {
         jobMap = new Hashtable<CarteObjectEntry, Job>();
@@ -136,5 +138,19 @@ public class JobMap
 		}
 		return null;
 	}
+
+  /**
+   * @return the slaveServerConfig
+   */
+  public SlaveServerConfig getSlaveServerConfig() {
+    return slaveServerConfig;
+  }
+
+  /**
+   * @param slaveServerConfig the slaveServerConfig to set
+   */
+  public void setSlaveServerConfig(SlaveServerConfig slaveServerConfig) {
+    this.slaveServerConfig = slaveServerConfig;
+  }
 
 }

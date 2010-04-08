@@ -17,8 +17,9 @@ import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -159,11 +160,11 @@ public abstract class BasePluginType implements PluginTypeInterface{
 				return BaseMessages.getString(parts[1], parts[2]);
 			}
 		} else {
-			int oldLogLevel = LogWriter.getInstance().getLogLevel();
+			LogLevel oldLogLevel = DefaultLogLevel.getLogLevel();
 			
 			// avoid i18n messages for missing locale
 			//
-			LogWriter.getInstance().setLogLevel(LogWriter.LOG_LEVEL_BASIC);
+			DefaultLogLevel.setLogLevel(LogLevel.BASIC);
 						
 			// Try the default package name
 			//
@@ -174,7 +175,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
 			
 				// restore loglevel, when the last alternative fails, log it when loglevel is detailed
 				//
-				LogWriter.getInstance().setLogLevel(oldLogLevel);
+				DefaultLogLevel.setLogLevel(oldLogLevel);
 				if (!Const.isEmpty(altPackageName)) {
 					if (translation.startsWith("!") && translation.endsWith("!")) translation=BaseMessages.getString(altPackageName, string, resourceClass);
 				}

@@ -43,78 +43,71 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
         this.timeAdded = addTime;
     }
 
-    public String format(LoggingEvent event)
-    {
-        // OK, perhaps the logging information has multiple lines of data.
-        // We need to split this up into different lines and all format these lines...
-        StringBuffer line=new StringBuffer();
-        
-        String dateTimeString = "";
-        if (timeAdded)
-        {
-            dateTimeString = ((SimpleDateFormat)LOCAL_SIMPLE_DATE_PARSER.get()).format(new Date(event.timeStamp))+" - ";
-        }
+  public String format(LoggingEvent event) {
+    // OK, perhaps the logging information has multiple lines of data.
+    // We need to split this up into different lines and all format these
+    // lines...
+    //
+    StringBuffer line = new StringBuffer();
 
-        Object object = event.getMessage();
-        if (object instanceof LogMessage)
-        {
-            LogMessage message = (LogMessage)object;
-            
-            if (message==null) {
-            	throw new RuntimeException("The message to log can't ever be null!!");
-            }
-
-            String parts[] = message.getMessage().split(Const.CR);
-            for (int i=0;i<parts.length;i++)
-            {
-                // Start every line of the output with a dateTimeString
-                line.append(dateTimeString);
-                
-                // Include the subject too on every line...
-                if (message.getSubject()!=null)
-                {
-                    line.append(message.getSubject());
-                    if (message.getCopy()!=null) {
-                    	line.append(".").append(message.getCopy());
-                    }
-                    line.append(" - ");
-                }
-                
-                if (message.isError())  
-                {
-                    BuildVersion buildVersion = BuildVersion.getInstance();
-                    line.append(ERROR_STRING);
-                    if (i==0) {
-	                    line.append(" (version ");
-	                    line.append(buildVersion.getVersion());
-	                    if (!Const.isEmpty(buildVersion.getRevision())) {
-	                    	line.append(", build ");
-	                    	line.append(buildVersion.getRevision());
-	                    }
-	                    if (!Const.isEmpty(buildVersion.getBuildDate())) {
-		                    line.append(" from ");
-		                    line.append( buildVersion.getBuildDate() );
-	                    }
-	                    if (!Const.isEmpty(buildVersion.getBuildUser())) {
-	                    	line.append(" by ");
-	                    	line.append(buildVersion.getBuildUser());
-	                    }
-	                    line.append(") : ");
-                    }
-                 }
-                
-                line.append(parts[i]);
-                if (i<parts.length-1) line.append(Const.CR); // put the CR's back in there!
-            }
-        }
-        else
-        {
-            line.append(dateTimeString);
-            line.append((object!=null?object.toString():"<null>"));
-        }
-        
-        return line.toString();
+    String dateTimeString = "";
+    if (timeAdded) {
+      dateTimeString = ((SimpleDateFormat) LOCAL_SIMPLE_DATE_PARSER.get()).format(new Date(event.timeStamp)) + " - ";
     }
+
+    Object object = event.getMessage();
+    if (object instanceof LogMessage) {
+      LogMessage message = (LogMessage) object;
+
+      if (message == null) {
+        throw new RuntimeException("The message to log can't ever be null!!");
+      }
+
+      String parts[] = message.getMessage().split(Const.CR);
+      for (int i = 0; i < parts.length; i++) {
+        // Start every line of the output with a dateTimeString
+        line.append(dateTimeString);
+
+        // Include the subject too on every line...
+        if (message.getSubject() != null) {
+          line.append(message.getSubject());
+          if (message.getCopy() != null) {
+            line.append(".").append(message.getCopy());
+          }
+          line.append(" - ");
+        }
+
+        if (message.isError()) {
+          BuildVersion buildVersion = BuildVersion.getInstance();
+          line.append(ERROR_STRING);
+          line.append(" (version ");
+          line.append(buildVersion.getVersion());
+          if (!Const.isEmpty(buildVersion.getRevision())) {
+            line.append(", build ");
+            line.append(buildVersion.getRevision());
+          }
+          if (!Const.isEmpty(buildVersion.getBuildDate())) {
+            line.append(" from ");
+            line.append(buildVersion.getBuildDate());
+          }
+          if (!Const.isEmpty(buildVersion.getBuildUser())) {
+            line.append(" by ");
+            line.append(buildVersion.getBuildUser());
+          }
+          line.append(") : ");
+        }
+
+        line.append(parts[i]);
+        if (i < parts.length - 1)
+          line.append(Const.CR); // put the CR's back in there!
+      }
+    } else {
+      line.append(dateTimeString);
+      line.append((object != null ? object.toString() : "<null>"));
+    }
+
+    return line.toString();
+  }
 
     public boolean ignoresThrowable()
     {

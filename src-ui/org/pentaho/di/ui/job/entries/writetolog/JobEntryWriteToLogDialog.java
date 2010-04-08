@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.writetolog.JobEntryWriteToLog;
@@ -173,10 +173,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
         fdlLoglevel.top = new FormAttachment(wName, margin);
         wlLoglevel.setLayoutData(fdlLoglevel);
         wLoglevel = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-        for (int i = 0; i < LogWriter.log_level_desc_long.length; i++)
-            wLoglevel.add(LogWriter.log_level_desc_long[i]);
-        wLoglevel.select(jobEntry.loglevel + 1); // +1: starts at -1
-
+        wLoglevel.setItems(LogLevel.getLogLevelDescriptions());
         props.setLook(wLoglevel);
         fdLoglevel = new FormData();
         fdLoglevel.left = new FormAttachment(middle, 0);
@@ -307,7 +304,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
         if (jobEntry.getLogSubject() != null)
             wLogSubject.setText(jobEntry.getLogSubject());
 
-        wLoglevel.select(jobEntry.loglevel + 1);
+        wLoglevel.select(jobEntry.entryLogLevel.getLevel());
     }
 
     private void cancel()
@@ -330,7 +327,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
         jobEntry.setName(wName.getText());
         jobEntry.setLogMessage(wLogMessage.getText());
         jobEntry.setLogSubject(wLogSubject.getText());
-        jobEntry.loglevel = wLoglevel.getSelectionIndex() - 1;
+        jobEntry.entryLogLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
         dispose();
     }
 

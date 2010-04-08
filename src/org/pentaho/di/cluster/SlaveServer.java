@@ -643,69 +643,75 @@ public class SlaveServer  extends ChangedFlag
 
     public SlaveServerTransStatus getTransStatus(String transName, String carteObjectId, int startLogLineNr) throws Exception
     {
-        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerTransStatus.fromXML(xml);
     }
     
     public SlaveServerJobStatus getJobStatus(String jobName, String carteObjectId, int startLogLineNr) throws Exception
     {
-        String xml = execService(GetJobStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&id="+carteObjectId+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetJobStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerJobStatus.fromXML(xml);
     }
     
     public WebResult stopTransformation(String transName, String carteObjectId) throws Exception
     {
-        String xml = execService(StopTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(StopTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
 
     public WebResult pauseResumeTransformation(String transName, String carteObjectId) throws Exception
     {
-        String xml = execService(PauseTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(PauseTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
 
     public WebResult removeTransformation(String transName, String carteObjectId) throws Exception
     {
-        String xml = execService(RemoveTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(RemoveTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
 
     public WebResult removeJob(String jobName, String carteObjectId) throws Exception
     {
-        String xml = execService(RemoveJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&id="+carteObjectId+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(RemoveJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
 
     public WebResult stopJob(String transName, String carteObjectId) throws Exception
     {
-        String xml = execService(StopJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y&id="+carteObjectId); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(StopJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&xml=Y&id="+Const.NVL(carteObjectId, "")); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
     
     public WebResult startTransformation(String transName, String carteObjectId) throws Exception
     {
-        String xml = execService(StartTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
+        String xml = execService(StartTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
     
     public WebResult startJob(String jobName, String carteObjectId) throws Exception
     {
-        String xml = execService(StartJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&xml=Y&id="+carteObjectId);  //$NON-NLS-1$ //$NON-NLS-2$
+        String xml = execService(StartJobServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&xml=Y&id="+Const.NVL(carteObjectId, ""));  //$NON-NLS-1$ //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
 
     public WebResult cleanupTransformation(String transName, String carteObjectId) throws Exception
     {
-        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+carteObjectId+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
-    
+
+    public WebResult deAllocateServerSockets(String transName, String carteObjectId) throws Exception
+    {
+        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y&sockets=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        return WebResult.fromXMLString(xml);
+    }
+
     public static SlaveServer findSlaveServer(List<SlaveServer> slaveServers, String name)
     {
         for (SlaveServer slaveServer : slaveServers)
         {
-            if (slaveServer.getName()!=null && slaveServer.getName().equalsIgnoreCase(name)) return slaveServer;
+            if (slaveServer.getName()!=null && slaveServer.getName().equalsIgnoreCase(name)) return slaveServer; 
         }
         return null;
     }

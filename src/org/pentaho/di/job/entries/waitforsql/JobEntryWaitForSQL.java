@@ -30,15 +30,14 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -325,7 +324,6 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 
 	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult(false);
 		result.setNrErrors(1);
@@ -418,7 +416,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 			boolean continueLoop = true;
 			while ( continueLoop && !parentJob.isStopped() )
 			{
-				if(SQLDataOK(log,result,nrRowsLimit, realSchemaname,realTablename, realCustomSQL))
+				if(SQLDataOK(result,nrRowsLimit, realSchemaname,realTablename, realCustomSQL))
 				{
 					// SQL data exists, we're happy to exit
 					logBasic("Detected SQL data within timeout");
@@ -490,7 +488,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		
 		return result;
 	}
-	private boolean SQLDataOK(LogWriter log,Result result,long nrRowsLimit, String realSchemaName,
+	private boolean SQLDataOK(Result result,long nrRowsLimit, String realSchemaName,
 			String realTableName, String customSQL) throws KettleException
 	{
 		String countStatement=null;

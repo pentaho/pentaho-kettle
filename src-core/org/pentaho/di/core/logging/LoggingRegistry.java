@@ -38,23 +38,13 @@ public class LoggingRegistry {
 	}
 	
 	/**
-   * This methods registers a new logging source, stores it in the registry.
-   * 
-   * @param object The logging source
-   * @return a new ID (UUID)
-   */
-	public String registerLoggingSource(Object object) {
-	  return registerLoggingSource(object, LogWriter.LOG_LEVEL_DEFAULT);
-	}
-	
-	/**
 	 * This methods registers a new logging source, stores it in the registry.
 	 * 
 	 * @param object The logging source
 	 * @param int The logging level for this logging source
 	 * @return a new ID (UUID)
 	 */
-	public String registerLoggingSource(Object object, int logLevel) {
+	public String registerLoggingSource(Object object) {
 		
 		// Extract the core logging information from the object itself, including the hierarchy.
 		//
@@ -65,8 +55,8 @@ public class LoggingRegistry {
 		//
 		LoggingObjectInterface found = findExistingLoggingSource(loggingSource);
 		if (found!=null) {
-		  // Update the logging level on this channel
-		  found.setLogLevel(logLevel);
+		  // Return the previous log channel ID
+		  //
 			return found.getLogChannelId();
 		}
 
@@ -74,7 +64,6 @@ public class LoggingRegistry {
 		//
 		String logChannelId = UUID.randomUUID().toString();
 		loggingSource.setLogChannelId(logChannelId);
-		loggingSource.setLogLevel(logLevel);
 
 		map.put(logChannelId, loggingSource);
 		lastModificationTime = new Date();

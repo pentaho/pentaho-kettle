@@ -22,7 +22,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
@@ -42,7 +41,6 @@ public class CarteSingleton {
 
   private CarteSingleton(SlaveServerConfig config) throws KettleException {
     KettleEnvironment.init();
-    LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
     CentralLogStore.init(config.getMaxLogLines(), config.getMaxLogTimeoutMinutes());
 
     this.log = new LogChannel("Carte");

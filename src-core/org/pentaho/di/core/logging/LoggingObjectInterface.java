@@ -51,12 +51,7 @@ public interface LoggingObjectInterface {
 	public String getObjectCopy();
 	
 	/**
-	 * @return The log level for this logging object
+	 * @return The logging level of the log channel of this logging object.
 	 */
-	public int getLogLevel();
-	
-	/**
-	 * @Param The LogWriter log level for this logging object
-	 */
-	public void setLogLevel(int logLevel);
+	public LogLevel getLogLevel();
 }

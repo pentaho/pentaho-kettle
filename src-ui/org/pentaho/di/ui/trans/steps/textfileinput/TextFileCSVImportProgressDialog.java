@@ -19,10 +19,7 @@ package org.pentaho.di.ui.trans.steps.textfileinput;
 
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -265,9 +262,9 @@ public class TextFileCSVImportProgressDialog
         List<StringEvaluator> evaluators = new ArrayList<StringEvaluator>();
         
         // Allocate number and date parsers
-        DecimalFormat df2 = (DecimalFormat) NumberFormat.getInstance();
-        DecimalFormatSymbols dfs2 = new DecimalFormatSymbols();
-        SimpleDateFormat daf2 = new SimpleDateFormat();
+        // DecimalFormat df2 = (DecimalFormat) NumberFormat.getInstance();
+        // DecimalFormatSymbols dfs2 = new DecimalFormatSymbols();
+        // SimpleDateFormat daf2 = new SimpleDateFormat();
 
         boolean errorFound = false;
         while (!errorFound && line != null && (linenr <= samples || samples == 0) && !monitor.isCanceled())

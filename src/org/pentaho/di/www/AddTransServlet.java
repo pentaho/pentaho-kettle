@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -85,8 +84,8 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
       TransMeta transMeta = transConfiguration.getTransMeta();
       TransExecutionConfiguration transExecutionConfiguration = transConfiguration.getTransExecutionConfiguration();
       transMeta.setLogLevel(transExecutionConfiguration.getLogLevel());
-      if (log.getLogLevel() >= LogWriter.LOG_LEVEL_DETAILED) {
-        logDetailed("Logging level set to " + log.getLogLevelDesc());
+      if (log.isDetailed()) {
+        logDetailed("Logging level set to " + log.getLogLevel().getDescription());
       }
       transMeta.injectVariables(transExecutionConfiguration.getVariables());
 

@@ -24,7 +24,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -52,7 +52,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	private static Class<?> PKG = JobEntryWriteToLog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private String logmessage;
-	public  int     loglevel;
+	public  LogLevel entryLogLevel;
 	private String logsubject;
 
 	public JobEntryWriteToLog(String n)
@@ -80,7 +80,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	
 		retval.append(super.getXML());
 		retval.append("      ").append(XMLHandler.addTagValue("logmessage",      logmessage));
-		retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
+		retval.append("      ").append(XMLHandler.addTagValue("loglevel",        entryLogLevel.getCode()));
 		retval.append("      ").append(XMLHandler.addTagValue("logsubject",      logsubject));
 
 		return retval.toString();
@@ -93,7 +93,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		{
 			super.loadXML(entrynode, databases, slaveServers);
 			logmessage = XMLHandler.getTagValue(entrynode, "logmessage");
-			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
+			entryLogLevel = LogLevel.getLogLevelForCode(XMLHandler.getTagValue(entrynode, "loglevel"));
 			logsubject = XMLHandler.getTagValue(entrynode, "logsubject");
 		}
 		catch(Exception e)
@@ -108,7 +108,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		try
 		{
 			logmessage = rep.getJobEntryAttributeString(id_jobentry, "logmessage");
-			loglevel = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
+			entryLogLevel = LogLevel.getLogLevelForCode( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
 			logsubject = rep.getJobEntryAttributeString(id_jobentry, "logsubject");
 		}
 		catch(KettleDatabaseException dbe)
@@ -125,7 +125,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		try
 		{
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logmessage", logmessage);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", entryLogLevel.getCode());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logsubject", logsubject);
 		}
 		catch(KettleDatabaseException dbe)
@@ -137,15 +137,14 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	private class LogWriterObject implements LoggingObjectInterface {
 
 		private LogChannelInterface log;
-		private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
 		
 		private LoggingObjectInterface	parent;
 		private String	subject;
 		
-		public LogWriterObject(String subject, LoggingObjectInterface parent) {
+		public LogWriterObject(String subject, LoggingObjectInterface parent, LogLevel logLevel) {
 			this.subject = subject;
 			this.parent = parent;
-			log = new LogChannel(this);
+			log = new LogChannel(this, parent);
 		}
 		
 		public String getFilename() {
@@ -188,13 +187,9 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 			return log;
 		}
 		
-		public int getLogLevel() {
-	    return logLevel;
-	  }
-
-	  public void setLogLevel(int logLevel) {
-	    this.logLevel = logLevel;
-	  }
+		public LogLevel getLogLevel() {
+		  return log.getLogLevel();
+		}
 	}
 
 	/**
@@ -202,49 +197,19 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	 */
 	public boolean evaluate(Result result)
 	{
-		LogWriterObject logWriterObject = new LogWriterObject(getRealLogSubject(), this);
+		LogWriterObject logWriterObject = new LogWriterObject(getRealLogSubject(), this, parentJob.getLogLevel());
 		LogChannelInterface logChannel = logWriterObject.getLogChannel();
 		
 		try
 		{
-			loglevel=loglevel+1;
-			
-			if (loglevel==LogWriter.LOG_LEVEL_ERROR)
-			{
-				// Output message to log
-				// Log level = ERREUR	
-				logChannel.logError(getRealLogMessage()+ Const.CR);
-			}
-			else if (loglevel==LogWriter.LOG_LEVEL_MINIMAL)
-			{
-				// Output message to log
-				// Log level = MINIMAL	
-				logChannel.logMinimal(getRealLogMessage()+ Const.CR);
-			}
-			else if (loglevel==LogWriter.LOG_LEVEL_BASIC)
-			{
-				// Output message to log
-				// Log level = BASIC	
-				logChannel.logBasic(getRealLogMessage()+ Const.CR);
-			}
-			else if (loglevel==LogWriter.LOG_LEVEL_DETAILED)
-			{
-				// Output message to log
-				// Log level = DETAILED	
-				logChannel.logDetailed(getRealLogMessage()+ Const.CR);
-			}
-			else if (loglevel==LogWriter.LOG_LEVEL_DEBUG)
-			{
-				// Output message to log
-				// Log level = DEBUG	
-				logChannel.logDebug(getRealLogMessage()+ Const.CR);
-			}
-			else if (loglevel==LogWriter.LOG_LEVEL_ROWLEVEL)
-			{
-				// Output message to log
-				// Log level = ROWLEVEL	
-				logChannel.logRowlevel(getRealLogMessage()+ Const.CR);
-			}
+			switch(logWriterObject.getLogLevel()) {
+			case ERROR: logChannel.logError(getRealLogMessage()+ Const.CR); break;
+			case MINIMAL: logChannel.logMinimal(getRealLogMessage()+ Const.CR); break;
+			case BASIC: logChannel.logBasic(getRealLogMessage()+ Const.CR); break;
+			case DETAILED: logChannel.logDetailed(getRealLogMessage()+ Const.CR); break;
+			case DEBUG: logChannel.logDebug(getRealLogMessage()+ Const.CR); break;
+			case ROWLEVEL: logChannel.logRowlevel(getRealLogMessage()+ Const.CR); break;
+ 		}
 
 			return true;
 		}

@@ -39,7 +39,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -432,13 +431,12 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	}
 	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setNrErrors(1);
 		result.setResult(false);
 		String realdestinationFolder=environmentSubstitute(getDestinationFolder());
 		
-		if(!CreateDestinationFolder(realdestinationFolder, log))
+		if(!CreateDestinationFolder(realdestinationFolder))
 		{
 			return result;
 		}
@@ -481,7 +479,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			           			&&specifywildcard))
 			  			{
 			        		// Copy or Move file
-							if(!ProcessFile(file,realdestinationFolder,log,result,parentJob))
+							if(!processFile(file,realdestinationFolder,result,parentJob))
 							{
 								// Update Errors
 								updateErrors();
@@ -552,7 +550,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		
 		return retval;
 	}
-	private boolean CreateDestinationFolder(String foldername,LogWriter log)
+	
+	private boolean CreateDestinationFolder(String foldername)
 	{
 		FileObject folder=null;
 		try
@@ -591,7 +590,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		 return false;
 	}
 
-	private boolean ProcessFile(FileObject sourcefile,String destinationFolder,LogWriter log,Result result,Job parentJob) 
+	private boolean processFile(FileObject sourcefile,String destinationFolder,Result result,Job parentJob) 
 	{
 		boolean retval=false;
 		boolean filexists=false;

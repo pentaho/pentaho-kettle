@@ -37,7 +37,6 @@ import javax.mail.search.SubjectTerm;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 
 import com.sun.mail.imap.IMAPSSLStore;
@@ -178,7 +177,7 @@ public class MailConnection {
 				
 				//Create session object
 				this.session = Session.getInstance(this.prop, null );
-				this.session.setDebug(LogWriter.getInstance().isDebug());
+				this.session.setDebug(log.isDebug());
 				if(this.port==-1) {
 					this.port=((protocol==MailConnectionMeta.PROTOCOL_POP3)?MailConnectionMeta.DEFAULT_SSL_POP3_PORT:MailConnectionMeta.DEFAULT_SSL_IMAP_PORT);
 				}
@@ -187,7 +186,7 @@ public class MailConnection {
 				url=null;
 			} else {
 				this.session = Session.getInstance(this.prop, null);
-				this.session.setDebug(LogWriter.getInstance().isDebug());
+				this.session.setDebug(log.isDebug());
 				this.store = this.session.getStore(protocolString);
 			}
 			

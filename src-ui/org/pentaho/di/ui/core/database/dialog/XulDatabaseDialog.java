@@ -26,7 +26,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.ui.core.database.dialog.DataOverrideHandler;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.ui.database.DatabaseConnectionDialog;
@@ -46,7 +45,7 @@ public class XulDatabaseDialog {
    */
   private ObjectId databaseMetaObjectId;
 
-  private Shell shell;
+  protected Shell shell;
 
   private Shell parentShell;
 
@@ -89,7 +88,6 @@ public class XulDatabaseDialog {
   * @return databaseName (or NULL on error or cancel)
   * TODO: Fix deprecation warning in v3.2 by using the new dialog 
   */
-  @SuppressWarnings("deprecation")
   public String open() {
     if(databaseDialogInstance == null){
       createDialog();
@@ -118,6 +116,7 @@ public class XulDatabaseDialog {
     return databaseName;
   }
   
+  @SuppressWarnings("deprecation")
   private void createDialog(){
     XulDomContainer container = null;
     try {

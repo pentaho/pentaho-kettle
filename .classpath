@@ -8,7 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libext/js.jar"/>
 	<classpathentry kind="lib" path="libext/mail.jar"/>
-	<classpathentry kind="lib" path="libext/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="libext/javadbf.jar" sourcepath="/javadbf/javadbf"/>
 	<classpathentry kind="lib" path="libswt/jface.jar"/>
 	<classpathentry kind="lib" path="libswt/runtime.jar"/>
@@ -96,7 +95,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/kettle-vfs-20091118.jar" sourcepath="libext-src/vfs-1.0.zip"/>
 	<classpathentry kind="lib" path="libext/salesforce/salesforce16.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/vertica_3.5_jdk_5.jar"/>
-	<classpathentry kind="lib" path="libext/script-api.jar"/>
 	<classpathentry kind="lib" path="libext/spring/spring-beans-2.5.6.jar"/>
 	<classpathentry kind="lib" path="libext/spring/spring-context-2.5.6.jar"/>
 	<classpathentry kind="lib" path="libext/spring/spring-context-support-2.5.6.jar"/>
@@ -129,5 +127,7 @@
 	<classpathentry kind="lib" path="libext/pentaho/olap4j-0.9.8-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/xercesImpl-2.6.0.jar"/>
 	<classpathentry kind="lib" path="libext/syslog4j-0.9.34.jar"/>
+	<classpathentry kind="lib" path="libext/livetribe-jsr223-2.0.6.jar"/>
+	<classpathentry kind="lib" path="libext/log4j-1.2.14.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

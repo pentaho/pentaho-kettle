@@ -1,16 +1,27 @@
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
-import java.math.*;
-import java.util.*;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+/**
+ * Sample Hello World class
+ * 
+ * @author matt
+ */
 public class HelloWorld extends TransformClassBase {
 
 	public HelloWorld(UserDefinedJavaClass parent, UserDefinedJavaClassMeta meta, UserDefinedJavaClassData data)
@@ -108,11 +119,14 @@ public class HelloWorld extends TransformClassBase {
 			else throw new KettleStepException("Unknown field data type "+name);
 		}
 	}
-	private final HashMap fieldsToUpdate = new HashMap();
+	
+	@SuppressWarnings("unchecked")
+  private final HashMap fieldsToUpdate = new HashMap();
 	private int rowsLeftForGenerateMode = -1;
 	private int outputRowSize = 0;
 
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+	@SuppressWarnings({ "unchecked", })
+  public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 	    // First, get a row from the default input hop
 		Object[] r = getRow();

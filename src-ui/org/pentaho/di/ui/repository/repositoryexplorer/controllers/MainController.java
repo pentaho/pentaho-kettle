@@ -43,7 +43,7 @@ import org.pentaho.ui.xul.util.DialogController;
  */
 public class MainController extends AbstractXulEventHandler implements DialogController<Object>{
  
-  private ResourceBundle messages = new ResourceBundle() {
+  protected ResourceBundle messages = new ResourceBundle() {
 
     @Override
     public Enumeration<String> getKeys() {

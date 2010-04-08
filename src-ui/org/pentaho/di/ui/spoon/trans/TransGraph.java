@@ -23,6 +23,7 @@ import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -90,11 +91,11 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
-import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -122,6 +123,7 @@ import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
@@ -3128,8 +3130,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
 
   public synchronized void start(TransExecutionConfiguration executionConfiguration) throws KettleException {
-    if (!running) // Not running, start the transformation...
-    {
       // Auto save feature...
       if (transMeta.hasChanged()) {
         if (spoon.props.getAutoSave()) {
@@ -3157,10 +3157,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           )
           && !transMeta.hasChanged() // Didn't change
       ) {
-        if (trans == null || (trans != null && trans.isFinished())) {
+        if (trans == null || (trans != null && !running)) {
           try {
-            // Set the requested logging level.
-            LogWriter.getInstance().setLogLevel(executionConfiguration.getLogLevel());
+            // Set the requested logging level..
+            //
+            DefaultLogLevel.setLogLevel(executionConfiguration.getLogLevel());
 
             transMeta.injectVariables(executionConfiguration.getVariables());
             
@@ -3189,6 +3190,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             // To be able to completely test this, we need to run it as we would normally do in pan
             //
             trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory().getPath(), transMeta.getFilename());
+            trans.setLogLevel(executionConfiguration.getLogLevel());
             trans.setReplayDate(executionConfiguration.getReplayDate());
             trans.setRepository(executionConfiguration.getRepository());
             trans.setMonitored(true);
@@ -3251,7 +3253,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           m.open();
         }
       }
-    }
   }
 
   public void addAllTabs() {
@@ -3283,7 +3284,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       try {
         this.lastTransDebugMeta = transDebugMeta;
 
-        LogWriter.getInstance().setLogLevel(executionConfiguration.getLogLevel());
+        log.setLogLevel(executionConfiguration.getLogLevel());
         if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "TransLog.Log.DoPreview")); //$NON-NLS-1$
         String[] args = null;
         Map<String, String> arguments = executionConfiguration.getArguments();
@@ -3512,11 +3513,16 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           initialized = true;
         } catch (KettleException e) {
           log.logError(trans.getName()+": preparing transformation execution failed", e); //$NON-NLS-1$
-          initialized = false;
-      	  checkErrorVisuals();
+          checkErrorVisuals();
         }
         halted = trans.hasHaltedSteps();
-        checkStartThreads();// After init, launch the threads.
+        if (trans.isReadyToStart()) {
+          checkStartThreads();// After init, launch the threads.
+        } else {
+          initialized = false;
+          running = false;
+          checkErrorVisuals();
+        }
       }
     };
     Thread thread = new Thread(runnable);
@@ -3539,7 +3545,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
         public void transFinished(Trans trans) {
           checkTransEnded();
-          // checkErrors();
+          checkErrorVisuals();
         }
       });
 
@@ -3564,8 +3570,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
     });
   }
-  
-  private String lastLog;
 
   private void checkTransEnded() {
 		if (trans != null) {
@@ -3604,49 +3608,44 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 	}
 
   private void checkErrorVisuals() {
-      if (trans.getErrors()>0) {
-      	// Get the logging text and filter it out.  Store it in the stepLogMap...
-      	//
-          stepLogMap = new HashMap<StepMeta, String>();
-          lastLog = null;
-          shell.getDisplay().syncExec(new Runnable() {
-			
-				public void run() {
-					lastLog = transLogDelegate.getLoggingText();
-				}
-			});
-          
-          if (!Const.isEmpty(lastLog)) {
-          	String lines[] = lastLog.split(Const.CR);
-          	for (int i=0;i<lines.length && i<30;i++) {
-          		if (lines[i].indexOf(Log4jKettleLayout.ERROR_STRING)>=0) {
-          			// This is an error line, log it!
-          			// Determine to which step it belongs!
-          			//
-          			for (StepMeta stepMeta : transMeta.getSteps()) {
-          				if (lines[i].indexOf(stepMeta.getName())>=0) {
-          					
-          					String line = lines[i];
-          					int index = lines[i].indexOf(") : "); // $NON-NLS-1$   TODO: define this as a more generic marker / constant value //$NON-NLS-1$
-          					if (index>0) line=lines[i].substring(index+3);
-          					
-          					String str = stepLogMap.get(stepMeta);
-          					if (str==null) {
-          						stepLogMap.put(stepMeta, line);
-          					} else {
-          						stepLogMap.put(stepMeta, str+Const.CR+line);
-          					}
-          				}
-          			}
-          		}
-          	}
-          }
-      } else {
-      	stepLogMap = null;
-      } 
-      // Redraw the canvas to show the error icons etc.
+    if (trans.getErrors() > 0) {
+      // Get the logging text and filter it out. Store it in the stepLogMap...
       //
-      shell.getDisplay().asyncExec(new Runnable() { public void run() { redraw(); } });
+      stepLogMap = new HashMap<StepMeta, String>();
+      shell.getDisplay().syncExec(new Runnable() {
+
+        public void run() {
+
+          for (StepMetaDataCombi combi : trans.getSteps()) {
+            if (combi.step.getErrors() > 0) {
+              String channelId = combi.step.getLogChannel().getLogChannelId();
+              List<LoggingEvent> eventList = CentralLogStore.getLogBufferFromTo(channelId, false, 0, CentralLogStore.getLastBufferLineNr());
+              StringBuilder logText = new StringBuilder();
+              for (LoggingEvent event : eventList) {
+                Object message = event.getMessage();
+                if (message instanceof LogMessage) {
+                  LogMessage logMessage = (LogMessage) message;
+                  if (logMessage.isError()) {
+                    logText.append(logMessage.getMessage()).append(Const.CR);
+                  }
+                }
+              }
+              stepLogMap.put(combi.stepMeta, logText.toString());
+            }
+          }
+        }
+      });
+
+    } else {
+      stepLogMap = null;
+    }
+    // Redraw the canvas to show the error icons etc.
+    //
+    shell.getDisplay().asyncExec(new Runnable() {
+      public void run() {
+        redraw();
+      }
+    });
   }
 
   public synchronized void showLastPreviewResults() {

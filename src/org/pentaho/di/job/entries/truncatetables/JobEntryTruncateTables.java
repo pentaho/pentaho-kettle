@@ -30,15 +30,14 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
@@ -204,7 +203,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 	{
 		return true;
 	}
-	private boolean TruncateTables(LogWriter log,String tablename, String schemaname, Database db)
+	private boolean truncateTables(String tablename, String schemaname, Database db)
 	{
 		boolean retval=false;
 		String realSchemaname=schemaname;
@@ -236,7 +235,6 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 
 	public Result execute(Result previousResult, int nr)
 	{
-		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 	    List<RowMetaAndData> rows = result.getRows();
 	    RowMetaAndData resultRow = null;
@@ -286,7 +284,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 		        	    		  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingArg", arguments[i], schemaname[i])); //$NON-NLS-1$
 		        			
 		        	    	  // let's truncate table
-		        	    	  if(TruncateTables(log, realTablename, realSchemaname, db)) 
+		        	    	  if(truncateTables(realTablename, realSchemaname, db)) 
 		        	    		  updateSuccess();
 		        	    	  else
 		        	    		  updateErrors();

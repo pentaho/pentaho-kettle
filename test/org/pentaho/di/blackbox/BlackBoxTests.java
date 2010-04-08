@@ -25,10 +25,9 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
-import org.pentaho.di.core.logging.Log4jBufferAppender;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -168,13 +167,7 @@ public class BlackBoxTests {
 		//    File transFile
 		//    List<File> expectedFiles
 
-		// System.out.println("Running: "+getPath(transFile));
-		LogWriter logWriter=LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR );
-        Log4jBufferAppender bufferAppender = CentralLogStore.getAppender();
-        logWriter.addAppender(bufferAppender);
-        
         LogChannelInterface log = new LogChannel("BlackBoxTest ["+transFile.toString()+"]");
-        
         Result result = new Result();
         
 		if( !transFile.exists() ) 
@@ -407,6 +400,7 @@ public class BlackBoxTests {
 		{
 			transMeta = new TransMeta(fileName);
 			trans = new Trans(transMeta);
+			trans.setLogLevel(LogLevel.ERROR);
 			result = trans.getResult();
 		}
 		catch(Exception e)

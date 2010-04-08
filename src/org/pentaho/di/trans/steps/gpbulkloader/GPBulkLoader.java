@@ -61,7 +61,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 	Process psqlProcess = null;
 	
 	private GPBulkLoaderMeta meta;
-	private GPBulkLoaderData data;
+	protected GPBulkLoaderData data;
 	private GPBulkDataOutput output = null;
 		
 	/*

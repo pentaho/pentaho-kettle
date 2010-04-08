@@ -7,7 +7,7 @@ public class LogMessage implements LogMessageInterface {
 	private String    message;
 	private String	  subject;
 	private Object[]  arguments;
-	private int       level;
+	private LogLevel  level;
 	private String	  copy;
 
 	/**
@@ -16,7 +16,7 @@ public class LogMessage implements LogMessageInterface {
 	 * @param message
 	 * @param logChannelId
 	 */
-	public LogMessage(String subject, int level) {
+	public LogMessage(String subject, LogLevel level) {
 		this.subject = subject;
 		this.level = level;
 		this.message = null;
@@ -27,15 +27,16 @@ public class LogMessage implements LogMessageInterface {
 	 * Recommended use : 
 	 * @param message
 	 * @param logChannelId
+	 * @param level the log level
 	 */
-	public LogMessage(String message, String logChannelId, int level) {
+	public LogMessage(String message, String logChannelId, LogLevel level) {
 		this.message = message;
 		this.logChannelId = logChannelId;
 		this.level = level;
 		lookupSubject();
 	}
 	
-	public LogMessage(String message, String logChannelId, Object[] arguments, int level) {
+	public LogMessage(String message, String logChannelId, Object[] arguments, LogLevel level) {
 		this.message = message;
 		this.logChannelId = logChannelId;	
 		this.arguments = arguments;
@@ -62,11 +63,11 @@ public class LogMessage implements LogMessageInterface {
 		}
 	}
 	
-	public int getLevel() {
+	public LogLevel getLevel() {
 		return level;
 	}
 	
-	public void setLevel(int level) {
+	public void setLevel(LogLevel level) {
 		this.level = level;
 	}
 		
@@ -128,7 +129,7 @@ public class LogMessage implements LogMessageInterface {
     
     public boolean isError()
     {
-        return level==LogWriter.LOG_LEVEL_ERROR;
+        return level.isError();
     }
     
     public String getCopy() {

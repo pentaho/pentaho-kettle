@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -323,7 +323,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         fdLogLevel.right = new FormAttachment(100, 0);
         fdLogLevel.top   = new FormAttachment(wClearLog, margin);
         wLogLevel.setLayoutData(fdLogLevel);
-        wLogLevel.setItems( LogWriter.log_level_desc_long );
+        wLogLevel.setItems(LogLevel.getLogLevelDescriptions());
 
         // ReplayDate
         wlReplayDate = new Label(gDetails, SWT.LEFT);
@@ -549,9 +549,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         wRemoteHost.setText( configuration.getRemoteServer()==null ? "" : configuration.getRemoteServer().toString() );
         wPassExport.setSelection(configuration.isPassingExport());
         
-        int logIndex = wLogLevel.indexOf(LogWriter.getInstance().getLogLevelLongDesc());
-        if (logIndex>=0) wLogLevel.select( logIndex );
-        else wLogLevel.setText(LogWriter.getInstance().getLogLevelLongDesc());
+        wLogLevel.select( configuration.getLogLevel().getLevel() );
         if (configuration.getReplayDate()!=null) wReplayDate.setText(simpleDateFormat.format(configuration.getReplayDate()));
         getParamsData();
         getArgumentsData();
@@ -595,7 +593,7 @@ public class TransExecutionConfigurationDialog extends Dialog
             
             configuration.setSafeModeEnabled(wSafeMode.getSelection() );
             configuration.setClearingLog(wClearLog.getSelection());
-            configuration.setLogLevel( LogWriter.getLogLevel(wLogLevel.getText()) );
+            configuration.setLogLevel( LogLevel.values()[wLogLevel.getSelectionIndex()] );
             
             // The lower part of the dialog...
             getInfoParameters();

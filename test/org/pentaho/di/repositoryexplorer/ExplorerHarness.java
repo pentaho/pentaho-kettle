@@ -32,6 +32,7 @@ public class ExplorerHarness {
   public static void main(String[] args) {
     KettleDatabaseRepositoryMeta repositoryMeta;
     KettleDatabaseRepository repository;
+    @SuppressWarnings("unused")
     UserInfo userInfo;
 
     repositoryMeta = new KettleDatabaseRepositoryMeta();
@@ -52,6 +53,7 @@ public class ExplorerHarness {
     repository = new KettleDatabaseRepository();
     repository.init(repositoryMeta);
     
+    @SuppressWarnings("unused")
     RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
 
         public boolean open(RepositoryElementLocationInterface element, String revision) {

@@ -64,12 +64,13 @@ import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -121,7 +122,6 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	
 	private LogChannelInterface log;
   private LoggingObjectInterface parentLoggingObject;
-  private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
 
     /**
      * Number of times a connection was opened using this object.
@@ -139,6 +139,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
     
     private VariableSpace variables = new Variables();
     
+    private LogLevel logLevel = DefaultLogLevel.getLogLevel();
     
 	/**
 	 * Construct a new Database Connection
@@ -151,7 +152,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		this.databaseMeta = databaseMeta;
 		shareVariablesWith(databaseMeta);
 		
-		log=new LogChannel(this); // In this case we don't have the parent object, so we don't know which object makes the connection. 
+	  // In this case we don't have the parent object, so we don't know which object makes the connection.
+		// We also don't know what log level to attach to it, so we have to stick to the default
+		// As such, this constructor is @deprecated.
+		//
+		log=new LogChannel(this);  
 
 		pstmt = null;
 		rowMeta = null;
@@ -172,9 +177,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	{
 		this.parentLoggingObject = parentObject;
 		this.databaseMeta = databaseMeta;
+		this.logLevel = parentObject.getLogLevel();
+		
 		shareVariablesWith(databaseMeta);
 		
-		log=new LogChannel(this);
+		log=new LogChannel(this, parentObject);
 
 		pstmt = null;
 		rowMeta = null;
@@ -4748,11 +4755,12 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		return null;
 	}
 
-  public int getLogLevel() {
+  public LogLevel getLogLevel() {
     return logLevel;
   }
 
-  public void setLogLevel(int logLevel) {
-   this.logLevel = logLevel;
+  public void setLogLevel(LogLevel logLevel) {
+    this.logLevel = logLevel;
+    log.setLogLevel(logLevel);
   }
 }

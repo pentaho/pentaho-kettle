@@ -15,7 +15,7 @@ public class LoggingObject implements LoggingObjectInterface {
 	private String filename;
 	private ObjectId objectId;
 	private ObjectRevision objectRevision;
-	private int logLevel = LogWriter.LOG_LEVEL_DEFAULT;
+	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 	
 	private LoggingObjectInterface parent;
 	
@@ -239,11 +239,11 @@ public class LoggingObject implements LoggingObjectInterface {
 		this.objectCopy = objectCopy;
 	}
 
-  public int getLogLevel() {
+  public LogLevel getLogLevel() {
     return logLevel;
   }
 
-  public void setLogLevel(int logLevel) {
+  public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
   }
 }
