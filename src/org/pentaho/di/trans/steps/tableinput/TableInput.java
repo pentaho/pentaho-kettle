@@ -51,7 +51,7 @@ public class TableInput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private synchronized RowMetaAndData readStartDate() throws KettleException
+	private RowMetaAndData readStartDate() throws KettleException
     {
 		if (log.isDetailed()) logDetailed("Reading from step [" + meta.getLookupStepname() + "]");
 
@@ -278,7 +278,7 @@ public class TableInput extends BaseStep implements StepInterface
 	}
 	
 	/** Stop the running query */
-	public synchronized void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+	public void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
         meta=(TableInputMeta)smi;
         data=(TableInputData)sdi;
@@ -287,7 +287,9 @@ public class TableInput extends BaseStep implements StepInterface
         
         if (data.db!=null && !data.isCanceled)
         {
-        	data.db.cancelQuery();
+          synchronized(data.db) { 
+            data.db.cancelQuery();
+          }
         	data.isCanceled=true;
         }
 	}
