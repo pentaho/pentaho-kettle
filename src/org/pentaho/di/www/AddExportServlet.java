@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -104,6 +107,7 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
       String fileUrl = null;
       
       String carteObjectId = null;
+      SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject(CONTEXT_PATH, LoggingObjectType.CARTE, null);
 
       // Now open the top level resource...
       //
@@ -117,8 +121,7 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
           KettleVFS.getFileObject(fileUrl);
 
           JobMeta jobMeta = new JobMeta(fileUrl, null); // never with a repository
-          Job job = new Job(null, jobMeta);
-
+          
           // Also read the execution configuration information
           //
           String configUrl = "zip:" + archiveUrl + "!" + Job.CONFIGURATION_IN_EXPORT_FILENAME;
@@ -126,9 +129,15 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
           JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration(XMLHandler.getSubNode(configDoc,
               JobExecutionConfiguration.XML_TAG));
 
+          carteObjectId = UUID.randomUUID().toString();
+          servletLoggingObject.setContainerObjectId(carteObjectId);
+          servletLoggingObject.setLogLevel(jobExecutionConfiguration.getLogLevel());
+
+          Job job = new Job(null, jobMeta, servletLoggingObject);
+
           // store it all in the map...
           //
-          getJobMap().addJob(job.getJobname(), job, new JobConfiguration(jobMeta, jobExecutionConfiguration));
+          getJobMap().addJob(job.getJobname(), carteObjectId, job, new JobConfiguration(jobMeta, jobExecutionConfiguration));
 
           // Apply the execution configuration...
           //
@@ -148,8 +157,7 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
           // Open the transformation from inside the ZIP archive
           //
           TransMeta transMeta = new TransMeta(fileUrl);
-          Trans trans = new Trans(transMeta);
-
+          
           // Also read the execution configuration information
           //
           String configUrl = "zip:" + archiveUrl + "!" + Trans.CONFIGURATION_IN_EXPORT_FILENAME;
@@ -157,9 +165,15 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
           TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration(XMLHandler.getSubNode(configDoc,
               TransExecutionConfiguration.XML_TAG));
 
+          carteObjectId = UUID.randomUUID().toString();
+          servletLoggingObject.setContainerObjectId(carteObjectId);
+          servletLoggingObject.setLogLevel(executionConfiguration.getLogLevel());
+          
+          Trans trans = new Trans(transMeta, servletLoggingObject);
+
           // store it all in the map...
           //
-          carteObjectId = getTransformationMap().addTransformation(trans.getName(), trans, new TransConfiguration(transMeta, executionConfiguration));
+          getTransformationMap().addTransformation(trans.getName(), carteObjectId, trans, new TransConfiguration(transMeta, executionConfiguration));
         }
       } else {
         fileUrl = archiveUrl;

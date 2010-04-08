@@ -17,6 +17,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	private ObjectRevision objectRevision;
 	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 	
+	private String containerObjectId;
+	
 	private LoggingObjectInterface parent;
 	
 	public LoggingObject(Object object) {
@@ -31,26 +33,36 @@ public class LoggingObject implements LoggingObjectInterface {
 		try {
 			LoggingObject loggingObject = (LoggingObject) obj;
 	
+		  // No carte object id specified on either side OR the same carte object id means: the same family.
+			//
+			boolean sameCarteFamily = 
+			  (getContainerObjectId()==null && loggingObject.getContainerObjectId()==null) || 
+			  (getContainerObjectId()!=null && loggingObject.getContainerObjectId()!=null && getContainerObjectId().equals(loggingObject.getContainerObjectId()));
+			
 			// See if we recognize the repository ID, this is an absolute match
 			//
-			if (loggingObject.getObjectId()!=null && loggingObject.getObjectId().equals(getObjectId())) {
+			if (sameCarteFamily && loggingObject.getObjectId()!=null && loggingObject.getObjectId().equals(getObjectId())) {
 				return true;
 			}
 			
-			// If the filename is the same, it's the same object...
+		  // If the filename is the same, it's the same object...
 			//
-			if (!Const.isEmpty(loggingObject.getFilename()) && loggingObject.getFilename().equals(getFilename())) {
+			if (sameCarteFamily && !Const.isEmpty(loggingObject.getFilename()) && loggingObject.getFilename().equals(getFilename())) {
 				return true;
 			}
 			
-			// See if the name & type and parent name & type is the same.
+			// See if the carte family, the name & type and parent name & type is the same.
 			// This will catch most matches except for the most exceptional use-case.
 			//
-			if ( (loggingObject.getObjectName()==null && getObjectName()!=null ) || (loggingObject.getObjectName()!=null && getObjectName()==null )) {
+			if (!sameCarteFamily || 
+			    (loggingObject.getObjectName()==null && getObjectName()!=null ) || 
+			    (loggingObject.getObjectName()!=null && getObjectName()==null )) {
 				return false;
 			}
 			
-			if ( ( (loggingObject.getObjectName()==null && getObjectName()==null ) || (loggingObject.getObjectName().equals(getObjectName()))) && loggingObject.getObjectType().equals(getObjectType())) {
+			if ( sameCarteFamily && ( (loggingObject.getObjectName()==null && getObjectName()==null ) || 
+			       (loggingObject.getObjectName().equals(getObjectName()))) && loggingObject.getObjectType().equals(getObjectType())
+			   ) {
 				
 				// If there are multiple copies of this object, they both need their own channel
 				//
@@ -86,6 +98,7 @@ public class LoggingObject implements LoggingObjectInterface {
 		objectRevision = loggingObject.getObjectRevision();
 		objectCopy = loggingObject.getObjectCopy();
 		logLevel = loggingObject.getLogLevel();
+		containerObjectId = loggingObject.getContainerObjectId();
 		
 		if (loggingObject.getParent()!=null) {
 			getParentLoggingObject(loggingObject.getParent());
@@ -245,5 +258,19 @@ public class LoggingObject implements LoggingObjectInterface {
 
   public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
+  }
+
+  /**
+   * @return the carteObjectId
+   */
+  public String getContainerObjectId() {
+    return containerObjectId;
+  }
+
+  /**
+   * @param carteObjectId the carteObjectId to set
+   */
+  public void setCarteObjectId(String carteObjectId) {
+    this.containerObjectId = carteObjectId;
   }
 }

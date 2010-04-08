@@ -116,6 +116,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     
 	private LogChannelInterface log;
 	private LogLevel logLevel = LogLevel.BASIC;
+	private String containerObjectId;
 	
 	/**
 	 * The transformation metadata to execute
@@ -279,6 +280,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		
 		this.log = new LogChannel(this, parent);
 		this.logLevel = log.getLogLevel();
+		this.containerObjectId = log.getContainerObjectId();
 		
 		if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
 		if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
@@ -2926,6 +2928,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
      */
 	public static String sendToSlaveServer(TransMeta transMeta, TransExecutionConfiguration executionConfiguration, Repository repository) throws KettleException
 	{
+	  String carteObjectId;
 		SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
 		if (slaveServer == null)
@@ -2956,6 +2959,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				{
 					throw new KettleException("There was an error passing the exported transformation to the remote server: " + Const.CR+ webResult.getMessage());
 				}
+				carteObjectId=webResult.getId();
 			} else {
 				
 				// Now send it off to the remote server...
@@ -2967,11 +2971,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				{
 					throw new KettleException( "There was an error posting the transformation on the remote server: " + Const.CR + webResult.getMessage());
 				}
+        carteObjectId=webResult.getId();
 			}
 	
 			// Prepare the transformation
 			//
-			String reply = slaveServer.execService(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
+			String reply = slaveServer.execService(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y&id="+carteObjectId);
 			WebResult webResult = WebResult.fromXMLString(reply);
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 			{
@@ -2980,7 +2985,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 			// Start the transformation
 			//
-			reply = slaveServer.execService(StartExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y");
+			reply = slaveServer.execService(StartExecutionTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode(transMeta.getName(), "UTF-8") + "&xml=Y&id="+carteObjectId);
 			webResult = WebResult.fromXMLString(reply);
 
 			if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
@@ -2988,7 +2993,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				throw new KettleException( "There was an error starting the transformation on the remote server: " + Const.CR + webResult.getMessage());
 			}
 			
-			return webResult.getId();
+			return carteObjectId;
 		} 
 		catch (Exception e)
 		{
@@ -3439,5 +3444,20 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	public Map<String, Trans> getActiveSubtransformations() {
 		return activeSubtransformations;
 	}
+
+  /**
+   * @return the carteObjectId
+   */
+  public String getContainerObjectId() {
+    return containerObjectId;
+  }
+
+  /**
+   * @param containerObjectId the carteObjectId to set
+   */
+  public void setContainerObjectId(String containerObjectId) {
+    this.containerObjectId = containerObjectId;
+
+  }
 
 }

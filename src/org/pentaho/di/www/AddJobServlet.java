@@ -17,13 +17,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
@@ -102,21 +104,18 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
       //
       final Repository repository = jobConfiguration.getJobExecutionConfiguration().getRepository();
 
+      String carteObjectId = UUID.randomUUID().toString();
+      SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject(CONTEXT_PATH, LoggingObjectType.CARTE, null);
+      servletLoggingObject.setContainerObjectId(carteObjectId);
+      servletLoggingObject.setLogLevel(jobExecutionConfiguration.getLogLevel());
+
       // Create the transformation and store in the list...
       //
-      final Job job = new Job(repository, jobMeta);
-      job.setLogLevel(jobExecutionConfiguration.getLogLevel());
+      final Job job = new Job(repository, jobMeta, servletLoggingObject);
 
       job.setSocketRepository(getSocketRepository());
-
-      Job oldOne = getJobMap().getJob(job.getJobname());
-      if (oldOne != null) {
-        if (oldOne.isStopped() || oldOne.isFinished()) {
-        	CentralLogStore.discardLines(oldOne.getLogChannelId(), true);
-        }
-      }
       
-      String id = getJobMap().addJob(job.getJobname(), job, jobConfiguration);
+      getJobMap().addJob(job.getJobname(), carteObjectId, job, jobConfiguration);
 
       // Setting variables
       //
@@ -134,13 +133,13 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
         });
       }
 
-      String message = "Job '" + job.getJobname() + "' was added to the list with id "+id;
+      String message = "Job '" + job.getJobname() + "' was added to the list with id "+carteObjectId;
 
       if (useXML) {
-        out.println(new WebResult(WebResult.STRING_OK, message, id));
+        out.println(new WebResult(WebResult.STRING_OK, message, carteObjectId));
       } else {
         out.println("<H1>" + message + "</H1>");
-        out.println("<p><a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + job.getJobname() + "&id="+id+"\">Go to the job status page</a><p>");
+        out.println("<p><a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + job.getJobname() + "&id="+carteObjectId+"\">Go to the job status page</a><p>");
       }
     } catch (Exception ex) {
       if (useXML) {

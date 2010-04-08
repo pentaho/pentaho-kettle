@@ -140,11 +140,13 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		
 		private LoggingObjectInterface	parent;
 		private String	subject;
+		private String  containerObjectId;
 		
 		public LogWriterObject(String subject, LoggingObjectInterface parent, LogLevel logLevel) {
 			this.subject = subject;
 			this.parent = parent;
 			log = new LogChannel(this, parent);
+			containerObjectId = log.getContainerObjectId();
 		}
 		
 		public String getFilename() {
@@ -190,6 +192,13 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		public LogLevel getLogLevel() {
 		  return log.getLogLevel();
 		}
+
+    /**
+     * @return the execution container object id
+     */
+    public String getContainerObjectId() {
+      return containerObjectId;
+    }
 	}
 
 	/**

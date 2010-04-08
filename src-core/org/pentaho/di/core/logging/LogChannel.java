@@ -11,6 +11,8 @@ public class LogChannel implements LogChannelInterface {
 	private String logChannelId;
 	
 	private LogLevel logLevel;
+	
+	private String containerObjectId;
 
 	 public LogChannel(Object subject) {
 	   logLevel = DefaultLogLevel.getLogLevel();
@@ -20,8 +22,10 @@ public class LogChannel implements LogChannelInterface {
 	public LogChannel(Object subject, LoggingObjectInterface parentObject) {
 	  if (parentObject!=null) {
 	    this.logLevel = parentObject.getLogLevel();
+	    this.containerObjectId = parentObject.getContainerObjectId();
 	  } else {
 	    this.logLevel = DefaultLogLevel.getLogLevel();
+      this.containerObjectId = null;
 	  }
 		logChannelId = LoggingRegistry.getInstance().registerLoggingSource(subject);
 	}
@@ -129,4 +133,18 @@ public class LogChannel implements LogChannelInterface {
 	public void setLogLevel(LogLevel logLevel) {
 	  this.logLevel = logLevel;
 	}
+
+  /**
+   * @return the containerObjectId
+   */
+  public String getContainerObjectId() {
+    return containerObjectId;
+  }
+
+  /**
+   * @param containerObjectId the containerObjectId to set
+   */
+  public void setContainerObjectId(String containerObjectId) {
+    this.containerObjectId = containerObjectId;
+  }
 }

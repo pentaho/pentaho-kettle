@@ -80,6 +80,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   protected LogChannelInterface log;
   
   private LogLevel logLevel = DefaultLogLevel.getLogLevel();
+  
+  private String containerObjectId;
  
   public JobEntryBase()
   {
@@ -484,6 +486,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     	this.parentJob = parentJob;
     	this.logLevel = parentJob.getLogLevel();
     	this.log = new LogChannel(this, parentJob);
+    	this.containerObjectId = parentJob.getContainerObjectId();
     }
     
     public Job getParentJob() {
@@ -547,5 +550,19 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
     log.setLogLevel(logLevel);
+  }
+
+  /**
+   * @return the carteObjectId
+   */
+  public String getContainerObjectId() {
+    return containerObjectId;
+  }
+
+  /**
+   * @param containerObjectId the carteObjectId to set
+   */
+  public void setContainerObjectId(String containerObjectId) {
+    this.containerObjectId = containerObjectId;
   }
 }

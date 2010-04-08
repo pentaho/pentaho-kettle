@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.vfs.FileObject;
@@ -26,6 +27,8 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -64,7 +67,13 @@ public class Carte
         SocketRepository socketRepository = new SocketRepository(log);
         
         Trans trans = generateTestTransformation();
-        transformationMap.addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
+        
+        String carteObjectId = UUID.randomUUID().toString();
+        SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject("Carte", LoggingObjectType.CARTE, null);
+        servletLoggingObject.setContainerObjectId(carteObjectId);
+        servletLoggingObject.setLogLevel(log.getLogLevel());
+
+        transformationMap.addTransformation(trans.getName(), carteObjectId, trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
         
     	SlaveServer slaveServer = config.getSlaveServer();
         

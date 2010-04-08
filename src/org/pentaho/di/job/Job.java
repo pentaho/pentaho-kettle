@@ -92,6 +92,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	
 	private LogChannelInterface log;
 	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
+	private String containerObjectId;
 	private JobMeta jobMeta;
 	private Repository rep;
     private AtomicInteger errors;
@@ -189,18 +190,21 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		this(repository, jobMeta, null);
 	}
 	
-	public Job(Repository repository, JobMeta jobMeta, Job parentJob)
+	public Job(Repository repository, JobMeta jobMeta, LoggingObjectInterface parentLogging)
 	{
         this.rep        = repository;
         this.jobMeta    = jobMeta;
-        this.parentJob  = parentJob;
+        if (parentLogging!=null && parentLogging instanceof Job) {
+          this.parentJob  = (Job)parentJob;
+        }
         
         init();
         
         jobTracker = new JobTracker(jobMeta);
 
-        this.log = new LogChannel(this, parentJob);
+        this.log = new LogChannel(this, parentLogging);
         this.logLevel = log.getLogLevel();
+        this.containerObjectId = log.getContainerObjectId();
 	}
 
     /**
@@ -1108,6 +1112,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     {
       this.logLevel = parentJob.getLogLevel();
       this.log.setLogLevel(logLevel);
+      this.containerObjectId = log.getContainerObjectId();
       this.parentJob = parentJob;
     }
 
@@ -1599,4 +1604,18 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	public List<JobEntryResult> getJobEntryResults() {
 		return jobEntryResults;
 	}
+
+  /**
+   * @return the carteObjectId
+   */
+  public String getContainerObjectId() {
+    return containerObjectId;
+  }
+
+  /**
+   * @param containerObjectId the execution container object id to set
+   */
+  public void setContainerObjectId(String containerObjectId) {
+    this.containerObjectId = containerObjectId;
+  }
 }

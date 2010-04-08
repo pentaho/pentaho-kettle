@@ -11,6 +11,16 @@ public interface LogChannelInterface {
   
   public void setLogLevel(LogLevel logLevel);
 
+  /**
+   * @return the containerObjectId
+   */
+  public String getContainerObjectId();
+  
+  /**
+   * @param containerObjectId the containerObjectId to set
+   */
+  public void setContainerObjectId(String containerObjectId);
+    
   public boolean isBasic();
 
   public boolean isDetailed();

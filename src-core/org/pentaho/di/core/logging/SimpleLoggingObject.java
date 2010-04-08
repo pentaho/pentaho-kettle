@@ -10,6 +10,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 	private LoggingObjectType		objectType;
 	private LoggingObjectInterface	parent;
 	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
+	private String containerObjectId;
 
 	/**
 	 * @param objectName
@@ -20,6 +21,10 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 		this.objectName = objectName;
 		this.objectType = loggingObjectType;
 		this.parent = parent;
+		if (parent!=null) {
+		  this.logLevel = parent.getLogLevel();
+		  this.containerObjectId = parent.getContainerObjectId();
+		}
 	}
 
 	/**
@@ -97,5 +102,13 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 
   public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
+  }
+  
+  public String getContainerObjectId() {
+    return containerObjectId;
+  }
+  
+  public void setContainerObjectId(String containerObjectId) {
+    this.containerObjectId = containerObjectId;
   }
 }

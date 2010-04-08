@@ -108,6 +108,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	protected ObjectId objectId;
 	
 	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
+  private String containerObjectId;
 
 	protected String name;
 
@@ -2651,8 +2652,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
   }
-	
-	/**
+  
+  /**
 	 * @return the channelLogTable
 	 */
 	public ChannelLogTable getChannelLogTable() {
@@ -2690,6 +2691,20 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	
 	public boolean canSave() {
     return true;
+  }
+
+  /**
+   * @return the carteObjectId
+   */
+  public String getContainerObjectId() {
+    return containerObjectId;
+  }
+
+  /**
+   * @param containerObjectId the execution container Object id to set
+   */
+  public void setCarteObjectId(String containerObjectId) {
+    this.containerObjectId = containerObjectId;
   }
 
 }

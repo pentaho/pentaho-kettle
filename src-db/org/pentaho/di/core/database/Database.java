@@ -141,6 +141,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
     
     private LogLevel logLevel = DefaultLogLevel.getLogLevel();
     
+    private String containerObjectId;
+    
 	/**
 	 * Construct a new Database Connection
 	 * @param databaseMeta The Database Connection Info to construct the connection with.
@@ -156,7 +158,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		// We also don't know what log level to attach to it, so we have to stick to the default
 		// As such, this constructor is @deprecated.
 		//
-		log=new LogChannel(this);  
+		log=new LogChannel(this);
+		logLevel = log.getLogLevel();
+		containerObjectId = log.getContainerObjectId();
 
 		pstmt = null;
 		rowMeta = null;
@@ -177,11 +181,12 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	{
 		this.parentLoggingObject = parentObject;
 		this.databaseMeta = databaseMeta;
-		this.logLevel = parentObject.getLogLevel();
 		
 		shareVariablesWith(databaseMeta);
 		
 		log=new LogChannel(this, parentObject);
+		this.containerObjectId = log.getContainerObjectId();
+		this.logLevel = log.getLogLevel();
 
 		pstmt = null;
 		rowMeta = null;
@@ -4762,5 +4767,19 @@ public class Database implements VariableSpace, LoggingObjectInterface
   public void setLogLevel(LogLevel logLevel) {
     this.logLevel = logLevel;
     log.setLogLevel(logLevel);
+  }
+
+  /**
+   * @return the carteObjectId
+   */
+  public String getContainerObjectId() {
+    return containerObjectId;
+  }
+
+  /**
+   * @param containerObjectId the execution container Object id to set
+   */
+  public void setContainerObjectId(String containerObjectId) {
+    this.containerObjectId = containerObjectId;
   }
 }

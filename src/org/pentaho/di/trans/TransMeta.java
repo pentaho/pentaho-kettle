@@ -244,6 +244,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     private LogLevel logLevel = DefaultLogLevel.getLogLevel();
     
+    private String containerObjectId;
+    
     public enum TransformationType {
     	Normal("Normal", BaseMessages.getString(PKG, "TransMeta.TransformationType.Normal")),
     	SerialSingleThreaded("SerialSingleThreaded", BaseMessages.getString(PKG, "TransMeta.TransformationType.SerialSingleThreaded")),
@@ -5811,5 +5813,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public boolean canSave() {
 	  return true;
 	}
+
+  /**
+   * @return the containerObjectId
+   */
+  public String getContainerObjectId() {
+    return containerObjectId;
+  }
+
+  /**
+   * @param containerObjectId the containerObjectId to set
+   */
+  public void setCarteObjectId(String containerObjectId) {
+    this.containerObjectId = containerObjectId;
+  }
 	
 }

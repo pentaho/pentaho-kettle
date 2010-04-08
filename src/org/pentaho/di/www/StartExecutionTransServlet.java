@@ -48,6 +48,7 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
     response.setStatus(HttpServletResponse.SC_OK);
 
     String transName = request.getParameter("name");
+    String id = request.getParameter("id");
     boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
 
     PrintWriter out = response.getWriter();
@@ -66,7 +67,27 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
     }
 
     try {
-      Trans trans = getTransformationMap().getTransformation(transName);
+      // ID is optional...
+      //
+      Trans trans;
+      CarteObjectEntry entry;
+      if (Const.isEmpty(id)) {
+        // get the first transformation that matches...
+        //
+        entry = getTransformationMap().getFirstCarteObjectEntry(transName);
+        if (entry == null) {
+          trans = null;
+        } else {
+          id = entry.getId();
+          trans = getTransformationMap().getTransformation(entry);
+        }
+      } else {
+        // Take the ID into account!
+        //
+        entry = new CarteObjectEntry(transName, id);
+        trans = getTransformationMap().getTransformation(entry);
+      }
+
       if (trans != null) {
         if (trans.isReadyToStart()) {
           trans.startThreads();
@@ -76,7 +97,7 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
           } else {
             out.println("<H1>Transformation '" + transName + "' has been executed.</H1>");
             out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8")
-                + "\">Back to the transformation status page</a><p>");
+                + "&id="+id+"\">Back to the transformation status page</a><p>");
           }
         } else {
           String message = "The specified transformation [" + transName + "] is not ready to be started. (Was not prepared for execution)";

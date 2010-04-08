@@ -14,6 +14,7 @@ package org.pentaho.di.www;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -22,6 +23,9 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
@@ -97,7 +101,13 @@ public class CarteSingleton {
         carte = new CarteSingleton(config);
         
         Trans trans = Carte.generateTestTransformation();
-        carte.getTransformationMap().addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
+        
+        String carteObjectId = UUID.randomUUID().toString();
+        SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject("CarteSingleton", LoggingObjectType.CARTE, null);
+        servletLoggingObject.setContainerObjectId(carteObjectId);
+        servletLoggingObject.setLogLevel(LogLevel.BASIC);
+
+        carte.getTransformationMap().addTransformation(trans.getName(), carteObjectId, trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
         
         return carte;
       } else {

@@ -82,6 +82,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     
     private LogLevel                     logLevel;
 
+    private String containerObjectId;
+
     private Trans                        trans;
 
     private Object statusCountersLock = new Object();
@@ -2922,5 +2924,19 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       }
     }
   }
-  
+ 
+  /**
+   * @return the containerObjectId
+   */
+  public String getContainerObjectId() {
+    return containerObjectId;
+  }
+
+  /**
+   * @param containerObjectId the containerObjectId to set
+   */
+  public void setCarteObjectId(String containerObjectId) {
+    this.containerObjectId = containerObjectId;
+  }
+
 }

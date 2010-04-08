@@ -54,4 +54,12 @@ public interface LoggingObjectInterface {
 	 * @return The logging level of the log channel of this logging object.
 	 */
 	public LogLevel getLogLevel();
+	
+	/**
+	 * @return The execution container (Carte/DI server/BI Server) object id.
+	 * We use this to see to which copy of the job/trans hierarchy this object belongs.
+	 * If it is null, we assume that we are running a single copy in Spoon/Pan/Kitchen.
+	 * 
+	 */
+	public String getContainerObjectId();
 }

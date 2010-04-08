@@ -16,13 +16,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -99,28 +101,23 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
 
       // If there was a repository, we know about it at this point in time.
       //
+      TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
       final Repository repository = transConfiguration.getTransExecutionConfiguration().getRepository();
+      
+      String carteObjectId = UUID.randomUUID().toString();
+      SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject(CONTEXT_PATH, LoggingObjectType.CARTE, null);
+      servletLoggingObject.setContainerObjectId(carteObjectId);
+      servletLoggingObject.setLogLevel(executionConfiguration.getLogLevel());
 
       // Create the transformation and store in the list...
       //
-      final Trans trans = new Trans(transMeta);
-      trans.setLogLevel(transExecutionConfiguration.getLogLevel());
+      final Trans trans = new Trans(transMeta, servletLoggingObject);
+      
       trans.setRepository(repository);
       trans.setSocketRepository(getSocketRepository());
 
-      Trans oldOne = getTransformationMap().getTransformation(trans.getName());
-      if (oldOne != null) {
-        if (oldOne.isStopped() || oldOne.isFinished()) {
-        	
-            // To prevent serious memory leaks in the logging sub-system, we clear out the rows from the previous execution...
-            // As such, every time we add a new one we clean out a used old one.
-        	// Please note that it's better to configure automatic cleanup after a certain period.
-        	//
-            CentralLogStore.discardLines(oldOne.getLogChannelId(), true);
-        }
-      }
-
-      String carteObjectId = getTransformationMap().addTransformation(transMeta.getName(), trans, transConfiguration);
+      getTransformationMap().addTransformation(transMeta.getName(), carteObjectId, trans, transConfiguration);
+      trans.setContainerObjectId(carteObjectId);
 
       if (repository != null) {
         // The repository connection is open: make sure we disconnect from the repository once we
@@ -133,7 +130,7 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
         });
       }
 
-      String message = "Transformation '" + trans.getName() + "' was added to the list with id "+carteObjectId;
+      String message = "Transformation '" + trans.getName() + "' was added to Carte with id "+carteObjectId;
 
       if (useXML) {
         // Return the log channel id as well
