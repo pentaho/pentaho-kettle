@@ -128,14 +128,14 @@ public class SniffStepServlet extends BaseHttpServlet implements CarteServletInt
     	  metaData.bufferRowData = new ArrayList<Object[]>();
 
 		  RowListener rowListener = new RowListener() {
-				public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+				public void rowReadEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
 					if (read && metaData.bufferRowData.size()<nrLines) {
 						metaData.bufferRowMeta = rowMeta;
 						metaData.bufferRowData.add(row);
 					}
 				}
 			
-				public void rowReadEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+				public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
 					if (written && metaData.bufferRowData.size()<nrLines) {
 						metaData.bufferRowMeta = rowMeta;
 						metaData.bufferRowData.add(row);
