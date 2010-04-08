@@ -256,4 +256,11 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     {
         return new String[] { "monetdb-1.7-jdbc.jar", };
     }
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }

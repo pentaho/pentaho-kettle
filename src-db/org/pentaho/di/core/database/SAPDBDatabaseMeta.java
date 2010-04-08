@@ -248,4 +248,11 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     {
         return new String[] { "sapdbc.jar" };
     }
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }

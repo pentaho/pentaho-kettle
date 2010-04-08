@@ -417,5 +417,11 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
     {
         return new String[] { "kingbasejdbc.jar" };
     }
-
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }

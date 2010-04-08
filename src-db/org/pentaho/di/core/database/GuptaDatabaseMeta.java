@@ -213,4 +213,11 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		if ( tableName.startsWith("SYS")) return true;
 		return false;
 	}
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }

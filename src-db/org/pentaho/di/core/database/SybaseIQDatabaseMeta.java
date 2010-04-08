@@ -254,5 +254,11 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	public boolean supportsPreparedStatementMetadataRetrieval() {
 		return false;
 	}
-
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }

@@ -4723,7 +4723,30 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	}
 	return names.toArray(new String[names.size()]);
   }
-
+    /**
+     * Return all sequence names from connection
+     * @return The sequences name list.
+     * @throws KettleDatabaseException
+     */
+	public String[] getSequences() throws KettleDatabaseException
+	{
+		if(databaseMeta.supportsSequences()) {
+			String sql = databaseMeta.getSQLListOfSequences();
+			if (sql!=null)
+			{
+				List<Object[]> seqs = getRows(sql, 0);
+				String[] str = new String[seqs.size()];
+				for (int i=0;i<seqs.size();i++)
+				{
+					str[i] = ((Object[])seqs.get(i))[0].toString();
+				}
+				return str;
+			}
+		}else {
+			throw new KettleDatabaseException("Sequences are only available for Oracle databases.");
+		}
+		return null;
+	}
 	public String getFilename() {
 		return null;
 	}

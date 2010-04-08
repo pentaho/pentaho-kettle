@@ -305,4 +305,11 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         // ignore parameter, since LucidDB has no concept of database names
         super.setDatabaseName(UNUSED_DB_NAME);
 	}
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }

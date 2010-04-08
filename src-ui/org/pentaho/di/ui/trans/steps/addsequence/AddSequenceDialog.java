@@ -38,13 +38,18 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.addsequence.AddSequenceMeta;
+
 
 public class AddSequenceDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -58,6 +63,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
     
 	private Label        wlUseDatabase;
 	private Button       wUseDatabase;
+	
+	private Button		wbSequence;
+	private FormData	fdbSequence;
 
     private Label        wlConnection;
 	private CCombo       wConnection;
@@ -65,6 +73,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 
     private Label        wlSchema;
     private TextVar      wSchema;
+    
+    private FormData	fdbSchema;
+    private Button		wbSchema;
 
 	private Label        wlSeqname;
 	private TextVar      wSeqname;
@@ -187,22 +198,31 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdUseDatabase.top  = new FormAttachment(0, 0);
 		wUseDatabase.setLayoutData(fdUseDatabase);
 		wUseDatabase.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
 			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-                    wUseCounter.setSelection(!wUseDatabase.getSelection());
-					enableFields();
-				}
+                wUseCounter.setSelection(!wUseDatabase.getSelection());
+				enableFields();
 			}
-		);
-
+		}
+	);
 		// Connection line
 		wlConnection = new Label(gDatabase, SWT.RIGHT);
         wbnConnection = new Button(gDatabase, SWT.PUSH);
 		wbeConnection = new Button(gDatabase, SWT.PUSH);
-        wConnection = addConnectionLine(gDatabase, wUseDatabase, middle, margin, wlConnection, wbnConnection, wbeConnection);
+        wConnection = addConnectionLine(gDatabase, wUseDatabase, middle, margin, wlConnection,wbnConnection, wbeConnection);
 		if (input.getDatabase()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
+        
+        wConnection.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				activeSequence(); 
+			}
+		}
+	);
+
 
         // Schema line...
         wlSchema=new Label(gDatabase, SWT.RIGHT);
@@ -211,16 +231,24 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
         FormData fdlSchema = new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
         fdlSchema.right= new FormAttachment(middle, -margin);
-        fdlSchema.top  = new FormAttachment(wConnection, margin);
+        fdlSchema.top  = new FormAttachment(wConnection, 2*margin);
         wlSchema.setLayoutData(fdlSchema);
+        
+    	wbSchema=new Button(gDatabase, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbSchema);
+ 		wbSchema.setText(BaseMessages.getString(PKG, "AddSequenceDialog.GetSchemas.Label"));
+ 		fdbSchema=new FormData();
+ 		fdbSchema.top  = new FormAttachment(wConnection, 2*margin);
+ 		fdbSchema.right= new FormAttachment(100, 0);
+		wbSchema.setLayoutData(fdbSchema);
 
         wSchema=new TextVar(transMeta, gDatabase, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
         FormData fdSchema = new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
-        fdSchema.top  = new FormAttachment(wConnection, margin);
-        fdSchema.right= new FormAttachment(100, 0);
+        fdSchema.top  = new FormAttachment(wConnection, 2*margin);
+        fdSchema.right= new FormAttachment(wbSchema, -margin);
         wSchema.setLayoutData(fdSchema);
 
 
@@ -231,16 +259,26 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		FormData fdlSeqname = new FormData();
 		fdlSeqname.left = new FormAttachment(0, 0);
 		fdlSeqname.right= new FormAttachment(middle, -margin);
-		fdlSeqname.top  = new FormAttachment(wSchema, margin);
+		fdlSeqname.top  = new FormAttachment(wbSchema, margin);
 		wlSeqname.setLayoutData(fdlSeqname);
+		
+		wbSequence=new Button(gDatabase, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbSequence);
+ 		wbSequence.setText(BaseMessages.getString(PKG, "AddSequenceDialog.GetSequences.Label"));
+ 		fdbSequence=new FormData();
+ 		fdbSequence.right= new FormAttachment(100, -margin);
+		fdbSequence.top  = new FormAttachment(wbSchema, margin);
+		wbSequence.setLayoutData(fdbSequence);
+
+		
 		wSeqname=new TextVar(transMeta, gDatabase, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wSeqname.setText(""); //$NON-NLS-1$
  		props.setLook(wSeqname);
 		wSeqname.addModifyListener(lsMod);
 		FormData fdSeqname = new FormData();
 		fdSeqname.left = new FormAttachment(middle, 0);
-		fdSeqname.top  = new FormAttachment(wSchema, margin);
-		fdSeqname.right= new FormAttachment(100, 0);
+		fdSeqname.top  = new FormAttachment(wbSchema, margin);
+		fdSeqname.right= new FormAttachment(wbSequence, -margin);
 		wSeqname.setLayoutData(fdSeqname);
 
         
@@ -273,14 +311,15 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdUseCounter.top  = new FormAttachment(wSeqname, margin);
 		wUseCounter.setLayoutData(fdUseCounter);
 		wUseCounter.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
 			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-                    wUseDatabase.setSelection(!wUseCounter.getSelection());
-					enableFields();
-				}
+                wUseDatabase.setSelection(!wUseCounter.getSelection());
+				enableFields();
 			}
-		);
+		}
+	);
+
 
         // CounterName line
         wlCounterName=new Label(gCounter, SWT.RIGHT);
@@ -357,8 +396,26 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdMaxVal.top  = new FormAttachment(wIncrBy, margin);
 		fdMaxVal.right= new FormAttachment(100, 0);
 		wMaxVal.setLayoutData(fdMaxVal);
-
-		
+        wbSequence.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					getSequences();
+				}
+			}
+		);
+        wbSchema.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					getSchemaNames();
+				}
+			}
+		);
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
@@ -407,6 +464,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
         boolean useDatabase = wUseDatabase.getSelection();
         boolean useCounter = wUseCounter.getSelection();
         
+        wbSchema.setEnabled(useDatabase);
 		wlConnection.setEnabled(useDatabase);
 		wConnection.setEnabled(useDatabase);
         wbnConnection.setEnabled(useDatabase);
@@ -424,6 +482,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		wIncrBy.setEnabled(useCounter);
 		wlMaxVal.setEnabled(useCounter);
 		wMaxVal.setEnabled(useCounter);
+		activeSequence();
 	}
 
 	/**
@@ -491,7 +550,104 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		
 		dispose();
 	}
-	
+	private void activeSequence()
+	{
+		boolean useDatabase = wUseDatabase.getSelection();
+		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+		wbSequence.setEnabled(databaseMeta==null?false:useDatabase && databaseMeta.supportsSequences());
+	}
+	private void getSequences()
+	{
+		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+		if (databaseMeta!=null)
+		{
+			Database database = new Database(loggingObject, databaseMeta);
+			try
+			{
+				database.connect();
+				String sequences[] = database.getSequences();
+				
+				if (null != sequences && sequences.length>0) {
+					sequences=Const.sortStrings(sequences);	
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, sequences, 
+							BaseMessages.getString(PKG, "AddSequenceDialog.SelectSequence.Title",wConnection.getText()), 
+							BaseMessages.getString(PKG, "AddSequenceDialog.SelectSequence.Message"));
+					
+					String d=dialog.open();
+					if (d!=null) 
+					{
+						wSeqname.setText(Const.NVL(d.toString(), ""));
+					}
+
+				}else
+				{
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(BaseMessages.getString(PKG,"AddSequenceDialog.NoSequence.Message"));
+					mb.setText(BaseMessages.getString(PKG,"AddSequenceDialog.NoSequence.Title"));
+					mb.open(); 
+				}
+			}
+			catch(Exception e)
+			{
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), 
+						BaseMessages.getString(PKG, "AddSequenceDialog.ErrorGettingSequences"), e);
+			}
+			finally
+			{
+				if(database!=null) 
+				{
+					database.disconnect();
+					database=null;
+				}
+			}
+		}
+	}
+	private void getSchemaNames()
+	{
+		if(wSchema.isDisposed()) return; 
+		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+		if (databaseMeta!=null)
+		{
+			Database database = new Database(loggingObject, databaseMeta);
+			try
+			{
+				database.connect();
+				String schemas[] = database.getSchemas();
+				
+				if (null != schemas && schemas.length>0) {
+					schemas=Const.sortStrings(schemas);	
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, schemas, 
+							BaseMessages.getString(PKG, "AddSequenceDialog.SelectSequence.Title",wConnection.getText()), 
+							BaseMessages.getString(PKG, "AddSequenceDialog.SelectSequence.Message"));
+					String d=dialog.open();
+					if (d!=null) 
+					{
+						wSchema.setText(Const.NVL(d.toString(), ""));
+					}
+
+				}else
+				{
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(BaseMessages.getString(PKG,"AddSequenceDialog.NoSchema.Message"));
+					mb.setText(BaseMessages.getString(PKG,"AddSequenceDialog.NoSchema.Title"));
+					mb.open(); 
+				}
+			}
+			catch(Exception e)
+			{
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), 
+						BaseMessages.getString(PKG, "AddSequenceDialog.ErrorGettingSchemas"), e);
+			}
+			finally
+			{
+				if(database!=null) 
+				{
+					database.disconnect();
+					database=null;
+				}
+			}
+		}
+	}
 	public String toString()
 	{
 		return this.getClass().getName();

@@ -309,4 +309,11 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
     {
         return new String[] { "interclient.jar" };
     }
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }

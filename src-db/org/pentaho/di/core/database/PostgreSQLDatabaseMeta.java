@@ -470,5 +470,11 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	public boolean supportsErrorHandlingOnBatchUpdates() {
 		return false;
 	}
-
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }

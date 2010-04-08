@@ -461,4 +461,11 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     {
         return new String[] { "nzjdbc.jar" };
     }
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }

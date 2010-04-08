@@ -492,4 +492,11 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	public int getMaxColumnsInIndex() {
 		return 32;
 	}
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  "SELECT SEQUENCE_NAME FROM all_sequences"; 
+	}
 }

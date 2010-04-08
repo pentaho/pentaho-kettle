@@ -296,5 +296,12 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	public boolean supportsSequenceNoMaxValueOption() {
 		return true;
 	}
-
+	
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }

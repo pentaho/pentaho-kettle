@@ -2547,4 +2547,13 @@ public class DatabaseMeta
 	public boolean isExplorable() {
 		return databaseInterface.isExplorable();
 	}
+	
+	/**
+	 * 
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return databaseInterface.getSQLListOfSequences();
+	}
 }

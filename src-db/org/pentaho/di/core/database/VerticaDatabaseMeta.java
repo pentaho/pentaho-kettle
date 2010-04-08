@@ -300,4 +300,11 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	public boolean requiresCastToVariousForIsNull() {
 		return true;
 	}
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 }
