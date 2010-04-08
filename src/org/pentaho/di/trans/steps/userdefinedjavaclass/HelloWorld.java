@@ -120,12 +120,10 @@ public class HelloWorld extends TransformClassBase {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
   private final HashMap fieldsToUpdate = new HashMap();
 	private int rowsLeftForGenerateMode = -1;
 	private int outputRowSize = 0;
 
-	@SuppressWarnings({ "unchecked", })
   public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 	    // First, get a row from the default input hop
