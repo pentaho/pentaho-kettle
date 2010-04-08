@@ -49,7 +49,6 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
-import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface.MODE;
 import org.pentaho.di.ui.repository.dialog.UpgradeRepositoryProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -64,7 +63,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface {
   private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
+  private MODE mode;
   private Label wlConnection;
 
   private Button wnConnection, weConnection, wdConnection;
@@ -98,22 +97,29 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
   private KettleDatabaseRepositoryMeta input;
 
   private RepositoriesMeta repositories;
+  
+  private RepositoriesMeta masterRepositoriesMeta;
 
+  private String masterRepositoryName;
+  
   private DatabaseDialog databaseDialog;
-
+  
   public KettleDatabaseRepositoryDialog(Shell parent, int style, RepositoryMeta repositoryMeta,
       RepositoriesMeta repositoriesMeta) {
     this.display = parent.getDisplay();
     this.props = PropsUI.getInstance();
     this.input = (KettleDatabaseRepositoryMeta) repositoryMeta;
     this.repositories = repositoriesMeta;
+    this.masterRepositoriesMeta = repositoriesMeta.clone();
+    this.masterRepositoryName = repositoryMeta.getName();
 
     shell = new Shell(parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     shell.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Main.Title")); //$NON-NLS-1$
 
   }
 
-  public KettleDatabaseRepositoryMeta open(RepositoryDialogInterface.MODE mode) {
+  public KettleDatabaseRepositoryMeta open(final MODE mode) {
+    this.mode = mode;
     props.setLook(shell);
 
     FormLayout formLayout = new FormLayout();
@@ -226,9 +232,6 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     fldId.right = new FormAttachment(middle, -margin);
     wlId.setLayoutData(fldId);
     wId = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    if (mode == MODE.EDIT) {
-      wId.setEnabled(false);
-    }
     props.setLook(wId);
     fdId = new FormData();
     fdId.left = new FormAttachment(middle, 0);
@@ -357,7 +360,24 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     if (input.getConnection() != null) {
       if (input.getName() != null && input.getName().length() > 0) {
         if (input.getDescription() != null && input.getDescription().length() > 0) {
-          dispose();
+          // If MODE is ADD then check if the repository name does not exist in the repository list then close this dialog
+          // If MODE is EDIT then check if the repository name is the same as before if not check if the new name does
+          // not exist in the repository. Otherwise return true to this method, which will mean that repository already exist
+          if(mode == MODE.ADD) {
+            if(masterRepositoriesMeta.searchRepository(input.getName()) == null) {
+              dispose();            
+            } else {
+              displayRepositoryAlreadyExistMessage(input.getName());
+            }
+          } else {
+            if(masterRepositoryName.equals(input.getName())) {
+              dispose();
+            } else if(masterRepositoriesMeta.searchRepository(input.getName()) == null) {
+              dispose();
+            } else {
+              displayRepositoryAlreadyExistMessage(input.getName());
+            }
+          }
         } else {
           MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
           box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorNoName.Message")); //$NON-NLS-1$
@@ -376,7 +396,6 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
       box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); //$NON-NLS-1$
       box.open();      
     }
-
   }
 
   private void fillConnections() {
@@ -569,5 +588,12 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
           shell,
           BaseMessages.getString(PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
+  }
+  
+  private void  displayRepositoryAlreadyExistMessage(String name) {
+    MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+    box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorIdExist.Message", name)); //$NON-NLS-1$
+    box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); //$NON-NLS-1$
+    box.open();                   
   }
 }

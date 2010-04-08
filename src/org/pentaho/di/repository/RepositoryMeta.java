@@ -58,5 +58,6 @@ public interface RepositoryMeta {
 	 */
 	public RepositoryCapabilities getRepositoryCapabilities();
 
+	public RepositoryMeta clone();
 
 }

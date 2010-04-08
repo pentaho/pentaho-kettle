@@ -97,18 +97,13 @@ public class RepositoriesHelper {
         RepositoryDialogInterface dialog = getRepositoryDialog(plugin, repositoryMeta, input, this.shell);
         RepositoryMeta meta = dialog.open(MODE.ADD);
         if (meta != null) {
-          // First check is the repository name does not in the repositories list. 
+          // If the repository meta is not null and the repository name does not exist in the repositories list. 
           // If it does then display a error to the user
-          if(input.searchRepository(meta.getName()) == null) {
+          if(meta.getName() != null) {
             input.addRepository(meta);
             fillRepositories();
             model.setSelectedRepository(meta);
             writeData();            
-          } else {
-            MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-            box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorIdExist.Message")); //$NON-NLS-1$
-            box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); //$NON-NLS-1$
-            box.open();                   
           }
         }
       } catch (Exception e) {

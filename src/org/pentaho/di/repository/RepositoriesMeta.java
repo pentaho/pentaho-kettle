@@ -231,6 +231,11 @@ public class RepositoriesMeta
   				RepositoryMeta repositoryMeta = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, id, RepositoryMeta.class);
   				if(repositoryMeta != null) {
     				repositoryMeta.loadXML(repnode, databases);
+    				// Backward compatibility. Description is now required as it will be what gets displayed on the
+    				// repositories dialog
+    				if(repositoryMeta.getDescription() == null || repositoryMeta.getDescription().equals("")) {
+    				  repositoryMeta.setDescription(repositoryMeta.getName());
+    				}
     				addRepository(repositoryMeta);
     				log.logDebug("Read repository : "+repositoryMeta.getName()); //$NON-NLS-1$
   				} else {
@@ -302,5 +307,17 @@ public class RepositoriesMeta
 	public String toString()
 	{
 		return getClass().getSimpleName();
+	}
+	
+	public RepositoriesMeta clone() {
+	  RepositoriesMeta meta = new RepositoriesMeta();
+	  meta.clear();
+	  for(DatabaseMeta dbMeta:databases) {
+	    meta.addDatabase(dbMeta);
+	  }
+	  for(RepositoryMeta repMeta:repositories) {
+	    meta.addRepository(repMeta.clone());
+	  }
+    return meta;
 	}
 }

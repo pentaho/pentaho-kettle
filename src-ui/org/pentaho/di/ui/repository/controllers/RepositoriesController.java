@@ -148,7 +148,6 @@ public class RepositoriesController extends AbstractXulEventHandler {
       okButton.setDisabled(false);
       cancelButton.setDisabled(false);
       getCallback().onSuccess(helper.getConnectedRepository());
-           
     } catch (final Throwable th) {
       getCallback().onError(th);
       okButton.setDisabled(false);

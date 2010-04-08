@@ -93,4 +93,8 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
 	public void setReadOnly(boolean readOnly) {
 		this.readOnly = readOnly;
 	}
+
+  public RepositoryMeta clone(){
+    return  new KettleFileRepositoryMeta(REPOSITORY_TYPE_ID, getName(), getDescription(), getBaseDirectory());
+  }
 }

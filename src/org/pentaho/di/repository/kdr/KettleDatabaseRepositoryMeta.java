@@ -116,4 +116,9 @@ public class KettleDatabaseRepositoryMeta extends BaseRepositoryMeta implements 
 			throw new KettleException("Unable to load Kettle database repository meta object", e);
 		}
 	}
+
+  public RepositoryMeta clone()  {
+    return new KettleDatabaseRepositoryMeta(REPOSITORY_TYPE_ID, getName(), getDescription(), getConnection());
+  }
+	
 }

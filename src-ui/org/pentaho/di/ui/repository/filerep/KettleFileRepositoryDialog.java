@@ -26,12 +26,11 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
-import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface.MODE;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
   private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
+  private MODE mode;
   private Label wlBaseDir;
 
   private Button wbBaseDir;
@@ -69,21 +68,26 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
   private PropsUI props;
 
   private KettleFileRepositoryMeta input;
+  //private RepositoriesMeta repositories;
+  private RepositoriesMeta masterRepositoriesMeta;
 
-  // private RepositoriesMeta repositories;
+  private String masterRepositoryName;
 
   public KettleFileRepositoryDialog(Shell parent, int style, RepositoryMeta repositoryMeta,
       RepositoriesMeta repositoriesMeta) {
     this.display = parent.getDisplay();
     this.props = PropsUI.getInstance();
     this.input = (KettleFileRepositoryMeta) repositoryMeta;
-    // this.repositories = repositoriesMeta;
+    this.masterRepositoriesMeta = repositoriesMeta.clone();
+    this.masterRepositoryName = repositoryMeta.getName();
 
+    //this.repositories = repositoriesMeta;
     shell = new Shell(parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     shell.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.Main.Title")); //$NON-NLS-1$
   }
 
-  public KettleFileRepositoryMeta open(RepositoryDialogInterface.MODE mode) {
+  public KettleFileRepositoryMeta open(final MODE mode){
+    this.mode = mode;
     props.setLook(shell);
 
     FormLayout formLayout = new FormLayout();
@@ -165,9 +169,6 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
     fdlId.right = new FormAttachment(middle, -margin);
     wlId.setLayoutData(fdlId);
     wId = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    if (mode == MODE.EDIT) {
-      wId.setEnabled(false);
-    }
     props.setLook(wId);
     fdId = new FormData();
     fdId.left = new FormAttachment(middle, 0);
@@ -262,7 +263,24 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
     if (input.getBaseDirectory() != null && input.getBaseDirectory().length() > 0) {
       if (input.getName() != null && input.getName().length() > 0) {
         if (input.getDescription() != null && input.getDescription().length() > 0) {
-          dispose();
+          // If MODE is ADD then check if the repository name does not exist in the repository list then close this dialog
+          // If MODE is EDIT then check if the repository name is the same as before if not check if the new name does
+          // not exist in the repository. Otherwise return true to this method, which will mean that repository already exist
+          if(mode == MODE.ADD) {
+            if(masterRepositoriesMeta.searchRepository(input.getName()) == null) {
+              dispose();            
+            } else {
+              displayRepositoryAlreadyExistMessage(input.getName());
+            }
+          } else {
+            if(masterRepositoryName.equals(input.getName())) {
+              dispose();
+            } else if(masterRepositoriesMeta.searchRepository(input.getName()) == null) {
+              dispose();
+            } else {
+              displayRepositoryAlreadyExistMessage(input.getName());
+            }
+          }
         } else {
           MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
           box.setMessage(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoName.Message")); //$NON-NLS-1$
@@ -281,5 +299,12 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
       box.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Dialog.ErrorNoBaseDir.Title")); //$NON-NLS-1$
       box.open();
     }
+  }
+  
+  private void  displayRepositoryAlreadyExistMessage(String name) {
+    MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+    box.setMessage(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.ErrorIdExist.Message", name)); //$NON-NLS-1$
+    box.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Error.Title")); //$NON-NLS-1$
+    box.open();                   
   }
 }
