@@ -5,7 +5,6 @@ import java.lang.reflect.Constructor;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectCreationException;
 
 public class DomainObjectRegistry {
 
@@ -78,7 +77,7 @@ public class DomainObjectRegistry {
           if (constructor != null) {
             return (JobMeta) constructor.newInstance(initArgs);
           } else {
-            throw new UIObjectCreationException("Unable to get the constructor for " + jobMetaClass);
+            throw new DomainObjectCreationException("Unable to get the constructor for " + jobMetaClass);
           }
         
         } else {
