@@ -322,58 +322,7 @@
 		</tabbox>
 	
 	</dialog>
-	<!--  ###############################################################################   -->
-    <!--     MANAGE ACLS DIALOG: Dialog to manage acls                                      -->
-    <!--  ###############################################################################   -->    
-	
-	<dialog id="manage-acls-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
-	    		ondialogaccept="permissionsController.updateAcls()"
-	    		ondialogcancel="permissionsController.closeManageAclsDialog()" 
-	    		buttons="accept, cancel" buttonalign="right" title="${ManageAclsDialog.Title}"
-	    		appicon="ui/images/spoon.ico" 
-	    		resizable="true"
-	    		height="500" width="400">
-	    	<vbox flex="1">
-		    	<groupbox id="user-section" flex="1">
-		    		<caption label="${ManageAclsDialog.UserLabel}" />
-		    		<hbox flex="1">
-			    		<vbox flex="2">
-							<label value="${ManageAclsDialog.Available}"/>
-							<listbox id="available-user-list" disabled="false" flex="1" seltype="multi"/>					
-			    		</vbox>
-					    <vbox>
-					    	<label id="spacer-label" flex="1" />
-							<button id="assign-user" image="images/accum_add.png"  pen:disabledimage="images/accum_add_disable.png" onclick="permissionsController.assignUsers()" disabled="true"/>
-							<button id="unassign-user" image="images/accum_remove.png"  pen:disabledimage="images/accum_remove_disable.png" onclick="permissionsController.unassignUsers()" disabled="true"/>
-							<label id="spacer-label" flex="1" />					    
-						</vbox>
-			    		<vbox flex="2">
-							<label value="${ManageAclsDialog.Selected}"/>
-							<listbox id="selected-user-list" pen:binding="recipientName" disabled="false" flex="1" seltype="multi"/>					
-			    		</vbox>	    		
-		    		</hbox>
-		    	</groupbox>
-		    	<groupbox id="role-section" flex="1">
-		    		<caption label="${ManageAclsDialog.RoleLabel}" />
-		    		<hbox flex="1">
-			    		<vbox flex="2">
-							<label value="${ManageAclsDialog.Available}"/>
-							<listbox id="available-role-list" disabled="false" flex="1" seltype="multi"/>					
-			    		</vbox>
-					    <vbox>
-					    	<label id="spacer-label" flex="1" />
-							<button id="assign-role" image="images/accum_add.png"  pen:disabledimage="images/accum_add_disable.png" onclick="permissionsController.assignRoles()" disabled="true"/>
-							<button id="unassign-role" image="images/accum_remove.png" pen:disabledimage="images/accum_remove_disable.png" onclick="permissionsController.unassignRoles()" disabled="true"/>
-							<label id="spacer-label" flex="1" />					    
-						</vbox>
-			    		<vbox flex="2">
-							<label value="${ManageAclsDialog.Selected}"/>
-							<listbox id="selected-role-list" pen:binding="recipientName" disabled="false" flex="1" seltype="multi"/>					
-			    		</vbox>	    		
-		    		</hbox>
-		    	</groupbox>	    	
-	    	</vbox>
-	</dialog>
+
   <!--  ###############################################################################   -->
   <!--     ADD USER DIALOG: Dialog to add/edit/manage user                                -->
   <!--  ###############################################################################   -->    
@@ -400,19 +349,5 @@
       </vbox>
       <vbox id="role-to-user-box" flex="1"/>
   </dialog>
-  <!--  ###############################################################################   -->
-  <!--     APPLY ACL CONFIRMATION DIALOG: Dialog to display the confirmation              -->
-  <!--     message to the user. User needs to select either of the two options or click   -->
-  <!--         cancel   												                  -->
-  <!--  ###############################################################################   -->    
-  <dialog id="apply-acl-confirmation-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}" buttons="accept, cancel" ondialogcancel="permissionsController.closeApplyAclConfirmationDialog()"
-	  ondialogaccept="permissionsController.applyAcl()" buttonalign="right" title="${ApplyAclConfirmationDialog.Title}" appicon="ui/images/spoon.ico" 
-  		xmlns:pen="http://www.pentaho.org/2008/xul" height="180" width="320">
-       <vbox>
-        <label value="${ApplyAclConfirmationDialog.ConfirmMessage1}"/>
-        <label value="${ApplyAclConfirmationDialog.ConfirmMessage2}"/>
-        <radio id="apply-only-radio-button" label="${ApplyAclConfirmationDialog.ApplyOnly}" command="permissionsController.setApplyOnly()" />		    
-       	<radio id="apply-recursive-radio-button" label="${ApplyAclConfirmationDialog.ApplyRecursive}" command="permissionsController.setApplyRecursive()" />
-      </vbox>
-  </dialog>  
+
 </window>  
