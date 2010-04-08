@@ -132,6 +132,7 @@ import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.dialog.DialogClosedListener;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -3805,6 +3806,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 			final PreviewRowsDialog dialog = new PreviewRowsDialog(shell, trans, SWT.NONE, stepMeta.getName(), null, rows);
 			dialog.setDynamic(true);
 
+			// Add a row listener that sends the rows over to the dialog...
+			//
 			final RowListener rowListener = new RowListener() {
 
 				public void rowReadEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
@@ -3838,14 +3841,20 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 				}
 			};
 
+      // When the dialog is closed, make sure to remove the listener!
+      //
+      dialog.addDialogClosedListener(new DialogClosedListener() {
+        public void dialogClosed() {
+          runThread.removeRowListener(rowListener);
+        }
+      });
+
+      // Open the dialog in a separate thread to make sure it doesn't block
+      //
 			getDisplay().asyncExec(new Runnable() {
 				
 				public void run() {
-					dialog.open();
-					
-					// remove the listener when close is hit!
-					//
-					runThread.removeRowListener(rowListener);
+					dialog.open();					
 				}
 			});
 			

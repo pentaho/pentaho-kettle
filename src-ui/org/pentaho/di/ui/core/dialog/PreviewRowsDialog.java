@@ -111,6 +111,8 @@ public class PreviewRowsDialog {
   private int style = SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN;
 
   private Shell parentShell;
+  
+  private List<DialogClosedListener> dialogClosedListeners;
 
 
   public PreviewRowsDialog(Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta,
@@ -127,6 +129,7 @@ public class PreviewRowsDialog {
     this.variables = space;
     this.parentShell = parent;
     this.style = (style != SWT.None) ? style : this.style;
+    this.dialogClosedListeners=new ArrayList<DialogClosedListener>();
 
     props = PropsUI.getInstance();
     bounds = null;
@@ -518,5 +521,9 @@ public class PreviewRowsDialog {
         wFields.table.setTopIndex(wFields.table.getItemCount() - 1);
       }
     });
+  }
+  
+  public void addDialogClosedListener(DialogClosedListener listener) {
+    dialogClosedListeners.add(listener);
   }
 }
