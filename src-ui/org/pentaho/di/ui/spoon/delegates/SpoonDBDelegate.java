@@ -33,6 +33,8 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.TransHopMeta;
@@ -50,6 +52,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
+import org.w3c.dom.Node;
 
 public class SpoonDBDelegate extends SpoonDelegate
 {
@@ -273,7 +276,13 @@ public class SpoonDBDelegate extends SpoonDelegate
       //
       // Create a new transformation...
       //
-      TransMeta meta = new TransMeta();
+      TransMeta meta = null;
+      try {
+        meta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
+      } catch(DomainObjectCreationException doce) {
+        meta = new TransMeta();
+      } 
+
       meta.addDatabase(sourceDBInfo);
       meta.addDatabase(targetDBInfo);
 

@@ -20,6 +20,8 @@ import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -240,8 +242,12 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	 */
 	public JobMeta loadJobMeta(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor) throws KettleException {
 		
-		JobMeta jobMeta = new JobMeta();
-		
+		JobMeta jobMeta = null;
+    try {
+      jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
+    } catch(DomainObjectCreationException doce) {
+      jobMeta = new JobMeta();
+    }
 		synchronized(repository)
 		{
 			try {

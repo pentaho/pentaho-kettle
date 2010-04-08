@@ -17,6 +17,9 @@ import java.io.IOException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -56,7 +59,11 @@ public class TransConfiguration
         Node trecNode = XMLHandler.getSubNode(configNode, TransExecutionConfiguration.XML_TAG);
         transExecutionConfiguration = new TransExecutionConfiguration(trecNode);
         Node transNode = XMLHandler.getSubNode(configNode, TransMeta.XML_TAG);
-        transMeta = new TransMeta(transNode, transExecutionConfiguration.getRepository());
+        try {
+          transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {Node.class, Repository.class}, new Object[]{transNode, transExecutionConfiguration.getRepository()}); 
+        } catch(DomainObjectCreationException doce) {
+          transMeta = new TransMeta(transNode, transExecutionConfiguration.getRepository());
+        }         
     }
     
     public static final TransConfiguration fromXML(String xml) throws KettleException

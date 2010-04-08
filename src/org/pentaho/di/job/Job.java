@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
@@ -63,6 +64,8 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -154,7 +157,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     {
     	this();
     	
-		jobMeta = new JobMeta();
+    try {
+      jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
+    } catch(DomainObjectCreationException doce) {
+      jobMeta = new JobMeta();
+    } 
         if (name!=null) setName(name+" ("+super.getName()+")");
         jobMeta.setName(name);
 		jobMeta.setFilename(file);

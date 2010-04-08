@@ -71,6 +71,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -323,7 +325,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			}
 			else
 			{
-				this.transMeta = new TransMeta(filename, false);
+	      try {
+	        transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class, boolean.class}, new Object[]{filename, false}); 
+	      } catch(DomainObjectCreationException doce) {
+	        transMeta = new TransMeta(filename, false);
+	      } 
 			}
 			
 			this.log = new LogChannel(this);

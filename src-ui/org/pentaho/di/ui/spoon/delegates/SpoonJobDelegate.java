@@ -51,6 +51,8 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.TransHopMeta;
@@ -562,8 +564,15 @@ public class SpoonJobDelegate extends SpoonDelegate
 		//
 		// Create a new job...
 		//
-		final JobMeta jobMeta = new JobMeta();
-		jobMeta.setDatabases(databases);
+		
+	  JobMeta anotherJobMeta = null; 
+    try {
+      anotherJobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
+    } catch(DomainObjectCreationException doce) {
+      anotherJobMeta = new JobMeta();
+    } 
+    final JobMeta jobMeta = anotherJobMeta;
+    jobMeta.setDatabases(databases);
 		jobMeta.setFilename(null);
 		jobMeta.setName(jobname);
 
@@ -614,8 +623,12 @@ public class SpoonJobDelegate extends SpoonDelegate
 						//
 						String transname = BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Transname1") + sourceDbInfo + "].[" + tables[i] + BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Transname2") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	
-						TransMeta transMeta = new TransMeta((String) null, transname, null);
-	
+						TransMeta transMeta = null;
+			      try {
+			        transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class, String.class, String[].class}, new Object[]{(String) null, transname, null}); 
+			      } catch(DomainObjectCreationException doce) {
+			        transMeta = new TransMeta((String) null, transname, null);
+			      }
 						if (repdir != null)
 						{
 							transMeta.setRepositoryDirectory(repdir);

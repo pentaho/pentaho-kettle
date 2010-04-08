@@ -15,9 +15,13 @@ package org.pentaho.di.trans;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+import org.w3c.dom.Node;
 
 public class TransPreviewFactory
 {
@@ -25,8 +29,12 @@ public class TransPreviewFactory
     {
         PluginRegistry registry = PluginRegistry.getInstance();
 
-        TransMeta previewMeta = new TransMeta(parent);
-        
+        TransMeta previewMeta = null;
+        try {
+          previewMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {VariableSpace.class}, new Object[]{parent}); 
+        } catch(DomainObjectCreationException doce) {
+          previewMeta = new TransMeta(parent);
+        } 
         // The following operation resets the internal variables!
         //
         previewMeta.setName(parent==null ? "Preview transformation" : parent.toString());

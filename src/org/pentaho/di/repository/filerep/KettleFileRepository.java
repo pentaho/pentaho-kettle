@@ -27,6 +27,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
@@ -714,7 +716,13 @@ public class KettleFileRepository implements Repository {
 		// This is a standard load of a transformation serialized in XML...
 		//
 		String filename = calcDirectoryName(repdir)+jobname+EXT_JOB;
-		JobMeta jobMeta = new JobMeta(filename, this);
+		JobMeta jobMeta = null;
+    try {
+      jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {String.class, Repository.class}, new Object[]{filename, this}); 
+    } catch(DomainObjectCreationException doce) {
+      jobMeta = new JobMeta(filename, this);
+    }
+		
 		jobMeta.setFilename(null);
 		jobMeta.setName(jobname);
 		jobMeta.setObjectId(new StringObjectId(calcObjectId(repdir, jobname, EXT_JOB)));
@@ -847,7 +855,12 @@ public class KettleFileRepository implements Repository {
 		// This is a standard load of a transformation serialized in XML...
 		//
 		String filename = calcDirectoryName(repdir)+transname+".ktr";
-		TransMeta transMeta = new TransMeta(filename, this, setInternalVariables);
+		TransMeta transMeta = null;
+    try {
+      transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class, Repository.class, boolean.class}, new Object[]{filename, this, setInternalVariables}); 
+    } catch(DomainObjectCreationException doce) {
+      transMeta = new TransMeta(filename, this, setInternalVariables);
+    }		
 		transMeta.setFilename(null);
 		transMeta.setName(transname);
 		transMeta.setObjectId(new StringObjectId(calcObjectId(repdir, transname, EXT_TRANSFORMATION)));

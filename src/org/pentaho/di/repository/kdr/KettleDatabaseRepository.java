@@ -43,6 +43,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.LongObjectId;
@@ -238,7 +240,13 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     
     public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String versionName) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.READ_TRANSFORMATION);
-    	return transDelegate.loadTransformation(new TransMeta(), transname, repdir, monitor, setInternalVariables);
+    	TransMeta transMeta = null;
+      try {
+        transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
+      } catch(DomainObjectCreationException doce) {
+        transMeta = new TransMeta();
+      } 
+    	return transDelegate.loadTransformation(transMeta, transname, repdir, monitor, setInternalVariables);
 	}
         
 	public SharedObjects readTransSharedObjects(TransMeta transMeta) throws KettleException {

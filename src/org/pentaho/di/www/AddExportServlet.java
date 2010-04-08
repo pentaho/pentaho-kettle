@@ -33,6 +33,9 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -120,7 +123,13 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
           //
           KettleVFS.getFileObject(fileUrl);
 
-          JobMeta jobMeta = new JobMeta(fileUrl, null); // never with a repository
+          JobMeta jobMeta = null;
+          try {
+            jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {String.class, Repository.class}, new Object[]{fileUrl, null}); 
+          } catch(DomainObjectCreationException doce) {
+            jobMeta = new JobMeta(fileUrl, null); // never with a repository
+          } 
+          
           
           // Also read the execution configuration information
           //
@@ -156,7 +165,12 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
         } else {
           // Open the transformation from inside the ZIP archive
           //
-          TransMeta transMeta = new TransMeta(fileUrl);
+          TransMeta transMeta = null;
+          try {
+            transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class}, new Object[]{fileUrl}); 
+          } catch(DomainObjectCreationException doce) {
+            transMeta = new TransMeta(fileUrl);
+          } 
           
           // Also read the execution configuration information
           //

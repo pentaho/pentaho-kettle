@@ -21,10 +21,14 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.groupby.GroupByMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.w3c.dom.Node;
 
 /**
  * Helper class to generate profiling transformations...
@@ -63,7 +67,13 @@ public class TransProfileFactory
 
         // Now start building the transformation...
         //
-        TransMeta transMeta = new TransMeta(databaseMeta);
+        TransMeta transMeta = null;
+        
+        try {
+          transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {DatabaseMeta.class}, new Object[]{databaseMeta}); 
+        } catch(DomainObjectCreationException doce) {
+          transMeta = new TransMeta(databaseMeta);
+        } 
         transMeta.addDatabase(databaseMeta);
         
         // Create a step to read the content of the table

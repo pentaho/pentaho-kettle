@@ -34,6 +34,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
@@ -49,6 +50,8 @@ import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -58,6 +61,7 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.w3c.dom.Node;
 
@@ -520,7 +524,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             if (fromXMLFile)
             {
             	if(log.isDetailed()) logDetailed("Loading job from XML file : ["+environmentSubstitute(filename)+"]");
-                jobMeta = new JobMeta(environmentSubstitute(filename), rep, null);
+                try {
+                  jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {String.class, Repository.class, OverwritePrompter.class}, new Object[]{environmentSubstitute(filename), rep, null}); 
+                } catch(DomainObjectCreationException doce) {
+                  jobMeta = new JobMeta(environmentSubstitute(filename), rep, null);
+                } 
                 jobMeta.setParentVariableSpace(parentJob);
             }
 
@@ -1065,8 +1073,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	        }
 	        else
 	        {
-	            return new JobMeta((space != null ? space.environmentSubstitute(getFilename()) : getFilename()), 
-	            		           rep, null);
+	          try {
+	            return DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {String.class, Repository.class, OverwritePrompter.class}, new Object[]{(space != null ? space.environmentSubstitute(getFilename()) : getFilename()), 
+                  rep, null}); 
+	          } catch(DomainObjectCreationException doce) {
+              return new JobMeta((space != null ? space.environmentSubstitute(getFilename()) : getFilename()), 
+                  rep, null);
+	          }
 	        }
     	}
 		catch(Exception e)

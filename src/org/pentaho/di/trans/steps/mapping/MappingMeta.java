@@ -28,6 +28,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -485,7 +487,12 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             try
             {
             	// OK, load the meta-data from file...
-                mappingTransMeta = new TransMeta( realFilename, false ); // don't set internal variables: they belong to the parent thread!
+                try {
+                  mappingTransMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class, 
+                      boolean.class}, new Object[]{ realFilename, false }); 
+                  } catch(DomainObjectCreationException doce) {
+                    mappingTransMeta = new TransMeta( realFilename, false ); // don't set internal variables: they belong to the parent thread!
+                  }
                 mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+realFilename+"]");
                 // mappingTransMeta.setFilename(fileName);
            }

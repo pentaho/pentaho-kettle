@@ -170,6 +170,8 @@ import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -3700,7 +3702,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void newTransFile() {
-    TransMeta transMeta = new TransMeta();
+    TransMeta transMeta = null;
+    try {
+      transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
+    } catch(DomainObjectCreationException doce) {
+      transMeta = new TransMeta();
+    }
     transMeta.addObserver(this);
 
     // Set the variables that were previously defined in this session on the
@@ -3743,7 +3750,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void newJobFile() {
     try {
-      JobMeta jobMeta = new JobMeta();
+      JobMeta jobMeta = null;
+      try {
+        jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
+      } catch(DomainObjectCreationException doce) {
+        jobMeta = new JobMeta();
+      } 
       jobMeta.addObserver(this);
 
       // Set the variables that were previously defined in this session on
@@ -6039,7 +6051,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     String xml = fromClipboard();
     try {
       Document doc = XMLHandler.loadXMLString(xml);
-      TransMeta transMeta = new TransMeta(XMLHandler.getSubNode(doc, TransMeta.XML_TAG), rep);
+      
+      TransMeta transMeta = null;
+      try {
+        transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {Node.class, Repository.class}, new Object[]{XMLHandler.getSubNode(doc, TransMeta.XML_TAG), rep}); 
+      } catch(DomainObjectCreationException doce) {
+        transMeta = new TransMeta(XMLHandler.getSubNode(doc, TransMeta.XML_TAG), rep);
+      }
       setTransMetaVariables(transMeta);
       addTransGraph(transMeta); // create a new tab
       sharedObjectsFileMap.put(transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects());
@@ -6059,7 +6077,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     String xml = fromClipboard();
     try {
       Document doc = XMLHandler.loadXMLString(xml);
-      JobMeta jobMeta = new JobMeta(XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep, this);
+      JobMeta jobMeta = null;
+      try {
+        jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {Node.class, Repository.class, OverwritePrompter.class}, new Object[]{XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep, this}); 
+      } catch(DomainObjectCreationException doce) {
+        new JobMeta(XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep, this);
+      } 
       addJobGraph(jobMeta); // create a new tab
       refreshGraph();
       refreshTree();
@@ -6567,7 +6590,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       if (lastUsedFile.isTransformation()) {
         openFile(lastUsedFile.getFilename(), false);
         /*
-         * TransMeta transMeta = new TransMeta(lastUsedFile.getFilename());
+         *TransMeta transMeta = null;
+         *try {
+         * transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class}, new Object[]{lastUsedFile.getFilename()}); 
+         *} catch(DomainObjectCreationException doce) {
+         * new TransMeta(lastUsedFile.getFilename());
+         *}
          * transMeta.setFilename(lastUsedFile.getFilename());
          * transMeta.clearChanged();
          * props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION,

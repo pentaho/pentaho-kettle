@@ -115,6 +115,8 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -1100,7 +1102,12 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			    
 			    // Generate a new test transformation...
 			    //
-			    TransMeta transMeta = new TransMeta();
+	         TransMeta transMeta =  null;
+	          try {
+	            transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
+	          } catch(DomainObjectCreationException doce) {
+	            transMeta = new TransMeta();
+	          } 
                 transMeta.setName(wStepname.getText()+" - PREVIEW"); // $NON-NLS-1$
 			    transMeta.addStep(genStep);
 			    transMeta.addStep(scriptStep);

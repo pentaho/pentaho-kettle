@@ -14,6 +14,8 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -80,7 +82,12 @@ public class TransBuilder
             //
             // Create a new transformation...
             //
-            TransMeta transMeta = new TransMeta();
+          TransMeta transMeta =  null;
+          try {
+            transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
+          } catch(DomainObjectCreationException doce) {
+            transMeta = new TransMeta();
+          } 
             transMeta.setName(transformationName);
             
             // Add the database connections

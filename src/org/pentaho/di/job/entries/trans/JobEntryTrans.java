@@ -49,6 +49,8 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.DomainObjectCreationException;
+import org.pentaho.di.repository.DomainObjectRegistry;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -1046,7 +1048,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	        {
 	        	String filename = environmentSubstitute(getFilename());
 	            logBasic("Loading transformation from XML file ["+filename+"]");
-	            transMeta = new TransMeta(filename, null, true, this);
+	            try {
+	            transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class, 
+	                Repository.class, boolean.class,VariableSpace.class}, new Object[]{filename, null, true, this}); 
+	            } catch(DomainObjectCreationException doce) {
+	              transMeta = new TransMeta(filename, null, true, this);
+	            }
 	            transMeta.copyVariablesFrom(this);
 	        }
 	        else
