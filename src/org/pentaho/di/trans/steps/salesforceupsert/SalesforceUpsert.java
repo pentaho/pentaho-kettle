@@ -174,8 +174,10 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 				if (data.upsertResult[j].isSuccess()) {
 					String id=data.upsertResult[j].getId();
 					if(data.upsertResult[j].isCreated()) {
+						incrementLinesOutput();
 						if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.ObjectCreated", id));
 					}else {
+						incrementLinesUpdated(); 
 						if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.ObjectUpdated", id));
 					}
 					// write out the row with the SalesForce ID
@@ -187,9 +189,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 					}
 					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.NewRow", newRow[0]));
 					
-					//putRow(data.outputRowMeta, data.outputRowMeta.cloneRow(newRow));  // copy row to output rowset(s);
 					putRow(data.outputRowMeta, newRow);  // copy row to output rowset(s);
-					incrementLinesOutput();
 					
 				    if (checkFeedback(getLinesInput()))
 				    {
