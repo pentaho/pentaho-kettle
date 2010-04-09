@@ -1459,7 +1459,7 @@ public class DatabaseMeta
 				return databaseInterface.getSchemaTableCombination(getPreferredSchemaName(), tableName);
 			}
 		} else {
-			return databaseInterface.getSchemaTableCombination(schemaName, tableName);
+			return databaseInterface.getSchemaTableCombination(environmentSubstitute(schemaName), environmentSubstitute(tableName));
 		}
 	}
 	
