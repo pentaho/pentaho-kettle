@@ -1314,7 +1314,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		if( ArgList.length==1 && spoon != null ) 
 		{
 			String strMessage = Context.toString(ArgList[0]);
-			spoon.messageBox(strMessage, "Alert", false, Const.INFO);
+			boolean ok = spoon.messageBox(strMessage, "Alert", true, Const.INFO);
+			if (!ok) {
+			  throw new RuntimeException("Alert dialog cancelled by user.");
+			}
 		}
 		
 		return "";
