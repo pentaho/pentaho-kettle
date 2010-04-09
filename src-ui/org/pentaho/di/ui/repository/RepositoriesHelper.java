@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
@@ -27,7 +26,7 @@ import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface.MODE;
 import org.pentaho.di.ui.repository.model.RepositoriesModel;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.components.XulConfirmBox;
-import org.pentaho.ui.xul.components.XulMessageBox;
+import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 public class RepositoriesHelper {
@@ -39,17 +38,15 @@ public class RepositoriesHelper {
   private String prefRepositoryName;
   private ResourceBundle messages;
   private RepositoriesModel model;
-  private XulMessageBox messageBox;
-  private XulConfirmBox confirmBox;
+  private Document document;
   private LogChannel log;  
   public RepositoriesHelper(RepositoriesModel model
-      , XulMessageBox messagebox, XulConfirmBox confirmBox, ResourceBundle messages, Shell shell) {
+      , Document document, ResourceBundle messages, Shell shell) {
     this.props = PropsUI.getInstance();
     this.input = new RepositoriesMeta();
     this.repository = null;
     this.model = model;
-    this.messageBox = messagebox;
-    this.confirmBox = confirmBox;
+    this.document = document;
     this.messages = messages;
     this.shell = shell;
     log = new LogChannel("RepositoriesHelper"); //$NON-NLS-1$
@@ -137,32 +134,36 @@ public class RepositoriesHelper {
   }
 
   public void deleteRepository() {
-
-      final RepositoryMeta repositoryMeta = input.searchRepository(model.getSelectedRepository().getName());
-      if (repositoryMeta != null) {
-        confirmBox.setTitle(messages.getString("RepositoryLogin.ConfirmDeleteRepositoryDialog.Title"));//$NON-NLS-1$
-        confirmBox.setMessage(messages.getString("RepositoryLogin.ConfirmDeleteRepositoryDialog.Message"));//$NON-NLS-1$
-        confirmBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
-        confirmBox.setCancelLabel(messages.getString("Dialog.Cancel"));//$NON-NLS-1$
-        confirmBox.addDialogCallback(new XulDialogCallback<Object>() {
-  
-          public void onClose(XulComponent sender, Status returnCode, Object retVal) {
-            if (returnCode == Status.ACCEPT) {
-              int idx = input.indexOfRepository(repositoryMeta);
-              input.removeRepository(idx);
-              fillRepositories();
-              writeData();
+    try {
+        XulConfirmBox confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
+        final RepositoryMeta repositoryMeta = input.searchRepository(model.getSelectedRepository().getName());
+        if (repositoryMeta != null) {
+          confirmBox.setTitle(messages.getString("RepositoryLogin.ConfirmDeleteRepositoryDialog.Title"));//$NON-NLS-1$
+          confirmBox.setMessage(messages.getString("RepositoryLogin.ConfirmDeleteRepositoryDialog.Message"));//$NON-NLS-1$
+          confirmBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+          confirmBox.setCancelLabel(messages.getString("Dialog.Cancel"));//$NON-NLS-1$
+          confirmBox.addDialogCallback(new XulDialogCallback<Object>() {
+    
+            public void onClose(XulComponent sender, Status returnCode, Object retVal) {
+              if (returnCode == Status.ACCEPT) {
+                int idx = input.indexOfRepository(repositoryMeta);
+                input.removeRepository(idx);
+                fillRepositories();
+                writeData();
+              }
             }
-          }
-  
-          public void onError(XulComponent sender, Throwable t) {
-            log.logDetailed(BaseMessages.getString(PKG, "RepositoryLogin.UnableToDeleteRepository", t.getLocalizedMessage()));//$NON-NLS-1$
-            new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.UnableToDeleteRepository", t.getLocalizedMessage()), t);//$NON-NLS-1$ //$NON-NLS-2$
-          }
-        });
-        confirmBox.open();
-      }
-      
+    
+            public void onError(XulComponent sender, Throwable t) {
+              log.logDetailed(BaseMessages.getString(PKG, "RepositoryLogin.UnableToDeleteRepository", t.getLocalizedMessage()));//$NON-NLS-1$
+              new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.UnableToDeleteRepository", t.getLocalizedMessage()), t);//$NON-NLS-1$ //$NON-NLS-2$
+            }
+          });
+          confirmBox.open();
+        }
+    } catch (Exception e) {
+      log.logDetailed(BaseMessages.getString(PKG, "RepositoryLogin.UnableToDeleteRepository", e.getLocalizedMessage()));//$NON-NLS-1$
+      new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.UnableToDeleteRepository", e.getLocalizedMessage()), e); //$NON-NLS-1$ //$NON-NLS-2$
+    }      
   }
 
   protected RepositoryDialogInterface getRepositoryDialog(PluginInterface plugin, RepositoryMeta repositoryMeta, RepositoriesMeta input2, Shell shell) throws Exception {
@@ -201,8 +202,12 @@ public class RepositoriesHelper {
   
   public void fillRepositories() {
     model.getAvailableRepositories().clear();
-    for (int i = 0; i < input.nrRepositories(); i++) {
-      model.addToAvailableRepositories(input.getRepository(i));
+    if(input.nrRepositories() == 0) {
+      model.addToAvailableRepositories(null);
+    } else {
+      for (int i = 0; i < input.nrRepositories(); i++) {
+        model.addToAvailableRepositories(input.getRepository(i));
+      }
     }
   }
   
@@ -239,9 +244,5 @@ public class RepositoriesHelper {
       log.logDetailed(BaseMessages.getString(PKG, "RepositoryLogin.ErrorSavingRepositoryDefinition", e.getLocalizedMessage())); //$NON-NLS-1$
       new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorSavingRepositoryDefinition", e.getLocalizedMessage()), e); //$NON-NLS-1$ //$NON-NLS-2$
     } 
-  }
-  
-  public XulMessageBox getMessageBox() {
-	return messageBox;
   }
 }

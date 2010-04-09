@@ -113,7 +113,7 @@ public class RepositoriesController extends AbstractXulEventHandler {
     bf.createBinding(loginModel, "selectedRepository", repositoryEditButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(loginModel, "selectedRepository", repositoryRemoveButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
 
-    helper = new RepositoriesHelper(loginModel, messageBox, confirmBox, getMessages(), shell);
+    helper = new RepositoriesHelper(loginModel, document, getMessages(), shell);
     helper.setPreferredRepositoryName(preferredRepositoryName);
     helper.getMetaData();
   }
@@ -135,6 +135,8 @@ public class RepositoriesController extends AbstractXulEventHandler {
    */
   public void login() {
     try{
+      okButton.setDisabled(true);
+      cancelButton.setDisabled(true);      
       helper.loginToRepository();
       loginDialog.hide();
       okButton.setDisabled(false);
@@ -144,11 +146,7 @@ public class RepositoriesController extends AbstractXulEventHandler {
       getCallback().onError(th);
       okButton.setDisabled(false);
       cancelButton.setDisabled(false);
-    } finally{
-      okButton.setDisabled(true);
-      cancelButton.setDisabled(true);
     }
-  
   }
   //TODO: uncomment this out once the ThreadLocal issues are resolved with the JCR repository.
 //  public void login() {
