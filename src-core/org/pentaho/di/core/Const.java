@@ -582,6 +582,12 @@ public class Const
 	 */
 	public static final String KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES = "KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES";
 
+	 /**
+   * System wide parameter: the maximum number of step performance snapshots to keep in memory. 
+   * Set to 0 to keep all snapshots indefinitely (default)
+   */
+  public static final String KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT = "KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT";
+
 	/**
 	 * The name of the system wide variable that can contain the name of the SAP Connection factory for the test button in the DB dialog.
 	 * This defaults to  

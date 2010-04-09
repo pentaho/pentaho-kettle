@@ -232,6 +232,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     private long       stepPerformanceCapturingDelay;
     
+    private String     stepPerformanceCapturingSizeLimit;
+    
     private Map<String, RowMetaInterface> stepsFieldsCache;
     private Map<String, Boolean> loopCache;
     
@@ -537,6 +539,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         //
         capturingStepPerformanceSnapShots = false;
         stepPerformanceCapturingDelay = 1000; // every 1 seconds
+        stepPerformanceCapturingSizeLimit = "100"; // maximum 100 data points
         
         stepsFieldsCache = new HashMap<String, RowMetaInterface>();
         loopCache = new HashMap<String, Boolean>();
@@ -2096,6 +2099,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         //
         retval.append("    ").append(XMLHandler.addTagValue("capture_step_performance", capturingStepPerformanceSnapShots)); // $NON-NLS-1$
         retval.append("    ").append(XMLHandler.addTagValue("step_performance_capturing_delay", stepPerformanceCapturingDelay)); // $NON-NLS-1$
+        retval.append("    ").append(XMLHandler.addTagValue("step_performance_capturing_size_limit", stepPerformanceCapturingSizeLimit)); // $NON-NLS-1$
 
         retval.append("    ").append(XMLHandler.openTag(XML_TAG_DEPENDENCIES)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrDependencies(); i++)
@@ -2781,6 +2785,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             //
             capturingStepPerformanceSnapShots = "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "capture_step_performance")); // $NON-NLS-1$ $NON-NLS-2$
             stepPerformanceCapturingDelay = Const.toLong(XMLHandler.getTagValue(infonode, "step_performance_capturing_delay"), 1000); // $NON-NLS-1$
+            stepPerformanceCapturingSizeLimit = XMLHandler.getTagValue(infonode, "step_performance_capturing_size_limit"); // $NON-NLS-1$
 
 			// Created user/date
 			createdUser = XMLHandler.getTagValue(infonode, "created_user");
@@ -2931,17 +2936,17 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         return name;
     }
 
-    /**
-     * Set the name of the transformation.
-     *
-     * @param newName The new name of the transformation
-     */
-    public void setName(String newName)
-    {
-    	fireNameChangedListeners(this.name, newName);
-        this.name = newName;
-        setInternalKettleVariables();
-    }
+  /**
+   * Set the name of the transformation.
+   * 
+   * @param newName
+   *          The new name of the transformation
+   */
+  public void setName(String newName) {
+    fireNameChangedListeners(this.name, newName);
+    this.name = newName;
+    setInternalNameKettleVariable(variables);
+  }
 
     /**
      * Builds a name - if no name is set, yet - from the filename
@@ -2972,8 +2977,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     public void setFilename(String fname)
     {
     	fireFilenameChangedListeners(this.filename, fname); 
-        this.filename = fname;
-        setInternalKettleVariables();
+      this.filename = fname;
+      setInternalFilenameKettleVariables(variables);
     }
 
 
@@ -5197,35 +5202,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     public void setInternalKettleVariables(VariableSpace var)
     {        
-        if (!Const.isEmpty(filename)) // we have a finename that's defined.
-        {
-            try
-            {
-                FileObject fileObject = KettleVFS.getFileObject(filename, var);
-                FileName fileName = fileObject.getName();
-                
-                // The filename of the transformation
-                var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, fileName.getBaseName());
-
-                // The directory of the transformation
-                FileName fileDir = fileName.getParent();
-                var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI());
-            }
-            catch(KettleFileException e)
-            {
-                var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
-                var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
-            }
-        }
-        else
-        {
-            var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
-            var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
-        }
-        
-        // The name of the transformation
-        //
-        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL(name, ""));
+      setInternalFilenameKettleVariables(var);
+      setInternalNameKettleVariable(var);
 
         // The name of the directory in the repository
         //
@@ -5251,7 +5229,41 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
     }    
     
-	public void copyVariablesFrom(VariableSpace space) {
+  private void setInternalNameKettleVariable(VariableSpace var) {
+    // The name of the transformation
+    //
+    var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL(name, ""));
+  }
+
+  private void setInternalFilenameKettleVariables(VariableSpace var) {
+    // If we have a filename that's defined, set variables.  If not, clear them.
+    //
+    if (!Const.isEmpty(filename)) 
+    {
+      try {
+        FileObject fileObject = KettleVFS.getFileObject(filename, var);
+        FileName fileName = fileObject.getName();
+
+        // The filename of the transformation
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, fileName.getBaseName());
+
+        // The directory of the transformation
+        FileName fileDir = fileName.getParent();
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI());
+      } catch (KettleFileException e) {
+        log.logError("Unexpected error setting internal filename variables!", e);
+        
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
+      }
+    } else {
+      var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
+      var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
+    }
+
+  }
+
+  public void copyVariablesFrom(VariableSpace space) {
 		variables.copyVariablesFrom(space);		
 	}
 
@@ -5546,6 +5558,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	}
 
 	/**
+   * @return the stepPerformanceCapturingSizeLimit
+   */
+  public String getStepPerformanceCapturingSizeLimit() {
+    return stepPerformanceCapturingSizeLimit;
+  }
+
+  /**
+   * @param stepPerformanceCapturingSizeLimit the stepPerformanceCapturingSizeLimit to set
+   */
+  public void setStepPerformanceCapturingSizeLimit(String stepPerformanceCapturingSizeLimit) {
+    this.stepPerformanceCapturingSizeLimit = stepPerformanceCapturingSizeLimit;
+  }
+
+  /**
 	 * @return the sharedObjects
 	 */
 	public SharedObjects getSharedObjects() {

@@ -66,6 +66,7 @@ import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -240,6 +241,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	private int	lastStepPerformanceSnapshotSeqNrAdded;
 
 	private Map<String, Trans> activeSubtransformations;
+
+  private int stepPerformanceSnapshotSizeLimit;
 	
 	public Trans() {
 		finished = new AtomicBoolean(false);
@@ -806,6 +809,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     		stepPerformanceSnapshotSeqNr = new AtomicInteger(0);
     		stepPerformanceSnapShots = new ConcurrentHashMap<String, List<StepPerformanceSnapShot>>();
     		
+    		// Calculate the maximum number of snapshots to be kept in memory
+    		//
+    		String limitString = environmentSubstitute(transMeta.getStepPerformanceCapturingSizeLimit());
+        if (Const.isEmpty(limitString)) {
+          limitString = EnvUtil.getSystemProperty(Const.KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT);
+        }
+        stepPerformanceSnapshotSizeLimit = Const.toInt(limitString, 0);
+        
     		// Set a timer to collect the performance data from the running threads...
     		//
     		stepPerformanceSnapShotTimer = new Timer();
@@ -978,6 +989,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            //
 	            snapShot.diff(previous, step.rowsetInputSize(), step.rowsetOutputSize());
 	            snapShotList.add(snapShot);
+	            
+	            if (stepPerformanceSnapshotSizeLimit>0 && snapShotList.size()>stepPerformanceSnapshotSizeLimit) {
+	              snapShotList.remove(0);
+	            }
 	        }
 	        
 	        lastStepPerformanceSnapshotSeqNrAdded = stepPerformanceSnapshotSeqNr.get();

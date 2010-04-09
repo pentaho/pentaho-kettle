@@ -193,7 +193,7 @@ public class TransDialog extends Dialog
 
 	private Button wEnableStepPerfMonitor;
 
-	private Text wEnableStepPerfInterval;
+	private Text wStepPerfInterval;
 
 	private Button	wSerialSingleThreaded;
 	
@@ -209,6 +209,7 @@ public class TransDialog extends Dialog
 	private StepLogTable stepLogTable;
 	private DatabaseDialog databaseDialog;
 	private SelectionAdapter	lsModSel;
+  private TextVar wStepPerfMaxSize;
 	
   public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep, Tabs currentTab)
   {
@@ -313,7 +314,7 @@ public class TransDialog extends Dialog
 		wSizeRowset.addSelectionListener( lsDef );
         wUniqueConnections.addSelectionListener( lsDef );
         wFeedbackSize.addSelectionListener( lsDef );
-        wEnableStepPerfInterval.addSelectionListener( lsDef );
+        wStepPerfInterval.addSelectionListener( lsDef );
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -1800,84 +1801,103 @@ public class TransDialog extends Dialog
     }
 
 
-    private void addMonitoringTab()
-    {
-        //////////////////////////
-        // START OF MONITORING TAB///
-        ///
-        wMonitorTab=new CTabItem(wTabFolder, SWT.NONE);
-        wMonitorTab.setText(BaseMessages.getString(PKG, "TransDialog.MonitorTab.Label")); //$NON-NLS-1$
-        
-        Composite wMonitorComp = new Composite(wTabFolder, SWT.NONE);
-        props.setLook(wMonitorComp);
+  private void addMonitoringTab() {
+    // ////////////////////////
+    // START OF MONITORING TAB///
+    // /
+    wMonitorTab = new CTabItem(wTabFolder, SWT.NONE);
+    wMonitorTab.setText(BaseMessages.getString(PKG, "TransDialog.MonitorTab.Label")); //$NON-NLS-1$
 
-        FormLayout monitorLayout = new FormLayout();
-        monitorLayout.marginWidth  = Const.FORM_MARGIN;
-        monitorLayout.marginHeight = Const.FORM_MARGIN;
-        wMonitorComp.setLayout(monitorLayout);
+    Composite wMonitorComp = new Composite(wTabFolder, SWT.NONE);
+    props.setLook(wMonitorComp);
 
-        // 
-        // Enable step performance monitoring?
-        //
-        Label wlEnableStepPerfMonitor = new Label(wMonitorComp, SWT.LEFT);
-        wlEnableStepPerfMonitor.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceMonitoring.Label")); //$NON-NLS-1$
-        props.setLook(wlEnableStepPerfMonitor);
-        FormData fdlSchemaName=new FormData();
-        fdlSchemaName.left = new FormAttachment(0, 0);
-        fdlSchemaName.right = new FormAttachment(middle, -margin);
-        fdlSchemaName.top  = new FormAttachment(0, 0);
-        wlEnableStepPerfMonitor.setLayoutData(fdlSchemaName);
-        wEnableStepPerfMonitor=new Button(wMonitorComp, SWT.CHECK);
-        props.setLook(wEnableStepPerfMonitor);
-        FormData fdEnableStepPerfMonitor=new FormData();
-        fdEnableStepPerfMonitor.left   = new FormAttachment(middle, 0);
-        fdEnableStepPerfMonitor.right  = new FormAttachment(100, 0);
-        fdEnableStepPerfMonitor.top    = new FormAttachment(0, 0);
-        wEnableStepPerfMonitor.setLayoutData(fdEnableStepPerfMonitor);
-        wEnableStepPerfMonitor.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent selectionEvent) {
-				setFlags();
-			}
-		});
+    FormLayout monitorLayout = new FormLayout();
+    monitorLayout.marginWidth = Const.FORM_MARGIN;
+    monitorLayout.marginHeight = Const.FORM_MARGIN;
+    wMonitorComp.setLayout(monitorLayout);
 
-        // 
-        // Step performance interval
-        //
-        Label wlEnableStepPerfInterval = new Label(wMonitorComp, SWT.LEFT);
-        wlEnableStepPerfInterval.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceInterval.Label")); //$NON-NLS-1$
-        props.setLook(wlEnableStepPerfInterval);
-        FormData fdlEnableStepPerfInterval=new FormData();
-        fdlEnableStepPerfInterval.left  = new FormAttachment(0, 0);
-        fdlEnableStepPerfInterval.right = new FormAttachment(middle, -margin);
-        fdlEnableStepPerfInterval.top = new FormAttachment(wEnableStepPerfMonitor, margin);
-        wlEnableStepPerfInterval.setLayoutData(fdlEnableStepPerfInterval);
-        wEnableStepPerfInterval=new Text(wMonitorComp, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
-        props.setLook(wEnableStepPerfInterval);
-        FormData fdEnableStepPerfInterval=new FormData();
-        fdEnableStepPerfInterval.left   = new FormAttachment(middle, 0);
-        fdEnableStepPerfInterval.right  = new FormAttachment(100, 0);
-        fdEnableStepPerfInterval.top    = new FormAttachment(wEnableStepPerfMonitor, margin);
-        wEnableStepPerfInterval.setLayoutData(fdEnableStepPerfInterval);
+    // 
+    // Enable step performance monitoring?
+    //
+    Label wlEnableStepPerfMonitor = new Label(wMonitorComp, SWT.LEFT);
+    wlEnableStepPerfMonitor.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceMonitoring.Label")); //$NON-NLS-1$
+    props.setLook(wlEnableStepPerfMonitor);
+    FormData fdlSchemaName = new FormData();
+    fdlSchemaName.left = new FormAttachment(0, 0);
+    fdlSchemaName.right = new FormAttachment(middle, -margin);
+    fdlSchemaName.top = new FormAttachment(0, 0);
+    wlEnableStepPerfMonitor.setLayoutData(fdlSchemaName);
+    wEnableStepPerfMonitor = new Button(wMonitorComp, SWT.CHECK);
+    props.setLook(wEnableStepPerfMonitor);
+    FormData fdEnableStepPerfMonitor = new FormData();
+    fdEnableStepPerfMonitor.left = new FormAttachment(middle, 0);
+    fdEnableStepPerfMonitor.right = new FormAttachment(100, 0);
+    fdEnableStepPerfMonitor.top = new FormAttachment(0, 0);
+    wEnableStepPerfMonitor.setLayoutData(fdEnableStepPerfMonitor);
+    wEnableStepPerfMonitor.addSelectionListener(lsModSel);
+    wEnableStepPerfMonitor.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent selectionEvent) {
+        setFlags();
+      }
+    });
 
+    // 
+    // Step performance interval
+    //
+    Label wlStepPerfInterval = new Label(wMonitorComp, SWT.LEFT);
+    wlStepPerfInterval.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceInterval.Label")); //$NON-NLS-1$
+    props.setLook(wlStepPerfInterval);
+    FormData fdlStepPerfInterval = new FormData();
+    fdlStepPerfInterval.left = new FormAttachment(0, 0);
+    fdlStepPerfInterval.right = new FormAttachment(middle, -margin);
+    fdlStepPerfInterval.top = new FormAttachment(wEnableStepPerfMonitor, margin);
+    wlStepPerfInterval.setLayoutData(fdlStepPerfInterval);
+    wStepPerfInterval = new Text(wMonitorComp, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
+    props.setLook(wStepPerfInterval);
+    FormData fdStepPerfInterval = new FormData();
+    fdStepPerfInterval.left = new FormAttachment(middle, 0);
+    fdStepPerfInterval.right = new FormAttachment(100, 0);
+    fdStepPerfInterval.top = new FormAttachment(wEnableStepPerfMonitor, margin);
+    wStepPerfInterval.setLayoutData(fdStepPerfInterval);
+    wStepPerfInterval.addModifyListener(lsMod);
 
-        // TransDialog.SchemaMonitoritions.Label
+    // 
+    // Step performance interval
+    //
+    Label wlStepPerfMaxSize = new Label(wMonitorComp, SWT.LEFT);
+    wlStepPerfMaxSize.setText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceMaxSize.Label")); //$NON-NLS-1$
+    wlStepPerfMaxSize.setToolTipText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceMaxSize.Tooltip"));
+    props.setLook(wlStepPerfMaxSize);
+    FormData fdlStepPerfMaxSize = new FormData();
+    fdlStepPerfMaxSize.left = new FormAttachment(0, 0);
+    fdlStepPerfMaxSize.right = new FormAttachment(middle, -margin);
+    fdlStepPerfMaxSize.top = new FormAttachment(wStepPerfInterval, margin);
+    wlStepPerfMaxSize.setLayoutData(fdlStepPerfMaxSize);
+    wStepPerfMaxSize = new TextVar(transMeta, wMonitorComp, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
+    wStepPerfMaxSize.setToolTipText(BaseMessages.getString(PKG, "TransDialog.StepPerformanceMaxSize.Tooltip"));
+    props.setLook(wStepPerfMaxSize);
+    FormData fdStepPerfMaxSize = new FormData();
+    fdStepPerfMaxSize.left = new FormAttachment(middle, 0);
+    fdStepPerfMaxSize.right = new FormAttachment(100, 0);
+    fdStepPerfMaxSize.top = new FormAttachment(wStepPerfInterval, margin);
+    wStepPerfMaxSize.setLayoutData(fdStepPerfMaxSize);
+    wStepPerfMaxSize.addModifyListener(lsMod);
 
-        FormData fdMonitorComp = new FormData();
-        fdMonitorComp.left  = new FormAttachment(0, 0);
-        fdMonitorComp.top   = new FormAttachment(0, 0);
-        fdMonitorComp.right = new FormAttachment(100, 0);
-        fdMonitorComp.bottom= new FormAttachment(100, 0);
-        wMonitorComp.setLayoutData(fdMonitorComp);
-    
-        wMonitorComp.layout();
-        wMonitorTab.setControl(wMonitorComp);
-        
-        /////////////////////////////////////////////////////////////
-        /// END OF MONITORING TAB
-        /////////////////////////////////////////////////////////////
+    FormData fdMonitorComp = new FormData();
+    fdMonitorComp.left = new FormAttachment(0, 0);
+    fdMonitorComp.top = new FormAttachment(0, 0);
+    fdMonitorComp.right = new FormAttachment(100, 0);
+    fdMonitorComp.bottom = new FormAttachment(100, 0);
+    wMonitorComp.setLayoutData(fdMonitorComp);
 
-    }
+    wMonitorComp.layout();
+    wMonitorTab.setControl(wMonitorComp);
 
+    // ///////////////////////////////////////////////////////////
+    // / END OF MONITORING TAB
+    // ///////////////////////////////////////////////////////////
+
+  }
 
     public void dispose()
 	{
@@ -1968,7 +1988,8 @@ public class TransDialog extends Dialog
 		// Performance monitoring tab:
 		//
 		wEnableStepPerfMonitor.setSelection(transMeta.isCapturingStepPerformanceSnapShots());
-		wEnableStepPerfInterval.setText(Long.toString(transMeta.getStepPerformanceCapturingDelay()));
+		wStepPerfInterval.setText(Long.toString(transMeta.getStepPerformanceCapturingDelay()));
+    wStepPerfMaxSize.setText(Const.NVL(transMeta.getStepPerformanceCapturingSizeLimit(), ""));
 		
 		wTransname.selectAll();
 		wTransname.setFocus();
@@ -2105,16 +2126,17 @@ public class TransDialog extends Dialog
 		// Performance monitoring tab:
 		//
 		transMeta.setCapturingStepPerformanceSnapShots(wEnableStepPerfMonitor.getSelection());
+		transMeta.setStepPerformanceCapturingSizeLimit(wStepPerfMaxSize.getText());
 
 		try {
-			transMeta.setStepPerformanceCapturingDelay(Long.parseLong(wEnableStepPerfInterval.getText()));
+			transMeta.setStepPerformanceCapturingDelay(Long.parseLong(wStepPerfInterval.getText()));
 		} catch (Exception e) {
 			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 			mb.setText(BaseMessages.getString(PKG, "TransDialog.InvalidStepPerfIntervalNumber.DialogTitle")); //$NON-NLS-1$
 			mb.setMessage(BaseMessages.getString(PKG, "TransDialog.InvalidStepPerfIntervalNumber.DialogMessage")); //$NON-NLS-1$
 			mb.open();
-			wEnableStepPerfInterval.setFocus();
-			wEnableStepPerfInterval.selectAll();
+			wStepPerfInterval.setFocus();
+			wStepPerfInterval.selectAll();
 			OK = false;
 		}
 
