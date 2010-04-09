@@ -463,7 +463,10 @@ public class Condition implements Cloneable, XMLInterface
 								Arrays.sort(inList);
 							}
 							String searchString = fieldMeta.getCompatibleString(field);
-							int inIndex = Arrays.binarySearch(inList, searchString);
+							int inIndex = -1;
+							if (searchString != null ) {
+								inIndex = Arrays.binarySearch(inList, searchString);
+							}
 							retval = Boolean.valueOf(inIndex>=0); 
 							break;
 					case FUNC_CONTAINS      : 
