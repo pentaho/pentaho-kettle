@@ -96,7 +96,7 @@ public class XulDatabaseExplorerDialog {
 	}
 
 	public String getSchemaName() {
-	  return schemaName;
+	  return (this.controller != null) ? this.controller.getSelectedSchema() : schemaName;
 	}
 
 	public void setSelectedTable(String aTable) {

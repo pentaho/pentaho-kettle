@@ -26,6 +26,7 @@ import org.pentaho.ui.xul.XulEventSourceAdapter;
 public class DatabaseExplorerNode extends XulEventSourceAdapter {
 
 	private String name;
+	private String schema;
 	private String image;
 	private List<DatabaseExplorerNode> children;
 	private boolean isTable;
@@ -74,4 +75,12 @@ public class DatabaseExplorerNode extends XulEventSourceAdapter {
 	public void setIsTable(boolean aIsTable) {
 		this.isTable = aIsTable;
 	}
+
+  public void setSchema(String schema) {
+    this.schema = schema;
+  }
+
+  public String getSchema() {
+    return schema;
+  }
 }

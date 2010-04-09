@@ -79,6 +79,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private static final String EXPAND_ALL_IMAGE = "ui/images/ExpandAll.png";
 	private static final String COLLAPSE_ALL_IMAGE = "ui/images/CollapseAll.png";
 
+	private static final String STRING_SCHEMAS = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Schemas.Label");
 	private static final String STRING_TABLES = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Tables.Label");
 	private static final String STRING_VIEWS = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Views.Label");
 
@@ -124,7 +125,24 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				return null;
 			}
 		};
+		
+		BindingConvertor<DatabaseExplorerNode, String> theTableSchemaConvertor = new BindingConvertor<DatabaseExplorerNode, String>() {
+
+      public String sourceToTarget(DatabaseExplorerNode aValue) {
+        String theSchema = null;
+        if (aValue != null && aValue.isTable()) {
+          theSchema = aValue.getSchema();
+        }
+        return theSchema;
+      }
+
+      public DatabaseExplorerNode targetToSource(String aValue) {
+        return null;
+      }
+    };
+		
 		this.bf.createBinding(this.databaseTree, "selectedItem", this.model, "table", theTableNameConvertor);
+		this.bf.createBinding(this.databaseTree, "selectedItem", this.model, "schema", theTableSchemaConvertor);
 
 		BindingConvertor<String, List<DatabaseExplorerNode>> theSelectedItemsConvertor = new BindingConvertor<String, List<DatabaseExplorerNode>>() {
 
@@ -264,7 +282,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 //				thePreviewRowsDialog.open();
 //			}
 			
-			GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(shell, this.model.getDatabaseMeta(), this.model.getTable(), theCallback.getLimit());
+			GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(shell, this.model.getDatabaseMeta(), this.model.getSchema(), this.model.getTable(), theCallback.getLimit());
       List<Object[]> rows = pd.open();
       if (rows!=null) // otherwise an already shown error...
       {
@@ -304,6 +322,12 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			theDatabaseNode.setName(this.model.getDatabaseMeta().getName());
 			theDatabaseNode.setImage(DATABASE_IMAGE);
 			this.model.getDatabase().add(theDatabaseNode);
+			
+			// Adds the Schema database node.
+			DatabaseExplorerNode theSchemasNode = new DatabaseExplorerNode();
+			theSchemasNode.setName(STRING_SCHEMAS);
+			theSchemasNode.setImage(FOLDER_IMAGE);
+			theDatabaseNode.addChild(theSchemasNode);
 
 			// Adds the Tables database node.
 			DatabaseExplorerNode theTablesNode = new DatabaseExplorerNode();
@@ -316,9 +340,32 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			theViewsNode.setName(STRING_VIEWS);
 			theViewsNode.setImage(FOLDER_IMAGE);
 			theDatabaseNode.addChild(theViewsNode);
-
+			
+			// Adds the database schemas.
+			String[] theSchemaNames = theDatabase.getSchemas();
+      DatabaseExplorerNode theSchemaNode = null;
+      for (int i = 0; i < theSchemaNames.length; i++) {
+        theSchemaNode = new DatabaseExplorerNode();
+        theSchemaNode.setName(theSchemaNames[i]);
+        theSchemaNode.setImage(FOLDER_IMAGE);
+        theSchemasNode.addChild(theSchemaNode);
+        
+        // Adds the database tables for the given schema.
+        String[] theTableNames = theDatabase.getTablenames(theSchemaNames[i], false);
+        DatabaseExplorerNode theTableNode = null;
+        for (int i2 = 0; i2 < theTableNames.length; i2++) {
+          theTableNode = new DatabaseExplorerNode();
+          theTableNode.setIsTable(true);
+          theTableNode.setSchema(theSchemaNames[i]);
+          theTableNode.setName(theTableNames[i2]);
+          theTableNode.setImage(TABLE_IMAGE);
+          theSchemaNode.addChild(theTableNode);
+        }
+        
+      }			
+			
 			// Adds the database tables.
-			String[] theTableNames = theDatabase.getTablenames();
+			String[] theTableNames = theDatabase.getTablenames("", false); //$NON-NLS-1$
 			DatabaseExplorerNode theTableNode = null;
 			for (int i = 0; i < theTableNames.length; i++) {
 				theTableNode = new DatabaseExplorerNode();

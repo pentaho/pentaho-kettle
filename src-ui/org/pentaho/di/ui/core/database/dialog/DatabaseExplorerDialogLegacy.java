@@ -692,7 +692,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog
 			if (samples>=0) limit=samples;
 		}
 
-	    GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(shell, dbMeta, tableName, limit);
+	    GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(shell, dbMeta, null, tableName, limit);
 	    List<Object[]> rows = pd.open();
 	    if (rows!=null) // otherwise an already shown error...
 	    {

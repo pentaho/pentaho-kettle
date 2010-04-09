@@ -53,11 +53,15 @@ public class GetPreviewTableProgressDialog
 	/**
 	 * Creates a new dialog that will handle the wait while we're doing the hard work.
 	 */
-	public GetPreviewTableProgressDialog(Shell shell, DatabaseMeta dbInfo, String tableName, int limit)
+	public GetPreviewTableProgressDialog(Shell shell, DatabaseMeta dbInfo, String schemaName, String tableName, int limit)
 	{
 		this.shell = shell;
 		this.dbMeta = dbInfo;
-		this.tableName = tableName;
+		if(schemaName != null) {
+		  this.tableName = dbInfo.getSchemaTableCombination(schemaName, tableName);
+		} else {
+		  this.tableName = tableName;
+		}
 		this.limit = limit;
     }
 	

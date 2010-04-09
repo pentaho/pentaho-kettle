@@ -41,6 +41,7 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 
 	private Shell shell;
 	private DatabaseMeta databaseMeta;
+	private String schema;
 	private String table;
 	private int limit;
 	private BindingFactory bf;
@@ -49,9 +50,10 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 
 	private static Log logger = LogFactory.getLog(XulStepFieldsController.class);
 
-	public XulPreviewRowsController(Shell aShell, DatabaseMeta aDatabaseMeta, String aTable, int aLimit) {
+	public XulPreviewRowsController(Shell aShell, DatabaseMeta aDatabaseMeta, String aSchema, String aTable, int aLimit) {
 		this.shell = aShell;
 		this.databaseMeta = aDatabaseMeta;
+		this.schema = aSchema;
 		this.table = aTable;
 		this.limit = aLimit;
 		this.bf = new DefaultBindingFactory();
@@ -75,7 +77,7 @@ public class XulPreviewRowsController extends AbstractXulEventHandler {
 	}
 
 	private void createPreviewRows() {
-		GetPreviewTableProgressDialog theProgressDialog = new GetPreviewTableProgressDialog(this.shell, this.databaseMeta, this.table, this.limit);
+		GetPreviewTableProgressDialog theProgressDialog = new GetPreviewTableProgressDialog(this.shell, this.databaseMeta, this.schema, this.table, this.limit);
 		List<Object[]> thePreviewData = theProgressDialog.open();
 
 		// Adds table rows.
