@@ -26,7 +26,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPException;
 
-public class SAPConnectionFactory implements DatabaseFactoryInterface {
+public class SAPConnectionFactoryMock implements DatabaseFactoryInterface {
 
 	public static SAPConnection create() {
 		return new SAPConnectionMock();

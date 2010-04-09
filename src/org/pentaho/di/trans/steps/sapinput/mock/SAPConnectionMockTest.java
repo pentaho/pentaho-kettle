@@ -42,7 +42,7 @@ public class SAPConnectionMockTest {
 	public static void main(String[] args) throws SAPException {
 
 		// how to obtain a connection
-		SAPConnection sc = SAPConnectionFactory.create();
+		SAPConnection sc = SAPConnectionFactoryMock.create();
 
 		// how to open a connection
 		// @Matt:
