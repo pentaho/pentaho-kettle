@@ -421,7 +421,9 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                for (int i = 0; i < hopids.length; i++)
 	                {
 	                    TransHopMeta hi = loadTransHopMeta(hopids[i], transMeta.getSteps());
-	                    transMeta.addTransHop(hi);
+	                    if (hi!=null) {
+  	                    transMeta.addTransHop(hi);
+	                    }
 	                    if (monitor != null) monitor.worked(1);
 	                }
 	                
@@ -898,56 +900,55 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 		}
 	}
 
-	public TransHopMeta loadTransHopMeta(ObjectId id_trans_hop, List<StepMeta> steps) throws KettleException
-	{
-		TransHopMeta hopTransMeta = new TransHopMeta();
-		try
-		{
-			hopTransMeta.setObjectId(id_trans_hop);
+  public TransHopMeta loadTransHopMeta(ObjectId id_trans_hop, List<StepMeta> steps) throws KettleException {
+    TransHopMeta hopTransMeta = new TransHopMeta();
+    try {
+      hopTransMeta.setObjectId(id_trans_hop);
 
-			RowMetaAndData r = getTransHop(id_trans_hop);
+      RowMetaAndData r = getTransHop(id_trans_hop);
 
-			hopTransMeta.setEnabled( r.getBoolean("ENABLED", false) ); //$NON-NLS-1$
+      hopTransMeta.setEnabled(r.getBoolean("ENABLED", false)); //$NON-NLS-1$
 
-			long id_step_from = r.getInteger("ID_STEP_FROM", 0); //$NON-NLS-1$
-			long id_step_to = r.getInteger("ID_STEP_TO", 0); //$NON-NLS-1$
+      long id_step_from = r.getInteger("ID_STEP_FROM", 0); //$NON-NLS-1$
+      long id_step_to = r.getInteger("ID_STEP_TO", 0); //$NON-NLS-1$
 
-			hopTransMeta.setFromStep( StepMeta.findStep(steps, new LongObjectId(id_step_from)) );
-			
-			// Links to a shared objects, try again by looking up the name...
-			//
-			if (hopTransMeta.getFromStep() == null && id_step_from > 0) 
-			{
-				// Simply load this, we only want the name, we don't care about the rest...
-				//
-				StepMeta stepMeta = repository.stepDelegate.loadStepMeta( new LongObjectId(id_step_from), new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(), new ArrayList<PartitionSchema>());
-				hopTransMeta.setFromStep( StepMeta.findStep(steps, stepMeta.getName()) );
-			}
-			hopTransMeta.getFromStep().setDraw(true);
+      StepMeta fromStep = StepMeta.findStep(steps, new LongObjectId(id_step_from));
 
-			hopTransMeta.setToStep( StepMeta.findStep(steps, new LongObjectId(id_step_to)) );
-			
-			// Links to a shared objects, try again by looking up the name...
-			//
-			if (hopTransMeta.getToStep() == null && id_step_to > 0) 
-			{
-				// Simply load this, we only want the name, we don't care about
-				// the rest...
-				StepMeta stepMeta = repository.stepDelegate.loadStepMeta( 
-						new LongObjectId(id_step_to), new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(),
-						new ArrayList<PartitionSchema>());
-				hopTransMeta.setToStep( StepMeta.findStep(steps, stepMeta.getName()) );
-			}
-			hopTransMeta.getToStep().setDraw(true);
-			
-			return hopTransMeta;
-		} catch (KettleDatabaseException dbe)
-		{
-			throw new KettleException(
-					BaseMessages.getString(PKG, "TransHopMeta.Exception.LoadTransformationHopInfo") + id_trans_hop, dbe); //$NON-NLS-1$
-		}
-	}
+      // Links to a shared objects, try again by looking up the name...
+      //
+      if (fromStep == null && id_step_from > 0) {
+        // Simply load this, we only want the name, we don't care about the
+        // rest...
+        //
+        StepMeta stepMeta = repository.stepDelegate.loadStepMeta(new LongObjectId(id_step_from), new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(), new ArrayList<PartitionSchema>());
+        fromStep = StepMeta.findStep(steps, stepMeta.getName());
+      }
 
+      if (fromStep == null) {
+        log.logError("Unable to determine source step of transformation hop with ID: "+id_trans_hop);
+        return null; // Invalid hop, simply ignore. See: PDI-2446
+      }
+      hopTransMeta.setFromStep(fromStep);
+
+      hopTransMeta.getFromStep().setDraw(true);
+
+      hopTransMeta.setToStep(StepMeta.findStep(steps, new LongObjectId(id_step_to)));
+
+      // Links to a shared objects, try again by looking up the name...
+      //
+      if (hopTransMeta.getToStep() == null && id_step_to > 0) {
+        // Simply load this, we only want the name, we don't care about
+        // the rest...
+        StepMeta stepMeta = repository.stepDelegate.loadStepMeta(new LongObjectId(id_step_to), new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(), new ArrayList<PartitionSchema>());
+        hopTransMeta.setToStep(StepMeta.findStep(steps, stepMeta.getName()));
+      }
+      hopTransMeta.getToStep().setDraw(true);
+
+      return hopTransMeta;
+    } catch (KettleDatabaseException dbe) {
+      throw new KettleException(BaseMessages.getString(PKG, "TransHopMeta.Exception.LoadTransformationHopInfo") + id_trans_hop, dbe); //$NON-NLS-1$
+    }
+  }
 
 
 	public synchronized int getNrTransformations(ObjectId id_directory) throws KettleException
