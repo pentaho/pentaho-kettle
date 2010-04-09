@@ -405,6 +405,35 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
     @Override
     public void resetStepIoMeta() {
     }
+    
+    /**
+     * When an optional stream is selected, this method is called to handled the ETL metadata implications of that.
+     * @param stream The optional stream to handle.
+     */
+    public void handleStreamSelection(StreamInterface stream) {
+      // This step targets another step.
+      // Make sure that we don't specify the same step for true and false...
+      // If the user requests false, we blank out true and vice versa
+      //
+      List<StreamInterface> targets = getStepIOMeta().getTargetStreams();
+      int index = targets.indexOf(stream);
+      if (index==0) {
+        // True
+        //
+        StepMeta falseStep = targets.get(1).getStepMeta();
+        if (falseStep!=null && falseStep.equals(stream.getStepMeta())) {
+          targets.get(1).setStepMeta(null);
+        }
+      }
+      if (index==1) {
+        // False
+        //
+        StepMeta trueStep = targets.get(0).getStepMeta();
+        if (trueStep!=null && trueStep.equals(stream.getStepMeta())) {
+          targets.get(0).setStepMeta(null);
+        }
+      }
+    }
 
     @Override
     public boolean excludeFromCopyDistributeVerification() {
