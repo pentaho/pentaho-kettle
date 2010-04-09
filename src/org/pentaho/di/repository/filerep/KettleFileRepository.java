@@ -883,8 +883,12 @@ public class KettleFileRepository implements Repository {
 	}
 
 	public List<DatabaseMeta> readDatabases() throws KettleException {
+	  List<DatabaseMeta> list = new ArrayList<DatabaseMeta>();
+		for (ObjectId id : getDatabaseIDs(false)) {
+      list.add(loadDatabaseMeta(id, null));
+		}
 		
-		return null;
+		return list;
 	}
 
 	public SharedObjects readJobMetaSharedObjects(JobMeta jobMeta) throws KettleException {
