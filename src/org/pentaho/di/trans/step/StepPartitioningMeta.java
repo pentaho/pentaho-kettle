@@ -279,7 +279,8 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
                 partitionSchema = schema; // found!
             }
         }
-        
+
+        /*
         if (methodType!=PARTITIONING_METHOD_NONE && partitionSchema==null) {
         	String message = "Unable to set partition schema for name ["+partitionSchemaName+"], method: "+getMethodDescription()+Const.CR;
         	message += "This is the list of available partition schema:"+Const.CR;
@@ -290,6 +291,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
             }
         	throw new KettleException(message);
         }
+        */
     }
 
     public void createPartitioner( String method ) throws KettlePluginException {
