@@ -26,7 +26,7 @@ set CLASSPATH=%CLASSPATH%;libswt\commands.jar
 
 set CLASSPATH=%CLASSPATH%;libext/pentaho/kettle-vfs-20091118.jar
 set CLASSPATH=%CLASSPATH%;libext/commons/commons-logging-1.1.jar
-set CLASSPATH=%CLASSPATH%;libext/log4j-1.2.8.jar
+set CLASSPATH=%CLASSPATH%;libext/log4j-1.2.14.jar
 set CLASSPATH=%CLASSPATH%;libext/spring/spring-core-2.5.6.jar
 
 REM ******************************************************************
