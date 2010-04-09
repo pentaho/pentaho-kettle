@@ -11,6 +11,7 @@
 
 package org.pentaho.di.job;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -383,17 +384,17 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return name;
 	}
 
-    /**
-     * Set the name of the job.
-     *
-     * @param newName The new name of the job
-     */
-    public void setName(String newName)
-    {
-    	fireNameChangedListeners(this.name, newName);
-        this.name = newName;
-        setInternalKettleVariables();
-    }
+  /**
+   * Set the name of the job.
+   * 
+   * @param newName
+   *          The new name of the job
+   */
+  public void setName(String newName) {
+    fireNameChangedListeners(this.name, newName);
+    this.name = newName;
+    setInternalNameKettleVariable(variables);
+  }
     
 	/**
 	 * Builds a name - if no name is set, yet - from the filename
@@ -424,21 +425,21 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return filename;
 	}
 
-    /**
-     * Set the filename of the job
-     *
-     * @param newFilename The new filename of the job
-     */
-    public void setFilename(String newFilename)
-    {
-    	fireFilenameChangedListeners(this.filename, newFilename); 
-        this.filename = newFilename;
-        setInternalKettleVariables();
-    }
+  /**
+   * Set the filename of the job
+   * 
+   * @param newFilename
+   *          The new filename of the job
+   */
+  public void setFilename(String newFilename) {
+    fireFilenameChangedListeners(this.filename, newFilename);
+    this.filename = newFilename;
+    setInternalFilenameKettleVariables(variables);
+  }
 
-    public JobLogTable getJobLogTable() {
-		return jobLogTable;
-	}
+  public JobLogTable getJobLogTable() {
+    return jobLogTable;
+  }
     
     public void setJobLogTable(JobLogTable jobLogTable) {
 		this.jobLogTable = jobLogTable;
@@ -697,6 +698,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		} catch (Exception e) {
 			throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToLoadJobFromXMLFile") + fname + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
+	}
+	
+	public JobMeta(InputStream inputStream, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
+	  loadXML(XMLHandler.loadXMLFile(inputStream, null, false, false), rep, prompter);
 	}
 
 	public JobMeta(Node jobnode, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
@@ -2161,30 +2166,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * the transformation.
 	 */
 	public void setInternalKettleVariables(VariableSpace var) {
-		if (filename != null) // we have a filename that's defined.
-		{
-			try {
-				FileObject fileObject = KettleVFS.getFileObject(filename, var);
-				FileName fileName = fileObject.getName();
-
-				// The filename of the transformation
-				var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, fileName.getBaseName());
-
-				// The directory of the transformation
-				FileName fileDir = fileName.getParent();
-				var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI());
-			} catch (Exception e) {
-				var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
-				var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
-			}
-		} else {
-			var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, ""); //$NON-NLS-1$
-			var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, ""); //$NON-NLS-1$
-		}
-
-		// The name of the job
-		var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(name, "")); //$NON-NLS-1$
-
+	  setInternalFilenameKettleVariables(var);
+	  setInternalNameKettleVariable(var);
+	  
 		// The name of the directory in the repository
 		var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null ? directory.getPath() : ""); //$NON-NLS-1$
 
@@ -2199,7 +2183,35 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, null);
 	}
 
-	public void copyVariablesFrom(VariableSpace space) {
+  private void setInternalNameKettleVariable(VariableSpace var) {
+    // The name of the job
+    var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(name, "")); //$NON-NLS-1$
+  }
+
+  private void setInternalFilenameKettleVariables(VariableSpace var) {
+    if (filename != null) // we have a filename that's defined.
+    {
+      try {
+        FileObject fileObject = KettleVFS.getFileObject(filename, var);
+        FileName fileName = fileObject.getName();
+
+        // The filename of the job
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, fileName.getBaseName());
+
+        // The directory of the job
+        FileName fileDir = fileName.getParent();
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI());
+      } catch (Exception e) {
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
+      }
+    } else {
+      var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, ""); //$NON-NLS-1$
+      var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, ""); //$NON-NLS-1$
+    }
+  }
+
+  public void copyVariablesFrom(VariableSpace space) {
 		variables.copyVariablesFrom(space);
 	}
 
