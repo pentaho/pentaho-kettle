@@ -5684,8 +5684,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       return null;
 
     TabMapEntry mapEntry = delegates.tabs.getTab(tabItem);
-
-    return mapEntry.getObject();
+    if (mapEntry!=null) {
+      return mapEntry.getObject();
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -6689,6 +6692,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void editPartitioning(TransMeta transMeta, StepMeta stepMeta) {
+    
+    // Before we start, check if there are any partition schemas defined...
+    //
+    String schemaNames[] = transMeta.getPartitionSchemasNames();
+    if (schemaNames.length == 0) {
+      MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+      box.setText("Create a partition schema");
+      box.setMessage("You first need to create one or more partition schemas in the transformation settings dialog before you can select one!");
+      box.open();
+      return;
+    }
+    
     StepPartitioningMeta stepPartitioningMeta = stepMeta.getStepPartitioningMeta();
     if (stepPartitioningMeta == null)
       stepPartitioningMeta = new StepPartitioningMeta();
@@ -6741,15 +6756,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
           case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
 
-            // Ask for a Partitioning Schema
-            String schemaNames[] = transMeta.getPartitionSchemasNames();
-            if (schemaNames.length == 0) {
-              MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-              box.setText("Create a partition schema");
-              box
-                  .setMessage("You first need to create one or more partition schemas in the transformation settings dialog before you can select one!");
-              box.open();
-            } else {
+
               // Set the partitioning schema too.
               PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
               idx = -1;
@@ -6763,7 +6770,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 idx = Const.indexOfString(schemaName, schemaNames);
                 stepPartitioningMeta.setPartitionSchema(transMeta.getPartitionSchemas().get(idx));
               }
-            }
+            
 
             if (methodType == StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL) {
               // ask for a fieldname
