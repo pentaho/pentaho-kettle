@@ -24,6 +24,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElement;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.ui.xul.util.AbstractModelNode;
 
 public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryObject> {
   

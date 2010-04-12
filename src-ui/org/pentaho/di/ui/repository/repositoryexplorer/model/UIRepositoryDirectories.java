@@ -16,6 +16,8 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
+import org.pentaho.ui.xul.util.AbstractModelNode;
+
 public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObject>{
 
   public UIRepositoryDirectories(){
@@ -23,6 +25,6 @@ public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObjec
   
   @Override
   protected void fireCollectionChanged() {
-    this.changeSupport.firePropertyChange("children", null, this.getChildren());
+    this.changeSupport.firePropertyChange("children", null, this);
   }
 }

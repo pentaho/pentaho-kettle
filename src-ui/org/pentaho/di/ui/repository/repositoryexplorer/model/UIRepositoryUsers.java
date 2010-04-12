@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.ui.xul.util.AbstractModelNode;
 
 
 public class UIRepositoryUsers extends AbstractModelNode<IUIUser>{
@@ -47,7 +48,7 @@ public class UIRepositoryUsers extends AbstractModelNode<IUIUser>{
   
   @Override
   protected void fireCollectionChanged() {
-    this.changeSupport.firePropertyChange("children", null, this.getChildren());
+    this.changeSupport.firePropertyChange("children", null, this);
   }
   
 }

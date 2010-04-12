@@ -41,6 +41,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer.TYPE;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectCreationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistry;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectories;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjects;
@@ -186,35 +187,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     bf.setBindingType(Binding.Type.ONE_WAY);
 
     bf.createBinding(folderTree, "selectedItems", this, "selectedFolderItems"); //$NON-NLS-1$  //$NON-NLS-2$
-    bf.createBinding(this, "repositoryDirectories", fileTable, "elements", //$NON-NLS-1$  //$NON-NLS-2$
-        new BindingConvertor<List<UIRepositoryDirectory>, UIRepositoryObjects>() {
-          @Override
-          public UIRepositoryObjects sourceToTarget(List<UIRepositoryDirectory> rd) {
-            UIRepositoryObjects listOfObjects = new UIRepositoryObjects();
 
-            if (rd == null) {
-              return null;
-            }
-            if (rd.size() <= 0) {
-              return null;
-            }
-            try {
-              listOfObjects = rd.get(0).getRepositoryObjects();
-            } catch (KettleException e) {
-              // convert to runtime exception so it bubbles up through the UI
-              throw new RuntimeException(e);
-            }
-            bf.setBindingType(Binding.Type.ONE_WAY);
-            bf.createBinding(listOfObjects, "children", fileTable, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
-            return listOfObjects;
-          }
-
-          @Override
-          public List<UIRepositoryDirectory> targetToSource(UIRepositoryObjects elements) {
-            return null;
-          }
-        });
-
+    bf.setBindingType(Binding.Type.ONE_WAY);
+    bf.createBinding(this, "selectedRepoDirChildren", fileTable, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
+    
     // bindings can be added here in subclasses
     doCreateBindings();
     
@@ -246,7 +222,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         
         // Traverse the tree until we find our destination
         for(; currentDir < homePath.length; currentDir++) {
-          for(UIRepositoryObject uiObj : tempRoot.getChildren()) {
+          for(UIRepositoryObject uiObj : tempRoot) {
             if(uiObj instanceof UIRepositoryDirectory) {
               if(uiObj.getName().equalsIgnoreCase(homePath[currentDir])) {
                 // We have a match. Let's move on to the next
@@ -284,7 +260,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   
   protected void populateDirMap(UIRepositoryDirectory repDir) {
     dirMap.put(repDir.getObjectId(), repDir);
-    for (UIRepositoryObject obj : repDir.getChildren()) {
+    for (UIRepositoryObject obj : repDir) {
       if (obj instanceof UIRepositoryDirectory) {
         populateDirMap((UIRepositoryDirectory) obj);
       }
@@ -535,12 +511,30 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public List<UIRepositoryDirectory> getRepositoryDirectories() {
+    if(repositoryDirectories != null && repositoryDirectories.size() == 0){
+      return null;
+    }
     return repositoryDirectories;
   }
 
   public void setRepositoryDirectories(List<UIRepositoryDirectory> selectedFolderItems) {
     this.repositoryDirectories = selectedFolderItems;
-    firePropertyChange("repositoryDirectories", null, selectedFolderItems); //$NON-NLS-1$
+    
+    firePropertyChange("repositoryDirectories", null, getRepositoryDirectories()); //$NON-NLS-1$
+    firePropertyChange("selectedRepoDirChildren", null, getSelectedRepoDirChildren()); //$NON-NLS-1$
+  }
+  
+  public UIRepositoryObjects getSelectedRepoDirChildren(){
+    UIRepositoryObjects repoObjects = null;
+    if(selectedFolderItems != null && selectedFolderItems.size() > 0){
+      try {
+        repoObjects = repositoryDirectories.get(0).getRepositoryObjects();
+      } catch (KettleException e) {
+        // convert to runtime exception so it bubbles up through the UI
+        throw new RuntimeException(e);
+      }
+    }
+    return repoObjects;
   }
 
   public void addContextChangeVetoer(ContextChangeVetoer listener) {
