@@ -130,7 +130,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             // If we find a transformation with the same name: ask!
             //
             if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.HandlingOldVersionTransformationTask.Title")); //$NON-NLS-1$
-            transMeta.setObjectId(getTransformationID(transMeta.getName(), transMeta.getRepositoryDirectory().getObjectId()));
+            //transMeta.setObjectId(getTransformationID(transMeta.getName(), transMeta.getRepositoryDirectory().getObjectId()));
 
             // If no valid id is available in the database, assign one...
             if (transMeta.getObjectId() == null)
