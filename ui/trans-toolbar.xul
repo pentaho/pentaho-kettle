@@ -114,7 +114,7 @@
 
   <menupopup id="trans-graph-note">
     <menuitem id="trans-graph-note-edit" label="${TransGraph.PopupMenu.EditNote}" command="transgraph.editNote()" />
-    <menuitem id="trans-graph-note-delete" label="${TransGraph.PopupMenu.DeleteNote}" command="transgraph.deleteNote" />
+    <menuitem id="trans-graph-note-delete" label="${TransGraph.PopupMenu.DeleteNote}" command="transgraph.deleteNote()" />
     <menuitem id="trans-graph-note-raise" label="${TransGraph.PopupMenu.RaiseNote}" command="transgraph.raiseNote()" />
     <menuitem id="trans-graph-note-lower" label="${TransGraph.PopupMenu.LowerNote}" command="transgraph.lowerNote()" />
   </menupopup>
