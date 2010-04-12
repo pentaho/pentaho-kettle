@@ -1179,4 +1179,37 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SyslogMessage</tooltip>
 		<iconfile>ui/images/SYL.png</iconfile>
 	</step>
+	
+	<step id="PaloCellInput">
+		<classname>org.pentaho.di.trans.steps.palo.cellinput.PaloCellInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.steps.palo.cellinput:PaloCellInput.ToolTip</tooltip>
+		<description>i18n:org.pentaho.di.trans.steps.palo.cellinput:PaloCellInput.Description</description>
+		<iconfile>ui/images/PaloCellInput.png</iconfile>
+	</step>
+	
+	<step id="PaloCellOutput">
+		<classname>org.pentaho.di.trans.steps.palo.celloutput.PaloCellOutputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.steps.palo.celloutput:PaloCellOutput.ToolTip</tooltip>
+		<description>i18n:org.pentaho.di.trans.steps.palo.celloutput:PaloCellOutput.Description</description>
+		<iconfile>ui/images/PaloCellOutput.png</iconfile>
+	</step>
+	
+	<step id="PaloDimInput">
+		<classname>org.pentaho.di.trans.steps.palo.diminput.PaloDimInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.steps.palo.diminput:PaloDimInput.ToolTip</tooltip>
+		<description>i18n:org.pentaho.di.trans.steps.palo.diminput:PaloDimInput.Description</description>
+		<iconfile>ui/images/PaloDimInput.png</iconfile>
+	</step>
+
+	<step id="PaloDimOutput">
+		<classname>org.pentaho.di.trans.steps.palo.dimoutput.PaloDimOutputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.steps.palo.dimoutput:PaloDimOutput.ToolTip</tooltip>
+		<description>i18n:org.pentaho.di.trans.steps.palo.dimoutput:PaloDimOutput.Description</description>
+		<iconfile>ui/images/PaloDimOutput.png</iconfile>
+	</step>
+		 
 </steps>
