@@ -19,8 +19,6 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -487,13 +485,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             try
             {
             	// OK, load the meta-data from file...
-                try {
-                  mappingTransMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class, 
-                      boolean.class}, new Object[]{ realFilename, false }); 
-                  } catch(DomainObjectCreationException doce) {
-                    mappingTransMeta = new TransMeta( realFilename, false ); // don't set internal variables: they belong to the parent thread!
-                  }
-                mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+realFilename+"]");
+              mappingTransMeta = new TransMeta( realFilename, false ); // don't set internal variables: they belong to the parent thread!
+              mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+realFilename+"]");
                 // mappingTransMeta.setFilename(fileName);
            }
             catch(Exception e)

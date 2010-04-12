@@ -26,8 +26,6 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
@@ -240,12 +238,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     
     public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String versionName) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.READ_TRANSFORMATION);
-    	TransMeta transMeta = null;
-      try {
-        transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
-      } catch(DomainObjectCreationException doce) {
-        transMeta = new TransMeta();
-      } 
+    	TransMeta transMeta = new TransMeta();
     	return transDelegate.loadTransformation(transMeta, transname, repdir, monitor, setInternalVariables);
 	}
         

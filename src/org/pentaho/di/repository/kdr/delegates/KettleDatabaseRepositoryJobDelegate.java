@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
@@ -242,12 +240,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	 */
 	public JobMeta loadJobMeta(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor) throws KettleException {
 		
-		JobMeta jobMeta = null;
-    try {
-      jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
-    } catch(DomainObjectCreationException doce) {
-      jobMeta = new JobMeta();
-    }
+		JobMeta jobMeta = new JobMeta();
 		synchronized(repository)
 		{
 			try {

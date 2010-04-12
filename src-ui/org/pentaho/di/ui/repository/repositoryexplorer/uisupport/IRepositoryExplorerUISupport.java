@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repository.capabilities;
+package org.pentaho.di.ui.repository.repositoryexplorer.uisupport;
 
 import java.util.List;
 

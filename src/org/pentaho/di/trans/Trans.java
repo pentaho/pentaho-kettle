@@ -33,8 +33,6 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
@@ -328,11 +326,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			}
 			else
 			{
-	      try {
-	        transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class, boolean.class}, new Object[]{filename, false}); 
-	      } catch(DomainObjectCreationException doce) {
-	        transMeta = new TransMeta(filename, false);
-	      } 
+			  transMeta = new TransMeta(filename, false);
 			}
 			
 			this.log = new LogChannel(this);

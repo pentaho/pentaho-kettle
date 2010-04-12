@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.pentaho.di.repository.IRepositoryService;
-import org.pentaho.di.ui.repository.capabilities.IRepositoryExplorerUISupport;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectCreationException;
+import org.pentaho.di.ui.repository.repositoryexplorer.uisupport.IRepositoryExplorerUISupport;
 
 public class UISupportRegistery {
 

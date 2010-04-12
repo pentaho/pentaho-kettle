@@ -16,15 +16,12 @@ import java.util.Locale;
 
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -41,13 +38,7 @@ public class TransFileListener implements FileListener {
     	final PropsUI props = PropsUI.getInstance();
         try
         {
-            TransMeta transMeta = null;
-            try {
-              transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
-            } catch(DomainObjectCreationException doce) {
-              transMeta = new TransMeta();
-            } 
-
+            TransMeta transMeta = new TransMeta();
             transMeta.loadXML(transNode, spoon.getRepository(), true, new Variables(), new OverwritePrompter() {
 			
             	public boolean overwritePrompt(String message, String rememberText, String rememberPropertyName) {

@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.database.Database;
@@ -82,13 +80,8 @@ public class TransBuilder
             //
             // Create a new transformation...
             //
-          TransMeta transMeta =  null;
-          try {
-            transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
-          } catch(DomainObjectCreationException doce) {
-            transMeta = new TransMeta();
-          } 
-            transMeta.setName(transformationName);
+          TransMeta transMeta = new TransMeta();
+          transMeta.setName(transformationName);
             
             // Add the database connections
             for (int i=0;i<databasesXML.length;i++)

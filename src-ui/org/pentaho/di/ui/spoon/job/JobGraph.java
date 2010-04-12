@@ -72,8 +72,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
@@ -85,11 +83,9 @@ import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.AreaOwner;
 import org.pentaho.di.core.gui.GCInterface;
-import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
-import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -148,7 +144,6 @@ import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
-import org.w3c.dom.Node;
 
 /**
  * Handles the display of Jobs in Spoon, in a graphical form.
@@ -2150,11 +2145,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         //
         boolean exists = spoon.rep.getTransformationID(exactTransname, spoon.rep.loadRepositoryDirectoryTree().findDirectory(entry.getDirectory())) != null;
         if (!exists) {
-          try {
-            newTrans = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class, String.class, String[].class}, new Object[]{null, exactTransname, entry.arguments}); 
-          } catch(DomainObjectCreationException doce) {
-            newTrans = new TransMeta(null, exactTransname, entry.arguments);
-          } 
+          newTrans = new TransMeta(null, exactTransname, entry.arguments);
         } 
         else {
           newTrans = spoon.rep.loadTransformation(exactTransname, spoon.rep.loadRepositoryDirectoryTree().findDirectory(entry.getDirectory()), null, true, null); // reads last version
@@ -2182,18 +2173,9 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         }
         TransMeta launchTransMeta = null;
         if (KettleVFS.fileExists(exactFilename)) {
-          try {
-            launchTransMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class}, new Object[]{exactFilename}); 
-          } catch(DomainObjectCreationException doce) {
-            launchTransMeta = new TransMeta(exactFilename);
-          } 
-          
+          launchTransMeta = new TransMeta(exactFilename);
         } else {
-          try {
-            launchTransMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
-          } catch(DomainObjectCreationException doce) {
-            launchTransMeta = new TransMeta();
-          } 
+          launchTransMeta = new TransMeta();
         }
 
         launchTransMeta.clearChanged();
@@ -2304,21 +2286,9 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
         JobMeta newJobMeta;
 
         if (KettleVFS.fileExists(exactFilename)) {
-          
-          try {
-            newJobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {String.class, Repository.class, OverwritePrompter.class}, new Object[]{exactFilename, spoon.rep, spoon}); 
-          } catch(DomainObjectCreationException doce) {
-            newJobMeta = new JobMeta(exactFilename, spoon.rep, spoon);
-          } 
-          
+          newJobMeta = new JobMeta(exactFilename, spoon.rep, spoon);
         } else {
-
-          try {
-            newJobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
-          } catch(DomainObjectCreationException doce) {
-            newJobMeta = new JobMeta();
-          } 
-          
+          newJobMeta = new JobMeta();
         }
         
         spoon.setParametersAsVariablesInUI(newJobMeta, newJobMeta);
@@ -2978,12 +2948,7 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 			if (spoon.rep!=null) {
 				runJobMeta = spoon.rep.loadJob(jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null);  // reads last version
 			} else {
-        try {
-          runJobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {String.class, Repository.class, OverwritePrompter.class}, new Object[]{jobMeta.getFilename(), null, null}); 
-        } catch(DomainObjectCreationException doce) {
-          runJobMeta = new JobMeta(jobMeta.getFilename(), null, null);
-        } 
-
+			  runJobMeta = new JobMeta(jobMeta.getFilename(), null, null);
 			}
 		    
 			job = new Job(spoon.rep, runJobMeta);

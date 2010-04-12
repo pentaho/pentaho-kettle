@@ -26,8 +26,6 @@ import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -37,7 +35,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
-import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
@@ -156,14 +153,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     public Job(String name, String file, String args[])
     {
     	this();
-    	
-    try {
-      jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
-    } catch(DomainObjectCreationException doce) {
-      jobMeta = new JobMeta();
-    } 
-        if (name!=null) setName(name+" ("+super.getName()+")");
-        jobMeta.setName(name);
+    jobMeta = new JobMeta();
+    if (name!=null) setName(name+" ("+super.getName()+")");
+    jobMeta.setName(name);
 		jobMeta.setFilename(file);
 		jobMeta.setArguments(args);
 		

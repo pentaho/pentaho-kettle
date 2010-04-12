@@ -25,14 +25,11 @@ import java.util.Set;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -42,7 +39,6 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
-import org.w3c.dom.Node;
 
 /**
  * This class takes care of the separation of the original transformation into pieces that run on the different slave servers in the clusters used.
@@ -96,12 +92,7 @@ public class TransSplitter
         // As such, we deflate/inflate over XML
         //
         String transXML = transMeta.getXML();
-        try {
-          this.originalTransformation = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {Node.class,
-              Repository.class}, new Object[]{XMLHandler.getSubNode(XMLHandler.loadXMLString(transXML), TransMeta.XML_TAG), null}); 
-          } catch(DomainObjectCreationException doce) {
-            this.originalTransformation = new TransMeta(XMLHandler.getSubNode(XMLHandler.loadXMLString(transXML), TransMeta.XML_TAG), null);
-          }
+        this.originalTransformation = new TransMeta(XMLHandler.getSubNode(XMLHandler.loadXMLString(transXML), TransMeta.XML_TAG), null);
         this.originalTransformation.shareVariablesWith(transMeta);
         this.originalTransformation.copyParametersFrom(transMeta);
 
@@ -246,13 +237,7 @@ public class TransSplitter
 
     private TransMeta getOriginalCopy(boolean isSlaveTrans, ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
     {
-        TransMeta transMeta;
-        
-        try {
-          transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
-        } catch(DomainObjectCreationException doce) {
-          transMeta = new TransMeta();
-        }
+        TransMeta transMeta = new TransMeta();
         transMeta.setSlaveTransformation(true);
         
         if (isSlaveTrans)

@@ -14,16 +14,11 @@ package org.pentaho.di.ui.spoon;
 
 import java.util.Locale;
 
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.OverwritePrompter;
-import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.w3c.dom.Node;
 
@@ -36,12 +31,7 @@ public class JobFileListener implements FileListener {
     	Spoon spoon = Spoon.getInstance();
         try
         {
-            JobMeta jobMeta = null;
-            try {
-              jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
-            } catch(DomainObjectCreationException doce) {
-              jobMeta = new JobMeta();
-            } 
+            JobMeta jobMeta = new JobMeta();
             jobMeta.loadXML(jobNode, spoon.getRepository(), spoon);
             jobMeta.setRepositoryDirectory(spoon.getDefaultSaveLocation(jobMeta));
             spoon.setJobMetaVariables(jobMeta);

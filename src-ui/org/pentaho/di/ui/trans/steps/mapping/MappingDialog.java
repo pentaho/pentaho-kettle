@@ -49,8 +49,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
@@ -59,7 +57,6 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -78,7 +75,6 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
-import org.w3c.dom.Node;
 
 public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -628,12 +624,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 	private void loadFileTrans(String fname) throws KettleException
 	{
-    try {
-      mappingTransMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class}, new Object[]{transMeta.environmentSubstitute(fname)}); 
-    } catch(DomainObjectCreationException doce) {
-      mappingTransMeta = new TransMeta(transMeta.environmentSubstitute(fname));
-    } 
-
+    mappingTransMeta = new TransMeta(transMeta.environmentSubstitute(fname));
 		mappingTransMeta.clearChanged();
 	}
 

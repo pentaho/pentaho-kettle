@@ -1,7 +1,7 @@
-package org.pentaho.di.ui.repository.capabilities;
+package org.pentaho.di.ui.repository.repositoryexplorer.uisupport;
 
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SecurityController;
-import org.pentaho.ui.xul.impl.DefaultXulOverlay;
 
 public class ManageUserUISupport extends AbstractRepositoryExplorerUISupport{
 
@@ -10,6 +10,6 @@ public class ManageUserUISupport extends AbstractRepositoryExplorerUISupport{
     SecurityController securityController = new SecurityController();
     controllerNames.add(securityController.getName());
     handlers.add(securityController);
-    overlays.add(new DefaultXulOverlay("org/pentaho/di/ui/repository/repositoryexplorer/xul/security-enabled-layout-overlay.xul")); //$NON-NLS-1$
+    overlays.add(new RepositoryExplorerDefaultXulOverlay("org/pentaho/di/ui/repository/repositoryexplorer/xul/security-enabled-layout-overlay.xul", RepositoryExplorer.class)); //$NON-NLS-1$
   }
 }

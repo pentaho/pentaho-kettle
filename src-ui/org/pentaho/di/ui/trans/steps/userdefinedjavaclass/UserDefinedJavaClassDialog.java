@@ -79,8 +79,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -1282,12 +1280,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 				// Generate a new test transformation...
 				//
-        TransMeta transMeta =  null;
-        try {
-          transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
-        } catch(DomainObjectCreationException doce) {
-          transMeta = new TransMeta();
-        } 
+        TransMeta transMeta =  new TransMeta();
 				transMeta.setName(wStepname.getText() + " - PREVIEW"); // $NON-NLS-1$
 				transMeta.addStep(genStep);
 				transMeta.addStep(scriptStep);

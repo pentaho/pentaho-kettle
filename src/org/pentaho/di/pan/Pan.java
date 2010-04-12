@@ -23,8 +23,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
@@ -47,7 +45,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.version.BuildVersion;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 public class Pan {
   private static Class<?> PKG = Pan.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
@@ -171,13 +168,7 @@ public class Pan {
     if (log.isDebug())
       log.logDebug(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.AllocatteNewTrans"));
 
-    TransMeta transMeta = null;
-    try {
-      transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
-      } catch(DomainObjectCreationException doce) {
-        transMeta = new TransMeta();
-      }
-
+    TransMeta transMeta = new TransMeta();
     // In case we use a repository...
     Repository rep = null;
     try {
@@ -285,12 +276,7 @@ public class Pan {
         if (trans == null && !Const.isEmpty(optionFilename)) {
           if (log.isDetailed())
             log.logDetailed(STRING_PAN, BaseMessages.getString(PKG, "Pan.Log.LoadingTransXML", "" + optionFilename));
-
-          try {
-            transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class}, new Object[]{optionFilename.toString()}); 
-            } catch(DomainObjectCreationException doce) {
-              transMeta = new TransMeta(optionFilename.toString());
-            }
+          transMeta = new TransMeta(optionFilename.toString());
           trans = new Trans(transMeta);
         }
 
@@ -308,12 +294,7 @@ public class Pan {
               xml.append((char) c);
             inputStream.close();
             Document document = XMLHandler.loadXMLString(xml.toString());
-            try {
-              transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {Node.class, Repository.class}, new Object[]{XMLHandler.getSubNode(document, "transformation"), null}); 
-              } catch(DomainObjectCreationException doce) {
-                transMeta = new TransMeta(XMLHandler.getSubNode(document, "transformation"), null);
-              }
-            
+            transMeta = new TransMeta(XMLHandler.getSubNode(document, "transformation"), null);
             trans = new Trans(transMeta);
           } catch (Exception e) {
             System.out.println(BaseMessages.getString(PKG, "Pan.Error.ReadingJar", e.toString()));

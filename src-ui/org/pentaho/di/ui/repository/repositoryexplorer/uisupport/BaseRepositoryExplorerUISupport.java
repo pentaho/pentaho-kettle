@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repository.capabilities;
+package org.pentaho.di.ui.repository.repositoryexplorer.uisupport;
 
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersController;

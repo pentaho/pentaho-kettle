@@ -28,8 +28,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -565,13 +563,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		// Create a new job...
 		//
 		
-	  JobMeta anotherJobMeta = null; 
-    try {
-      anotherJobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
-    } catch(DomainObjectCreationException doce) {
-      anotherJobMeta = new JobMeta();
-    } 
-    final JobMeta jobMeta = anotherJobMeta;
+    final JobMeta jobMeta = new JobMeta();
     jobMeta.setDatabases(databases);
 		jobMeta.setFilename(null);
 		jobMeta.setName(jobname);
@@ -623,12 +615,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						//
 						String transname = BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Transname1") + sourceDbInfo + "].[" + tables[i] + BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.Transname2") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	
-						TransMeta transMeta = null;
-			      try {
-			        transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class, String.class, String[].class}, new Object[]{(String) null, transname, null}); 
-			      } catch(DomainObjectCreationException doce) {
-			        transMeta = new TransMeta((String) null, transname, null);
-			      }
+						TransMeta transMeta = new TransMeta((String) null, transname, null);
 						if (repdir != null)
 						{
 							transMeta.setRepositoryDirectory(repdir);

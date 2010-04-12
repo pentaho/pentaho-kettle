@@ -23,12 +23,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -159,12 +156,7 @@ public class Kitchen
 		if(log.isDebug()) log.logDebug(STRING_KITCHEN, BaseMessages.getString(PKG, "Kitchen.Log.AllocateNewJob"));
 		
 		
-		JobMeta jobMeta = null;
-    try {
-      jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
-    } catch(DomainObjectCreationException doce) {
-      jobMeta = new JobMeta();
-    } 
+		JobMeta jobMeta = new JobMeta();
         // In case we use a repository...
         Repository repository = null;
 
@@ -260,11 +252,7 @@ public class Kitchen
                 // Try to load if from file anyway.
 				if (!Const.isEmpty(optionFilename) && job==null)
 				{
-			    try {
-			      jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {String.class, Repository.class, OverwritePrompter.class}, new Object[]{optionFilename.toString(), null, null}); 
-			    } catch(DomainObjectCreationException doce) {
-			      jobMeta = new JobMeta(optionFilename.toString(), null, null);
-			    }
+			    jobMeta = new JobMeta(optionFilename.toString(), null, null);
 					job = new Job(null, jobMeta);
 				}
 			}

@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.repository.capabilities;
+package org.pentaho.di.ui.repository.repositoryexplorer.uisupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
+import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulOverlay;
@@ -32,7 +33,11 @@ public abstract class AbstractRepositoryExplorerUISupport implements IRepository
       container.addEventHandler(handler);
     }
     for (XulOverlay overlay : overlays) {
-      container.loadOverlay(overlay.getOverlayUri());
+      if(overlay instanceof RepositoryExplorerDefaultXulOverlay) {
+        container.loadOverlay(overlay.getOverlayUri(), new XulSpoonResourceBundle(((RepositoryExplorerDefaultXulOverlay) overlay).getPackageClass()));
+      } else {
+        container.loadOverlay(overlay.getOverlayUri(), overlay.getResourceBundleUri());  
+      }
     }
   }
 

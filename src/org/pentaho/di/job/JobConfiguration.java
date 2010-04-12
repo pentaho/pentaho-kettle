@@ -15,12 +15,8 @@ package org.pentaho.di.job;
 import java.io.IOException;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -60,11 +56,7 @@ public class JobConfiguration
         Node jobNode = XMLHandler.getSubNode(configNode, JobMeta.XML_TAG);
         Node trecNode = XMLHandler.getSubNode(configNode, JobExecutionConfiguration.XML_TAG);
         jobExecutionConfiguration = new JobExecutionConfiguration(trecNode);
-        try {
-          jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {String.class, Repository.class, OverwritePrompter.class}, new Object[]{jobNode, jobExecutionConfiguration.getRepository(), null}); 
-        } catch(DomainObjectCreationException doce) {
-          jobMeta = new JobMeta(jobNode, jobExecutionConfiguration.getRepository(), null);
-        } 
+        jobMeta = new JobMeta(jobNode, jobExecutionConfiguration.getRepository(), null);
     }
     
     public static final JobConfiguration fromXML(String xml) throws KettleException

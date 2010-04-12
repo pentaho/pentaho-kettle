@@ -39,11 +39,8 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -224,12 +221,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
     	//
     	// Load transformation from XML into a directory, possibly created!
     	//
-    	TransMeta ti = null;
-      try {
-        ti = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {Node.class, Repository.class}, new Object[]{transnode, rep}); 
-      } catch(DomainObjectCreationException doce) {
-        ti = new TransMeta(transnode, rep);
-      } 
+    	TransMeta ti = new TransMeta(transnode, rep);
     	wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.ImportTrans.Label", Integer.toString(transformationNumber), Integer.toString(nrtrans), ti.getName()));
 
     	// What's the directory path?
@@ -340,12 +332,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 	{
         // Load the job from the XML node.
         //                
-		    JobMeta jobMeta = null;
-          try {
-            jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {Node.class, Repository.class, OverwritePrompter.class}, new Object[]{jobnode, rep, SpoonFactory.getInstance()}); 
-          } catch(DomainObjectCreationException doce) {
-            jobMeta = new JobMeta(jobnode, rep, SpoonFactory.getInstance());
-          } 
+		    JobMeta jobMeta = new JobMeta(jobnode, rep, SpoonFactory.getInstance());
         wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.ImportJob.Label", Integer.toString(nrthis), Integer.toString(nrjobs), jobMeta.getName()));
 
         // What's the directory path?

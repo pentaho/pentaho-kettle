@@ -98,8 +98,6 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.JndiUtil;
 import org.pentaho.di.core.KettleEnvironment;
@@ -227,8 +225,6 @@ import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.ILoginCallback;
 import org.pentaho.di.ui.repository.RepositoriesDialog;
 import org.pentaho.di.ui.repository.RepositorySecurityUI;
-import org.pentaho.di.ui.repository.capabilities.BaseRepositoryExplorerUISupport;
-import org.pentaho.di.ui.repository.capabilities.ManageUserUISupport;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
 import org.pentaho.di.ui.repository.dialog.RepositoryExportProgressDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryImportProgressDialog;
@@ -238,6 +234,8 @@ import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.UISupportRegistery;
+import org.pentaho.di.ui.repository.repositoryexplorer.uisupport.BaseRepositoryExplorerUISupport;
+import org.pentaho.di.ui.repository.repositoryexplorer.uisupport.ManageUserUISupport;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
@@ -3702,12 +3700,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void newTransFile() {
-    TransMeta transMeta = null;
-    try {
-      transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {}, new Object[]{}); 
-    } catch(DomainObjectCreationException doce) {
-      transMeta = new TransMeta();
-    }
+    TransMeta transMeta = new TransMeta();
     transMeta.addObserver(this);
 
     // Set the variables that were previously defined in this session on the
@@ -3750,12 +3743,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void newJobFile() {
     try {
-      JobMeta jobMeta = null;
-      try {
-        jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {}, new Object[]{}); 
-      } catch(DomainObjectCreationException doce) {
-        jobMeta = new JobMeta();
-      } 
+      JobMeta jobMeta = new JobMeta();
       jobMeta.addObserver(this);
 
       // Set the variables that were previously defined in this session on
@@ -6055,12 +6043,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     try {
       Document doc = XMLHandler.loadXMLString(xml);
       
-      TransMeta transMeta = null;
-      try {
-        transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {Node.class, Repository.class}, new Object[]{XMLHandler.getSubNode(doc, TransMeta.XML_TAG), rep}); 
-      } catch(DomainObjectCreationException doce) {
-        transMeta = new TransMeta(XMLHandler.getSubNode(doc, TransMeta.XML_TAG), rep);
-      }
+      TransMeta transMeta = new TransMeta(XMLHandler.getSubNode(doc, TransMeta.XML_TAG), rep);
       setTransMetaVariables(transMeta);
       addTransGraph(transMeta); // create a new tab
       sharedObjectsFileMap.put(transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects());
@@ -6080,12 +6063,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     String xml = fromClipboard();
     try {
       Document doc = XMLHandler.loadXMLString(xml);
-      JobMeta jobMeta = null;
-      try {
-        jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {Node.class, Repository.class, OverwritePrompter.class}, new Object[]{XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep, this}); 
-      } catch(DomainObjectCreationException doce) {
-        new JobMeta(XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep, this);
-      } 
+      JobMeta jobMeta = new JobMeta(XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep, this);
       addJobGraph(jobMeta); // create a new tab
       refreshGraph();
       refreshTree();

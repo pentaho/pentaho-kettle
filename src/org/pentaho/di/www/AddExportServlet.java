@@ -25,8 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.DomainObjectCreationException;
-import org.pentaho.di.core.DomainObjectRegistry;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -35,7 +33,6 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -123,14 +120,7 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
           //
           KettleVFS.getFileObject(fileUrl);
 
-          JobMeta jobMeta = null;
-          try {
-            jobMeta = DomainObjectRegistry.getInstance().constructJobMeta(new Class[] {String.class, Repository.class}, new Object[]{fileUrl, null}); 
-          } catch(DomainObjectCreationException doce) {
-            jobMeta = new JobMeta(fileUrl, null); // never with a repository
-          } 
-          
-          
+          JobMeta jobMeta = new JobMeta(fileUrl, null); // never with a repository
           // Also read the execution configuration information
           //
           String configUrl = "zip:" + archiveUrl + "!" + Job.CONFIGURATION_IN_EXPORT_FILENAME;
@@ -165,13 +155,7 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
         } else {
           // Open the transformation from inside the ZIP archive
           //
-          TransMeta transMeta = null;
-          try {
-            transMeta = DomainObjectRegistry.getInstance().constructTransMeta(new Class[] {String.class}, new Object[]{fileUrl}); 
-          } catch(DomainObjectCreationException doce) {
-            transMeta = new TransMeta(fileUrl);
-          } 
-          
+          TransMeta transMeta = new TransMeta(fileUrl);
           // Also read the execution configuration information
           //
           String configUrl = "zip:" + archiveUrl + "!" + Trans.CONFIGURATION_IN_EXPORT_FILENAME;
