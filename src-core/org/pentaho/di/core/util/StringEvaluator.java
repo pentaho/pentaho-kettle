@@ -45,9 +45,11 @@ public class StringEvaluator {
 		if (!values.contains(value)) {
 			values.add(value);
 			
-			evaluateLength(value);
-			
-			challengeConversions(value);
+			if(value != null) {
+  			evaluateLength(value);
+  			
+  			challengeConversions(value);
+			}
 		}
 	}
 	
