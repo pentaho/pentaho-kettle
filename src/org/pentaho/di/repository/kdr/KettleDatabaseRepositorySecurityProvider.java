@@ -120,7 +120,7 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     delUser(getUserID(name));
   }
   public void updateUser(IUser user) throws KettleException {
-    userDelegate.editUser(user);
+    userDelegate.saveUserInfo(user);
   }
 
   public IUser constructUser() throws KettleException {

@@ -164,18 +164,4 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 
 		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
 	}
-
-
-	public synchronized void editUser(IUser userInfo) throws KettleException {
-	  boolean hasPasswordChanged = (userInfo.getPassword() != null && userInfo.getPassword().length() > 0);
-	  String sql = "UPDATE "+ quoteTable(KettleDatabaseRepository.TABLE_R_USER) + (hasPasswordChanged  ? " SET "+quote(KettleDatabaseRepository.FIELD_USER_PASSWORD) + " = ?": "")
-	  +" SET "+quote(KettleDatabaseRepository.FIELD_USER_DESCRIPTION) + " = ? WHERE "+quote(KettleDatabaseRepository.FIELD_USER_ID_USER)+" = ?";
-    RowMetaAndData table = new RowMetaAndData();
-    if(hasPasswordChanged) {
-      table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_PASSWORD, ValueMetaInterface.TYPE_STRING), userInfo.getPassword());  
-    }
-    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_DESCRIPTION, ValueMetaInterface.TYPE_STRING), userInfo.getDescription());
-	  table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER), getUserID(userInfo.getLogin()));
-	  repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
-	}
 }
