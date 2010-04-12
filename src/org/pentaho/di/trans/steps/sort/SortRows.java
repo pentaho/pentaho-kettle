@@ -99,7 +99,7 @@ public class SortRows extends BaseStep implements StepInterface
 				data.memoryReporting++;
 				if (data.memoryReporting>=10)
 				{
-					logDetailed("Available memory : "+data.freeMemoryPct+"%");
+					if(log.isDetailed()) logDetailed("Available memory : "+data.freeMemoryPct+"%");
 					data.memoryReporting=0;
 				}
 			}
