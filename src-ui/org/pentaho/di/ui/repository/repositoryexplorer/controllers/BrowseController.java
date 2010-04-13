@@ -21,6 +21,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +92,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   protected BindingFactory bf;
 
-  protected Binding directoryBinding;
+  protected Binding directoryBinding, selectedItemsBinding;
 
   protected List<UIRepositoryDirectory> selectedFolderItems;
 
@@ -117,6 +118,11 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   private void fireRepositoryDirectoryChange() {
     firePropertyChange("repositoryDirectory", null, repositoryDirectory);
+  }
+  
+  private void fireFoldersAndItemsChange(){
+    firePropertyChange("repositoryDirectories", null, getRepositoryDirectories()); //$NON-NLS-1$
+    firePropertyChange("selectedRepoDirChildren", null, getSelectedRepoDirChildren()); //$NON-NLS-1$
   }
   
   // end PDI-3326 hack
@@ -189,7 +195,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     bf.createBinding(folderTree, "selectedItems", this, "selectedFolderItems"); //$NON-NLS-1$  //$NON-NLS-2$
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(this, "selectedRepoDirChildren", fileTable, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
+    selectedItemsBinding = bf.createBinding(this, "selectedRepoDirChildren", fileTable, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
     
     // bindings can be added here in subclasses
     doCreateBindings();
@@ -304,6 +310,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     renameRepositoryObject(contentToRename);
     if (contentToRename instanceof UIRepositoryDirectory) {
       directoryBinding.fireSourceChanged();
+      selectedItemsBinding.fireSourceChanged();
     }
   }
 
@@ -316,6 +323,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
           repoObject.delete();
           if (repoObject instanceof UIRepositoryDirectory) {
             directoryBinding.fireSourceChanged();
+            selectedItemsBinding.fireSourceChanged();
           }
         }
       }
@@ -353,8 +361,13 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         selectedFolder = repositoryDirectory;
       }
       UIRepositoryDirectory newDirectory = selectedFolder.createFolder(newName);
+
+      
       directoryBinding.fireSourceChanged();
-      System.out.println(newDirectory.getName() + ", " + newDirectory.getObjectId().getId());
+      selectedItemsBinding.fireSourceChanged();
+      
+      this.folderTree.setSelectedItems(Collections.singletonList(selectedFolder));
+      
     }
     newName = null;
   }
@@ -367,6 +380,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         if(repoDir != null) {
           repoDir.delete();
            directoryBinding.fireSourceChanged();
+           selectedItemsBinding.fireSourceChanged();
         }
       }
     }
@@ -377,6 +391,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     final UIRepositoryDirectory toRename = directory.iterator().next();
     renameRepositoryObject(toRename);
     directoryBinding.fireSourceChanged();
+    selectedItemsBinding.fireSourceChanged();
   }
 
   private void renameRepositoryObject(final UIRepositoryObject object) throws XulException {
@@ -523,9 +538,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   public void setRepositoryDirectories(List<UIRepositoryDirectory> selectedFolderItems) {
     this.repositoryDirectories = selectedFolderItems;
-    
-    firePropertyChange("repositoryDirectories", null, getRepositoryDirectories()); //$NON-NLS-1$
-    firePropertyChange("selectedRepoDirChildren", null, getSelectedRepoDirChildren()); //$NON-NLS-1$
+    fireFoldersAndItemsChange();
   }
   
   public UIRepositoryObjects getSelectedRepoDirChildren(){
