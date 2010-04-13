@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.Adler32;
@@ -745,17 +746,56 @@ public class ValueDataUtil
 
     	throw new KettleValueException("The 'add_months' function only works on a dates");
 	}
-    public static Object DateDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    /**
+     * This method introduces rounding errors based on time of day and timezones. It should not be used
+     * except for the case where this rounding error is desired.
+     * @Deprecated
+     */
+    public static Object DateDiffLegacy(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
         if (metaA.isDate() && metaB.isDate())
         {
-        	 if (dataA!=null && dataB!=null)
+           if (dataA!=null && dataB!=null)
              {
                  // Get msec from each, and subtract.
                  long diff = metaA.getDate(dataA).getTime() - metaB.getDate(dataB).getTime();
                  return new Long(diff / (1000 * 60 * 60 * 24));  
              }else
-            	 return null;
+               return null;
+        }
+
+        throw new KettleValueException("The 'DateDiff' function only works with dates");
+    }
+    /**
+     * Returns the number of days that have elapsed between dataA and dataB. Timezones are
+     * not considered in the computation.
+     * @param metaA
+     * @param dataA The "end date"
+     * @param metaB
+     * @param dataB The "start date"
+     * @return Number of days
+     * @throws KettleValueException
+     */
+    public static Object DateDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    {
+        if (metaA.isDate() && metaB.isDate())
+        {
+          if (dataA!=null && dataB!=null)
+          {
+            Date startDate = metaB.getDate(dataB);
+            Date endDate = metaA.getDate(dataA);
+            // Explicitly zero-out hour/minute/second - not figured in subtraction to determine number of days
+            Calendar stDateCal = new GregorianCalendar(startDate.getYear()+1900, startDate.getMonth(), startDate.getDate(), 0, 0, 0);
+            // Explicitly zero-out hour/minute/second - not figured in subtraction to determine number of days
+            Calendar endDateCal = new GregorianCalendar(endDate.getYear()+1900, endDate.getMonth(), endDate.getDate(), 0, 0, 0);
+            // the format creates a number like 2010076 (2010 is the year, 076 is the 76th day of the year).
+            int startJulian = (stDateCal.get(Calendar.YEAR) * 1000) + stDateCal.get(Calendar.DAY_OF_YEAR);
+            int endJulian = (endDateCal.get(Calendar.YEAR) * 1000) + endDateCal.get(Calendar.DAY_OF_YEAR);
+            // I have no idea why this returns a Long, but I'll keep it the same
+            return new Long(endJulian - startJulian);
+          } else {
+            return null;
+          }
         }
 
         throw new KettleValueException("The 'DateDiff' function only works with dates");
