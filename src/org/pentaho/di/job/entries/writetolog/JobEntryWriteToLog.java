@@ -136,7 +136,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 
 	private class LogWriterObject implements LoggingObjectInterface {
 
-		private LogChannelInterface log;
+		private LogChannelInterface writerLog;
 		
 		private LoggingObjectInterface	parent;
 		private String	subject;
@@ -145,8 +145,8 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		public LogWriterObject(String subject, LoggingObjectInterface parent, LogLevel logLevel) {
 			this.subject = subject;
 			this.parent = parent;
-			log = new LogChannel(this, parent);
-			containerObjectId = log.getContainerObjectId();
+			this.writerLog = new LogChannel(subject, parent);
+			this.containerObjectId = writerLog.getContainerObjectId();
 		}
 		
 		public String getFilename() {
@@ -154,7 +154,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		}
 
 		public String getLogChannelId() {
-			return log.getLogChannelId();
+			return writerLog.getLogChannelId();
 		}
 
 		public String getObjectCopy() {
@@ -186,11 +186,11 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		}
 		
 		public LogChannelInterface getLogChannel() {
-			return log;
+			return writerLog;
 		}
 		
 		public LogLevel getLogLevel() {
-		  return log.getLogLevel();
+		  return writerLog.getLogLevel();
 		}
 
     /**
