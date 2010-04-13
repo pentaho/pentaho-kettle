@@ -749,7 +749,7 @@ public class ValueDataUtil
     /**
      * This method introduces rounding errors based on time of day and timezones. It should not be used
      * except for the case where this rounding error is desired.
-     * @Deprecated
+     * @deprecated
      */
     public static Object DateDiffLegacy(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
