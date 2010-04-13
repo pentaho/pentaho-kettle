@@ -19,6 +19,7 @@
 
 package org.pentaho.di.trans.steps.webservices.wsdl;
 
+import org.pentaho.di.core.exception.KettleStepException;
 import org.w3c.dom.Element;
 
 import javax.wsdl.Definition;
@@ -37,7 +38,7 @@ import java.util.Map;
  * WsdlTypes provides utilities for getting information about the &lt;types&gt; section of the WSDL.
  */
 public final class WsdlTypes implements Serializable {
-
+   
     private static final long serialVersionUID = 1L;
     private final String _targetNamespace;
     private final Types _types;
@@ -67,9 +68,13 @@ public final class WsdlTypes implements Serializable {
      * @return The element node.
      * @throws IllegalArgumentException if element cannot be found in the schema.
      */
-    protected Element findNamedElement(QName elementName) {
+    protected Element findNamedElement(QName elementName) throws KettleStepException {
 
         Schema s = getSchema(elementName.getNamespaceURI());
+        if ( s == null ) {
+            
+            throw new KettleStepException(Messages.getString("Wsdl.Error.MissingSchemaException", elementName.toString()));
+        }
         Element schemaRoot = s.getElement();
         List<Element> elements = DomUtils.getChildElementsByName(schemaRoot, WsdlUtils.ELEMENT_NAME);
 
@@ -83,7 +88,7 @@ public final class WsdlTypes implements Serializable {
         }
 
         if (namedElement == null) {
-            throw new IllegalArgumentException("Could not find element in schema!");
+            throw new KettleStepException(Messages.getString("Wsdl.Error.ElementMissingException", elementName.toString()));
         }
         return namedElement;
     }

@@ -106,8 +106,18 @@ public class WebService extends BaseStep implements StepInterface
     public boolean processRow(StepMetaInterface metaInterface, StepDataInterface dataInterface) throws KettleException
     {
         meta = (WebServiceMeta) metaInterface;
-        data = (WebServiceData) dataInterface;
+        
+        //  if a URL is not specified, throw an exception 
+        if (Const.isEmpty(meta.getUrl())) {
+            throw new KettleStepException(Messages.getString("WebServices.ERROR0014.urlNotSpecified", getStepname()));
+        }       
+        
+        //  if an operation is not specified, throw an exception 
+        if (Const.isEmpty(meta.getOperationName())) {
+            throw new KettleStepException(Messages.getString("WebServices.ERROR0015.OperationNotSelected", getStepname()));
+        }
 
+        data = (WebServiceData) dataInterface;        
         Object[] vCurrentRow = getRow();
 
     	if (first)

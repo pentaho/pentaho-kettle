@@ -38,6 +38,7 @@ import javax.wsdl.xml.WSDLLocator;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogWriter;
 
 /**
@@ -140,8 +141,10 @@ public final class Wsdl implements java.io.Serializable {
      *
      * @param operationName Name of operation to find.
      * @return A WsdlOperation instance, null if operation can not be found in WSDL.
+     * @throws KettleStepException 
      */
-    public WsdlOperation getOperation(String operationName) {
+    public WsdlOperation getOperation(String operationName) 
+           throws KettleStepException {
 
         // is the operation in the cache?
         if (_operationCache.containsKey(operationName)) {
@@ -158,8 +161,9 @@ public final class Wsdl implements java.io.Serializable {
 	            _operationCache.put(operationName, wop);
 	            return wop;
         	}
-        	catch(Exception e) {
-        		LogWriter.getInstance().logError("WSDL", "Could not retrieve WSDL Operator for operation name: "+operationName, e);
+        	catch(KettleStepException kse) {
+        		LogWriter.getInstance().logError("WSDL", "Could not retrieve WSDL Operator for operation name: "+operationName, kse);
+        		throw kse;
         	}
         }
         return null;
@@ -169,9 +173,11 @@ public final class Wsdl implements java.io.Serializable {
      * Get a list of all operations defined in this WSDL.
      *
      * @return List of WsdlOperations.
+     * @throws KettleStepException
      */
     @SuppressWarnings("unchecked")
-	public List<WsdlOperation> getOperations() {
+	public List<WsdlOperation> getOperations() 
+	       throws KettleStepException {
 
         List<WsdlOperation> opList = new ArrayList<WsdlOperation>();
         PortType pt = _port.getBinding().getPortType();
