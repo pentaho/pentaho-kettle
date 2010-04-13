@@ -221,7 +221,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 			return successConditionCode[0];
 		return successConditionCode[i];
 	}
-	private static String getSuccessNumberConditionCode(int i) {
+	public static String getSuccessNumberConditionCode(int i) {
 		if (i < 0 || i >= successNumberConditionCode.length)
 			return successNumberConditionCode[0];
 		return successNumberConditionCode[i];
@@ -313,7 +313,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		return this.successwhenvarset;
 	}
 
-	private static int getSuccessNumberConditionByCode(String tt) {
+	public static int getSuccessNumberConditionByCode(String tt) {
 		if (tt == null)
 			return 0;
 
