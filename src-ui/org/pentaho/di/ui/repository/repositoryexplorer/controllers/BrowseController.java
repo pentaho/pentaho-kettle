@@ -327,6 +327,12 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   public void createFolder() throws Exception {
 
+    Collection<UIRepositoryDirectory> directories = folderTree.getSelectedItems();
+    if(directories == null || directories.size() == 0){
+      return;
+    }
+    UIRepositoryDirectory selectedFolder = directories.iterator().next();
+    
     // First, ask for a name for the folder
     XulPromptBox prompt = promptForName(null);
     prompt.addDialogCallback(new XulDialogCallback<String>() {
@@ -343,8 +349,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     prompt.open();
 
     if (newName != null) {
-      Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
-      UIRepositoryDirectory selectedFolder = directory.iterator().next();
       if (selectedFolder == null) {
         selectedFolder = repositoryDirectory;
       }
