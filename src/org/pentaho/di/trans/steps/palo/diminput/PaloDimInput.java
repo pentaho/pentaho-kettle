@@ -98,6 +98,7 @@ public class PaloDimInput extends BaseStep implements StepInterface {
       try {
         this.logDebug("Meta Levels: " + meta.getLevels().size());
         data.helper = new PaloHelper(meta.getDatabaseMeta());
+        data.helper.connect();
         return true;
       } catch (Exception e) {
         logError("An error occurred, processing will be stopped: " + e.getMessage());
