@@ -109,4 +109,9 @@ public class PaloDimInput extends BaseStep implements StepInterface {
 
     return false;
   }
+
+  public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+    data.helper.disconnect();
+    super.dispose(smi, sdi);
+  }
 }

@@ -117,7 +117,7 @@ public class PaloCellInput extends BaseStep implements StepInterface {
     this.listener.resume();
     this.logDebug("Process Resumed");
   }
-
+  
   public final boolean init(StepMetaInterface smi, StepDataInterface sdi) {
     meta = (PaloCellInputMeta) smi;
     data = (PaloCellInputData) sdi;
@@ -135,5 +135,10 @@ public class PaloCellInput extends BaseStep implements StepInterface {
       }
     }
     return false;
+  }
+  
+  public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+    data.helper.disconnect();
+    super.dispose(smi, sdi);
   }
 }
