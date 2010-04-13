@@ -323,8 +323,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
           repoObject.delete();
           if (repoObject instanceof UIRepositoryDirectory) {
             directoryBinding.fireSourceChanged();
-            selectedItemsBinding.fireSourceChanged();
           }
+          selectedItemsBinding.fireSourceChanged();
         }
       }
     }
