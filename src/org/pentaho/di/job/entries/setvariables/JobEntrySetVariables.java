@@ -213,11 +213,11 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 		          case VARIABLE_TYPE_JVM:  {
 		              System.setProperty(varname, value); 
 		              setVariable(varname, value);
-		              Job parentjob=parentJob;
-		              while (parentjob!=null) {                           
-		            	  parentjob.setVariable(varname, value);
-		            	  parentjob = parentJob.getParentJob();
-		              }
+                  Job parentJobTraverse = parentJob;
+                  while (parentJobTraverse!=null) {                           
+                    parentJobTraverse.setVariable(varname, value);
+                    parentJobTraverse = parentJobTraverse.getParentJob();
+                  }
 		          }
 		          break;
 		          case VARIABLE_TYPE_ROOT_JOB: {
