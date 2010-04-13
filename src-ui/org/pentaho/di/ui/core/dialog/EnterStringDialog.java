@@ -31,9 +31,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
@@ -48,6 +50,9 @@ public class EnterStringDialog extends Dialog
 
 	private Label        wlString;
 	private Text         wString;
+	private TextVar      wStringVar;
+	private TransMeta    transMeta;
+	private boolean      allowVariables;
     private FormData     fdlString, fdString;
 		
 	private Button wOK, wCancel;
@@ -62,13 +67,40 @@ public class EnterStringDialog extends Dialog
 	private PropsUI props;
 	private boolean manditory;
 
-    public EnterStringDialog(Shell parent, String string, String shellText, String lineText)
+	/**
+	 * This constructs without allowing for variable substitution.  This constructor allows
+	 * for backwards compatibility for objects that wish to create this object without
+	 * variable substitution.
+	 * 
+	 * @param parent Parent gui object
+	 * @param string The string to display in the dialog
+	 * @param shellText
+	 * @param lineText
+	 */
+	public EnterStringDialog(Shell parent, String string, String shellText, String lineText) {
+	    this(parent, string, shellText, lineText, false, null);
+	}
+	
+	/**
+	 * Constructs with the ability to use environmental variable substitution.
+	 * 
+	 * @param parent Parent gui object
+	 * @param string The string to display in the dialog
+	 * @param shellText 
+	 * @param lineText
+	 * @param allowVariables Indicates to allow environmental substitution
+	 * @param TransMeta This object has the has the environmental variables
+	 */
+    public EnterStringDialog(Shell parent, String string, String shellText, 
+           String lineText, boolean allowVariables, TransMeta transMeta)
     {
         super(parent, SWT.NONE);
         this.props      = PropsUI.getInstance();
         this.string     = string;
         this.shellText  = shellText;
         this.lineText   = lineText;
+        this.allowVariables = allowVariables;
+        this.transMeta = transMeta;
     }
     
 	public String open()
@@ -97,21 +129,39 @@ public class EnterStringDialog extends Dialog
 		fdlString.left = new FormAttachment(0, 0);
 		fdlString.top  = new FormAttachment(0, margin);
 		wlString.setLayoutData(fdlString);
-		wString=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wString.setText(string);
- 		props.setLook(wString);
+		if (allowVariables) {
+		    wStringVar=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		    wStringVar.setText(string);
+	        props.setLook(wStringVar);
+		}
+		else {
+		    wString = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		    wString.setText(string);
+	        props.setLook(wString);
+		}
+		
 		fdString=new FormData();
 		fdString.left = new FormAttachment(0, 0);
 		fdString.top  = new FormAttachment(wlString, margin);
 		fdString.right= new FormAttachment(100, -margin);
-		wString.setLayoutData(fdString);
 		
-		wString.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent arg0) {
-				setFlags();
-			}
-		});
-
+		if (allowVariables) {
+		    wStringVar.setLayoutData(fdString);
+		    wStringVar.addModifyListener(new ModifyListener() {
+                public void modifyText(ModifyEvent arg0) {
+                    setFlags();
+                }
+            });
+        }		    
+		else {
+		    wString.setLayoutData(fdString);
+		    wString.addModifyListener(new ModifyListener() {
+		        public void modifyText(ModifyEvent arg0) {
+		            setFlags();
+		        }
+		    });
+		}
+		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
@@ -128,7 +178,14 @@ public class EnterStringDialog extends Dialog
 		wCancel.addListener(SWT.Selection, lsCancel );
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		wString.addSelectionListener(lsDef);
+		
+		if (allowVariables) {
+		    wStringVar.addSelectionListener(lsDef);
+		} 
+		else {
+		    wString.addSelectionListener(lsDef);
+		}
+		
 		
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -146,7 +203,7 @@ public class EnterStringDialog extends Dialog
 	}
 
 	protected void setFlags() {
-		String string = wString.getText();
+		String string = (allowVariables?wStringVar.getText():wString.getText());
 		boolean enabled = !manditory || !Const.isEmpty(string);
 		wOK.setEnabled(enabled);
 	}
@@ -159,9 +216,16 @@ public class EnterStringDialog extends Dialog
 	
 	public void getData()
 	{
-		wString.setText(Const.NVL(string, ""));
-		wString.selectAll();
-		setFlags();
+	    if (allowVariables) {
+	        wStringVar.setText(Const.NVL(string, ""));
+	        wStringVar.selectAll();
+	    }
+	    else {
+	        wString.setText(Const.NVL(string, ""));
+	        wString.selectAll();
+	    }
+	    
+        setFlags();
 	}
 	
 	private void cancel()
@@ -172,7 +236,7 @@ public class EnterStringDialog extends Dialog
 	
 	private void ok()
 	{
-		string = wString.getText(); 
+		string = (allowVariables?wStringVar.getText():wString.getText()); 
 		dispose();
 	}
 

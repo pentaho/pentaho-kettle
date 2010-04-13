@@ -27,6 +27,7 @@ import javax.wsdl.Binding;
 import javax.wsdl.Operation;
 import javax.wsdl.Part;
 
+import org.pentaho.di.core.exception.KettleStepException;
 import org.w3c.dom.Element;
 
 /**
@@ -93,7 +94,8 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter>
      * @param requestPart tue if this parameter is part of an reqest message.
      * @return true if this collection was modified as a result of this call.
      */
-    protected boolean add(Part p, boolean requestPart) {
+    protected boolean add(Part p, boolean requestPart) 
+        throws KettleStepException {
 
         List<WsdlOpParameter> params = getParameter(p, requestPart);
         for (WsdlOpParameter op : params) {
@@ -120,7 +122,8 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter>
      * @param part       A list of message part.
      * @param requesPart true if part from request message.
      */
-    private List<WsdlOpParameter> getParameter(Part part, boolean requesPart) {
+    private List<WsdlOpParameter> getParameter(Part part, boolean requesPart) 
+        throws KettleStepException {
 
         List<WsdlOpParameter> params = new ArrayList<WsdlOpParameter>();
 
@@ -212,7 +215,8 @@ public final class WsdlOpParameterList extends ArrayList<WsdlOpParameter>
      * @return A list of parameters resulting from the schema type -- typically the list will only
      *         contains a single parameter.
      */
-    private List<WsdlOpParameter> resolvePartElement(Part p) {
+    private List<WsdlOpParameter> resolvePartElement(Part p) 
+        throws KettleStepException {
 
         List<WsdlOpParameter> resolvedParams = new ArrayList<WsdlOpParameter>();
         Element schemaElement = _wsdlTypes.findNamedElement(p.getElementName());

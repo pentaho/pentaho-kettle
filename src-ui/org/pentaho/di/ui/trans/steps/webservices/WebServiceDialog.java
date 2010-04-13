@@ -402,15 +402,13 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         {
             tabItemFieldIn = new CTabItem(wTabFolder, SWT.NONE);
         }
-        final ColumnInfo colNames = new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.NameColumn.Column"), //$NON-NLS-1$
+        final ColumnInfo fieldColumn = new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.NameColumn.Column"), //$NON-NLS-1$
                                                    ColumnInfo.COLUMN_TYPE_CCOMBO,
                                                    new String[] {},
                                                    false);
-        fieldColumns.add(colNames);
+        fieldColumns.add(fieldColumn);
         ColumnInfo[] colinf = new ColumnInfo[] {
-            new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.NameColumn.Column"), //$NON-NLS-1$
-		                   ColumnInfo.COLUMN_TYPE_TEXT,
-		                   false),
+                fieldColumn,
             new ColumnInfo(BaseMessages.getString(PKG, "WebServiceDialog.WsNameColumn.Column"), //$NON-NLS-1$
                            ColumnInfo.COLUMN_TYPE_TEXT,
                            false),

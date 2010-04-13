@@ -21,6 +21,7 @@ package org.pentaho.di.trans.steps.webservices.wsdl;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +40,7 @@ import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogChannel;
 
 /**
@@ -80,7 +82,7 @@ public final class Wsdl implements java.io.Serializable {
         }
 
         if (portName == null) {
-            _port = (Port) _service.getPorts().values().iterator().next();
+            _port = getSoapPort(_service.getPorts().values());
         }
         else {
             _port = _service.getPort(portName);
@@ -88,12 +90,35 @@ public final class Wsdl implements java.io.Serializable {
                 throw new IllegalArgumentException("Port: " + portName
                         + " is not defined in the service: " + serviceQName);
             }
+            else {
+                _port = _service.getPort(portName);
+            }
         }
 
         _wsdlTypes = new WsdlTypes(_wsdlDefinition);
         _operationCache = new HashMap<String, WsdlOperation>();
     }
 
+    /**
+     * Returns the first Soap port from the passed collection of Ports.
+     * @param portCollection
+     * @return
+     */
+     @SuppressWarnings("unchecked")
+     private Port getSoapPort(Collection portCollection) {
+         Port soapPort       = null;
+         Iterator iterator   = portCollection.iterator();
+         while (iterator.hasNext()) {
+             Port port = (Port) iterator.next();    
+             if (WsdlUtils.isSoapPort(port)) {
+                 soapPort = port;
+                 break ;
+             }
+         }
+         return soapPort;
+    }
+
+    
     /**
      * Loads and parses the specified WSDL file.
      *
@@ -142,7 +167,7 @@ public final class Wsdl implements java.io.Serializable {
      * @param operationName Name of operation to find.
      * @return A WsdlOperation instance, null if operation can not be found in WSDL.
      */
-    public WsdlOperation getOperation(String operationName) throws KettleException {
+    public WsdlOperation getOperation(String operationName) throws KettleStepException {
 
         // is the operation in the cache?
         if (_operationCache.containsKey(operationName)) {
@@ -159,8 +184,9 @@ public final class Wsdl implements java.io.Serializable {
 	            _operationCache.put(operationName, wop);
 	            return wop;
         	}
-        	catch(Exception e) {
-        		LogChannel.GENERAL.logError("Could not retrieve WSDL Operator for operation name: "+operationName, e);
+        	catch (KettleException kse) {
+        	    LogChannel.GENERAL.logError("Could not retrieve WSDL Operator for operation name: "+operationName);
+                throw new KettleStepException("Could not retrieve WSDL Operator for operation name: "+operationName, kse);
         	}
         }
         return null;
@@ -172,7 +198,7 @@ public final class Wsdl implements java.io.Serializable {
      * @return List of WsdlOperations.
      */
     @SuppressWarnings("unchecked")
-	public List<WsdlOperation> getOperations() throws KettleException {
+	public List<WsdlOperation> getOperations() throws KettleStepException {
 
         List<WsdlOperation> opList = new ArrayList<WsdlOperation>();
         PortType pt = _port.getBinding().getPortType();
@@ -294,5 +320,12 @@ public final class Wsdl implements java.io.Serializable {
         WSDLReader wsdlReader = getReader();
         return wsdlReader.readWSDL(wsdlURI.toString());
     }
-
+    
+    /**
+     * Returns this objects WSDL types.
+     * @return WsdlTepes
+     */
+    public WsdlTypes getWsdlTypes() {
+        return this._wsdlTypes;
+    }
 }

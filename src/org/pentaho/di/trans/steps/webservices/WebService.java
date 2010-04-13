@@ -111,11 +111,22 @@ public class WebService extends BaseStep implements StepInterface
         }
     }
 
-    public boolean processRow(StepMetaInterface metaInterface, StepDataInterface dataInterface) throws KettleException
+    public boolean processRow(StepMetaInterface metaInterface, StepDataInterface dataInterface) 
+           throws KettleException
     {
         meta = (WebServiceMeta) metaInterface;
-        data = (WebServiceData) dataInterface;
+        
+        //  if a URL is not specified, throw an exception 
+        if (Const.isEmpty(meta.getUrl())) {
+            throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0014.urlNotSpecified", getStepname()));
+        }       
+        
+        //  if an operation is not specified, throw an exception 
+        if (Const.isEmpty(meta.getOperationName())) {
+            throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0015.OperationNotSelected", getStepname()));
+        }
 
+        data = (WebServiceData) dataInterface;
         Object[] vCurrentRow = getRow();
 
     	if (first)
@@ -198,7 +209,7 @@ public class WebService extends BaseStep implements StepInterface
         }
     }
    
-    private String getRequestXML(WsdlOperation operation) throws KettleException
+    private String getRequestXML(WsdlOperation operation, boolean qualifyWSField) throws KettleException
     {
     	WsdlOpParameterList parameters = operation.getParameters();
     	String requestOperation = Const.NVL(meta.getOperationRequestName(), meta.getOperationName()); 
@@ -224,7 +235,7 @@ public class WebService extends BaseStep implements StepInterface
         xml.append("\">\n");
 
         xml.append("  <soapenv:Header>\n");
-        addParametersToXML(xml, headerNames);
+        addParametersToXML(xml, headerNames, qualifyWSField);
         xml.append("  </soapenv:Header>\n");
 
         xml.append("  <soapenv:Body>\n");
@@ -235,7 +246,7 @@ public class WebService extends BaseStep implements StepInterface
             xml.append("      <" + NS_PREFIX + ":" + meta.getInFieldContainerName() + ">\n");
         }
 
-        addParametersToXML(xml, bodyNames);
+        addParametersToXML(xml, bodyNames, qualifyWSField);
 
         if (meta.getInFieldContainerName() != null)
         {
@@ -248,7 +259,14 @@ public class WebService extends BaseStep implements StepInterface
         return xml.toString();
     }
     
-    private void addParametersToXML(StringBuffer xml, List<String> names) throws KettleException {
+    /**
+     * 
+     * @param xml the XML this method is appending to.
+     * @param names the header names
+     * @param formNameIsQualified indicates if the we are to use the namespace prefix when writing the WS field name
+     * @throws KettleException
+     */
+    private void addParametersToXML(StringBuffer xml, List<String> names, boolean qualifyWSField) throws KettleException {
     	
         // Add the row parameters...
         //
@@ -269,7 +287,13 @@ public class WebService extends BaseStep implements StepInterface
                 {
                     if (!vCurrentValue.isNull(data))
                     {
-                        xml.append("          <").append(NS_PREFIX).append(":").append(field.getWsName()).append(">");
+                        xml.append("          <");
+                        if (qualifyWSField) {
+                            xml.append(NS_PREFIX).append(":");
+                        }
+                        xml.append(field.getWsName()).append(">");
+                        
+                        
                         if (XsdType.TIME.equals(field.getXsdType()))
                         {
                             // Allow to deal with hours like 36:12:12 (> 24h)
@@ -301,7 +325,13 @@ public class WebService extends BaseStep implements StepInterface
                         {
                             xml.append(Const.trim(vCurrentValue.getString(data)));
                         }
-                        xml.append("</").append(NS_PREFIX).append(":").append(field.getWsName()).append(">\n");
+                        
+                        xml.append("</");
+                        if (qualifyWSField) {
+                            xml.append(NS_PREFIX).append(":");
+                        }
+                        xml.append(field.getWsName()).append(">\n");
+                        
                     }
                     else
                     {
@@ -350,7 +380,13 @@ public class WebService extends BaseStep implements StepInterface
         	// Generate the XML to send over, determine the correct name for the request...
         	//
         	WsdlOperation operation = wsdl.getOperation(meta.getOperationName());
-        	String xml = getRequestXML(operation);
+        	String xml = getRequestXML(operation, wsdl.getWsdlTypes().isElementFormQualified(wsdl.getTargetNamespace()));
+        	
+           if (log.isDetailed()) {
+               logDetailed(BaseMessages.getString(PKG, "WebServices.Log.SOAPEnvelope"));               
+               logDetailed(xml);
+            }
+        	
             data.argumentRows.clear(); // ready for the next batch.
         	
         	URI uri = new URI(vURLService, false);
@@ -371,7 +407,7 @@ public class WebService extends BaseStep implements StepInterface
             int responseCode = vHttpClient.executeMethod(vHostConfiguration, vHttpMethod);
             if (responseCode == 200)
             {
-                processRows(vHttpMethod.getResponseBodyAsStream(), rowData, rowMeta);
+                processRows(vHttpMethod.getResponseBodyAsStream(), rowData, rowMeta, wsdl.getWsdlTypes().isElementFormQualified(wsdl.getTargetNamespace()));
             }
             else if (responseCode == 401)
             {
@@ -451,12 +487,12 @@ public class WebService extends BaseStep implements StepInterface
     	}
     }
 
-    private void processRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta) throws KettleException
+    private void processRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta, boolean ignoreNamespacePrefix) throws KettleException
     {
     	// Just to make sure the old transformations keep working...
     	//
     	if (meta.isCompatible()) {
-    		compatibleProcessRows(anXml, rowData, rowMeta);
+    		compatibleProcessRows(anXml, rowData, rowMeta, ignoreNamespacePrefix);
     		return;
     	}
     	
@@ -601,7 +637,7 @@ public class WebService extends BaseStep implements StepInterface
 	    			// This node either contains the data for a single row or it contains the first element of a single result response
 	    			// If we find the node name in out output result fields list, we are going to consider it a single row result.
 	    			//
-	    			WebServiceField field = meta.getFieldOutFromWsName(node.getNodeName());
+	    			WebServiceField field = meta.getFieldOutFromWsName(node.getNodeName(), ignoreNamespacePrefix);
 	    			if (field!=null) {
 	    				if (getNodeValue(outputRowData, node, field, transformer, true)) {
 	    					// We found a match.
@@ -636,7 +672,7 @@ public class WebService extends BaseStep implements StepInterface
 				    		for (int j=0;j<childNodes.getLength();j++) {
 				    			Node childNode = childNodes.item(j);
 				    			
-				    			field = meta.getFieldOutFromWsName(childNode.getNodeName());
+				    			field = meta.getFieldOutFromWsName(childNode.getNodeName(), ignoreNamespacePrefix);
 				    			if (field!=null) {
 				    			
 					    			if (getNodeValue(outputRowData, childNode, field, transformer, false)) {
@@ -677,7 +713,7 @@ public class WebService extends BaseStep implements StepInterface
     	return inputRowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(inputRowData, data.outputRowMeta.size());
 	}
 
-	private void compatibleProcessRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta) throws KettleException {
+	private void compatibleProcessRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta, boolean ignoreNamespacePrefix) throws KettleException {
 
 		// First we should get the complete string
 		// The problem is that the string can contain XML or any other format such as HTML saying the service is no longer available.
@@ -720,7 +756,7 @@ public class WebService extends BaseStep implements StepInterface
 					if (Const.isEmpty(meta.getOutFieldArgumentName())) {
 						//getOutFieldArgumentName() == null
 						if (oneValueRowProcessing) {
-							WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
+							WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName(), ignoreNamespacePrefix);
 							if (field != null) {
 								outputRowData[outputIndex++] = getValue(vReader.getElementText(), field);
 								putRow(data.outputRowMeta, outputRowData);
@@ -744,7 +780,7 @@ public class WebService extends BaseStep implements StepInterface
 							if (log.isRowLevel())
 								logRowlevel("OutFieldArgumentName = ");
 							if (processing) {
-								WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
+								WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName(), ignoreNamespacePrefix);
 								if (field != null) {
 									int index = data.outputRowMeta.indexOfValue(field.getName());
 									if (index >= 0) {
@@ -753,11 +789,19 @@ public class WebService extends BaseStep implements StepInterface
 								}
 								processing = false;
 							} else {
-								WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
+								WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName(), ignoreNamespacePrefix);
 								if (meta.getFieldsOut().size() == 1 && field != null) {
 									// This can be either a simple return element, or a complex type...
 									//
 									try {
+									    if(meta.isPassingInputData()){
+                                            for(int i = 0; i<rowMeta.getValueMetaList().size(); i++){
+                                                ValueMetaInterface valueMeta = getInputRowMeta().getValueMeta( i );
+                                                outputRowData[outputIndex++] = valueMeta.cloneValueData(rowData[i]);
+    
+                                            }
+                                        }
+								    
 										outputRowData[outputIndex++] = getValue(vReader.getElementText(), field);
 										putRow(data.outputRowMeta, outputRowData);
 									} catch (WstxParsingException e) {

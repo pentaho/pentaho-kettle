@@ -31,6 +31,7 @@ import javax.wsdl.Part;
 import javax.xml.namespace.QName;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 
 /**
  * WSDL operation abstraction.
@@ -202,7 +203,8 @@ public final class WsdlOperation implements java.io.Serializable {
      * @param op Operation
      */
     @SuppressWarnings("unchecked")
-	private void loadFaults(Operation op) {
+	private void loadFaults(Operation op) 
+        throws KettleStepException {
         Map<?, Fault> faultMap = op.getFaults();
         for (Fault fault : faultMap.values()) {
             _faults.add(fault);
@@ -213,9 +215,11 @@ public final class WsdlOperation implements java.io.Serializable {
      * Create the parameter list for this operations parameter set.
      *
      * @param op Operation.
+     * @throws KettleStepException
      */
     @SuppressWarnings("unchecked")
-	private void loadParameters(Operation op) {
+	private void loadParameters(Operation op) 
+        throws KettleStepException {
 
         Input input = op.getInput();
         if (input != null) {

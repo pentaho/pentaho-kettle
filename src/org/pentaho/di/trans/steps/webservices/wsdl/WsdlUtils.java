@@ -83,9 +83,11 @@ final class WsdlUtils {
         ExtensibilityElement e = findExtensibilityElement(p, SOAP_PORT_ADDRESS_NAME);
         if (e instanceof SOAP12Address) {
         	return ((SOAP12Address) e).getLocationURI();
-        } else {
+        } else if (e instanceof SOAPAddress) {
         	return ((SOAPAddress)e).getLocationURI();
         }
+
+        return null;
     }
 
     /**
@@ -281,4 +283,14 @@ final class WsdlUtils {
         }
         return elements;
     }
+    
+    /**
+    * 
+    * @param port
+    * @return
+    */
+    protected static boolean isSoapPort(Port port) {
+        return getSOAPAddress(port) != null;
+    }
+ 
 }

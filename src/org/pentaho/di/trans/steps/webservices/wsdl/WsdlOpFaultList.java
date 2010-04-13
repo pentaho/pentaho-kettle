@@ -21,12 +21,11 @@ package org.pentaho.di.trans.steps.webservices.wsdl;
 
 import java.util.ArrayList;
 import java.util.Map;
-
 import javax.wsdl.Fault;
 import javax.wsdl.Message;
 import javax.wsdl.Part;
 import javax.xml.namespace.QName;
-
+import org.pentaho.di.core.exception.KettleStepException;
 import org.w3c.dom.Element;
 
 /**
@@ -53,7 +52,8 @@ public final class WsdlOpFaultList extends ArrayList<WsdlOpFault> {
      * @param fault Fault to add.
      * @return true if this collection was modified as a result of this call.
      */
-    protected boolean add(Fault fault) {
+    protected boolean add(Fault fault) 
+        throws KettleStepException {
         return add(getFault(fault));
     }
 
@@ -64,7 +64,8 @@ public final class WsdlOpFaultList extends ArrayList<WsdlOpFault> {
      * @return WsdlOpFault Result of processing.
      */
     @SuppressWarnings("unchecked")
-	private WsdlOpFault getFault(Fault fault) {
+	private WsdlOpFault getFault(Fault fault) 
+        throws KettleStepException {
         Message m = fault.getMessage();
 
         // a fault should only have one message part.

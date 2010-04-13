@@ -19,6 +19,8 @@
 
 package org.pentaho.di.trans.steps.webservices.wsdl;
 
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Element;
 
 import javax.wsdl.Definition;
@@ -38,6 +40,8 @@ import java.util.Map;
  */
 public final class WsdlTypes implements Serializable {
 
+    private static Class<?> PKG = WsdlTypes.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+    
     private static final long serialVersionUID = 1L;
     private final String _targetNamespace;
     private final Types _types;
@@ -65,15 +69,19 @@ public final class WsdlTypes implements Serializable {
      *
      * @param elementName Name of element to find.
      * @return The element node.
-     * @throws IllegalArgumentException if element cannot be found in the schema.
+     * @throws KettleStepException If schema or element in schema can't be found for the given element name
      */
-    protected Element findNamedElement(QName elementName) {
+    protected Element findNamedElement(QName elementName) throws KettleStepException {
 
+        Element namedElement = null;
         Schema s = getSchema(elementName.getNamespaceURI());
+        if (s == null) {
+            throw new KettleStepException(BaseMessages.getString(PKG, "Wsdl.Error.MissingSchemaException", elementName));
+        }
+             
         Element schemaRoot = s.getElement();
         List<Element> elements = DomUtils.getChildElementsByName(schemaRoot, WsdlUtils.ELEMENT_NAME);
 
-        Element namedElement = null;
         for (Element e : elements) {
             String schemaElementName = e.getAttribute(WsdlUtils.NAME_ATTR);
             if (elementName.getLocalPart().equals(schemaElementName)) {
@@ -83,7 +91,7 @@ public final class WsdlTypes implements Serializable {
         }
 
         if (namedElement == null) {
-            throw new IllegalArgumentException("Could not find element in schema!");
+              throw new KettleStepException(BaseMessages.getString(PKG, "Wsdl.Error.ElementMissingException", elementName));
         }
         return namedElement;
     }
@@ -174,7 +182,7 @@ public final class WsdlTypes implements Serializable {
      * @param namespaceURI Namespace URI string.
      * @return true If element form is qualified.
      */
-    protected boolean isElementFormQualified(String namespaceURI) {
+    public boolean isElementFormQualified(String namespaceURI) {
         return _elementFormQualifiedNamespaces.contains(namespaceURI);
     }
 

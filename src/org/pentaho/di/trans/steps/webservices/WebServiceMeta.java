@@ -440,11 +440,31 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         return param;
     }
     
-    public WebServiceField getFieldOutFromWsName(String wsName)
-    {
+    /**
+     * Returns the WebServicesField for the given wsName. 
+     *
+     * @param wsName The name of the WebServiceField to return
+     * @param ignoreWsNsPrefix If true the lookup of the cache of WebServiceFields will not include
+     * the target namespace prefix.
+     * @return
+     */
+    public WebServiceField getFieldOutFromWsName(String wsName, boolean ignoreWsNsPrefix) {
         WebServiceField param = null;
-        for (Iterator<WebServiceField> iter = getFieldsOut().iterator(); iter.hasNext();)
-        {
+        
+        if (Const.isEmpty(wsName)) {
+            return param;
+        }
+        
+        //  if we are ignoring the name space prefix
+        if (ignoreWsNsPrefix) {
+            
+            //  we split the wsName and set it to the last element of what was parsed
+            String[] wsNameParsed = wsName.split(":");
+            wsName = wsNameParsed[wsNameParsed.length-1];
+        }
+        
+        //  we now look for the wsname
+        for (Iterator<WebServiceField> iter = getFieldsOut().iterator(); iter.hasNext();) {
             WebServiceField paramCour = (WebServiceField) iter.next();
             if (paramCour.getWsName().equals(wsName))
             {
