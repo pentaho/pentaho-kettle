@@ -383,14 +383,22 @@ public class SelectObjectDialog extends Dialog
         try
         {
             wTree.removeAll();
-            
-            TreeItem ti = new TreeItem(wTree, SWT.NONE);
-            ti.setImage(GUIResource.getInstance().getImageFolderConnections());
-            ti.setExpanded(true);
-            
+            TreeItem ti = null;
             objectMap = new HashMap<String, RepositoryObject>();
-            
-			RepositoryDirectoryUI.getTreeWithNames(ti, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString, pattern);
+            // If the directory is a root directory and is visible to the user we will display that on the UI otherwise we will hide it
+            if(directoryTree.isRoot() && directoryTree.isVisible()) {
+              ti = new TreeItem(wTree, SWT.NONE);
+              ti.setImage(GUIResource.getInstance().getImageFolderConnections());
+              ti.setExpanded(true);
+              RepositoryDirectoryUI.getTreeWithNames(ti, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString, pattern);
+            } else {
+              for(int i=0;i<directoryTree.getNrSubdirectories();i++) {
+                RepositoryDirectory subdir = directoryTree.getSubdirectory(i);
+                ti = new TreeItem(wTree, SWT.NONE);
+                ti.setImage(GUIResource.getInstance().getImageArrow());
+                RepositoryDirectoryUI.getTreeWithNames(ti, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, subdir, filterString, pattern);
+              }
+            }
         }
         catch(KettleException e)
         {
