@@ -282,10 +282,11 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return retval;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.database.DatabaseInterface#getSQLListOfProcedures()
-	 */
-	public String getSQLListOfProcedures()
+  /**
+   * @param the schema name to search in or null if you want to search the whole DB
+   * @return The SQL on this database to get a list of stored procedures.
+   */
+  public String getSQLListOfProcedures(String schemaName)
 	{
 		return  null; // Netezza does not support database procedures
 	}

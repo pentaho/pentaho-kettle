@@ -250,4 +250,15 @@ public class SybaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	{
 		return  null; 
 	}
+	
+	 /**
+   * @param string
+   * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
+   */
+  public String quoteSQLString(String string) {
+    string = string.replaceAll("'", "''"); 
+    string = string.replaceAll("\\n", "\\0xd");
+    string = string.replaceAll("\\r", "\\0xa");
+    return "'"+string+"'";
+  }
 }

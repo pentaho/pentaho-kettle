@@ -280,10 +280,11 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 		return retval;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.database.DatabaseInterface#getSQLListOfProcedures()
-	 */
-	public String getSQLListOfProcedures()
+  /**
+   * @param the schema name to search in or null if you want to search the whole DB
+   * @return The SQL on this database to get a list of stored procedures.
+   */
+  public String getSQLListOfProcedures(String schemaName)
 	{
 		return "select o.name from sysobjects o, sysusers u where  xtype in ( 'FN', 'P' ) and o.uid = u.uid order by o.name";
 	}
@@ -460,4 +461,15 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	{
 		return  null; 
 	}
+	
+  /**
+   * @param string
+   * @return A string that is properly quoted for use in an Oracle SQL statement (insert, update, delete, etc)
+   */
+  public String quoteSQLString(String string) {
+    string = string.replaceAll("'", "''"); 
+    string = string.replaceAll("\\n", "'+char(13)+'");
+    string = string.replaceAll("\\r", "'+char(10)+'");
+    return "'"+string+"'";
+  }
 }

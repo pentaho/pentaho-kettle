@@ -4605,18 +4605,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				case ValueMetaInterface.TYPE_BOOLEAN:
 				case ValueMetaInterface.TYPE_STRING:
 					String string = valueMeta.getString(valueData);
-					if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta) {
-						string = string.replaceAll("'", "\\\\'"); 
-						// string = string.replaceAll("'", "''"); 
-						string = string.replaceAll("\\n", "\\\\n");
-						string = string.replaceAll("\\r", "\\\\r");
-					} else {
-						string = string.replaceAll("'", "\\\\'"); 
-						string = string.replaceAll("\\n", "\\\\n");
-						string = string.replaceAll("\\r", "\\\\r");
-					}
-
-					ins.append("'" + string + "'") ;
+					// Have the database dialect do the quoting.
+					// This also adds the single quotes around the string (thanks to PostgreSQL)
+					//
+					string = databaseMeta.quoteSQLString(string);
+					ins.append(string) ;
 					break;
 				case ValueMetaInterface.TYPE_DATE:
 					Date date = fields.getDate(r,i);

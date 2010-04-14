@@ -283,10 +283,11 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 		};
 	}
 	
-	/* (non-Javadoc)
-	 * @see DatabaseInterface#getSQLListOfProcedures()
-	 */
-	public String getSQLListOfProcedures()
+  /**
+   * @param the schema name to search in or null if you want to search the whole DB
+   * @return The SQL on this database to get a list of stored procedures.
+   */
+  public String getSQLListOfProcedures(String schemaName)
 	{
 		return  "SELECT RDB$PROCEDURE_NAME " +
 				"FROM RDB$PROCEDURES " +

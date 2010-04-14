@@ -269,10 +269,11 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
 		return retval;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.kingbase.ketl.core.database.DatabaseInterface#getSQLListOfProcedures()
-	 */
-	public String getSQLListOfProcedures()
+  /**
+   * @param the schema name to search in or null if you want to search the whole DB
+   * @return The SQL on this database to get a list of stored procedures.
+   */
+  public String getSQLListOfProcedures(String schemaName)
 	{
 		return  "select proname " +
 				"from sys_proc, sys_user " +

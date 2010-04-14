@@ -2556,4 +2556,8 @@ public class DatabaseMeta
 	{
 		return databaseInterface.getSQLListOfSequences();
 	}
+
+  public String quoteSQLString(String string) {
+    return databaseInterface.quoteSQLString(string);
+  }
 }

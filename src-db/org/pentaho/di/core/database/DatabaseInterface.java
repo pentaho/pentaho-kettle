@@ -835,4 +835,10 @@ public interface DatabaseInterface extends Cloneable
 	 * @return The SQL on this database to get a list of sequences.
 	 */
 	public String getSQLListOfSequences();
+
+	/**
+	 * @param string
+	 * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
+	 */
+  public String quoteSQLString(String string);
 }

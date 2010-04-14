@@ -477,4 +477,18 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	{
 		return  null; 
 	}
+	
+	/**
+	 * PG needs the extra E in front of the string before it allows you to quote it.
+	 * Imagine that.
+	 * 
+   * @param string
+   * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
+   */
+  public String quoteSQLString(String string) {
+    string = string.replaceAll("'", "''"); 
+    string = string.replaceAll("\\n", "\\\\n");
+    string = string.replaceAll("\\r", "\\\\r");
+    return "E'"+string+"'"; 
+  }
 }

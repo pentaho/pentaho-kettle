@@ -221,14 +221,6 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		return retval;
 	}
 	
-	/* (non-Javadoc)
-	 * @see DatabaseInterface#getSQLListOfProcedures()
-	 */
-	public String getSQLListOfProcedures()
-	{
-		return null;
-	}
-    
     /**
      * @param tableName The table to be truncated.
      * @return The SQL statement to truncate a table: remove all rows from it without a transaction

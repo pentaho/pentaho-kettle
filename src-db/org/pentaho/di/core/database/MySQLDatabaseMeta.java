@@ -408,6 +408,17 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	{
 		return  null; 
 	}
+	
+	/**
+   * @param string
+   * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
+   */
+  public String quoteSQLString(String string) {
+    string = string.replaceAll("'", "\\\\'"); 
+    string = string.replaceAll("\\n", "\\\\n");
+    string = string.replaceAll("\\r", "\\\\r");
+    return "'"+string+"'";
+  }
 }
 
 

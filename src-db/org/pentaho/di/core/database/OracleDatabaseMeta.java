@@ -499,4 +499,16 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	{
 		return  "SELECT SEQUENCE_NAME FROM all_sequences"; 
 	}
+	
+  /**
+   * @param string
+   * @return A string that is properly quoted for use in an Oracle SQL statement (insert, update, delete, etc)
+   */
+  public String quoteSQLString(String string) {
+    string = string.replaceAll("'", "''"); 
+    string = string.replaceAll("\\n", "'||chr(13)||'");
+    string = string.replaceAll("\\r", "'||chr(10)||'");
+    return "'"+string+"'";
+  }
+
 }
