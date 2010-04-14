@@ -61,7 +61,6 @@ abstract class BaseLogTable {
 	 * @throws KettleException 
 	 */
 	public void saveToRepository(RepositoryAttributeInterface attributeInterface) throws KettleException {
-		  
 		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_CONNECTION_NAME, getConnectionName());
 		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_SCHEMA_NAME, getSchemaName());
 		attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_TABLE_NAME, getTableName());
@@ -78,15 +77,29 @@ abstract class BaseLogTable {
 	}
 	
 	public void loadFromRepository(RepositoryAttributeInterface attributeInterface) throws KettleException {
-		connectionName = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_CONNECTION_NAME);
-		schemaName = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_SCHEMA_NAME);
-		tableName = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_TABLE_NAME);
+		String connectionNameFromRepository = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_CONNECTION_NAME);
+		if (connectionNameFromRepository!=null) {
+		  connectionName = connectionNameFromRepository;
+		}
+		String schemaNameFromRepository = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_SCHEMA_NAME);
+		if (schemaNameFromRepository!=null) {
+		  schemaName = schemaNameFromRepository;
+		}
+		String tableNameFromRepository = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_TABLE_NAME);
+		if (tableNameFromRepository!=null) {
+		  tableName = tableNameFromRepository;
+		}
 		timeoutInDays = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_TIMEOUT_DAYS);
 		for (int i=0;i<getFields().size();i++) {
 			String id = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_ID+i);
-			LogTableField field = findField(id);
-			field.setFieldName(attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_NAME+i));
-			field.setEnabled(attributeInterface.getAttributeBoolean(getLogTableCode()+PROP_LOG_TABLE_FIELD_ENABLED+i));
+			// Only read further if the ID is available.
+			// For backward compatibility, this might not be provided yet!
+			//
+			if (id!=null) {
+  			LogTableField field = findField(id);
+  			field.setFieldName(attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_NAME+i));
+  			field.setEnabled(attributeInterface.getAttributeBoolean(getLogTableCode()+PROP_LOG_TABLE_FIELD_ENABLED+i));
+			}
 		}
 	}
 

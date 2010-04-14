@@ -1386,7 +1386,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 		// redraw();
 	}
     
-    protected void addHop(StreamInterface stream) {
+  protected void addHop(StreamInterface stream) {
 		switch(stream.getStreamType()) {
 		case ERROR  : 
 			addErrorHop(); 
@@ -3774,11 +3774,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
 	public synchronized void setTrans(Trans trans) {
 		this.trans = trans;
-		
-		pausing = trans.isPaused();
-		initialized = trans.isInitializing();
-		running = trans.isRunning();
-		halted = trans.isStopped();
+		if (trans!=null) {
+  		pausing = trans.isPaused();
+  		initialized = trans.isInitializing();
+  		running = trans.isRunning();
+  		halted = trans.isStopped();
+		}
 	}
 	
 	public void sniffInput() {

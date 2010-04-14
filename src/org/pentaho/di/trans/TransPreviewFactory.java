@@ -30,10 +30,6 @@ public class TransPreviewFactory
         //
         previewMeta.setName(parent==null ? "Preview transformation" : parent.toString());
         
-        // So let's copy them again...
-        //
-        previewMeta.copyVariablesFrom(parent);
-        
         // At it to the first step.
         StepMeta one = new StepMeta(registry.getPluginId(StepPluginType.class, oneMeta), oneStepname, oneMeta);
         one.setLocation(50,50);

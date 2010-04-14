@@ -491,8 +491,9 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	        }
 
 	        handlePluginAnnotation(clazz, annotation, libraries, false, jarFilePlugin.getPluginFolder());
-	      } catch(ClassNotFoundException e) {
+	      } catch(Exception e) {
 	        // Ignore for now, don't know if it's even possible.
+	        LogChannel.GENERAL.logError("Unexpected error registering jar plugin file: "+jarFilePlugin.getJarFile(), e);
 	      }
 	    }
 	  }

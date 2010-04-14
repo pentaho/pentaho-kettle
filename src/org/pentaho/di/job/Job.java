@@ -737,170 +737,158 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	    }
 	}
 
-	//
-	// Handle logging at start
-	public boolean beginProcessing() throws KettleException
-	{
-		currentDate = new Date();
-		logDate     = new Date();
-		startDate   = Const.MIN_DATE;
-		endDate     = currentDate;
-		
-		resetErrors();
-		
-		final JobLogTable jobLogTable = jobMeta.getJobLogTable();
-        int intervalInSeconds = Const.toInt( environmentSubstitute(jobLogTable.getLogInterval()), -1);
+	/**
+	 * Handle logging at start
+	 * 
+	 * @return true if it went OK.
+	 * 
+	 * @throws KettleException
+	 */
+  public boolean beginProcessing() throws KettleException {
+    currentDate = new Date();
+    logDate = new Date();
+    startDate = Const.MIN_DATE;
+    endDate = currentDate;
 
-		if (jobLogTable.isDefined()) {
-		
-			DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
-			String tableName = jobMeta.getJobLogTable().getTableName();
-			Database ldb = new Database(this, logcon);
-			ldb.shareVariablesWith(this);
-			try
-			{
-				boolean lockedTable=false;
-				ldb.connect();
-				
-				// Enable transactions to make table locking possible
-				//
-			    ldb.setCommit(100);
-			    
-                // See if we have to add a batch id...
-                Long id_batch = new Long(1);
-                if (jobMeta.getJobLogTable().isBatchIdUsed())
-                {
-                    // Make sure we lock that table to avoid concurrency issues
-                    //
-                    ldb.lockTables( new String[] { tableName, } );
-                    lockedTable=true;
-                    
-					// Now insert value -1 to create a real write lock blocking the other requests.. FCFS
-					//
-					String sql = "INSERT INTO "+logcon.quoteField(tableName)+"("+logcon.quoteField("ID_JOB")+") values (-1)";
-					ldb.execStatement(sql);
-					
-					// Now this next lookup will stall on the other connections
-					//
-                    id_batch = ldb.getNextValue(null, tableName, "ID_JOB");
+    resetErrors();
 
-                    setBatchId( id_batch.longValue() );
-                    if (getPassedBatchId()<=0) 
-                    {
-                        setPassedBatchId(id_batch.longValue());
-                    }
-                }
-			    
-				Object[] lastr = ldb.getLastLogDate(tableName, jobMeta.getName(), true, LogStatus.END); // $NON-NLS-1$
-				if (!Const.isEmpty(lastr))
-				{
-                    Date last;
-                    try
-                    {
-                        last = ldb.getReturnRowMeta().getDate(lastr, 0);
-                    }
-                    catch (KettleValueException e)
-                    {
-                        throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.ConversionError",""+tableName), e);
-                    }
-					if (last!=null)
-					{
-						startDate = last;
-					}
-				}
+    final JobLogTable jobLogTable = jobMeta.getJobLogTable();
+    int intervalInSeconds = Const.toInt(environmentSubstitute(jobLogTable.getLogInterval()), -1);
 
-				depDate = currentDate;
+    if (jobLogTable.isDefined()) {
 
-				ldb.writeLogRecord(jobMeta.getJobLogTable(), LogStatus.START, this);
-				
-                if (lockedTable) {
+      DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
+      String tableName = jobMeta.getJobLogTable().getTableName();
+      Database ldb = new Database(this, logcon);
+      ldb.shareVariablesWith(this);
+      try {
+        boolean lockedTable = false;
+        ldb.connect();
 
-                	// Remove the -1 record again...
-                	//
-					String sql = "DELETE FROM "+logcon.quoteField(tableName)+" WHERE "+logcon.quoteField("ID_JOB")+"= -1";
-					ldb.execStatement(sql);
-
-                	ldb.unlockTables( new String[] { tableName, } );
-                }
-				ldb.disconnect();
-				
-				
-                // If we need to do periodic logging, make sure to install a timer for this...
-                //
-                if (intervalInSeconds>0) {
-                    final Timer timer = new Timer(getName()+" - interval logging timer");
-                    TimerTask timerTask = new TimerTask() {
-            			public void run() {
-            				try {
-            					endProcessing();
-            				} catch(Exception e) {
-            					log.logError(BaseMessages.getString(PKG, "Job.Exception.UnableToPerformIntervalLogging"), e);
-            					// Also stop the show...
-            					//
-            					
-            					errors.incrementAndGet();
-            					stopAll();
-            				}
-            			}
-                    };
-                    timer.schedule(timerTask, intervalInSeconds*1000, intervalInSeconds*1000);
-                    
-                    addJobListener(new JobListener() {
-    					public void jobFinished(Job job) {
-    						timer.cancel();						
-    					}
-    				});
-                }
-
-				
-	            // Add a listener at the end of the job to take of writing the final job log record...
-				//
-	        	addJobListener(new JobListener() {
-					public void jobFinished(Job job) {
-						try {
-    						endProcessing();
-						} catch(Exception e) {
-							log.logError(BaseMessages.getString(PKG, "Job.Exception.UnableToWriteToLoggingTable", jobLogTable.toString()), e);
-						}
-					}
-				});
-
-				
-				
-				
-				
-				
-			}
-			catch(KettleDatabaseException dbe)
-			{
-				addErrors(1);  // This is even before actual execution 
-				throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.UnableToProcessLoggingStart",""+tableName), dbe);
-			}
-			finally
-			{
-				ldb.disconnect();
-			}
-		}
-		
-        // If we need to write the log channel hierarchy and lineage information, add a listener for that too... 
+        // Enable transactions to make table locking possible
         //
-        ChannelLogTable channelLogTable = jobMeta.getChannelLogTable();
-        if (channelLogTable.isDefined()) {
-            addJobListener(new JobListener() {
-            	
-            	public void jobFinished(Job job) throws KettleException {
-					try {
-						writeLogChannelInformation();
-					} catch(KettleException e) {
-						throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"), e);
-					}
-				}
-			});
+        ldb.setCommit(100);
+
+        // See if we have to add a batch id...
+        Long id_batch = new Long(1);
+        if (jobMeta.getJobLogTable().isBatchIdUsed()) {
+          // Make sure we lock that table to avoid concurrency issues
+          //
+          ldb.lockTables(new String[] { tableName, });
+          lockedTable = true;
+
+          // Now insert value -1 to create a real write lock blocking the other
+          // requests.. FCFS
+          //
+          String sql = "INSERT INTO " + logcon.quoteField(tableName) + "(" + logcon.quoteField(jobLogTable.getKeyField().getFieldName()) + ") values (-1)";
+          ldb.execStatement(sql);
+
+          // Now this next lookup will stall on the other connections
+          //
+          id_batch = ldb.getNextValue(null, tableName, "ID_JOB");
+
+          setBatchId(id_batch.longValue());
+          if (getPassedBatchId() <= 0) {
+            setPassedBatchId(id_batch.longValue());
+          }
         }
 
+        Object[] lastr = ldb.getLastLogDate(tableName, jobMeta.getName(), true, LogStatus.END); // $NON-NLS-1$
+        if (!Const.isEmpty(lastr)) {
+          Date last;
+          try {
+            last = ldb.getReturnRowMeta().getDate(lastr, 0);
+          } catch (KettleValueException e) {
+            throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.ConversionError", "" + tableName), e);
+          }
+          if (last != null) {
+            startDate = last;
+          }
+        }
 
-		return true;
-	}
+        depDate = currentDate;
+
+        ldb.writeLogRecord(jobMeta.getJobLogTable(), LogStatus.START, this);
+
+        if (lockedTable) {
+
+          // Remove the -1 record again...
+          //
+          String sql = "DELETE FROM " + logcon.quoteField(tableName) + " WHERE " + logcon.quoteField(jobLogTable.getKeyField().getFieldName()) + "= -1";
+          ldb.execStatement(sql);
+
+          ldb.unlockTables(new String[] { tableName, });
+        }
+        ldb.disconnect();
+
+        // If we need to do periodic logging, make sure to install a timer for
+        // this...
+        //
+        if (intervalInSeconds > 0) {
+          final Timer timer = new Timer(getName() + " - interval logging timer");
+          TimerTask timerTask = new TimerTask() {
+            public void run() {
+              try {
+                endProcessing();
+              } catch (Exception e) {
+                log.logError(BaseMessages.getString(PKG, "Job.Exception.UnableToPerformIntervalLogging"), e);
+                // Also stop the show...
+                //
+
+                errors.incrementAndGet();
+                stopAll();
+              }
+            }
+          };
+          timer.schedule(timerTask, intervalInSeconds * 1000, intervalInSeconds * 1000);
+
+          addJobListener(new JobListener() {
+            public void jobFinished(Job job) {
+              timer.cancel();
+            }
+          });
+        }
+
+        // Add a listener at the end of the job to take of writing the final job
+        // log record...
+        //
+        addJobListener(new JobListener() {
+          public void jobFinished(Job job) {
+            try {
+              endProcessing();
+            } catch (Exception e) {
+              log.logError(BaseMessages.getString(PKG, "Job.Exception.UnableToWriteToLoggingTable", jobLogTable.toString()), e);
+            }
+          }
+        });
+
+      } catch (KettleDatabaseException dbe) {
+        addErrors(1); // This is even before actual execution
+        throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.UnableToProcessLoggingStart", "" + tableName), dbe);
+      } finally {
+        ldb.disconnect();
+      }
+    }
+
+    // If we need to write the log channel hierarchy and lineage information,
+    // add a listener for that too...
+    //
+    ChannelLogTable channelLogTable = jobMeta.getChannelLogTable();
+    if (channelLogTable.isDefined()) {
+      addJobListener(new JobListener() {
+
+        public void jobFinished(Job job) throws KettleException {
+          try {
+            writeLogChannelInformation();
+          } catch (KettleException e) {
+            throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"), e);
+          }
+        }
+      });
+    }
+
+    return true;
+  }
 	
 	//
 	// Handle logging at end

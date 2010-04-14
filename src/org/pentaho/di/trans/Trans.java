@@ -1864,7 +1864,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		Database ldb = null;
 		PerformanceLogTable performanceLogTable = transMeta.getPerformanceLogTable();
 		
-		if (!performanceLogTable.isDefined() || !transMeta.isCapturingStepPerformanceSnapShots()) {
+		if (!performanceLogTable.isDefined() || !transMeta.isCapturingStepPerformanceSnapShots() || stepPerformanceSnapShots==null || stepPerformanceSnapShots.isEmpty()) {
 			return 0; // nothing to do here!
 		}
 		

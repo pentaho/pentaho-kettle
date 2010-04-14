@@ -404,7 +404,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 
 			List<StepPerformanceSnapShot> snapShotList = stepPerformanceSnapShots.get(stepNameCopy);
 			if (snapShotList != null && snapShotList.size() > 1) {
-				totalTimeInSeconds = (int)Math.round( ((double)(snapShotList.get(snapShotList.size()-1).getDate().getTime() - snapShotList.get(0).getDate().getTime() )) / 1000 ); 
+				totalTimeInSeconds = (int)Math.round( ((double)(snapShotList.get(snapShotList.size()-1).getDate().getTime() - snapShotList.get(0).getDate().getTime() )) / 1000 );
 				for (int i = 0; i < snapShotList.size(); i++) {
 					StepPerformanceSnapShot snapShot = snapShotList.get(i);
 					if (snapShot.getTimeDifference()!=0) {

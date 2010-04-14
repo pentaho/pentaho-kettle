@@ -34,6 +34,18 @@ public class Stream implements StreamInterface {
 		}
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+	  if (!(obj instanceof StreamInterface)) return false;
+	  if (obj == this) return true;
+	  
+	  StreamInterface stream = (StreamInterface) obj;
+	  
+	  if (description.equals(stream.getDescription())) return true;
+	  	  
+	  return false;
+	}
+	
 	public String getStepname() {
 		if (stepMeta==null) return null;
 		return stepMeta.getName();

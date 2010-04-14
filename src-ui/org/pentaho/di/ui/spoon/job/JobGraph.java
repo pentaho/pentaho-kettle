@@ -2160,7 +2160,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         TransGraph transGraph = spoon.getActiveTransGraph();
         attachActiveTrans(transGraph, newTrans, jobEntryCopy);
         
-        spoon.open();
+        spoon.refreshTree();
       } catch (Throwable e) {
         new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title"),
             BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message"), (Exception) e);
@@ -2189,7 +2189,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         TransGraph transGraph = spoon.getActiveTransGraph();
         attachActiveTrans(transGraph, launchTransMeta, jobEntryCopy);
         
-        spoon.open();
+        spoon.refreshTree();
       } catch (Throwable e) {
         new ErrorDialog(shell, BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title"), 
         		BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message"), (Exception) e);
@@ -2306,6 +2306,7 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
       }
     }
     spoon.applyVariables();
+    spoon.refreshTree();
   }
 
   public void paintControl(PaintEvent e) {

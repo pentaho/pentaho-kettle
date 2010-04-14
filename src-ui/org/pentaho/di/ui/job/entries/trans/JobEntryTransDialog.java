@@ -1165,20 +1165,26 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
 	public void getData()
 	{
-		if (jobEntry.getDirectory() != null)
-		{
-			wDirectory.setText(jobEntry.getDirectory());
-		} else
-		{
-			if (jobEntry.getDirectoryPath() != null)
-				wDirectory.setText(jobEntry.getDirectoryPath());
-		}
-		if (jobEntry.getName() != null)
-			wName.setText(jobEntry.getName());
-		if (jobEntry.getTransname() != null)
-			wTransname.setText(jobEntry.getTransname());
-		if (jobEntry.getFilename() != null)
-			wFilename.setText(jobEntry.getFilename());
+    wName.setText(Const.NVL(jobEntry.getName(), ""));
+    
+    if (!Const.isEmpty(jobEntry.getFilename())) {
+      // Run a job by filename
+      //
+      wFilename.setText(jobEntry.getFilename());
+      radioFilename.setSelection(true);
+      radioByName.setSelection(false);
+      radioByReference.setSelection(false);
+    } else {
+      // Run a job by name in the repository
+      //
+      if (jobEntry.getDirectory() != null) {
+        wDirectory.setText(jobEntry.getDirectory());
+      }
+      wTransname.setText(Const.NVL(jobEntry.getTransname(), ""));
+      radioFilename.setSelection(false);
+      radioByName.setSelection(true);
+      radioByReference.setSelection(false);
+    }
 		
 		// Arguments
 		if (jobEntry.arguments != null)

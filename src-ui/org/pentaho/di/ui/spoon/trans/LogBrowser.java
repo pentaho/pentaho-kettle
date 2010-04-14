@@ -67,6 +67,8 @@ public class LogBrowser {
 		final Timer logRefreshTimer = new Timer();
 		TimerTask timerTask = new TimerTask() {
 			public void run() {
+			  if (text.isDisposed()) return;
+        
 				text.getDisplay().asyncExec(new Runnable() {
 					public void run() {
 						HasLogChannelInterface provider = logProvider.getLogChannelProvider();

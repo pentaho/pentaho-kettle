@@ -229,8 +229,8 @@ public class GlobalMessages extends AbstractMessageHandler
         catch(IllegalArgumentException e)
         {
             String message = "Format problem with key=["+key+"], locale=["+locale+"], package="+packageName+" : "+e.toString();
-            log.logError("i18n", message);
-            log.logError("i18n", Const.getStackTracker(e));
+            log.logError(message);
+            log.logError(Const.getStackTracker(e));
             throw new MissingResourceException(message, packageName, key);
         }
     }
@@ -262,7 +262,7 @@ public class GlobalMessages extends AbstractMessageHandler
         
         string = "!"+key+"!";
         String message = "Message not found in the preferred and failover locale: key=["+key+"], package="+packageName;
-        log.logDetailed("i18n", Const.getStackTracker(new KettleException(message)));
+        log.logDetailed(Const.getStackTracker(new KettleException(message)));
 
         return string;
     }

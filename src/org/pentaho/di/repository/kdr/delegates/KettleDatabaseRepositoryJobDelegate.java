@@ -12,6 +12,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -22,6 +23,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -292,6 +294,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					} else {
 						// TODO: save the name as a string attribute
 					}
+					
 					jobMeta.getJobLogTable().setTableName( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, null) ); //$NON-NLS-1$
 					jobMeta.getJobLogTable().setBatchIdUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, false) ); //$NON-NLS-1$
 					jobMeta.getJobLogTable().setLogFieldUsed( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, false) ); //$NON-NLS-1$
@@ -299,9 +302,13 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 					
 					jobMeta.setBatchIdPassed(  jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, false) ); //$NON-NLS-1$
 
-					// The log size limit is an attribute
+					// Load all the log tables for the job...
 					//
-	
+			    RepositoryAttributeInterface attributeInterface = new KettleDatabaseRepositoryJobAttribute(repository.connectionDelegate, jobMeta.getObjectId());
+		      for (LogTableInterface logTable : jobMeta.getLogTables()) {
+		        logTable.loadFromRepository(attributeInterface);
+		      }
+					
 					if (monitor != null)
 						monitor.worked(1);
 					// 
@@ -752,6 +759,13 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 		if (jobMeta.getJobLogTable().getDatabaseMeta()!=null) {
 			repository.insertJobEntryDatabase(jobMeta.getObjectId(), null, jobMeta.getJobLogTable().getDatabaseMeta().getObjectId());
 		}
+		
+    // Save the logging tables too..
+    //
+    RepositoryAttributeInterface attributeInterface = new KettleDatabaseRepositoryJobAttribute(repository.connectionDelegate, jobMeta.getObjectId());
+    for (LogTableInterface logTable : jobMeta.getLogTables()) {
+      logTable.saveToRepository(attributeInterface);
+    }
 	}
 
 	public synchronized ObjectId insertJobHop(ObjectId id_job, ObjectId id_jobentry_copy_from, ObjectId id_jobentry_copy_to, boolean enabled, boolean evaluation, boolean unconditional) throws KettleException {

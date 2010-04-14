@@ -178,7 +178,7 @@ public class PropsUI extends Props
         for (PluginInterface plugin : plugins) {
         	try {
         		leditables.add( registry.loadClass(plugin, GUIOption.class) );
-        	} catch(KettleException e) {
+        	} catch(Exception e) {
         		LogChannel.GENERAL.logError("Unexpected error loading class for plugin "+plugin.getName(), e);
         	}
         }

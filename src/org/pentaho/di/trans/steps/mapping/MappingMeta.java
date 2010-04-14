@@ -351,7 +351,11 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         	    if (infoStepIndex<0) {
         	    	throw new KettleStepException(BaseMessages.getString(PKG, "MappingMeta.Exception.UnableToFindMetadataInfo", definition.getInputStepname()));
         	    }
-        	    inputRowMeta = info[infoStepIndex].clone();
+        	    if (info[infoStepIndex]!=null) {
+        	      inputRowMeta = info[infoStepIndex].clone();
+        	    } else {
+        	      inputRowMeta = null;
+        	    }
         	}
         	
     		// What is this mapping input step?

@@ -128,7 +128,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 	public static JobLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface) {
 		JobLogTable table = new JobLogTable(space, databasesInterface);
 		
-		table.fields.add( new LogTableField(ID.ID_JOB.id, true, false, "ID_BATCH", BaseMessages.getString(PKG, "JobLogTable.FieldName.BatchID"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.BatchID"), ValueMetaInterface.TYPE_INTEGER, 8) );
+		table.fields.add( new LogTableField(ID.ID_JOB.id, true, false, "ID_JOB", BaseMessages.getString(PKG, "JobLogTable.FieldName.BatchID"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.BatchID"), ValueMetaInterface.TYPE_INTEGER, 8) );
 		table.fields.add( new LogTableField(ID.CHANNEL_ID.id, false, false, "CHANNEL_ID", BaseMessages.getString(PKG, "JobLogTable.FieldName.ChannelID"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.ChannelID"), ValueMetaInterface.TYPE_STRING, 255) );
 		table.fields.add( new LogTableField(ID.JOBNAME.id, true, false, "JOBNAME", BaseMessages.getString(PKG, "JobLogTable.FieldName.JobName"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.JobName"), ValueMetaInterface.TYPE_STRING, 255) );
 		table.fields.add( new LogTableField(ID.STATUS.id, true, false, "STATUS", BaseMessages.getString(PKG, "JobLogTable.FieldName.Status"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.Status"), ValueMetaInterface.TYPE_STRING, 15) );
