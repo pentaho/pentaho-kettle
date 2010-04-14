@@ -3271,8 +3271,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         TransLoadProgressDialog progressDialog = new TransLoadProgressDialog(shell, rep, objname, repdir, versionLabel);
         TransMeta transMeta = progressDialog.open();
         transMeta.clearChanged();
-        // transMeta.setFilename(objname);
-        addTransGraph(transMeta);
+        if (transMeta != null) {
+          if (log.isDetailed())
+            log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.LoadToTransformation", objname, repdir.getName()));
+          props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, objname, repdir.getPath(), true, rep.getName());
+          addMenuLast();
+          addTransGraph(transMeta);
+        }
         refreshTree();
         refreshGraph();
       } catch (Exception e) {
@@ -3289,9 +3294,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         JobLoadProgressDialog progressDialog = new JobLoadProgressDialog(shell, rep, objname, repdir, versionLabel);
         JobMeta jobMeta = progressDialog.open();
         jobMeta.clearChanged();
-        // jobMeta.setFilename(objname);
-        jobMeta.setArguments(arguments);
-        addJobGraph(jobMeta);
+        if (jobMeta != null) {
+          props.addLastFile(LastUsedFile.FILE_TYPE_JOB, objname, repdir.getPath(), true, rep.getName());
+          saveSettings();
+          addMenuLast();
+          jobMeta.setArguments(arguments);
+          addJobGraph(jobMeta);
+        }
         refreshTree();
         refreshGraph();
       } catch (Exception e) {
