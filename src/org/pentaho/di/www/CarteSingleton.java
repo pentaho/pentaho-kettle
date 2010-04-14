@@ -33,8 +33,9 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 
 public class CarteSingleton {
 
-  private static Class<?> PKG = Carte.class; // for i18n purposes, needed by
-  // Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+
+  private static SlaveServerConfig slaveServerConfig;
   private static CarteSingleton carte;
 
   private LogChannelInterface log;
@@ -49,7 +50,9 @@ public class CarteSingleton {
 
     this.log = new LogChannel("Carte");
     transformationMap = new TransformationMap();
+    transformationMap.setSlaveServerConfig(config);
     jobMap = new JobMap();
+    jobMap.setSlaveServerConfig(config);
     detections = new ArrayList<SlaveServerDetection>();
     socketRepository = new SocketRepository(log);
 
@@ -93,12 +96,15 @@ public class CarteSingleton {
   public static CarteSingleton getInstance() {
     try {
       if (carte == null) {
-        String hostname = "localhost";
-        String port = "8881";
-        SlaveServer slaveServer = new SlaveServer(hostname + ":" + port, hostname, port, null, null);
-        SlaveServerConfig config = new SlaveServerConfig();
-        config.setSlaveServer(slaveServer);
-        carte = new CarteSingleton(config);
+        if (slaveServerConfig == null) {
+            String hostname = "localhost";
+            String port = "8881";
+            slaveServerConfig = new SlaveServerConfig();
+            SlaveServer slaveServer = new SlaveServer(hostname + ":" + port, hostname, port, null, null);
+            slaveServerConfig.setSlaveServer(slaveServer);
+        }
+        
+        carte = new CarteSingleton(slaveServerConfig);
         
         Trans trans = Carte.generateTestTransformation();
         
@@ -150,4 +156,12 @@ public class CarteSingleton {
     this.socketRepository = socketRepository;
   }
 
+  public static SlaveServerConfig getSlaveServerConfig() {
+    return slaveServerConfig;
+  }
+
+  public static void setSlaveServerConfig(SlaveServerConfig slaveServerConfig) {
+	CarteSingleton.slaveServerConfig = slaveServerConfig;
+  }
+  
 }
