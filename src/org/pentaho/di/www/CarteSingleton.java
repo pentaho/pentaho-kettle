@@ -9,12 +9,15 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
-*/
+ */
 package org.pentaho.di.www;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -27,6 +30,7 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -55,6 +59,10 @@ public class CarteSingleton {
     jobMap.setSlaveServerConfig(config);
     detections = new ArrayList<SlaveServerDetection>();
     socketRepository = new SocketRepository(log);
+
+    if (config.getObjectTimeoutMinutes() > 0) {
+      installPurgeTimer(config, log, transformationMap, jobMap);
+    }
 
     SlaveServer slaveServer = config.getSlaveServer();
     String hostname = slaveServer.getHostname();
@@ -93,28 +101,98 @@ public class CarteSingleton {
     }
   }
 
+  public static void installPurgeTimer(final SlaveServerConfig config, final LogChannelInterface log, final TransformationMap transformationMap,
+      final JobMap jobMap) {
+    // If we need to time out finished or idle objects, we should create a timer in the background to clean
+    //
+    if (config.getObjectTimeoutMinutes() > 0) {
+
+      log.logBasic("Installing timer to purge stale objects after " + config.getObjectTimeoutMinutes() + " minutes.");
+
+      Timer timer = new Timer();
+
+      final AtomicBoolean busy = new AtomicBoolean(false);
+      TimerTask timerTask = new TimerTask() {
+        public void run() {
+          if (!busy.get()) {
+            busy.set(true);
+
+            try {
+              // Check all transformations...
+              //
+              for (CarteObjectEntry entry : transformationMap.getTransformationObjects()) {
+                Trans trans = transformationMap.getTransformation(entry);
+
+                // See if the transformation is finished or stopped.
+                //
+                if (trans != null && (trans.isFinished() || trans.isStopped()) && trans.getLogDate() != null) {
+                  // check the last log time
+                  //
+                  int diffInMinutes = (int) Math.floor((System.currentTimeMillis() - trans.getLogDate().getTime()) / 60000);
+                  if (diffInMinutes >= config.getObjectTimeoutMinutes()) {
+                    // Let's remove this from the transformation map...
+                    //
+                    transformationMap.removeTransformation(entry);
+                    transformationMap.deallocateServerSocketPorts(entry);
+                  }
+                }
+              }
+
+              // And the jobs...
+              //
+              for (CarteObjectEntry entry : jobMap.getJobObjects()) {
+                Job job = jobMap.getJob(entry);
+
+                // See if the job is finished or stopped.
+                //
+                if (job != null && (job.isFinished() || job.isStopped()) && job.getLogDate() != null) {
+                  // check the last log time
+                  //
+                  int diffInMinutes = (int) Math.floor((System.currentTimeMillis() - job.getLogDate().getTime()) / 60000);
+                  if (diffInMinutes >= config.getObjectTimeoutMinutes()) {
+                    // Let's remove this from the job map...
+                    //
+                    jobMap.removeJob(entry);
+                  }
+                }
+              }
+
+            } finally {
+              busy.set(false);
+            }
+          }
+        }
+      };
+
+      // Search for stale objects every minute:
+      //
+      timer.schedule(timerTask, 60000, 60000);
+    }
+  }
+
   public static CarteSingleton getInstance() {
     try {
       if (carte == null) {
         if (slaveServerConfig == null) {
-            String hostname = "localhost";
-            String port = "8881";
-            slaveServerConfig = new SlaveServerConfig();
-            SlaveServer slaveServer = new SlaveServer(hostname + ":" + port, hostname, port, null, null);
-            slaveServerConfig.setSlaveServer(slaveServer);
+          String hostname = "localhost";
+          String port = "8881";
+          slaveServerConfig = new SlaveServerConfig();
+          SlaveServer slaveServer = new SlaveServer(hostname + ":" + port, hostname, port, null, null);
+          slaveServerConfig.setSlaveServer(slaveServer);
         }
-        
+
         carte = new CarteSingleton(slaveServerConfig);
-        
+
         Trans trans = Carte.generateTestTransformation();
-        
+
         String carteObjectId = UUID.randomUUID().toString();
         SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject("CarteSingleton", LoggingObjectType.CARTE, null);
         servletLoggingObject.setContainerObjectId(carteObjectId);
         servletLoggingObject.setLogLevel(LogLevel.BASIC);
 
-        carte.getTransformationMap().addTransformation(trans.getName(), carteObjectId, trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
-        
+        carte.getTransformationMap().addTransformation(trans.getName(), carteObjectId, trans,
+            new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
+
         return carte;
       } else {
         return carte;
@@ -161,7 +239,7 @@ public class CarteSingleton {
   }
 
   public static void setSlaveServerConfig(SlaveServerConfig slaveServerConfig) {
-	CarteSingleton.slaveServerConfig = slaveServerConfig;
+    CarteSingleton.slaveServerConfig = slaveServerConfig;
   }
-  
+
 }
