@@ -337,13 +337,14 @@ public class TextFileCSVImportProgressDialog
             
             // If we didn't find any matching result, it's a String...
             //
+            StringEvaluationResult result = evaluator.getAdvicedResult();
             if (evaluationResults.isEmpty()) {
             	field.setType(ValueMetaInterface.TYPE_STRING);
             	field.setLength(evaluator.getMaxLength());
-            } else {
+            }
+            if(result != null) {
             	// Take the first option we find, list the others below...
             	//
-            	StringEvaluationResult result = evaluator.getAdvicedResult();
             	ValueMetaInterface conversionMeta = result.getConversionMeta();
             	field.setType(conversionMeta.getType());
             	field.setTrimType(conversionMeta.getTrimType());
@@ -351,6 +352,10 @@ public class TextFileCSVImportProgressDialog
             	field.setDecimalSymbol(conversionMeta.getDecimalSymbol());
             	field.setGroupSymbol(conversionMeta.getGroupingSymbol());
             	field.setLength(conversionMeta.getLength());
+            	
+            	nrnull[i] = result.getNrNull();
+            	minstr[i] = result.getMin().toString();
+            	maxstr[i] = result.getMax().toString();
             }
 
             
@@ -375,6 +380,7 @@ public class TextFileCSVImportProgressDialog
                     String mask = seResult.getConversionMeta().getConversionMask();
                     
                     message.append(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.NumberFormat2", mask));
+                    message.append(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.TrimType", seResult.getConversionMeta().getTrimType()));
                     message.append(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.NumberMinValue", seResult.getMin()));
                     message.append(BaseMessages.getString(PKG, "TextFileCSVImportProgressDialog.Info.NumberMaxValue", seResult.getMax()));
                     

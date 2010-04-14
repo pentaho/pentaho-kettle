@@ -197,14 +197,20 @@ public class StringEvaluator {
 		if (evaluationResults.isEmpty()) {
 			ValueMetaInterface adviced = new ValueMeta("adviced", ValueMetaInterface.TYPE_STRING);
 			adviced.setLength(maxLength);
+			int nrNulls = 0;
 			String min=null;
 			String max=null;
 			for (String string : values) {
-				if (min==null || min.compareTo(string)>0) min=string;
-				if (max==null || max.compareTo(string)<0) max=string;
+			  if(string != null) {
+    			if (min==null || min.compareTo(string)>0) min=string;
+    			if (max==null || max.compareTo(string)<0) max=string;
+			  } else {
+			    nrNulls++;
+			  }
 			}
 			
 			StringEvaluationResult result = new StringEvaluationResult(adviced);
+			result.setNrNull(nrNulls);
 			result.setMin(min);
 			result.setMax(max);
 			return result;
