@@ -42,7 +42,6 @@ import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer.TYPE;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectCreationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistry;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectories;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjects;
@@ -52,6 +51,7 @@ import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
+import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.dnd.DropEvent;
@@ -81,7 +81,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   };
 
-  
   protected XulTree folderTree;
 
   protected XulTree fileTable;
@@ -99,12 +98,15 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected List<UIRepositoryObject> selectedFileItems;
 
   protected List<UIRepositoryDirectory> repositoryDirectories;
-  
+
   protected Repository repository;
 
   List<UIRepositoryObject> repositoryObjects;
 
   private MainController mainController;
+  
+  private XulMessageBox messageBox;
+
   /**
    * Allows for lookup of a UIRepositoryDirectory by ObjectId. This allows the reuse of instances that are inside a UI
    * tree.
@@ -119,22 +121,23 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   private void fireRepositoryDirectoryChange() {
     firePropertyChange("repositoryDirectory", null, repositoryDirectory);
   }
-  
-  private void fireFoldersAndItemsChange(){
+
+  private void fireFoldersAndItemsChange() {
     firePropertyChange("repositoryDirectories", null, getRepositoryDirectories()); //$NON-NLS-1$
     firePropertyChange("selectedRepoDirChildren", null, getSelectedRepoDirChildren()); //$NON-NLS-1$
   }
-  
+
   // end PDI-3326 hack
 
   public void init(Repository repository) throws ControllerInitializationException {
     try {
-      this.repository = repository; 
-      
+      this.repository = repository;
+
       mainController = (MainController) this.getXulDomContainer().getEventHandler("mainController");
       try {
-        this.repositoryDirectory = UIObjectRegistry.getInstance().constructUIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
-      } catch(UIObjectCreationException uoe) {
+        this.repositoryDirectory = UIObjectRegistry.getInstance().constructUIRepositoryDirectory(
+            repository.loadRepositoryDirectoryTree(), repository);
+      } catch (UIObjectCreationException uoe) {
         this.repositoryDirectory = new UIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
       }
       dirMap = new HashMap<ObjectId, UIRepositoryDirectory>();
@@ -142,7 +145,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
       bf = new DefaultBindingFactory();
       bf.setDocument(this.getXulDomContainer().getDocumentRoot());
-
+      messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
       createBindings();
     } catch (Exception e) {
       throw new ControllerInitializationException(e);
@@ -152,7 +155,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected void createBindings() {
     folderTree = (XulTree) document.getElementById("folder-tree"); //$NON-NLS-1$
     fileTable = (XulTree) document.getElementById("file-table"); //$NON-NLS-1$ 
-    
+
     if (!repositoryDirectory.isVisible()) {
       folderTree.setHiddenrootnode(true);
     } else {
@@ -172,9 +175,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     };
     bf.createBinding(fileTable, "selectedItems", "file-context-rename", "!disabled", checkIfMultipleItemsAreSelected); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
-    
+
     // begin PDI-3326 hack
-    
+
     PropertyChangeListener childrenListener = new PropertyChangeListener() {
 
       public void propertyChange(PropertyChangeEvent evt) {
@@ -184,9 +187,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     };
 
     repositoryDirectory.addPropertyChangeListener("children", childrenListener);
-    
+
     // end PDI-3326 hack
-    
+
     directoryBinding = createDirectoryBinding();
 
     // Bind the selected index from the folder tree to the list of repository objects in the file table. 
@@ -196,10 +199,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
     bf.setBindingType(Binding.Type.ONE_WAY);
     selectedItemsBinding = bf.createBinding(this, "selectedRepoDirChildren", fileTable, "elements"); //$NON-NLS-1$  //$NON-NLS-2$
-    
+
     // bindings can be added here in subclasses
     doCreateBindings();
-    
+
     try {
       // Fires the population of the repository tree of folders. 
       directoryBinding.fireSourceChanged();
@@ -213,33 +216,33 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       RepositoryDirectory homeDir = repository.getUserHomeDirectory();
       int currentDir = 0;
       String[] homePath = homeDir.getPathArray();
-      if(homePath != null) {
+      if (homePath != null) {
         UIRepositoryDirectory tempRoot = repositoryDirectory;
-    
+
         // Check to see if the first item in homePath is the root directory
-        if(homePath.length > 0 && tempRoot.getName().equalsIgnoreCase(homePath[currentDir])) {
-          if(homePath.length == 1) {
+        if (homePath.length > 0 && tempRoot.getName().equalsIgnoreCase(homePath[currentDir])) {
+          if (homePath.length == 1) {
             // The home directory is home root
             setSelectedFolderItems(Arrays.asList(tempRoot));
           }
           // We have used the first element. Increment to the next
           currentDir++;
         }
-        
+
         // Traverse the tree until we find our destination
-        for(; currentDir < homePath.length; currentDir++) {
-          for(UIRepositoryObject uiObj : tempRoot) {
-            if(uiObj instanceof UIRepositoryDirectory) {
-              if(uiObj.getName().equalsIgnoreCase(homePath[currentDir])) {
+        for (; currentDir < homePath.length; currentDir++) {
+          for (UIRepositoryObject uiObj : tempRoot) {
+            if (uiObj instanceof UIRepositoryDirectory) {
+              if (uiObj.getName().equalsIgnoreCase(homePath[currentDir])) {
                 // We have a match. Let's move on to the next
-                tempRoot = (UIRepositoryDirectory)uiObj;
+                tempRoot = (UIRepositoryDirectory) uiObj;
                 break;
               }
             }
           }
         }
         // If we have traversed as many directories as there are in the path, we have found the directory
-        if(homePath.length == currentDir) {
+        if (homePath.length == currentDir) {
           setSelectedFolderItems(Arrays.asList(tempRoot));
           folderTree.setSelectedItems(this.selectedFolderItems);
         }
@@ -248,8 +251,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       throw new RuntimeException(e);
     }
   }
-  
-  protected void doCreateBindings() {}
+
+  protected void doCreateBindings() {
+  }
 
   protected Binding createDirectoryBinding() {
     bf.setBindingType(Binding.Type.ONE_WAY);
@@ -263,7 +267,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   public UIRepositoryDirectory getRepositoryDirectory() {
     return repositoryDirectory;
   }
-  
+
   protected void populateDirMap(UIRepositoryDirectory repDir) {
     dirMap.put(repDir.getObjectId(), repDir);
     for (UIRepositoryObject obj : repDir) {
@@ -305,42 +309,55 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void renameContent() throws Exception {
-    Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
-    UIRepositoryObject contentToRename = content.iterator().next();
-    renameRepositoryObject(contentToRename);
-    if (contentToRename instanceof UIRepositoryDirectory) {
-      directoryBinding.fireSourceChanged();
-      selectedItemsBinding.fireSourceChanged();
+    try {
+      Collection<UIRepositoryContent> content = fileTable.getSelectedItems();
+      UIRepositoryObject contentToRename = content.iterator().next();
+      renameRepositoryObject(contentToRename);
+      if (contentToRename instanceof UIRepositoryDirectory) {
+        directoryBinding.fireSourceChanged();
+        selectedItemsBinding.fireSourceChanged();
+      }
+    } catch (Throwable th) {
+      messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
+      messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+      messageBox.setMessage(messages.getString(th.getLocalizedMessage()));
+      messageBox.open();
     }
   }
 
   public void deleteContent() throws Exception {
-    for(Object object:fileTable.getSelectedItems()) {
-      UIRepositoryObject repoObject = null;
-      if(object instanceof UIRepositoryObject) {
-        repoObject = (UIRepositoryObject) object;
-        if(repoObject != null) {
-          repoObject.delete();
-          if (repoObject instanceof UIRepositoryDirectory) {
-            directoryBinding.fireSourceChanged();
+    try {
+      for (Object object : fileTable.getSelectedItems()) {
+        UIRepositoryObject repoObject = null;
+        if (object instanceof UIRepositoryObject) {
+          repoObject = (UIRepositoryObject) object;
+          if (repoObject != null) {
+            repoObject.delete();
+            if (repoObject instanceof UIRepositoryDirectory) {
+              directoryBinding.fireSourceChanged();
+            }
+            selectedItemsBinding.fireSourceChanged();
           }
-          selectedItemsBinding.fireSourceChanged();
         }
       }
+    } catch (KettleException ke) {
+      messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
+      messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+      messageBox.setMessage(messages.getString(ke.getLocalizedMessage()));
+      messageBox.open();
     }
   }
-
 
   private String newName = null;
 
   public void createFolder() throws Exception {
 
     Collection<UIRepositoryDirectory> directories = folderTree.getSelectedItems();
-    if(directories == null || directories.size() == 0){
+    if (directories == null || directories.size() == 0) {
       return;
     }
     UIRepositoryDirectory selectedFolder = directories.iterator().next();
-    
+
     // First, ask for a name for the folder
     XulPromptBox prompt = promptForName(null);
     prompt.addDialogCallback(new XulDialogCallback<String>() {
@@ -349,8 +366,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       }
 
       public void onError(XulComponent component, Throwable err) {
-        // TODO: Deal with errors
-        System.out.println(err.getMessage());
+        throw new RuntimeException(err);
       }
     });
 
@@ -362,36 +378,49 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       }
       UIRepositoryDirectory newDirectory = selectedFolder.createFolder(newName);
 
-      
       directoryBinding.fireSourceChanged();
       selectedItemsBinding.fireSourceChanged();
-      
+
       this.folderTree.setSelectedItems(Collections.singletonList(selectedFolder));
-      
+
     }
     newName = null;
   }
 
   public void deleteFolder() throws Exception {
-    for(Object object:folderTree.getSelectedItems()) {
-      UIRepositoryDirectory repoDir = null;
-      if(object instanceof UIRepositoryDirectory) {
-        repoDir = (UIRepositoryDirectory) object;
-        if(repoDir != null) {
-          repoDir.delete();
-           directoryBinding.fireSourceChanged();
-           selectedItemsBinding.fireSourceChanged();
+    try {
+      for (Object object : folderTree.getSelectedItems()) {
+        UIRepositoryDirectory repoDir = null;
+        if (object instanceof UIRepositoryDirectory) {
+          repoDir = (UIRepositoryDirectory) object;
+          if (repoDir != null) {
+            repoDir.delete();
+            directoryBinding.fireSourceChanged();
+            selectedItemsBinding.fireSourceChanged();
+          }
         }
       }
+    } catch (KettleException ke) {
+      messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
+      messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+      messageBox.setMessage(messages.getString(ke.getLocalizedMessage()));
+      messageBox.open();
     }
   }
 
   public void renameFolder() throws Exception {
-    Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
-    final UIRepositoryDirectory toRename = directory.iterator().next();
-    renameRepositoryObject(toRename);
-    directoryBinding.fireSourceChanged();
-    selectedItemsBinding.fireSourceChanged();
+    try {
+      Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();
+      final UIRepositoryDirectory toRename = directory.iterator().next();
+      renameRepositoryObject(toRename);
+      directoryBinding.fireSourceChanged();
+      selectedItemsBinding.fireSourceChanged();
+    } catch (Throwable th) {
+      messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
+      messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+      messageBox.setMessage(messages.getString(th.getLocalizedMessage()));
+      messageBox.open();
+    }
   }
 
   private void renameRepositoryObject(final UIRepositoryObject object) throws XulException {
@@ -399,20 +428,17 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     prompt.addDialogCallback(new XulDialogCallback<String>() {
       public void onClose(XulComponent component, Status status, String value) {
         if (status == Status.ACCEPT) {
-        try {
+          try {
             object.setName(value);
           } catch (Exception e) {
             // convert to runtime exception so it bubbles up through the UI
             throw new RuntimeException(e);
           }
-          System.out.println("Component: " + component.getName());
-          System.out.println("Status: " + status.name());
-          System.out.println("Value: " + value);
         }
       }
+
       public void onError(XulComponent component, Throwable err) {
-        // TODO: Deal with errors
-        System.out.println(err.getMessage());
+        throw new RuntimeException(err);
       }
     });
 
@@ -448,14 +474,14 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       List<Object> dirList = new ArrayList<Object>();
       List<UIRepositoryObject> moveList = new ArrayList<UIRepositoryObject>();
       UIRepositoryDirectory targetDirectory = null;
-      
+
       if (event.getDropParent() != null && event.getDropParent() instanceof UIRepositoryDirectory) {
-        targetDirectory = (UIRepositoryDirectory) event.getDropParent();        
+        targetDirectory = (UIRepositoryDirectory) event.getDropParent();
         if (event.getDataTransfer().getData().size() > 0) {
-          for(Object o : event.getDataTransfer().getData()) {
+          for (Object o : event.getDataTransfer().getData()) {
             if (o instanceof UIRepositoryObject) {
               moveList.add((UIRepositoryObject) o);
-  
+
               // Make sure only Folders are copied to the Directory Tree
               if (o instanceof UIRepositoryDirectory) {
                 dirList.add(o);
@@ -465,10 +491,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
           }
         }
       }
-      
-      if(result == true) {
+
+      if (result == true) {
         // Perform move
-        for(UIRepositoryObject o : moveList) {
+        for (UIRepositoryObject o : moveList) {
           o.move(targetDirectory);
         }
         // Set UI objects to appear in folder directory
@@ -480,10 +506,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
     }
-    
+
     event.setAccepted(result);
   }
-  
+
   public void onDoubleClick(Object[] selectedItems) {
     openContent(selectedItems);
   }
@@ -530,7 +556,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public List<UIRepositoryDirectory> getRepositoryDirectories() {
-    if(repositoryDirectories != null && repositoryDirectories.size() == 0){
+    if (repositoryDirectories != null && repositoryDirectories.size() == 0) {
       return null;
     }
     return repositoryDirectories;
@@ -540,10 +566,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     this.repositoryDirectories = selectedFolderItems;
     fireFoldersAndItemsChange();
   }
-  
-  public UIRepositoryObjects getSelectedRepoDirChildren(){
+
+  public UIRepositoryObjects getSelectedRepoDirChildren() {
     UIRepositoryObjects repoObjects = null;
-    if(selectedFolderItems != null && selectedFolderItems.size() > 0){
+    if (selectedFolderItems != null && selectedFolderItems.size() > 0) {
       try {
         repoObjects = repositoryDirectories.get(0).getRepositoryObjects();
       } catch (KettleException e) {
@@ -597,7 +623,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         return false;
       }
       for (int i = 0; i < rd1.size(); i++) {
-        if(rd1.get(i) != null && rd2.get(i) != null) {
+        if (rd1.get(i) != null && rd2.get(i) != null) {
           if (!rd1.get(i).getName().equals(rd2.get(i).getName())) {
             return false;
           }
@@ -615,7 +641,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         return false;
       }
       for (int i = 0; i < ro1.size(); i++) {
-        if(ro1.get(i) != null && ro2.get(i) != null) {
+        if (ro1.get(i) != null && ro2.get(i) != null) {
           if (!ro1.get(i).getName().equals(ro2.get(i).getName())) {
             return false;
           }
