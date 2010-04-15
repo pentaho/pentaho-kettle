@@ -489,6 +489,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		waitingToFinish=true;
 		followingAbortRemotely=false; // backward compatibility reasons
 		createParentFolder=false;
+		logFileLevel = LogLevel.BASIC;
 	}
 
 

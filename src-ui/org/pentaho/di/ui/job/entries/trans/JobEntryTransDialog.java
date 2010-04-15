@@ -176,11 +176,11 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
 	private Button	radioFilename;
 	private Button	radioByName;
-	private Button	radioByReference;
+//	private Button	radioByReference;
 
-	private Button	wbByReference;
-
-	private TextVar	wByReference;
+//	private Button	wbByReference;
+//
+//	private TextVar	wByReference;
 
 	private Composite	wAdvanced;
 
@@ -277,7 +277,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		radioFilename.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { 
 			radioFilename.setSelection(true);
 			radioByName.setSelection(false);
-			radioByReference.setSelection(false);
+//			radioByReference.setSelection(false);
 		}});
 		
 		wbFilename = new Button(gFilename, SWT.PUSH | SWT.CENTER);
@@ -301,6 +301,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 			
 			public void modifyText(ModifyEvent arg0) {
 				radioFilename.setSelection(true);
+				radioByName.setSelection(false);
 			}
 		});
 
@@ -330,7 +331,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		radioByName.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { 
 			radioFilename.setSelection(false);
 			radioByName.setSelection(true);
-			radioByReference.setSelection(false);
+//			radioByReference.setSelection(false);
 		}});
 
 		wbTransname = new Button(gByName, SWT.PUSH | SWT.CENTER);
@@ -368,6 +369,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
 		// The specify by filename option...
 		//
+    /*
 		Group gByReference = new Group(wSpec, SWT.SHADOW_ETCHED_IN);
 		props.setLook(gByReference);
 		FormLayout gByReferenceLayout = new FormLayout();
@@ -412,7 +414,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 		fdgByReference.left = new FormAttachment(0, 0);
 		fdgByReference.right = new FormAttachment(100, 0);
 		gByReference.setLayoutData(fdgByReference);
-		
+		*/
 		wSpec.pack();
 		Rectangle bounds = wSpec.getBounds();
 
@@ -1126,10 +1128,10 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 	public void setActive()
 	{	
 		radioByName.setEnabled(rep != null);
-		radioByReference.setEnabled(rep != null);
+//		radioByReference.setEnabled(rep != null);
 		wTransname.setEnabled(rep != null);
 		wbTransname.setEnabled(rep != null);
-		wbByReference.setEnabled(rep != null);
+//		wbByReference.setEnabled(rep != null);
 
 		wlLogfile.setEnabled(wSetLogfile.getSelection());
 		wLogfile.setEnabled(wSetLogfile.getSelection());
@@ -1173,7 +1175,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       wFilename.setText(jobEntry.getFilename());
       radioFilename.setSelection(true);
       radioByName.setSelection(false);
-      radioByReference.setSelection(false);
+//      radioByReference.setSelection(false);
     } else {
       // Run a job by name in the repository
       //
@@ -1183,7 +1185,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       wTransname.setText(Const.NVL(jobEntry.getTransname(), ""));
       radioFilename.setSelection(false);
       radioByName.setSelection(true);
-      radioByReference.setSelection(false);
+//      radioByReference.setSelection(false);
     }
 		
 		// Arguments
@@ -1261,10 +1263,17 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 			mb.open(); 
 			return;
          }
-		jobEntry.setTransname(wTransname.getText());
-		jobEntry.setFileName(wFilename.getText());
-		jobEntry.setName(wName.getText());
-		jobEntry.setDirectory(wDirectory.getText());
+	   jobEntry.setName(wName.getText());
+	   if (radioByName.getSelection()) {
+	     jobEntry.setDirectory(wDirectory.getText());
+	     jobEntry.setTransname(wTransname.getText());
+	     jobEntry.setFileName("");
+	   } else if (radioFilename.getSelection()) {
+	     jobEntry.setFileName(wFilename.getText());	
+	     jobEntry.setDirectory("");
+       jobEntry.setTransname("");
+	   }
+
 
 		int nritems = wFields.nrNonEmpty();
 		int nr = 0;
