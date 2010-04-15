@@ -2098,13 +2098,13 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     if (jobEntryCopy.isJob()) {
       final JobEntryJob entry = (JobEntryJob) jobEntryCopy.getEntry();
       if ((entry != null && entry.getFilename() != null && spoon.rep == null)
-          || (entry != null && entry.getName() != null && spoon.rep != null)) {
+          || (entry != null && entry.getName() != null && entry.getObjectId() != null && spoon.rep != null)) {
         openJob(entry, jobEntryCopy);
       }
     } else if (jobEntryCopy.isTransformation()) {
       final JobEntryTrans entry = (JobEntryTrans) jobEntryCopy.getEntry();
       if ((entry != null && entry.getFilename() != null && spoon.rep == null)
-          || (entry != null && entry.getName() != null && spoon.rep != null)) {
+          || (entry != null && entry.getName() != null && entry.getObjectId() != null && spoon.rep != null)) {
         openTransformation(entry, jobEntryCopy);
       }
     }
@@ -2924,7 +2924,7 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
         }
       }
 
-      if (((jobMeta.getName() != null && spoon.rep != null) || // Repository available & name set
+      if (((jobMeta.getName() != null && jobMeta.getObjectId() != null && spoon.rep != null) || // Repository available & name / id set
           (jobMeta.getFilename() != null && spoon.rep == null) // No repository & filename set
           )
           && !jobMeta.hasChanged() // Didn't change

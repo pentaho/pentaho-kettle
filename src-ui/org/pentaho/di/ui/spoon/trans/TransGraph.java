@@ -3153,7 +3153,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         }
       }
 
-      if (((transMeta.getName() != null && spoon.rep != null) || // Repository available & name set
+      if (((transMeta.getName() != null && transMeta.getObjectId() != null && spoon.rep != null) || // Repository available & name / id set
           (transMeta.getFilename() != null && spoon.rep == null) // No repository & filename set
           )
           && !transMeta.hasChanged() // Didn't change
