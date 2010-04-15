@@ -174,10 +174,8 @@ public class CarteSingleton {
     try {
       if (carte == null) {
         if (slaveServerConfig == null) {
-          String hostname = "localhost";
-          String port = "8881";
           slaveServerConfig = new SlaveServerConfig();
-          SlaveServer slaveServer = new SlaveServer(hostname + ":" + port, hostname, port, null, null);
+          SlaveServer slaveServer = new SlaveServer();
           slaveServerConfig.setSlaveServer(slaveServer);
         }
 
