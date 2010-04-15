@@ -105,6 +105,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     public  boolean passingAllParameters=true;
 
     private boolean	passingExport;
+    
+    public static final LogLevel DEFAULT_LOG_LEVEL = LogLevel.NOTHING;
 
 	private Job	job;
 
@@ -228,7 +230,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		retval.append("      ").append(XMLHandler.addTagValue("logext",            logext));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date",          addDate));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
-		retval.append("      ").append(XMLHandler.addTagValue("loglevel",          logFileLevel.getCode()));
+		retval.append("      ").append(XMLHandler.addTagValue("loglevel",          logFileLevel != null ? logFileLevel.getCode() : DEFAULT_LOG_LEVEL.getCode()));
 		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
 		retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished",     waitingToFinish));
 		retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote",     followingAbortRemotely));
@@ -418,7 +420,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logext", logext);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_append_logfile", setAppendLogfile);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", logFileLevel.getCode());
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", logFileLevel != null ? logFileLevel.getCode() : JobEntryJob.DEFAULT_LOG_LEVEL.getCode());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "slave_server_name", remoteSlaveServerName);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "pass_export", passingExport);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wait_until_finished", waitingToFinish);

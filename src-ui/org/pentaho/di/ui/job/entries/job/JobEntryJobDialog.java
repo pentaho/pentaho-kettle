@@ -1020,7 +1020,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 	protected void pickFileVFS() {
 		
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-		dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
+		dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
 		dialog.setFilterNames(Const.getJobFilterNames());
 		String prevName = jobMeta.environmentSubstitute(wFilename.getText());
 		String parentFolder = null;
@@ -1196,7 +1196,12 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 		}
 		wPassExport.setSelection(jobEntry.isPassingExport());
 
-		wLoglevel.select(jobEntry.logFileLevel.getLevel());
+		if(jobEntry.logFileLevel != null) {
+		  wLoglevel.select(jobEntry.logFileLevel.getLevel());
+		} else {
+		  // Set the default log level
+		  wLoglevel.select(JobEntryJob.DEFAULT_LOG_LEVEL.getLevel());
+		}
 		wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
 	    wCreateParentFolder.setSelection(jobEntry.createParentFolder);
 		wWaitingToFinish.setSelection(jobEntry.isWaitingToFinish());
