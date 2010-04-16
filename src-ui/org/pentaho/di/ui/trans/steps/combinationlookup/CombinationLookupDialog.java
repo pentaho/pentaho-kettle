@@ -666,7 +666,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
 					colInfo.setComboValues(new String[] {});
 				}
-				if (!Const.isEmpty(wTable.getText())) {
+				if (!wTable.isDisposed() && !Const.isEmpty(wTable.getText())) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
 						Database db = new Database(loggingObject, ci);
