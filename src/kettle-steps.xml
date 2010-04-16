@@ -1211,5 +1211,12 @@
 		<description>i18n:org.pentaho.di.trans.steps.palo.dimoutput:PaloDimOutput.Description</description>
 		<iconfile>ui/images/PaloDimOutput.png</iconfile>
 	</step>
+	<step id="JSONInput">		
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.JSONInput</description>
+		<classname>org.pentaho.di.trans.steps.jsoninput.JSONInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JSONInput</tooltip>
+		<iconfile>ui/images/PaloDimOutput.png</iconfile>
+	</step>
 		 
 </steps>
