@@ -12,6 +12,7 @@
 */
 package org.pentaho.di.core.row;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -33,6 +34,8 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.job.entries.xmlwellformed.CheckXML;
+
 
 public class ValueDataUtil
 {
@@ -1297,5 +1300,41 @@ public class ValueDataUtil
             if (!isSpace(str.charAt(i)))
                 return false;
         return true;
+    }
+    
+    /**
+     * Checks an xml file is well formed.
+     * @param metaA The ValueMetaInterface 
+     *  @param dataA The value (filename) 
+     * @return true if the file is well formed.
+     */
+    public static boolean isXMLFileWellFormed(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return false;
+    	String filename=dataA.toString();
+    	FileObject file=null;
+    	try {
+    		file=KettleVFS.getFileObject(filename);
+    		return CheckXML.isXMLFileWellFormed(file);
+    	}catch(Exception e) {
+    	}finally {
+    		if(file!=null) try{file.close();}catch(Exception e){};
+    	}
+    	return false;
+    }
+    /**
+     * Checks an xml string is well formed.
+     * @param metaA The ValueMetaInterface 
+     *  @param dataA The value (filename) 
+     * @return true if the file is well formed.
+     */
+    public static boolean isXMLWellFormed(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return false;
+    	try {
+    		return CheckXML.isXMLWellFormed(new ByteArrayInputStream(metaA.getBinary(dataA)));
+    	}catch(Exception e) {
+    	}
+    	return false;
     }
 }

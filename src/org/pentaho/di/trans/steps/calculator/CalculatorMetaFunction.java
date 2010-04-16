@@ -93,6 +93,8 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_ESCAPE_SQL        = 60;
     public static final int CALC_DATE_WORKING_DIFF  =  61;
     public static final int CALC_ADD_MONTHS             = 62;
+    public static final int CALC_CHECK_XML_FILE_WELL_FORMED         = 63;
+    public static final int CALC_CHECK_XML_WELL_FORMED         = 64;
     
     public static final String calc_desc[] = 
         { 
@@ -158,7 +160,9 @@ public class CalculatorMetaFunction implements Cloneable
             "UNESCAPE_HTML",
             "ESCAPE_SQL",
             "DATE_WORKING_DIFF",
-            "ADD_MONTHS"
+            "ADD_MONTHS",
+            "CHECK_XML_FILE_WELL_FORMED",
+            "CHECK_XML_WELL_FORMED"
         };
     
     public static final String calcLongDesc[] = 
@@ -226,6 +230,8 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.EscapeSQL"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffWorking"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DatePlusMonths"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.CheckXmlFileWellFormed"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.CheckXmlWellFormed"),
         };
    
     private String fieldName;

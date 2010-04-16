@@ -367,6 +367,12 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_ADD_MONTHS     : // Date A - B Months
             	defaultResultType=ValueMetaInterface.TYPE_DATE;
                 break;
+            case CalculatorMetaFunction.CALC_CHECK_XML_FILE_WELL_FORMED     : // XML file A well formed
+            	defaultResultType=ValueMetaInterface.TYPE_BOOLEAN;
+                break;
+            case CalculatorMetaFunction.CALC_CHECK_XML_WELL_FORMED     : // XML string A well formed
+            	defaultResultType=ValueMetaInterface.TYPE_BOOLEAN;
+                break;
             default:
                 break;
             }

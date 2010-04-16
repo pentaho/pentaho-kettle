@@ -35,6 +35,7 @@ import java.util.zip.GZIPOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
@@ -49,6 +50,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * This class contains a number of (static final) methods to facilitate 
@@ -1113,6 +1115,8 @@ class DTDIgnoringEntityResolver implements EntityResolver{
 		System.out.println("System-ID: "+systemID.toString());
 		return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
 	}
+	
+
 }
 
 	

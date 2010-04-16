@@ -16,15 +16,10 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
@@ -387,25 +382,19 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	 public static class XMLTreeHandler extends DefaultHandler {
 		   
 	 }
-	private boolean checkWellFormed(FileObject file)
-	{
-		boolean retval=false;
-		try{
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			XMLTreeHandler handler = new XMLTreeHandler();
+	 private boolean CheckFile(FileObject file)
+	 {
+			boolean retval=false;
+			try{
+				retval=CheckXML.isXMLFileWellFormed(file);
+		    } catch (Exception e) {
+		        logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ErrorCheckingFile",file.toString(),e.getMessage()));
+		    }
+		  
+		      return retval; 
+		}
+	
 
-			// Parse the input.
-			SAXParser saxParser = factory.newSAXParser();
-			saxParser.parse(new File(KettleVFS.getFilename(file)),handler);
-			retval=true;
-	    } catch (Exception e) {
-
-	        logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ErrorCheckingFile",file.toString(),e.getMessage()));
-	      
-	    }
-	  
-	      return retval; 
-	}
 	private boolean processFileFolder(String sourcefilefoldername,String wildcard,Job parentJob,Result result)
 	{
 		boolean entrystatus = false ;
@@ -555,7 +544,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 		try
 		{
 		 // We deal with a file..so let's check if it's well formed
-		 boolean retformed=checkWellFormed(file);
+		 boolean retformed=CheckFile(file);
 		 if(!retformed)
 		 {
 			 logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Error.FileBadFormed",file.toString()));					

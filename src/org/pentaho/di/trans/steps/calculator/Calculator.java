@@ -622,6 +622,18 @@ public class Calculator extends BaseStep implements StepInterface
                     calcData[index] = ValueDataUtil.addMonths(metaA, dataA, metaB, dataB);
                 }
                 break;
+                case CalculatorMetaFunction.CALC_CHECK_XML_FILE_WELL_FORMED      : // Check if file A is well formed
+                {
+                    calcData[index] = ValueDataUtil.isXMLFileWellFormed(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_BOOLEAN; 
+                }
+                break;
+                case CalculatorMetaFunction.CALC_CHECK_XML_WELL_FORMED      : // Check if xml A is well formed
+                {
+                    calcData[index] = ValueDataUtil.isXMLWellFormed(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_BOOLEAN;
+                }
+                break;
                 default:
                     throw new KettleValueException(BaseMessages.getString(PKG, "Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }
