@@ -139,7 +139,6 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
       repository.directoryDelegate.deleteDirectory(dir.getObjectId());
     } else {
       deleteDirectoryRecursively(dir);
-      repository.directoryDelegate.deleteDirectory(dir.getObjectId());
     }
   }
 
@@ -155,8 +154,9 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
         repository.deleteJob(id);
       } 
       for(Directory subDir:dir.getChildren()) {
-        deleteDirectory((RepositoryDirectory)subDir);
+        deleteDirectoryRecursively((RepositoryDirectory)subDir);   
       }
+      repository.directoryDelegate.deleteDirectory(dir.getObjectId());
   }
   /**
    * Move / rename a directory in the repository
@@ -312,9 +312,11 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
    */
   public RepositoryDirectory createRepositoryDirectory(RepositoryDirectory parentDirectory, String directoryPath)
       throws KettleException {
+    RepositoryDirectory refreshedParentDir = repository.loadRepositoryDirectoryTree().findDirectory(parentDirectory.getPath());
+
     String path[] = Const.splitPath(directoryPath, RepositoryDirectory.DIRECTORY_SEPARATOR);
 
-    RepositoryDirectory parent = parentDirectory;
+    RepositoryDirectory parent = refreshedParentDir;
     for (int level = 1; level <= path.length; level++) {
       String subPath[] = new String[level];
       for (int i = 0; i < level; i++) {
