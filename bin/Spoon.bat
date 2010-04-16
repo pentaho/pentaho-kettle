@@ -43,15 +43,13 @@ IF %IS64BITJAVA% == 1 GOTO :USE64
 REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
 REM ===========================================
-set CLASSPATH=%CLASSPATH%;libswt\win32\swt.jar
-set LIBSPATH=libswt\win32
+set LIBSPATH=..\libswt\win32
 GOTO :CONTINUE
 :USE64
 REM ===========================================
 REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
-set CLASSPATH=%CLASSPATH%;libswt\win64\swt.jar
-set LIBSPATH=libswt\win64
+set LIBSPATH=..\libswt\win64
 :CONTINUE
 
 REM FOR /D %%F IN (plugins\spoon\*) DO call :addpp %%F
@@ -82,10 +80,10 @@ REM ** Set java runtime options                                     **
 REM ** Change 256m to higher values in case you run out of memory.  **
 REM ******************************************************************
 
-set OPT=-Xmx256m -Xms256m -Djava.library.path=..\libswt\win32\ -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%" -DKETTLE_PLUGIN_PACKAGES="%KETTLE_PLUGIN_PACKAGES%" -DKETTLE_LOG_SIZE_LIMIT="%KETTLE_LOG_SIZE_LIMIT%"
+set OPT=-Xmx256m -Xms256m -Djava.library.path=%LIBSPATH% -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%" -DKETTLE_PLUGIN_PACKAGES="%KETTLE_PLUGIN_PACKAGES%" -DKETTLE_LOG_SIZE_LIMIT="%KETTLE_LOG_SIZE_LIMIT%"
 
 REM ***************
 REM ** Run...    **
 REM ***************
 
-start javaw %OPT% -jar launcher\launcher.jar %LIBSPATH% %_cmdline%
+start javaw %OPT% -jar launcher\launcher.jar -lib %LIBSPATH% %_cmdline%
