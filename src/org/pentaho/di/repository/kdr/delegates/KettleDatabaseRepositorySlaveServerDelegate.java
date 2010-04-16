@@ -4,6 +4,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleObjectExistsException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -35,7 +36,12 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
 
   public void saveSlaveServer(SlaveServer slaveServer, ObjectId id_transformation, boolean isUsedByTransformation)
       throws KettleException {
-    saveSlaveServer(slaveServer, id_transformation, isUsedByTransformation, false);
+    try {
+      saveSlaveServer(slaveServer, id_transformation, isUsedByTransformation, false);
+    } catch (KettleObjectExistsException e) {
+      // This is an expected possibility here. Common objects are not going to overwrite database objects
+      log.logBasic(e.getMessage());
+    }
   }
 
   public void saveSlaveServer(SlaveServer slaveServer, ObjectId id_transformation, boolean isUsedByTransformation,
@@ -54,7 +60,7 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
           repository.deleteSlave(existingSlaveId);
           updateSlave(slaveServer);
         } else {
-          throw new KettleException("Failed to save object to repository. Object [" + slaveServer.getName()
+          throw new KettleObjectExistsException("Failed to save object to repository. Object [" + slaveServer.getName()
               + "] already exists.");
         }
       } else {
@@ -97,7 +103,7 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
   public synchronized ObjectId insertSlave(SlaveServer slaveServer) throws KettleException {
     if (getSlaveID(slaveServer.getName()) != null) {
       // This slave server name is already in use. Throw an exception.
-      throw new KettleException("Failed to create object in repository. Object [" + slaveServer.getName()
+      throw new KettleObjectExistsException("Failed to create object in repository. Object [" + slaveServer.getName()
           + "] already exists.");
     }
 

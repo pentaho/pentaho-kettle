@@ -8,6 +8,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleObjectExistsException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.repository.ObjectId;
@@ -64,7 +65,12 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
     }
     
     public void saveClusterSchema(ClusterSchema clusterSchema, String versionComment, ObjectId id_transformation, boolean isUsedByTransformation) throws KettleException {
-      saveClusterSchema(clusterSchema, versionComment, id_transformation, isUsedByTransformation, false);
+      try {
+        saveClusterSchema(clusterSchema, versionComment, id_transformation, isUsedByTransformation, false);
+      } catch (KettleObjectExistsException e) {
+        // This is an expected possibility here. Common objects are not going to overwrite database objects
+        log.logBasic(e.getMessage());
+      }
     }
 
     public void saveClusterSchema(ClusterSchema clusterSchema, String versionComment, ObjectId id_transformation, boolean isUsedByTransformation, boolean overwrite) throws KettleException
@@ -84,7 +90,7 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
             repository.deleteClusterSchema(existingClusterSchemaId);
             updateCluster(clusterSchema);
           } else {
-            throw new KettleException("Failed to save object to repository. Object [" + clusterSchema.getName() + "] already exists.");
+            throw new KettleObjectExistsException("Failed to save object to repository. Object [" + clusterSchema.getName() + "] already exists.");
           }
         } else {
           // There are no naming collisions (either it is the same object or the name is unique)
@@ -117,7 +123,7 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
     {
       if(getClusterID(clusterSchema.getName()) != null) {
         // This cluster schema name is already in use. Throw an exception.
-        throw new KettleException("Failed to create object in repository. Object [" + clusterSchema.getName() + "] already exists.");
+        throw new KettleObjectExistsException("Failed to create object in repository. Object [" + clusterSchema.getName() + "] already exists.");
       }
       
     	ObjectId id = repository.connectionDelegate.getNextClusterID();

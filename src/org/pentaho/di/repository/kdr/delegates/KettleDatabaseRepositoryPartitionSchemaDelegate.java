@@ -4,6 +4,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleObjectExistsException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.partition.PartitionSchema;
@@ -39,7 +40,12 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
 	}
 	
 	public void savePartitionSchema(PartitionSchema partitionSchema, ObjectId id_transformation, boolean isUsedByTransformation) throws KettleException {
-	  savePartitionSchema(partitionSchema, id_transformation, isUsedByTransformation, false);
+	  try {
+	    savePartitionSchema(partitionSchema, id_transformation, isUsedByTransformation, false);
+	  } catch (KettleObjectExistsException e) {
+	    // This is an expected possibility here. Common objects are not going to overwrite database objects
+	    log.logBasic(e.getMessage());
+	  }
 	}
 
 	public void savePartitionSchema(PartitionSchema partitionSchema, ObjectId id_transformation, boolean isUsedByTransformation, boolean overwrite) throws KettleException
@@ -60,7 +66,7 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
           updatePartitionSchema(partitionSchema);
           repository.delPartitions(partitionSchema.getObjectId());
         } else {
-          throw new KettleException("Failed to save object to repository. Object [" + partitionSchema.getName() + "] already exists.");
+          throw new KettleObjectExistsException("Failed to save object to repository. Object [" + partitionSchema.getName() + "] already exists.");
         }
       } else {
         // There are no naming collisions (either it is the same object or the name is unique)
@@ -112,7 +118,7 @@ public class KettleDatabaseRepositoryPartitionSchemaDelegate extends KettleDatab
     {
       if(getPartitionSchemaID(partitionSchema.getName()) != null) {
         // This partition schema name is already in use. Throw an exception.
-        throw new KettleException("Failed to create object in repository. Object [" + partitionSchema.getName() + "] already exists.");
+        throw new KettleObjectExistsException("Failed to create object in repository. Object [" + partitionSchema.getName() + "] already exists.");
       }
       
     	ObjectId id = repository.connectionDelegate.getNextPartitionSchemaID();
