@@ -30,6 +30,7 @@ import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.DoubleMetaphone;
 
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLCheck;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
@@ -1314,8 +1315,7 @@ public class ValueDataUtil
     	FileObject file=null;
     	try {
     		file=KettleVFS.getFileObject(filename);
-    		//return CheckXML.isXMLFileWellFormed(file);
-    		return true;
+    		return XMLCheck.isXMLFileWellFormed(file);
     	}catch(Exception e) {
     	}finally {
     		if(file!=null) try{file.close();}catch(Exception e){};
@@ -1332,8 +1332,7 @@ public class ValueDataUtil
     {
     	if(dataA==null) return false;
     	try {
-    		//return CheckXML.isXMLWellFormed(new ByteArrayInputStream(metaA.getBinary(dataA)));
-    		return false;
+    		return XMLCheck.isXMLWellFormed(new ByteArrayInputStream(metaA.getBinary(dataA)));
     	}catch(Exception e) {}
     	return false;
     }

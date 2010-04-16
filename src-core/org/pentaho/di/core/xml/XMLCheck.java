@@ -9,7 +9,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.*/
  
-package org.pentaho.di.job.entries.xmlwellformed;
+package org.pentaho.di.core.xml;
 
 import java.io.InputStream;
 
@@ -21,7 +21,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.xml.sax.helpers.DefaultHandler;
 
 
-public class CheckXML {
+public class XMLCheck {
 
 	 public static class XMLTreeHandler extends DefaultHandler {
 		   

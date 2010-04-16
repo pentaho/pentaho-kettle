@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLCheck;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -386,7 +387,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	 {
 			boolean retval=false;
 			try{
-				retval=CheckXML.isXMLFileWellFormed(file);
+				retval=XMLCheck.isXMLFileWellFormed(file);
 		    } catch (Exception e) {
 		        logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ErrorCheckingFile",file.toString(),e.getMessage()));
 		    }
