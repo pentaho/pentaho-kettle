@@ -994,12 +994,11 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 
 	private void ok()
 	{
-
        if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Please give this job entry a name!");
-			mb.setText("Specify a name");
+			mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+			mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
 			mb.open(); 
 			return;
         }
