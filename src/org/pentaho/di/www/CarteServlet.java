@@ -22,25 +22,29 @@ import javax.servlet.http.HttpServletResponse;
 public class CarteServlet extends HttpServlet {
 
   private static final long serialVersionUID = 2434694833497859776L;
-  // by
+
   private AddExportServlet addExportServlet = new AddExportServlet();
   private AddJobServlet addJobServlet = new AddJobServlet();
   private AddTransServlet addTransServlet = new AddTransServlet();
   private AllocateServerSocketServlet allocateServerSocketServlet = new AllocateServerSocketServlet();
   private CleanupTransServlet cleanupTransServlet = new CleanupTransServlet();
   private GetJobStatusServlet getJobStatusServlet = new GetJobStatusServlet();
+  private GetRootServlet getRootServlet = new GetRootServlet();
   private GetSlavesServlet getSlavesServlet = new GetSlavesServlet();
   private GetStatusServlet getStatusServlet = new GetStatusServlet();
   private GetTransStatusServlet getTransStatusServlet = new GetTransStatusServlet();
   private PauseTransServlet pauseTransServlet = new PauseTransServlet();
   private PrepareExecutionTransServlet prepareExecutionTransServlet = new PrepareExecutionTransServlet();
   private RegisterSlaveServlet registerSlaveServlet = new RegisterSlaveServlet();
+  private RemoveTransServlet removeTransServlet = new RemoveTransServlet();
+  private RemoveJobServlet removeJobServlet = new RemoveJobServlet();
+  private SniffStepServlet sniffStepServlet = new SniffStepServlet();
   private StartExecutionTransServlet startExecutionTransServlet = new StartExecutionTransServlet();
   private StartJobServlet startJobServlet = new StartJobServlet();
   private StartTransServlet startTransServlet = new StartTransServlet();
   private StopJobServlet stopJobServlet = new StopJobServlet();
   private StopTransServlet stopTransServlet = new StopTransServlet();
-
+  
   public CarteServlet() {
   }
 
@@ -62,6 +66,8 @@ public class CarteServlet extends HttpServlet {
       allocateServerSocketServlet.doGet(req, resp);
     } else if (uri.contains(CleanupTransServlet.CONTEXT_PATH)) {
       cleanupTransServlet.doGet(req, resp);
+    } else if (uri.contains(GetRootServlet.CONTEXT_PATH)) {
+      getRootServlet.doGet(req, resp);
     } else if (uri.contains(GetJobStatusServlet.CONTEXT_PATH)) {
       getJobStatusServlet.doGet(req, resp);
     } else if (uri.contains(GetSlavesServlet.CONTEXT_PATH)) {
@@ -86,6 +92,12 @@ public class CarteServlet extends HttpServlet {
       stopJobServlet.doGet(req, resp);
     } else if (uri.contains(StopTransServlet.CONTEXT_PATH)) {
       stopTransServlet.doGet(req, resp);
+    } else if (uri.contains(RemoveTransServlet.CONTEXT_PATH)) {
+      removeTransServlet.doGet(req, resp);
+    } else if (uri.contains(RemoveJobServlet.CONTEXT_PATH)) {
+      removeJobServlet.doGet(req, resp);
+    } else if (uri.contains(SniffStepServlet.CONTEXT_PATH)) {
+      sniffStepServlet.doGet(req, resp);
     }
   }
 
