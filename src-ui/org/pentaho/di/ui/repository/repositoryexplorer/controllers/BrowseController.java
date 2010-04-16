@@ -51,6 +51,7 @@ import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
+import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -58,6 +59,7 @@ import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.custom.DialogConstant;
 import org.pentaho.ui.xul.util.XulDialogCallback;
+import org.pentaho.ui.xul.util.XulDialogCallback.Status;
 
 /**
  *
@@ -80,6 +82,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     }
 
   };
+
+  private UIRepositoryObject repoObject;
+  private UIRepositoryDirectory repoDir;
 
   protected XulTree folderTree;
 
@@ -104,8 +109,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   List<UIRepositoryObject> repositoryObjects;
 
   private MainController mainController;
-  
+
   private XulMessageBox messageBox;
+
+  private XulConfirmBox confirmBox;
 
   /**
    * Allows for lookup of a UIRepositoryDirectory by ObjectId. This allows the reuse of instances that are inside a UI
@@ -328,15 +335,43 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   public void deleteContent() throws Exception {
     try {
       for (Object object : fileTable.getSelectedItems()) {
-        UIRepositoryObject repoObject = null;
         if (object instanceof UIRepositoryObject) {
           repoObject = (UIRepositoryObject) object;
           if (repoObject != null) {
-            repoObject.delete();
-            if (repoObject instanceof UIRepositoryDirectory) {
-              directoryBinding.fireSourceChanged();
+            // If content to be deleted is a folder and they have either subfolder or jobs or transformation in it,
+            // We will display a warning message that folder is not empty. If you choose to delete this folder, all its item(s)
+            // will be lost. If the user accept this, then we will delete that folder otherwise we will end this method call
+            if (repoObject instanceof UIRepositoryDirectory
+                && (((UIRepositoryDirectory) repoObject).getChildren().size() > 0 || ((UIRepositoryDirectory) repoObject).getRepositoryObjects().size() > 0)) {
+              confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
+              confirmBox.setTitle(messages.getString("BrowseController.DeleteNonEmptyFolderWarningTitle")); //$NON-NLS-1$
+              confirmBox.setMessage(messages.getString("BrowseController.DeleteNonEmptyFolderWarningMessage")); //$NON-NLS-1$
+              confirmBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+              confirmBox.setCancelLabel(messages.getString("Dialog.Cancel")); //$NON-NLS-1$
+              confirmBox.addDialogCallback(new XulDialogCallback() {
+
+                public void onClose(XulComponent sender, Status returnCode, Object retVal) {
+                  if (returnCode == Status.ACCEPT) {
+                    try {
+                      deleteContent(repoObject);
+                    } catch (Exception e) {
+                      messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
+                      messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+                      messageBox.setMessage(messages.getString(e.getLocalizedMessage()));
+                      messageBox.open();
+                    }
+                  }
+                }
+
+                public void onError(XulComponent sender, Throwable t) {
+                  throw new RuntimeException(t);
+                }
+              });
+              confirmBox.open();
+              break;
+            } else {
+              deleteContent(repoObject);
             }
-            selectedItemsBinding.fireSourceChanged();
           }
         }
       }
@@ -349,6 +384,14 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   private String newName = null;
+
+  private void deleteContent(UIRepositoryObject repoObject) throws Exception {
+    repoObject.delete();
+    if (repoObject instanceof UIRepositoryDirectory) {
+      directoryBinding.fireSourceChanged();
+    }
+    selectedItemsBinding.fireSourceChanged();
+  }
 
   public void createFolder() throws Exception {
 
@@ -390,13 +433,43 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   public void deleteFolder() throws Exception {
     try {
       for (Object object : folderTree.getSelectedItems()) {
-        UIRepositoryDirectory repoDir = null;
+        
         if (object instanceof UIRepositoryDirectory) {
           repoDir = (UIRepositoryDirectory) object;
           if (repoDir != null) {
-            repoDir.delete();
-            directoryBinding.fireSourceChanged();
-            selectedItemsBinding.fireSourceChanged();
+            // If content to be deleted is a folder and they have either sub folder or jobs or transformation in it,
+            // We will display a warning message that folder is not empty. If you choose to delete this folder, all its item(s)
+            // will be lost. If the user accept this, then we will delete that folder otherwise we will end this method call
+            if (repoDir.getChildren().size() > 0 || repoDir.getRepositoryObjects().size() > 0) {
+              confirmBox = (XulConfirmBox) document.createElement("confirmbox");//$NON-NLS-1$
+              confirmBox.setTitle(messages.getString("BrowseController.DeleteNonEmptyFolderWarningTitle")); //$NON-NLS-1$
+              confirmBox.setMessage(messages.getString("BrowseController.DeleteNonEmptyFolderWarningMessage")); //$NON-NLS-1$
+              confirmBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+              confirmBox.setCancelLabel(messages.getString("Dialog.Cancel")); //$NON-NLS-1$
+              confirmBox.addDialogCallback(new XulDialogCallback() {
+
+                public void onClose(XulComponent sender, Status returnCode, Object retVal) {
+                  if (returnCode == Status.ACCEPT) {
+                    try {
+                      deleteFolder(repoDir);
+                    } catch (Exception e) {
+                      messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
+                      messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+                      messageBox.setMessage(messages.getString(e.getLocalizedMessage()));
+                      messageBox.open();
+                    }
+                  }
+                }
+
+                public void onError(XulComponent sender, Throwable t) {
+                  throw new RuntimeException(t);
+                }
+              });
+              confirmBox.open();
+              break;
+            } else {
+              deleteFolder(repoDir);
+            }
           }
         }
       }
@@ -407,7 +480,11 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       messageBox.open();
     }
   }
-
+  private void deleteFolder(UIRepositoryDirectory repoDir) throws Exception{
+    repoDir.delete();
+    directoryBinding.fireSourceChanged();
+    selectedItemsBinding.fireSourceChanged();
+  }
   public void renameFolder() throws Exception {
     try {
       Collection<UIRepositoryDirectory> directory = folderTree.getSelectedItems();

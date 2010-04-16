@@ -452,7 +452,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
 	public void deleteRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.DELETE_DIRECTORY);
-		directoryDelegate.delRepositoryDirectory(dir);
+		directoryDelegate.delRepositoryDirectory(dir, true);
 	}
 
 	/**

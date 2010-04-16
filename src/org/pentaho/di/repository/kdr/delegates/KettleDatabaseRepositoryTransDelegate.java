@@ -1219,6 +1219,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
       log.logBasic("row = [" + table + "]");
       
       repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
+      repository.connectionDelegate.getDatabase().commit();
 	  }
 	}
 }
