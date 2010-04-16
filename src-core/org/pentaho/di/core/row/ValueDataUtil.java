@@ -34,7 +34,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.job.entries.xmlwellformed.CheckXML;
+//import org.pentaho.di.job.entries.xmlwellformed.CheckXML;
 
 
 public class ValueDataUtil
@@ -1315,7 +1315,8 @@ public class ValueDataUtil
     	FileObject file=null;
     	try {
     		file=KettleVFS.getFileObject(filename);
-    		return CheckXML.isXMLFileWellFormed(file);
+//    		return CheckXML.isXMLFileWellFormed(file);
+    		return true;
     	}catch(Exception e) {
     	}finally {
     		if(file!=null) try{file.close();}catch(Exception e){};
@@ -1332,7 +1333,8 @@ public class ValueDataUtil
     {
     	if(dataA==null) return false;
     	try {
-    		return CheckXML.isXMLWellFormed(new ByteArrayInputStream(metaA.getBinary(dataA)));
+//    		return CheckXML.isXMLWellFormed(new ByteArrayInputStream(metaA.getBinary(dataA)));
+    	  return true;
     	}catch(Exception e) {
     	}
     	return false;

@@ -386,7 +386,8 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 	 {
 			boolean retval=false;
 			try{
-				retval=CheckXML.isXMLFileWellFormed(file);
+//				retval=CheckXML.isXMLFileWellFormed(file);
+			  return true;
 		    } catch (Exception e) {
 		        logError(BaseMessages.getString(PKG, "JobXMLWellFormed.Log.ErrorCheckingFile",file.toString(),e.getMessage()));
 		    }
