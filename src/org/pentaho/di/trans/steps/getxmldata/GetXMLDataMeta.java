@@ -57,7 +57,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 	public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
 	public static final String[] RequiredFilesCode = new String[] {"N", "Y"};
 	
-	
+	public static final String AT= "@";
+	public static final String N0DE_SEPARATOR = "/";
 	
 	/** Array of filenames */
 	private  String  fileName[]; 

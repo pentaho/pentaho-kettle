@@ -47,6 +47,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 
+
 /**
  * Read XML files, parse them and convert them to rows and writes these to one or more output 
  * streams.
@@ -203,10 +204,10 @@ public class GetXMLData extends BaseStep implements StepInterface
 				{
 					if (element.getNamespacePrefix() != null && element.getNamespacePrefix().length() > 0) 
 					{
-						path = "/" + element.getNamespacePrefix()
+						path = GetXMLDataMeta.N0DE_SEPARATOR + element.getNamespacePrefix()
 								+ ":" + element.getName() + path;
 					} else {
-						path = "/" + element.getName() + path;
+						path = GetXMLDataMeta.N0DE_SEPARATOR + element.getName() + path;
 					}
 					element = element.getParent();
 				}
@@ -396,18 +397,17 @@ public class GetXMLData extends BaseStep implements StepInterface
 		{
 			String fullPath = loopPath;
 			if (!path.equals(fullPath)) {
-				for (String tmp : path.split("/")) 
+				for (String tmp : path.split(GetXMLDataMeta.N0DE_SEPARATOR)) 
 				{
 					if (tmp.equals("..")) 
 					{
-						fullPath = fullPath.substring(0, fullPath
-								.lastIndexOf("/"));
+						fullPath = fullPath.substring(0, fullPath.lastIndexOf(GetXMLDataMeta.N0DE_SEPARATOR));
 					} else {
-						fullPath += "/" + tmp;
+						fullPath += GetXMLDataMeta.N0DE_SEPARATOR + tmp;
 					}
 				}
 			}
-			int[] indexs = new int[fullPath.split("/").length - 1];
+			int[] indexs = new int[fullPath.split(GetXMLDataMeta.N0DE_SEPARATOR).length - 1];
 			java.util.Arrays.fill(indexs, -1);
 			int length = 0;
 			for (int i = 0; i < data.NSPath.size(); i++) 
@@ -416,25 +416,24 @@ public class GetXMLData extends BaseStep implements StepInterface
 						&& fullPath
 								.startsWith(data.NSPath.get(i))) 
 				{
-					java.util.Arrays.fill(indexs, data.NSPath
-							.get(i).split("/").length - 2,
+					java.util.Arrays.fill(indexs, data.NSPath.get(i).split(GetXMLDataMeta.N0DE_SEPARATOR).length - 2,
 							indexs.length, i);
 					length = data.NSPath.get(i).length();
 				}
 			}
 
 			StringBuilder newPath = new StringBuilder();
-			String[] pathStrs = path.split("/");
+			String[] pathStrs = path.split(GetXMLDataMeta.N0DE_SEPARATOR);
 			for (int i = 0; i < pathStrs.length; i++) 
 			{
 				String tmp = pathStrs[i];
 				if (newPath.length() > 0) 
 				{
-					newPath.append("/");
+					newPath.append(GetXMLDataMeta.N0DE_SEPARATOR);
 				}
 				if (tmp.length() > 0 && tmp.indexOf(":") == -1
 						&& tmp.indexOf(".") == -1
-						&& tmp.indexOf("@") == -1) {
+						&& tmp.indexOf(GetXMLDataMeta.AT) == -1) {
 					int index = indexs[i + indexs.length
 							- pathStrs.length];
 					if (index >= 0) 
@@ -676,39 +675,22 @@ public class GetXMLData extends BaseStep implements StepInterface
 				// Get field
 				GetXMLDataField xmlDataField = meta.getInputFields()[i];
 				// Get the Path to look for
-				String XPathValue = environmentSubstitute(xmlDataField.getXPath());
-				// Get the path type
-				String Element_Type = xmlDataField.getElementTypeCode();
-				
+				String XPathValue = xmlDataField.getXPath();
+
 				if(meta.isuseToken())
 				{
-					
 					// See if user use Token inside path field
 					// The syntax is : @_Fieldname-
 					// PDI will search for Fieldname value and replace it
 					// Fieldname must be defined before the current node
-					int indexvarstart=XPathValue.indexOf(data.tokenStart);
-					int indexvarend=XPathValue.indexOf(data.tokenEnd);
-
-					if(indexvarstart>=0 && indexvarend>=0)
-					{
-						String NameVarInputField = XPathValue.substring(indexvarstart+2, indexvarend);
-						for (int k=0;k<meta.getInputFields().length;k++)
-						{
-							GetXMLDataField Tmp_xmlInputField = meta.getInputFields()[k];
-							if(Tmp_xmlInputField.getName().equalsIgnoreCase(NameVarInputField))
-							{		
-								XPathValue = XPathValue.replaceAll(data.tokenStart+NameVarInputField+data.tokenEnd,"'"+ outputRowData[data.totalpreviousfields+k] +"'");
-								if (log.isDetailed() ) 	logDetailed(XPathValue);
-							}
-						}	
-					}
-				}// end if use token
+					XPathValue=substituteToken(XPathValue, outputRowData);
+					if (isDetailed() ) 	logDetailed(toString(),XPathValue);
+				}
 				
 				// Get node value
 				String nodevalue =null;
-				if (!Element_Type.equals("node")) XPathValue='@'+XPathValue;  //TODO only put @ to the last element in path, not in front at all
 				
+				// Handle namespaces
 				if(meta.isNamespaceAware())
 				{
 					XPath xpathField = node.createXPath(addNSPrefix(XPathValue, data.PathValue));
@@ -722,17 +704,17 @@ public class GetXMLData extends BaseStep implements StepInterface
 				// Do trimming
 				switch (xmlDataField.getTrimType())
 				{
-				case GetXMLDataField.TYPE_TRIM_LEFT:
-					nodevalue = Const.ltrim(nodevalue);
-					break;
-				case GetXMLDataField.TYPE_TRIM_RIGHT:
-					nodevalue = Const.rtrim(nodevalue);
-					break;
-				case GetXMLDataField.TYPE_TRIM_BOTH:
-					nodevalue = Const.trim(nodevalue);
-					break;
-				default:
-					break;
+					case GetXMLDataField.TYPE_TRIM_LEFT:
+						nodevalue = Const.ltrim(nodevalue);
+						break;
+					case GetXMLDataField.TYPE_TRIM_RIGHT:
+						nodevalue = Const.rtrim(nodevalue);
+						break;
+					case GetXMLDataField.TYPE_TRIM_BOTH:
+						nodevalue = Const.trim(nodevalue);
+						break;
+					default:
+						break;
 				}
 				
 				if(meta.isInFields())
@@ -790,7 +772,43 @@ public class GetXMLData extends BaseStep implements StepInterface
 		return outputRowData;
 	}
 
+	public String substituteToken(String aString, Object[] outputRowData)
+	{
+		if (aString==null) return null;
 
+		StringBuffer buffer = new StringBuffer();
+
+		String rest = aString;
+
+		// search for closing string
+		int i = rest.indexOf(data.tokenStart);
+		while (i > -1) {
+			int j = rest.indexOf(data.tokenEnd, i + data.tokenStart.length());
+			// search for closing string
+			if (j > -1) {
+				String varName = rest.substring(i + data.tokenStart.length(), j);
+				Object Value = varName;
+				
+				for (int k=0;k<data.nrInputFields;k++) {
+					GetXMLDataField Tmp_xmlInputField = meta.getInputFields()[k];
+					if(Tmp_xmlInputField.getName().equalsIgnoreCase(varName)) {	
+						Value="'"+ outputRowData[data.totalpreviousfields+k] +"'";
+					}
+				}	
+				buffer.append(rest.substring(0, i));
+				buffer.append(Value);
+				rest = rest.substring(j + data.tokenEnd.length());
+			} else {
+				// no closing tag found; end the search
+				buffer.append(rest);
+				rest = "";
+			}
+			// keep searching
+			i = rest.indexOf(data.tokenEnd);
+		}
+		buffer.append(rest);
+		return buffer.toString();
+	}
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(GetXMLDataMeta)smi;
@@ -800,8 +818,36 @@ public class GetXMLData extends BaseStep implements StepInterface
 		{
 			data.rownr = 1L;
 			data.nrInputFields=meta.getInputFields().length;
+			
+			// correct attribut path if needed
+			// do it once
+			for(int i=0; i<data.nrInputFields; i++) {
+				GetXMLDataField xmlDataField = meta.getInputFields()[i];
+				if (xmlDataField.getElementType() == GetXMLDataField.ELEMENT_TYPE_ATTRIBUT){
+					// We have an attribut
+					// do we need to add leading @
+					String XPathValue=environmentSubstitute(xmlDataField.getXPath());
+					
+					//Only put @ to the last element in path, not in front at all
+					int last=XPathValue.lastIndexOf(GetXMLDataMeta.N0DE_SEPARATOR);
+					if(last>-1){
+						last++;
+						String attribut=XPathValue.substring(last, XPathValue.length());
+						if(!attribut.startsWith(GetXMLDataMeta.AT)) {
+							XPathValue=XPathValue.substring(0, last)+GetXMLDataMeta.AT+attribut;
+							xmlDataField.setXPath(XPathValue);
+						}
+					}else{
+						if(!XPathValue.startsWith(GetXMLDataMeta.AT)) {
+							XPathValue=GetXMLDataMeta.AT+XPathValue; 
+							xmlDataField.setXPath(XPathValue);
+						}
+					}
+				}
+			}
+			
 			data.PathValue=environmentSubstitute(meta.getLoopXPath());
-			if(!data.PathValue.substring(0,1).equals("/")) data.PathValue="/" + data.PathValue;
+			if(!data.PathValue.substring(0,1).equals(GetXMLDataMeta.N0DE_SEPARATOR)) data.PathValue=GetXMLDataMeta.N0DE_SEPARATOR + data.PathValue;
 			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.LoopXPath",data.PathValue));
 			
 			data.prunePath=environmentSubstitute(meta.getPrunePath());
@@ -810,12 +856,12 @@ public class GetXMLData extends BaseStep implements StepInterface
 					data.prunePath=null; 
 				} else {
 					// ensure a leading slash
-					if(!data.prunePath.startsWith("/")) data.prunePath="/"+data.prunePath;
+					if(!data.prunePath.startsWith(GetXMLDataMeta.N0DE_SEPARATOR)) data.prunePath=GetXMLDataMeta.N0DE_SEPARATOR+data.prunePath;
 					// check if other conditions apply that do not allow pruning
 					if(meta.isInFields()) data.prunePath=null; // not possible by design, could be changed later on
 				}
 			}
-				
+			
 			return true;
 		}
 		return false;		

@@ -1535,7 +1535,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	{
 		String retval=inputstring;
 		retval=retval.replace(wLoopXPath.getText(), "");
-		while(retval.startsWith("/"))
+		while(retval.startsWith(GetXMLDataMeta.N0DE_SEPARATOR))
 		{
 			retval=retval.substring(1, retval.length());
 		}
