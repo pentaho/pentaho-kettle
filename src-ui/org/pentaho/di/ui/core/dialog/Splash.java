@@ -100,10 +100,9 @@ public class Splash {
           drawVersionWarning(e);
         } else if (Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)) {
           versionText = BaseMessages.getString(PKG, "SplashDialog.ReleaseCandidate") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
-          drawVersionWarning(e);
         }
         else if (Const.RELEASE.equals(Const.ReleaseType.PREVIEW)) {
-            versionText = BaseMessages.getString(PKG, "SplashDialog.PreviewRelease") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
+          versionText = BaseMessages.getString(PKG, "SplashDialog.PreviewRelease") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
         }
 
         Font verFont = new Font(e.display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$

@@ -4661,10 +4661,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     //  resolve the release text
     String releaseText = "";
     if (Const.RELEASE.equals(Const.ReleaseType.PREVIEW)) {
-      releaseText = "Preview Release";
-    } else if (Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)
-        || Const.RELEASE.equals(Const.ReleaseType.MILESTONE)) {
-      releaseText = "Developer Release ";
+      releaseText = BaseMessages.getString(PKG, "Spoon.PreviewRelease.HelpAboutText");
+    } else if (Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)) {
+        releaseText = BaseMessages.getString(PKG, "Spoon.Candidate.HelpAboutText");
+    } else if (Const.RELEASE.equals(Const.ReleaseType.MILESTONE)) {
+      releaseText = BaseMessages.getString(PKG, "Spoon.Milestone.HelpAboutText");
     }
 
     //  build a message
@@ -6417,7 +6418,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
 
     //  If we are a MILESTONE or RELEASE_CANDIDATE    
-    if (Const.RELEASE.equals(Const.ReleaseType.MILESTONE) || Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)) {
+    if (Const.RELEASE.equals(Const.ReleaseType.MILESTONE)) { // || Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)) {
 
       //  display the same warning message
       MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING);

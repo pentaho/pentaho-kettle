@@ -645,7 +645,7 @@ public class Const
     /**
      * The release type of this compilation
      */
-    public static final ReleaseType RELEASE = ReleaseType.PREVIEW;
+    public static final ReleaseType RELEASE = ReleaseType.RELEASE_CANDIDATE;
     
     /** 
      *  rounds double f to any number of places after decimal point
