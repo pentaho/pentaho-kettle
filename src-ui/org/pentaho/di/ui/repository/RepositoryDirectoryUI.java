@@ -26,6 +26,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -49,7 +51,7 @@ public class RepositoryDirectoryUI {
      * @param getJobs Include jobs in the tree or not
      * @throws KettleDatabaseException
      */
-	public static void getTreeWithNames(TreeItem ti, Repository rep, Map<String, RepositoryObject> objectMap, Color dircolor, int sortPosition, boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectory dir, String filterString, Pattern pattern) throws KettleDatabaseException
+	public static void getTreeWithNames(TreeItem ti, Repository rep, Map<String, RepositoryElementMetaInterface> objectMap, Color dircolor, int sortPosition, boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectoryInterface dir, String filterString, Pattern pattern) throws KettleDatabaseException
 	{
 		ti.setText(dir.getName());
 		ti.setForeground(dircolor);
@@ -66,12 +68,12 @@ public class RepositoryDirectoryUI {
 		
 		try
 		{
-            List<RepositoryObject> repositoryObjects = new ArrayList<RepositoryObject>();
+            List<RepositoryElementMetaInterface> repositoryObjects = new ArrayList<RepositoryElementMetaInterface>();
             
 			// Then show the transformations & jobs in that directory...
             if (getTransformations)
             {
-                List<RepositoryObject> repositoryTransformations = rep.getTransformationObjects(dir.getObjectId(), includeDeleted);
+                List<RepositoryElementMetaInterface> repositoryTransformations = rep.getTransformationObjects(dir.getObjectId(), includeDeleted);
                 if (repositoryTransformations!=null)
                 {
                     repositoryObjects.addAll(repositoryTransformations);
@@ -79,7 +81,7 @@ public class RepositoryDirectoryUI {
             }
             if (getJobs)
             {
-                List<RepositoryObject> repositoryJobs = rep.getJobObjects(dir.getObjectId(), includeDeleted);
+                List<RepositoryElementMetaInterface> repositoryJobs = rep.getJobObjects(dir.getObjectId(), includeDeleted);
                 if (repositoryJobs!=null)
                 {
                     repositoryObjects.addAll(repositoryJobs);
@@ -93,7 +95,7 @@ public class RepositoryDirectoryUI {
             for (int i=0;i<repositoryObjects.size();i++)
             {
             	boolean add=false;
-            	RepositoryObject repositoryObject = (RepositoryObject)repositoryObjects.get(i);
+            	RepositoryElementMetaInterface repositoryObject = repositoryObjects.get(i);
                 
                 if(filterString==null && pattern==null)
                 	add=true;
@@ -180,7 +182,7 @@ public class RepositoryDirectoryUI {
 	 * @param ti The TreeItem to set the directory tree on
 	 * @param dircolor The color of the directory tree item.
 	 */
-	public static void getDirectoryTree(TreeItem ti, Color dircolor, RepositoryDirectory dir)
+	public static void getDirectoryTree(TreeItem ti, Color dircolor, RepositoryDirectoryInterface dir)
 	{
 		ti.setText(dir.getName());
 		ti.setForeground(dircolor);

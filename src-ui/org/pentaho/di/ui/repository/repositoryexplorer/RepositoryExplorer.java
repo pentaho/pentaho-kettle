@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -56,8 +55,6 @@ public class RepositoryExplorer {
   private MainController mainController = new MainController();
 
   private XulDomContainer container;
-
-  private Directory repositoryDirectory;
 
   private ResourceBundle resourceBundle = new ResourceBundle() {
 
@@ -133,13 +130,5 @@ public class RepositoryExplorer {
     XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
     dialog.show();
 
-  }
-
-  public Directory getRepositoryDirectory() {
-    return repositoryDirectory;
-  }
-
-  public void setRepositoryDirectory(Directory repositoryDirectory) {
-    this.repositoryDirectory = repositoryDirectory;
   }
 }

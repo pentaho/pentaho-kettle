@@ -30,6 +30,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 
@@ -57,7 +58,7 @@ public class CopyTableWizardPage3 extends WizardPage
 
 	private PropsUI props;
 	private Repository rep;
-	private RepositoryDirectory directory;
+	private RepositoryDirectoryInterface directory;
 	private Shell shell;
 
     /** @deprecated */
@@ -188,7 +189,7 @@ public class CopyTableWizardPage3 extends WizardPage
 	/**
 	 * @return Returns the directory.
 	 */
-	public RepositoryDirectory getDirectory()
+	public RepositoryDirectoryInterface getDirectory()
 	{
 		return directory;
 	}

@@ -25,6 +25,7 @@ import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
@@ -212,7 +213,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
     	}
     }
 
-	public boolean existsJobMeta(String name, RepositoryDirectory repositoryDirectory, RepositoryObjectType objectType) throws KettleException {
+	public boolean existsJobMeta(String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType) throws KettleException {
 		try {
 			return (getJobID(name, repositoryDirectory.getObjectId()) != null);
 		} catch (KettleException e) {
@@ -227,7 +228,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	 * @param repdir The directory in which the job resides.
 	 * @throws KettleException
 	 */
-	public JobMeta loadJobMeta(String jobname, RepositoryDirectory repdir) throws KettleException {
+	public JobMeta loadJobMeta(String jobname, RepositoryDirectoryInterface repdir) throws KettleException {
 		return loadJobMeta(jobname, repdir, null);
 	}
 
@@ -240,7 +241,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	 * @param repdir The directory in which the job resides.
 	 * @throws KettleException
 	 */
-	public JobMeta loadJobMeta(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor) throws KettleException {
+	public JobMeta loadJobMeta(String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor) throws KettleException {
 		
 		JobMeta jobMeta = new JobMeta();
 		synchronized(repository)
@@ -712,7 +713,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
                  {
                      String jobName = jobRow.getString(quote(KettleDatabaseRepository.FIELD_JOB_NAME), "<name not found>");
                      long id_directory = jobRow.getInteger(quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY), -1L);
-                     RepositoryDirectory dir = repository.loadRepositoryDirectoryTree().findDirectory(new LongObjectId(id_directory)); // always reload the directory tree!
+                     RepositoryDirectoryInterface dir = repository.loadRepositoryDirectoryTree().findDirectory(new LongObjectId(id_directory)); // always reload the directory tree!
                      
                      jobList[i]=dir.getPathObjectCombination(jobName);
                  }
@@ -813,7 +814,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 		repository.connectionDelegate.getDatabase().execStatement(sql, par.getRowMeta(), par.getData());
 	}
 
-	public synchronized void renameJob(ObjectId id_job, RepositoryDirectory newParentDir, String newname) throws KettleException
+	public synchronized void renameJob(ObjectId id_job, RepositoryDirectoryInterface newParentDir, String newname) throws KettleException
 	{
 	  if(newParentDir != null || newname != null) {
 	    RowMetaAndData table = new RowMetaAndData();

@@ -23,7 +23,7 @@ import java.util.List;
  * @author Matt
  * 
  */
-public class RepositoryObject implements RepositoryContent
+public class RepositoryObject implements RepositoryElementMetaInterface
 {
 
 	@Deprecated
@@ -32,7 +32,7 @@ public class RepositoryObject implements RepositoryContent
     public static final String STRING_OBJECT_TYPE_JOB =            "Job";
     
     private String name;
-    private RepositoryDirectory repositoryDirectory;
+    private RepositoryDirectoryInterface repositoryDirectory;
     private String modifiedUser;
     private Date   modifiedDate;
     private RepositoryObjectType objectType; 
@@ -49,7 +49,7 @@ public class RepositoryObject implements RepositoryContent
      * @param modifiedUser
      * @param modifiedDate
      */
-    public RepositoryObject(ObjectId objectId, String name, RepositoryDirectory repositoryDirectory, String modifiedUser, Date modifiedDate, RepositoryObjectType objectType, String description, boolean deleted)
+    public RepositoryObject(ObjectId objectId, String name, RepositoryDirectoryInterface repositoryDirectory, String modifiedUser, Date modifiedDate, RepositoryObjectType objectType, String description, boolean deleted)
     {
         this();
         this.objectId = objectId;
@@ -126,11 +126,11 @@ public class RepositoryObject implements RepositoryContent
         return one.compareTo(two);
     }
     
-    public static final void sortRepositoryObjects(List<RepositoryObject> objects, final int sortPosition, final boolean ascending)
+    public static final void sortRepositoryObjects(List<RepositoryElementMetaInterface> objects, final int sortPosition, final boolean ascending)
     {
-        Collections.sort(objects, new Comparator<RepositoryObject>()
+        Collections.sort(objects, new Comparator<RepositoryElementMetaInterface>()
             {
-                public int compare(RepositoryObject r1, RepositoryObject r2)
+                public int compare(RepositoryElementMetaInterface r1, RepositoryElementMetaInterface r2)
                 {
                     int result=0;
                     
@@ -201,14 +201,14 @@ public class RepositoryObject implements RepositoryContent
 	/**
 	 * @return the repositoryDirectory
 	 */
-	public RepositoryDirectory getRepositoryDirectory() {
+	public RepositoryDirectoryInterface getRepositoryDirectory() {
 		return repositoryDirectory;
 	}
 
 	/**
 	 * @param repositoryDirectory the repositoryDirectory to set
 	 */
-	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+	public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
 		this.repositoryDirectory = repositoryDirectory;
 	}
 

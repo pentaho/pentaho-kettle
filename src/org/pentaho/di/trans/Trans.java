@@ -76,6 +76,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.TransMeta.TransformationType;
@@ -314,7 +315,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		{
 			if (rep!=null)
 			{
-				RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(dirname);
+			  RepositoryDirectoryInterface repdir = rep.loadRepositoryDirectoryTree().findDirectory(dirname);
 				if (repdir!=null)
 				{
 					this.transMeta = rep.loadTransformation(name, repdir, null, false, null); // reads last version
@@ -3429,7 +3430,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		return parent;
 	}
 
-	public RepositoryDirectory getRepositoryDirectory() {
+	public RepositoryDirectoryInterface getRepositoryDirectory() {
 		if (transMeta==null) return null;
 		return transMeta.getRepositoryDirectory();
 	}

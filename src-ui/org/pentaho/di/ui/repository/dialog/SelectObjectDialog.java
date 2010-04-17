@@ -44,6 +44,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -84,7 +86,7 @@ public class SelectObjectDialog extends Dialog
 	private Repository rep;
 
 	private String 			    objectName;
-	private RepositoryDirectory objectDirectory;
+	private RepositoryDirectoryInterface objectDirectory;
     private TreeColumn nameColumn;
     private TreeColumn userColumn;
     private TreeColumn changedColumn;
@@ -102,13 +104,13 @@ public class SelectObjectDialog extends Dialog
 	private Text searchText = null;
 	private Pattern pattern = null;
 
-	private RepositoryDirectory	directoryTree;
+	private RepositoryDirectoryInterface	directoryTree;
 
 	// private RepositoryCapabilities	capabilities;
 
 	private boolean	includeDeleted;
 
-	private Map<String,RepositoryObject>	objectMap;
+	private Map<String, RepositoryElementMetaInterface>	objectMap;
 	
 	private ToolItem wbRegex;
 	
@@ -384,7 +386,7 @@ public class SelectObjectDialog extends Dialog
         {
             wTree.removeAll();
             TreeItem ti = null;
-            objectMap = new HashMap<String, RepositoryObject>();
+            objectMap = new HashMap<String, RepositoryElementMetaInterface>();
             // If the directory is a root directory and is visible to the user we will display that on the UI otherwise we will hide it
             if(directoryTree.isRoot() && directoryTree.isVisible()) {
               ti = new TreeItem(wTree, SWT.NONE);
@@ -463,7 +465,7 @@ public class SelectObjectDialog extends Dialog
 		}
 	}
 	
-	public RepositoryDirectory getDirectory()
+	public RepositoryDirectoryInterface getDirectory()
 	{
 		return objectDirectory;
 	}

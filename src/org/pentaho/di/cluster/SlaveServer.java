@@ -52,6 +52,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -870,11 +871,11 @@ public class SlaveServer  extends ChangedFlag
 	/**
 	 * Not used in this case, simply return root /
 	 */
-	public RepositoryDirectory getRepositoryDirectory() {
+	public RepositoryDirectoryInterface getRepositoryDirectory() {
 		return new RepositoryDirectory();
 	}
 	
-	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+	public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
 		throw new RuntimeException("Setting a directory on a database connection is not supported");
 	}
 	

@@ -17,4 +17,5 @@ public interface ChangedFlagInterface
     public boolean hasChanged();
     public void setChanged(boolean changed);
     public void setChanged();
+    public void clearChanged();
 }

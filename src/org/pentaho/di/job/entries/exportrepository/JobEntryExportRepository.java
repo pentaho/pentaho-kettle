@@ -53,6 +53,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryExporter;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Node;
@@ -579,7 +580,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			}
 			else if(export_type.equals(Export_One_Folder))
 			{
-				RepositoryDirectory directory= new RepositoryDirectory();
+			  RepositoryDirectoryInterface directory= new RepositoryDirectory();
 				directory=repository.loadRepositoryDirectoryTree().findDirectory(realfoldername);
 				if(directory!=null)
 				{
@@ -598,7 +599,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			{
 				// User must give a destination folder..
 				
-				RepositoryDirectory directory= new RepositoryDirectory();
+				RepositoryDirectoryInterface directory= new RepositoryDirectory();
 				directory=this.repository.loadRepositoryDirectoryTree().findRoot();
 		        // Loop over all the directory id's
 		        ObjectId dirids[] = directory.getDirectoryIDs();
@@ -612,7 +613,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 						throw new Exception(BaseMessages.getString(PKG, "JobExportRepository.Error.SuccessConditionbroken",""+NrErrors));
 					}
                 	
-                	RepositoryDirectory repdir = directory.findDirectory(dirids[d]);
+                	RepositoryDirectoryInterface repdir = directory.findDirectory(dirids[d]);
                 	if(!processOneFolder(parentJob,result, log, repdir, realoutfilename,d,dirids.length))
                 	{
                 		// updateErrors
@@ -672,7 +673,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		}
 	}
 	private boolean processOneFolder(Job parentJob, Result result, LogChannelInterface log,
-			RepositoryDirectory repdir,String realoutfilename, int folderno, int totalfolders)
+	    RepositoryDirectoryInterface repdir,String realoutfilename, int folderno, int totalfolders)
 	{
 		boolean retval=false;
 		try{

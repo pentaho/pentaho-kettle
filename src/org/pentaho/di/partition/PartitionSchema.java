@@ -24,6 +24,7 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceHolderInterface;
@@ -304,11 +305,11 @@ public class PartitionSchema
 	/**
 	 * Not supported for Partition schema, return the root.
 	 */
-	public RepositoryDirectory getRepositoryDirectory() {
+	public RepositoryDirectoryInterface getRepositoryDirectory() {
 		return new RepositoryDirectory();
 	}
 
-	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+	public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
 	}
 
 	public RepositoryObjectType getRepositoryElementType() {

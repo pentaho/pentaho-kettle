@@ -86,16 +86,16 @@ public interface Repository {
      * @return true if the job exists
      * @throws KettleException in case something goes wrong.
      */
-    public boolean exists(String name, RepositoryDirectory repositoryDirectory, RepositoryObjectType objectType) throws KettleException;
+    public boolean exists(String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType) throws KettleException;
     
-    public ObjectId getTransformationID(String name, RepositoryDirectory repositoryDirectory) throws KettleException;
-    public ObjectId getJobId(String name, RepositoryDirectory repositoryDirectory) throws KettleException;
+    public ObjectId getTransformationID(String name, RepositoryDirectoryInterface repositoryDirectory) throws KettleException;
+    public ObjectId getJobId(String name, RepositoryDirectoryInterface repositoryDirectory) throws KettleException;
 
     public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException;
   
-    public RepositoryDirectory getDefaultSaveDirectory(RepositoryElementInterface repositoryElement) throws KettleException;
+    public RepositoryDirectoryInterface getDefaultSaveDirectory(RepositoryElementInterface repositoryElement) throws KettleException;
     
-    public RepositoryDirectory getUserHomeDirectory() throws KettleException;
+    public RepositoryDirectoryInterface getUserHomeDirectory() throws KettleException;
   
     // Transformations : Loading & saving objects...
   
@@ -108,7 +108,7 @@ public interface Repository {
    *  @param setInternalVariables set to true if you want to automatically set the internal variables of the loaded transformation. (true is the default with very few exceptions!) 
    *  @param revision the revision to load.  Specify null to load the last version.
    */
-    public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String revision) throws KettleException;
+    public TransMeta loadTransformation(String transname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String revision) throws KettleException;
 
   public SharedObjects readTransSharedObjects(TransMeta transMeta) throws KettleException;
   
@@ -116,12 +116,12 @@ public interface Repository {
    * Move / rename a transformation
    * 
    * @param id_transformation The ObjectId of the transformation to move
-   * @param newDirectory The RepositoryDirectory that will be the new parent of the transformation (May be null if a move is not desired)
+   * @param newDirectory The RepositoryDirectoryInterface that will be the new parent of the transformation (May be null if a move is not desired)
    * @param newName The new name of the transformation (May be null if a rename is not desired)
    * @return The ObjectId of the transformation that was moved 
    * @throws KettleException
    */
-  public ObjectId renameTransformation(ObjectId id_transformation, RepositoryDirectory newDirectory, String newName) throws KettleException;
+  public ObjectId renameTransformation(ObjectId id_transformation, RepositoryDirectoryInterface newDirectory, String newName) throws KettleException;
 
   /**
    * Delete everything related to a transformation from the repository.
@@ -143,7 +143,7 @@ public interface Repository {
    * @param monitor the progress monitor or null
    * @param revision the revision to load.  Specify null to load the last version.
    */
-  public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor, String revision) throws KettleException;
+  public JobMeta loadJob(String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, String revision) throws KettleException;
   
     public SharedObjects readJobMetaSharedObjects(JobMeta jobMeta) throws KettleException;
 
@@ -151,12 +151,12 @@ public interface Repository {
      * Move / rename a job
      * 
      * @param id_job The ObjectId of the job to move
-     * @param newDirectory The RepositoryDirectory that will be the new parent of the job (May be null if a move is not desired)
+     * @param newDirectory The RepositoryDirectoryInterface that will be the new parent of the job (May be null if a move is not desired)
      * @param newName The new name of the job (May be null if a rename is not desired)
      * @return The ObjectId of the job that was moved 
      * @throws KettleException
      */
-    public ObjectId renameJob(ObjectId id_job, RepositoryDirectory newDirectory, String newName) throws KettleException;
+    public ObjectId renameJob(ObjectId id_job, RepositoryDirectoryInterface newDirectory, String newName) throws KettleException;
 
   public void deleteJob(ObjectId id_job) throws KettleException;
   
@@ -182,16 +182,6 @@ public interface Repository {
   public ObjectId[] getDatabaseIDs(boolean includeDeleted) throws KettleException;
     
   public String[] getDatabaseNames(boolean includeDeleted) throws KettleException;
-  
-  /**
-   * 
-   * @param id_database
-   * @param newname
-   * @deprecated
-   * @return
-   * @throws KettleException
-   */
-  public ObjectId renameDatabase(ObjectId id_database, String newname) throws KettleException;
 
   /**
    * Read all the databases defined in the repository
@@ -257,27 +247,22 @@ public interface Repository {
   // Directory stuff
   /////////////////////////////////////////////////////////////////////////////////////////////////
   
-  public RepositoryDirectory loadRepositoryDirectoryTree() throws KettleException;
-  
-  // public RepositoryDirectory loadRepositoryDirectoryTree(RepositoryDirectory root) throws KettleException;
+  public RepositoryDirectoryInterface loadRepositoryDirectoryTree() throws KettleException;
 
-  public void saveRepositoryDirectory(RepositoryDirectory dir) throws KettleException;
+  public void saveRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException;
 
-  public void deleteRepositoryDirectory(RepositoryDirectory dir) throws KettleException;
+  public void deleteRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException;
 
   /**
    * Move / rename a repository directory
    * 
    * @param id The ObjectId of the repository directory to move
-   * @param newParentDir The RepositoryDirectory that will be the new parent of the repository directory (May be null if a move is not desired)
+   * @param newParentDir The RepositoryDirectoryInterface that will be the new parent of the repository directory (May be null if a move is not desired)
    * @param newName The new name of the repository directory (May be null if a rename is not desired)
    * @return The ObjectId of the repository directory that was moved 
    * @throws KettleException
    */
-  public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectory newParentDir, String newName) throws KettleException;
-
-  @Deprecated
-  public ObjectId renameRepositoryDirectory(RepositoryDirectory dir) throws KettleException;
+  public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectoryInterface newParentDir, String newName) throws KettleException;
 
   /**
    * Create a new directory, possibly by creating several sub-directies of / at the same time.
@@ -287,13 +272,13 @@ public interface Repository {
    * @return The created sub-directory
    * @throws KettleException In case something goes wrong
    */
-  public RepositoryDirectory createRepositoryDirectory(RepositoryDirectory parentDirectory, String directoryPath) throws KettleException;
+  public RepositoryDirectoryInterface createRepositoryDirectory(RepositoryDirectoryInterface parentDirectory, String directoryPath) throws KettleException;
   
   public String[] getTransformationNames(ObjectId id_directory, boolean includeDeleted) throws KettleException;
     
-    public List<RepositoryObject> getJobObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
+    public List<RepositoryElementMetaInterface> getJobObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
-    public List<RepositoryObject> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
+    public List<RepositoryElementMetaInterface> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
     /**
      * Gets all job and transformation objects in the given directory. (Combines 
@@ -305,10 +290,17 @@ public interface Repository {
      * @return list of repository objects
      * @throws KettleException In case something goes wrong
      */
-    public List<RepositoryObject> getJobAndTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
+    public List<RepositoryElementMetaInterface> getJobAndTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
   public String[] getJobNames(ObjectId id_directory, boolean includeDeleted) throws KettleException;
 
+  /**
+   * Returns the child directory names of a parent directory
+   * 
+   * @param id_directory parent directory id
+   * @return array of child names
+   * @throws KettleException
+   */
   public String[] getDirectoryNames(ObjectId id_directory) throws KettleException;
 
 
@@ -440,17 +432,8 @@ public interface Repository {
    * @param element the repository element to restore
    * @throws KettleException get throws in case something goes horribly wrong.
    */
-  public void undeleteObject(RepositoryElementLocationInterface element) throws KettleException;
-  
-  
-  /**
-   * Get a hold of the version registry of this repository.
-   * 
-   * @return the version registry.
-   * @throws KettleException in case something goes horribly wrong.
-   */
-  public RepositoryVersionRegistry getVersionRegistry() throws KettleException;
-  
+  public void undeleteObject(RepositoryElementMetaInterface repositoryObject) throws KettleException;
+
   /**
   * Retrieves the current list of of IRepository Services.
   * 

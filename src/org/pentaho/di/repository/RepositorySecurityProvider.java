@@ -13,7 +13,7 @@ import org.pentaho.di.core.exception.KettleSecurityException;
  * @author matt
  *
  */
-public interface RepositorySecurityProvider extends IRepositoryService{
+public interface RepositorySecurityProvider extends IRepositoryService {
 
 	/**
 	 * @return the user information set on the security provider

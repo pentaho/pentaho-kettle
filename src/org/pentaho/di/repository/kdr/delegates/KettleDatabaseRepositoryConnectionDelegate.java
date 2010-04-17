@@ -26,6 +26,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -1351,7 +1353,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
      * 
      * @throws KettleException
      */
-    public synchronized List<RepositoryObject> getRepositoryObjects(String tableName, RepositoryObjectType objectType, ObjectId id_directory) throws KettleException
+    public synchronized List<RepositoryElementMetaInterface> getRepositoryObjects(String tableName, RepositoryObjectType objectType, ObjectId id_directory) throws KettleException
     {
     	try
     	{
@@ -1365,7 +1367,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 	    		id_directory = new LongObjectId(0L); // root!
 	    	}
 	    	
-	    	RepositoryDirectory repositoryDirectory = repository.loadRepositoryDirectoryTree().findDirectory(id_directory);
+	    	RepositoryDirectoryInterface repositoryDirectory = repository.loadRepositoryDirectoryTree().findDirectory(id_directory);
 	    	
 	        String sql = "SELECT "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME)+", "+
 	        	quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_USER)+", "+
@@ -1376,7 +1378,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 	                "WHERE "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " "
 	                ;
 	
-	        List<RepositoryObject> repositoryObjects = new ArrayList<RepositoryObject>();
+	        List<RepositoryElementMetaInterface> repositoryObjects = new ArrayList<RepositoryElementMetaInterface>();
 	        
 	        ResultSet rs = database.openQuery(sql);
 	        if (rs != null)

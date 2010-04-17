@@ -13,7 +13,7 @@ public class RepositoryImportLocation {
 
 	private static RepositoryImportLocation location;
 	
-	private RepositoryDirectory repositoryDirectory;
+	private RepositoryDirectoryInterface repositoryDirectory;
 	
 	private RepositoryImportLocation() {
 		repositoryDirectory = null;
@@ -26,7 +26,7 @@ public class RepositoryImportLocation {
 	 * @return the import location in the repository in the form of a repository directory.
 	 *         If no import location is set, null is returned.
 	 */
-	public static RepositoryDirectory getRepositoryImportLocation() {
+	public static RepositoryDirectoryInterface getRepositoryImportLocation() {
 		if (location==null) location = new RepositoryImportLocation();
 		return location.repositoryDirectory;
 	}
@@ -41,7 +41,7 @@ public class RepositoryImportLocation {
 	 * @param repositoryDirectory the import location in the repository in the form of a repository directory.
 	 *    
 	 */
-	public static void setRepositoryImportLocation(RepositoryDirectory repositoryDirectory) {
+	public static void setRepositoryImportLocation(RepositoryDirectoryInterface repositoryDirectory) {
 		if (location==null) location = new RepositoryImportLocation();
 		location.repositoryDirectory = repositoryDirectory;
 	}

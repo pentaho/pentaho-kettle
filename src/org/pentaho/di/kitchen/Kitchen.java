@@ -42,6 +42,7 @@ import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
@@ -189,7 +190,7 @@ public class Kitchen
 						
 						repository.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
 
-						RepositoryDirectory directory = repository.loadRepositoryDirectoryTree(); // Default = root
+						RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree(); // Default = root
 						
 						// Find the directory name if one is specified...
 						if (!Const.isEmpty(optionDirname))

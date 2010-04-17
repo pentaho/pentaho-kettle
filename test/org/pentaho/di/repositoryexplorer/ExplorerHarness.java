@@ -17,11 +17,11 @@
 package org.pentaho.di.repositoryexplorer;
 
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 
 public class ExplorerHarness {
 
@@ -56,7 +56,7 @@ public class ExplorerHarness {
     @SuppressWarnings("unused")
     RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
 
-        public boolean open(RepositoryElementLocationInterface element, String revision) {
+        public boolean open(UIRepositoryContent element, String revision) {
           System.out.println("Name: ".concat(element.getName()));
           System.out.println("Type: ".concat(element.getRepositoryElementType().name()));
           System.out.println("Directory: ".concat(element.getRepositoryDirectory().toString()));

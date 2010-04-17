@@ -18,14 +18,14 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 
 public class UITransformation extends UIRepositoryContent {
 
   public UITransformation() {
   }
 
-  public UITransformation(RepositoryContent rc, UIRepositoryDirectory parent, Repository rep) {
+  public UITransformation(RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep) {
     super(rc, parent, rep);
   }
 

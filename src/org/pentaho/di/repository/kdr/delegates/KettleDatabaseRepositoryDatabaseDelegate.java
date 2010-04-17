@@ -447,18 +447,4 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
         
         return id;
     }
-
-	public synchronized void renameDatabase(ObjectId id_database, String newname) throws KettleException
-	{
-		String sql = "UPDATE "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE)+" SET "+quote(KettleDatabaseRepository.FIELD_DATABASE_NAME)+" = ? WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE)+" = ?";
-
-		RowMetaAndData table = new RowMetaAndData();
-		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING), newname);
-		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER), id_database);
-
-		repository.connectionDelegate.getDatabase().execStatement(sql, table.getRowMeta(), table.getData());
-	}
-
-	
-
 }

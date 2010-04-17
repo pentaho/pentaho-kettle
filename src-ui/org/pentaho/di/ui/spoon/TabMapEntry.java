@@ -13,6 +13,7 @@
 package org.pentaho.di.ui.spoon;
 
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.xul.swt.tab.TabItem;
 
@@ -26,7 +27,7 @@ public class TabMapEntry
     
     private String objectName;
     
-    private RepositoryDirectory repositoryDirectory;
+    private RepositoryDirectoryInterface repositoryDirectory;
     
     private String versionLabel;
 
@@ -42,7 +43,7 @@ public class TabMapEntry
      * @param objectType
      * @param object
      */
-    public TabMapEntry(TabItem tabItem, String filename, String objectName, RepositoryDirectory repositoryDirectory, String versionLabel, TabItemInterface object, ObjectType objectType)
+    public TabMapEntry(TabItem tabItem, String filename, String objectName, RepositoryDirectoryInterface repositoryDirectory, String versionLabel, TabItemInterface object, ObjectType objectType)
     {
         this.tabItem = tabItem;
         this.filename = filename;
@@ -155,14 +156,14 @@ public class TabMapEntry
 	/**
 	 * @return the repositoryDirectory
 	 */
-	public RepositoryDirectory getRepositoryDirectory() {
+	public RepositoryDirectoryInterface getRepositoryDirectory() {
 		return repositoryDirectory;
 	}
 
 	/**
 	 * @param repositoryDirectory the repositoryDirectory to set
 	 */
-	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+	public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
 		this.repositoryDirectory = repositoryDirectory;
 	}
 

@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 
@@ -56,8 +57,8 @@ public class RipDatabaseWizardPage3 extends WizardPage
 
 	private PropsUI props;
 	private Repository rep;
-	private RepositoryDirectory repositoryDirectory;
-    private String directory;
+	private RepositoryDirectoryInterface repositoryDirectory;
+	private String directory;
 	private Shell shell;
 
 	public RipDatabaseWizardPage3(String arg, Repository rep)
@@ -191,7 +192,7 @@ public class RipDatabaseWizardPage3 extends WizardPage
 	/**
 	 * @return Returns the directory.
 	 */
-	public RepositoryDirectory getRepositoryDirectory()
+	public RepositoryDirectoryInterface getRepositoryDirectory()
 	{
 		return repositoryDirectory;
 	}

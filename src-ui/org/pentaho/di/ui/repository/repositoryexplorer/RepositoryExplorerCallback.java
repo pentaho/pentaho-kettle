@@ -1,6 +1,6 @@
 package org.pentaho.di.ui.repository.repositoryexplorer;
 
-import org.pentaho.di.repository.RepositoryElementLocationInterface;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 
 public interface RepositoryExplorerCallback {
   /**
@@ -8,6 +8,6 @@ public interface RepositoryExplorerCallback {
    * @param object
    * @return boolean indicating if repository explorer dialog should close
    */
-  boolean open(RepositoryElementLocationInterface object, String revision);
+  boolean open(UIRepositoryContent object, String revision);
 
 }

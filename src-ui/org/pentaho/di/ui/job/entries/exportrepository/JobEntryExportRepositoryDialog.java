@@ -61,6 +61,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -1302,7 +1303,7 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 			}
 			
 			SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, repos);
-			RepositoryDirectory rd = sdd.open();
+			RepositoryDirectoryInterface rd = sdd.open();
 			if (rd!=null)
 			{
 	            wFoldername.setText(rd.getPath());

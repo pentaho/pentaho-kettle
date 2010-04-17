@@ -21,13 +21,13 @@ import java.util.List;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
 
-public class UIRepositoryObjects extends AbstractModelNode<UIRepositoryObject>{
+public class UIRepositoryObjects extends AbstractModelNode<UIRepositoryObject> {
 
     
-  public UIRepositoryObjects(){
+  public UIRepositoryObjects() {
   }
   
-  public UIRepositoryObjects(List<UIRepositoryObject> objects){
+  public UIRepositoryObjects(List<UIRepositoryObject> objects) {
     super(objects);
   }
 

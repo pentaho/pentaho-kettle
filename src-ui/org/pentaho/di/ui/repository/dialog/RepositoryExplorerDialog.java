@@ -83,14 +83,13 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryElementLocation;
-import org.pentaho.di.repository.RepositoryElementLocationInterface;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
-import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
@@ -140,21 +139,21 @@ public class RepositoryExplorerDialog extends Dialog
      */
     public class RepositoryObjectReference {
     	private RepositoryObjectType type;   // Type of object
-    	private RepositoryDirectory directory;    // The directory to which it belongs.
+    	private RepositoryDirectoryInterface directory;    // The directory to which it belongs.
     	private String              name;   // name of object being referenced	
     	private String              versionLabel; // the version to be loaded
     	
-    	public RepositoryObjectReference(RepositoryObjectType type, RepositoryDirectory dir, String name) {
+    	public RepositoryObjectReference(RepositoryObjectType type, RepositoryDirectoryInterface dir, String name) {
     		this(type, dir, name, null);
     	}
     	
-    	public RepositoryObjectReference(RepositoryObjectType type, RepositoryDirectory dir, String name, String versionLabel) {
+    	public RepositoryObjectReference(RepositoryObjectType type, RepositoryDirectoryInterface dir, String name, String versionLabel) {
     		this.type = type;
     		this.directory = dir;
     		this.name = name;
     		this.versionLabel = versionLabel;
     	}
-    	public RepositoryDirectory getDirectory()
+    	public RepositoryDirectoryInterface getDirectory()
 		{
 			return directory;
 		}
@@ -225,14 +224,14 @@ public class RepositoryExplorerDialog extends Dialog
 	private ToolItem exportToXML, importFromXML, showHideDeleted, expandAll, collapseAll;
     
     private FormData     fdTreeTb;
-	private RepositoryDirectory	directoryTree;
+	private RepositoryDirectoryInterface	directoryTree;
 	private RepositoryMeta	repositoryMeta;
 	private RepositoryCapabilities	capabilities;
 	private boolean	readonly;
 	private RepositorySecurityProvider securityProvider;
 	private RepositorySecurityManager securityManager;
 	private boolean	includeDeleted;
-	private Map<String, RepositoryObject>	objectMap;
+	private Map<String, RepositoryElementMetaInterface>	objectMap;
 
   DatabaseDialog databaseDialog;
   
@@ -247,7 +246,7 @@ public class RepositoryExplorerDialog extends Dialog
         sortColumn = 0;
         ascending = false;
         
-        objectMap = new HashMap<String, RepositoryObject>();
+        objectMap = new HashMap<String, RepositoryElementMetaInterface>();
         
         repositoryMeta = rep.getRepositoryMeta();
         capabilities = repositoryMeta.getRepositoryCapabilities();
@@ -426,9 +425,6 @@ public class RepositoryExplorerDialog extends Dialog
     					if (e.keyCode == SWT.F2)    { if (!readonly) renameInTree(); }
     					// F5 --> refresh...
     					if (e.keyCode == SWT.F5)    { refreshTree(); }
-    					// 
-    					if (e.keyCode == SWT.F12)    { showVersionRegistryDialog(); }
-    					
     				}
     			}
     		);
@@ -496,8 +492,8 @@ public class RepositoryExplorerDialog extends Dialog
     						//
     						if (cat==ITEM_CATEGORY_TRANSFORMATION)
     						{
-                                debug="drag set: drag around transformation"; //$NON-NLS-1$
-    							RepositoryDirectory repdir = getDirectory(ti[0]);
+    						  debug="drag set: drag around transformation"; //$NON-NLS-1$
+    						  RepositoryDirectoryInterface repdir = getDirectory(ti[0]);
     							if (repdir!=null)
     							{
     								//
@@ -516,8 +512,8 @@ public class RepositoryExplorerDialog extends Dialog
                             else
     						if (cat==ITEM_CATEGORY_JOB)
     						{
-                                debug="drag set: drag around job"; //$NON-NLS-1$
-    							RepositoryDirectory repdir = getDirectory(ti[0]);
+                  debug="drag set: drag around job"; //$NON-NLS-1$
+                  RepositoryDirectoryInterface repdir = getDirectory(ti[0]);
     							if (repdir!=null)
     							{
     								//
@@ -592,8 +588,8 @@ public class RepositoryExplorerDialog extends Dialog
 
         					if (category==ITEM_CATEGORY_TRANSFORMATION_DIRECTORY || category==ITEM_CATEGORY_TRANSFORMATION)
         					{
-                                debug="Get directory"; //$NON-NLS-1$
-        						RepositoryDirectory repdir = getDirectory(ti);
+        					  debug="Get directory"; //$NON-NLS-1$
+        					  RepositoryDirectoryInterface repdir = getDirectory(ti);
         						if (repdir!=null)
         						{
         							event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
@@ -614,8 +610,8 @@ public class RepositoryExplorerDialog extends Dialog
                             else
         					if (category==ITEM_CATEGORY_JOB_DIRECTORY || category==ITEM_CATEGORY_JOB)
         					{
-                                debug="Get directory"; //$NON-NLS-1$
-        						RepositoryDirectory repdir = getDirectory(ti);
+        					  debug="Get directory"; //$NON-NLS-1$
+        					  RepositoryDirectoryInterface repdir = getDirectory(ti);
         						if (repdir!=null)
         						{
         							event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
@@ -709,9 +705,9 @@ public class RepositoryExplorerDialog extends Dialog
         refreshTree();
     }
 
-    public RepositoryDirectory getDirectory(TreeItem ti)
+    public RepositoryDirectoryInterface getDirectory(TreeItem ti)
 	{
-		RepositoryDirectory repdir = null;
+      RepositoryDirectoryInterface repdir = null;
 		
 		int level = ConstUI.getTreeLevel(ti);
 		String path[] = ConstUI.getTreeStrings(ti);
@@ -791,7 +787,7 @@ public class RepositoryExplorerDialog extends Dialog
 					realpath[i] = path[i + 2];
 				}
 				// Find the directory in the directory tree...
-				final RepositoryDirectory repdir = directoryTree.findDirectory(realpath);
+				final RepositoryDirectoryInterface repdir = directoryTree.findDirectory(realpath);
 
 				switch (cat) {
 				case ITEM_CATEGORY_JOB_DIRECTORY:
@@ -827,7 +823,7 @@ public class RepositoryExplorerDialog extends Dialog
 			final String fullPath = ConstUI.getTreePath(ti, 0);
 			final String item = ti.getText();
 			
-			final RepositoryObject repositoryObject = objectMap.get(fullPath); 
+			final RepositoryElementMetaInterface repositoryObject = objectMap.get(fullPath); 
 		
 			int cat = getItemCategory(ti);
 			
@@ -1003,7 +999,7 @@ public class RepositoryExplorerDialog extends Dialog
 			case ITEM_CATEGORY_TRANSFORMATION              :
 				if (level>=2 && repositoryObject!=null)
 				{
-					final RepositoryDirectory repdir = repositoryObject.getRepositoryDirectory();
+					final RepositoryDirectoryInterface repdir = repositoryObject.getRepositoryDirectory();
 
 					if (tisel.length==1) {
 						if (!repositoryObject.isDeleted()) {
@@ -1032,20 +1028,6 @@ public class RepositoryExplorerDialog extends Dialog
 								}
 							);
 							miRen.setEnabled(!readonly);
-						}
-						if (capabilities.supportsRevisions()) {
-							// Transformation history...
-							MenuItem miHist = new MenuItem(mTree, SWT.PUSH); 
-							miHist.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Transformations.History")); //$NON-NLS-1$
-							miHist.addSelectionListener( 
-								new SelectionAdapter() 
-								{ 
-									public void widgetSelected(SelectionEvent e) 
-									{ 
-										showTransformationVersions(item, repdir);
-									}
-								}
-							);
 						}
 					}
 					
@@ -1091,7 +1073,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
 					// Find the directory in the directory tree...
-					final RepositoryDirectory repdir = directoryTree.findDirectory(realpath);
+					final RepositoryDirectoryInterface repdir = directoryTree.findDirectory(realpath);
 
 					// Export xforms and jobs from directory
 					MenuItem miExp  = new MenuItem(mTree, SWT.PUSH); 
@@ -1166,7 +1148,7 @@ public class RepositoryExplorerDialog extends Dialog
 			case ITEM_CATEGORY_JOB                         :
 				if (level>=2 && repositoryObject!=null)
 				{
-					final RepositoryDirectory repdir = repositoryObject.getRepositoryDirectory();
+					final RepositoryDirectoryInterface repdir = repositoryObject.getRepositoryDirectory();
 
 					if (tisel.length==1) {
 						if (!repositoryObject.isDeleted()) {
@@ -1195,20 +1177,6 @@ public class RepositoryExplorerDialog extends Dialog
 								}
 							);
 							miRen.setEnabled(!readonly);
-						}
-						if (capabilities.supportsRevisions()) {
-							// Job history...
-							MenuItem miHist = new MenuItem(mTree, SWT.PUSH); 
-							miHist.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.PopupMenu.Jobs.History")); //$NON-NLS-1$
-							miHist.addSelectionListener( 
-								new SelectionAdapter() 
-								{ 
-									public void widgetSelected(SelectionEvent e) 
-									{ 
-										showJobVersions(item, repdir);
-									}
-								}
-							);
 						}
 					}
 					if (repositoryObject.isDeleted()) {
@@ -1320,7 +1288,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<path.length;i++) path[i] = text[i+2];
 					
 					// Find the directory in the directory tree...
-					RepositoryDirectory repdir = directoryTree.findDirectory(path);
+					RepositoryDirectoryInterface repdir = directoryTree.findDirectory(path);
 	
 					if (repdir!=null) renameTransformation(name, repdir); 
 				}
@@ -1334,7 +1302,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<path.length;i++) path[i] = text[i+2];
 					
 					// Find the directory in the directory tree...
-					RepositoryDirectory repdir = directoryTree.findDirectory(path);
+					RepositoryDirectoryInterface repdir = directoryTree.findDirectory(path);
 	
 					if (repdir!=null) renameJob(name, repdir); 
 				}
@@ -1491,7 +1459,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 	}
 	
-	public void openTransformation(String name, RepositoryDirectory repdir)
+	public void openTransformation(String name, RepositoryDirectoryInterface repdir)
 	{
 		lastOpened = new RepositoryObjectReference(RepositoryObjectType.TRANSFORMATION, repdir, name);
 		if (callback != null) {
@@ -1503,40 +1471,8 @@ public class RepositoryExplorerDialog extends Dialog
 			close();
 		}
 	}
-	
-	public void showTransformationVersions(String name, RepositoryDirectory repdir)
-	{
-		showItemVersions(name, repdir, RepositoryObjectType.TRANSFORMATION);
-	}
 
-	public void showJobVersions(String name, RepositoryDirectory repdir)
-	{
-		showItemVersions(name, repdir, RepositoryObjectType.JOB);
-	}
-
-	public void showItemVersions(String name, RepositoryDirectory repdir, RepositoryObjectType objectType)
-	{
-		try {
-			RepositoryRevisionBrowserDialogInterface versionBrowserDialog = getVersionBrowserDialog(name, repdir, objectType);
-			
-			String versionLabel = versionBrowserDialog.open();
-			if (versionLabel!=null) {
-				lastOpened = new RepositoryObjectReference(objectType, repdir, name, versionLabel);
-				if (callback != null) {
-					if (callback.open(lastOpened))			{
-						close();
-					}
-				}
-				else {
-					close();
-				}
-			}
-		} catch(Exception e) {
-			new ErrorDialog(shell, "Error browsing item history", "There was an error browsing the history of ["+name+"] in ["+repdir.getPath()+"]", e);
-		}
-	}
-
-	public void openJob(String name, RepositoryDirectory repdir)
+	public void openJob(String name, RepositoryDirectoryInterface repdir)
 	{
 		lastOpened = new RepositoryObjectReference(RepositoryObjectType.JOB, repdir, name);
 		if (callback != null) {
@@ -1566,7 +1502,7 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		for (int i=0;i<items.length;i++)
 		{
-			final RepositoryObject repositoryObject = objectMap.get(ConstUI.getTreePath(items[i], 0));
+			final RepositoryElementMetaInterface repositoryObject = objectMap.get(ConstUI.getTreePath(items[i], 0));
 			if (repositoryObject!=null) {
 				
 				try {
@@ -1594,10 +1530,10 @@ public class RepositoryExplorerDialog extends Dialog
 
 		for (int i=0;i<items.length;i++)
 		{
-			final RepositoryObject repositoryObject = objectMap.get(ConstUI.getTreePath(items[i], 0));
+			final RepositoryElementMetaInterface repositoryObject = objectMap.get(ConstUI.getTreePath(items[i], 0));
 			if (repositoryObject!=null) {
 				try {
-					rep.undeleteObject(new RepositoryElementLocation(repositoryObject.getName(), repositoryObject.getRepositoryDirectory(), repositoryObject.getObjectType()));
+					rep.undeleteObject(repositoryObject);
 				} catch(Exception e) {
 					new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRestoring.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Delete.ErrorRestoring.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					error=true;
@@ -1609,7 +1545,7 @@ public class RepositoryExplorerDialog extends Dialog
 		return !error;
 	}
 
-	public boolean renameTransformation(String name, RepositoryDirectory repdir)
+	public boolean renameTransformation(String name, RepositoryDirectoryInterface repdir)
 	{
 		boolean retval=false;
 		final TreeItem ti = wTree.getSelection()[0];
@@ -1617,7 +1553,7 @@ public class RepositoryExplorerDialog extends Dialog
 		if (ti.getItemCount()==0)
 		{
 			final String fname = name;
-			final RepositoryDirectory frepdir = repdir;
+			final RepositoryDirectoryInterface frepdir = repdir;
 			
 			TreeEditor editor = new TreeEditor(wTree);
 			editor.setItem(ti);
@@ -1675,7 +1611,7 @@ public class RepositoryExplorerDialog extends Dialog
 		return retval;
 	}
 	
-	public boolean renameTransformation(String name, String newname, RepositoryDirectory repdir)
+	public boolean renameTransformation(String name, String newname, RepositoryDirectoryInterface repdir)
 	{
 		boolean retval=false;
 		
@@ -1711,7 +1647,7 @@ public class RepositoryExplorerDialog extends Dialog
 		return retval;
 	}
 	
-	public boolean moveTransformation(String xml, RepositoryDirectory repdir)
+	public boolean moveTransformation(String xml, RepositoryDirectoryInterface repdir)
 	{
         debug = "Move transformation"; //$NON-NLS-1$
         
@@ -1725,14 +1661,14 @@ public class RepositoryExplorerDialog extends Dialog
 			String dirname   = XMLHandler.getTagValue(doc, "dragdrop", "directory"); //$NON-NLS-1$ //$NON-NLS-2$
 			String transname = XMLHandler.getTagValue(doc, "dragdrop", "transformation"); //$NON-NLS-1$ //$NON-NLS-2$
             
-            if (dirname!=null && transname!=null)
-            {
-                debug = "dirname="+dirname+", transname="+transname; //$NON-NLS-1$ //$NON-NLS-2$
-    
-    			// OK, find this transformation...
-    			RepositoryDirectory fromdir = directoryTree.findDirectory(dirname);
-    			if (fromdir!=null)
-    			{
+			if (dirname!=null && transname!=null)
+			{
+			  debug = "dirname="+dirname+", transname="+transname; //$NON-NLS-1$ //$NON-NLS-2$
+			  
+			  // OK, find this transformation...
+			  RepositoryDirectoryInterface fromdir = directoryTree.findDirectory(dirname);
+			  if (fromdir!=null)
+			  {
                     debug = "fromdir found: move transformation!"; //$NON-NLS-1$
                     ObjectId existingTransID = rep.getTransformationID(transname, repdir);
                     if (existingTransID == null) {
@@ -1755,7 +1691,7 @@ public class RepositoryExplorerDialog extends Dialog
     				mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Trans.Move.ErrorMoving.Title")); //$NON-NLS-1$
     				mb.open();
     			}
-            }
+			}
 		}
 		catch(Exception dbe)
 		{
@@ -1765,7 +1701,7 @@ public class RepositoryExplorerDialog extends Dialog
 		return retval;
 	}
 	
-	public boolean moveJob(String xml, RepositoryDirectory repdir)
+	public boolean moveJob(String xml, RepositoryDirectoryInterface repdir)
 	{
         debug = "Move Job"; //$NON-NLS-1$
         
@@ -1779,37 +1715,37 @@ public class RepositoryExplorerDialog extends Dialog
 			String dirname = XMLHandler.getTagValue(doc, "dragdrop", "directory"); //$NON-NLS-1$ //$NON-NLS-2$
 			String jobname = XMLHandler.getTagValue(doc, "dragdrop", "job"); //$NON-NLS-1$ //$NON-NLS-2$
             
-            if (dirname!=null && jobname!=null)
-            {
-                debug = "dirname="+dirname+", jobname="+jobname; //$NON-NLS-1$ //$NON-NLS-2$
+			if (dirname!=null && jobname!=null)
+			{
+			  debug = "dirname="+dirname+", jobname="+jobname; //$NON-NLS-1$ //$NON-NLS-2$
     
-    			// OK, find this transformation...
-    			RepositoryDirectory fromdir = directoryTree.findDirectory(dirname);
-    			if (fromdir!=null)
-    			{
-                    debug = "fromdir found: move job!"; //$NON-NLS-1$
-                    ObjectId existingjobID = rep.getJobId(jobname, repdir);
-                    if (existingjobID == null) {
-                    	ObjectId id = rep.getJobId(jobname, fromdir);
-                    	rep.renameJob(id, repdir, jobname);
-                    	retval=true;
-                    }
-                    else 
-                    {
-                    	MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-        				mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Move.ErrorDuplicate.Message", jobname)+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-        				mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Move.ErrorDuplicate.Title")); //$NON-NLS-1$
-        				mb.open();	
-                    }
-    			}
-    			else
-    			{
-    				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-    				mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Move.ErrorMoving.Message")+dirname+"]"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-    				mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Move.ErrorMoving.Title")); //$NON-NLS-1$
-    				mb.open();
-    			}
-            }
+			  // OK, find this transformation...
+			  RepositoryDirectoryInterface fromdir = directoryTree.findDirectory(dirname);
+			  if (fromdir!=null)
+			  {
+			    debug = "fromdir found: move job!"; //$NON-NLS-1$
+			    ObjectId existingjobID = rep.getJobId(jobname, repdir);
+			    if (existingjobID == null) {
+			      ObjectId id = rep.getJobId(jobname, fromdir);
+			      rep.renameJob(id, repdir, jobname);
+			      retval=true;
+			    }
+			    else 
+			    {
+			      MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+			      mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Move.ErrorDuplicate.Message", jobname)+Const.CR); //$NON-NLS-1$
+			      mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Move.ErrorDuplicate.Title")); //$NON-NLS-1$
+			      mb.open();	
+			    }
+			  }
+			  else
+			  {
+			    MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+			    mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Move.ErrorMoving.Message")+dirname+"]"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+			    mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Job.Move.ErrorMoving.Title")); //$NON-NLS-1$
+			    mb.open();
+			  }
+			}
 		}
 		catch(Exception dbe)
 		{
@@ -1820,7 +1756,7 @@ public class RepositoryExplorerDialog extends Dialog
 	}
 
 
-	public boolean renameJob(String name, RepositoryDirectory repdir)
+	public boolean renameJob(String name, RepositoryDirectoryInterface repdir)
 	{
 		boolean retval=false;
 		
@@ -1829,7 +1765,7 @@ public class RepositoryExplorerDialog extends Dialog
 		if (ti.getItemCount()==0)
 		{
 			final String fname = name;
-			final RepositoryDirectory frepdir = repdir;
+			final RepositoryDirectoryInterface frepdir = repdir;
 			
 			TreeEditor editor = new TreeEditor(wTree);
 			editor.setItem(ti);
@@ -1887,7 +1823,7 @@ public class RepositoryExplorerDialog extends Dialog
 		return retval;
 	}
 	
-	public boolean renameJob(String name, String newname, RepositoryDirectory repdir)
+	public boolean renameJob(String name, String newname, RepositoryDirectoryInterface repdir)
 	{
 		boolean retval=false;
 		
@@ -1924,11 +1860,11 @@ public class RepositoryExplorerDialog extends Dialog
 	}
 	
 
-	public void renameJob(TreeItem treeitem, String jobname, RepositoryDirectory repositorydir)
+	public void renameJob(TreeItem treeitem, String jobname, RepositoryDirectoryInterface repositorydir)
 	{
 		final TreeItem ti = treeitem;
 		final String name = jobname;
-		final RepositoryDirectory repdir = repositorydir;
+		final RepositoryDirectoryInterface repdir = repositorydir;
 		
 		TreeEditor editor = new TreeEditor(wTree);
 		editor.setItem(ti);
@@ -1984,7 +1920,7 @@ public class RepositoryExplorerDialog extends Dialog
 		editor.setEditor(text);
 	}
 	
-	public boolean renameJob(String name, RepositoryDirectory repdir, String newname)
+	public boolean renameJob(String name, RepositoryDirectoryInterface repdir, String newname)
 	{
 		boolean retval=false;
 		
@@ -2355,17 +2291,20 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		try
 		{
-            if (Const.isEmpty(newname))
-            {
-                throw new KettleException(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty"));
-            }
+		  if (Const.isEmpty(newname))
+		  {
+		    throw new KettleException(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Exception.NameCanNotBeEmpty"));
+		  }
+		  
 			if (!name.equals(newname))
 			{
 				ObjectId id = rep.getDatabaseID(name);
 				if (id!=null)
 				{
-					// System.out.println("Renaming transformation ["+name+"] with ID = "+id);
-					rep.renameDatabase(id, newname);
+				  DatabaseMeta databaseMeta = rep.loadDatabaseMeta(id, null);  // reads last version
+				  databaseMeta.setName(newname);
+          rep.insertLogEntry("Renaming database connection '"+getDatabaseDialog().getDatabaseMeta().getName()+"'");
+          rep.save(databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null);
 					retval=true;
 				}
 				else
@@ -2385,10 +2324,10 @@ public class RepositoryExplorerDialog extends Dialog
 		return retval;
 	}
 
-	public void renameDirectory(TreeItem treeitem, RepositoryDirectory rd)
+	public void renameDirectory(TreeItem treeitem, RepositoryDirectoryInterface rd)
 	{
 		final TreeItem ti = treeitem;
-		final RepositoryDirectory repdir = rd;
+		final RepositoryDirectoryInterface repdir = rd;
 		
 		final String name = ti.getText();
 		TreeEditor editor = new TreeEditor(wTree);
@@ -2446,7 +2385,7 @@ public class RepositoryExplorerDialog extends Dialog
 	}
 	
 	
-	public boolean renameDirectory(RepositoryDirectory repdir, String name, String newname)
+	public boolean renameDirectory(RepositoryDirectoryInterface repdir, String name, String newname)
 	{
 		boolean retval=false;
 
@@ -2480,16 +2419,16 @@ public class RepositoryExplorerDialog extends Dialog
 		return retval;
 	}
 
-	public void createDirectory(TreeItem ti, RepositoryDirectory repdir)
+	public void createDirectory(TreeItem ti, RepositoryDirectoryInterface repdir)
 	{
 		EnterStringDialog esd = new EnterStringDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Default"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.Directory.Create.AskName.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String newdir = esd.open();
 		if (newdir!=null)
 		{
-			RepositoryDirectory rd = new RepositoryDirectory(repdir, newdir);
+		  RepositoryDirectoryInterface rd = new RepositoryDirectory(repdir, newdir);
 			String path[] = rd.getPathArray();
 			
-			RepositoryDirectory exists = directoryTree.findDirectory( path );
+			RepositoryDirectoryInterface exists = directoryTree.findDirectory( path );
 			if (exists==null)
 			{
 				try {
@@ -2513,7 +2452,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 	}
 	
-	public void delDirectory(TreeItem ti, RepositoryDirectory repdir)
+	public void delDirectory(TreeItem ti, RepositoryDirectoryInterface repdir)
 	{
 		try
 		{
@@ -2530,7 +2469,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 	}
 	
-	public void exportTransformations(RepositoryDirectory root)
+	public void exportTransformations(RepositoryDirectoryInterface root)
 	{
 		try
 		{
@@ -2542,7 +2481,7 @@ public class RepositoryExplorerDialog extends Dialog
 				ObjectId dirids[] = ((root == null ) ? directoryTree : root).getDirectoryIDs();
 				for (int d=0;d<dirids.length;d++)
 				{
-					RepositoryDirectory repdir = directoryTree.findDirectory(dirids[d]);				
+				  RepositoryDirectoryInterface repdir = directoryTree.findDirectory(dirids[d]);				
 					String trans[] = rep.getTransformationNames(dirids[d], false);
 				
 					// See if the directory exists...
@@ -2592,7 +2531,7 @@ public class RepositoryExplorerDialog extends Dialog
 		return filename;
 	}
 
-	public void exportJobs(RepositoryDirectory root)
+	public void exportJobs(RepositoryDirectoryInterface root)
 	{
 		try
 		{
@@ -2604,7 +2543,7 @@ public class RepositoryExplorerDialog extends Dialog
 				ObjectId dirids[] = ((null == root)? directoryTree : root).getDirectoryIDs();
 				for (int d=0;d<dirids.length;d++)
 				{
-					RepositoryDirectory repdir = directoryTree.findDirectory(dirids[d]);				
+				  RepositoryDirectoryInterface repdir = directoryTree.findDirectory(dirids[d]);				
 					String jobs[] = rep.getJobNames(dirids[d], false);
 
 					// See if the directory exists...
@@ -2644,7 +2583,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 	}
 	
-	public void exportAll(RepositoryDirectory dir)
+	public void exportAll(RepositoryDirectoryInterface dir)
 	{
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE | SWT.SINGLE);
 		if (dialog.open()!=null)
@@ -2665,7 +2604,7 @@ public class RepositoryExplorerDialog extends Dialog
 			// Ask for a destination in the repository...
 			//
 			SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
-			RepositoryDirectory baseDirectory = sdd.open();
+			RepositoryDirectoryInterface baseDirectory = sdd.open();
 			if (baseDirectory!=null)
 			{
 				// Finally before importing, ask for a version comment (if applicable)
@@ -2993,40 +2932,17 @@ public class RepositoryExplorerDialog extends Dialog
         }
     }
     
-    protected RepositoryRevisionBrowserDialogInterface getVersionBrowserDialog(final String name, final RepositoryDirectory repositoryDirectory, final RepositoryObjectType objectType) throws Exception {
-    	return getVersionBrowserDialog(shell, rep, name, repositoryDirectory, objectType);
+    protected RepositoryRevisionBrowserDialogInterface getVersionBrowserDialog(final RepositoryElementInterface element) throws Exception {
+    	return getVersionBrowserDialog(shell, rep, element);
     }
     	
-	public static final RepositoryRevisionBrowserDialogInterface getVersionBrowserDialog(Shell shell, Repository repository, final String name, final RepositoryDirectory repositoryDirectory, final RepositoryObjectType objectType) throws Exception {
-		
-		RepositoryElementLocationInterface element = new RepositoryElementLocationInterface() {
-			public RepositoryObjectType getRepositoryElementType() { return objectType; }
-			public RepositoryDirectory getRepositoryDirectory() { return repositoryDirectory; }
-			public String getName() { return name; }
-		};
+	public static final RepositoryRevisionBrowserDialogInterface getVersionBrowserDialog(Shell shell, Repository repository, final RepositoryElementInterface element) throws Exception {
 		
 		String className = repository.getRepositoryMeta().getRevisionBrowserDialogClassName();
 		PluginRegistry registry = PluginRegistry.getInstance();
 		PluginInterface plugin = registry.getPlugin(RepositoryPluginType.class, repository.getRepositoryMeta().getId());
 		Class<? extends RepositoryRevisionBrowserDialogInterface> dialogClass = registry.getClass(plugin, className);
-		Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, Repository.class, RepositoryElementLocationInterface.class);
+		Constructor<?> constructor = dialogClass.getConstructor(Shell.class, Integer.TYPE, Repository.class, RepositoryElementInterface.class);
 		return (RepositoryRevisionBrowserDialogInterface) constructor.newInstance(new Object[] { shell, Integer.valueOf(SWT.NONE), repository, element, });
 	}
-
-	protected void showVersionRegistryDialog() {
-		
-		// If there is no version registry, don't bother
-		//
-		if (rep.getRepositoryMeta().getRepositoryCapabilities().hasVersionRegistry()) {
-			try {
-				RepositoryVersionRegistry versionRegistry = rep.getVersionRegistry();
-				VersionRegistryDialog dialog = new VersionRegistryDialog(shell, versionRegistry);
-				dialog.open();
-			} catch(Exception e) {
-                new ErrorDialog(shell, BaseMessages.getString(PKG, "RepositoryExplorerDialog.VersionRegistry.UnexpectedError.Title"), BaseMessages.getString(PKG, "RepositoryExplorerDialog.VersionRegistry.UnexpectedError.Message1")+debug+"]"+Const.CR+BaseMessages.getString(PKG, "RepositoryExplorerDialog.Drop.UnexpectedError.Message2"), e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			}
-		}
-	}
-
-
 }

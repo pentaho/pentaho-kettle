@@ -53,6 +53,7 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -556,7 +557,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 	}
 
 	public JobMeta ripDB(final List<DatabaseMeta> databases, final String jobname,
-			final RepositoryDirectory repdir, final String directory, final DatabaseMeta sourceDbInfo,
+			final RepositoryDirectoryInterface repdir, final String directory, final DatabaseMeta sourceDbInfo,
 			final DatabaseMeta targetDbInfo, final String[] tables)
 	{
 		//

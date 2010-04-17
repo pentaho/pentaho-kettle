@@ -2,10 +2,10 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.lang.reflect.Constructor;
 
-import org.pentaho.di.repository.Directory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 
 public class UIObjectRegistry {
 
@@ -16,10 +16,10 @@ public class UIObjectRegistry {
   
   private static UIObjectRegistry instance;
   
-  private Class<?> repositoryUserClass;
-  private Class<?> jobClass;
-  private Class<?> transClass;
-  private Class<?> dirClass;
+  private Class<?> repositoryUserClass = DEFAULT_UIREPOSITORYUSER_CLASS;
+  private Class<?> jobClass = DEFAULT_UIJOB_CLASS;
+  private Class<?> transClass = DEFAULT_UITRANS_CLASS;
+  private Class<?> dirClass = DEFAULT_UIDIR_CLASS;
 
 
   private UIObjectRegistry() {
@@ -63,11 +63,9 @@ public class UIObjectRegistry {
   public Class<?> getRegisteredUIRepositoryDirectoryClass() {
     return this.dirClass;
   }
+
   public IUIUser constructUIRepositoryUser(IUser user) throws UIObjectCreationException {
     try {
-      if(repositoryUserClass == null) {
-        repositoryUserClass = DEFAULT_UIREPOSITORYUSER_CLASS;
-      }
       Constructor<?> constructor = repositoryUserClass.getConstructor(IUser.class);
       if (constructor != null) {
         return (IUIUser) constructor.newInstance(user);
@@ -79,92 +77,39 @@ public class UIObjectRegistry {
     }
   }
   
-  public UIJob constructUIJob(RepositoryContent rc, UIRepositoryDirectory parent, Repository rep) throws UIObjectCreationException {
+  public UIJob constructUIJob(RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep) throws UIObjectCreationException {
     try {
-      if(jobClass == null) {
-        Constructor<?> constructor = DEFAULT_UIJOB_CLASS.getConstructor(RepositoryContent.class, UIRepositoryDirectory.class, Repository.class);
-        if (constructor != null) {
-          return (UIJob) constructor.newInstance(rc, parent, rep);
-        } else {
-          throw new UIObjectCreationException("Unable to get the constructor for " + jobClass);
-        }
-      
+      Constructor<?> constructor = jobClass.getConstructor(RepositoryElementMetaInterface.class, UIRepositoryDirectory.class, Repository.class);
+      if (constructor != null) {
+        return (UIJob) constructor.newInstance(rc, parent, rep);
       } else {
-        Constructor<?> constructor = jobClass.getConstructor(RepositoryContent.class, UIRepositoryDirectory.class, Repository.class);
-        if (constructor != null) {
-          return (UIJob) constructor.newInstance(rc, parent, rep);
-        } else {
-          throw new UIObjectCreationException("Unable to get the constructor for " + jobClass);
-        }
+        throw new UIObjectCreationException("Unable to get the constructor for " + jobClass);
       }
     } catch (Exception e) {
       throw new UIObjectCreationException("Unable to instantiate object for " + jobClass);
     }
   }
   
-  public UITransformation constructUITransformation(RepositoryContent rc, UIRepositoryDirectory parent, Repository rep) throws UIObjectCreationException {
+  public UITransformation constructUITransformation(RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep) throws UIObjectCreationException {
     try {
-      if(transClass == null) {
-        Constructor<?> constructor = DEFAULT_UITRANS_CLASS.getConstructor(RepositoryContent.class, UIRepositoryDirectory.class, Repository.class);
-        if (constructor != null) {
-          return (UITransformation) constructor.newInstance(rc, parent, rep);
-        } else {
-          throw new UIObjectCreationException("Unable to get the constructor for " + transClass);
-        }
-      
+      Constructor<?> constructor = transClass.getConstructor(RepositoryElementMetaInterface.class, UIRepositoryDirectory.class, Repository.class);
+      if (constructor != null) {
+        return (UITransformation) constructor.newInstance(rc, parent, rep);
       } else {
-        Constructor<?> constructor = transClass.getConstructor(RepositoryContent.class, UIRepositoryDirectory.class, Repository.class);
-        if (constructor != null) {
-          return (UITransformation) constructor.newInstance(rc, parent, rep);
-        } else {
-          throw new UIObjectCreationException("Unable to get the constructor for " + transClass);
-        }
+        throw new UIObjectCreationException("Unable to get the constructor for " + transClass);
       }
     } catch (Exception e) {
       throw new UIObjectCreationException("Unable to instantiate object for " + transClass);
     }
   }
-  
-  public UIRepositoryDirectory constructUIRepositoryDirectory(Directory rd, Repository rep) throws UIObjectCreationException {
-    try {
-      if(dirClass == null) {
-        Constructor<?> constructor = DEFAULT_UIDIR_CLASS.getConstructor(Directory.class, Repository.class);
-        if (constructor != null) {
-          return (UIRepositoryDirectory) constructor.newInstance(rd, rep);
-        } else {
-          throw new UIObjectCreationException("Unable to get the constructor for " + dirClass);
-        }
-      
-      } else {
-        Constructor<?> constructor = dirClass.getConstructor(Directory.class, Repository.class);
-        if (constructor != null) {
-          return (UIRepositoryDirectory) constructor.newInstance(rd, rep);
-        } else {
-          throw new UIObjectCreationException("Unable to get the constructor for " + dirClass);
-        }
-      }
-    } catch (Exception e) {
-      throw new UIObjectCreationException("Unable to instantiate object for " + dirClass);
-    }
-  }
 
-  public UIRepositoryDirectory constructUIRepositoryDirectory(Directory rd, UIRepositoryDirectory uiParent, Repository rep) throws UIObjectCreationException {
+  public UIRepositoryDirectory constructUIRepositoryDirectory(RepositoryDirectoryInterface rd, UIRepositoryDirectory uiParent, Repository rep) throws UIObjectCreationException {
     try {
-      if(dirClass == null) {
-        Constructor<?> constructor = DEFAULT_UIDIR_CLASS.getConstructor(Directory.class, UIRepositoryDirectory.class, Repository.class);
-        if (constructor != null) {
-          return (UIRepositoryDirectory) constructor.newInstance(rd, uiParent, rep);
-        } else {
-          throw new UIObjectCreationException("Unable to get the constructor for " + dirClass);
-        }
-      
+      Constructor<?> constructor = dirClass.getConstructor(RepositoryDirectoryInterface.class, UIRepositoryDirectory.class, Repository.class);
+      if (constructor != null) {
+        return (UIRepositoryDirectory) constructor.newInstance(rd, uiParent, rep);
       } else {
-        Constructor<?> constructor = dirClass.getConstructor(Directory.class, UIRepositoryDirectory.class, Repository.class);
-        if (constructor != null) {
-          return (UIRepositoryDirectory) constructor.newInstance(rd, uiParent, rep);
-        } else {
-          throw new UIObjectCreationException("Unable to get the constructor for " + dirClass);
-        }
+        throw new UIObjectCreationException("Unable to get the constructor for " + dirClass);
       }
     } catch (Exception e) {
       throw new UIObjectCreationException("Unable to instantiate object for " + dirClass);

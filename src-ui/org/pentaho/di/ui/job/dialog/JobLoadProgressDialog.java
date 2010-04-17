@@ -28,6 +28,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 
@@ -42,14 +43,14 @@ public class JobLoadProgressDialog
 	private Shell shell;
 	private Repository rep;
 	private String jobname;
-	private RepositoryDirectory repdir;
+	private RepositoryDirectoryInterface repdir;
 	private JobMeta jobInfo;
 	private String	versionLabel;
 
 	/**
 	 * Creates a new dialog that will handle the wait while loading a job...
 	 */
-	public JobLoadProgressDialog(Shell shell, Repository rep, String jobname, RepositoryDirectory repdir, String versionLabel)
+	public JobLoadProgressDialog(Shell shell, Repository rep, String jobname, RepositoryDirectoryInterface repdir, String versionLabel)
 	{
 		this.shell = shell;
 		this.rep = rep;

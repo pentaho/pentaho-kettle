@@ -2,7 +2,7 @@ package org.pentaho.di.core.logging;
 
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
-import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
 public interface LoggingObjectInterface {
 	/**
@@ -13,7 +13,7 @@ public interface LoggingObjectInterface {
 	/**
 	 * @return the repositoryDirectory
 	 */
-	public RepositoryDirectory getRepositoryDirectory();
+	public RepositoryDirectoryInterface getRepositoryDirectory();
 
 	/**
 	 * @return the filename

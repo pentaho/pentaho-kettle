@@ -36,6 +36,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
@@ -68,10 +69,10 @@ public class SelectDirectoryDialog extends Dialog
     private Button wOK;
     private Button wRefresh;
     private Button wCancel;
-    private RepositoryDirectory selection;
+    private RepositoryDirectoryInterface selection;
     private Color dircolor;
 
-	private RepositoryDirectory	repositoryTree;
+	private RepositoryDirectoryInterface	repositoryTree;
 
 	private boolean readOnly;
 ;
@@ -86,7 +87,7 @@ public class SelectDirectoryDialog extends Dialog
         readOnly = rep.getSecurityProvider().isReadOnly();
     }
 
-    public RepositoryDirectory open()
+    public RepositoryDirectoryInterface open()
     {
         dircolor = GUIResource.getInstance().getColorDirectory();
 
@@ -249,7 +250,7 @@ public class SelectDirectoryDialog extends Dialog
                         //
                         // In which directory do we want create a subdirectory?
                         //
-                        RepositoryDirectory dir = repositoryTree.findDirectory(str);
+                        RepositoryDirectoryInterface dir = repositoryTree.findDirectory(str);
                         if (dir != null)
                         {
                             //

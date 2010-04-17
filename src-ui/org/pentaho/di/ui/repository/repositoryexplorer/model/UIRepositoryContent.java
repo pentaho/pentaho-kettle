@@ -20,21 +20,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 
-public abstract class UIRepositoryContent extends UIRepositoryObject implements RepositoryElementLocationInterface{
+public abstract class UIRepositoryContent extends UIRepositoryObject {
 
-  protected RepositoryContent rc;
+  protected RepositoryElementMetaInterface rc;
   protected UIRepositoryDirectory uiParent;
   
   public UIRepositoryContent() {
     super();
   }
   
-  public UIRepositoryContent(RepositoryContent rc, UIRepositoryDirectory parent, Repository rep) {
+  public UIRepositoryContent(RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep) {
     super(rc, rep);
     this.rc = rc;
     this.uiParent = parent;

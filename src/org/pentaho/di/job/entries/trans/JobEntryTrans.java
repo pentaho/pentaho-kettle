@@ -52,6 +52,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -405,7 +406,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	//
 	public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
 		try {
-			RepositoryDirectory importLocation = RepositoryImportLocation.getRepositoryImportLocation();
+		  RepositoryDirectoryInterface importLocation = RepositoryImportLocation.getRepositoryImportLocation();
 			if (directory == null) {
 				if (importLocation!=null) {
 					directory = importLocation.getPath();

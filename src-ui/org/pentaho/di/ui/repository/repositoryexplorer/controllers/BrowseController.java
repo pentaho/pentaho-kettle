@@ -33,6 +33,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoerCollection;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
@@ -143,9 +144,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       mainController = (MainController) this.getXulDomContainer().getEventHandler("mainController");
       try {
         this.repositoryDirectory = UIObjectRegistry.getInstance().constructUIRepositoryDirectory(
-            repository.loadRepositoryDirectoryTree(), repository);
+            repository.loadRepositoryDirectoryTree(), null, repository);
       } catch (UIObjectCreationException uoe) {
-        this.repositoryDirectory = new UIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), repository);
+        this.repositoryDirectory = new UIRepositoryDirectory(repository.loadRepositoryDirectoryTree(), null, repository);
       }
       dirMap = new HashMap<ObjectId, UIRepositoryDirectory>();
       populateDirMap(repositoryDirectory);
@@ -220,7 +221,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
     try {
       // Set the initial selected directory as the users home directory
-      RepositoryDirectory homeDir = repository.getUserHomeDirectory();
+      RepositoryDirectoryInterface homeDir = repository.getUserHomeDirectory();
       int currentDir = 0;
       String[] homePath = homeDir.getPathArray();
       if (homePath != null) {

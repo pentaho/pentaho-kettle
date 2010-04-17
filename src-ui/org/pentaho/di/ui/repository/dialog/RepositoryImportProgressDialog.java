@@ -50,6 +50,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -80,7 +81,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
     private Repository rep;
     private String fileDirectory;
     private String[] filenames;
-    private RepositoryDirectory baseDirectory;
+    private RepositoryDirectoryInterface baseDirectory;
     private ProgressBar wBar;
     private Label wLabel;
     private Text wLogging;
@@ -95,7 +96,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
 	private String	versionComment;
 
-    public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String fileDirectory, String[] filenames, RepositoryDirectory baseDirectory, String versionComment)
+    public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, String versionComment)
     {
         super(parent, style);
 
@@ -229,7 +230,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
     	// remove the leading root, we never don't need it.
     	directoryPath = directoryPath.substring(1);
 
-    	RepositoryDirectory targetDirectory = baseDirectory.findDirectory(directoryPath);
+    	RepositoryDirectoryInterface targetDirectory = baseDirectory.findDirectory(directoryPath);
     	if (targetDirectory == null)
     	{
     		if (askDirectory)
@@ -338,7 +339,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
         // What's the directory path?
         String directoryPath = Const.NVL(XMLHandler.getTagValue(jobnode, "directory"), Const.FILE_SEPARATOR);
 
-        RepositoryDirectory targetDirectory = baseDirectory.findDirectory(directoryPath);
+        RepositoryDirectoryInterface targetDirectory = baseDirectory.findDirectory(directoryPath);
         if (targetDirectory == null)
         {
             if (askDirectory)

@@ -89,6 +89,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -143,7 +144,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     private List<PartitionSchema>    partitionSchemas;
 
-    private RepositoryDirectory directory;
+    private RepositoryDirectoryInterface directory;
 
     private String              name;
 
@@ -4280,7 +4281,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /**
      * @return Returns the directory.
      */
-    public RepositoryDirectory getRepositoryDirectory()
+    public RepositoryDirectoryInterface getRepositoryDirectory()
     {
         return directory;
     }
@@ -4288,7 +4289,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /**
      * @param directory The directory to set.
      */
-    public void setRepositoryDirectory(RepositoryDirectory directory)
+    public void setRepositoryDirectory(RepositoryDirectoryInterface directory)
     {
         this.directory = directory;
         setInternalKettleVariables();

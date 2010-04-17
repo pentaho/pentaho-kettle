@@ -67,6 +67,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.Trans;
@@ -1530,7 +1531,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		return parentJob;
 	}
 
-	public RepositoryDirectory getRepositoryDirectory() {
+	public RepositoryDirectoryInterface getRepositoryDirectory() {
 		if (jobMeta==null) return null;
 		return jobMeta.getRepositoryDirectory();
 	}

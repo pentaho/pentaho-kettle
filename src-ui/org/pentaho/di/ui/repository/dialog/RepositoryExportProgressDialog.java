@@ -30,6 +30,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryExporter;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
@@ -46,12 +47,12 @@ public class RepositoryExportProgressDialog
 
     private Shell shell;
     private Repository rep;
-    private RepositoryDirectory dir;
+    private RepositoryDirectoryInterface dir;
     private String filename;
 
 	private LogChannelInterface	log;
 
-    public RepositoryExportProgressDialog(Shell shell, Repository rep, RepositoryDirectory dir, String filename)
+    public RepositoryExportProgressDialog(Shell shell, Repository rep, RepositoryDirectoryInterface dir, String filename)
     {
         this.shell = shell;
         this.rep = rep;

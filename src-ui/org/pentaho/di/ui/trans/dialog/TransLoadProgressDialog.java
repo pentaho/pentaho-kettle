@@ -28,6 +28,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
@@ -49,7 +50,7 @@ public class TransLoadProgressDialog
 	private Shell shell;
 	private Repository rep;
 	private String transname;
-	private RepositoryDirectory repdir;
+	private RepositoryDirectoryInterface repdir;
 	private TransMeta transInfo;
 
 	private String	versionLabel;
@@ -57,7 +58,7 @@ public class TransLoadProgressDialog
 	/**
 	 * Creates a new dialog that will handle the wait while loading a transformation...
 	 */
-	public TransLoadProgressDialog(Shell shell, Repository rep, String transname, RepositoryDirectory repdir, String versionLabel)
+	public TransLoadProgressDialog(Shell shell, Repository rep, String transname, RepositoryDirectoryInterface repdir, String versionLabel)
 	{
 		this.shell = shell;
 		this.rep = rep;

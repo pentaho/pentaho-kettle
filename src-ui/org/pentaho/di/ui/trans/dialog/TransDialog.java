@@ -64,6 +64,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
@@ -169,7 +170,7 @@ public class TransDialog extends Dialog
 	private ModifyListener lsMod;
 	private Repository rep;
 	private PropsUI props;
-	private RepositoryDirectory newDirectory;
+	private RepositoryDirectoryInterface newDirectory;
 
     private int middle;
 
@@ -506,12 +507,12 @@ public class TransDialog extends Dialog
 			{
 				if (rep!=null)
 				{
-					RepositoryDirectory directoryFrom = transMeta.getRepositoryDirectory();
+					RepositoryDirectoryInterface directoryFrom = transMeta.getRepositoryDirectory();
 					if (directoryFrom==null) directoryFrom = new RepositoryDirectory();
 					ObjectId idDirectoryFrom  = directoryFrom.getObjectId();
                     
                     SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
-                    RepositoryDirectory rd = sdd.open();
+                    RepositoryDirectoryInterface rd = sdd.open();
                     if (rd!=null)
                     {
                         if (idDirectoryFrom!=rd.getObjectId())
@@ -2104,7 +2105,7 @@ public class TransDialog extends Dialog
 
 		if (directoryChangeAllowed && transMeta.getObjectId()!=null) {
 			if (newDirectory != null) {
-				RepositoryDirectory dirFrom = transMeta.getRepositoryDirectory();
+				RepositoryDirectoryInterface dirFrom = transMeta.getRepositoryDirectory();
 
 				try {
 					ObjectId newId = rep.renameTransformation(transMeta.getObjectId(), newDirectory, transMeta.getName());

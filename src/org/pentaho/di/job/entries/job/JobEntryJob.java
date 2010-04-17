@@ -52,6 +52,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
@@ -390,7 +391,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		try
 		{
-			RepositoryDirectory importLocation = RepositoryImportLocation.getRepositoryImportLocation();
+		  RepositoryDirectoryInterface importLocation = RepositoryImportLocation.getRepositoryImportLocation();
 			
 			if (importLocation!=null && !importLocation.isRoot()) {
 				directory = importLocation.getPath() + directoryPath;

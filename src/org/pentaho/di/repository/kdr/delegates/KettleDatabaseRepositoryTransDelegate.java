@@ -24,6 +24,7 @@ import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryAttributeInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.shared.SharedObjects;
@@ -59,7 +60,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 		return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_DEPENDENCY), quote(KettleDatabaseRepository.FIELD_DEPENDENCY_ID_DEPENDENCY), id_dependency);
 	}
 
-	public boolean existsTransMeta(String name, RepositoryDirectory repositoryDirectory, RepositoryObjectType objectType) throws KettleException {
+	public boolean existsTransMeta(String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType) throws KettleException {
 		try {
 			return (getTransformationID(name, repositoryDirectory.getObjectId()) != null);
 		} catch (KettleException e) {
@@ -332,7 +333,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     * @param monitor The progress monitor to display the progress of the file-open operation in a dialog
     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
     */
-   public TransMeta loadTransformation(TransMeta transMeta, String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables) throws KettleException
+   public TransMeta loadTransformation(TransMeta transMeta, String transname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, boolean setInternalVariables) throws KettleException
    {
        transMeta.setRepository(repository);
        
@@ -1008,7 +1009,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 {
                     String transName = transRow.getString(quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME), "<name not found>");
                     long id_directory = transRow.getInteger(quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY), -1L);
-                    RepositoryDirectory dir = repository.loadRepositoryDirectoryTree().findDirectory(new LongObjectId(id_directory));
+                    RepositoryDirectoryInterface dir = repository.loadRepositoryDirectoryTree().findDirectory(new LongObjectId(id_directory));
                     
                     transList[i]=dir.getPathObjectCombination(transName);
                 }
@@ -1190,7 +1191,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 		repository.connectionDelegate.getDatabase().execStatement(sql, par.getRowMeta(), par.getData());
 	}
 
-	public synchronized void renameTransformation(ObjectId id_transformation, RepositoryDirectory newParentDir, String newname) throws KettleException
+	public synchronized void renameTransformation(ObjectId id_transformation, RepositoryDirectoryInterface newParentDir, String newname) throws KettleException
 	{
 	  if(newParentDir != null || newname != null) {
       RowMetaAndData table = new RowMetaAndData();

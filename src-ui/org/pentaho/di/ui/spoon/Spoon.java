@@ -175,8 +175,8 @@ import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
@@ -234,6 +234,7 @@ import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.UISupportRegistery;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent;
 import org.pentaho.di.ui.repository.repositoryexplorer.uisupport.BaseRepositoryExplorerUISupport;
 import org.pentaho.di.ui.repository.repositoryexplorer.uisupport.ManageUserUISupport;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
@@ -371,7 +372,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   // Save the last directory saved to for new files
   // TODO: Save the last saved position to the defaulstSaveLocaton
-  private RepositoryDirectory defaultSaveLocation = null;
+  private RepositoryDirectoryInterface defaultSaveLocation = null;
 
   // Associate the defaultSaveLocation with a given repository; We should clear this out on a repo change
   private Repository defaultSaveLocationRepository = null;
@@ -3081,7 +3082,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           rep.disconnect();
           SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
         }
-        RepositoryDirectory directoryTree = null;
+        RepositoryDirectoryInterface directoryTree = null;
         try {
           setRepository(repository);
           directoryTree = rep.loadRepositoryDirectoryTree();
@@ -3155,7 +3156,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
           // For the existing transformation, change the directory too:
           // Try to find the same directory in the new repository...
-          RepositoryDirectory redi = directoryTree.findDirectory(transMeta.getRepositoryDirectory().getPath());
+          RepositoryDirectoryInterface redi = directoryTree.findDirectory(transMeta.getRepositoryDirectory().getPath());
           if (redi != null) {
             transMeta.setRepositoryDirectory(redi);
           } else {
@@ -3209,7 +3210,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (rep != null) {
       final RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
 
-        public boolean open(RepositoryElementLocationInterface element, String revision) {
+        public boolean open(UIRepositoryContent element, String revision) {
           String objname = element.getName();
           if (objname != null) {
             RepositoryObjectType objectType = element.getRepositoryElementType();
@@ -3263,7 +3264,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
 
-  public void loadObjectFromRepository(String objname, RepositoryObjectType objectType, RepositoryDirectory repdir,
+  public void loadObjectFromRepository(String objname, RepositoryObjectType objectType, RepositoryDirectoryInterface repdir,
       String versionLabel) {
     // Try to open the selected transformation.
     if (objectType.equals(RepositoryObjectType.TRANSFORMATION)) {
@@ -3374,7 +3375,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       if (sod.open() != null) {
         RepositoryObjectType type = sod.getObjectType();
         String name = sod.getObjectName();
-        RepositoryDirectory repdir = sod.getDirectory();
+        RepositoryDirectoryInterface repdir = sod.getDirectory();
 
         // Load a transformation
         if (RepositoryObjectType.TRANSFORMATION.equals(type)) {
@@ -4412,7 +4413,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // Ask for a destination in the repository...
       //
       SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
-      RepositoryDirectory baseDirectory = sdd.open();
+      RepositoryDirectoryInterface baseDirectory = sdd.open();
       if (baseDirectory != null) {
         // Finally before importing, ask for a version comment (if applicable)
         //
@@ -6343,7 +6344,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 // transformation, try to load it...
                 // If not, keep the repository logged
                 // in.
-                RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(optionDirname.toString());
+                RepositoryDirectoryInterface repdir = rep.loadRepositoryDirectoryTree().findDirectory(optionDirname.toString());
                 if (repdir == null) {
                   log.logError(BaseMessages.getString(PKG, "Spoon.Log.UnableFindDirectory", optionDirname.toString())); // "Can't find directory ["+dirname+"] in the repository."
                 } else {
@@ -6540,7 +6541,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       if (rep != null) // load from this repository...
       {
         if (rep.getName().equalsIgnoreCase(lastUsedFile.getRepositoryName())) {
-          RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(lastUsedFile.getDirectory());
+          RepositoryDirectoryInterface repdir = rep.loadRepositoryDirectoryTree().findDirectory(lastUsedFile.getDirectory());
           if (repdir != null) {
             // Are we loading a transformation or a job?
             if (lastUsedFile.isTransformation()) {
@@ -7447,7 +7448,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     return selectionObject;
   }
 
-  public RepositoryDirectory getDefaultSaveLocation(RepositoryElementInterface repositoryElement) {
+  public RepositoryDirectoryInterface getDefaultSaveLocation(RepositoryElementInterface repositoryElement) {
     try {
       if (getRepository() != defaultSaveLocationRepository) {
         // The repository has changed, reset the defaultSaveLocation

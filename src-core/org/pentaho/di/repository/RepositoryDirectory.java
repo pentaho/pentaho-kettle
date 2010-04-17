@@ -24,16 +24,18 @@ import org.w3c.dom.Node;
  * That means that it's just an extra parameter for recognizing a transformation, job or schema.
  * It allows for sub-directories by linking back to itself.
  * 
+ * TODO: This class is referenced in a large amount of Interfaces.  We should convert it into an interface.
+ * 
  * @author Matt
  * @since  09-nov-2004
  *
  */
-public class RepositoryDirectory implements Directory
+public class RepositoryDirectory implements RepositoryDirectoryInterface
 {
     public static final String DIRECTORY_SEPARATOR = "/";
 
-	private RepositoryDirectory parent;
-	private List<Directory> children;
+	private RepositoryDirectoryInterface parent;
+	private List<RepositoryDirectoryInterface> children;
 	
 	private String directoryname;
 	
@@ -50,11 +52,11 @@ public class RepositoryDirectory implements Directory
 	 * @param parent The directory to create the sub-directory in
 	 * @param directoryname The name of the new directory.
 	 */
-	public RepositoryDirectory(RepositoryDirectory parent, String directoryname)
+	public RepositoryDirectory(RepositoryDirectoryInterface parent, String directoryname)
 	{
 		this.parent        = parent;
 		this.directoryname = directoryname;
-		this.children      = new ArrayList<Directory>(); // default: no subdirectories...
+		this.children      = new ArrayList<RepositoryDirectoryInterface>(); // default: no subdirectories...
 		this.id            = null;              // The root directory!
 	}
 	
@@ -68,11 +70,11 @@ public class RepositoryDirectory implements Directory
 		this(null, (String)null);
 	}
 	
-	public List<Directory> getChildren() {
+	public List<RepositoryDirectoryInterface> getChildren() {
     return children;
   }
 
-  public void setChildren(List<Directory> children) {
+  public void setChildren(List<RepositoryDirectoryInterface> children) {
     this.children = children;
   }
 
@@ -80,7 +82,7 @@ public class RepositoryDirectory implements Directory
 	{
 		this.parent        = null;
 		this.directoryname = null;
-		this.children      = new ArrayList<Directory>(); // default: no subdirectories...
+		this.children      = new ArrayList<RepositoryDirectoryInterface>(); // default: no subdirectories...
 	}
 	
 	/**
@@ -106,7 +108,7 @@ public class RepositoryDirectory implements Directory
 	 * 
 	 * @param parent The new parent of this directory.
 	 */
-	public void setParent(RepositoryDirectory parent)
+	public void setParent(RepositoryDirectoryInterface parent)
 	{
 		this.parent = parent;
 	}
@@ -115,7 +117,7 @@ public class RepositoryDirectory implements Directory
 	 * get the parent directory for this directory.
 	 * @return The parent directory of null if this is the root directory. 
 	 */
-	public RepositoryDirectory getParent()
+	public RepositoryDirectoryInterface getParent()
 	{
 		return this.parent;
 	}
@@ -181,7 +183,7 @@ public class RepositoryDirectory implements Directory
 	{
 		// First determine the depth of the tree...
 		int depth=1;
-		RepositoryDirectory follow = getParent();
+		RepositoryDirectoryInterface follow = getParent();
 		if (follow!=null)
 		{
 			depth++;
@@ -210,7 +212,7 @@ public class RepositoryDirectory implements Directory
 	 * Add a subdirectory to this directory.
 	 * @param subdir The subdirectory to add.
 	 */
-	public void addSubdirectory(RepositoryDirectory subdir)
+	public void addSubdirectory(RepositoryDirectoryInterface subdir)
 	{
 		subdir.setParent(this);
 		children.add(subdir);
@@ -345,7 +347,7 @@ public class RepositoryDirectory implements Directory
 	}
 	
 	public RepositoryDirectory findChild(String name) {
-		for (Directory child : children) {
+		for (RepositoryDirectoryInterface child : children) {
 			if (child.getName().equalsIgnoreCase(name)) 
 			  return (RepositoryDirectory)child;
 		}
@@ -485,7 +487,7 @@ public class RepositoryDirectory implements Directory
 	 * Find the root of the directory tree starting from this directory.
 	 * @return the root of the directory tree
 	 */
-	public RepositoryDirectory findRoot()
+	public RepositoryDirectoryInterface findRoot()
 	{
 		if (isRoot()) return this;
 		return getParent().findRoot();

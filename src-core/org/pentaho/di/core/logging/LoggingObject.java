@@ -4,6 +4,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
 public class LoggingObject implements LoggingObjectInterface {
 	
@@ -11,7 +12,7 @@ public class LoggingObject implements LoggingObjectInterface {
 	private LoggingObjectType objectType;
 	private String objectName;
 	private String objectCopy;
-	private RepositoryDirectory repositoryDirectory;
+	private RepositoryDirectoryInterface repositoryDirectory;
 	private String filename;
 	private ObjectId objectId;
 	private ObjectRevision objectRevision;
@@ -148,7 +149,7 @@ public class LoggingObject implements LoggingObjectInterface {
 	/**
 	 * @return the repositoryDirectory
 	 */
-	public RepositoryDirectory getRepositoryDirectory() {
+	public RepositoryDirectoryInterface getRepositoryDirectory() {
 		return repositoryDirectory;
 	}
 	/**

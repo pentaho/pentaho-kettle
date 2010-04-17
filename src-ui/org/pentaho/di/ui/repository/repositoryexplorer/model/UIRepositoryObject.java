@@ -22,14 +22,14 @@ import java.util.Date;
 import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryElement;
+import org.pentaho.di.repository.RepositoryObjectInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
 public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryObject> {
   
   // This object can be a Directory or a RepositoryContent
-  protected RepositoryElement obj;
+  protected RepositoryObjectInterface obj;
   protected Repository rep;
   private RepositoryObjectComparator roc;
   private IRepositoryService repositoryService;
@@ -39,12 +39,12 @@ public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryO
     roc = new RepositoryObjectComparator();
   }
 
-  public UIRepositoryObject(RepositoryElement obj) {
+  public UIRepositoryObject(RepositoryObjectInterface obj) {
     this();
     this.obj = obj;
   }
   
-  public UIRepositoryObject(RepositoryElement obj, Repository rep) {
+  public UIRepositoryObject(RepositoryObjectInterface obj, Repository rep) {
     this(obj);
     this.rep = rep;
   }

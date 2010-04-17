@@ -39,6 +39,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryExporter;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.trans.Trans;
@@ -206,7 +207,7 @@ public class Pan {
 
             rep.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
 
-            RepositoryDirectory directory = rep.loadRepositoryDirectoryTree(); // Default
+            RepositoryDirectoryInterface directory = rep.loadRepositoryDirectoryTree(); // Default
                                                                                // =
                                                                                // root
 

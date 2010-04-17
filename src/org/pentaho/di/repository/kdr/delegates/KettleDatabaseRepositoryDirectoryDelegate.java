@@ -6,10 +6,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Directory;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRepositoryBaseDelegate {
@@ -24,7 +24,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
         quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY), id_directory);
   }
 
-  public RepositoryDirectory loadRepositoryDirectoryTree(RepositoryDirectory root) throws KettleException {
+  public RepositoryDirectoryInterface loadRepositoryDirectoryTree(RepositoryDirectoryInterface root) throws KettleException {
     try {
       root.clear();
       ObjectId subids[] = repository.getSubDirectoryIDs(root.getObjectId());
@@ -102,7 +102,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     return retval;
   }
 
-  private synchronized ObjectId insertDirectory(ObjectId id_directory_parent, RepositoryDirectory dir)
+  private synchronized ObjectId insertDirectory(ObjectId id_directory_parent, RepositoryDirectoryInterface dir)
       throws KettleException {
     ObjectId id = repository.connectionDelegate.getNextDirectoryID();
 
@@ -131,7 +131,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     repository.connectionDelegate.getDatabase().commit();
   }
 
-  public synchronized void deleteDirectory(RepositoryDirectory dir) throws KettleException {
+  public synchronized void deleteDirectory(RepositoryDirectoryInterface dir) throws KettleException {
     String trans[] = repository.getTransformationNames(dir.getObjectId(), false); // TODO : include or exclude deleted objects?
     String jobs[] = repository.getJobNames(dir.getObjectId(), false); // TODO : include or exclude deleted objects?
     ObjectId[] subDirectories = repository.getSubDirectoryIDs(dir.getObjectId());
@@ -142,7 +142,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
   }
 
-  private synchronized void deleteDirectoryRecursively(RepositoryDirectory dir) throws KettleException {
+  private synchronized void deleteDirectoryRecursively(RepositoryDirectoryInterface dir) throws KettleException {
       String trans[] = repository.getTransformationNames(dir.getObjectId(), false); // TODO : include or exclude deleted objects?
       String jobs[] = repository.getJobNames(dir.getObjectId(), false); // TODO : include or exclude deleted objects?
       for(String transformation:trans) {
@@ -153,7 +153,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
         ObjectId id =  repository.getJobId(job, dir);
         repository.deleteJob(id);
       } 
-      for(Directory subDir:dir.getChildren()) {
+      for(RepositoryDirectoryInterface subDir : dir.getChildren()) {
         deleteDirectoryRecursively((RepositoryDirectory)subDir);   
       }
       repository.directoryDelegate.deleteDirectory(dir.getObjectId());
@@ -241,7 +241,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
         + quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME));
   }
 
-  public void saveRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+  public void saveRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException {
     try {
       ObjectId id_directory_parent = null;
       if (dir.getParent() != null) {
@@ -258,7 +258,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
   }
 
-  public void delRepositoryDirectory(RepositoryDirectory dir, boolean deleteNonEmptyFolder) throws KettleException {
+  public void delRepositoryDirectory(RepositoryDirectoryInterface dir, boolean deleteNonEmptyFolder) throws KettleException {
     try {
       if (!deleteNonEmptyFolder) {
         String trans[] = repository.getTransformationNames(dir.getObjectId(), false); // TODO : include or exclude deleted objects?
@@ -287,7 +287,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
   }
 
-  public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectory newParentDir, String newName)
+  public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectoryInterface newParentDir, String newName)
       throws KettleException {
     ObjectId parentId = null;
     if (newParentDir != null) {
@@ -310,20 +310,20 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
    * @return The created sub-directory
    * @throws KettleException In case something goes wrong
    */
-  public RepositoryDirectory createRepositoryDirectory(RepositoryDirectory parentDirectory, String directoryPath)
+  public RepositoryDirectoryInterface createRepositoryDirectory(RepositoryDirectoryInterface parentDirectory, String directoryPath)
       throws KettleException {
-    RepositoryDirectory refreshedParentDir = repository.loadRepositoryDirectoryTree().findDirectory(parentDirectory.getPath());
+    RepositoryDirectoryInterface refreshedParentDir = repository.loadRepositoryDirectoryTree().findDirectory(parentDirectory.getPath());
 
     String path[] = Const.splitPath(directoryPath, RepositoryDirectory.DIRECTORY_SEPARATOR);
 
-    RepositoryDirectory parent = refreshedParentDir;
+    RepositoryDirectoryInterface parent = refreshedParentDir;
     for (int level = 1; level <= path.length; level++) {
       String subPath[] = new String[level];
       for (int i = 0; i < level; i++) {
         subPath[i] = path[i];
       }
 
-      RepositoryDirectory rd = parent.findDirectory(subPath);
+      RepositoryDirectoryInterface rd = parent.findDirectory(subPath);
       if (rd == null) {
         // This directory doesn't exists, let's add it!
         //

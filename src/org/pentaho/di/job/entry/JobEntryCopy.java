@@ -247,6 +247,10 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	{
 		entry.setChanged(ch);
 	}
+	
+	public void clearChanged() {
+	  entry.setChanged(false);
+	}
 
 	public boolean hasChanged()
 	{

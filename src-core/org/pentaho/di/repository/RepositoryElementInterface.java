@@ -1,12 +1,9 @@
 package org.pentaho.di.repository;
 
-
-
-
 /**
  * A repository element is an object that can be saved or loaded from the repository.
  * As such, we need to be able to identify it.
- * It needs a RepositoryDirectory,a name and an ID.
+ * It needs a RepositoryDirectory, a name and an ID.
  * 
  * We also need to identify the type of the element.
  *   
@@ -15,22 +12,23 @@ package org.pentaho.di.repository;
  * @author matt
  *
  */
-public interface RepositoryElementInterface extends RepositoryElementLocationInterface {
-	public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory);
+public interface RepositoryElementInterface extends RepositoryObjectInterface {
+  
+  public RepositoryDirectoryInterface getRepositoryDirectory();
+  public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory);
 	
+	public String getName();
 	public void setName(String name);
-	
-	public void setDescription(String description);
+
 	public String getDescription();
-	
-	public void setObjectId(ObjectId id);
+	public void setDescription(String description);
+
 	public ObjectId getObjectId();
+	public void setObjectId(ObjectId id);
 			
-	/**
-	 * Clears the changed flag
-	 */
-	public void clearChanged();
+	public RepositoryObjectType getRepositoryElementType();
 	
+  public ObjectRevision getObjectRevision();	
 	public void setObjectRevision(ObjectRevision objectRevision);
-	public ObjectRevision getObjectRevision();
+
 }

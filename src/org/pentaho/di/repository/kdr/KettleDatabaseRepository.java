@@ -47,18 +47,16 @@ import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryElementLocationInterface;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
-import org.pentaho.di.repository.RepositoryVersionRegistry;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryClusterSchemaDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConditionDelegate;
@@ -236,7 +234,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     
     // TransMeta
     
-    public TransMeta loadTransformation(String transname, RepositoryDirectory repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String versionName) throws KettleException {
+    public TransMeta loadTransformation(String transname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String versionName) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.READ_TRANSFORMATION);
     	TransMeta transMeta = new TransMeta();
     	return transDelegate.loadTransformation(transMeta, transname, repdir, monitor, setInternalVariables);
@@ -246,7 +244,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return transDelegate.readTransSharedObjects(transMeta);
 	}
 		
-	public synchronized ObjectId renameTransformation(ObjectId id_transformation, RepositoryDirectory newDir, String newName) throws KettleException {
+	public synchronized ObjectId renameTransformation(ObjectId id_transformation, RepositoryDirectoryInterface newDir, String newName) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.MODIFY_TRANSFORMATION);
 
     	transDelegate.renameTransformation(id_transformation, newDir, newName);
@@ -264,7 +262,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	 * @param the monitor to use as feedback in a UI (or null if not used)
 	 * @throws KettleException
 	 */
-	public JobMeta loadJob(String jobname, RepositoryDirectory repdir, ProgressMonitorListener monitor, String versionName) throws KettleException {
+	public JobMeta loadJob(String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, String versionName) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.READ_JOB);
     	
 		return jobDelegate.loadJobMeta(jobname, repdir, monitor);
@@ -274,7 +272,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     	return jobDelegate.readSharedObjects(jobMeta);
     }
 
-	public synchronized ObjectId renameJob(ObjectId id_job, RepositoryDirectory dir, String newname) throws KettleException {
+	public synchronized ObjectId renameJob(ObjectId id_job, RepositoryDirectoryInterface dir, String newname) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.MODIFY_TRANSFORMATION);
 
     	jobDelegate.renameJob(id_job, dir, newname);
@@ -285,7 +283,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	// Common methods...
 	//////////////////////////////
 
-	public boolean exists(String name, RepositoryDirectory repositoryDirectory, RepositoryObjectType objectType) throws KettleException {
+	public boolean exists(String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType) throws KettleException {
     	
 		switch(objectType) {
 		case JOB : 
@@ -435,41 +433,33 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	
 	// Directory stuff
 	
-	public RepositoryDirectory loadRepositoryDirectoryTree() throws KettleException {
+	public RepositoryDirectoryInterface loadRepositoryDirectoryTree() throws KettleException {
 		RepositoryDirectory root = new RepositoryDirectory();
 		root.setObjectId(new LongObjectId(0L));
 		return directoryDelegate.loadRepositoryDirectoryTree(root);
 	}
 	
-	public RepositoryDirectory loadRepositoryDirectoryTree(RepositoryDirectory root) throws KettleException {
+	public RepositoryDirectoryInterface loadRepositoryDirectoryTree(RepositoryDirectoryInterface root) throws KettleException {
 		return directoryDelegate.loadRepositoryDirectoryTree(root);
 	}
 
-	public void saveRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+	public void saveRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.CREATE_DIRECTORY);
 		directoryDelegate.saveRepositoryDirectory(dir);
 	}
 
-	public void deleteRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
+	public void deleteRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.DELETE_DIRECTORY);
 		directoryDelegate.delRepositoryDirectory(dir, true);
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public ObjectId renameRepositoryDirectory(RepositoryDirectory dir) throws KettleException {
-    	securityProvider.validateAction(RepositoryOperation.RENAME_DIRECTORY);
-		return directoryDelegate.renameRepositoryDirectory(dir.getObjectId(), dir, dir.getName());
-	}
-	
-	 public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectory newParentDir, String newName) throws KettleException {
-	   ObjectId result = null;
-	   securityProvider.validateAction(RepositoryOperation.RENAME_DIRECTORY);
-	   result = directoryDelegate.renameRepositoryDirectory(id, newParentDir, newName);
+	public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectoryInterface newParentDir, String newName) throws KettleException {
+	  ObjectId result = null;
+	  securityProvider.validateAction(RepositoryOperation.RENAME_DIRECTORY);
+	  result = directoryDelegate.renameRepositoryDirectory(id, newParentDir, newName);
 	   
-	   return result;
-	 }
+	  return result;
+	}
 	
 	/**
 	 * Create a new directory, possibly by creating several sub-directies of / at the same time.
@@ -479,7 +469,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	 * @return The created sub-directory
 	 * @throws KettleException In case something goes wrong
 	 */
-	public RepositoryDirectory createRepositoryDirectory(RepositoryDirectory parentDirectory, String directoryPath) throws KettleException {
+	public RepositoryDirectoryInterface createRepositoryDirectory(RepositoryDirectoryInterface parentDirectory, String directoryPath) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.CREATE_DIRECTORY);
 		return directoryDelegate.createRepositoryDirectory(parentDirectory, directoryPath);
 	}
@@ -673,12 +663,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return connectionDelegate.getStrings("SELECT "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME));
 	}
     
-    public List<RepositoryObject> getJobObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException
+    public List<RepositoryElementMetaInterface> getJobObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException
     {
         return getRepositoryObjects(quoteTable(KettleDatabaseRepository.TABLE_R_JOB), RepositoryObjectType.JOB, id_directory);
     }
 
-    public List<RepositoryObject> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException
+    public List<RepositoryElementMetaInterface> getTransformationObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException
     {
         return getRepositoryObjects(quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION), RepositoryObjectType.TRANSFORMATION, id_directory);
     }
@@ -689,7 +679,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
      * 
      * @throws KettleException
      */
-    private synchronized List<RepositoryObject> getRepositoryObjects(String tableName, RepositoryObjectType objectType, ObjectId id_directory) throws KettleException
+    private synchronized List<RepositoryElementMetaInterface> getRepositoryObjects(String tableName, RepositoryObjectType objectType, ObjectId id_directory) throws KettleException
     {
     	return connectionDelegate.getRepositoryObjects(tableName, objectType, id_directory);
     }
@@ -1224,13 +1214,6 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		// logBasic("All deleted on job with ID_JOB: "+id_job);
 	}
 
-	public synchronized ObjectId renameDatabase(ObjectId id_database, String newname) throws KettleException {
-		databaseDelegate.renameDatabase(id_database, newname);
-		return id_database; // doesn't change in this case
-	}
-
-
-
 	public boolean dropRepositorySchema() throws KettleException
 	{
 		// Make sure we close shop before dropping everything. 
@@ -1593,7 +1576,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return databaseDelegate.getDatabaseID(name);
 	}
 
-	public ObjectId getJobId(String name, RepositoryDirectory repositoryDirectory) throws KettleException {
+	public ObjectId getJobId(String name, RepositoryDirectoryInterface repositoryDirectory) throws KettleException {
 		return jobDelegate.getJobID(name, repositoryDirectory.getObjectId());
 	}
 
@@ -1605,7 +1588,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return slaveServerDelegate.getSlaveID(name);
 	}
 
-	public ObjectId getTransformationID(String name, RepositoryDirectory repositoryDirectory) throws KettleException {
+	public ObjectId getTransformationID(String name, RepositoryDirectoryInterface repositoryDirectory) throws KettleException {
 		return transDelegate.getTransformationID(name, repositoryDirectory.getObjectId());
 	}
 
@@ -1724,28 +1707,15 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	 public KettleDatabaseRepositorySecurityProvider getSecurityManager() {
 	    return securityProvider;
 	  }
-
 	
-	public List<ObjectRevision> getRevisions(RepositoryElementLocationInterface element) throws KettleException {
-    throw new UnsupportedOperationException();
-	}
-	
-	public void undeleteObject(RepositoryElementLocationInterface element) throws KettleException {
+	public void undeleteObject(RepositoryElementMetaInterface element) throws KettleException {
     throw new UnsupportedOperationException();
 	}
 
-	public RepositoryVersionRegistry getVersionRegistry() throws KettleException {
-    throw new UnsupportedOperationException();
-  }
-
-  public List<ObjectRevision> getRevisions(ObjectId id) throws KettleException {
-    throw new UnsupportedOperationException();
-   }
-  
-  public List<RepositoryObject> getJobAndTransformationObjects(ObjectId id_directory, boolean includeDeleted)
+  public List<RepositoryElementMetaInterface> getJobAndTransformationObjects(ObjectId id_directory, boolean includeDeleted)
       throws KettleException {
     // TODO not the most efficient impl; also, no sorting is done
-    List<RepositoryObject> objs = new ArrayList<RepositoryObject>();
+    List<RepositoryElementMetaInterface> objs = new ArrayList<RepositoryElementMetaInterface>();
     objs.addAll(getJobObjects(id_directory, includeDeleted));
     objs.addAll(getTransformationObjects(id_directory, includeDeleted));
     return objs;

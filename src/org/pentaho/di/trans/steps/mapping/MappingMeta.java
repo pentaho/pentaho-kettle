@@ -31,6 +31,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
@@ -272,7 +273,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         
 		// Verify import from repository explorer into different directory...
         //
-        RepositoryDirectory importLocation = RepositoryImportLocation.getRepositoryImportLocation();
+        RepositoryDirectoryInterface importLocation = RepositoryImportLocation.getRepositoryImportLocation();
 		if (importLocation!=null && !importLocation.isRoot()) {
 			directoryPath = importLocation.getPath()+directoryPath;
 		}
@@ -506,7 +507,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             // OK, load the meta-data from the repository...
             if (!Const.isEmpty(realTransname) && directoryPath!=null && rep!=null)
             {
-                RepositoryDirectory repdir = rep.loadRepositoryDirectoryTree().findDirectory(space.environmentSubstitute(directoryPath));
+              RepositoryDirectoryInterface repdir = rep.loadRepositoryDirectoryTree().findDirectory(space.environmentSubstitute(directoryPath));
                 if (repdir!=null)
                 {
                     try

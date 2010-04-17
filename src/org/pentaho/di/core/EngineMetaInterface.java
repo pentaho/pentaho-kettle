@@ -16,7 +16,7 @@ import java.util.Date;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 
 public interface EngineMetaInterface extends RepositoryElementInterface {
@@ -59,7 +59,7 @@ public interface EngineMetaInterface extends RepositoryElementInterface {
     
     public String getModifiedUser( );
     
-    public RepositoryDirectory getRepositoryDirectory();
+    public RepositoryDirectoryInterface getRepositoryDirectory();
     
     public String getFilename();
     

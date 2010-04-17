@@ -27,7 +27,7 @@ public class RepositoryExporter {
 		this.repository = repository;
 	}
 	
-    public synchronized void exportAllObjects(ProgressMonitorListener monitor, String xmlFilename, RepositoryDirectory root, String exportType) throws KettleException
+    public synchronized void exportAllObjects(ProgressMonitorListener monitor, String xmlFilename, RepositoryDirectoryInterface root, String exportType) throws KettleException
     {
     	OutputStream os = null;
     	OutputStreamWriter writer = null;
@@ -86,7 +86,7 @@ public class RepositoryExporter {
         if (monitor!=null) monitor.done();
     }
 
-    private void exportJobs(ProgressMonitorListener monitor, RepositoryDirectory dirTree, OutputStreamWriter writer) throws KettleException
+    private void exportJobs(ProgressMonitorListener monitor, RepositoryDirectoryInterface dirTree, OutputStreamWriter writer) throws KettleException
     {
     	try {
 	        // Loop over all the directory id's
@@ -97,7 +97,7 @@ public class RepositoryExporter {
 	        
 	        for (int d=0;d<dirids.length && (monitor==null || (monitor!=null && !monitor.isCanceled()));d++)
 	        {
-	            RepositoryDirectory repdir = dirTree.findDirectory(dirids[d]);
+	          RepositoryDirectoryInterface repdir = dirTree.findDirectory(dirids[d]);
 	
 	            String jobs[]  = repository.getJobNames(dirids[d], false);
 	            for (int i=0;i<jobs.length && (monitor==null || (monitor!=null && !monitor.isCanceled()));i++)
@@ -122,7 +122,7 @@ public class RepositoryExporter {
     	}
     }
     
-    private void exportTransformations(ProgressMonitorListener monitor, RepositoryDirectory dirTree, OutputStreamWriter writer) throws KettleException
+    private void exportTransformations(ProgressMonitorListener monitor, RepositoryDirectoryInterface dirTree, OutputStreamWriter writer) throws KettleException
     {
     	try {
 	        if (monitor!=null) monitor.subTask("Exporting the transformations...");
@@ -133,7 +133,7 @@ public class RepositoryExporter {
 	        
 	        for (int d=0;d<dirids.length && (monitor==null || (monitor!=null && !monitor.isCanceled()) );d++)
 	        {
-	            RepositoryDirectory repdir = dirTree.findDirectory(dirids[d]);
+	          RepositoryDirectoryInterface repdir = dirTree.findDirectory(dirids[d]);
 	
 	            System.out.println("Directory ID #"+d+" : "+dirids[d]+" : "+repdir);
 	

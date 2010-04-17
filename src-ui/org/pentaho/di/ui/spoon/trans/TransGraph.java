@@ -2966,7 +2966,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public void browseVersionHistory() {
 		  try {
 			  if (spoon.rep.exists(transMeta.getName(), transMeta.getRepositoryDirectory(), RepositoryObjectType.TRANSFORMATION)) {
-				RepositoryRevisionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory(), transMeta.getRepositoryElementType());
+				RepositoryRevisionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, transMeta);
 				String versionLabel = dialog.open();
 				if (versionLabel!=null) {
 					spoon.loadObjectFromRepository(transMeta.getName(), transMeta.getRepositoryElementType(), transMeta.getRepositoryDirectory(), versionLabel);

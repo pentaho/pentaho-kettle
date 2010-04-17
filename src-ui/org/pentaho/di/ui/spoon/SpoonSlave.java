@@ -51,6 +51,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.StepStatus;
@@ -929,7 +930,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 				return null;
 			}
 		
-			public RepositoryDirectory getRepositoryDirectory() {
+			public RepositoryDirectoryInterface getRepositoryDirectory() {
 				return null;
 			}
 		
@@ -959,7 +960,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 			public void setName(String name) {
 			}
 
-			public void setRepositoryDirectory(RepositoryDirectory repositoryDirectory) {
+			public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
 			}
 
 			public String getDescription() {

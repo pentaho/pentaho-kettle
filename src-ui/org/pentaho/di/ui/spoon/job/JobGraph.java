@@ -2887,7 +2887,7 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 
   public void browseVersionHistory() {
 	  try {
-		RepositoryRevisionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, jobMeta.getName(), jobMeta.getRepositoryDirectory(), jobMeta.getRepositoryElementType());
+		RepositoryRevisionBrowserDialogInterface dialog = RepositoryExplorerDialog.getVersionBrowserDialog(shell, spoon.rep, jobMeta);
 		String versionLabel = dialog.open();
 		if (versionLabel!=null) {
 			spoon.loadObjectFromRepository(jobMeta.getName(), jobMeta.getRepositoryElementType(), jobMeta.getRepositoryDirectory(), versionLabel);

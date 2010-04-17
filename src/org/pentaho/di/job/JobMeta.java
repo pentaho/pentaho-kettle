@@ -74,6 +74,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -133,7 +134,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	private List<SlaveServer> slaveServers;
 
-	protected RepositoryDirectory directory;
+	protected RepositoryDirectoryInterface directory;
 
 	protected String arguments[];
 
@@ -408,7 +409,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	/**
 	 * @return Returns the directory.
 	 */
-	public RepositoryDirectory getRepositoryDirectory() {
+	public RepositoryDirectoryInterface getRepositoryDirectory() {
 		return directory;
 	}
 
@@ -416,7 +417,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	 * @param directory
 	 *            The directory to set.
 	 */
-	public void setRepositoryDirectory(RepositoryDirectory directory) {
+	public void setRepositoryDirectory(RepositoryDirectoryInterface directory) {
 		this.directory = directory;
 		setInternalKettleVariables();
 	}

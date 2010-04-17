@@ -18,14 +18,14 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 
 public class UIJob extends UIRepositoryContent {
 
   public UIJob() {
   }
 
-  public UIJob(RepositoryContent rc, UIRepositoryDirectory parent, Repository rep) {
+  public UIJob(RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep) {
     super(rc, parent, rep);
   }
 

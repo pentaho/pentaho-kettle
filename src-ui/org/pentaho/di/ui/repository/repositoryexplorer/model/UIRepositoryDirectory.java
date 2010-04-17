@@ -21,16 +21,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.Directory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryContent;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 
 public class UIRepositoryDirectory extends UIRepositoryObject {
 
-  private Directory rd;
+  private static final long serialVersionUID = -2003651575793768451L;
+
+  private RepositoryDirectoryInterface rd;
   private UIRepositoryDirectory uiParent = null;
   private UIRepositoryDirectories kidDirectoryCache = null;
   private UIRepositoryObjects kidElementCache = null;
@@ -39,13 +41,8 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   public UIRepositoryDirectory() {
     super();
   }
-  
-  public UIRepositoryDirectory(Directory rd, Repository rep) {
-    super(rd, rep);
-    this.rd = rd;
-  }
 
-  public UIRepositoryDirectory(Directory rd, UIRepositoryDirectory uiParent, Repository rep) {
+  public UIRepositoryDirectory(RepositoryDirectoryInterface rd, UIRepositoryDirectory uiParent, Repository rep) {
     super(rd, rep);
     this.uiParent = uiParent;
     this.rd = rd;
@@ -62,7 +59,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
       return kidDirectoryCache;
     }
 
-    for (Directory child : rd.getChildren()) {
+    for (RepositoryDirectoryInterface child : rd.getChildren()) {
       try {
         kidDirectoryCache.add(UIObjectRegistry.getInstance().constructUIRepositoryDirectory(child, this, rep));
       } catch (UIObjectCreationException e) {
@@ -89,18 +86,18 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     for (UIRepositoryObject child : getChildren()) {
       kidElementCache.add(child);
     }
-    List<? extends RepositoryContent> transformations;
+    List<? extends RepositoryElementMetaInterface> transformations;
     transformations = rep.getTransformationObjects(new StringObjectId(getId()), false);
-    for (RepositoryContent child : transformations) {
+    for (RepositoryElementMetaInterface child : transformations) {
       try {
         kidElementCache.add(UIObjectRegistry.getInstance().constructUITransformation(child, this, rep));
       } catch (UIObjectCreationException e) {
         kidElementCache.add(new UITransformation(child, this, rep));
       }
     }
-    List<? extends RepositoryContent> jobs;
+    List<? extends RepositoryElementMetaInterface> jobs;
     jobs = rep.getJobObjects(new StringObjectId(getId()), false);
-    for (RepositoryContent child : jobs) {
+    for (RepositoryElementMetaInterface child : jobs) {
       try {
         kidElementCache.add(UIObjectRegistry.getInstance().constructUIJob(child, this, rep));
       } catch (UIObjectCreationException e) {
@@ -176,7 +173,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   }
   
   public UIRepositoryDirectory createFolder(String name) throws Exception{
-    Directory dir = getRepository().createRepositoryDirectory(getDirectory(), name);
+    RepositoryDirectoryInterface dir = getRepository().createRepositoryDirectory(getDirectory(), name);
     UIRepositoryDirectory newDir = null;
     try {
       newDir = UIObjectRegistry.getInstance().constructUIRepositoryDirectory(dir, this, rep);
@@ -229,7 +226,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   public void refresh() {
     try {
       if(this == getRootDirectory()) {
-        RepositoryDirectory localRoot = rep.loadRepositoryDirectoryTree().findDirectory(rd.getObjectId());
+        RepositoryDirectoryInterface localRoot = rep.loadRepositoryDirectoryTree().findDirectory(rd.getObjectId());
         rd = localRoot;
         //Rebuild caches
         kidElementCache = null;

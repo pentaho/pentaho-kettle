@@ -58,6 +58,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -551,7 +552,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			SelectObjectDialog sod = new SelectObjectDialog(shell, repository);
 			String transName = sod.open();
-			RepositoryDirectory repdir = sod.getDirectory();
+			RepositoryDirectoryInterface repdir = sod.getDirectory();
 			if (transName != null && repdir != null)
 			{
 				loadRepositoryTrans(transName, repdir);
@@ -569,7 +570,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		}
 	}
 
-	private void loadRepositoryTrans(String transName, RepositoryDirectory repdir) throws KettleException
+	private void loadRepositoryTrans(String transName, RepositoryDirectoryInterface repdir) throws KettleException
 	{
 		// Read the transformation...
 		//
@@ -664,7 +665,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			if (wRepRadio.getSelection() && repository != null && !Const.isEmpty(wTransName.getText())
 					&& !Const.isEmpty(wTransDir.getText()))
 			{
-				RepositoryDirectory repdir = repository.loadRepositoryDirectoryTree().findDirectory(transMeta.environmentSubstitute(wTransDir.getText()));
+			  RepositoryDirectoryInterface repdir = repository.loadRepositoryDirectoryTree().findDirectory(transMeta.environmentSubstitute(wTransDir.getText()));
 				if (repdir == null)
 				{
 					throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToFindRepositoryDirectory)"));
