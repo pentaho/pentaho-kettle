@@ -69,7 +69,7 @@
 		
 									<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" 
 									ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" 
-									pen:drageffect="move" pen:preserveexpandedstate="true" command="browseController.onDoubleClick()">
+									pen:drageffect="move" pen:preserveexpandedstate="true" pen:preserveselection="true" command="browseController.onDoubleClick()">
 										<treecols>
 											<treecol flex="1" label="" primary="true" pen:binding="name"
 												pen:childrenbinding="children" pen:imagebinding="image" expandedbinding="expanded" />
