@@ -495,4 +495,11 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.EvalFilesMetrics.TypeDesc.Tooltip</tooltip>
 		<iconfile>ui/images/CFS.png</iconfile>
 	</job-entry>
+	<job-entry id="CHECK_FILES_LOCKED">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.CheckFilesLocked.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.checkfilelocked.JobEntryCheckFilesLocked</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CheckFilesLocked.Tooltip</tooltip>
+		<iconfile>ui/images/CFL.png</iconfile>
+	</job-entry>
 </job-entries>
