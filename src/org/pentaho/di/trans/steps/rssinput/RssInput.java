@@ -136,8 +136,7 @@ public class RssInput extends BaseStep implements StepInterface
 			data.urlnr++;
 			data.itemsnr=0;
 
-			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.UrlReaded", data.currenturl,""+data.itemssize));
-
+			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.UrlReaded", data.currenturl,data.itemssize));
 
 		}
 		catch(Exception e)
@@ -145,6 +144,7 @@ public class RssInput extends BaseStep implements StepInterface
 			logError(BaseMessages.getString(PKG, "RssInput.Log.UnableToReadUrl", ""+data.urlnr, data.currenturl, e.toString()));
 			stopAll();
 			setErrors(1);
+			logError(Const.getStackTracker(e));
 			return false;
 		}
 		return true;
@@ -183,7 +183,9 @@ public class RssInput extends BaseStep implements StepInterface
 			// Get item
 			FeedItem item = data.feed.getItem(data.itemsnr);
 
-			if((Const.isEmpty(meta.getRealReadFrom()) || (!Const.isEmpty(meta.getRealReadFrom()) && item.getPubDate().compareTo(data.readfromdatevalide)>0)))
+			if((Const.isEmpty(meta.getRealReadFrom()) 
+					|| (!Const.isEmpty(meta.getRealReadFrom()) 
+							&& item.getPubDate().compareTo(data.readfromdatevalide)>0))) 
 			{
 						
 				// Execute for each Input field...
@@ -192,36 +194,48 @@ public class RssInput extends BaseStep implements StepInterface
 					RssInputField RSSInputField = meta.getInputFields()[j];
 							
 					String valueString=null;
-					if(RSSInputField.getColumn()==RssInputField.COLUMN_TITLE)
-						valueString=item.getTitle();
-					else if(RSSInputField.getColumn()==RssInputField.COLUMN_LINK)
-						valueString=item.getLink()== null ? "" :item.getLink().toString();
-					else if(RSSInputField.getColumn()==RssInputField.COLUMN_DESCRIPTION_AS_TEXT)
-						valueString=item.getDescriptionAsText();
-					else if(RSSInputField.getColumn()==RssInputField.COLUMN_DESCRIPTION_AS_HTML)
-						valueString=item.getDescriptionAsHTML();
-					else if(RSSInputField.getColumn()==RssInputField.COLUMN_COMMENTS)
-						valueString=item.getComments()== null ? "": item.getComments().toString();
-					else if(RSSInputField.getColumn()==RssInputField.COLUMN_GUID)
-						valueString=item.getGUID();
-					else if(RSSInputField.getColumn()==RssInputField.COLUMN_PUB_DATE)
-						valueString=item.getPubDate()== null ? "":DateFormat.getInstance().format(item.getPubDate());	
-							
+					switch (RSSInputField.getColumn())
+					{
+						case RssInputField.COLUMN_TITLE:
+							valueString=item.getTitle();
+							break;
+						case RssInputField.COLUMN_LINK:
+							valueString=item.getLink()== null ? "" :item.getLink().toString();
+							break;
+						case RssInputField.COLUMN_DESCRIPTION_AS_TEXT:
+							valueString=item.getDescriptionAsText();
+							break;
+						case RssInputField.COLUMN_DESCRIPTION_AS_HTML:
+							valueString=item.getDescriptionAsHTML();
+							break;
+						case RssInputField.COLUMN_COMMENTS:
+							valueString=item.getComments()== null ? "": item.getComments().toString();
+							break;
+						case RssInputField.COLUMN_GUID:
+							valueString=item.getGUID();
+							break;
+						case RssInputField.COLUMN_PUB_DATE:
+							valueString=item.getPubDate()== null ? "":DateFormat.getInstance().format(item.getPubDate());
+							break;
+						default:
+							break;
+					}
+
 							
 					// Do trimming
 					switch (RSSInputField.getTrimType())
 					{
-					case RssInputField.TYPE_TRIM_LEFT:
-						valueString = Const.ltrim(valueString);
-						break;
-					case RssInputField.TYPE_TRIM_RIGHT:
-						valueString = Const.rtrim(valueString);
-						break;
-					case RssInputField.TYPE_TRIM_BOTH:
-						valueString = Const.trim(valueString);
-						break;
-					default:
-						break;
+						case RssInputField.TYPE_TRIM_LEFT:
+							valueString = Const.ltrim(valueString);
+							break;
+						case RssInputField.TYPE_TRIM_RIGHT:
+							valueString = Const.rtrim(valueString);
+							break;
+						case RssInputField.TYPE_TRIM_BOTH:
+							valueString = Const.trim(valueString);
+							break;
+						default:
+							break;
 					}
 					
 							
@@ -260,8 +274,15 @@ public class RssInput extends BaseStep implements StepInterface
 				// surely the next step doesn't change it in between...
 				
 				data.rownr++; 
-				data.itemsnr++;
+				
+				putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+
+				 if (meta.getRowLimit()>0 && data.rownr>meta.getRowLimit())  // limit has been reached: stop now.
+			     {
+					 return null;	
+			     }	
 			}
+			data.itemsnr++;
 		}
 		catch(Exception e)
 		{
@@ -273,8 +294,6 @@ public class RssInput extends BaseStep implements StepInterface
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		 Object[] outputRowData=null;
-		 boolean sendToErrorRow=false;
-		 String errorMessage = null;
 
 		try
 		{
@@ -285,17 +304,12 @@ public class RssInput extends BaseStep implements StepInterface
 		        setOutputDone();  // signal end to receiver(s)
 		        return false; // end of data or error.
 		     }
-			 
-			 putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
-			 
-			 if (meta.getRowLimit()>0 && data.rownr>meta.getRowLimit())  // limit has been reached: stop now.
-		     {
-		         setOutputDone();
-		         return false;
-		     }	
 		}
 		catch(Exception e)
 		{
+			boolean sendToErrorRow=false;
+			String errorMessage = null;
+			 
 			if (getStepMeta().isDoingErrorHandling())
 			{
 		         sendToErrorRow = true;
