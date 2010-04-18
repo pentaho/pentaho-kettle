@@ -80,7 +80,7 @@ public class DBProc extends BaseStep implements StepInterface
 				}
 			}
 			
-			data.db.setProcLookup(meta.getProcedure(), meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), 
+			data.db.setProcLookup(environmentSubstitute(meta.getProcedure()), meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), 
 			                      meta.getResultName(), meta.getResultType());
 		}
 

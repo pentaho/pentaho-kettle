@@ -64,6 +64,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 
 public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
@@ -74,7 +75,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 
 	private Button       wbProcName;
 	private Label        wlProcName;
-	private Text         wProcName;
+	private TextVar      wProcName;
 	private FormData     fdlProcName, fdbProcName, fdProcName;
 
     private Label        wlAutoCommit;
@@ -228,7 +229,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		fdlProcName.top  = new FormAttachment(wConnection, margin*2);
 		wlProcName.setLayoutData(fdlProcName);
 		
-		wProcName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wProcName=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wProcName);
 		wProcName.addModifyListener(lsMod);
 		fdProcName=new FormData();
