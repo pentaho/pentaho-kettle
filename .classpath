@@ -69,7 +69,6 @@
 	<classpathentry kind="lib" path="libext/web/activation.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/georss-rome-0.9.8.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/jdom.jar"/>
-	<classpathentry kind="lib" path="libext/feeds/rome-0.9.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/feed4j.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/nekohtml.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/xml-apis.jar"/>
@@ -130,5 +129,6 @@
 	<classpathentry kind="lib" path="libext/log4j-1.2.14.jar"/>
 	<classpathentry kind="lib" path="libext/xercesImpl-2.9.1.jar"/>
 	<classpathentry kind="lib" path="libext/palo-core.jar"/>
+	<classpathentry kind="lib" path="libext/feeds/rome-1.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
