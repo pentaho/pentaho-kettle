@@ -20,8 +20,8 @@ public class Validation implements Cloneable {
 	private String name;
 	private String fieldName;
 
-	private int maximumLength;
-	private int minimumLength;
+	private String maximumLength;
+	private String minimumLength;
 	
 	private boolean nullAllowed;
 	private boolean onlyNullAllowed;
@@ -54,8 +54,8 @@ public class Validation implements Cloneable {
 	
 	
 	public Validation() {
-		maximumLength=-1;
-		minimumLength=-1;
+		maximumLength="";
+		minimumLength="";
 		nullAllowed=true;
 		onlyNullAllowed=false;
 		onlyNumericAllowed=false;
@@ -138,8 +138,8 @@ public class Validation implements Cloneable {
 		name = XMLHandler.getTagValue(calcnode, "validation_name");
 		if (Const.isEmpty(name)) name = fieldName; // remain backward compatible 
 		
-		maximumLength = Const.toInt(XMLHandler.getTagValue(calcnode, "max_length"), -1);
-		minimumLength = Const.toInt(XMLHandler.getTagValue(calcnode, "min_length"), -1);
+		maximumLength = XMLHandler.getTagValue(calcnode, "max_length");
+		minimumLength = XMLHandler.getTagValue(calcnode, "min_length");
 
 		nullAllowed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(calcnode, "null_allowed"));
 		onlyNullAllowed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(calcnode, "only_null_allowed"));
@@ -183,8 +183,8 @@ public class Validation implements Cloneable {
 		name = rep.getStepAttributeString(id_step, i, "validator_field_validation_name");
 		if (Const.isEmpty(name)) name = fieldName; // remain backward compatible
 		
-		maximumLength = (int)rep.getStepAttributeInteger(id_step, i, "validator_field_max_length");
-		minimumLength = (int)rep.getStepAttributeInteger(id_step, i, "validator_field_min_length");
+		maximumLength = rep.getStepAttributeString(id_step, i, "validator_field_max_length");
+		minimumLength = rep.getStepAttributeString(id_step, i, "validator_field_min_length");
 
 		nullAllowed = rep.getStepAttributeBoolean(id_step, i, "validator_field_null_allowed");
 		onlyNullAllowed = rep.getStepAttributeBoolean(id_step, i, "validator_field_only_null_allowed");
@@ -285,28 +285,28 @@ public class Validation implements Cloneable {
 	/**
 	 * @return the maximumLength
 	 */
-	public int getMaximumLength() {
+	public String getMaximumLength() {
 		return maximumLength;
 	}
 
 	/**
 	 * @param maximumLength the maximumLength to set
 	 */
-	public void setMaximumLength(int maximumLength) {
+	public void setMaximumLength(String maximumLength) {
 		this.maximumLength = maximumLength;
 	}
 
 	/**
 	 * @return the minimumLength
 	 */
-	public int getMinimumLength() {
+	public String getMinimumLength() {
 		return minimumLength;
 	}
 
 	/**
 	 * @param minimumLength the minimumLength to set
 	 */
-	public void setMinimumLength(int minimumLength) {
+	public void setMinimumLength(String minimumLength) {
 		this.minimumLength = minimumLength;
 	}
 

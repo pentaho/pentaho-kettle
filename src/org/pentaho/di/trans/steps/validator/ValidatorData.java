@@ -29,13 +29,32 @@ public class ValidatorData extends BaseStepData implements StepDataInterface
     public int[] fieldIndexes;
     
     public ValueMetaInterface[] constantsMeta;
-    public Object[] minimumValue;
-    public Object[] maximumValue;
+    public String[] minimumValueAsString;
+    public String[] maximumValueAsString;
+    public int[]    fieldsMinimumLengthAsInt;
+    public int[]    fieldsMaximumLengthAsInt;
     public Object[] listValues[];
 
 	public Pattern[] patternExpected;
-
+	
 	public Pattern[] patternDisallowed;
+	
+	public String[] errorCode;
+	public String[] errorDescription; 
+	public String[] conversionMask;
+	public String[] decimalSymbol;
+	public String[] groupingSymbol;
+	public String[] maximumLength;
+	public String[] minimumLength;
+	public Object[] maximumValue;
+	public Object[] minimumValue;
+	public String[] startString;
+	public String[] endString;
+	public String[] startStringNotAllowed;
+	public String[] endStringNotAllowed;
+	public String[] regularExpression;
+	public String[] regularExpressionNotAllowed;
+
 
 	/**
 	 * 

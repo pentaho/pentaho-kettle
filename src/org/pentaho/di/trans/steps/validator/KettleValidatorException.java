@@ -24,6 +24,7 @@ public class KettleValidatorException extends KettleValueException {
 	
 	private static final String errorCode[] = new String[] { "KVD000", "KVD001", "KVD002", "KVD003", "KVD004", "KVD005", "KVD006", "KVD007", "KVD008", "KVD009", "KVD010", "KVD011", "KVD012", "KVD013", "KVD014", "KVD015", };
 	
+	private Validator validator;
 	private Validation validatorField;
 	private int code;
 	private String fieldname;
@@ -35,12 +36,17 @@ public class KettleValidatorException extends KettleValueException {
 
 	/**
 	 * Constructs a new Throwable with the specified detail message.
+	 * 
+	 * @param Validator - the instance of Validator that this object will reference use environmenSubsitute invokation.  The class is probably where this object is being created.
+     * @param validatorField - the Validation in which the failure happened and this exception is to be created for.
 	 * @param code - the error code, see the static members of this class.
 	 * @param message - the detail message. The detail message is saved for later retrieval by the getMessage() method.
+	 * @param fieldName - the name of the field that failed Validation.
 	 */
-	public KettleValidatorException(Validation validatorField, int code, String message, String fieldname)
+	public KettleValidatorException(Validator validator, Validation validatorField, int code, String message, String fieldname)
 	{
 		super(message);
+		this.validator = validator;
 		this.validatorField = validatorField;
 		this.code = code;
 		this.fieldname = fieldname;
@@ -60,19 +66,25 @@ public class KettleValidatorException extends KettleValueException {
 		this.code = code;
 	}
 	
-	/**
-	 * @return the code in string format
-	 */
-	public String getCodeDesc() { 
-		if (!Const.isEmpty(validatorField.getErrorCode())) return validatorField.getErrorCode();
-		return errorCode[code];
-	}
-	
-	@Override
-	public String getMessage() {
-		if (!Const.isEmpty(validatorField.getErrorDescription())) return validatorField.getErrorDescription();
-		return super.getMessage();
-	}
+    /**
+     * @return the code in string format
+     */
+    public String getCodeDesc() { 
+        if (!Const.isEmpty(validatorField.getErrorCode())) {
+            String validatorCode = validator.environmentSubstitute(validatorField.getErrorCode());
+            return validatorCode;
+        }
+        return errorCode[code];
+    }
+    
+    @Override
+    public String getMessage() {
+        if (!Const.isEmpty(validatorField.getErrorDescription())) {
+            return validator.environmentSubstitute(validatorField.getErrorDescription());
+        }
+        
+        return super.getMessage();
+    }
 
 	/**
 	 * @return the fieldname
