@@ -130,6 +130,12 @@ public class Const
      * Path to the users home directory (keep this entry above references to getKettleDirectory())
      */
     public static final String USER_HOME_DIRECTORY = NVL(System.getProperty("KETTLE_HOME"), System.getProperty("user.home"));
+    
+    /**
+     * Path to the simple-jndi directory
+     */
+    
+    public static String JNDI_DIRECTORY = NVL(System.getProperty("KETTLE_JNDI_ROOT"), System.getProperty("org.osjava.sj.root")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	/*
 	 * The images directory
