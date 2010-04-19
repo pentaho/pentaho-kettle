@@ -81,19 +81,17 @@ public class HTTPPOST extends BaseStep implements StepInterface
             PostMethod post = new PostMethod(data.realUrl);
             //post.setFollowRedirects(false); 
             
-            String httpLogin = environmentSubstitute(meta.getHttpLogin());
-            if (!Const.isEmpty(httpLogin))
+            if (!Const.isEmpty(data.realHttpLogin))
             {
                 HTTPPOSTclient.getParams().setAuthenticationPreemptive(true);
-                Credentials defaultcreds = new UsernamePasswordCredentials(environmentSubstitute(httpLogin), environmentSubstitute(meta.getHttpPassword()));
+                Credentials defaultcreds = new UsernamePasswordCredentials(environmentSubstitute(data.realHttpLogin), data.realHttpPassword);
                 HTTPPOSTclient.getState().setCredentials(AuthScope.ANY, defaultcreds);
             }
             
-            String proxyHost = environmentSubstitute(meta.getProxyHost());
             HostConfiguration hostConfiguration = new HostConfiguration();
-            if (!Const.isEmpty(proxyHost))
+            if (!Const.isEmpty(data.realProxyHost))
             {   
-                hostConfiguration.setProxy(proxyHost, Const.toInt(environmentSubstitute(meta.getProxyPort()), 8080));
+                hostConfiguration.setProxy(data.realProxyHost, data.realProxyPort);
             }
             
             // Specify content type and encoding
@@ -416,6 +414,11 @@ public class HTTPPOST extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
+			// get autentication settings once
+			data.realProxyHost=environmentSubstitute(meta.getProxyHost());
+			data.realProxyPort= Const.toInt(environmentSubstitute(meta.getProxyPort()), 8080);
+			data.realHttpLogin=environmentSubstitute(meta.getHttpLogin());
+			data.realHttpPassword=environmentSubstitute(meta.getHttpPassword());
 		    return true;
 		}
 		return false;

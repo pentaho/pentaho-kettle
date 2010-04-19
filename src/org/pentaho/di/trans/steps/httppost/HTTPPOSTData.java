@@ -42,6 +42,11 @@ public class HTTPPOSTData extends BaseStepData implements StepDataInterface
 	public boolean useBodyParameters;
 	public boolean useQueryParameters;
 	public int indexOfRequestEntity;
+	
+	public String realProxyHost;
+	public int realProxyPort;
+	public String realHttpLogin;
+	public String realHttpPassword;
 
 	/**
 	 * 
@@ -56,6 +61,10 @@ public class HTTPPOSTData extends BaseStepData implements StepDataInterface
 		useQueryParameters=false;
 		indexOfRequestEntity=-1;
 		realEncoding=null;
+		realProxyHost=null;
+		realProxyPort=8080;
+		realHttpLogin=null;
+		realHttpPassword=null;
 	}
 
 }
