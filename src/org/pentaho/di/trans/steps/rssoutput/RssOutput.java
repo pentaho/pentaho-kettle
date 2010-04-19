@@ -574,7 +574,7 @@ public class RssOutput extends BaseStep implements StepInterface
 		
 		return true;
 	}
-	public String buildFilename()
+	public String buildFilename() throws KettleStepException
 	{
 		return meta.buildFilename(this,getCopy());
 	}

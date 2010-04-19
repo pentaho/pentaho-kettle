@@ -50,6 +50,7 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.Const;
@@ -1456,17 +1457,27 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 				{
 					RssOutputMeta tfoi = new RssOutputMeta();
 					getInfo(tfoi);
-					String files[] = tfoi.getFiles(transMeta);
-					if (files!=null && files.length>0)
+					try
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("RssOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("RssOutputDialog.SelectOutputFiles.DialogMessage"));
-						esd.setViewOnly();
-						esd.open();
-					}
-					else
+						String files[] = tfoi.getFiles(transMeta);
+						if (files!=null && files.length>0)
+						{
+							EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("RssOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("RssOutputDialog.SelectOutputFiles.DialogMessage"));
+							esd.setViewOnly();
+							esd.open();
+						}
+						else
+						{
+							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+							mb.setMessage(Messages.getString("RssOutputDialog.NoFilesFound.DialogMessage"));
+							mb.setText(Messages.getString("System.DialogTitle.Error"));
+							mb.open(); 
+						}
+					}catch(KettleStepException s)
 					{
+						
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(Messages.getString("RssOutputDialog.NoFilesFound.DialogMessage"));
+						mb.setMessage(Messages.getString("RssOutputDialog.ErrorGettingFiles.DialogMessage", s.getMessage()));
 						mb.setText(Messages.getString("System.DialogTitle.Error"));
 						mb.open(); 
 					}

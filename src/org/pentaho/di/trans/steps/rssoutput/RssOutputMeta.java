@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Node;
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -29,7 +31,9 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -566,7 +570,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
     	this.createparentfolder=createparentfolder;
     }
     
-    public String[] getFiles(VariableSpace space)
+    public String[] getFiles(VariableSpace space) throws KettleStepException
 	{
 		int copies=1;
 		int parts=1;
@@ -604,13 +608,28 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		return retval;
 	}
-	public String buildFilename(VariableSpace space, int stepnr)
+    private String getFilename(VariableSpace space) throws KettleStepException
+    {
+    	FileObject file= null;
+    	try 
+    	{
+    		file= KettleVFS.getFileObject(space.environmentSubstitute(getFileName()));
+    		return KettleVFS.getFilename(file);
+    	}catch(Exception e)
+    	{
+    		throw new KettleStepException(BaseMessages.getString("RssOutput.Meta.ErrorGettingFile",getFileName()), e);
+    	}finally 
+    	{
+    		if(file!=null) {try { file.close();}catch(Exception e){};};
+    	}
+    }
+	public String buildFilename(VariableSpace space, int stepnr) throws KettleStepException
 	{
 
 		SimpleDateFormat daf     = new SimpleDateFormat();
 
 		// Replace possible environment variables...
-		String retval=space.environmentSubstitute(fileName) ;
+		String retval=getFilename(space);
 		
 
 		Date now = new Date();
