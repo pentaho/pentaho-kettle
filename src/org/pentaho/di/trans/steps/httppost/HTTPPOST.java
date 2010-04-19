@@ -15,9 +15,13 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-
+import java.net.UnknownHostException;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.pentaho.di.core.Const;
@@ -76,6 +80,21 @@ public class HTTPPOST extends BaseStep implements StepInterface
             HttpClient HTTPPOSTclient = new HttpClient();
             PostMethod post = new PostMethod(data.realUrl);
             //post.setFollowRedirects(false); 
+            
+            String httpLogin = environmentSubstitute(meta.getHttpLogin());
+            if (!Const.isEmpty(httpLogin))
+            {
+                HTTPPOSTclient.getParams().setAuthenticationPreemptive(true);
+                Credentials defaultcreds = new UsernamePasswordCredentials(environmentSubstitute(httpLogin), environmentSubstitute(meta.getHttpPassword()));
+                HTTPPOSTclient.getState().setCredentials(AuthScope.ANY, defaultcreds);
+            }
+            
+            String proxyHost = environmentSubstitute(meta.getProxyHost());
+            HostConfiguration hostConfiguration = new HostConfiguration();
+            if (!Const.isEmpty(proxyHost))
+            {   
+                hostConfiguration.setProxy(proxyHost, Const.toInt(environmentSubstitute(meta.getProxyPort()), 8080));
+            }
             
             // Specify content type and encoding
             // If content encoding is not explicitly specified
@@ -155,33 +174,46 @@ public class HTTPPOST extends BaseStep implements StepInterface
             try
             {
             	// Execute the POST method
-                int statusCode = HTTPPOSTclient.executeMethod(post);
+                int statusCode = HTTPPOSTclient.executeMethod(hostConfiguration, post);
                 
                 // Display status code
                 if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseCode",""+statusCode));
                 String body=null;
                 if( statusCode != -1 )
                 {
-                	 // guess encoding
-                    String encoding = post.getResponseHeader("Content-Type").getValue().replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim(); 
-                    if (encoding == null) encoding = "ISO-8859-1"; 
-                    
-                    if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.Encoding",encoding));
-
-	                // the response
-                    inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream(),encoding); 
-                    StringBuffer bodyBuffer = new StringBuffer(); 
-                     
-                    int c;
-                    while ( (c=inputStreamReader.read())!=-1) {
-                    	bodyBuffer.append((char)c);
+                    //  if the response is not 401: HTTP Authentication required
+                    if (statusCode != 401) { 
+                        
+                       // we process the response 
+                       // guess encoding
+                        String encoding = null;
+                        if (post.getResponseHeader("Content-Type") != null) {
+                            encoding = post.getResponseHeader("Content-Type").getValue().replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim(); 
+                        }
+                        
+                        if (encoding == null) encoding = "ISO-8859-1"; 
+                        
+                        if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.Encoding",encoding));
+    
+    	                // the response
+                        inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream(),encoding); 
+                        StringBuffer bodyBuffer = new StringBuffer(); 
+                         
+                        int c;
+                        while ( (c=inputStreamReader.read())!=-1) {
+                        	bodyBuffer.append((char)c);
+                        }
+                        inputStreamReader.close(); 
+    	                
+    	                // Display response
+    	                body = bodyBuffer.toString();
+    	                
+    	                if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseBody",body));
                     }
-                    inputStreamReader.close(); 
-	                
-	                // Display response
-	                body = bodyBuffer.toString();
-	                
-	                if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseBody",body));
+                    else {  //  the status is a 401
+                        throw new KettleStepException(BaseMessages.getString(PKG, "HTTPPOST.Exception.Authentication", data.realUrl));
+                        
+                    }
                 }
                 int returnFieldsOffset=data.inputRowMeta.size();
                 if (!Const.isEmpty(meta.getFieldName())) {
@@ -201,6 +233,9 @@ public class HTTPPOST extends BaseStep implements StepInterface
             }
             return newRow;
         }
+      	catch (UnknownHostException uhe) {
+      	   throw new KettleException(BaseMessages.getString(PKG, "HTTPPOST.Error.UnknownHostException", uhe.getMessage()));
+      	}
         catch(Exception e)
         {
             throw new KettleException(BaseMessages.getString(PKG, "HTTPPOST.Error.CanNotReadURL",data.realUrl), e);

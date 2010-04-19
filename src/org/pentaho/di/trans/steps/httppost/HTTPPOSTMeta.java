@@ -81,6 +81,14 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
     private String encoding;
     
     private boolean  postafile;
+    
+    private String proxyHost;
+    
+    private String proxyPort;
+    
+    private String httpLogin;
+    
+    private String httpPassword;
 
     public HTTPPOSTMeta()
     {
@@ -330,6 +338,10 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("urlInField",  urlInField));
         retval.append("    " + XMLHandler.addTagValue("urlField",  urlField));
         retval.append("    " + XMLHandler.addTagValue("requestEntity",  requestEntity));
+        retval.append("    " + XMLHandler.addTagValue("httpLogin", httpLogin));
+        retval.append("    " + XMLHandler.addTagValue("httpPassword", httpPassword));
+        retval.append("    " + XMLHandler.addTagValue("proxyHost", proxyHost));
+        retval.append("    " + XMLHandler.addTagValue("proxyPort", proxyPort));
         
         retval.append("    <lookup>" + Const.CR); //$NON-NLS-1$
 
@@ -369,6 +381,10 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             urlInField="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "urlInField"));
             urlField       = XMLHandler.getTagValue(stepnode, "urlField");
             requestEntity       = XMLHandler.getTagValue(stepnode, "requestEntity");
+            httpLogin = XMLHandler.getTagValue(stepnode, "httpLogin");
+            httpPassword = XMLHandler.getTagValue(stepnode, "httpPassword");
+            proxyHost = XMLHandler.getTagValue(stepnode, "proxyHost");
+            proxyPort = XMLHandler.getTagValue(stepnode, "proxyPort");
             
             
             Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
@@ -412,6 +428,10 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             urlInField =      rep.getStepAttributeBoolean (id_step, "urlInField");
             urlField	=	   rep.getStepAttributeString (id_step, "urlField");
             requestEntity	=	   rep.getStepAttributeString (id_step, "requestEntity");
+            httpLogin = rep.getStepAttributeString(id_step, "httpLogin");
+            httpPassword = rep.getStepAttributeString(id_step, "httpPassword");
+            proxyHost = rep.getStepAttributeString(id_step, "proxyHost");
+            proxyPort = rep.getStepAttributeString(id_step, "proxyPort");
             
             int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$
             allocate(nrargs);
@@ -452,7 +472,11 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "urlInField",   urlInField);
 			rep.saveStepAttribute(id_transformation, id_step, "urlField",   urlField);
 			rep.saveStepAttribute(id_transformation, id_step, "requestEntity",   requestEntity);
-			
+			rep.saveStepAttribute(id_transformation, id_step, "httpLogin",   httpLogin);
+			rep.saveStepAttribute(id_transformation, id_step, "httpPassword",   httpPassword);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyHost",   proxyHost);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyPort",   proxyPort);
+            
             for (int i = 0; i < argumentField.length; i++)
             {
                 rep.saveStepAttribute(id_transformation, id_step, i, "arg_name", argumentField[i]); //$NON-NLS-1$
@@ -548,5 +572,71 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setResultCodeFieldName(String resultCodeFieldName) {
 		this.resultCodeFieldName = resultCodeFieldName;
-	}    
+	}
+
+	/**
+	 * Setter
+	 * @param proxyHost
+	 */
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+	
+    /**
+     * Getter
+     * @return
+     */
+    public String getProxyHost() {
+        return proxyHost;
+    }
+    
+    
+    /**
+     * Setter
+     * @param proxyPort
+     */
+    public void setProxyPort(String proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+    
+    /**
+     * Getter
+     * @return
+     */
+    public String getProxyPort() {
+        return this.proxyPort;
+    }
+    
+    /**
+     * Setter
+     * @param httpLogin
+     */
+    public void setHttpLogin(String httpLogin) {
+        this.httpLogin = httpLogin;
+    }
+    
+    /**
+     * Getter
+     * @return
+     */
+    public String getHttpLogin() {
+        return httpLogin;
+    }
+    
+    /**
+     * Setter
+     * @param httpPassword
+     */
+    public void setHttpPassword(String httpPassword) {
+        this.httpPassword = httpPassword;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getHttpPassword() {
+        return httpPassword;
+    }
 }
+

@@ -35,6 +35,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -99,6 +100,18 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 	private ComboVar     wrequestEntity;
 	private FormData     fdlrequestEntity, fdrequestEntity;
 
+    private Label wlHttpLogin;
+    private TextVar wHttpLogin;
+
+    private Label wlHttpPassword;
+    private TextVar wHttpPassword;
+
+    private Label wlProxyHost;
+    private TextVar wProxyHost;
+
+    private Label wlProxyPort;
+    private TextVar wProxyPort;
+	
 	private HTTPPOSTMeta input;
 	
     private Map<String, Integer> inputFields;
@@ -383,12 +396,130 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		fdResultCode.right= new FormAttachment(100, -margin);
 		wResultCode.setLayoutData(fdResultCode);
 		
+        //////////////////////////
+        // START HTTP AUTH GROUP
+
+        Group gHttpAuth = new Group(shell, SWT.SHADOW_ETCHED_IN);
+        gHttpAuth.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpAuthGroup.Label")); //$NON-NLS-1$;
+        FormLayout httpAuthLayout = new FormLayout();
+        httpAuthLayout.marginWidth = 3;
+        httpAuthLayout.marginHeight = 3;
+        gHttpAuth.setLayout(httpAuthLayout);
+        props.setLook(gHttpAuth);
+
+        // HTTP Login
+        wlHttpLogin = new Label(gHttpAuth, SWT.RIGHT);
+        wlHttpLogin.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpLogin.Label")); //$NON-NLS-1$
+        props.setLook(wlHttpLogin);
+        FormData fdlHttpLogin = new FormData();
+        fdlHttpLogin.top = new FormAttachment(0, margin);
+        fdlHttpLogin.left = new FormAttachment(0, 0);
+        fdlHttpLogin.right = new FormAttachment(middle, -margin);
+        wlHttpLogin.setLayoutData(fdlHttpLogin);
+        wHttpLogin = new TextVar(transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wHttpLogin.addModifyListener(lsMod);
+        wHttpLogin.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpLogin.Tooltip")); //$NON-NLS-1$
+        props.setLook(wHttpLogin);
+        FormData fdHttpLogin = new FormData();
+        fdHttpLogin.top = new FormAttachment(0, margin);
+        fdHttpLogin.left = new FormAttachment(middle, 0);
+        fdHttpLogin.right = new FormAttachment(100, 0);
+        wHttpLogin.setLayoutData(fdHttpLogin);
+
+        // HTTP Password
+        wlHttpPassword = new Label(gHttpAuth, SWT.RIGHT);
+        wlHttpPassword.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpPassword.Label")); //$NON-NLS-1$
+        props.setLook(wlHttpPassword);
+        FormData fdlHttpPassword = new FormData();
+        fdlHttpPassword.top = new FormAttachment(wHttpLogin, margin);
+        fdlHttpPassword.left = new FormAttachment(0, 0);
+        fdlHttpPassword.right = new FormAttachment(middle, -margin);
+        wlHttpPassword.setLayoutData(fdlHttpPassword);
+        wHttpPassword = new TextVar(transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wHttpPassword.addModifyListener(lsMod);
+        wHttpPassword.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.HttpPassword.Tooltip")); //$NON-NLS-1$
+        wHttpPassword.setEchoChar('*');
+        props.setLook(wHttpPassword);
+        FormData fdHttpPassword = new FormData();
+        fdHttpPassword.top = new FormAttachment(wHttpLogin, margin);
+        fdHttpPassword.left = new FormAttachment(middle, 0);
+        fdHttpPassword.right = new FormAttachment(100, 0);
+        wHttpPassword.setLayoutData(fdHttpPassword);
+        
+        FormData fdHttpAuth = new FormData();
+        fdHttpAuth.left = new FormAttachment(0, 0);
+        fdHttpAuth.right = new FormAttachment(100, 0);
+        fdHttpAuth.top = new FormAttachment(wResultCode, margin);
+        gHttpAuth.setLayoutData(fdHttpAuth);
+
+        // END HTTP AUTH GROUP
+        //////////////////////////
+
+        //////////////////////////
+        // START PROXY GROUP
+
+        Group gProxy = new Group(shell, SWT.SHADOW_ETCHED_IN);
+        gProxy.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyGroup.Label")); //$NON-NLS-1$;
+        FormLayout proxyLayout = new FormLayout();
+        proxyLayout.marginWidth = 3;
+        proxyLayout.marginHeight = 3;
+        gProxy.setLayout(proxyLayout);
+        props.setLook(gProxy);
+
+        // HTTP Login
+        wlProxyHost = new Label(gProxy, SWT.RIGHT);
+        wlProxyHost.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyHost.Label")); //$NON-NLS-1$
+        props.setLook(wlProxyHost);
+        FormData fdlProxyHost = new FormData();
+        fdlProxyHost.top = new FormAttachment(0, margin);
+        fdlProxyHost.left = new FormAttachment(0, 0);
+        fdlProxyHost.right = new FormAttachment(middle, -margin);
+        wlProxyHost.setLayoutData(fdlProxyHost);
+        wProxyHost = new TextVar(transMeta, gProxy, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wProxyHost.addModifyListener(lsMod);
+        wProxyHost.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyHost.Tooltip")); //$NON-NLS-1$
+        props.setLook(wProxyHost);
+        FormData fdProxyHost = new FormData();
+        fdProxyHost.top = new FormAttachment(0, margin);
+        fdProxyHost.left = new FormAttachment(middle, 0);
+        fdProxyHost.right = new FormAttachment(100, 0);
+        wProxyHost.setLayoutData(fdProxyHost);
+
+        // HTTP Password
+        wlProxyPort = new Label(gProxy, SWT.RIGHT);
+        wlProxyPort.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyPort.Label")); //$NON-NLS-1$
+        props.setLook(wlProxyPort);
+        FormData fdlProxyPort = new FormData();
+        fdlProxyPort.top = new FormAttachment(wProxyHost, margin);
+        fdlProxyPort.left = new FormAttachment(0, 0);
+        fdlProxyPort.right = new FormAttachment(middle, -margin);
+        wlProxyPort.setLayoutData(fdlProxyPort);
+        wProxyPort = new TextVar(transMeta, gProxy, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wProxyPort.addModifyListener(lsMod);
+        wProxyPort.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ProxyPort.Tooltip")); //$NON-NLS-1$
+        props.setLook(wProxyPort);
+        FormData fdProxyPort = new FormData();
+        fdProxyPort.top = new FormAttachment(wProxyHost, margin);
+        fdProxyPort.left = new FormAttachment(middle, 0);
+        fdProxyPort.right = new FormAttachment(100, 0);
+        wProxyPort.setLayoutData(fdProxyPort);
+
+        FormData fdProxy = new FormData();
+        fdProxy.left = new FormAttachment(0, 0);
+        fdProxy.right = new FormAttachment(100, 0);
+        fdProxy.top = new FormAttachment(gHttpAuth, margin);
+        gProxy.setLayoutData(fdProxy);
+
+        // END HTTP AUTH GROUP
+        //////////////////////////
+
+		
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Parameters.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wResultCode, margin);
+		fdlFields.top  = new FormAttachment(gProxy, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsRows=input.getArgumentField().length;
@@ -648,6 +779,11 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		if (input.getEncoding()!=null) wEncoding.setText(input.getEncoding());
 		wPostAFile.setSelection(input.isPostAFile());
 		
+	    if(input.getHttpLogin() != null) wHttpLogin.setText(input.getHttpLogin());
+	    if(input.getHttpPassword() != null) wHttpPassword.setText(input.getHttpPassword());
+	    if(input.getProxyHost() != null) wProxyHost.setText(input.getProxyHost());
+	    if(input.getProxyPort() != null) wProxyPort.setText(input.getProxyPort());
+		
 		wFields.setRowNums();
 		wFields.optWidth(true);
 		wStepname.selectAll();
@@ -686,8 +822,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 			input.getQueryField()[i]       = item.getText(1);
 			input.getQueryParameter()[i]    = item.getText(2);
 		}
-		
-
+        
 		input.setUrl( wUrl.getText() );
 		input.setUrlField(wUrlField.getText() );
 		input.setRequestEntity(wrequestEntity.getText() );
@@ -696,6 +831,11 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		input.setResultCodeFieldName( wResultCode.getText() );
 		input.setEncoding( wEncoding.getText() );
 		input.setPostAFile(wPostAFile.getSelection());
+		input.setHttpLogin(wHttpLogin.getText());
+		input.setHttpPassword(wHttpPassword.getText());
+		input.setProxyHost(wProxyHost.getText());
+		input.setProxyPort(wProxyPort.getText());
+		
 		stepname = wStepname.getText(); // return value
 
 		dispose();
