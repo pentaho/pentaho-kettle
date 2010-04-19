@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -1456,20 +1457,30 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 				{
 					RssOutputMeta tfoi = new RssOutputMeta();
 					getInfo(tfoi);
-					String files[] = tfoi.getFiles(transMeta);
-					if (files!=null && files.length>0)
+					try 
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, BaseMessages.getString(PKG, "RssOutputDialog.SelectOutputFiles.DialogTitle"), BaseMessages.getString(PKG, "RssOutputDialog.SelectOutputFiles.DialogMessage"));
-						esd.setViewOnly();
-						esd.open();
-					}
-					else
+						String files[] = tfoi.getFiles(transMeta);
+						if (files!=null && files.length>0)
+						{
+							EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, BaseMessages.getString(PKG, "RssOutputDialog.SelectOutputFiles.DialogTitle"), BaseMessages.getString(PKG, "RssOutputDialog.SelectOutputFiles.DialogMessage"));
+							esd.setViewOnly();
+							esd.open();
+						}
+						else
+						{
+							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+							mb.setMessage(BaseMessages.getString(PKG, "RssOutputDialog.NoFilesFound.DialogMessage"));
+							mb.setText(BaseMessages.getString(PKG, "System.DialogTitle.Error"));
+							mb.open(); 
+						}
+					}catch(KettleStepException s)
 					{
+						
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(BaseMessages.getString(PKG, "RssOutputDialog.NoFilesFound.DialogMessage"));
+						mb.setMessage(BaseMessages.getString(PKG, "RssOutputDialog.ErrorGettingFiles.DialogMessage", s.getMessage()));
 						mb.setText(BaseMessages.getString(PKG, "System.DialogTitle.Error"));
 						mb.open(); 
-					}
+					}	
 				}
 			}
 		);
