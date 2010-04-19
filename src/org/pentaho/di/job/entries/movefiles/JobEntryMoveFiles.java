@@ -307,6 +307,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "move_empty_folders",      move_empty_folders);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "arg_from_previous",  arg_from_previous);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "include_subfolders", include_subfolders);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_result_filesname", add_result_filesname);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "destination_is_a_file", destination_is_a_file);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "create_destination_folder", create_destination_folder);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_errors_less_than",      nr_errors_less_than);
