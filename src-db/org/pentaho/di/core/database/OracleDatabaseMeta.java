@@ -377,7 +377,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 */
 	public String getSQLListOfProcedures()
 	{
-		return  "SELECT DISTINCT DECODE(package_name, NULL, '', package_name||'.')||object_name FROM user_arguments"; 
+		return  "SELECT DISTINCT DECODE(package_name, NULL, '', package_name||'.')||object_name FROM user_arguments ORDER BY 1"; 
 	}
 
     public String getSQLLockTables(String tableNames[])
