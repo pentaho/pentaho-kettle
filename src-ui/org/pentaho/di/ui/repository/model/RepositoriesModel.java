@@ -86,20 +86,24 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
     return selectedRepository;
   }
   public RepositoryMeta getRepository(String repositoryName) {
-    for(RepositoryMeta meta:availableRepositories) {
-      if(meta.getName().equals(repositoryName)) {
-        return meta;
+    if(availableRepositories != null && availableRepositories.size() > 0) { 
+      for(RepositoryMeta meta:availableRepositories) {
+        if(meta != null && meta.getName().equals(repositoryName)) {
+          return meta;
+        }
       }
     }
     return null;
   }
   public int getRepositoryIndex(RepositoryMeta repositoryMeta) {
-    int index = 0;
-    for(RepositoryMeta meta:availableRepositories) {
-      if(meta.getName().equals(repositoryMeta.getName())) {
-        break;
-      } else {
-        index++;
+    int index = -1;
+    if(availableRepositories != null && availableRepositories.size() > 0) {
+      for(RepositoryMeta meta:availableRepositories) {
+        if(meta != null && meta.getName().equals(repositoryMeta.getName())) {
+          break;
+        } else {
+          index++;
+        }
       }
     }
     return index;

@@ -215,6 +215,7 @@ public class RepositoriesMeta
 			// Handle repositories...
 			int nrreps = XMLHandler.countNodes(repsnode, RepositoryMeta.XML_TAG);
 			log.logDebug("We have "+nrreps+" repositories...");
+			StringBuffer unableToReadIds = new StringBuffer();
 			KettleException kettleException = null;
 			for (int i=0;i<nrreps;i++)
 			{
@@ -239,6 +240,7 @@ public class RepositoriesMeta
     				addRepository(repositoryMeta);
     				log.logDebug("Read repository : "+repositoryMeta.getName()); //$NON-NLS-1$
   				} else {
+            unableToReadIds.append(id);
             log.logDebug("Unable to read repository with id: "+id); //$NON-NLS-1$
   				}
 				} catch (KettleException ex) {
@@ -255,6 +257,9 @@ public class RepositoriesMeta
 				  }
 				}
 			}
+		  if(unableToReadIds != null && unableToReadIds.length() > 0) {
+		    kettleException = new KettleException("Unable to read repository with id [" + unableToReadIds.toString() + "]  RepositoryMeta is not available");
+		  }
 			if(kettleException != null) {
 			  throw kettleException;
 			}
