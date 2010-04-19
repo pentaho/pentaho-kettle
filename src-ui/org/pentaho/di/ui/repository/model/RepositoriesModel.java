@@ -96,7 +96,7 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
     return null;
   }
   public int getRepositoryIndex(RepositoryMeta repositoryMeta) {
-    int index = -1;
+    int index = 0;
     if(availableRepositories != null && availableRepositories.size() > 0) {
       for(RepositoryMeta meta:availableRepositories) {
         if(meta != null && meta.getName().equals(repositoryMeta.getName())) {
@@ -105,6 +105,8 @@ public class RepositoriesModel  extends XulEventSourceAdapter{
           index++;
         }
       }
+    } else {
+      index = -1;
     }
     return index;
   }
