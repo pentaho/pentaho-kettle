@@ -60,7 +60,6 @@ import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.custom.DialogConstant;
 import org.pentaho.ui.xul.util.XulDialogCallback;
-import org.pentaho.ui.xul.util.XulDialogCallback.Status;
 
 /**
  *
@@ -323,8 +322,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       renameRepositoryObject(contentToRename);
       if (contentToRename instanceof UIRepositoryDirectory) {
         directoryBinding.fireSourceChanged();
-        selectedItemsBinding.fireSourceChanged();
       }
+      selectedItemsBinding.fireSourceChanged();
     } catch (Throwable th) {
       messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
@@ -624,6 +623,16 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     }
   }
 
+  
+
+  public Binding getSelectedItemsBinding() {
+    return selectedItemsBinding;
+  }
+
+  public void setSelectedItemsBinding(Binding selectedItemsBinding) {
+    this.selectedItemsBinding = selectedItemsBinding;
+  }
+  
   public void setRepositoryObjects(List<UIRepositoryObject> selectedFileItems) {
     this.repositoryObjects = selectedFileItems;
     firePropertyChange("repositoryObjects", null, selectedFileItems);//$NON-NLS-1$
@@ -730,4 +739,5 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     }
     return true;
   }
+
 }
