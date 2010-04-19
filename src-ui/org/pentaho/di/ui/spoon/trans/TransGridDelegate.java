@@ -241,6 +241,8 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
   		if (transGridView==null || transGridView.isDisposed()) return;
 		if (refresh_busy) return;
 
+		int scrollPos = transGridView.getVerticalBar().getSelection();
+		
 		refresh_busy = true;
 
 		Table table = transGridView.table;
@@ -323,6 +325,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 			if (sortColumn != 0 || !sortDescending) {
 				transGridView.sortTable(sortColumn, sortDescending);
 			}
+			transGridView.getVerticalBar().setSelection(scrollPos);
 		}
 		else
 		{
