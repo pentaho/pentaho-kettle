@@ -1090,4 +1090,17 @@ public class KettleFileRepository implements Repository {
     root.setObjectId(null);
     return loadRepositoryDirectoryTree(root);
   }
+  
+  public RepositoryObject getObjectInformation(ObjectId objectId, RepositoryObjectType objectType)
+      throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  public JobMeta loadJob(ObjectId idJob, String versionLabel) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  public TransMeta loadTransformation(ObjectId idTransformation, String versionLabel) throws KettleException {
+    throw new UnsupportedOperationException();  
+  }
 }

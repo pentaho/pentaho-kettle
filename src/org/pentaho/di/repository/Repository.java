@@ -108,7 +108,15 @@ public interface Repository {
    *  @param setInternalVariables set to true if you want to automatically set the internal variables of the loaded transformation. (true is the default with very few exceptions!) 
    *  @param revision the revision to load.  Specify null to load the last version.
    */
-    public TransMeta loadTransformation(String transname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String revision) throws KettleException;
+  public TransMeta loadTransformation(String transname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, boolean setInternalVariables, String revision) throws KettleException;
+
+  /**
+   * Load a transformation by id
+   * 
+   * @param id_transformation the id of the transformation to load
+   * @param versionLabel version to load. Specify null to load the last version.
+   */
+  public TransMeta loadTransformation(ObjectId id_transformation, String versionLabel) throws KettleException;
 
   public SharedObjects readTransSharedObjects(TransMeta transMeta) throws KettleException;
   
@@ -144,6 +152,13 @@ public interface Repository {
    * @param revision the revision to load.  Specify null to load the last version.
    */
   public JobMeta loadJob(String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor, String revision) throws KettleException;
+
+  /**
+   * Load a job from the repository by id
+   * @param id_job the id of the job
+   * @param versionLabel version to load. Specify null to load the last version.
+   */
+  public JobMeta loadJob(ObjectId id_job, String versionLabel) throws KettleException;
   
     public SharedObjects readJobMetaSharedObjects(JobMeta jobMeta) throws KettleException;
 
@@ -458,4 +473,13 @@ public interface Repository {
    * @throws KettleException in case something goes horribly wrong.
    */  
   public boolean hasService(Class<? extends IRepositoryService> clazz) throws KettleException;
+  
+  /**
+   * Get more information about a certain object ID in the form of the RepositoryObject
+   * @param objectId The ID of the object to get more information about.
+   * @param objectType The type of object to investigate.
+   * @return The repository object or null if nothing could be found.
+   * @throws KettleException In case there was a loading problem.
+   */
+  public RepositoryObject getObjectInformation(ObjectId objectId, RepositoryObjectType objectType) throws KettleException;
 }

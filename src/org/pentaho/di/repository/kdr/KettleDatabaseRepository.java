@@ -53,6 +53,7 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
@@ -1742,5 +1743,18 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     root.setObjectId(new LongObjectId(0L));
     directoryDelegate.loadRepositoryDirectory(root, root.getObjectId());
     return root;
+  }
+
+  public RepositoryObject getObjectInformation(ObjectId objectId, RepositoryObjectType objectType)
+      throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  public JobMeta loadJob(ObjectId idJob, String versionLabel) throws KettleException {
+    throw new UnsupportedOperationException();
+  }
+
+  public TransMeta loadTransformation(ObjectId idTransformation, String versionLabel) throws KettleException {
+    throw new UnsupportedOperationException();  
   }
 }
