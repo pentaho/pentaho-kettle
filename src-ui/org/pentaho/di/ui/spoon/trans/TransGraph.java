@@ -738,9 +738,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 			return;
 		}
 
-		// A single left click on one of the area owners...
+		// A single left or middle click on one of the area owners...
 		//
-		if (e.button == 1) {
+		if (e.button == 1 || e.button == 2) {
 			AreaOwner areaOwner = getVisibleAreaOwner(real.x, real.y);
 			if (areaOwner != null) {
 				switch (areaOwner.getAreaType()) {
