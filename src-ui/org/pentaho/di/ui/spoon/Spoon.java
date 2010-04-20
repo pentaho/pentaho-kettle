@@ -112,6 +112,7 @@ import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.clipboard.ImageDataTransfer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleAuthException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -216,6 +217,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.KettlePropertiesFileDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
+import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -6236,9 +6238,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     StringBuffer optionPassword = getCommandLineOption(options, "pass").getArgument();
 
     if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && props.showRepositoriesDialogAtStartup()) {
-      if (log.isBasic())
+      if (log.isBasic()) {
         // "Asking for repository"
         log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.AskingForRepository"));
+      }
 
       splash.hide();
       loginDialog = new RepositoriesDialog(shell, null, new ILoginCallback() {
@@ -6249,13 +6252,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
 
         public void onError(Throwable t) {
-          new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
-              BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+          if (t instanceof KettleAuthException) {
+            ShowMessageDialog dialog = new ShowMessageDialog(loginDialog.getShell(), SWT.OK | SWT.ICON_ERROR, BaseMessages.getString(PKG,
+                "Spoon.Dialog.LoginFailed.Title"), t.getLocalizedMessage());
+            dialog.open();
+          } else {
+           new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
+                BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+          }
         }
 
         public void onCancel() {
-          // TODO Auto-generated method stub
-
+          // do nothing
         }
       });
       loginDialog.show();

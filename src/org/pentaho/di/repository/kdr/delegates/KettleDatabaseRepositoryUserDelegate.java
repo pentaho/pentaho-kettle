@@ -2,6 +2,7 @@ package org.pentaho.di.repository.kdr.delegates;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleAuthException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
@@ -86,7 +87,7 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 		
 		if ( userInfo.getObjectId()==null || !userInfo.getPassword().equals(userPass))
 		{
-            throw new KettleDatabaseException(BaseMessages.getString(PKG, "UserInfo.Error.IncorrectPasswortLogin"));
+            throw new KettleAuthException(BaseMessages.getString(PKG, "UserInfo.Error.IncorrectPasswortLogin"));
 		}
 		return userInfo;
 	}

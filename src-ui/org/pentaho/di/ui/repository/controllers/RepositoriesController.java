@@ -101,21 +101,30 @@ public class RepositoriesController extends AbstractXulEventHandler {
     bf.createBinding(loginModel, "valid", okButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
 
     BindingConvertor<RepositoryMeta, Boolean> buttonConverter = new BindingConvertor<RepositoryMeta, Boolean>() {
-
       @Override
       public Boolean sourceToTarget(RepositoryMeta value) {
-        if (value != null) {
-          return false;
-        }
-        return true;
+        return (value == null);
       }
-
       @Override
       public RepositoryMeta targetToSource(Boolean value) {
-        // TODO Auto-generated method stub
         return null;
       }
     };
+
+    BindingConvertor<RepositoryMeta, Boolean> userpassConverter = new BindingConvertor<RepositoryMeta, Boolean>() {
+      @Override
+      public Boolean sourceToTarget(RepositoryMeta value) {
+        return (value == null) || !value.getRepositoryCapabilities().supportsUsers();
+      }
+      @Override
+      public RepositoryMeta targetToSource(Boolean value) {
+        return null;
+      }
+    };
+
+    bf.createBinding(loginModel, "selectedRepository", username, "disabled", userpassConverter);//$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding(loginModel, "selectedRepository", userPassword, "disabled", userpassConverter);//$NON-NLS-1$ //$NON-NLS-2$
+
     bf.createBinding(loginModel, "selectedRepository", repositoryEditButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(loginModel, "selectedRepository", repositoryRemoveButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
 
