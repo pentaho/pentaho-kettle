@@ -12,7 +12,7 @@
  * the license for the specific language governing your rights and limitations.
  */
 
-package org.pentaho.di.trans.steps.farragostreamingloader;
+package org.pentaho.di.trans.steps.luciddbstreamingloader;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -54,18 +54,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Ray Zhang
  * @since Jan-05-2010
  */
-public class FarragoStreamingLoader
+public class LucidDBStreamingLoader
     extends BaseStep
     implements StepInterface
 {
 
-    private static Class<?> PKG = FarragoStreamingLoaderMeta.class;
+    private static Class<?> PKG = LucidDBStreamingLoaderMeta.class;
 
-    private FarragoStreamingLoaderMeta meta;
+    private LucidDBStreamingLoaderMeta meta;
 
-    private FarragoStreamingLoaderData data;
+    private LucidDBStreamingLoaderData data;
 
-    public FarragoStreamingLoader(
+    public LucidDBStreamingLoader(
         StepMeta stepMeta,
         StepDataInterface stepDataInterface,
         int copyNr,
@@ -79,8 +79,8 @@ public class FarragoStreamingLoader
     public void stopRunning(StepMetaInterface smi, StepDataInterface sdi)
         throws KettleException
     {
-        meta = (FarragoStreamingLoaderMeta) smi;
-        data = (FarragoStreamingLoaderData) sdi;
+        meta = (LucidDBStreamingLoaderMeta) smi;
+        data = (LucidDBStreamingLoaderData) sdi;
 
         if (data.objOut != null) {
 
@@ -113,8 +113,8 @@ public class FarragoStreamingLoader
         throws KettleException
     {
 
-        meta = (FarragoStreamingLoaderMeta) smi;
-        data = (FarragoStreamingLoaderData) sdi;
+        meta = (LucidDBStreamingLoaderMeta) smi;
+        data = (LucidDBStreamingLoaderData) sdi;
 
         try {
 
@@ -248,8 +248,8 @@ public class FarragoStreamingLoader
 
     public boolean init(StepMetaInterface smi, StepDataInterface sdi)
     {
-        meta = (FarragoStreamingLoaderMeta) smi;
-        data = (FarragoStreamingLoaderData) sdi;
+        meta = (LucidDBStreamingLoaderMeta) smi;
+        data = (LucidDBStreamingLoaderData) sdi;
 
         if (super.init(smi, sdi)) {
 
@@ -376,8 +376,8 @@ public class FarragoStreamingLoader
 
     public void dispose(StepMetaInterface smi, StepDataInterface sdi)
     {
-        meta = (FarragoStreamingLoaderMeta) smi;
-        data = (FarragoStreamingLoaderData) sdi;
+        meta = (LucidDBStreamingLoaderMeta) smi;
+        data = (LucidDBStreamingLoaderData) sdi;
 
         // Close the output streams if still needed.
         //
@@ -406,7 +406,7 @@ public class FarragoStreamingLoader
     static class SqlRunner
         extends Thread
     {
-        private FarragoStreamingLoaderData data;
+        private LucidDBStreamingLoaderData data;
 
         private PreparedStatement ps;
 
@@ -414,7 +414,7 @@ public class FarragoStreamingLoader
 
         List<String> warnings;
 
-        SqlRunner(FarragoStreamingLoaderData data, PreparedStatement ps)
+        SqlRunner(LucidDBStreamingLoaderData data, PreparedStatement ps)
         {
             this.data = data;
             this.ps = ps;

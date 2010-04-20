@@ -12,7 +12,7 @@
  * the license for the specific language governing your rights and limitations.
  */
 
-package org.pentaho.di.trans.steps.farragostreamingloader;
+package org.pentaho.di.trans.steps.luciddbstreamingloader;
 
 import java.util.List;
 import java.util.Map;
@@ -50,11 +50,11 @@ import org.w3c.dom.Node;
  * @since Jan-05-2010
  * 
  */
-public class FarragoStreamingLoaderMeta
+public class LucidDBStreamingLoaderMeta
     extends BaseStepMeta
     implements StepMetaInterface
 {
-    private static Class<?> PKG = FarragoStreamingLoaderMeta.class; // for i18n
+    private static Class<?> PKG = LucidDBStreamingLoaderMeta.class; // for i18n
     // purposes,
     // needed by
     // Translator2!!
@@ -123,7 +123,7 @@ public class FarragoStreamingLoaderMeta
         this.sql_statement = sql_statement;
     }
 
-    public FarragoStreamingLoaderMeta()
+    public LucidDBStreamingLoaderMeta()
     {
         super();
     }
@@ -184,7 +184,7 @@ public class FarragoStreamingLoaderMeta
 
     public Object clone()
     {
-        FarragoStreamingLoaderMeta retval = (FarragoStreamingLoaderMeta) super.clone();
+        LucidDBStreamingLoaderMeta retval = (LucidDBStreamingLoaderMeta) super.clone();
         int nrKeyMapping = fieldTableForKeys.length;
         int nrFieldMapping = fieldTableForFields.length;
         int nrTabIsEnable = tabIsEnable.length;
@@ -758,7 +758,7 @@ public class FarragoStreamingLoaderMeta
         TransMeta transMeta,
         Trans trans)
     {
-        return new FarragoStreamingLoader(
+        return new LucidDBStreamingLoader(
             stepMeta,
             stepDataInterface,
             cnr,
@@ -768,7 +768,7 @@ public class FarragoStreamingLoaderMeta
 
     public StepDataInterface getStepData()
     {
-        return new FarragoStreamingLoaderData();
+        return new LucidDBStreamingLoaderData();
     }
 
     public DatabaseMeta[] getUsedDatabaseConnections()

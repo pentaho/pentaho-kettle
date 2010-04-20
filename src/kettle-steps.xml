@@ -856,7 +856,7 @@
 	<step id="LucidDBBulkLoader">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.LucidDBBulkLoader</description>
 		<classname>org.pentaho.di.trans.steps.luciddbbulkloader.LucidDBBulkLoaderMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LucidDBBulkLoader</tooltip>
 		<iconfile>ui/images/OBL.png</iconfile>
 	</step>
@@ -1061,11 +1061,11 @@
 		<iconfile>ui/images/SFD.png</iconfile>
 	</step>
 
-    <step id="FarragoStreamingLoader">
-    	<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FarragoStreamingLoader</description>
-        <classname>org.pentaho.di.trans.steps.farragostreamingloader.FarragoStreamingLoaderMeta</classname>
+    <step id="LucidDBStreamingLoader">
+    	<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.LucidDBStreamingLoader</description>
+        <classname>org.pentaho.di.trans.steps.luciddbstreamingloader.LucidDBStreamingLoaderMeta</classname>
         <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
-        <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FarragoStreamingLoader</tooltip>
+        <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LucidDBStreamingLoader</tooltip>
         <iconfile>ui/images/OBL.png</iconfile>
     </step>
 

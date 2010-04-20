@@ -12,7 +12,7 @@
  * the license for the specific language governing your rights and limitations.
  */
 
-package org.pentaho.di.ui.trans.steps.farragostreamingloader;
+package org.pentaho.di.ui.trans.steps.luciddbstreamingloader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.farragostreamingloader.FarragoStreamingLoaderMeta;
+import org.pentaho.di.trans.steps.luciddbstreamingloader.LucidDBStreamingLoaderMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -66,17 +66,17 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
- * Description: Dialog class for the Farrago Streaming Loader step.
+ * Description: Dialog class for the LucidDB Streaming Loader step.
  * 
  * @author Ray Zhang
  * @since Jan-05-2010
  * 
  */
-public class FarragoStreamingLoaderDialog
+public class LucidDBStreamingLoaderDialog
     extends BaseStepDialog
     implements StepDialogInterface
 {
-    private static Class<?> PKG = FarragoStreamingLoaderMeta.class;
+    private static Class<?> PKG = LucidDBStreamingLoaderMeta.class;
 
     private CCombo wConnection;
 
@@ -168,16 +168,16 @@ public class FarragoStreamingLoaderDialog
 
     private FormData fdDoMappingForFields;
 
-    private FarragoStreamingLoaderMeta input;
+    private LucidDBStreamingLoaderMeta input;
 
-    public FarragoStreamingLoaderDialog(
+    public LucidDBStreamingLoaderDialog(
         Shell parent,
         Object in,
         TransMeta transMeta,
         String sname)
     {
         super(parent, (BaseStepMeta) in, transMeta, sname);
-        input = (FarragoStreamingLoaderMeta) in;
+        input = (LucidDBStreamingLoaderMeta) in;
     }
 
     public String open()
@@ -206,7 +206,7 @@ public class FarragoStreamingLoaderDialog
         shell.setLayout(formLayout);
         shell.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.Shell.Title"));
+            "LucidDBStreamingLoaderDialog.Shell.Title"));
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
@@ -215,7 +215,7 @@ public class FarragoStreamingLoaderDialog
         wlStepname = new Label(shell, SWT.RIGHT);
         wlStepname.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.Stepname.Label"));
+            "LucidDBStreamingLoaderDialog.Stepname.Label"));
         props.setLook(wlStepname);
         fdlStepname = new FormData();
         fdlStepname.left = new FormAttachment(0, 0);
@@ -242,7 +242,7 @@ public class FarragoStreamingLoaderDialog
         wlSchema = new Label(shell, SWT.RIGHT);
         wlSchema.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.TargetSchema.Label"));
+            "LucidDBStreamingLoaderDialog.TargetSchema.Label"));
         props.setLook(wlSchema);
         fdlSchema = new FormData();
         fdlSchema.left = new FormAttachment(0, 0);
@@ -264,7 +264,7 @@ public class FarragoStreamingLoaderDialog
         wlTable = new Label(shell, SWT.RIGHT);
         wlTable.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.TargetTable.Label"));
+            "LucidDBStreamingLoaderDialog.TargetTable.Label"));
         props.setLook(wlTable);
         fdlTable = new FormData();
         fdlTable.left = new FormAttachment(0, 0);
@@ -276,7 +276,7 @@ public class FarragoStreamingLoaderDialog
         props.setLook(wbTable);
         wbTable.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.Browse.Button"));
+            "LucidDBStreamingLoaderDialog.Browse.Button"));
         fdbTable = new FormData();
         fdbTable.right = new FormAttachment(100, 0);
         fdbTable.top = new FormAttachment(wSchema, margin);
@@ -295,7 +295,7 @@ public class FarragoStreamingLoaderDialog
         wlHost = new Label(shell, SWT.RIGHT);
         wlHost.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.Host.Label"));
+            "LucidDBStreamingLoaderDialog.Host.Label"));
         props.setLook(wlHost);
         fdlHost = new FormData();
         fdlHost.left = new FormAttachment(0, 0);
@@ -316,7 +316,7 @@ public class FarragoStreamingLoaderDialog
         wlPort = new Label(shell, SWT.RIGHT);
         wlPort.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.Port.Label"));
+            "LucidDBStreamingLoaderDialog.Port.Label"));
         props.setLook(wlPort);
         fdlPort = new FormData();
         fdlPort.left = new FormAttachment(0, 0);
@@ -338,7 +338,7 @@ public class FarragoStreamingLoaderDialog
         wlOperation = new Label(shell, SWT.RIGHT);
         wlOperation.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.Operation.Label"));
+            "LucidDBStreamingLoaderDialog.Operation.Label"));
         props.setLook(wlOperation);
         fdlOperation = new FormData();
         fdlOperation.left = new FormAttachment(0, 0);
@@ -357,16 +357,16 @@ public class FarragoStreamingLoaderDialog
         final String[] operations = new String[] {
             BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.Operation.CCombo.Item1"),
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item1"),
             BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.Operation.CCombo.Item2"),
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2"),
             BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.Operation.CCombo.Item3")
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item3")
         // BaseMessages.getString(
         // PKG,
-        // "FarragoStreamingLoaderDialog.Operation.CCombo.Item4") // disable
+        // "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4") // disable
         // operation CUSTOM
         };
 
@@ -478,7 +478,7 @@ public class FarragoStreamingLoaderDialog
         wKeysTab = new CTabItem(wTabFolder, SWT.NONE);
         wKeysTab.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.KeyTab.TabTitle"));
+            "LucidDBStreamingLoaderDialog.KeyTab.TabTitle"));
 
         FormLayout fieldsLayout = new FormLayout();
         fieldsLayout.marginWidth = Const.FORM_MARGIN;
@@ -492,7 +492,7 @@ public class FarragoStreamingLoaderDialog
         wlKeysTb = new Label(wKeysComp, SWT.LEFT);
         wlKeysTb.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.KeyTab.Label"));
+            "LucidDBStreamingLoaderDialog.KeyTab.Label"));
         fdlKeysTb = new FormData();
 
         fdlKeysTb.left = new FormAttachment(0, 0);
@@ -505,13 +505,13 @@ public class FarragoStreamingLoaderDialog
             new ColumnInfo(
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.Key.Column1"),
+                    "LucidDBStreamingLoaderDialog.Key.Column1"),
                 ColumnInfo.COLUMN_TYPE_TEXT,
                 false),
             new ColumnInfo(
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.Key.Column2"),
+                    "LucidDBStreamingLoaderDialog.Key.Column2"),
                 ColumnInfo.COLUMN_TYPE_TEXT,
                 false), };
         wKeysTb = new TableView(transMeta, wKeysComp, SWT.FULL_SELECTION
@@ -534,7 +534,7 @@ public class FarragoStreamingLoaderDialog
         wGetFieldsForKeys = new Button(wKeysComp, SWT.PUSH);
         wGetFieldsForKeys.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.GetFields.Label"));
+            "LucidDBStreamingLoaderDialog.GetFields.Label"));
         fdGetFieldsForKeys = new FormData();
         fdGetFieldsForKeys.top = new FormAttachment(wKeysTb, margin);
         fdGetFieldsForKeys.left = new FormAttachment(0, margin);
@@ -555,7 +555,7 @@ public class FarragoStreamingLoaderDialog
         wDoMappingForKeys = new Button(wKeysComp, SWT.PUSH);
         wDoMappingForKeys.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.EditMapping.Label"));
+            "LucidDBStreamingLoaderDialog.EditMapping.Label"));
         fdDoMappingForKeys = new FormData();
         fdDoMappingForKeys.top = new FormAttachment(wKeysTb, margin);
         fdDoMappingForKeys.left = new FormAttachment(wGetFieldsForKeys, margin);
@@ -580,7 +580,7 @@ public class FarragoStreamingLoaderDialog
         wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
         wFieldsTab.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.FieldsTab.TabTitle"));
+            "LucidDBStreamingLoaderDialog.FieldsTab.TabTitle"));
 
         wFieldsComp = new Composite(wTabFolder, SWT.NONE);
         wFieldsComp.setLayout(fieldsLayout);
@@ -589,7 +589,7 @@ public class FarragoStreamingLoaderDialog
         wlFieldsTb = new Label(wFieldsComp, SWT.LEFT);
         wlFieldsTb.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.FieldTab.Label"));
+            "LucidDBStreamingLoaderDialog.FieldTab.Label"));
 
         fdlFieldsTb = new FormData();
         fdlFieldsTb.left = new FormAttachment(0, 0);
@@ -601,19 +601,19 @@ public class FarragoStreamingLoaderDialog
             new ColumnInfo(
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.Field.Column1"),
+                    "LucidDBStreamingLoaderDialog.Field.Column1"),
                 ColumnInfo.COLUMN_TYPE_TEXT,
                 false),
             new ColumnInfo(
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.Field.Column2"),
+                    "LucidDBStreamingLoaderDialog.Field.Column2"),
                 ColumnInfo.COLUMN_TYPE_TEXT,
                 false),
             new ColumnInfo(
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.Field.Column3"),
+                    "LucidDBStreamingLoaderDialog.Field.Column3"),
                 ColumnInfo.COLUMN_TYPE_CCOMBO,
                 new String[] { "Y", "N", },
                 true)
@@ -640,7 +640,7 @@ public class FarragoStreamingLoaderDialog
         wGetFieldsForFields = new Button(wFieldsComp, SWT.PUSH);
         wGetFieldsForFields.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.GetFields.Label"));
+            "LucidDBStreamingLoaderDialog.GetFields.Label"));
         fdGetFieldsForFields = new FormData();
         fdGetFieldsForFields.top = new FormAttachment(wFieldsTb, margin);
         fdGetFieldsForFields.left = new FormAttachment(0, margin);
@@ -661,7 +661,7 @@ public class FarragoStreamingLoaderDialog
         wDoMappingForFields = new Button(wFieldsComp, SWT.PUSH);
         wDoMappingForFields.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.EditMapping.Label"));
+            "LucidDBStreamingLoaderDialog.EditMapping.Label"));
         fdDoMappingForFields = new FormData();
         fdDoMappingForFields.top = new FormAttachment(wFieldsTb, margin);
         fdDoMappingForFields.left = new FormAttachment(
@@ -688,7 +688,7 @@ public class FarragoStreamingLoaderDialog
         // wCustomTab = new CTabItem(wTabFolder, SWT.NONE);
         // wCustomTab.setText(BaseMessages.getString(
         // PKG,
-        // "FarragoStreamingLoaderDialog.CustomTab.TabTitle"));
+        // "LucidDBStreamingLoaderDialog.CustomTab.TabTitle"));
         //
         // wCustomComp = new Composite(wTabFolder, SWT.NONE);
         // wCustomComp.setLayout(fieldsLayout);
@@ -697,7 +697,7 @@ public class FarragoStreamingLoaderDialog
         // wlCustomTb = new Label(wCustomComp, SWT.LEFT);
         // wlCustomTb.setText(BaseMessages.getString(
         // PKG,
-        // "FarragoStreamingLoaderDialog.CustomTab.Label"));
+        // "LucidDBStreamingLoaderDialog.CustomTab.Label"));
         //
         // fdlCustomTb = new FormData();
         // fdlCustomTb.left = new FormAttachment(0, 0);
@@ -737,7 +737,7 @@ public class FarragoStreamingLoaderDialog
         wSQL = new Button(shell, SWT.PUSH);
         wSQL.setText(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.SQL.Button"));
+            "LucidDBStreamingLoaderDialog.SQL.Button"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
@@ -821,7 +821,7 @@ public class FarragoStreamingLoaderDialog
 
         logDebug(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.Log.GettingKeyInfo"));
+            "LucidDBStreamingLoaderDialog.Log.GettingKeyInfo"));
         if (input.getDatabaseMeta() != null)
             wConnection.setText(input.getDatabaseMeta().getName());
         else {
@@ -842,7 +842,7 @@ public class FarragoStreamingLoaderDialog
             wOperation.select(wOperation.indexOf(input.getOperation()));
             if (BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.Operation.CCombo.Item2").equals(
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2").equals(
                 input.getOperation()))
             {
 
@@ -908,7 +908,10 @@ public class FarragoStreamingLoaderDialog
         }
 
         int fieldWidth = wFieldsTb.table.getColumn(3).getWidth();
-        if (input.getOperation() != null
+        
+        //Temporarily resolve index out of bounds
+        wFieldsTb.table.getColumn(3).setWidth(fieldWidth);
+        /*if (input.getOperation() != null
             && "INSERT".equalsIgnoreCase(wOperation.getItem(wOperation.getSelectionIndex())))
         {
 
@@ -917,7 +920,7 @@ public class FarragoStreamingLoaderDialog
         } else {
 
             wFieldsTb.table.getColumn(3).setWidth(fieldWidth);
-        }
+        }*/
 
         wStepname.selectAll();
 
@@ -937,21 +940,21 @@ public class FarragoStreamingLoaderDialog
 
         if (tabName.equals(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.KeyTab.TabTitle")))
+            "LucidDBStreamingLoaderDialog.KeyTab.TabTitle")))
         {
 
             myTb = wKeysTb;
 
         } else if (tabName.equals(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.FieldsTab.TabTitle")))
+            "LucidDBStreamingLoaderDialog.FieldsTab.TabTitle")))
         {
 
             myTb = wFieldsTb;
             // Hidden Update Field when select operation INSERT
             if (BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.Operation.CCombo.Item2")
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2")
                 .equalsIgnoreCase(
                     wOperation.getItem(wOperation.getSelectionIndex())))
             {
@@ -975,10 +978,10 @@ public class FarragoStreamingLoaderDialog
                 shell,
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Title"),
+                    "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Title"),
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Message"),
+                    "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindSourceFields.Message"),
                 e);
             return;
         }
@@ -993,10 +996,10 @@ public class FarragoStreamingLoaderDialog
                 shell,
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Title"),
+                    "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Title"),
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Message"),
+                    "LucidDBStreamingLoaderDialog.DoMapping.UnableToFindTargetFields.Message"),
                 e);
             return;
         }
@@ -1025,21 +1028,21 @@ public class FarragoStreamingLoaderDialog
             if (missingSourceFields.length() > 0) {
                 message += BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.DoMapping.SomeSourceFieldsNotFound",
+                    "LucidDBStreamingLoaderDialog.DoMapping.SomeSourceFieldsNotFound",
                     missingSourceFields.toString())
                     + Const.CR;
             }
             if (missingTargetFields.length() > 0) {
                 message += BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.DoMapping.SomeTargetFieldsNotFound",
+                    "LucidDBStreamingLoaderDialog.DoMapping.SomeTargetFieldsNotFound",
                     missingSourceFields.toString())
                     + Const.CR;
             }
             message += Const.CR;
             message += BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundContinue")
+                "LucidDBStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundContinue")
                 + Const.CR;
             MessageDialog.setDefaultImage(GUIResource.getInstance()
                 .getImageSpoon());
@@ -1047,14 +1050,14 @@ public class FarragoStreamingLoaderDialog
                 shell,
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundTitle"),
+                    "LucidDBStreamingLoaderDialog.DoMapping.SomeFieldsNotFoundTitle"),
                 message);
             if (!goOn) {
                 return;
             }
         }
         EnterMappingDialog d = new EnterMappingDialog(
-            FarragoStreamingLoaderDialog.this.shell,
+            LucidDBStreamingLoaderDialog.this.shell,
             sourceFields.getFieldNames(),
             targetFields.getFieldNames(),
             mappings);
@@ -1101,7 +1104,7 @@ public class FarragoStreamingLoaderDialog
         dispose();
     }
 
-    private void getInfo(FarragoStreamingLoaderMeta inf)
+    private void getInfo(LucidDBStreamingLoaderMeta inf)
     {
         inf.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()));
         inf.setSchemaName(wSchema.getText());
@@ -1151,21 +1154,21 @@ public class FarragoStreamingLoaderDialog
 
         if (tabName.equals(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.KeyTab.TabTitle")))
+            "LucidDBStreamingLoaderDialog.KeyTab.TabTitle")))
         {
 
             myTb = wKeysTb;
 
         } else if (tabName.equals(BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderDialog.FieldsTab.TabTitle")))
+            "LucidDBStreamingLoaderDialog.FieldsTab.TabTitle")))
         {
 
             myTb = wFieldsTb;
 
             if (BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.Operation.CCombo.Item2")
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2")
                 .equalsIgnoreCase(
                     wOperation.getItem(wOperation.getSelectionIndex())))
             {
@@ -1270,10 +1273,10 @@ public class FarragoStreamingLoaderDialog
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
             mb.setMessage(BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.InvalidConnection.DialogMessage"));
+                "LucidDBStreamingLoaderDialog.InvalidConnection.DialogMessage"));
             mb.setText(BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.InvalidConnection.DialogTitle"));
+                "LucidDBStreamingLoaderDialog.InvalidConnection.DialogTitle"));
             mb.open();
         }
 
@@ -1291,7 +1294,7 @@ public class FarragoStreamingLoaderDialog
         if (inf != null) {
             logDebug(BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.Log.LookingAtConnection")
+                "LucidDBStreamingLoaderDialog.Log.LookingAtConnection")
                 + inf.toString());
 
             DatabaseExplorerDialog std = new DatabaseExplorerDialog(
@@ -1310,10 +1313,10 @@ public class FarragoStreamingLoaderDialog
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
             mb.setMessage(BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.InvalidConnection.DialogMessage"));
+                "LucidDBStreamingLoaderDialog.InvalidConnection.DialogMessage"));
             mb.setText(BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.InvalidConnection.DialogTitle"));
+                "LucidDBStreamingLoaderDialog.InvalidConnection.DialogTitle"));
             mb.open();
         }
     }
@@ -1323,7 +1326,7 @@ public class FarragoStreamingLoaderDialog
     private void create()
     {
 
-        FarragoStreamingLoaderMeta info = new FarragoStreamingLoaderMeta();
+        LucidDBStreamingLoaderMeta info = new LucidDBStreamingLoaderMeta();
         getInfo(info);
 
         RowMetaInterface prev;

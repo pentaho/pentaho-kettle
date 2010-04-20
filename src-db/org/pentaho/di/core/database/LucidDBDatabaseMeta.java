@@ -25,7 +25,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-    private static final String UNUSED_DB_NAME = "DEFAULT";
+    private static final String UNUSED_DB_NAME = "LOCAL_DB";
     
 	public int[] getAccessTypeList()
 	{
@@ -34,7 +34,7 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	
 	public int getDefaultDatabasePort()
 	{
-		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 5434;
+		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 8034;
 		return -1;
 	}
 
@@ -46,7 +46,7 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		}
 		else
 		{
-			return "com.lucidera.jdbc.LucidDbRmiDriver";
+			return "com.dynamobi.jdbc.Driver";
 		}
 	}
 
@@ -59,9 +59,9 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		else
 		{
 			if (!Const.isEmpty(port) && Const.toInt(port, -1)>0) {
-				return "jdbc:luciddb:rmi://"+hostname+":"+port;
+				return "jdbc:luciddb:http://"+hostname+":"+port;
 			} else {
-				return "jdbc:luciddb:rmi://"+hostname;
+				return "jdbc:luciddb:http://"+hostname;
 			}
 		}
 	}
@@ -278,7 +278,7 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "LucidDbClient.jar" };
+        return new String[] { "dynamodb-client-jdbc-minimal.jar" };
     }
     
     public String getExtraOptionsHelpText()

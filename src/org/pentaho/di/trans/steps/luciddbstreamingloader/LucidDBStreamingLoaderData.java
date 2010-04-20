@@ -9,7 +9,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.*/
 
-package org.pentaho.di.trans.steps.farragostreamingloader;
+package org.pentaho.di.trans.steps.luciddbstreamingloader;
 
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -25,7 +25,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @author Matt
  * @since Jan-05-2010
  */
-public class FarragoStreamingLoaderData
+public class LucidDBStreamingLoaderData
     extends BaseStepData
     implements StepDataInterface
 {
@@ -46,12 +46,12 @@ public class FarragoStreamingLoaderData
     public Socket client;
     public ObjectOutputStream objOut;
 
-    public FarragoStreamingLoader.SqlRunner sqlRunner;
+    public LucidDBStreamingLoader.SqlRunner sqlRunner;
 
     /**
      * Default constructor.
      */
-    public FarragoStreamingLoaderData()
+    public LucidDBStreamingLoaderData()
     {
         super();
 

@@ -46,6 +46,7 @@
 	<classpathentry kind="lib" path="libext/JDBC/derbyclient.jar"/>
 	<classpathentry kind="lib" path="libext/ldapjdk.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/derby.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/dynamodb-client-jdbc-minimal.jar"/>
 	<classpathentry kind="src" path="extra"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-i18n.jar"/>
@@ -72,7 +73,6 @@
 	<classpathentry kind="lib" path="libext/feeds/feed4j.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/nekohtml.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/xml-apis.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/LucidDbClient.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/axis.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/commons-discovery-0.2.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/jaxrpc.jar"/>
