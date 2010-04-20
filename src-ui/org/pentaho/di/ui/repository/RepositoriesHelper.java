@@ -53,6 +53,9 @@ public class RepositoriesHelper {
     try {
       try {
         this.input.readData();
+        if(input.getErrorMessage() != null && input.getErrorMessage().length() >0 ) {
+          throw new KettleException(input.getErrorMessage());
+        }
       } catch (KettleException e) {
         log.logDetailed(BaseMessages.getString(PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", e.getLocalizedMessage()));//$NON-NLS-1$
         new ErrorDialog(shell, messages.getString("Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", e.getLocalizedMessage()), e); //$NON-NLS-1$ //$NON-NLS-2$

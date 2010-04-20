@@ -50,8 +50,10 @@ public class RepositoriesMeta
 	private List<DatabaseMeta>   databases;    // Repository connections
 	private List<RepositoryMeta> repositories;   // List of repositories
 	private LogChannel	log;
+	private String errorMessage;
 
-	public RepositoriesMeta()
+
+  public RepositoriesMeta()
 	{
 		clear();
 	}
@@ -63,6 +65,7 @@ public class RepositoriesMeta
 	}
 
 	public void clear() {
+	  errorMessage = null;
 		databases = new ArrayList<DatabaseMeta>();
 		repositories = new ArrayList<RepositoryMeta>();
 		log = new LogChannel("RepositoriesMeta");
@@ -241,6 +244,7 @@ public class RepositoriesMeta
     				log.logDebug("Read repository : "+repositoryMeta.getName()); //$NON-NLS-1$
   				} else {
             unableToReadIds.append(id);
+            unableToReadIds.append(",");
             log.logDebug("Unable to read repository with id: "+id); //$NON-NLS-1$
   				}
 				} catch (KettleException ex) {
@@ -258,7 +262,7 @@ public class RepositoriesMeta
 				}
 			}
 		  if(unableToReadIds != null && unableToReadIds.length() > 0) {
-		    kettleException = new KettleException("Unable to read repository with id [" + unableToReadIds.toString() + "]  RepositoryMeta is not available");
+		    errorMessage = "Unable to read repository with id [" + unableToReadIds.substring(0, unableToReadIds.lastIndexOf(",")-1) + "].  RepositoryMeta is not available";
 		  }
 			if(kettleException != null) {
 			  throw kettleException;
@@ -325,4 +329,7 @@ public class RepositoriesMeta
 	  }
     return meta;
 	}
+	 public String getErrorMessage() {
+	    return errorMessage;
+	  }
 }
