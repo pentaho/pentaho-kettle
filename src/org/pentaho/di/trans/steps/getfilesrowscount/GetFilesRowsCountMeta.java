@@ -360,6 +360,24 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 
         return retval.toString();
     }
+    
+    /**
+     * Adjust old outdated values to new ones
+     * 
+     * @param original The original value
+     * @return The new/correct equivelant
+     */
+    private String scrubOldRowSeparator(String original) {
+      if(original != null) {
+        // Update old files to the new format
+        if(original.equalsIgnoreCase("CR")) { //$NON-NLS-1$
+          return "LINEFEED"; //$NON-NLS-1$
+        } else if(original.equalsIgnoreCase("LF")) { //$NON-NLS-1$
+          return "CARRIAGERETURN"; //$NON-NLS-1$
+        }
+      }
+      return original;
+    }
 
 	private void readData(Node stepnode) throws KettleXMLException
 	{
@@ -370,8 +388,9 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 			filesCountFieldName    = XMLHandler.getTagValue(stepnode, "files_count_fieldname");
 			rowsCountFieldName    = XMLHandler.getTagValue(stepnode, "rows_count_fieldname");
 
-			RowSeparator_format    = XMLHandler.getTagValue(stepnode, "rowseparator_format");
+			RowSeparator_format    = scrubOldRowSeparator(XMLHandler.getTagValue(stepnode, "rowseparator_format"));
 			RowSeparator    = XMLHandler.getTagValue(stepnode, "row_separator");
+			
 			String addresult  = XMLHandler.getTagValue(stepnode, "isaddresult");
 			if(Const.isEmpty(addresult))
 				isaddresult=true;
@@ -465,7 +484,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 			filesCountFieldName    = rep.getStepAttributeString (id_step, "files_count_fieldname");
 			rowsCountFieldName    = rep.getStepAttributeString (id_step, "rows_count_fieldname");
 			
-			RowSeparator_format    = rep.getStepAttributeString (id_step, "rowseparator_format");
+			RowSeparator_format    = scrubOldRowSeparator(rep.getStepAttributeString (id_step, "rowseparator_format"));
 			RowSeparator    = rep.getStepAttributeString (id_step, "row_separator");
 			
 			String addresult    = rep.getStepAttributeString (id_step, "isaddresult");
