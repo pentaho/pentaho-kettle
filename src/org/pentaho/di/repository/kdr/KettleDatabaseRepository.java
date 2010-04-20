@@ -48,10 +48,10 @@ import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -397,10 +397,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	}
 
 	// ClusterSchema
-	
-    public ClusterSchema loadClusterSchema(ObjectId id_cluster_schema, List<SlaveServer> slaveServers, String versionName) throws KettleException {
-    	return clusterSchemaDelegate.loadClusterSchema(id_cluster_schema, slaveServers);
-    }
+	public ClusterSchema loadClusterSchema(ObjectId idClusterSchema, List<SlaveServer> slaveServers, String versionLabel) throws KettleException {
+    return clusterSchemaDelegate.loadClusterSchema(idClusterSchema, slaveServers);
+	}
 	
     // SlaveServer
     
@@ -1596,14 +1595,13 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	public ObjectId insertJobEntry(ObjectId id_job, JobEntryBase jobEntryBase) throws KettleException {
 		return jobEntryDelegate.insertJobEntry(id_job, jobEntryBase);
 	}
-	
-	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId id_step, String code, List<DatabaseMeta> databases) throws KettleException {
-		
-		long id_database = getStepAttributeInteger(id_step, code);
-		if (id_database<=0) {
-			return null;
-		}
-		return DatabaseMeta.findDatabase(databases, new LongObjectId(id_database));
+
+	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId idStep, String code, List<DatabaseMeta> databases) throws KettleException {
+    long id_database = getStepAttributeInteger(idStep, code);
+    if (id_database<=0) {
+      return null;
+    }
+    return DatabaseMeta.findDatabase(databases, new LongObjectId(id_database));
 	}
 
 	/**
@@ -1744,17 +1742,50 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     directoryDelegate.loadRepositoryDirectory(root, root.getObjectId());
     return root;
   }
+  
+  public RepositoryObject getObjectInformation(ObjectId objectId, RepositoryObjectType objectType) throws KettleException {
+    try {
+      
+      switch(objectType) {
+      case TRANSFORMATION: 
+        {
+          RowMetaAndData row = transDelegate.getTransformation(objectId);
+          String name = row.getString(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME, null);
+          String description = row.getString(KettleDatabaseRepository.FIELD_TRANSFORMATION_DESCRIPTION, null);
+          String modifiedUser = row.getString(KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_USER, "-");
+          Date modifiedDate = row.getDate(KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_DATE, null);
+          long dirId = row.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY, 0);
+          RepositoryDirectoryInterface directory = loadRepositoryDirectoryTree().findDirectory(new LongObjectId(dirId));
+          return new RepositoryObject(objectId, name, directory, modifiedUser, modifiedDate, objectType, description, false);
+        }
 
-  public RepositoryObject getObjectInformation(ObjectId objectId, RepositoryObjectType objectType)
-      throws KettleException {
-    throw new UnsupportedOperationException();
+      case JOB:
+        {
+          RowMetaAndData row = jobDelegate.getJob(objectId);
+          String name = row.getString(KettleDatabaseRepository.FIELD_JOB_NAME, null);
+          String description = row.getString(KettleDatabaseRepository.FIELD_JOB_DESCRIPTION, null);
+          String modifiedUser = row.getString(KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, "-");
+          Date modifiedDate = row.getDate(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, null);
+          long dirId = row.getInteger(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, 0);
+          RepositoryDirectoryInterface directory = loadRepositoryDirectoryTree().findDirectory(new LongObjectId(dirId));
+          return new RepositoryObject(objectId, name, directory, modifiedUser, modifiedDate, objectType, description, false);
+        }
+      default:
+        throw new KettleException("Object type "+objectType.getTypeDescription()+" was specified.  Only information from transformations and jobs can be retrieved at this time.");
+      // Nothing matches, return null
+      }
+    } catch(Exception e) {
+      throw new KettleException("Unable to get object information for object with id="+objectId, e);
+    }
   }
 
   public JobMeta loadJob(ObjectId idJob, String versionLabel) throws KettleException {
-    throw new UnsupportedOperationException();
+    RepositoryObject jobInfo = getObjectInformation(idJob, RepositoryObjectType.JOB);
+    return loadJob(jobInfo.getName(), jobInfo.getRepositoryDirectory(), null, versionLabel);
   }
 
   public TransMeta loadTransformation(ObjectId idTransformation, String versionLabel) throws KettleException {
-    throw new UnsupportedOperationException();  
+    RepositoryObject jobInfo = getObjectInformation(idTransformation, RepositoryObjectType.TRANSFORMATION);
+    return loadTransformation(jobInfo.getName(), jobInfo.getRepositoryDirectory(), null, true, versionLabel);
   }
 }

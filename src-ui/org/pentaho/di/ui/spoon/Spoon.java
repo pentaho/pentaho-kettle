@@ -6437,18 +6437,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         } else if (!Const.isEmpty(optionFilename)) {
           openFile(optionFilename.toString(), false);
         }
-      } else // Normal operations, nothing on the commandline...
-      {
-        if (props.openLastFile()) {
-          if (log.isDetailed())
-            // "Trying to open the last file used."
-            log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.TryingOpenLastUsedFile"));
-
-          List<LastUsedFile> lastUsedFiles = props.getOpenTabFiles();
-          for (LastUsedFile lastUsedFile : lastUsedFiles) {
-            loadLastUsedFile(lastUsedFile, rep == null ? null : rep.getName(), false);
-          }
-        }
       }
     } catch (KettleException ke) {
       log.logError(BaseMessages.getString(PKG, "Spoon.Log.ErrorOccurred") + Const.CR + ke.getMessage());// "An error occurred: "
@@ -6459,17 +6447,48 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           + Const.CR + ke.getMessage(), ke);
       rep = null;
     }
+  }
+  
+  private void loadLastUsedFiles() {
+    if (props.openLastFile()) {
+      if (log.isDetailed())
+        // "Trying to open the last file used."
+        log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.TryingOpenLastUsedFile"));
 
+      List<LastUsedFile> lastUsedFiles = props.getOpenTabFiles();
+      for (LastUsedFile lastUsedFile : lastUsedFiles) {
+        try {
+          if (!lastUsedFile.isSourceRepository() || 
+              lastUsedFile.isSourceRepository() && rep!=null && rep.getName().equals(lastUsedFile.getRepositoryName())) {
+            loadLastUsedFile(lastUsedFile, rep == null ? null : rep.getName(), false);
+          }
+        } catch(Exception e) {
+          new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.LoadLastUsedFile.Exception.Title"), 
+              BaseMessages.getString(PKG, "Spoon.LoadLastUsedFile.Exception.Message", lastUsedFile.toString()), e);
+        }
+      }
+    }
   }
 
   public void start(Splash splash, CommandLineOption[] options) throws KettleException {
     // Read the start option parameters
+    //
     handleStartOptions(options);
+    
     // Open the spoon application
+    //
     open();
+    
     // Show the repository connection dialog
+    //
     selectRep(splash, options);
-    // Enable menue based on whether user was able to login or not
+    
+    // Load the last loaded files
+    //
+    loadLastUsedFiles();
+    
+    // Enable menus based on whether user was able to login or not
+    //
     enableMenus();
 
     if (props.showTips()) {

@@ -34,7 +34,6 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogLevel;
@@ -202,205 +201,227 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval;
 	}
 
-	public String getXML()
-	{
-        StringBuffer retval = new StringBuffer(300);
+  public String getXML() {
+    StringBuffer retval = new StringBuffer(300);
 
-		retval.append(super.getXML());
+    retval.append(super.getXML());
 
-		// specificationMethod
-		//
-		retval.append("      ").append(XMLHandler.addTagValue("specification_method", specificationMethod == null ? null : specificationMethod.getCode()));
-		retval.append("      ").append(XMLHandler.addTagValue("trans_object_id",  transObjectId==null ? null : transObjectId.toString()));
-		retval.append("      ").append(XMLHandler.addTagValue("filename",          filename));
-		retval.append("      ").append(XMLHandler.addTagValue("transname",         transname));
-        if (directory!=null)
-        {
-            retval.append("      ").append(XMLHandler.addTagValue("directory",         directory));
-        }
-        else
-        if (directoryPath!=null)
-        {
-            retval.append("      ").append(XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
-        }
-		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
-        retval.append("      ").append(XMLHandler.addTagValue("params_from_previous", paramsFromPrevious));
-        retval.append("      ").append(XMLHandler.addTagValue("exec_per_row",      execPerRow));
-        retval.append("      ").append(XMLHandler.addTagValue("clear_rows",        clearResultRows));
-        retval.append("      ").append(XMLHandler.addTagValue("clear_files",       clearResultFiles));
-		retval.append("      ").append(XMLHandler.addTagValue("set_logfile",       setLogfile));
-		retval.append("      ").append(XMLHandler.addTagValue("logfile",           logfile));
-		retval.append("      ").append(XMLHandler.addTagValue("logext",            logext));
-		retval.append("      ").append(XMLHandler.addTagValue("add_date",          addDate));
-		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
-        retval.append("      ").append(XMLHandler.addTagValue("loglevel",          logFileLevel.getCode()));
-        retval.append("      ").append(XMLHandler.addTagValue("cluster",           clustering));
-		retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
-		retval.append("      ").append(XMLHandler.addTagValue("set_append_logfile",     setAppendLogfile));
-		retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished",     waitingToFinish));
-		retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote",     followingAbortRemotely));
-		retval.append("      ").append(XMLHandler.addTagValue("create_parent_folder",       createParentFolder));
-		
-		if (arguments!=null)
-		for (int i=0;i<arguments.length;i++)
-		{
-			// This is a very very bad way of making an XML file, don't use it (or copy it). Sven Boden
-			retval.append("      ").append(XMLHandler.addTagValue("argument"+i, arguments[i]));
-		}
-		
-		if (parameters!=null)  {
-			retval.append("      ").append(XMLHandler.openTag("parameters"));
-			
-			retval.append("        ").append(XMLHandler.addTagValue("pass_all_parameters", passingAllParameters));
+    // specificationMethod
+    //
+    retval.append("      ").append(XMLHandler.addTagValue("specification_method", specificationMethod == null ? null : specificationMethod.getCode()));
+    retval.append("      ").append(XMLHandler.addTagValue("trans_object_id", transObjectId == null ? null : transObjectId.toString()));
+    retval.append("      ").append(XMLHandler.addTagValue("filename", filename));
+    retval.append("      ").append(XMLHandler.addTagValue("transname", transname));
+    
+    if (directory != null) {
+      retval.append("      ").append(XMLHandler.addTagValue("directory", directory));
+    } else if (directoryPath != null) {
+      // don't loose this info (backup/recovery)
+      //
+      retval.append("      ").append(XMLHandler.addTagValue("directory", directoryPath)); 
+    }
+    retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
+    retval.append("      ").append(XMLHandler.addTagValue("params_from_previous", paramsFromPrevious));
+    retval.append("      ").append(XMLHandler.addTagValue("exec_per_row", execPerRow));
+    retval.append("      ").append(XMLHandler.addTagValue("clear_rows", clearResultRows));
+    retval.append("      ").append(XMLHandler.addTagValue("clear_files", clearResultFiles));
+    retval.append("      ").append(XMLHandler.addTagValue("set_logfile", setLogfile));
+    retval.append("      ").append(XMLHandler.addTagValue("logfile", logfile));
+    retval.append("      ").append(XMLHandler.addTagValue("logext", logext));
+    retval.append("      ").append(XMLHandler.addTagValue("add_date", addDate));
+    retval.append("      ").append(XMLHandler.addTagValue("add_time", addTime));
+    retval.append("      ").append(XMLHandler.addTagValue("loglevel", logFileLevel.getCode()));
+    retval.append("      ").append(XMLHandler.addTagValue("cluster", clustering));
+    retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
+    retval.append("      ").append(XMLHandler.addTagValue("set_append_logfile", setAppendLogfile));
+    retval.append("      ").append(XMLHandler.addTagValue("wait_until_finished", waitingToFinish));
+    retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote", followingAbortRemotely));
+    retval.append("      ").append(XMLHandler.addTagValue("create_parent_folder", createParentFolder));
 
-			for (int i=0;i<parameters.length;i++)
-			{
-				// This is a better way of making the XML file than the arguments.
-				retval.append("            ").append(XMLHandler.openTag("parameter"));
-				
-				retval.append("            ").append(XMLHandler.addTagValue("name", parameters[i]));
-				retval.append("            ").append(XMLHandler.addTagValue("stream_name", parameterFieldNames[i]));
-				retval.append("            ").append(XMLHandler.addTagValue("value", parameterValues[i]));
-				
-				retval.append("            ").append(XMLHandler.closeTag("parameter"));
-			}
-			retval.append("      ").append(XMLHandler.closeTag("parameters"));
-		}
-		
-		return retval.toString();
+    if (arguments != null)
+      for (int i = 0; i < arguments.length; i++) {
+        // This is a very very bad way of making an XML file, don't use it (or
+        // copy it). Sven Boden
+        retval.append("      ").append(XMLHandler.addTagValue("argument" + i, arguments[i]));
+      }
+
+    if (parameters != null) {
+      retval.append("      ").append(XMLHandler.openTag("parameters"));
+
+      retval.append("        ").append(XMLHandler.addTagValue("pass_all_parameters", passingAllParameters));
+
+      for (int i = 0; i < parameters.length; i++) {
+        // This is a better way of making the XML file than the arguments.
+        retval.append("            ").append(XMLHandler.openTag("parameter"));
+
+        retval.append("            ").append(XMLHandler.addTagValue("name", parameters[i]));
+        retval.append("            ").append(XMLHandler.addTagValue("stream_name", parameterFieldNames[i]));
+        retval.append("            ").append(XMLHandler.addTagValue("value", parameterValues[i]));
+
+        retval.append("            ").append(XMLHandler.closeTag("parameter"));
+      }
+      retval.append("      ").append(XMLHandler.closeTag("parameters"));
+    }
+
+    return retval.toString();
+  }
+
+	private void checkObjectLocationSpecificationMethod() {
+    if (specificationMethod==null) {
+      // Backward compatibility
+      //
+      // Default = Filename
+      //
+      specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+      
+      if (!Const.isEmpty(filename)) {
+        specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+      } else if (transObjectId!=null) {
+        specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+      } else if (!Const.isEmpty(transname)) {
+        specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+      }
+    }
 	}
+	
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
+    try {
+      super.loadXML(entrynode, databases, slaveServers);
 
-    public void loadXML(Node entrynode, List<DatabaseMeta>  databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
-	{
-		try
-		{
-            super.loadXML(entrynode, databases, slaveServers);
+      String method = XMLHandler.getTagValue(entrynode, "specification_method");
+      specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
+      String transId = XMLHandler.getTagValue(entrynode, "trans_object_id");
+      transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
+      filename = XMLHandler.getTagValue(entrynode, "filename");
+      transname = XMLHandler.getTagValue(entrynode, "transname");
+      directory = XMLHandler.getTagValue(entrynode, "directory");
 
-            String method = XMLHandler.getTagValue(entrynode, "specification_method");
-            specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
-            String transId = XMLHandler.getTagValue(entrynode, "trans_object_id");
-            transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
-			filename = XMLHandler.getTagValue(entrynode, "filename") ;
-			transname = XMLHandler.getTagValue(entrynode, "transname") ;
-            directory = XMLHandler.getTagValue(entrynode, "directory");
+      // Backward compatibility check for object specification
+      //
+      checkObjectLocationSpecificationMethod();
+      
+      argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous"));
+      paramsFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "params_from_previous"));
+      execPerRow = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "exec_per_row"));
+      clearResultRows = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "clear_rows"));
+      clearResultFiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "clear_files"));
+      setLogfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "set_logfile"));
+      addDate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_date"));
+      addTime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "add_time"));
+      logfile = XMLHandler.getTagValue(entrynode, "logfile");
+      logext = XMLHandler.getTagValue(entrynode, "logext");
+      logFileLevel = LogLevel.getLogLevelForCode(XMLHandler.getTagValue(entrynode, "loglevel"));
+      clustering = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "cluster"));
+      createParentFolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "create_parent_folder"));
 
-            argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
-            paramsFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "params_from_previous") );
-            execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
-            clearResultRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "clear_rows") );
-            clearResultFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "clear_files") );
-			setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
-			addDate = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
-			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
-			logfile = XMLHandler.getTagValue(entrynode, "logfile");
-			logext = XMLHandler.getTagValue(entrynode, "logext");
-			logFileLevel = LogLevel.getLogLevelForCode( XMLHandler.getTagValue(entrynode, "loglevel"));
-            clustering = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "cluster") );
-        	createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "create_parent_folder") );
-        	
-			remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
-			
-			setAppendLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_append_logfile") );
-			String wait = XMLHandler.getTagValue(entrynode, "wait_until_finished");
-			if (Const.isEmpty(wait)) waitingToFinish=true;
-			else waitingToFinish = "Y".equalsIgnoreCase( wait );
+      remoteSlaveServerName = XMLHandler.getTagValue(entrynode, "slave_server_name");
 
-			followingAbortRemotely = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "follow_abort_remote"));
+      setAppendLogfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "set_append_logfile"));
+      String wait = XMLHandler.getTagValue(entrynode, "wait_until_finished");
+      if (Const.isEmpty(wait))
+        waitingToFinish = true;
+      else
+        waitingToFinish = "Y".equalsIgnoreCase(wait);
 
-			// How many arguments?
-			int argnr = 0;
-			while ( XMLHandler.getTagValue(entrynode, "argument"+argnr)!=null) argnr++;
-			arguments = new String[argnr];
+      followingAbortRemotely = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "follow_abort_remote"));
 
-			// Read them all...
-			for (int a=0;a<argnr;a++)  {
-				arguments[a]=XMLHandler.getTagValue(entrynode, "argument"+a);	
-			}
-			
-			Node parametersNode = XMLHandler.getSubNode(entrynode, "parameters");   //$NON-NLS-1$
+      // How many arguments?
+      int argnr = 0;
+      while (XMLHandler.getTagValue(entrynode, "argument" + argnr) != null)
+        argnr++;
+      arguments = new String[argnr];
 
-			String passAll = XMLHandler.getTagValue(parametersNode, "pass_all_parameters");
-			passingAllParameters = Const.isEmpty(passAll) || "Y".equalsIgnoreCase(passAll);
+      // Read them all...
+      for (int a = 0; a < argnr; a++) {
+        arguments[a] = XMLHandler.getTagValue(entrynode, "argument" + a);
+      }
 
-			int nrParameters  = XMLHandler.countNodes(parametersNode, "parameter");       //$NON-NLS-1$
-			
-			parameters = new String[nrParameters];
-			parameterFieldNames = new String[nrParameters];
-			parameterValues = new String[nrParameters];
-			
-			for (int i=0;i<nrParameters;i++)
-			{
-				Node knode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i);         //$NON-NLS-1$
-				
-				parameters         [i] = XMLHandler.getTagValue(knode, "name");        //$NON-NLS-1$
-				parameterFieldNames[i] = XMLHandler.getTagValue(knode, "stream_name"); //$NON-NLS-1$
-				parameterValues    [i] = XMLHandler.getTagValue(knode, "value");       //$NON-NLS-1$
-			}				
-		}
-		catch(KettleException e)
-		{
-			throw new KettleXMLException("Unable to load job entry of type 'trans' from XML node", e);
-		}
-	}
+      Node parametersNode = XMLHandler.getSubNode(entrynode, "parameters"); //$NON-NLS-1$
+
+      String passAll = XMLHandler.getTagValue(parametersNode, "pass_all_parameters");
+      passingAllParameters = Const.isEmpty(passAll) || "Y".equalsIgnoreCase(passAll);
+
+      int nrParameters = XMLHandler.countNodes(parametersNode, "parameter"); //$NON-NLS-1$
+
+      parameters = new String[nrParameters];
+      parameterFieldNames = new String[nrParameters];
+      parameterValues = new String[nrParameters];
+
+      for (int i = 0; i < nrParameters; i++) {
+        Node knode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); //$NON-NLS-1$
+
+        parameters[i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
+        parameterFieldNames[i] = XMLHandler.getTagValue(knode, "stream_name"); //$NON-NLS-1$
+        parameterValues[i] = XMLHandler.getTagValue(knode, "value"); //$NON-NLS-1$
+      }
+    } catch (KettleException e) {
+      throw new KettleXMLException("Unable to load job entry of type 'trans' from XML node", e);
+    }
+  }
 
 	// Load the jobentry from repository
     //
-	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
-		try {
-			String method = rep.getJobEntryAttributeString(id_jobentry, "specification_method");
-            specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
-            String transId = rep.getJobEntryAttributeString(id_jobentry, "trans_object_id");
-            transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
-			transname = rep.getJobEntryAttributeString(id_jobentry, "name");
-			directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
-			filename = rep.getJobEntryAttributeString(id_jobentry, "file_name");
-			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
-            paramsFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "params_from_previous");
-			execPerRow = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
-			clearResultRows = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_rows", true);
-			clearResultFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_files", true);
-			setLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
-			addDate = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
-			addTime = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
-			logfile = rep.getJobEntryAttributeString(id_jobentry, "logfile");
-			logext = rep.getJobEntryAttributeString(id_jobentry, "logext");
-			logFileLevel = LogLevel.getLogLevelForCode(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
-			clustering = rep.getJobEntryAttributeBoolean(id_jobentry, "cluster");
-			createParentFolder       = rep.getJobEntryAttributeBoolean(id_jobentry, "create_parent_folder");
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+    try {
+      String method = rep.getJobEntryAttributeString(id_jobentry, "specification_method");
+      specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
+      String transId = rep.getJobEntryAttributeString(id_jobentry, "trans_object_id");
+      transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
+      transname = rep.getJobEntryAttributeString(id_jobentry, "name");
+      directory = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
+      filename = rep.getJobEntryAttributeString(id_jobentry, "file_name");
+      
+      // Backward compatibility check for object specification
+      //
+      checkObjectLocationSpecificationMethod();
+      
+      argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+      paramsFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "params_from_previous");
+      execPerRow = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
+      clearResultRows = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_rows", true);
+      clearResultFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_files", true);
+      setLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
+      addDate = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
+      addTime = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
+      logfile = rep.getJobEntryAttributeString(id_jobentry, "logfile");
+      logext = rep.getJobEntryAttributeString(id_jobentry, "logext");
+      logFileLevel = LogLevel.getLogLevelForCode(rep.getJobEntryAttributeString(id_jobentry, "loglevel"));
+      clustering = rep.getJobEntryAttributeBoolean(id_jobentry, "cluster");
+      createParentFolder = rep.getJobEntryAttributeBoolean(id_jobentry, "create_parent_folder");
 
-			remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
-			setAppendLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
-			waitingToFinish = rep.getJobEntryAttributeBoolean(id_jobentry, "wait_until_finished", true);
-			followingAbortRemotely = rep.getJobEntryAttributeBoolean(id_jobentry, "follow_abort_remote");
+      remoteSlaveServerName = rep.getJobEntryAttributeString(id_jobentry, "slave_server_name");
+      setAppendLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_append_logfile");
+      waitingToFinish = rep.getJobEntryAttributeBoolean(id_jobentry, "wait_until_finished", true);
+      followingAbortRemotely = rep.getJobEntryAttributeBoolean(id_jobentry, "follow_abort_remote");
 
-			// How many arguments?
-			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
-			arguments = new String[argnr];
+      // How many arguments?
+      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
+      arguments = new String[argnr];
 
-			// Read all arguments...
-			for (int a = 0; a < argnr; a++) {
-				arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "argument");
-			}
-			
-			// How many arguments?
-			int parameternr = rep.countNrJobEntryAttributes(id_jobentry, "parameter_name");
-			parameters = new String[parameternr];
-			parameterFieldNames = new String[parameternr];
-			parameterValues = new String[parameternr];
+      // Read all arguments...
+      for (int a = 0; a < argnr; a++) {
+        arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "argument");
+      }
 
-			// Read all parameters ...
-			for (int a = 0; a < parameternr; a++) {
-				parameters[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_name");
-				parameterFieldNames[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_stream_name");
-				parameterValues[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_value");
-			}			
-			
-			passingAllParameters = rep.getJobEntryAttributeBoolean(id_jobentry, "pass_all_parameters", true);
-			
-		} catch (KettleDatabaseException dbe) {
-			throw new KettleException("Unable to load job entry of type 'trans' from the repository for id_jobentry=" + id_jobentry, dbe);
-		}
-	}
+      // How many arguments?
+      int parameternr = rep.countNrJobEntryAttributes(id_jobentry, "parameter_name");
+      parameters = new String[parameternr];
+      parameterFieldNames = new String[parameternr];
+      parameterValues = new String[parameternr];
+
+      // Read all parameters ...
+      for (int a = 0; a < parameternr; a++) {
+        parameters[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_name");
+        parameterFieldNames[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_stream_name");
+        parameterValues[a] = rep.getJobEntryAttributeString(id_jobentry, a, "parameter_value");
+      }
+
+      passingAllParameters = rep.getJobEntryAttributeBoolean(id_jobentry, "pass_all_parameters", true);
+
+    } catch (KettleDatabaseException dbe) {
+      throw new KettleException("Unable to load job entry of type 'trans' from the repository for id_jobentry=" + id_jobentry, dbe);
+    }
+  }
 
 	// Save the attributes of this job entry
 	//
@@ -415,10 +436,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 				}
 			}
 
-			// Removed id_transformation as we do not know what it is if we are using variables in the path
-			// long id_transformation = rep.getTransformationID(transname, directory.getID());
-			// rep.saveJobEntryAttribute(id_job, getID(), "id_transformation", id_transformation);
-			//
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "trans_object_id", transObjectId==null ? null : transObjectId.toString());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "name", getTransname());
@@ -552,23 +569,29 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         	}
         }
         
-		// Open the transformation...
-		// Default directory for now...
-        // XXX: This seems a bit odd here.  These three log messages all work off of getFilename().  Why are there three?
-        //
-        if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningFile",environmentSubstitute(getFilename())));
-        if (!Const.isEmpty(getFilename()))
-        {
-            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningTrans",environmentSubstitute(getFilename())));
+    		// Open the transformation...
+    		// 
+        switch(specificationMethod) {
+        case FILENAME:
+          if (log.isDetailed()) {
+            logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningTrans",environmentSubstitute(getFilename())));
+          }
+          break;
+        case REPOSITORY_BY_NAME:
+          if (log.isDetailed()) {
+            logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningTransInDirec",environmentSubstitute(getFilename()),environmentSubstitute(directory)));
+          }
+          break;
+        case REPOSITORY_BY_REFERENCE:
+          if (log.isDetailed()) {
+            logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningTransByReference",transObjectId));
+          }
+          break;
         }
-        else
-        {
-            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningTransInDirec",environmentSubstitute(getFilename()),environmentSubstitute(directory)));
-        }
-
+        
         // Load the transformation only once for the complete loop!
-    	// Throws an exception if it was not possible to load the transformation.  For example, the XML file doesn't exist or the repository is down.
-    	// Log the stack trace and return an error condition from this
+        // Throws an exception if it was not possible to load the transformation.  For example, the XML file doesn't exist or the repository is down.
+        // Log the stack trace and return an error condition from this
         //
         TransMeta transMeta = getTransMeta(rep);
 
@@ -1044,41 +1067,48 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		try
 		{
 	        TransMeta transMeta = null;
-	        if (!Const.isEmpty(getFilename())) // Load from an XML file
-	        {
-	        	String filename = environmentSubstitute(getFilename());
-	            logBasic("Loading transformation from XML file ["+filename+"]");
-	            transMeta = new TransMeta(filename, null, true, this);
-	            transMeta.copyVariablesFrom(this);
+	        switch(specificationMethod) {
+	        case FILENAME:
+            String filename = environmentSubstitute(getFilename());
+            logBasic("Loading transformation from XML file ["+filename+"]");
+            transMeta = new TransMeta(filename, null, true, this);
+            break;
+	        case REPOSITORY_BY_NAME:
+            String transname = environmentSubstitute(getTransname());
+            String realDirectory = environmentSubstitute(getDirectory());
+            logBasic(BaseMessages.getString(PKG, "JobTrans.Log.LoadingTransRepDirec", transname, realDirectory));
+  
+            if ( rep != null )
+            {
+              //
+              // It only makes sense to try to load from the repository when the repository is also filled in.
+              //
+              RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory(realDirectory);
+              transMeta = rep.loadTransformation(transname, repositoryDirectory, null, true, null); // reads last version
+            }
+            else
+            {
+              throw new KettleException(BaseMessages.getString(PKG, "JobTrans.Exception.NoRepDefined"));
+            }
+  	        break;
+	        case REPOSITORY_BY_REFERENCE:
+	          if (rep!=null) {
+	            transMeta = rep.loadTransformation(transObjectId, null); // load the last version
+	          }
+	          break;
+	        default: 
+	          throw new KettleException("The specified object location specification method '"+specificationMethod+"' is not yet supported in this job entry.");
 	        }
-	        else
-	        if (!Const.isEmpty(getTransname()) && getDirectory() != null)  // Load from the repository
-	        {
-	        	String filename = environmentSubstitute(getTransname());
-	        	
-	            logBasic(BaseMessages.getString(PKG, "JobTrans.Log.LoadingTransRepDirec",filename,""+getDirectory()));
-	
-	            if ( rep != null )
-	            {
-	            	//
-	            	// It only makes sense to try to load from the repository when the repository is also filled in.
-	            	//
-	                transMeta = rep.loadTransformation(filename, rep.loadRepositoryDirectoryTree().findDirectory(environmentSubstitute(getDirectory())), null, true, null); // reads last version
-		            transMeta.copyVariablesFrom(this);
-	            }
-	            else
-	            {
-	            	
-	            	throw new KettleException(BaseMessages.getString(PKG, "JobTrans.Exception.NoRepDefined"));
-	            }
-	        }
-	        else
-	        {
-	            throw new KettleJobException(BaseMessages.getString(PKG, "JobTrans.Exception.TransNotSpecified"));
-	        }
-	
-	        // Set the arguments...
-	        transMeta.setArguments(arguments);
+	        
+          if (transMeta!=null) {
+            // copy parent variables to this loaded variable space.
+            //
+            transMeta.copyVariablesFrom(this);
+            
+            // Set the arguments...
+            //
+            transMeta.setArguments(arguments);
+          }
 
 	        return transMeta;
 		}
@@ -1279,4 +1309,32 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public Trans getTrans() {
 		return trans;
 	}
+
+  /**
+   * @return the transObjectId
+   */
+  public ObjectId getTransObjectId() {
+    return transObjectId;
+  }
+
+  /**
+   * @param transObjectId the transObjectId to set
+   */
+  public void setTransObjectId(ObjectId transObjectId) {
+    this.transObjectId = transObjectId;
+  }
+
+  /**
+   * @return the specificationMethod
+   */
+  public ObjectLocationSpecificationMethod getSpecificationMethod() {
+    return specificationMethod;
+  }
+
+  /**
+   * @param specificationMethod the specificationMethod to set
+   */
+  public void setSpecificationMethod(ObjectLocationSpecificationMethod specificationMethod) {
+    this.specificationMethod = specificationMethod;
+  }
 }

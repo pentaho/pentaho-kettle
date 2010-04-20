@@ -1091,16 +1091,33 @@ public class KettleFileRepository implements Repository {
     return loadRepositoryDirectoryTree(root);
   }
   
-  public RepositoryObject getObjectInformation(ObjectId objectId, RepositoryObjectType objectType)
-      throws KettleException {
-    throw new UnsupportedOperationException();
+  public RepositoryObject getObjectInformation(ObjectId objectId, RepositoryObjectType objectType) throws KettleException {
+    try {
+      String filename = calcDirectoryName(null)+objectId.getId();
+      FileObject fileObject = KettleVFS.getFileObject(filename);
+      if (!fileObject.exists()) {
+        return null;
+      }
+      String name = fileObject.getName().getBaseName();
+      String filePath = fileObject.getParent().getName().getPath();
+      String dirPath = filePath.substring(repositoryMeta.getBaseDirectory().length());
+      RepositoryDirectoryInterface directory = loadRepositoryDirectoryTree().findDirectory(dirPath);
+      Date lastModified = new Date(fileObject.getContent().getLastModifiedTime());
+          
+      return new RepositoryObject(objectId, name, directory, "-", lastModified, objectType, "", false);
+      
+    } catch(Exception e) {
+      throw new KettleException("Unable to get object information for object with id="+objectId, e);
+    }
   }
 
   public JobMeta loadJob(ObjectId idJob, String versionLabel) throws KettleException {
-    throw new UnsupportedOperationException();
+    RepositoryObject jobInfo = getObjectInformation(idJob, RepositoryObjectType.JOB);
+    return loadJob(jobInfo.getName(), jobInfo.getRepositoryDirectory(), null, versionLabel);
   }
 
   public TransMeta loadTransformation(ObjectId idTransformation, String versionLabel) throws KettleException {
-    throw new UnsupportedOperationException();  
+    RepositoryObject jobInfo = getObjectInformation(idTransformation, RepositoryObjectType.TRANSFORMATION);
+    return loadTransformation(jobInfo.getName(), jobInfo.getRepositoryDirectory(), null, true, versionLabel);
   }
 }
