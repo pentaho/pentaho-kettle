@@ -92,6 +92,12 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     private String proxyUsername;
      
     private String proxyPassword;
+    
+    private String socksProxyHost;
+    private String socksProxyPort;
+    private String socksProxyUsername;
+    private String socksProxyPassword;
+    
     private String protocol;
     
     public static final String PROTOCOL_FTP= "FTP";
@@ -128,6 +134,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		copyprevious=false;
 		protocol=PROTOCOL_FTP;
 		port="21";
+		socksProxyPort="1080";
 		nr_limit_success="10";
 		success_condition=SUCCESS_IF_ALL_FILES_DOWNLOADED;
 		publicpublickey=false;
@@ -169,7 +176,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", proxyPassword)); //$NON-NLS-1$ //$NON-NLS-2$
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword))); //$NON-NLS-1$ //$NON-NLS-2$
 	    
         retval.append("      ").append(XMLHandler.addTagValue("publicpublickey",     publicpublickey));
         retval.append("      ").append(XMLHandler.addTagValue("keyfilename",   keyFilename));
@@ -180,7 +187,10 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		retval.append("      ").append(XMLHandler.addTagValue("copyprevious",       copyprevious));
 		retval.append("      ").append(XMLHandler.addTagValue("ftps_connection_type",FTPSConnection.getConnectionTypeCode(FTPSConnectionType)));
 	    
-		
+	    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_host", socksProxyHost)); //$NON-NLS-1$
+	    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_port", socksProxyPort)); //$NON-NLS-1$
+	    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_username", socksProxyUsername)); //$NON-NLS-1$
+	    retval.append("      ").append(XMLHandler.addTagValue("socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(getSocksProxyPassword()))); //$NON-NLS-1$ 
 	    
 		return retval.toString();
 	}
@@ -205,7 +215,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); //$NON-NLS-1$
 		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); //$NON-NLS-1$
 		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = XMLHandler.getTagValue(entrynode, "proxy_password"); //$NON-NLS-1$
+		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "proxy_password")); //$NON-NLS-1$
 		    
             publicpublickey = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "publicpublickey") );
             keyFilename          = XMLHandler.getTagValue(entrynode, "keyfilename");
@@ -215,7 +225,11 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			success_condition          = XMLHandler.getTagValue(entrynode, "success_condition");
 			copyprevious    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "copyprevious") );
 			FTPSConnectionType = FTPSConnection.getConnectionTypeByCode(Const.NVL(XMLHandler.getTagValue(entrynode,	"ftps_connection_type"), ""));
-		      
+	        socksProxyHost = XMLHandler.getTagValue(entrynode, "socksproxy_host"); //$NON-NLS-1$
+	        socksProxyPort = XMLHandler.getTagValue(entrynode, "socksproxy_port"); //$NON-NLS-1$
+	        socksProxyUsername = XMLHandler.getTagValue(entrynode, "socksproxy_username"); //$NON-NLS-1$
+	        socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "socksproxy_password")); 
+			
 		}
 		catch(KettleXMLException xe)
 		{
@@ -244,7 +258,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); //$NON-NLS-1$
 		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); //$NON-NLS-1$
 		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = rep.getJobEntryAttributeString(id_jobentry, "proxy_password"); //$NON-NLS-1$
+		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "proxy_password")); //$NON-NLS-1$
 	
 			publicpublickey = rep.getJobEntryAttributeBoolean(id_jobentry, "publicpublickey");
 			keyFilename            = rep.getJobEntryAttributeString(id_jobentry, "keyfilename");
@@ -253,6 +267,11 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		    nr_limit_success  = rep.getJobEntryAttributeString(id_jobentry, "nr_limit_success");
 			success_condition  = rep.getJobEntryAttributeString(id_jobentry, "success_condition");
 			FTPSConnectionType = FTPSConnection.getConnectionTypeByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry,"ftps_connection_type"), ""));
+			
+	        socksProxyHost   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_host"); //$NON-NLS-1$
+	        socksProxyPort   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_port"); //$NON-NLS-1$
+	        socksProxyUsername   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_username"); //$NON-NLS-1$
+	        socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "socksproxy_password") );
 		}
 		catch(KettleException dbe)
 		{
@@ -284,11 +303,16 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); //$NON-NLS-1$
 		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); //$NON-NLS-1$
 		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", proxyPassword); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)); //$NON-NLS-1$
 
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "nr_limit_success",  nr_limit_success);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",    success_condition);
 			rep.saveJobEntryAttribute(id_job, getObjectId(),"ftps_connection_type", FTPSConnection.getConnectionType(FTPSConnectionType));
+			
+	        rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_host", socksProxyHost); //$NON-NLS-1$
+	        rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_port", socksProxyPort); //$NON-NLS-1$
+	        rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_username", socksProxyUsername); //$NON-NLS-1$
+	        rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword)); //$NON-NLS-1$
 			
 		}
 		catch(KettleDatabaseException dbe)
@@ -369,7 +393,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		return keyFilePass;
 	}
     /**
-     * @return the conenction type
+     * @return the connection type
      */
     public int getFTPSConnectionType() 
     {
@@ -648,7 +672,26 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			// Get all the files in the current directory...
 			String[] filelist=null;
 			if(protocol.equals(PROTOCOL_FTP))
-			{
+			{    
+   	            //  If socks proxy server was provided
+	            if (!Const.isEmpty(socksProxyHost)) {  
+	                if (!Const.isEmpty(socksProxyPort)) {
+	                   FTPClient.initSOCKS(environmentSubstitute(socksProxyPort), environmentSubstitute(socksProxyHost));
+	               }
+	               else {
+	                   throw new FTPException(BaseMessages.getString(PKG, "JobEntryFTPDelete.SocksProxy.PortMissingException", environmentSubstitute(socksProxyHost), getName()));
+	               }
+	               //  then if we have authentication information
+	               if (!Const.isEmpty(socksProxyUsername) && !Const.isEmpty(socksProxyPassword)) {
+	                   FTPClient.initSOCKSAuthentication(environmentSubstitute(socksProxyUsername), environmentSubstitute(socksProxyPassword));
+	               }
+	               else if (    !Const.isEmpty(socksProxyUsername) && Const.isEmpty(socksProxyPassword)
+	                         || Const.isEmpty(socksProxyUsername) && !Const.isEmpty(socksProxyPassword)) {
+	                    //  we have a username without a password or vica versa
+	                   throw new FTPException(BaseMessages.getString(PKG, "JobEntryFTPDelete.SocksProxy.IncompleteCredentials", environmentSubstitute(socksProxyHost), getName()));
+	               }
+	            }
+
 				// establish the connection
 				 FTPConnect(realservername,realUsername, realPassword,
 						 realserverport,realFtpDirectory, realproxyhost,realproxyusername, realproxypassword,realproxyport,
@@ -873,11 +916,16 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	            	logError(BaseMessages.getString(PKG, "JobEntryFTPDelete.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
 	            }
 	        }
+	        
+	        FTPClient.clearSOCKS();
 	    }
 		
 		result.setResult(!successConditionBroken );
 		result.setNrFilesRetrieved(NrfilesDeleted);
 		result.setNrErrors(NrErrors);
+		
+		
+		
 		
 		return result;
 	}
@@ -1162,5 +1210,60 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     }
     return references;
   }
-
+  
+  /**
+   * @return Socks proxy host
+   */
+  public String getSocksProxyHost() {
+      return this.socksProxyHost;
+  }
+  
+  /**
+   * @return Socks proxy port
+   */
+  public String getSocksProxyPort() {
+      return this.socksProxyPort;
+  }
+  
+  /**
+   * @return Socks proxy username
+   */
+  public String getSocksProxyUsername() {
+      return this.socksProxyUsername;
+  }
+  
+  /**
+   * @return Socks proxy username
+   */
+  public String getSocksProxyPassword() {
+      return this.socksProxyPassword;
+  }
+  
+  /**
+   * @return Sets socks proxy host
+   */
+  public void setSocksProxyHost(String socksProxyHost) {
+      this.socksProxyHost = socksProxyHost;
+  }
+  
+  /**
+   * @return Sets socks proxy port
+   */
+  public void setSocksProxyPort(String socksProxyPort) {
+      this.socksProxyPort = socksProxyPort;
+  }
+  
+  /**
+   * @return Sets socks proxy username
+   */
+  public void setSocksProxyUsername(String socksProxyUsername) {
+      this.socksProxyUsername = socksProxyUsername;
+  }
+  
+  /**
+   * @return Sets socks proxy username
+   */
+  public void setSocksProxyPassword(String socksProxyPassword) {
+      this.socksProxyPassword = socksProxyPassword;
+  }
 }

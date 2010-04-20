@@ -17,7 +17,8 @@
 package org.pentaho.di.ui.job.entries.ftpput;
 
 import java.net.InetAddress;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -44,6 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT;
@@ -182,9 +184,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     
 	private CTabFolder   wTabFolder;
 	
-	private Composite    wGeneralComp,wFilesComp;	
+	private Composite    wGeneralComp,wFilesComp,wSocksProxyComp;	
 	
-	private CTabItem     wGeneralTab,wFilesTab;
+	private CTabItem     wGeneralTab,wFilesTab,wSocksProxyTab;
 	
 	private FormData	 fdGeneralComp,fdFilesComp;
 	
@@ -217,6 +219,16 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     private FormData     fdProxyPasswd;
     
     private LabelTextVar wProxyHost;
+    
+    private Group wSocksProxy;
+    
+    private LabelTextVar wSocksProxyHost,wSocksProxyPort,wSocksProxyUsername,wSocksProxyPassword;
+    
+    private FormData fdSocksProxyHost;
+    private FormData fdSocksProxyPort;
+    private FormData fdSocksProxyUsername;
+    private FormData fdSocksProxyPassword;
+    private FormData fdSocksProxyComp;
     
     // These should not be translated, they are required to exist on all
     // platforms according to the documentation of "Charset".
@@ -394,6 +406,15 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         fdPassword.right = new FormAttachment(100, 0);
         wPassword.setLayoutData(fdPassword);
         
+        // OK, if the password contains a variable, we don't want to have the password hidden...
+        wPassword.getTextWidget().addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
+            {
+                checkPasswordVisible();
+            }
+        });
+        
         // Proxy host line
         wProxyHost = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTPPUT.ProxyHost.Label"), BaseMessages.getString(PKG, "JobFTPPUT.ProxyHost.Tooltip"));
         props.setLook(wProxyHost);
@@ -427,6 +448,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         // Proxy password line
         wProxyPassword = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTPPUT.ProxyPassword.Label"), BaseMessages.getString(PKG, "JobFTPPUT.ProxyPassword.Tooltip"));
         props.setLook(wProxyPassword);
+        wProxyPassword.setEchoChar('*');
         wProxyPassword.addModifyListener(lsMod);
         fdProxyPasswd=new FormData();
         fdProxyPasswd.left = new FormAttachment(0, 0);
@@ -434,6 +456,14 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         fdProxyPasswd.right= new FormAttachment(100, 0);
         wProxyPassword.setLayoutData(fdProxyPasswd);
         
+        // OK, if the password contains a variable, we don't want to have the password hidden...
+        wProxyPassword.getTextWidget().addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
+            {
+                checkProxyPasswordVisible();
+            }
+        });
         
         // Test connection button
 		wTest=new Button(wServerSettings,SWT.PUSH);
@@ -752,7 +782,108 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 		/// END OF Files TAB
 		/////////////////////////////////////////////////////////////
 		
-		fdTabFolder = new FormData();
+        /////////////////////////////////////////////////////////////
+        //  Start of Socks Proxy Tab
+        /////////////////////////////////////////////////////////////
+        wSocksProxyTab=new CTabItem(wTabFolder, SWT.NONE);
+        wSocksProxyTab.setText(BaseMessages.getString(PKG, "JobFTPPUT.Tab.Socks.Label"));
+         
+        wSocksProxyComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wSocksProxyComp);
+
+        FormLayout SoxProxyLayout = new FormLayout();
+        SoxProxyLayout.marginWidth  = 3;
+        SoxProxyLayout.marginHeight = 3;
+        wSocksProxyComp.setLayout(SoxProxyLayout);
+ 		
+        //////////////////////////////////////////////////////////
+        //  Start of Proxy Group
+        //////////////////////////////////////////////////////////
+        wSocksProxy = new Group(wSocksProxyComp, SWT.SHADOW_NONE);
+        props.setLook(wSocksProxy);
+        wSocksProxy.setText(BaseMessages.getString(PKG, "JobFTPPUT.SocksProxy.Group.Label"));
+        
+        FormLayout SocksProxyGroupLayout = new FormLayout();
+        SocksProxyGroupLayout.marginWidth = 10;
+        SocksProxyGroupLayout.marginHeight = 10;
+        wSocksProxy.setLayout(SocksProxyGroupLayout);
+        
+        // host line
+        wSocksProxyHost = new LabelTextVar(jobMeta,wSocksProxy, 
+                BaseMessages.getString(PKG, "JobFTPPUT.SocksProxyHost.Label"), 
+                BaseMessages.getString(PKG, "JobFTPPUT.SocksProxyHost.Tooltip"));
+        props.setLook(wSocksProxyHost);
+        wSocksProxyHost.addModifyListener(lsMod);
+        fdSocksProxyHost = new FormData();
+        fdSocksProxyHost.left = new FormAttachment(0, 0);
+        fdSocksProxyHost.top = new FormAttachment(wName, margin);
+        fdSocksProxyHost.right = new FormAttachment(100, margin);
+        wSocksProxyHost.setLayoutData(fdSocksProxyHost);
+        
+        // port line
+        wSocksProxyPort = new LabelTextVar(jobMeta,wSocksProxy, 
+                BaseMessages.getString(PKG, "JobFTPPUT.SocksProxyPort.Label"), 
+                BaseMessages.getString(PKG, "JobFTPPUT.SocksProxyPort.Tooltip"));
+        props.setLook(wSocksProxyPort);
+        wSocksProxyPort.addModifyListener(lsMod);
+        fdSocksProxyPort = new FormData();
+        fdSocksProxyPort.left = new FormAttachment(0, 0);
+        fdSocksProxyPort.top = new FormAttachment(wSocksProxyHost, margin);
+        fdSocksProxyPort.right = new FormAttachment(100, margin);
+        wSocksProxyPort.setLayoutData(fdSocksProxyPort);
+        
+        // username line
+        wSocksProxyUsername = new LabelTextVar(jobMeta, wSocksProxy, 
+                BaseMessages.getString(PKG, "JobFTPPUT.SocksProxyUsername.Label"), 
+                BaseMessages.getString(PKG, "JobFTPPUT.SocksProxyPassword.Tooltip"));
+        props.setLook(wSocksProxyUsername);
+        wSocksProxyUsername.addModifyListener(lsMod);
+        fdSocksProxyUsername = new FormData();
+        fdSocksProxyUsername.left = new FormAttachment(0, 0);
+        fdSocksProxyUsername.top = new FormAttachment(wSocksProxyPort, margin);
+        fdSocksProxyUsername.right = new FormAttachment(100, margin);
+        wSocksProxyUsername.setLayoutData(fdSocksProxyUsername);
+        
+        // password line
+        wSocksProxyPassword = new LabelTextVar(jobMeta,wSocksProxy, 
+                BaseMessages.getString(PKG, "JobFTPPUT.SocksProxyPassword.Label"), 
+                BaseMessages.getString(PKG, "JobFTPPUT.SocksProxyPassword.Tooltip"));
+        props.setLook(wSocksProxyPort);
+        wSocksProxyPassword.setEchoChar('*');
+        wSocksProxyPassword.addModifyListener(lsMod);
+        fdSocksProxyPassword = new FormData();
+        fdSocksProxyPassword.left = new FormAttachment(0, 0);
+        fdSocksProxyPassword.top = new FormAttachment(wSocksProxyUsername, margin);
+        fdSocksProxyPassword.right = new FormAttachment(100, margin);
+        wSocksProxyPassword.setLayoutData(fdSocksProxyPassword);
+        
+        // OK, if the password contains a variable, we don't want to have the password hidden...
+        wSocksProxyPassword.getTextWidget().addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
+            {
+                checkSocksProxyPasswordVisible();
+            }
+        });
+        
+        /////////////////////////////////////////////////////////////////
+        //  End of socks proxy group
+        /////////////////////////////////////////////////////////////////
+
+        fdSocksProxyComp = new FormData();
+        fdSocksProxyComp.left = new FormAttachment(0, margin);
+        fdSocksProxyComp.top = new FormAttachment(0, margin);
+        fdSocksProxyComp.right = new FormAttachment(100, -margin);
+        wSocksProxy.setLayoutData(fdSocksProxyComp);
+        
+        wSocksProxyComp.layout();
+        wSocksProxyTab.setControl(wSocksProxyComp);
+        props.setLook(wSocksProxyComp);
+        
+        //////////////////////////////////////////////////////////
+        //  End of Socks Proxy Tab
+        //////////////////////////////////////////////////////////
+        fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
 		fdTabFolder.top   = new FormAttachment(wName, margin);
 		fdTabFolder.right = new FormAttachment(100, 0);
@@ -1005,6 +1136,10 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
         wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
         wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
+        wSocksProxyHost.setText(Const.NVL(jobEntry.getSocksProxyHost(), ""));       
+        wSocksProxyPort.setText(Const.NVL(jobEntry.getSocksProxyPort(), "1080"));
+        wSocksProxyUsername.setText(Const.NVL(jobEntry.getSocksProxyUsername(), ""));
+        wSocksProxyPassword.setText(Const.NVL(jobEntry.getSocksProxyPassword(), ""));
     }
 
     private void cancel()
@@ -1043,7 +1178,10 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         jobEntry.setProxyPort(wProxyPort.getText());
         jobEntry.setProxyUsername(wProxyUsername.getText());
         jobEntry.setProxyPassword(wProxyPassword.getText());
-
+        jobEntry.setSocksProxyHost(wSocksProxyHost.getText()); 
+        jobEntry.setSocksProxyPort(wSocksProxyPort.getText());
+        jobEntry.setSocksProxyUsername(wSocksProxyUsername.getText());
+        jobEntry.setSocksProxyPassword(wSocksProxyPassword.getText());
         dispose();
     }
 
@@ -1061,5 +1199,49 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     {
         return false;
     }
-
+    
+    public void checkPasswordVisible()
+    {
+        String password = wPassword.getText();
+        List<String> list = new ArrayList<String>();
+        StringUtil.getUsedVariables(password, list, true);
+        if (list.size() == 0)
+        {
+            wPassword.setEchoChar('*');
+        }
+        else
+        {
+            wPassword.setEchoChar('\0'); // Show it all...
+        }
+    }
+    
+    public void checkProxyPasswordVisible()
+    {
+        String password = wProxyPassword.getText();
+        List<String> list = new ArrayList<String>();
+        StringUtil.getUsedVariables(password, list, true);
+        if (list.size() == 0)
+        {
+            wProxyPassword.setEchoChar('*');
+        }
+        else
+        {
+            wProxyPassword.setEchoChar('\0'); // Show it all...
+        }
+    }
+    
+    public void checkSocksProxyPasswordVisible()
+    {
+        String password = wSocksProxyPassword.getText();
+        List<String> list = new ArrayList<String>();
+        StringUtil.getUsedVariables(password, list, true);
+        if (list.size() == 0)
+        {
+            wSocksProxyPassword.setEchoChar('*');
+        }
+        else
+        {
+            wSocksProxyPassword.setEchoChar('\0'); // Show it all...
+        }
+    }
 }

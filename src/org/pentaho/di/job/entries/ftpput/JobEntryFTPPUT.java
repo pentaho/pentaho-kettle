@@ -47,6 +47,7 @@ import org.w3c.dom.Node;
 
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
+import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
 
 /**
@@ -82,6 +83,11 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
      
     private String proxyPassword;
     
+    private String socksProxyHost;
+    private String socksProxyPort;
+    private String socksProxyUsername;
+    private String socksProxyPassword;
+    
     /**
      * Implicit encoding used before PDI v2.4.1
      */
@@ -97,6 +103,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		super(n, "");
 		serverName=null;
         serverPort="21";
+        socksProxyPort="1080";
         remoteDirectory=null;
         localDirectory=null;
 		setID(-1L);
@@ -137,7 +144,11 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
 	    retval.append("      ").append(XMLHandler.addTagValue("proxy_username", proxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
-	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", proxyPassword)); //$NON-NLS-1$ //$NON-NLS-2$
+	    retval.append("      ").append(XMLHandler.addTagValue("proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword))); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_host", socksProxyHost)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_port", socksProxyPort)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_username", socksProxyUsername)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword))); //$NON-NLS-1$ //$NON-NLS-2$
 	    
 		
 		return retval.toString();
@@ -165,7 +176,11 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		    proxyHost = XMLHandler.getTagValue(entrynode, "proxy_host"); //$NON-NLS-1$
 		    proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port"); //$NON-NLS-1$
 		    proxyUsername = XMLHandler.getTagValue(entrynode, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = XMLHandler.getTagValue(entrynode, "proxy_password"); //$NON-NLS-1$
+		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "proxy_password")); //$NON-NLS-1$
+            socksProxyHost = XMLHandler.getTagValue(entrynode, "socksproxy_host"); //$NON-NLS-1$
+            socksProxyPort = XMLHandler.getTagValue(entrynode, "socksproxy_port"); //$NON-NLS-1$
+            socksProxyUsername = XMLHandler.getTagValue(entrynode, "socksproxy_username"); //$NON-NLS-1$
+            socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "socksproxy_password")); //$NON-NLS-1$
             
             if ( controlEncoding == null )
             {
@@ -210,7 +225,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		    proxyHost	= rep.getJobEntryAttributeString(id_jobentry, "proxy_host"); //$NON-NLS-1$
 		    proxyPort	= rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); //$NON-NLS-1$
 		    proxyUsername	= rep.getJobEntryAttributeString(id_jobentry, "proxy_username"); //$NON-NLS-1$
-		    proxyPassword = rep.getJobEntryAttributeString(id_jobentry, "proxy_password"); //$NON-NLS-1$
+		    proxyPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "proxy_password") ); //$NON-NLS-1$
+	        socksProxyHost   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_host"); //$NON-NLS-1$
+	        socksProxyPort   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_port"); //$NON-NLS-1$
+	        socksProxyUsername   = rep.getJobEntryAttributeString(id_jobentry, "socksproxy_username"); //$NON-NLS-1$
+	        socksProxyPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "socksproxy_password")); //$NON-NLS-1$
+		    
 		}
 		catch(KettleException dbe)
 		{
@@ -239,7 +259,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_host", proxyHost); //$NON-NLS-1$
 		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort); //$NON-NLS-1$
 		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_username", proxyUsername); //$NON-NLS-1$
-		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", proxyPassword); //$NON-NLS-1$
+		    rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_password", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)); //$NON-NLS-1$
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_host", socksProxyHost); //$NON-NLS-1$
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_port", socksProxyPort); //$NON-NLS-1$
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_username", socksProxyUsername); //$NON-NLS-1$
+            rep.saveJobEntryAttribute(id_job, getObjectId(), "socksproxy_password", Encr.encryptPasswordIfNotUsingVariables(socksProxyPassword)); //$NON-NLS-1$
+		
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -504,7 +529,66 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     public String getProxyUsername() {
       return proxyUsername;
     }
-      
+
+    /**
+     * @param socksProxyHost The socks proxy host to set
+     */
+    public void setSocksProxyHost(String socksProxyHost) {
+        this.socksProxyHost = socksProxyHost;
+    }
+    
+    /**
+     * 
+     * @param socksProxyPort The socks proxy port to set
+     */
+    public void setSocksProxyPort(String socksProxyPort){
+        this.socksProxyPort = socksProxyPort;
+    }
+    
+    /**
+     * 
+     * @param socksProxyUsername The socks proxy username to set
+     */
+    public void setSocksProxyUsername(String socksProxyUsername) {
+        this.socksProxyUsername = socksProxyUsername;
+    }
+    
+    /**
+     * 
+     * @param socksProxyPassword The socks proxy password to set
+     */
+    public void setSocksProxyPassword(String socksProxyPassword) {
+        this.socksProxyPassword = socksProxyPassword;
+    }
+    
+    /**
+     * @return The sox proxy host name
+     */
+    public String getSocksProxyHost() {
+        return this.socksProxyHost;
+    }
+    
+    /**
+     * @return The socks proxy port
+     */
+    public String getSocksProxyPort() {
+        return this.socksProxyPort;
+    }
+    
+    /** 
+     * @return The socks proxy username
+     */
+    public String getSocksProxyUsername() {
+        return this.socksProxyUsername;
+    }
+    
+    /**
+     * @return The socks proxy password
+     */
+    public String getSocksProxyPassword() {
+        return this.socksProxyPassword;
+    }
+    
     /**
      * @param proxyUsername The username which is used to authenticate at the proxy.
      */
@@ -588,6 +672,26 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 			ftpclient.setControlEncoding(controlEncoding);
 			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobFTPPUT.Log.SetEncoding",controlEncoding));
 
+            //  If socks proxy server was provided
+            if (!Const.isEmpty(socksProxyHost)) 
+            {  
+               //  if a port was provided
+               if (!Const.isEmpty(socksProxyPort)) 
+               {
+                   FTPClient.initSOCKS(environmentSubstitute(socksProxyPort), environmentSubstitute(socksProxyHost));
+               }
+               else 
+               {   //  looks like we have a host and no port
+                   throw new FTPException(BaseMessages.getString(PKG, "JobFTPPUT.SocksProxy.PortMissingException", environmentSubstitute(socksProxyHost)));
+               }
+               //  now if we have authentication information
+               if (    !Const.isEmpty(socksProxyUsername) && Const.isEmpty(socksProxyPassword)
+                       || Const.isEmpty(socksProxyUsername) && !Const.isEmpty(socksProxyPassword)) {
+                  //  we have a username without a password or vica versa
+                 throw new FTPException(BaseMessages.getString(PKG, "JobFTPPUT.SocksProxy.IncompleteCredentials", environmentSubstitute(socksProxyHost), getName()));
+               }
+            }
+			
 			// login to ftp host ...
             ftpclient.connect();
 			ftpclient.login(realUsername, realPassword);
@@ -720,6 +824,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 	                    logError(BaseMessages.getString(PKG, "JobFTPPUT.Log.ErrorQuitingFTP",e.getMessage()));
 	                }
 	            }
+			 
+			 FTPClient.clearSOCKS();
 		}
 		
 		return result;

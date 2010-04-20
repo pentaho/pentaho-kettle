@@ -157,10 +157,13 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     private FormData fdServerSettings;
     
 	private CTabFolder   wTabFolder;
-	private Composite    wGeneralComp,wFilesComp;	
-	private CTabItem     wGeneralTab,wFilesTab;
+	private Composite    wGeneralComp,wFilesComp,wSocksProxyComp;	
+	private CTabItem     wGeneralTab,wFilesTab,wSocksProxyTab;
 	private FormData	 fdGeneralComp,fdFilesComp;
 	private FormData     fdTabFolder;
+	private Group        wSocksProxy;
+	private LabelTextVar wSocksProxyHost,wSocksProxyPort,wSocksProxyUsername,wSocksProxyPassword;
+	private FormData     fdSocksProxyComp,fdSocksProxyHost,fdSocksProxyPort,fdSocksProxyUsername,fdSocksProxyPassword;
 	
     private LabelTextVar wPort;
 
@@ -494,12 +497,22 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         // Proxy password line
         wProxyPassword = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobFTPDelete.ProxyPassword.Label"), BaseMessages.getString(PKG, "JobFTPDelete.ProxyPassword.Tooltip"));
         props.setLook(wProxyPassword);
+        wProxyPassword.setEchoChar('*');
         wProxyPassword.addModifyListener(lsMod);
         fdProxyPasswd=new FormData();
         fdProxyPasswd.left = new FormAttachment(0, 0);
         fdProxyPasswd.top  = new FormAttachment(wProxyUsername, margin);
         fdProxyPasswd.right= new FormAttachment(100, 0);
         wProxyPassword.setLayoutData(fdProxyPasswd);
+        
+        // OK, if the password contains a variable, we don't want to have the password hidden...
+        wProxyPassword.getTextWidget().addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
+            {
+                checkProxyPasswordVisible();
+            }
+        });
         
         
         // usePublicKey
@@ -920,6 +933,123 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 		/// END OF Advanced TAB
 		/////////////////////////////////////////////////////////////
 		
+        /////////////////////////////////////////////////////////////
+        //  Start of Socks Proxy Tab
+        /////////////////////////////////////////////////////////////
+        wSocksProxyTab=new CTabItem(wTabFolder, SWT.NONE);
+        wSocksProxyTab.setText(BaseMessages.getString(PKG, "JobFTPDelete.Tab.Socks.Label"));
+         
+        wSocksProxyComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wSocksProxyComp);
+
+        FormLayout SoxProxyLayout = new FormLayout();
+        SoxProxyLayout.marginWidth  = 3;
+        SoxProxyLayout.marginHeight = 3;
+        wSocksProxyComp.setLayout(SoxProxyLayout);
+
+        //////////////////////////////////////////////////////////
+        //  Start of Proxy Group
+        //////////////////////////////////////////////////////////
+        wSocksProxy = new Group(wSocksProxyComp, SWT.SHADOW_NONE);
+        props.setLook(wSocksProxy);
+        wSocksProxy.setText(BaseMessages.getString(PKG, "JobFTPDelete.SocksProxy.Group.Label"));
+        
+        FormLayout SocksProxyGroupLayout = new FormLayout();
+        SocksProxyGroupLayout.marginWidth = 10;
+        SocksProxyGroupLayout.marginHeight = 10;
+        wSocksProxy.setLayout(SocksProxyGroupLayout);
+        
+        // host line
+        wSocksProxyHost = new LabelTextVar(jobMeta,wSocksProxy, 
+                BaseMessages.getString(PKG, "JobFTPDelete.SocksProxyHost.Label"), 
+                BaseMessages.getString(PKG, "JobFTPDelete.SocksProxyHost.Tooltip"));
+        props.setLook(wSocksProxyHost);
+        wSocksProxyHost.addModifyListener(lsMod);
+        fdSocksProxyHost = new FormData();
+        fdSocksProxyHost.left = new FormAttachment(0, 0);
+        fdSocksProxyHost.top = new FormAttachment(wName, margin);
+        fdSocksProxyHost.right = new FormAttachment(100, margin);
+        wSocksProxyHost.setLayoutData(fdSocksProxyHost);
+        
+        // port line
+        wSocksProxyPort = new LabelTextVar(jobMeta,wSocksProxy, 
+                BaseMessages.getString(PKG, "JobFTPDelete.SocksProxyPort.Label"), 
+                BaseMessages.getString(PKG, "JobFTPDelete.SocksProxyPort.Tooltip"));
+        props.setLook(wSocksProxyPort);
+        wSocksProxyPort.addModifyListener(lsMod);
+        fdSocksProxyPort = new FormData();
+        fdSocksProxyPort.left = new FormAttachment(0, 0);
+        fdSocksProxyPort.top = new FormAttachment(wSocksProxyHost, margin);
+        fdSocksProxyPort.right = new FormAttachment(100, margin);
+        wSocksProxyPort.setLayoutData(fdSocksProxyPort);
+        
+        // username line
+        wSocksProxyUsername = new LabelTextVar(jobMeta, wSocksProxy, 
+                BaseMessages.getString(PKG, "JobFTPDelete.SocksProxyUsername.Label"), 
+                BaseMessages.getString(PKG, "JobFTPDelete.SocksProxyPassword.Tooltip"));
+        props.setLook(wSocksProxyUsername);
+        wSocksProxyUsername.addModifyListener(lsMod);
+        fdSocksProxyUsername = new FormData();
+        fdSocksProxyUsername.left = new FormAttachment(0, 0);
+        fdSocksProxyUsername.top = new FormAttachment(wSocksProxyPort, margin);
+        fdSocksProxyUsername.right = new FormAttachment(100, margin);
+        wSocksProxyUsername.setLayoutData(fdSocksProxyUsername);
+        
+        // password line
+        wSocksProxyPassword = new LabelTextVar(jobMeta,wSocksProxy, 
+                BaseMessages.getString(PKG, "JobFTPDelete.SocksProxyPassword.Label"), 
+                BaseMessages.getString(PKG, "JobFTPDelete.SocksProxyPassword.Tooltip"));
+        props.setLook(wSocksProxyPort);
+        wSocksProxyPassword.setEchoChar('*');
+        wSocksProxyPassword.addModifyListener(lsMod);
+        fdSocksProxyPassword = new FormData();
+        fdSocksProxyPassword.left = new FormAttachment(0, 0);
+        fdSocksProxyPassword.top = new FormAttachment(wSocksProxyUsername, margin);
+        fdSocksProxyPassword.right = new FormAttachment(100, margin);
+        wSocksProxyPassword.setLayoutData(fdSocksProxyPassword);
+        
+        // OK, if the password contains a variable, we don't want to have the password hidden...
+        wSocksProxyPassword.getTextWidget().addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
+            {
+                checkSocksProxyPasswordVisible();
+            }
+        });
+        
+        // OK, if the password contains a variable, we don't want to have the password hidden...
+        wSocksProxyPassword.getTextWidget().addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
+            {
+                checkSocksProxyPasswordVisible();
+            }
+        });
+        
+        /////////////////////////////////////////////////////////////////
+        //  End of socks proxy group
+        /////////////////////////////////////////////////////////////////
+        
+        fdSocksProxyComp = new FormData();
+        fdSocksProxyComp.left = new FormAttachment(0, margin);
+        fdSocksProxyComp.top = new FormAttachment(0, margin);
+        fdSocksProxyComp.right = new FormAttachment(100, -margin);
+        wSocksProxy.setLayoutData(fdSocksProxyComp);
+        
+        wSocksProxyComp.layout();
+        wSocksProxyTab.setControl(wSocksProxyComp);
+        props.setLook(wSocksProxyComp);
+        
+        //////////////////////////////////////////////////////////
+        //  End of Socks Proxy Tab
+        //////////////////////////////////////////////////////////
+        
+        fdTabFolder = new FormData();
+        fdTabFolder.left  = new FormAttachment(0, 0);
+        fdTabFolder.top   = new FormAttachment(wName, margin);
+        fdTabFolder.right = new FormAttachment(100, 0);
+        fdTabFolder.bottom= new FormAttachment(100, -50);
+        wTabFolder.setLayoutData(fdTabFolder);
 		
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
@@ -1035,12 +1165,19 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     	{
     		wlusePublicKey.setEnabled(true);
     		wusePublicKey.setEnabled(true);
-    	}else
+    		wSocksProxyHost.setEnabled(false);
+    	}
+    	else if (wProtocol.getText().equals(JobEntryFTPDelete.PROTOCOL_FTP)) 
+    	{
+    	     wSocksProxy.setEnabled(true);  
+    	}
+        else 
     	{
     		wusePublicKey.setSelection(false);
     		activeUsePublicKey();
     		wlusePublicKey.setEnabled(false);
     		wusePublicKey.setEnabled(false);
+    		wSocksProxy.setEnabled(false);
     	}
     }
     /**
@@ -1357,6 +1494,36 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
             wPassword.setEchoChar('\0'); // Show it all...
         }
     }
+    
+    public void checkProxyPasswordVisible()
+    {
+        String password = wProxyPassword.getText();
+        List<String> list = new ArrayList<String>();
+        StringUtil.getUsedVariables(password, list, true);
+        if (list.size() == 0)
+        {
+            wProxyPassword.setEchoChar('*');
+        }
+        else
+        {
+            wProxyPassword.setEchoChar('\0'); // Show it all...
+        }
+    }
+    
+    public void checkSocksProxyPasswordVisible()
+    {
+        String password = wSocksProxyPassword.getText();
+        List<String> list = new ArrayList<String>();
+        StringUtil.getUsedVariables(password, list, true);
+        if (list.size() == 0)
+        {
+            wSocksProxyPassword.setEchoChar('*');
+        }
+        else
+        {
+            wSocksProxyPassword.setEchoChar('\0'); // Show it all...
+        }
+    }
 
     public void dispose()
     {
@@ -1394,6 +1561,10 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
         wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
         wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
+        wSocksProxyHost.setText(Const.NVL(jobEntry.getSocksProxyHost(), ""));       
+        wSocksProxyPort.setText(Const.NVL(jobEntry.getSocksProxyPort(), ""));
+        wSocksProxyUsername.setText(Const.NVL(jobEntry.getSocksProxyUsername(), ""));
+        wSocksProxyPassword.setText(Const.NVL(jobEntry.getSocksProxyPassword(), ""));
         
     	if (jobEntry.getLimitSuccess()!= null) 
 			wNrErrorsLessThan.setText( jobEntry.getLimitSuccess());
@@ -1453,6 +1624,10 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
         jobEntry.setProxyPort(wProxyPort.getText());
         jobEntry.setProxyUsername(wProxyUsername.getText());
         jobEntry.setProxyPassword(wProxyPassword.getText());
+        jobEntry.setSocksProxyHost(wSocksProxyHost.getText()); 
+        jobEntry.setSocksProxyPort(wSocksProxyPort.getText());
+        jobEntry.setSocksProxyUsername(wSocksProxyUsername.getText());
+        jobEntry.setSocksProxyPassword(wSocksProxyPassword.getText());
        
         jobEntry.setLimitSuccess(wNrErrorsLessThan.getText());
 
@@ -1518,5 +1693,5 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     public boolean isUnconditional()
     {
         return false;
-    }
+    }    
 }
