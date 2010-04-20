@@ -1883,16 +1883,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				while(iterator.hasNext()) {
 					List<StepPerformanceSnapShot> snapshots = iterator.next();
 					synchronized(snapshots) {
-						for (StepPerformanceSnapShot snapshot : snapshots) {
-							if (snapshot.getSeqNr()>=startSequenceNr && snapshot.getSeqNr()<=lastStepPerformanceSnapshotSeqNrAdded) {
-								
-								RowMetaAndData row = performanceLogTable.getLogRecord(LogStatus.START, snapshot);
-								
-								ldb.setValuesInsert(row.getRowMeta(), row.getData());
-								ldb.insertRow(true);
-							}
-							lastSeqNr = snapshot.getSeqNr();
-						}
+					  Iterator<StepPerformanceSnapShot> snapshotsIterator = snapshots.iterator();
+					  while(snapshotsIterator.hasNext()) {
+					    StepPerformanceSnapShot snapshot=snapshotsIterator.next();
+              if (snapshot.getSeqNr()>=startSequenceNr && snapshot.getSeqNr()<=lastStepPerformanceSnapshotSeqNrAdded) {
+                
+                RowMetaAndData row = performanceLogTable.getLogRecord(LogStatus.START, snapshot);
+                
+                ldb.setValuesInsert(row.getRowMeta(), row.getData());
+                ldb.insertRow(true);
+              }
+              lastSeqNr = snapshot.getSeqNr();
+					  }
 					}
 				}
 			}
