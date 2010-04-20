@@ -46,21 +46,7 @@ public class OlapInput extends BaseStep implements StepInterface
 		if (first) // we just got started
 		{
 			first=false;
-			String driver = meta.getOlap4jDriver();
-			String url = environmentSubstitute(meta.getOlap4jUrl());
-			String username = environmentSubstitute(meta.getUsername());
-			String password = environmentSubstitute(meta.getPassword());
-			
-			String mdx = meta.getMdx();
-            if(meta.isVariableReplacementActive()) mdx = environmentSubstitute(meta.getMdx());
-            String catalog = environmentSubstitute(meta.getCatalog());
-
-//            mdx = "select NON EMPTY Hierarchize(Union(Crossjoin({[Measures].[Actual]}, Union(Crossjoin({[Region].[All Regions]},  {[Department].[All Departments]}), Crossjoin({[Region].[All Regions]}, [Department].[All Departments].Children))), Crossjoin({[Measures].[Actual]}, Union(Crossjoin([Region].[All Regions].Children, {[Department].[All Departments]}),  Crossjoin([Region].[All Regions].Children, [Department].[All Departments].Children))))) ON COLUMNS,NON EMPTY Hierarchize(Union({[Positions].[All Positions]}, [Positions].[All Positions].Children)) ON ROWS from [Quadrant Analysis]";
-//            data.olapHelper = new OlapHelper(driver,"http://localhost:8080/pentaho/Xmla", "joe", "password","SampleData",mdx, this);
-			data.olapHelper = new OlapHelper(driver,url, username, password,catalog,mdx, this);
-			data.olapHelper.openQuery();
-			data.olapHelper.createRectangularOutput();
-			data.outputRowMeta = data.olapHelper.getOutputRowMeta().clone(); 
+			meta.initData(this);
 			
 			data.rowNumber = 0;
 		}

@@ -22,11 +22,6 @@ import org.olap4j.OlapStatement;
 import org.olap4j.OlapWrapper;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.steps.olapinput.olap4jhelper.AbstractBaseCell;
 import org.pentaho.di.trans.steps.olapinput.olap4jhelper.CellDataSet;
 import org.pentaho.di.trans.steps.olapinput.olap4jhelper.OlapUtil;
@@ -46,22 +41,19 @@ public class OlapHelper {
     private String username;
     private String password;
     	
-	private RowMetaInterface outputRowMeta;
     private CellSet result;
-	private VariableSpace space;
 	
 	private String[] headerValues = null;
     private String[][] cellValues = null;
     private OlapConnection olapConnection;
 
-	public OlapHelper(String olap4jDriver, String olap4jUrl, String username, String password, String catalogName, String mdx, VariableSpace space) {
+	public OlapHelper(String olap4jDriver, String olap4jUrl, String username, String password, String catalogName, String mdx/*, VariableSpace space*/) {
 	        this.olap4jDriver = olap4jDriver;
 	        this.olap4jUrl    = "jdbc:xmla:Server=" + olap4jUrl;
 	        this.catalogName  = catalogName; 
 	        this.mdx          = mdx;
 	        this.username     = username;
 	        this.password     = password;
-	        this.space        = space;
 	}
 	
     public void openQuery() throws Exception {
@@ -69,13 +61,11 @@ public class OlapHelper {
         try {
         Class.forName(olap4jDriver);
         OlapConnection connection= null;
-        String uname = space.environmentSubstitute(username);
-        String pwd = space.environmentSubstitute(password);
         
-        if (Const.isEmpty(pwd) && Const.isEmpty(uname)) {
+        if (Const.isEmpty(username) && Const.isEmpty(password)) {
             connection = (OlapConnection) DriverManager.getConnection(olap4jUrl);
         } else {
-            connection = (OlapConnection) DriverManager.getConnection(olap4jUrl, uname, pwd);
+            connection = (OlapConnection) DriverManager.getConnection(olap4jUrl, username, password);
         }
 
         OlapWrapper wrapper = connection;
@@ -129,28 +119,6 @@ public class OlapHelper {
 
         }
         
-        outputRowMeta = new RowMeta();
-
-            for (int i=0;i<cellValues[0].length;i++)
-            {
-                String name ="";
-                if (Const.isEmpty(headerValues)) {
-                    name = "Column" + i;
-                }
-                else {
-                    name = headerValues[i];
-                }
-
-                ValueMetaInterface valueMeta=new ValueMeta(name,ValueMetaInterface.TYPE_STRING);
-
-                outputRowMeta.addValueMeta(valueMeta);
-
-            }
-
-        // Now that we painstakingly found the meta data that comes out of the Mondrian database, cache it please...
-        //
-//        DBCacheEntry cacheEntry = new DBCacheEntry(databaseMeta.getName(), queryString);
-//        DBCache.getInstance().put(cacheEntry, outputRowMeta);
     }
     
 
@@ -202,17 +170,19 @@ public class OlapHelper {
         return null;
     }
     
-    /**
-	 * @return the outputRowMeta
-	 */
-	public RowMetaInterface getOutputRowMeta() {
-		return outputRowMeta;
-	}
-	
 	public String[][] getRows() {
 	    return cellValues;
 	}
 
+	public String[] getHeaderValues() {
+		return headerValues;
+	}
+
+	public String[][] getCellValues() {
+		return cellValues;
+	}
+	
+	
+
 }
 
-// End Foo.java

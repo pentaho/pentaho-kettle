@@ -24,10 +24,11 @@ public class OlapData extends BaseStepData implements StepDataInterface
 {
 	public OlapHelper olapHelper;
 	public RowMetaInterface outputRowMeta;
+	public OlapInputMeta meta;
 	public int rowNumber;
 	
 	public OlapData()
 	{
 		super();
-	}	
+	}
 }

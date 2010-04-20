@@ -22,7 +22,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -51,6 +53,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
 	private String olap4jUrl;
 	private final String olap4jDriver = "org.olap4j.driver.xmla.XmlaOlap4jDriver";
 	private String catalog;
+	private OlapData data;
 	
     private boolean variableReplacementActive;
     public OlapInputMeta()
@@ -127,12 +130,9 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		try
 		{
-			String mdxQuery = getMdx();
-			if(isVariableReplacementActive()) mdxQuery = space.environmentSubstitute(mdxQuery);
-			OlapHelper helper = new OlapHelper(olap4jDriver, olap4jUrl, username, password, catalog, mdxQuery, space);
-			helper.openQuery();
-			helper.createRectangularOutput();
-			add = helper.getOutputRowMeta();
+			initData(space);
+			
+			add = data.outputRowMeta;
 		}
 		catch(Exception dbe)
 		{
@@ -212,6 +212,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
 	{
+		data = (OlapData) stepDataInterface;
 		return new OlapInput(stepMeta, stepDataInterface, cnr, transMeta, trans);
 	}
 
@@ -225,6 +226,26 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
 		// you can't really analyze the database impact since it runs on a remote XML/A server
 	}
     
+	public RowMeta createRowMeta(String[] headerValues, String[][] cellValues) {
+		RowMeta outputRowMeta = new RowMeta();
+
+        for (int i=0;i<cellValues[0].length;i++)
+        {
+            String name ="";
+            if (Const.isEmpty(headerValues)) {
+                name = "Column" + i;
+            }
+            else {
+                name = headerValues[i];
+            }
+
+            ValueMetaInterface valueMeta=new ValueMeta(name,ValueMetaInterface.TYPE_STRING);
+
+            outputRowMeta.addValueMeta(valueMeta);
+
+        }
+        return outputRowMeta;
+	}
 
 	/**
 	 * @return the catalog
@@ -276,5 +297,22 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
         return olap4jDriver;
     }
 
+    public void initData(VariableSpace space) throws Exception {
+    		String driver = this.getOlap4jDriver();
+    		String url = space.environmentSubstitute(this.getOlap4jUrl());
+    		String username = space.environmentSubstitute(this.getUsername());
+    		String password = space.environmentSubstitute(this.getPassword());
+    		
+    		String mdx = this.getMdx();
+            if(this.isVariableReplacementActive()) mdx = space.environmentSubstitute(this.getMdx());
+            String catalog = space.environmentSubstitute(this.getCatalog());
 
+//            mdx = "select NON EMPTY Hierarchize(Union(Crossjoin({[Measures].[Actual]}, Union(Crossjoin({[Region].[All Regions]},  {[Department].[All Departments]}), Crossjoin({[Region].[All Regions]}, [Department].[All Departments].Children))), Crossjoin({[Measures].[Actual]}, Union(Crossjoin([Region].[All Regions].Children, {[Department].[All Departments]}),  Crossjoin([Region].[All Regions].Children, [Department].[All Departments].Children))))) ON COLUMNS,NON EMPTY Hierarchize(Union({[Positions].[All Positions]}, [Positions].[All Positions].Children)) ON ROWS from [Quadrant Analysis]";
+//            data.olapHelper = new OlapHelper(driver,"http://localhost:8080/pentaho/Xmla", "joe", "password","SampleData",mdx, this);
+    		data.olapHelper = new OlapHelper(driver,url, username, password,catalog,mdx);
+    		data.olapHelper.openQuery();
+			data.olapHelper.createRectangularOutput();
+    		data.outputRowMeta = this.createRowMeta(data.olapHelper.getHeaderValues(), data.olapHelper.getCellValues()).clone(); 
+    		
+    }
 }
