@@ -113,7 +113,7 @@
           command="spoon.previewFile()" />
         <menuitem id="trans-debug" acceltext="SHIFT-F10" accesskey="shift-f10" label="${Spoon.Menu.Transformation.Debug}"
           command="spoon.debugFile()" />
-        <menuitem id="trans-replay" acceltext="SHIFT-F11" accesskey="shift-f10" label="${Spoon.Menu.Transformation.Replay}"
+        <menuitem id="trans-replay" acceltext="SHIFT-F11" accesskey="shift-f11" label="${Spoon.Menu.Transformation.Replay}"
           command="spoon.replayTransformation()" />
         <menuitem id="trans-verify" acceltext="F11" accesskey="f11" label="${Spoon.Menu.Transformation.Verify}"
           command="spoon.checkTrans()" />
