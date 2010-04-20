@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
@@ -46,6 +46,7 @@ public class JobLoadProgressDialog
 	private RepositoryDirectoryInterface repdir;
 	private JobMeta jobInfo;
 	private String	versionLabel;
+	private ObjectId objectId;
 
 	/**
 	 * Creates a new dialog that will handle the wait while loading a job...
@@ -60,6 +61,19 @@ public class JobLoadProgressDialog
 		
 		this.jobInfo = null;
 	}
+
+	 /**
+   * Creates a new dialog that will handle the wait while loading a job...
+   */
+  public JobLoadProgressDialog(Shell shell, Repository rep, ObjectId objectId, String versionLabel)
+  {
+    this.shell = shell;
+    this.rep = rep;
+    this.objectId = objectId;
+    this.versionLabel = versionLabel;
+    
+    this.jobInfo = null;
+  }
 	
 	public JobMeta open()
 	{
@@ -69,7 +83,11 @@ public class JobLoadProgressDialog
 			{
 				try
 				{
-					jobInfo = rep.loadJob(jobname, repdir, new ProgressMonitorAdapter(monitor), versionLabel);
+				  if (objectId != null) {
+				    jobInfo = rep.loadJob(objectId, versionLabel);
+				  } else {
+					  jobInfo = rep.loadJob(jobname, repdir, new ProgressMonitorAdapter(monitor), versionLabel);
+				  }
 				}
 				catch(KettleException e)
 				{

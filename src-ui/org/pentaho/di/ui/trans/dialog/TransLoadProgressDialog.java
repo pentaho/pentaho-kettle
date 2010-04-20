@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -52,6 +52,7 @@ public class TransLoadProgressDialog
 	private String transname;
 	private RepositoryDirectoryInterface repdir;
 	private TransMeta transInfo;
+	private ObjectId objectId;
 
 	private String	versionLabel;
 	
@@ -69,6 +70,19 @@ public class TransLoadProgressDialog
 		this.transInfo = null;
 	}
 	
+	 /**
+   * Creates a new dialog that will handle the wait while loading a transformation...
+   */
+  public TransLoadProgressDialog(Shell shell, Repository rep, ObjectId objectId, String versionLabel)
+  {
+    this.shell = shell;
+    this.rep = rep;
+    this.objectId = objectId;
+    this.versionLabel = versionLabel;
+    
+    this.transInfo = null;
+  }
+	
 	public TransMeta open()
 	{
 		IRunnableWithProgress op = new IRunnableWithProgress()
@@ -77,7 +91,11 @@ public class TransLoadProgressDialog
 			{
 				try
 				{
-					transInfo = rep.loadTransformation(transname, repdir, new ProgressMonitorAdapter(monitor), true, versionLabel);
+				  if (objectId != null) {
+				    transInfo = rep.loadTransformation(objectId, versionLabel);
+				  } else {
+					  transInfo = rep.loadTransformation(transname, repdir, new ProgressMonitorAdapter(monitor), true, versionLabel);
+				  }
 				}
 				catch(KettleException e)
 				{

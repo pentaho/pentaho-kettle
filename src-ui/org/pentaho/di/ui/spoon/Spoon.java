@@ -3217,7 +3217,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           if (objname != null) {
             RepositoryObjectType objectType = element.getRepositoryElementType();
             RepositoryDirectory repdir = element.getRepositoryDirectory();
-            loadObjectFromRepository(objname, objectType, repdir, revision);
+            if (element.getObjectId() != null) { // new way
+              loadObjectFromRepository(element.getObjectId(), objectType, revision);
+            } else { // old way
+              loadObjectFromRepository(objname, objectType, repdir, revision);
+            }
           }
           return false; // do not close explorer
         }
@@ -3266,6 +3270,56 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
 
+
+  private void loadObjectFromRepository(ObjectId objectId, RepositoryObjectType objectType, String revision) {
+    // Try to open the selected transformation.
+    if (objectType.equals(RepositoryObjectType.TRANSFORMATION)) {
+      try {
+        TransLoadProgressDialog progressDialog = new TransLoadProgressDialog(shell, rep, objectId, revision);
+        TransMeta transMeta = progressDialog.open();
+        transMeta.clearChanged();
+        if (transMeta != null) {
+          if (log.isDetailed())
+            log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.LoadToTransformation", transMeta.getName(), transMeta.getRepositoryDirectory().getName()));
+          props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, transMeta.getName(), transMeta.getRepositoryDirectory().getPath(), true, rep.getName());
+          addMenuLast();
+          addTransGraph(transMeta);
+        }
+        refreshTree();
+        refreshGraph();
+      } catch (Exception e) {
+        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+        mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpeningById.Message") + objectId + Const.CR
+            + e.getMessage());// "Error opening : "
+        mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"));
+        mb.open();
+      }
+    } else
+    // Try to open the selected job.
+    if (objectType.equals(RepositoryObjectType.JOB)) {
+      try {
+        JobLoadProgressDialog progressDialog = new JobLoadProgressDialog(shell, rep, objectId, revision);
+        JobMeta jobMeta = progressDialog.open();
+        jobMeta.clearChanged();
+        if (jobMeta != null) {
+          props.addLastFile(LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), true, rep.getName());
+          saveSettings();
+          addMenuLast();
+          jobMeta.setArguments(arguments);
+          addJobGraph(jobMeta);
+        }
+        refreshTree();
+        refreshGraph();
+      } catch (Exception e) {
+        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+        mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpeningById.Message") + objectId + Const.CR
+            + e.getMessage());// "Error opening : "
+        mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"));
+        mb.open();
+      }
+    }
+  }
+  
   public void loadObjectFromRepository(String objname, RepositoryObjectType objectType, RepositoryDirectoryInterface repdir,
       String versionLabel) {
     // Try to open the selected transformation.
