@@ -3275,7 +3275,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
     
     XulToolbarbutton button = (XulToolbarbutton) toolbar.getElementById("trans-show-results"); //$NON-NLS-1$
-    button.setTooltiptext("Spoon.Tooltip.HideExecutionResults"); //$NON-NLS-1$
+    button.setTooltiptext(BaseMessages.getString(PKG, "Spoon.Tooltip.HideExecutionResults")); //$NON-NLS-1$
     ToolItem toolItem = (ToolItem) button.getManagedObject();
     toolItem.setImage(GUIResource.getInstance().getImageHideResults());
   }
