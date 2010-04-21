@@ -1025,6 +1025,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     radioFilename.setSelection(specificationMethod==ObjectLocationSpecificationMethod.FILENAME);
     radioByName.setSelection(specificationMethod==ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
     radioByReference.setSelection(specificationMethod==ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE);
+    setActive();
   }
 
   protected void selectTransformation() {
@@ -1134,6 +1135,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     radioByName.setEnabled(rep != null);
     radioByReference.setEnabled(rep != null);
     wFilename.setEnabled(radioFilename.getSelection());
+    wbFilename.setEnabled(radioFilename.getSelection());
     wTransname.setEnabled(rep != null && radioByName.getSelection());
     
     wDirectory.setEnabled(rep != null && radioByName.getSelection());
