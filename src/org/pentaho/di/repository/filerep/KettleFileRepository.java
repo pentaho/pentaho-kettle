@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
@@ -152,7 +153,11 @@ public class KettleFileRepository implements Repository {
 			id.append("/");
 		}
 		
-		id.append(name+extension);
+		if (name.startsWith("/")) {
+		  id.append(name.substring(1)).append(extension);
+		} else {
+		  id.append(name).append(extension);
+		}
 		
 		return id.toString();
 	}
@@ -728,7 +733,7 @@ public class KettleFileRepository implements Repository {
 
 	public RepositoryDirectoryInterface loadRepositoryDirectoryTree() throws KettleException {
 		RepositoryDirectory root = new RepositoryDirectory();
-		root.setObjectId(null);
+		root.setObjectId(new StringObjectId("/"));
 		return loadRepositoryDirectoryTree(root);
 	}
 
@@ -764,6 +769,7 @@ public class KettleFileRepository implements Repository {
 			RepositoryDirectoryInterface directory = tree.findDirectory(idDirectory);
 			
 			String folderName = calcDirectoryName(directory);
+			String relativeFolderName = calcRelativeElementDirectory(directory);
 			FileObject folder = KettleVFS.getFileObject(folderName);
 			
 			for (FileObject child : folder.getChildren()) {
@@ -774,7 +780,7 @@ public class KettleFileRepository implements Repository {
 						
 						String transName = name.substring(0, name.length()-4);
 						
-						ObjectId id = new StringObjectId(calcObjectId(directory, transName, EXT_TRANSFORMATION));
+						ObjectId id = new StringObjectId(calcObjectId(directory, relativeFolderName+transName, EXT_TRANSFORMATION));
 						Date date = new Date(child.getContent().getLastModifiedTime());
 						list.add( new RepositoryObject(id, transName, directory, "-", date, RepositoryObjectType.TRANSFORMATION, "", false) );
 					}
@@ -797,6 +803,7 @@ public class KettleFileRepository implements Repository {
 			RepositoryDirectoryInterface directory = tree.findDirectory(id_directory);
 			
 			String folderName = calcDirectoryName(directory);
+			String relativeFolderName = calcRelativeElementDirectory(directory);
 			FileObject folder = KettleVFS.getFileObject(folderName);
 			
 			for (FileObject child : folder.getChildren()) {
@@ -805,8 +812,9 @@ public class KettleFileRepository implements Repository {
 					
 					if (name.endsWith(EXT_JOB)) {
 
-						ObjectId id = new StringObjectId(calcObjectId(directory, folderName, EXT_JOB));
-						String jobName = name.substring(0, name.length()-4);
+					  String jobName = name.substring(0, name.length()-4);
+
+					  ObjectId id = new StringObjectId(calcObjectId(directory, relativeFolderName+jobName, EXT_JOB));
 						Date date = new Date(child.getContent().getLastModifiedTime());
 						list.add( new RepositoryObject(id, jobName, directory, "-", date, RepositoryObjectType.JOB, "", false) );
 					}
@@ -1093,12 +1101,22 @@ public class KettleFileRepository implements Repository {
   
   public RepositoryObject getObjectInformation(ObjectId objectId, RepositoryObjectType objectType) throws KettleException {
     try {
-      String filename = calcDirectoryName(null)+objectId.getId();
+      String filename = calcDirectoryName(null);
+      if (objectId.getId().startsWith("/")) {
+        filename+=objectId.getId().substring(1);
+      } else {
+        filename+=objectId.getId();
+      }
       FileObject fileObject = KettleVFS.getFileObject(filename);
       if (!fileObject.exists()) {
         return null;
       }
-      String name = fileObject.getName().getBaseName();
+      FileName fname = fileObject.getName();
+      String name = fname.getBaseName();
+      if (!Const.isEmpty(fname.getExtension()) && name.length()>fname.getExtension().length()) {
+        name = name.substring(0, name.length()-fname.getExtension().length()-1);
+      }
+      
       String filePath = fileObject.getParent().getName().getPath();
       String dirPath = filePath.substring(repositoryMeta.getBaseDirectory().length());
       RepositoryDirectoryInterface directory = loadRepositoryDirectoryTree().findDirectory(dirPath);
