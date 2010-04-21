@@ -51,11 +51,22 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 
 	}
     
+	public int getDefaultDatabasePort() {
+	  return 8082;
+	}
+	
     public String getURL(String hostname, String port, String databaseName)
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
+          if ( (Const.isEmpty(port)||"-1".equals(port)) && Const.isEmpty(hostname) ) 
+          {
             return "jdbc:h2:"+databaseName;
+          }
+          else
+          {
+            return "jdbc:h2:tcp://"+hostname+ ":" + port +"/"+databaseName;
+          }
         }
         else
         {
@@ -228,7 +239,8 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 				}
 				else
 				{
-					retval+="("; // Maybe use some default DB String length?
+				  // http://www.h2database.com/html/datatypes.html#varchar_type
+					retval+="("+Integer.MAX_VALUE; 
 				}
 				retval+=")";
 			}

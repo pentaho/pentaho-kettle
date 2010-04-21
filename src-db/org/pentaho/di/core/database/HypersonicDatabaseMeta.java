@@ -56,7 +56,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 		}
 		else
 		{
-			if ( Const.toInt(port, -1)<=0 || Const.isEmpty(hostname) ) 
+      if ( (Const.isEmpty(port)||"-1".equals(port)) && Const.isEmpty(hostname) ) 
 			{
 				// When no port is specified, or port is 0 support local/memory
 				// HSQLDB databases.
