@@ -1646,18 +1646,18 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         return fields;
     }
 
-    /**
-     * Returns the fields that are emitted by a certain step
-     *
-     * @param stepMeta The step to be queried.
-     * @param monitor The progress monitor for progress dialog. (null if not used!)
-     * @return A row containing the fields emitted.
-     */
-    public RowMetaInterface getStepFields(StepMeta stepMeta, ProgressMonitorListener monitor) throws KettleStepException
-    {
-    	clearStepFieldsCachce();
-        return getStepFields(stepMeta, null, monitor);
-    }
+  /**
+   * Returns the fields that are emitted by a certain step
+   * 
+   * @param stepMeta The step to be queried.
+   * @param monitor The progress monitor for progress dialog. (null if not used!)
+   * @return A row containing the fields emitted.
+   */
+  public RowMetaInterface getStepFields(StepMeta stepMeta, ProgressMonitorListener monitor) throws KettleStepException {
+    clearStepFieldsCachce();
+    setRepositoryOnMappingSteps();
+    return getStepFields(stepMeta, null, monitor);
+  }
     
     /**
      * Returns the fields that are emitted by a certain step
@@ -1875,17 +1875,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             for (int i=0;i<lu.length;i++) inform[i] = getStepFields(lu[i]);
         }
 
-        // Set the Repository object on the Mapping step
-        // That way the mapping step can determine the output fields for repository hosted mappings...
-        // This is the exception to the rule so we don't pass this through the getFields() method.
-        //
-        for (StepMeta step : steps)
-        {
-        	if (step.getStepMetaInterface() instanceof MappingMeta) 
-        	{
-        		((MappingMeta)step.getStepMetaInterface()).setRepository(repository);
-        	}
-        }
+        setRepositoryOnMappingSteps();
         
         // Go get the fields...
         //
@@ -1894,6 +1884,22 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         return row;
     }
    
+    /**
+     * Set the Repository object on the Mapping step
+     * That way the mapping step can determine the output fields for repository hosted mappings...
+     * This is the exception to the rule so we don't pass this through the getFields() method.
+     */
+    private void setRepositoryOnMappingSteps() {
+      
+      for (StepMeta step : steps)
+      {
+        if (step.getStepMetaInterface() instanceof MappingMeta) 
+        {
+          ((MappingMeta)step.getStepMetaInterface()).setRepository(repository);
+        }
+      }
+    }
+
     public boolean isUsingPartitionSchema(PartitionSchema partitionSchema)
     {
         // Loop over all steps and see if the partition schema is used.

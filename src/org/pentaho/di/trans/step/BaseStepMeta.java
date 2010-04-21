@@ -352,9 +352,7 @@ public class BaseStepMeta implements Cloneable
     public void logError(String message, Throwable e) { getLog().logError(message, e); }
     public void logError(String message, Object...arguments) { getLog().logError(message, arguments); }
 
-	public String getFilename() {
-		return null;
-	}
+
 
 	public String getLogChannelId() {
 		return null;

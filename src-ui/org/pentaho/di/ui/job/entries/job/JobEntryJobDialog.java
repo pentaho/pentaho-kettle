@@ -408,7 +408,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     fdbByReference.right = new FormAttachment(100, 0);
     wbByReference.setLayoutData(fdbByReference);
 
-    wByReference = new Text(gByReference, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    wByReference = new Text(gByReference, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY);
     props.setLook(wByReference);
     wByReference.addModifyListener(lsMod);
     FormData fdByReference = new FormData();

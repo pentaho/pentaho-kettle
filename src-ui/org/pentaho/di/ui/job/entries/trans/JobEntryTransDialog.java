@@ -404,7 +404,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     fdbByReference.right = new FormAttachment(100, 0);
     wbByReference.setLayoutData(fdbByReference);
 
-    wByReference = new TextVar(jobMeta, gByReference, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    wByReference = new TextVar(jobMeta, gByReference, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY);
     props.setLook(wByReference);
     wByReference.addModifyListener(lsMod);
     FormData fdByReference = new FormData();
@@ -1203,9 +1203,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       }
       break;   
     }
-    radioFilename.setSelection(jobEntry.getSpecificationMethod()==ObjectLocationSpecificationMethod.FILENAME);
-    radioByName.setSelection(jobEntry.getSpecificationMethod()==ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
-    radioByReference.setSelection(jobEntry.getSpecificationMethod()==ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE);
+    setRadioButtons();
 
     // Arguments
     if (jobEntry.arguments != null) {

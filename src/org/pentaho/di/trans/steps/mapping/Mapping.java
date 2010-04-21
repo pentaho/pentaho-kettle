@@ -356,7 +356,7 @@ public class Mapping extends BaseStep implements StepInterface
             	//
             	meta.setRepository(getTransMeta().getRepository());
             	
-                data.mappingTransMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), meta.getRepository(), this);
+                data.mappingTransMeta = MappingMeta.loadMappingMeta(meta, meta.getRepository(), this);
                 if (data.mappingTransMeta!=null) // Do we have a mapping at all?
                 {
                 	// Set the parameters statically or dynamically

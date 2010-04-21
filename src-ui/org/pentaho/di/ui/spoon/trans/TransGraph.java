@@ -2486,6 +2486,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private void inputOutputFields(StepMeta stepMeta, boolean before) {
     spoon.refreshGraph();
 
+    transMeta.setRepository(spoon.rep);
     SearchFieldsProgressDialog op = new SearchFieldsProgressDialog(transMeta, stepMeta, before);
     try {
       final ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
@@ -3681,7 +3682,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public void openMapping() {
 	  try {
 		  MappingMeta meta = (MappingMeta) this.currentStep.getStepMetaInterface();
-		  TransMeta mappingMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), spoon.rep, transMeta);
+		  TransMeta mappingMeta = MappingMeta.loadMappingMeta(meta, spoon.rep, transMeta);
 		  mappingMeta.clearChanged();
 		  spoon.addTransGraph(mappingMeta);
 		  TransGraph subTransGraph = spoon.getActiveTransGraph();

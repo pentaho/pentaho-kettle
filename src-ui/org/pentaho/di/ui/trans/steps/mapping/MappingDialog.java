@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
@@ -57,8 +58,11 @@ import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -70,6 +74,7 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -85,20 +90,26 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 	private Group gTransGroup;
 
-	// File
-	private Button wFileRadio;
+  // File
+  //
+  private Button                            radioFilename;
+  private Button                            wbbFilename;
+  private TextVar                           wFilename;
 
-	private Button wbbFilename; // Browse: add file or directory
+	// Repository by name
+	//
+  private Button                            radioByName;
+  private TextVar                           wTransname, wDirectory;
+  private Button                            wbTrans;
 
-	private TextVar wFilename;
-
-	// Repository
-	private Button wRepRadio;
-
-	private TextVar wTransName, wTransDir;
-
-	private Button wbTrans;
-
+	// Repository by reference
+	//
+  private Button                            radioByReference;
+  private Button                            wbByReference;
+  private TextVar                           wByReference;
+	
+  // Edit the mapping transformation in Spoon
+  //
 	private Button wEditTrans;
 
 	private CTabFolder wTabFolder;
@@ -122,6 +133,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	private Button wAddInput;
 
 	private Button wAddOutput;
+
+  private ObjectId         referenceObjectId;
+  private ObjectLocationSpecificationMethod specificationMethod;
 
 	private interface ApplyChanges
 	{
@@ -306,16 +320,22 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Radio button: The mapping is in a file
 		// 
-		wFileRadio = new Button(gTransGroup, SWT.RADIO);
-		props.setLook(wFileRadio);
-		wFileRadio.setSelection(false);
-		wFileRadio.setText(BaseMessages.getString(PKG, "MappingDialog.RadioFile.Label")); //$NON-NLS-1$
-		wFileRadio.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioFile.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		radioFilename = new Button(gTransGroup, SWT.RADIO);
+		props.setLook(radioFilename);
+		radioFilename.setSelection(false);
+		radioFilename.setText(BaseMessages.getString(PKG, "MappingDialog.RadioFile.Label")); //$NON-NLS-1$
+		radioFilename.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioFile.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 		FormData fdFileRadio = new FormData();
 		fdFileRadio.left = new FormAttachment(0, 0);
 		fdFileRadio.right = new FormAttachment(100, 0);
 		fdFileRadio.top = new FormAttachment(0, 0);
-		wFileRadio.setLayoutData(fdFileRadio);
+		radioFilename.setLayoutData(fdFileRadio);
+    radioFilename.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+        setRadioButtons();
+      }
+    });
 
 		wbbFilename = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
 		props.setLook(wbbFilename);
@@ -323,11 +343,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		FormData fdbFilename = new FormData();
 		fdbFilename.right = new FormAttachment(100, 0);
-		fdbFilename.top = new FormAttachment(wFileRadio, margin);
+		fdbFilename.top = new FormAttachment(radioFilename, margin);
 		wbbFilename.setLayoutData(fdbFilename);
-		wbbFilename.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
+		wbbFilename.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
 			{
 				selectFileTrans();
 			}
@@ -341,62 +359,120 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		fdFilename.right = new FormAttachment(wbbFilename, -margin);
 		fdFilename.top = new FormAttachment(wbbFilename, 0, SWT.CENTER);
 		wFilename.setLayoutData(fdFilename);
-		wFilename.addModifyListener(new ModifyListener()
-		{
-			public void modifyText(ModifyEvent e)
+		wFilename.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent e)
 			{
-				wFileRadio.setSelection(true);
-				wRepRadio.setSelection(false);
-			}
+        specificationMethod=ObjectLocationSpecificationMethod.FILENAME;
+        setRadioButtons();			
+      }
 		});
 
 		// Radio button: The mapping is in the repository
 		// 
-		wRepRadio = new Button(gTransGroup, SWT.RADIO);
-		props.setLook(wRepRadio);
-		wRepRadio.setSelection(false);
-		wRepRadio.setText(BaseMessages.getString(PKG, "MappingDialog.RadioRep.Label")); //$NON-NLS-1$
-		wRepRadio.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioRep.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		radioByName = new Button(gTransGroup, SWT.RADIO);
+		props.setLook(radioByName);
+		radioByName.setSelection(false);
+		radioByName.setText(BaseMessages.getString(PKG, "MappingDialog.RadioRep.Label")); //$NON-NLS-1$
+		radioByName.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioRep.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 		FormData fdRepRadio = new FormData();
 		fdRepRadio.left = new FormAttachment(0, 0);
 		fdRepRadio.right = new FormAttachment(100, 0);
 		fdRepRadio.top = new FormAttachment(wbbFilename, 2 * margin);
-		wRepRadio.setLayoutData(fdRepRadio);
-
+		radioByName.setLayoutData(fdRepRadio);
+    radioByName.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+        setRadioButtons();
+      }
+    });
 		wbTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
 		props.setLook(wbTrans);
 		wbTrans.setText(BaseMessages.getString(PKG, "MappingDialog.Select.Button"));
 		wbTrans.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		FormData fdbTrans = new FormData();
 		fdbTrans.right = new FormAttachment(100, 0);
-		fdbTrans.top = new FormAttachment(wRepRadio, 2 * margin);
+		fdbTrans.top = new FormAttachment(radioByName, 2 * margin);
 		wbTrans.setLayoutData(fdbTrans);
-		wbTrans.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
+		wbTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
 			{
 				selectRepositoryTrans();
 			}
 		});
 
-		wTransDir = new TextVar(transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		props.setLook(wTransDir);
-		wTransDir.addModifyListener(lsMod);
+		wDirectory = new TextVar(transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wDirectory);
+		wDirectory.addModifyListener(lsMod);
 		FormData fdTransDir = new FormData();
 		fdTransDir.left = new FormAttachment(middle + (100 - middle) / 2, 0);
 		fdTransDir.right = new FormAttachment(wbTrans, -margin);
 		fdTransDir.top = new FormAttachment(wbTrans, 0, SWT.CENTER);
-		wTransDir.setLayoutData(fdTransDir);
+		wDirectory.setLayoutData(fdTransDir);
+    wDirectory.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent e) {
+        specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+        setRadioButtons();      
+      }
+    });
 
-		wTransName = new TextVar(transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		props.setLook(wTransName);
-		wTransName.addModifyListener(lsMod);
+		wTransname = new TextVar(transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wTransname);
+		wTransname.addModifyListener(lsMod);
 		FormData fdTransName = new FormData();
 		fdTransName.left = new FormAttachment(0, 25);
-		fdTransName.right = new FormAttachment(wTransDir, -margin);
+		fdTransName.right = new FormAttachment(wDirectory, -margin);
 		fdTransName.top = new FormAttachment(wbTrans, 0, SWT.CENTER);
-		wTransName.setLayoutData(fdTransName);
+		wTransname.setLayoutData(fdTransName);
+		wTransname.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent e) {
+        specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+        setRadioButtons();      
+      }
+    });
+		
+    // Radio button: The mapping is in the repository
+    // 
+    radioByReference = new Button(gTransGroup, SWT.RADIO);
+    props.setLook(radioByReference);
+    radioByReference.setSelection(false);
+    radioByReference.setText(BaseMessages.getString(PKG, "MappingDialog.RadioRepByReference.Label")); //$NON-NLS-1$
+    radioByReference.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.RadioRepByReference.Tooltip", Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+    FormData fdRadioByReference = new FormData();
+    fdRadioByReference.left = new FormAttachment(0, 0);
+    fdRadioByReference.right = new FormAttachment(100, 0);
+    fdRadioByReference.top = new FormAttachment(wTransname, 2 * margin);
+    radioByReference.setLayoutData(fdRadioByReference);
+    radioByReference.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+        setRadioButtons();
+      }
+    });
 
+    wbByReference = new Button(gTransGroup, SWT.PUSH | SWT.CENTER);
+    props.setLook(wbByReference);
+    wbByReference.setImage(GUIResource.getInstance().getImageTransGraph());
+    wbByReference.setToolTipText(BaseMessages.getString(PKG, "MappingDialog.SelectTrans.Tooltip"));
+    FormData fdbByReference = new FormData();
+    fdbByReference.top = new FormAttachment(radioByReference, margin);
+    fdbByReference.right = new FormAttachment(100, 0);
+    wbByReference.setLayoutData(fdbByReference);
+    wbByReference.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        selectTransformationByReference();
+      }
+    });
+
+    wByReference = new TextVar(transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY);
+    props.setLook(wByReference);
+    wByReference.addModifyListener(lsMod);
+    FormData fdByReference = new FormData();
+    fdByReference.top = new FormAttachment(radioByReference, margin);
+    fdByReference.left = new FormAttachment(0, 25);
+    fdByReference.right = new FormAttachment(wbByReference, -margin);
+    wByReference.setLayoutData(fdByReference);
+    wByReference.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent e) {
+        specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+        setRadioButtons();      
+      }
+    });
+		
 		wEditTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
 		props.setLook(wEditTrans);
 		wEditTrans.setText(BaseMessages.getString(PKG, "MappingDialog.Edit.Button"));
@@ -404,11 +480,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		FormData fdEditTrans = new FormData();
 		fdEditTrans.left = new FormAttachment(0, 0);
 		fdEditTrans.right = new FormAttachment(100, 0);
-		fdEditTrans.top = new FormAttachment(wTransName, 3 * margin);
+		fdEditTrans.top = new FormAttachment(wByReference, 3 * margin);
 		wEditTrans.setLayoutData(fdEditTrans);
-		wEditTrans.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
+		wEditTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e)
 			{
 				editTrans();
 			}
@@ -519,7 +593,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		wStepname.addSelectionListener(lsDef);
 		wFilename.addSelectionListener(lsDef);
-		wTransName.addSelectionListener(lsDef);
+		wTransname.addSelectionListener(lsDef);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter()
@@ -546,7 +620,21 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		return stepname;
 	}
 
-	private void selectRepositoryTrans()
+  protected void selectTransformationByReference() {
+    if (repository != null) {
+      SelectObjectDialog sod = new SelectObjectDialog(shell, repository, true, false);
+      sod.open();
+      RepositoryElementMetaInterface repositoryObject = sod.getRepositoryObject();
+      if (repositoryObject != null) {
+        specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+        getByReferenceData(repositoryObject);
+        referenceObjectId = repositoryObject.getObjectId();
+        setRadioButtons();
+      }
+    }
+  }
+
+  private void selectRepositoryTrans()
 	{
 		try
 		{
@@ -556,11 +644,11 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			if (transName != null && repdir != null)
 			{
 				loadRepositoryTrans(transName, repdir);
-				wTransName.setText(mappingTransMeta.getName());
-				wTransDir.setText(mappingTransMeta.getRepositoryDirectory().getPath());
+				wTransname.setText(mappingTransMeta.getName());
+				wDirectory.setText(mappingTransMeta.getRepositoryDirectory().getPath());
 				wFilename.setText("");
-				wRepRadio.setSelection(true);
-				wFileRadio.setSelection(false);
+				radioByName.setSelection(true);
+				radioFilename.setSelection(false);
 			}
 		} catch (KettleException ke)
 		{
@@ -578,50 +666,41 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		mappingTransMeta.clearChanged();
 	}
 
-	private void selectFileTrans()
-	{
+  private void selectFileTrans() {
+    String curFile = wFilename.getText();
+    FileObject root = null;
 
-		String curFile = wFilename.getText();
-		FileObject root = null;
+    try {
+      root = KettleVFS.getFileObject(curFile != null ? curFile : Const.USER_HOME_DIRECTORY);
 
-		try
-		{
-			root = KettleVFS.getFileObject(curFile != null ? curFile : Const.USER_HOME_DIRECTORY);
+      VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(root.getParent(), root);
+      FileObject file = vfsFileChooser.open(shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
+      if (file == null) {
+        return;
+      }
+      String fname = null;
 
-			VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(root.getParent(), root);
-			FileObject file = vfsFileChooser.open(shell, null, Const.STRING_TRANS_FILTER_EXT, Const
-					.getTransformationFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
-			if (file == null) {
-				  return;
-				}
-			String fname = null;
+      fname = file.getURL().getFile();
 
-			fname = file.getURL().getFile();
+      if (fname != null) {
 
-			if (fname != null)
-			{
-
-				loadFileTrans(fname);
-				wFilename.setText(mappingTransMeta.getFilename());
-				wTransName.setText(Const.NVL(mappingTransMeta.getName(), ""));
-				wTransDir.setText("");
-				wFileRadio.setSelection(true);
-				wRepRadio.setSelection(false);
-			}
-		} catch (IOException e)
-		{
-			new ErrorDialog(
-					shell,
-					BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
-		} catch (KettleException e)
-
-		{
-			new ErrorDialog(
-					shell,
-					BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-
-	}
+        loadFileTrans(fname);
+        wFilename.setText(mappingTransMeta.getFilename());
+        wTransname.setText(Const.NVL(mappingTransMeta.getName(), ""));
+        wDirectory.setText("");
+        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+        setRadioButtons();
+      }
+    } catch (IOException e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle"), 
+          BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    } catch (KettleException e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogTitle"), 
+          BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+  }
 
 	private void loadFileTrans(String fname) throws KettleException
 	{
@@ -634,18 +713,17 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		// Load the transformation again to make sure it's still there and
 		// refreshed
 		// It's an extra check to make sure it's still OK...
-
+	  //
 		try
 		{
 			loadTransformation();
 
 			// If we're still here, mappingTransMeta is valid.
+			//
 			SpoonInterface spoon = SpoonFactory.getInstance();
-			if (spoon != null)
-			{
+			if (spoon != null) {
 				spoon.addTransGraph(mappingTransMeta);
 			}
-
 		} catch (KettleException e)
 		{
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "MappingDialog.ErrorShowingTransformation.Title"),
@@ -655,28 +733,60 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 	private void loadTransformation() throws KettleException
 	{
-		if (wFileRadio.getSelection() && !Const.isEmpty(wFilename.getText())) // Read
-		// from
-		// file...
-		{
-			loadFileTrans(wFilename.getText());
-		} else
-		{
-			if (wRepRadio.getSelection() && repository != null && !Const.isEmpty(wTransName.getText())
-					&& !Const.isEmpty(wTransDir.getText()))
-			{
-			  RepositoryDirectoryInterface repdir = repository.loadRepositoryDirectoryTree().findDirectory(transMeta.environmentSubstitute(wTransDir.getText()));
-				if (repdir == null)
-				{
-					throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToFindRepositoryDirectory)"));
-				}
-				loadRepositoryTrans(wTransName.getText(), repdir);
-			} else
-			{
-				throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.NoValidMappingDetailsFound"));
-			}
-		}
+	  switch(specificationMethod) {
+	  case FILENAME:
+      loadFileTrans(wFilename.getText());
+      break;
+	  case REPOSITORY_BY_NAME:
+	    String realDirectory = transMeta.environmentSubstitute(wDirectory.getText());
+	    String realTransname = transMeta.environmentSubstitute(wTransname.getText());
+	    
+	    if (Const.isEmpty(realDirectory) || Const.isEmpty(realTransname)) {
+	       throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.NoValidMappingDetailsFound"));
+	    }
+      RepositoryDirectoryInterface repdir = repository.loadRepositoryDirectoryTree().findDirectory(realDirectory);
+      if (repdir == null)
+      {
+        throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToFindRepositoryDirectory)"));
+      }
+      loadRepositoryTrans(realTransname, repdir);
+      break;
+	  case REPOSITORY_BY_REFERENCE:
+      mappingTransMeta = repository.loadTransformation(referenceObjectId, null); // load the last version
+      mappingTransMeta.clearChanged();
+      break;
+	  }
 	}
+	
+  public void setActive() {
+    radioByName.setEnabled(repository != null);
+    radioByReference.setEnabled(repository != null);
+    wFilename.setEnabled(radioFilename.getSelection());
+    wbbFilename.setEnabled(radioFilename.getSelection());
+    wTransname.setEnabled(repository != null && radioByName.getSelection());
+    
+    wDirectory.setEnabled(repository != null && radioByName.getSelection());
+    
+    wbTrans.setEnabled(repository != null && radioByName.getSelection());
+
+    wByReference.setEnabled(repository != null && radioByReference.getSelection());
+    wbByReference.setEnabled(repository != null && radioByReference.getSelection());
+  }
+  
+  protected void setRadioButtons() {
+    radioFilename.setSelection(specificationMethod==ObjectLocationSpecificationMethod.FILENAME);
+    radioByName.setSelection(specificationMethod==ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
+    radioByReference.setSelection(specificationMethod==ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE);
+    setActive();
+  }
+
+  private void getByReferenceData(RepositoryElementMetaInterface transInf) {
+    String path = transInf.getRepositoryDirectory().getPath();
+    if (!path.endsWith("/"))
+      path += "/";
+    path += transInf.getName();
+    wByReference.setText(path);
+  }
 
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
@@ -685,28 +795,31 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		wStepname.selectAll();
 
-		wFilename.setText(Const.NVL(mappingMeta.getFileName(), ""));
-		wTransName.setText(Const.NVL(mappingMeta.getTransName(), ""));
-		wTransDir.setText(Const.NVL(mappingMeta.getDirectoryPath(), ""));
-
-		// if we have a filename, then we use the filename, otherwise we go with
-		// the repository...
-		wFileRadio.setSelection(false);
-		wRepRadio.setSelection(false);
-		
-		if (!Const.isEmpty(mappingMeta.getFileName()))
-		{
-			wFileRadio.setSelection(true);
-		} else
-		{
-			if (repository != null && !Const.isEmpty(mappingMeta.getTransName())
-					&& !Const.isEmpty(mappingMeta.getDirectoryPath()))
-			{
-				wRepRadio.setSelection(true);
-			}
-		}
-
-		setFlags();
+    specificationMethod=mappingMeta.getSpecificationMethod();
+    switch(specificationMethod) {
+    case FILENAME: 
+      wFilename.setText(Const.NVL(mappingMeta.getFileName(), "")); 
+      break;
+    case REPOSITORY_BY_NAME:
+      wDirectory.setText(Const.NVL(mappingMeta.getDirectoryPath(), ""));
+      wTransname.setText(Const.NVL(mappingMeta.getTransName(), ""));
+      break;
+    case REPOSITORY_BY_REFERENCE:
+      referenceObjectId = mappingMeta.getTransObjectId();
+      wByReference.setText("");
+      try {
+        RepositoryObject transInf = repository.getObjectInformation(mappingMeta.getTransObjectId(), RepositoryObjectType.TRANSFORMATION);
+        if (transInf != null) {
+          getByReferenceData(transInf);
+        }
+      } catch (KettleException e) {
+        new ErrorDialog(shell, 
+            BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title"), 
+            BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Message"), e);
+      }
+      break;   
+    }
+    setRadioButtons();
 
 		// Add the parameters tab
 		addParametersTab(mappingParameters);
@@ -1405,16 +1518,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		wTab.setToolTipText(tooltip); //$NON-NLS-1$
 	}
 
-	private void setFlags()
-	{
-		if (repository == null)
-		{
-			wRepRadio.setEnabled(false);
-			wbTrans.setEnabled(false);
-			wTransName.setEnabled(false);
-			wTransDir.setEnabled(false);
-		}
-	}
 
 	private void cancel()
 	{
@@ -1437,9 +1540,27 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), BaseMessages.getString(PKG, "MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
 		}
 		
-		mappingMeta.setFileName(wFilename.getText());
-		mappingMeta.setTransName(wTransName.getText());
-		mappingMeta.setDirectoryPath(wTransDir.getText());
+    mappingMeta.setSpecificationMethod(specificationMethod);
+    switch(specificationMethod) {
+    case FILENAME:
+      mappingMeta.setFileName(wFilename.getText());
+      mappingMeta.setDirectoryPath(null);
+      mappingMeta.setTransName(null);
+      mappingMeta.setTransObjectId(null);
+      break;
+    case REPOSITORY_BY_NAME:
+      mappingMeta.setDirectoryPath(wDirectory.getText());
+      mappingMeta.setTransName(wTransname.getText());
+      mappingMeta.setFileName(null);
+      mappingMeta.setTransObjectId(null);
+      break;
+    case REPOSITORY_BY_REFERENCE:
+      mappingMeta.setFileName(null);
+      mappingMeta.setDirectoryPath(null);
+      mappingMeta.setTransName(null);
+      mappingMeta.setTransObjectId(referenceObjectId);
+      break;
+    }
 
 		// Load the information on the tabs, optionally do some
 		// verifications...
