@@ -797,6 +797,13 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	{
 		return null;
 	}
+	/**
+	 * @return The SQL on this database to get a list of sequences.
+	 */
+	public String getSQLListOfSequences()
+	{
+		return  null; 
+	}
 	
 	/**
 	 * @param tableName The table to be truncated.

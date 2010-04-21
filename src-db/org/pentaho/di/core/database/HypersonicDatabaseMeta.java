@@ -263,11 +263,5 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
             "TEXT", "TODAY", "TOP", "TRIM", "VAR_POP", "VAR_SAMP", "VIEW", "WORK", "WRITE_DELAY",
         };
     }
-	/**
-	 * @return The SQL on this database to get a list of sequences.
-	 */
-	public String getSQLListOfSequences()
-	{
-		return  null; 
-	}
+
 }

@@ -401,13 +401,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	public String getSQLInsertAutoIncUnknownDimensionRow(String schemaTable, String keyField, String versionField) {
 		return "insert into "+schemaTable+"("+keyField+", "+versionField+") values (1, 1)";		
 	}
-	/**
-	 * @return The SQL on this database to get a list of sequences.
-	 */
-	public String getSQLListOfSequences()
-	{
-		return  null; 
-	}
+
 	
 	/**
    * @param string

@@ -333,11 +333,5 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     {
         return new String[] { "jaybird-full-2.1.0.jar" };
     }	
-	/**
-	 * @return The SQL on this database to get a list of sequences.
-	 */
-	public String getSQLListOfSequences()
-	{
-		return  null; 
-	}
+
 }

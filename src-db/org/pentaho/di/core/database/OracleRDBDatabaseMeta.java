@@ -299,11 +299,5 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
     {
         return new String[] { "rdbthin.jar" };
     }  
-	/**
-	 * @return The SQL on this database to get a list of sequences.
-	 */
-	public String getSQLListOfSequences()
-	{
-		return  null; 
-	}
+
 }

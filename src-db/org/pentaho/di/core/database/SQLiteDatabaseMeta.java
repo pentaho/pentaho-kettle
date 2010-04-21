@@ -205,11 +205,5 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     {
         return new String[] { "sqlitejdbc-v037-nested.jar" };
     }
-	/**
-	 * @return The SQL on this database to get a list of sequences.
-	 */
-	public String getSQLListOfSequences()
-	{
-		return  null; 
-	}
+
 }

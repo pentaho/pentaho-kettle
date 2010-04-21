@@ -239,11 +239,5 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     public boolean supportsGetBlob() {
     	return false;
     }
-	/**
-	 * @return The SQL on this database to get a list of sequences.
-	 */
-	public String getSQLListOfSequences()
-	{
-		return  null; 
-	}
+
 }

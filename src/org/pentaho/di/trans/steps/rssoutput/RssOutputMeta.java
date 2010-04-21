@@ -597,10 +597,8 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			for (int part=0;part<parts;part++)
 			{
-				
-					retval[i]=buildFilename(space, copy);
-					i++;
-				
+				retval[i]=buildFilename(space, copy);
+				i++;	
 			}
 		}
 		if (i<nr)
