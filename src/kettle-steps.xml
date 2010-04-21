@@ -1218,4 +1218,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FileLocked</tooltip>
 		<iconfile>ui/images/CFL.png</iconfile>
 	</step>	 
+	<step id="WebServiceAvailable">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.WebServiceAvailable</description>
+		<classname>org.pentaho.di.trans.steps.webserviceavailable.WebServiceAvailableMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.WebServiceAvailable</tooltip>
+		<iconfile>ui/images/WSA.png</iconfile>
+	</step>	
 </steps>

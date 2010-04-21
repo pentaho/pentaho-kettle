@@ -502,4 +502,13 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CheckFilesLocked.Tooltip</tooltip>
 		<iconfile>ui/images/CFL.png</iconfile>
 	</job-entry>
+		<job-entry id="WEBSERVICE_AVAILABLE">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.WebServiceAvailable.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.webserviceavailable.JobEntryWebServiceAvailable</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WebServiceAvailable.Tooltip</tooltip>
+		<iconfile>ui/images/WSA.png</iconfile>
+	</job-entry>
+	
+	
 </job-entries>
