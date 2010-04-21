@@ -3187,6 +3187,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	 */
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+		if (transMeta!=null) {
+		  transMeta.setRepository(repository);
+		}
 	}
 
 	/**
