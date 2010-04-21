@@ -651,6 +651,7 @@ public class TransExecutionConfiguration implements Cloneable
 			
   	    	try {
   	    		rep.connect(username, password);
+  	    		setRepository(rep);
   	    	} catch(Exception e) {
   	    	  throw new KettleException("Unable to connect to the repository with name '"+repositoryName+"'");
   	    	}
