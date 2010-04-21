@@ -2099,14 +2099,18 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   public void launchStuff(JobEntryCopy jobEntryCopy) {
     if (jobEntryCopy.isJob()) {
       final JobEntryJob entry = (JobEntryJob) jobEntryCopy.getEntry();
-      if ((entry != null && entry.getFilename() != null && spoon.rep == null)
-          || (entry != null && entry.getName() != null && entry.getObjectId() != null && spoon.rep != null)) {
+      if ((entry != null && !Const.isEmpty(entry.getFilename()) && spoon.rep == null)
+          || (entry != null && !Const.isEmpty(entry.getName()) && spoon.rep != null)
+          || (entry != null && entry.getJobObjectId()!=null && spoon.rep != null)
+          ) {
         openJob(entry, jobEntryCopy);
       }
     } else if (jobEntryCopy.isTransformation()) {
       final JobEntryTrans entry = (JobEntryTrans) jobEntryCopy.getEntry();
-      if ((entry != null && entry.getFilename() != null && spoon.rep == null)
-          || (entry != null && entry.getName() != null && entry.getObjectId() != null && spoon.rep != null)) {
+      if ((entry != null && !Const.isEmpty(entry.getFilename()) && spoon.rep == null)
+          || (entry != null && entry.getName() != null && spoon.rep != null)
+          || (entry != null && entry.getTransObjectId()!=null && spoon.rep != null)
+         ) {
         openTransformation(entry, jobEntryCopy);
       }
     }
