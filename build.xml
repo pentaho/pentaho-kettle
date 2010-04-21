@@ -469,7 +469,7 @@
 	  	<jar jarfile="${dist.dir}/${impl.productID}-${version}-r${revision}.zip" 
 	    	 basedir="${distrib}" 
 	    	 includes="**/*"
-	  	     excludes="**/Thumbs.db"
+	  	     excludes="docs/api/** docs/api-core/** **/Thumbs.db"
 	  		/>
 	  </target>
 
@@ -484,7 +484,7 @@
 	  	<jar jarfile="${dist.dir}/${impl.productID}-src-${version}-r${revision}.zip" 
 	  		 basedir="."
 	    	 includes="**/*"
-	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/*"
+	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/* docs/api/** docs/api-core/**"
 	  		/>
 	  </target>
 
