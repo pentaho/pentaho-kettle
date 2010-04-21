@@ -1399,8 +1399,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     copyTransformationImage(getActiveTransformation());
   }
 
-  public void editTransformationProperties() {
-    TransGraph.editProperties(getActiveTransformation(), this, rep, true);
+  public boolean editTransformationProperties() {
+    return TransGraph.editProperties(getActiveTransformation(), this, rep, true);
   }
 
   public void editProperties() {
@@ -4279,7 +4279,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     } else {
       saved = saveXMLFile(meta, false);
-
     }
 
     delegates.tabs.renameTabs(); // filename or name of transformation might
@@ -4524,7 +4523,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (log.isBasic())
       log.logBasic("Save file as..."); //$NON-NLS-1$
     boolean saved = false;
-
+    String beforeFilename = meta.getFilename();
+    String beforeName = meta.getName();
+    
     FileDialog dialog = new FileDialog(shell, SWT.SAVE);
     String extensions[] = meta.getFilterExtensions();
     dialog.setFilterExtensions(extensions);
@@ -4568,7 +4569,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         // is not, but we might.
       }
       if (id == SWT.YES) {
-        save(meta, fname, export);
+        if (!export && !beforeFilename.equals(fname)) {
+          meta.setName(Const.createName(fname));
+          meta.setFilename(fname);
+          // If the user hits cancel here, don't save anything
+          //
+          if (!editTransformationProperties()) {
+            // Revert the changes!
+            //
+            meta.setFilename(beforeFilename);
+            meta.setName(beforeName);
+            return saved;
+          }
+        }
+        
+        saved=save(meta, fname, export);
       }
     }
     return saved;
