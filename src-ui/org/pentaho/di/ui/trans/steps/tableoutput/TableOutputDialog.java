@@ -55,6 +55,7 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -1093,46 +1094,60 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		
 	private void setTableFieldCombo(){
-		Runnable fieldLoader = new Runnable() {
-			public void run() {
-				//clear
-				for (int i = 0; i < tableFieldColumns.size(); i++) {
-					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
-					colInfo.setComboValues(new String[] {});
-				}
-				if (!Const.isEmpty(wTable.getText())) {
-					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
-					if (ci != null) {
-						Database db = new Database(loggingObject, ci);
-						try {
-							db.connect();
+	  // define a reusable Runnable to clear out the table fields
+	  final Runnable clearTableFields = new Runnable() {
+      public void run() {
+        for (int i = 0; i < tableFieldColumns.size(); i++) {
+          ColumnInfo colInfo = tableFieldColumns.get(i);
+          colInfo.setComboValues(new String[] {});
+        }
+      }
+	  };
 
-							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
-											.getText()), transMeta.environmentSubstitute(wTable.getText()));
-							RowMetaInterface r = db.getTableFields(schemaTable);
-							if (null != r) {
-								String[] fieldNames = r.getFieldNames();
-								if (null != fieldNames) {
-									for (int i = 0; i < tableFieldColumns
-											.size(); i++) {
-										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
-										colInfo.setComboValues(fieldNames);
-									}
-								}
-							}
-						} catch (Exception e) {
-							for (int i = 0; i < tableFieldColumns.size(); i++) {
-								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns	.get(i);
-								colInfo.setComboValues(new String[] {});
-							}
-							// ignore any errors here. drop downs will not be
-							// filled, but no problem for the user
-						}
-					}
-				}
-			}
-		};
-		shell.getDisplay().asyncExec(fieldLoader);
+	  // clear out the fields
+	  shell.getDisplay().asyncExec(clearTableFields);
+
+	  if (!Const.isEmpty(wTable.getText())) {
+      final DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+      
+      if (ci != null) {
+        final Database db = new Database(loggingObject, ci);
+        
+        // RCF 04.21.2010 - create a new thread to get the database connection in, this way it does not block the UI thread if the DB is unreachable
+        new Thread(new Runnable(){
+          public void run() {
+            try {
+              db.connect();
+              
+              // now that we have the db, we need to modify stuff in the UI. we do this in the UI thread with asyncExec.
+              shell.getDisplay().asyncExec(new Runnable() {                
+                public void run() {
+                  String schemaTable = ci.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
+                      .getText()), transMeta.environmentSubstitute(wTable.getText()));
+                  RowMetaInterface r;
+                  try {
+                    r = db.getTableFields(schemaTable);
+                    if (null != r) {
+                      final String[] fieldNames = r.getFieldNames();
+                      if (null != fieldNames) {
+                        for (int i = 0; i < tableFieldColumns.size(); i++) {
+                          ColumnInfo colInfo = tableFieldColumns.get(i);
+                          colInfo.setComboValues(fieldNames);
+                        }
+                      }
+                    }
+                  } catch (KettleDatabaseException e) {
+                    shell.getDisplay().asyncExec(clearTableFields);
+                  }
+                }
+              });
+            } catch (Exception e) {
+              shell.getDisplay().asyncExec(clearTableFields);
+            }
+          }
+        }).start();        
+      }
+	  }
 	}
 	
 	protected void setComboBoxes()
