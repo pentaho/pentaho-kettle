@@ -434,6 +434,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     toolTip.setRespectMonitorBounds(true);
     toolTip.setRespectDisplayBounds(true);
     toolTip.setPopupDelay(350);
+    toolTip.setHideDelay(5000);
     toolTip.setShift(new org.eclipse.swt.graphics.Point(ConstUI.TOOLTIP_OFFSET, ConstUI.TOOLTIP_OFFSET));
 
     helpTip = new CheckBoxToolTip(canvas);
