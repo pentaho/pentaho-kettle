@@ -59,12 +59,17 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
-          if ( "mem:db".equals(databaseName) || ((Const.isEmpty(port)||"-1".equals(port)) && Const.isEmpty(hostname)) ) 
+          // If the database is an in-memory DB or if there is no valid port and hostname, go embedded
+          //
+          if ( (databaseName!=null && databaseName.startsWith("mem:")) || 
+              ((Const.isEmpty(port)||"-1".equals(port)) && Const.isEmpty(hostname)) ) 
           {
             return "jdbc:h2:"+databaseName;
           }
           else
           {
+            // Connect over TCP/IP
+            //
             return "jdbc:h2:tcp://"+hostname+ ":" + port +"/"+databaseName;
           }
         }
