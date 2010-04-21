@@ -439,14 +439,13 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         // Get a stream for the specified URL
         server = new URL(urlToUse);
         URLConnection connection = server.openConnection();
+        connection.setDoOutput(true);
 
         // See if we need to send a file over?
         String realUploadFilename = environmentSubstitute(uploadFilename);
         if (!Const.isEmpty(realUploadFilename))
         {
           if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobHTTP.Log.SendingFile", realUploadFilename));
-
-          connection.setDoOutput(true);
 
           // Grab an output stream to upload data to web server
           uploadStream = connection.getOutputStream();
@@ -468,13 +467,13 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
               fileStream = null;
             }
           }
-          if(log.isDetailed()) logDetailed(BaseMessages.getString("JobHTTP.Log.FinishedSendingFile"));
+          if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobHTTP.Log.FinishedSendingFile"));
         }
 
         if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobHTTP.Log.StartReadingReply"));
 
         // Read the result from the server...
-        input = server.openStream();
+        input = connection.getInputStream();
         Date date = new Date(connection.getLastModified());
         logBasic(BaseMessages.getString(PKG, "JobHTTP.Log.ReplayInfo", connection.getContentType(),date));
 
