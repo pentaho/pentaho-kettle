@@ -390,6 +390,7 @@ public class Result implements Cloneable
         nrErrors+=res.getNrErrors();
         nrFilesRetrieved+=res.getNrFilesRetrieved();
         resultFiles.putAll(res.getResultFiles());
+        logChannelId=res.getLogChannelId();
         rows.addAll(res.getRows());        
     }
     
