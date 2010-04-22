@@ -144,6 +144,15 @@ public class RepositoriesController extends AbstractXulEventHandler {
   public String getName() {
     return "repositoryLoginController"; //$NON-NLS-1$
   }
+  
+  public void show(){
+    if(loginModel.getUsername() != null){
+      userPassword.setFocus();
+    } else {
+      username.setFocus();
+    }
+    loginDialog.show();
+  }
 
   public void login() {
     XulWaitBox box;

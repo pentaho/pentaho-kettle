@@ -75,8 +75,7 @@ public class RepositoriesDialog {
   }
 
   public void show() {
-    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-login-dialog"); //$NON-NLS-1$
-    dialog.show();
+    repositoriesController.show();
   }
 
   public ILoginCallback getCallback() {
