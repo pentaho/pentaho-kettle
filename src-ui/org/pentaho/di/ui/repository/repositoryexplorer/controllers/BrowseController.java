@@ -580,8 +580,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     } catch (Exception e) {
       result = false;
       event.setAccepted(false);
-      // convert to runtime exception so it bubbles up through the UI
-      throw new RuntimeException(e);
+      messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
+      messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+      messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class, "BrowseController.UnableToMove", e.getLocalizedMessage()));//$NON-NLS-1$
+      messageBox.open();
     }
 
     event.setAccepted(result);
