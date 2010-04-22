@@ -129,5 +129,6 @@
 	<classpathentry kind="lib" path="libext/xercesImpl-2.9.1.jar"/>
 	<classpathentry kind="lib" path="libext/palo-core.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/rome-1.0.jar"/>
+	<classpathentry kind="lib" path="libext/webservices/xalan-2.4.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

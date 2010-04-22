@@ -523,10 +523,16 @@ public class WebService extends BaseStep implements StepInterface
 	    	
 	    	// Create a few objects to help do the layout of XML snippets we find along the way
 	    	// 
-	    	TransformerFactory transformerFactory = TransformerFactory.newInstance();
-	    	Transformer transformer = transformerFactory.newTransformer();
+        Transformer transformer = null;
+        try {
+          TransformerFactory transformerFactory = TransformerFactory.newInstance("org.apache.xalan.processor.TransformerFactoryImpl", null);
+          transformer = transformerFactory.newTransformer();
+        } catch (Throwable t) { 
+          TransformerFactory transformerFactory = TransformerFactory.newInstance();
+          transformer = transformerFactory.newTransformer();
+        }
 	    	transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
             if (log.isDetailed()) {
 		    	StringWriter bodyXML = new StringWriter();
