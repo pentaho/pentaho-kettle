@@ -4570,7 +4570,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         // is not, but we might.
       }
       if (id == SWT.YES) {
-        if (!export && !beforeFilename.equals(fname)) {
+        if (!export && !Const.isEmpty(beforeFilename) && !beforeFilename.equals(fname)) {
           meta.setName(Const.createName(fname));
           meta.setFilename(fname);
           // If the user hits cancel here, don't save anything
