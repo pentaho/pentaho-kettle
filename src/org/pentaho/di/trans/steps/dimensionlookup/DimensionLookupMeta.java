@@ -908,61 +908,55 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
-	{
-		try
-		{
-			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
+  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+    try {
+      databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
 
-            schemaName = rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
-			tableName = rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
-			commitSize = (int) rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
-			update = rep.getStepAttributeBoolean(id_step, "update"); //$NON-NLS-1$
+      schemaName = rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
+      tableName = rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
+      commitSize = (int) rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
+      update = rep.getStepAttributeBoolean(id_step, "update"); //$NON-NLS-1$
 
-			int nrkeys = rep.countNrStepAttributes(id_step, "lookup_key_name"); //$NON-NLS-1$
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+      int nrkeys = rep.countNrStepAttributes(id_step, "lookup_key_name"); //$NON-NLS-1$
+      int nrfields = rep.countNrStepAttributes(id_step, "field_update"); //$NON-NLS-1$
 
-			allocate(nrkeys, nrfields);
+      allocate(nrkeys, nrfields);
 
-			for (int i = 0; i < nrkeys; i++)
-			{
-				keyStream[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name"); //$NON-NLS-1$
-				keyLookup[i] = rep.getStepAttributeString(id_step, i, "lookup_key_field"); //$NON-NLS-1$
-			}
+      for (int i = 0; i < nrkeys; i++) {
+        keyStream[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name"); //$NON-NLS-1$
+        keyLookup[i] = rep.getStepAttributeString(id_step, i, "lookup_key_field"); //$NON-NLS-1$
+      }
 
-			dateField = rep.getStepAttributeString(id_step, "date_name"); //$NON-NLS-1$
-			dateFrom = rep.getStepAttributeString(id_step, "date_from"); //$NON-NLS-1$
-			dateTo = rep.getStepAttributeString(id_step, "date_to"); //$NON-NLS-1$
+      dateField = rep.getStepAttributeString(id_step, "date_name"); //$NON-NLS-1$
+      dateFrom = rep.getStepAttributeString(id_step, "date_from"); //$NON-NLS-1$
+      dateTo = rep.getStepAttributeString(id_step, "date_to"); //$NON-NLS-1$
 
-			for (int i = 0; i < nrfields; i++)
-			{
-				fieldStream[i] = rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
-				fieldLookup[i] = rep.getStepAttributeString(id_step, i, "field_lookup"); //$NON-NLS-1$
-				fieldUpdate[i] = getUpdateType(update, rep.getStepAttributeString(id_step, i, "field_update")); //$NON-NLS-1$
-			}
+      for (int i = 0; i < nrfields; i++) {
+        fieldStream[i] = rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
+        fieldLookup[i] = rep.getStepAttributeString(id_step, i, "field_lookup"); //$NON-NLS-1$
+        fieldUpdate[i] = getUpdateType(update, rep.getStepAttributeString(id_step, i, "field_update")); //$NON-NLS-1$
+      }
 
-			keyField = rep.getStepAttributeString(id_step, "return_name"); //$NON-NLS-1$
-			keyRename = rep.getStepAttributeString(id_step, "return_rename"); //$NON-NLS-1$
-			autoIncrement = rep.getStepAttributeBoolean(id_step, "use_autoinc"); //$NON-NLS-1$
-			versionField = rep.getStepAttributeString(id_step, "version_field"); //$NON-NLS-1$
-			techKeyCreation = rep.getStepAttributeString(id_step, "creation_method"); //$NON-NLS-1$
+      keyField = rep.getStepAttributeString(id_step, "return_name"); //$NON-NLS-1$
+      keyRename = rep.getStepAttributeString(id_step, "return_rename"); //$NON-NLS-1$
+      autoIncrement = rep.getStepAttributeBoolean(id_step, "use_autoinc"); //$NON-NLS-1$
+      versionField = rep.getStepAttributeString(id_step, "version_field"); //$NON-NLS-1$
+      techKeyCreation = rep.getStepAttributeString(id_step, "creation_method"); //$NON-NLS-1$
 
-			sequenceName = rep.getStepAttributeString(id_step, "sequence"); //$NON-NLS-1$
-			minYear = (int) rep.getStepAttributeInteger(id_step, "min_year"); //$NON-NLS-1$
-			maxYear = (int) rep.getStepAttributeInteger(id_step, "max_year"); //$NON-NLS-1$
+      sequenceName = rep.getStepAttributeString(id_step, "sequence"); //$NON-NLS-1$
+      minYear = (int) rep.getStepAttributeInteger(id_step, "min_year"); //$NON-NLS-1$
+      maxYear = (int) rep.getStepAttributeInteger(id_step, "max_year"); //$NON-NLS-1$
 
-            cacheSize = (int) rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
-            preloadingCache = rep.getStepAttributeBoolean(id_step, "preload_cache"); //$NON-NLS-1$
-            
-            usingStartDateAlternative = rep.getStepAttributeBoolean(id_step, "use_start_date_alternative"); //$NON-NLS-1$
-            startDateAlternative = getStartDateAlternative(rep.getStepAttributeString(id_step, "start_date_alternative")); //$NON-NLS-1$
-            startDateFieldName = rep.getStepAttributeString(id_step, "start_date_field_name"); //$NON-NLS-1$ 
-		}
-		catch (Exception e)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
-		}
-	}
+      cacheSize = (int) rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
+      preloadingCache = rep.getStepAttributeBoolean(id_step, "preload_cache"); //$NON-NLS-1$
+
+      usingStartDateAlternative = rep.getStepAttributeBoolean(id_step, "use_start_date_alternative"); //$NON-NLS-1$
+      startDateAlternative = getStartDateAlternative(rep.getStepAttributeString(id_step, "start_date_alternative")); //$NON-NLS-1$
+      startDateFieldName = rep.getStepAttributeString(id_step, "start_date_field_name"); //$NON-NLS-1$ 
+    } catch (Exception e) {
+      throw new KettleException(BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+    }
+  }
 
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     try {
