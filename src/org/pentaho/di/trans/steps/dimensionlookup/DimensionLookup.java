@@ -186,7 +186,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	            }
             }
 
-            if (meta.getDateField()!=null && meta.getDateField().length()>0)
+            if (!Const.isEmpty(meta.getDateField()))
             { 
                 data.datefieldnr = data.inputRowMeta.indexOfValue(meta.getDateField());
             }
@@ -195,19 +195,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 data.datefieldnr=-1;
             } 
 
+            // Initialize the start date value in case we don't have one in the input rows
+            //
+            data.valueDateNow = determineDimensionUpdatedDate(r);
+            
             determineTechKeyCreation();
 
             data.notFoundTk = new Long( (long)meta.getDatabaseMeta().getNotFoundTK(isAutoIncrement()) );
             // if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0) data.notFoundTk.setName(meta.getKeyRename());
-
-            if (meta.getDateField()!=null && data.datefieldnr>=0)
-            {
-                data.valueDateNow = data.inputRowMeta.getDate(r, data.datefieldnr);
-            }
-            else
-            {
-                data.valueDateNow = new Date(System.currentTimeMillis()); // System date... //$NON-NLS-1$
-            }
                         
             if (getCopy()==0) checkDimZero();
             
@@ -244,6 +239,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
         return true;
     }
     
+    private Date determineDimensionUpdatedDate(Object[] row) throws KettleException {
+      if (data.datefieldnr < 0) {
+        return getTrans().getCurrentDate(); // start of transformation...
+      } else {
+        return data.inputRowMeta.getDate(row, data.datefieldnr);  // Date field in the input row
+      }
+    }
+
     /**
      * Pre-load the cache by reading the whole dimension table from disk...
      * 
@@ -306,236 +309,243 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		}
 	}
 
-	private synchronized Object[] lookupValues(RowMetaInterface rowMeta, Object[] row) throws KettleException
-	{
-        Object[] outputRow = new Object[data.outputRowMeta.size()];
+  private synchronized Object[] lookupValues(RowMetaInterface rowMeta, Object[] row) throws KettleException {
+    Object[] outputRow = new Object[data.outputRowMeta.size()];
+
+    RowMetaInterface lookupRowMeta;
+    Object[] lookupRow;
+
+    Object[] returnRow = null;
+
+    Long technicalKey;
+    Long valueVersion;
+    Date valueDate = null;
+    Date valueDateFrom = null;
+    Date valueDateTo = null;
+
+    // Determine the lookup date ("now") if we have a field that carries said
+    // date.
+    // If not, the system date is taken.
+    //
+    valueDate = determineDimensionUpdatedDate(row);
+
+    if (!meta.isUpdate() && meta.isPreloadingCache()) {
+      // Obtain a result row from the pre-load cache...
+      // 
+      // Create a row to compare with
+      //
+      RowMetaInterface preloadRowMeta = data.preloadCache.getRowMeta();
+      
+      // In this case it's all the same. (simple)
+      // 
+      data.returnRowMeta = data.preloadCache.getRowMeta(); 
+      lookupRowMeta = preloadRowMeta;
+      lookupRow = new Object[preloadRowMeta.size()];
+
+      // Assemble the lookup row, convert data if needed...
+      //
+      for (int i = 0; i < data.preloadIndexes.size(); i++) {
+        int from = data.preloadIndexes.get(i); // Input row index
+        int to = data.preloadCache.getKeyIndexes()[i]; // Lookup row index
+
+        // From data type...
+        //
+        ValueMetaInterface fromValueMeta = rowMeta.getValueMeta(from);
         
-        RowMetaInterface lookupRowMeta;
-        Object[] lookupRow;
+        // to date type...
+        //
+        ValueMetaInterface toValueMeta = data.preloadCache.getRowMeta().getValueMeta(to); 
+
+        // From value:
+        //
+        Object fromData = row[from];
         
-        Object[] returnRow = null;
-        
-		Long technicalKey;
-		Long valueVersion;
-		Date valueDate    = null;
-		Date valueDateFrom = null;
-		Date valueDateTo   = null;
+        // To value:
+        //
+        Object toData = toValueMeta.convertData(fromValueMeta, fromData); 
 
-        // Determine the lookup date ("now") if we have a field that carries said date.
-		// If not, the system date is taken.
-		//
-		if (data.datefieldnr>=0) {
-			valueDate = rowMeta.getDate(row, data.datefieldnr);
-		} else {
-			valueDate = data.valueDateNow; // system date in this case.
-		}
-		
-		if (!meta.isUpdate() && meta.isPreloadingCache()) {
-			// Obtain a result row from the pre-load cache...
-			// 
-			// Create a row to compare with
-			//
-			RowMetaInterface preloadRowMeta = data.preloadCache.getRowMeta();
-			data.returnRowMeta = data.preloadCache.getRowMeta(); // In this case it's all the same. (simple)
-			lookupRowMeta = preloadRowMeta;
-			lookupRow = new Object[preloadRowMeta.size()];
-			
-			// Assemble the lookup row, convert data if needed...
-			//
-			for (int i=0;i<data.preloadIndexes.size();i++) {
-				int from = data.preloadIndexes.get(i); // Input row index
-				int to   = data.preloadCache.getKeyIndexes()[i]; // Lookup row index
+        // Set the key in the row...
+        //
+        lookupRow[to] = toData;
+      }
 
-				ValueMetaInterface fromValueMeta = rowMeta.getValueMeta(from); // from data type
-				ValueMetaInterface toValueMeta = data.preloadCache.getRowMeta().getValueMeta(to); // to data type
-				
-				Object fromData = row[from]; // from value
-				Object toData = toValueMeta.convertData(fromValueMeta, fromData); // to value
+      // Also set the lookup date on the "end of date range" (toDate) position
+      //
+      lookupRow[data.preloadFromDateIndex] = valueDate;
 
-				// Set the key in the row...
-				//
-				lookupRow[to] = toData;
-			}
-			
-			// Also set the lookup date on the "end of date range" (toDate) position
-			//
-			lookupRow[data.preloadFromDateIndex] = valueDate;
-			
-			// Look up the row in the pre-load cache...
-			//
-			int index = data.preloadCache.lookupRow(lookupRow);
-			if (index>=0) {
-				returnRow = data.preloadCache.getRow(index);
-			} else {
-				returnRow = null; // Nothing found!
-			}
-			
-			
-		}
-		else 
-		{
-			lookupRow = new Object[data.lookupRowMeta.size()];
-			lookupRowMeta = data.lookupRowMeta;
-			
-	        // Construct the lookup row...
-			//
-			for (int i=0;i<meta.getKeyStream().length;i++)
-			{
-				try
-				{
-					lookupRow[i] = row[data.keynrs[i]];
-				}
-				catch(Exception e) // TODO : remove exception??
-				{
-					throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.ErrorDetectedInGettingKey",i+"",data.keynrs[i]+"/"+rowMeta.size(),rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				}
-			}
+      // Look up the row in the pre-load cache...
+      //
+      int index = data.preloadCache.lookupRow(lookupRow);
+      if (index >= 0) {
+        returnRow = data.preloadCache.getRow(index);
+      } else {
+        returnRow = null; // Nothing found!
+      }
 
-	        lookupRow[meta.getKeyStream().length]=valueDate;  // ? >= date_from
-	        lookupRow[meta.getKeyStream().length+1]=valueDate; // ? < date_to
-			
-			if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "DimensionLookup.Log.LookupRow")+data.lookupRowMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
-			
-	        // Do the lookup and see if we can find anything in the database.
-	        // But before that, let's see if we can find anything in the cache
-	        //
-	        
-			if (meta.getCacheSize()>=0)
-	        {
-	            returnRow=getFromCache(lookupRow, valueDate);
-	        }
-			
-	        if (returnRow==null)
-	        {
-	            data.db.setValues(data.lookupRowMeta, lookupRow, data.prepStatementLookup);
-	            returnRow=data.db.getLookup(data.prepStatementLookup);
-	            data.returnRowMeta = data.db.getReturnRowMeta();
-	            
-	            incrementLinesInput();
-	            
-	            if (returnRow!=null && meta.getCacheSize()>=0)
-	            {
-	                addToCache(lookupRow, returnRow);
-	            }
-	        }
-		}
-        		
-		/* Handle "update = false" first for performance reasons
-		 */
-		if (!meta.isUpdate())
-		{
-			if (returnRow==null)
-			{
-                returnRow=new Object[data.returnRowMeta.size()];
-                returnRow[0] = data.notFoundTk; 
+    } else {
+      lookupRow = new Object[data.lookupRowMeta.size()];
+      lookupRowMeta = data.lookupRowMeta;
 
-                if (meta.getCacheSize()>=0) // need -oo to +oo as well...
-                {
-                    returnRow[returnRow.length-2] = data.min_date;
-                    returnRow[returnRow.length-1] = data.max_date;
-                }
-			}
-			else
-			{
-				// We found the return values in row "add".
-				// Throw away the version nr...
-				// add.removeValue(1);
-				
-				// Rename the key field if needed.  Do it directly in the row...
-				// if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0) add.getValue(0).setName(meta.getKeyRename());
-			}
-		}
-		else  // Insert - update algorithm for slowly changing dimensions
-		{
-			if (returnRow==null) // The dimension entry was not found, we need to add it!
-			{
-				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.NoDimensionEntryFound")+lookupRowMeta.getString(lookupRow)+")"); //$NON-NLS-1$ //$NON-NLS-2$
-				//logDetailed("Entry not found: add value!");
-				// Date range: ]-oo,+oo[ 
-				valueDateFrom = data.min_date;
-				valueDateTo   = data.max_date;
-				valueVersion  = new Long(1L);     // Versions always start at 1.
-				
-				// get a new value from the sequence generator chosen.
-				//
-				technicalKey = null;
-				switch ( getTechKeyCreation() )
-				{
-				    case CREATION_METHOD_TABLEMAX:
-						// What's the next value for the technical key?
-						technicalKey=data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName, data.realTableName, meta.getKeyField());
-                        break;
-				    case CREATION_METHOD_AUTOINC:
-						technicalKey=null; // Set to null to flag auto-increment usage
-						break;
-				    case CREATION_METHOD_SEQUENCE:						
-						technicalKey=data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceName(), meta.getKeyField());
-						if (technicalKey!=null && log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.FoundNextSequence")+technicalKey.toString()); //$NON-NLS-1$
-						break;					
-				}	               
+      // Construct the lookup row...
+      //
+      for (int i = 0; i < meta.getKeyStream().length; i++) {
+        try {
+          lookupRow[i] = row[data.keynrs[i]];
+        } catch (Exception e) // TODO : remove exception??
+        {
+          throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.ErrorDetectedInGettingKey", i + "", data.keynrs[i] + "/" + rowMeta.size(), rowMeta.getString(row))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        }
+      }
 
-				/*
-				 *   INSERT INTO table(version, datefrom, dateto, fieldlookup)
-				 *   VALUES(valueVersion, valueDateFrom, valueDateTo, row.fieldnrs)
-				 *   ;
-				 */
-				
-				technicalKey = dimInsert(data.inputRowMeta, row, technicalKey, true, valueVersion, valueDateFrom, valueDateTo); 
-								
-				incrementLinesOutput();
-				returnRow = new Object[data.returnRowMeta.size()];
-                int returnIndex=0;
-                
-                returnRow[returnIndex] = technicalKey;
-                returnIndex++;
-                
-                // See if we need to store this record in the cache as well...
-                /*
-                 * TODO: we can't really assume like this that the cache layout of the incoming rows (below) is the same as the stored data.
-                 * Storing this in the cache gives us data/metadata collision errors. (class cast problems etc)
-                 * Perhaps we need to convert this data to the target data types.  Alternatively, we can use a separate cache in the future.
-                 * Reference: PDI-911
-                 * 
-                if (meta.getCacheSize()>=0)
-                {
-                    Object[] values = getCacheValues(rowMeta, row, technicalKey, valueVersion, valueDateFrom, valueDateTo);
-                    
-                    // put it in the cache...
-                    if (values!=null)
-                    {
-                    	addToCache(lookupRow, values);
-                    }
-                }
-                */
-                
-				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.AddedDimensionEntry")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
-			}
-			else  // The entry was found: do we need to insert, update or both?
-			{
-				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.DimensionEntryFound")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
-                
-				// What's the key?  The first value of the return row
-				technicalKey = data.returnRowMeta.getInteger(returnRow, 0);
-				valueVersion = data.returnRowMeta.getInteger(returnRow, 1);
-                
-				// Date range: ]-oo,+oo[ 
-				valueDateFrom = meta.getMinDate();
-				valueDateTo   = meta.getMaxDate();
+      lookupRow[meta.getKeyStream().length] = valueDate; // ? >= date_from
+      lookupRow[meta.getKeyStream().length + 1] = valueDate; // ? < date_to
 
-				// The other values, we compare with
-				int cmp;
-				
-				// If everything is the same: don't do anything
-				// If one of the fields is different: insert or update
-				// If all changed fields have update = Y, update
-				// If one of the changed fields has update = N, insert
+      if (log.isDebug())
+        logDebug(BaseMessages.getString(PKG, "DimensionLookup.Log.LookupRow") + data.lookupRowMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
 
-				boolean insert=false;
-				boolean identical=true;
-				boolean punch=false;
-				
-				for (int i=0;i<meta.getFieldStream().length;i++)
-				{
+      // Do the lookup and see if we can find anything in the database.
+      // But before that, let's see if we can find anything in the cache
+      //
+      if (meta.getCacheSize() >= 0) {
+        returnRow = getFromCache(lookupRow, valueDate);
+      }
+
+      // Nothing found in the cache?
+      // Perform the lookup in the database...
+      //
+      if (returnRow == null) {
+        data.db.setValues(data.lookupRowMeta, lookupRow, data.prepStatementLookup);
+        returnRow = data.db.getLookup(data.prepStatementLookup);
+        data.returnRowMeta = data.db.getReturnRowMeta();
+
+        incrementLinesInput();
+
+        if (returnRow != null && meta.getCacheSize() >= 0) {
+          addToCache(lookupRow, returnRow);
+        }
+      }
+    }
+
+    // This next block of code handles the dimension key LOOKUP ONLY.
+    // We handle this case where "update = false" first for performance reasons
+    //
+    if (!meta.isUpdate()) {
+      if (returnRow == null) {
+        returnRow = new Object[data.returnRowMeta.size()];
+        returnRow[0] = data.notFoundTk;
+
+        if (meta.getCacheSize() >= 0) // need -oo to +oo as well...
+        {
+          returnRow[returnRow.length - 2] = data.min_date;
+          returnRow[returnRow.length - 1] = data.max_date;
+        }
+      } else {
+        // We found the return values in row "add".
+        // Throw away the version nr...
+        // add.removeValue(1);
+
+        // Rename the key field if needed. Do it directly in the row...
+        // if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0)
+        // add.getValue(0).setName(meta.getKeyRename());
+      }
+    } else 
+      // This is the "update=true" case where we update the dimension table...  
+      // It is an "Insert - update" algorithm for slowly changing dimensions
+      //
+    {
+      // The dimension entry was not found, we need to add it!
+      //
+      if (returnRow == null) {
+        if (log.isRowLevel()) {
+          logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.NoDimensionEntryFound") + lookupRowMeta.getString(lookupRow) + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        // Date range: ]-oo,+oo[
+        //
+        valueDateFrom = data.min_date;
+        valueDateTo = data.max_date;
+        valueVersion = new Long(1L); // Versions always start at 1.
+
+        // get a new value from the sequence generator chosen.
+        //
+        technicalKey = null;
+        switch (getTechKeyCreation()) {
+        case CREATION_METHOD_TABLEMAX:
+          // What's the next value for the technical key?
+          technicalKey = data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName, data.realTableName, meta.getKeyField());
+          break;
+        case CREATION_METHOD_AUTOINC:
+          technicalKey = null; // Set to null to flag auto-increment usage
+          break;
+        case CREATION_METHOD_SEQUENCE:
+          technicalKey = data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceName(), meta.getKeyField());
+          if (technicalKey != null && log.isRowLevel())
+            logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.FoundNextSequence") + technicalKey.toString()); //$NON-NLS-1$
+          break;
+        }
+
+        /*
+         * INSERT INTO table(version, datefrom, dateto, fieldlookup)
+         * VALUES(valueVersion, valueDateFrom, valueDateTo, row.fieldnrs) ;
+         */
+
+        technicalKey = dimInsert(data.inputRowMeta, row, technicalKey, true, valueVersion, valueDateFrom, valueDateTo);
+
+        incrementLinesOutput();
+        returnRow = new Object[data.returnRowMeta.size()];
+        int returnIndex = 0;
+
+        returnRow[returnIndex] = technicalKey;
+        returnIndex++;
+
+        // See if we need to store this record in the cache as well...
+        /*
+         * TODO: we can't really assume like this that the cache layout of the
+         * incoming rows (below) is the same as the stored data. Storing this in
+         * the cache gives us data/metadata collision errors. (class cast
+         * problems etc) Perhaps we need to convert this data to the target data
+         * types. Alternatively, we can use a separate cache in the future.
+         * Reference: PDI-911
+         * 
+         * if (meta.getCacheSize()>=0) { Object[] values =
+         * getCacheValues(rowMeta, row, technicalKey, valueVersion,
+         * valueDateFrom, valueDateTo);
+         * 
+         * // put it in the cache... if (values!=null) { addToCache(lookupRow,
+         * values); } }
+         */
+
+        if (log.isRowLevel())
+          logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.AddedDimensionEntry") + data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
+      } else 
+      // 
+      // The entry was found: do we need to insert, update or both?
+      //
+      {
+        if (log.isRowLevel())
+          logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.DimensionEntryFound") + data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
+
+        // What's the key? The first value of the return row
+        technicalKey = data.returnRowMeta.getInteger(returnRow, 0);
+        valueVersion = data.returnRowMeta.getInteger(returnRow, 1);
+
+        // Date range: ]-oo,+oo[
+        valueDateFrom = meta.getMinDate();
+        valueDateTo = meta.getMaxDate();
+
+        // The other values, we compare with
+        int cmp;
+
+        // If everything is the same: don't do anything
+        // If one of the fields is different: insert or update
+        // If all changed fields have update = Y, update
+        // If one of the changed fields has update = N, insert
+
+        boolean insert = false;
+        boolean identical = true;
+        boolean punch = false;
+
+        for (int i = 0; i < meta.getFieldStream().length; i++) {
           if (data.fieldnrs[i] >= 0) {
             // Only compare real fields, not last updated row, last version, etc
             //
@@ -546,7 +556,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
             try {
               cmp = v1.compare(valueData1, v2, valueData2);
-            } catch(ClassCastException e) {
+            } catch (ClassCastException e) {
               throw e;
             }
 
@@ -567,138 +577,137 @@ public class DimensionLookup extends BaseStep implements StepInterface
             if (log.isRowLevel())
               logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.ComparingValues", "" + v1, "" + v2, String.valueOf(cmp), String.valueOf(identical), String.valueOf(insert), String.valueOf(punch))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
           }
-				}
-				
-				if (!insert)  // Just an update of row at key = valueKey
-				{
-					if (!identical)
-					{
-						if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.UpdateRowWithValues")+data.inputRowMeta.getString(row)); //$NON-NLS-1$
-						/*
-						 * UPDATE d_customer
-						 * SET    fieldlookup[] = row.getValue(fieldnrs)
-						 * WHERE  returnkey = dimkey
-						 */
-						dimUpdate(rowMeta, row, technicalKey);
-						incrementLinesUpdated();
-                        
-                        // We need to capture this change in the cache as well...
-                        if (meta.getCacheSize()>=0)
-                        {
-                            Object[] values = getCacheValues(rowMeta, row, technicalKey, valueVersion, valueDateFrom, valueDateTo);
-                            addToCache(lookupRow, values);
-                        }
-					}
-					else
-					{
-						if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.SkipLine")); //$NON-NLS-1$
-						// Don't do anything, everything is file in de dimension.
-						incrementLinesSkipped();
-					}
-				}
-				else
-				{
-					if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.InsertNewVersion")+technicalKey.toString()); //$NON-NLS-1$
-					
-	                Long valueNewVersion = valueVersion + 1;
-	                // From date (valueDate) is calculated at the start of this method to be either the system date or the value in a column
-	                //
-					valueDateFrom = valueDate;
-					valueDateTo   = data.max_date; //$NON-NLS-1$
+        }
 
-					// First try to use an AUTOINCREMENT field
-					if (meta.getDatabaseMeta().supportsAutoinc() && isAutoIncrement())
-					{
-						technicalKey=new Long(0L); // value to accept new key...
-					}
-					else
-					// Try to get the value by looking at a SEQUENCE (oracle mostly)
-					if (meta.getDatabaseMeta().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
-					{
-						technicalKey=data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceName(), meta.getKeyField());
-						if (technicalKey!=null && log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.FoundNextSequence2")+technicalKey.toString()); //$NON-NLS-1$
-					}
-					else
-					// Use our own sequence here...
-					{
-						// What's the next value for the technical key?
-                        technicalKey = data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName,data.realTableName, meta.getKeyField());
-					}
-
-					// update our technicalKey with the return of the insert
-					technicalKey = dimInsert( rowMeta, row, technicalKey, false, valueNewVersion, valueDateFrom, valueDateTo ); 
-					incrementLinesOutput();
-                    
-                    // We need to capture this change in the cache as well...
-                    if (meta.getCacheSize()>=0)
-                    {
-                        Object[] values = getCacheValues(rowMeta, row, technicalKey, valueNewVersion, valueDateFrom, valueDateTo);
-                        addToCache(lookupRow, values);
-                    }
-				}
-				if (punch) // On of the fields we have to punch through has changed!
-				{
-					/*
-					 * This means we have to update all versions:
-					 * 
-					 * UPDATE dim SET punchf1 = val1, punchf2 = val2, ...
-					 * WHERE  fieldlookup[] = ?
-					 * ;
-					 * 
-					 * --> update ALL versions in the dimension table.
-					 */
-					dimPunchThrough( rowMeta, row );
-					incrementLinesUpdated();
-				}
-				
-				returnRow = new Object[data.returnRowMeta.size()];
-				returnRow[0] = technicalKey;
-				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.TechnicalKey")+technicalKey); //$NON-NLS-1$
-			}
-		}
-		
-		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.AddValuesToRow")+data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
-        
-        
-        // Copy the results to the output row...
+        // After comparing the record in the database and the data in the input
+        // and taking into account the rules of the slowly changing dimension,
+        // we found out whether or not to perform an insert or an update.
         //
-        // First copy the input row values to the output..
-		//
-        for (int i=0;i<rowMeta.size();i++) outputRow[i] = row[i];
+        if (!insert) // Just an update of row at key = valueKey
+        {
+          if (!identical) {
+            if (log.isRowLevel())
+              logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.UpdateRowWithValues") + data.inputRowMeta.getString(row)); //$NON-NLS-1$
+            /*
+             * UPDATE d_customer SET fieldlookup[] = row.getValue(fieldnrs)
+             * WHERE returnkey = dimkey
+             */
+            dimUpdate(rowMeta, row, technicalKey, valueDate);
+            incrementLinesUpdated();
 
-        int outputIndex = rowMeta.size();
-        int inputIndex = 0;
-        
-        // Then the technical key...
-        //
-        outputRow[outputIndex++] = data.returnRowMeta.getInteger(returnRow, inputIndex++);
-        
-        //skip the version in the input        
-        inputIndex++;
-        
-        // Then get the "extra fields"...
-        // don't return date from-to fields, they can be returned when explicitly specified in lookup fields.
-        while (inputIndex<returnRow.length && outputIndex<outputRow.length)
-		{
-			outputRow[outputIndex] = returnRow[inputIndex];
-            outputIndex++;
-            inputIndex++;
-		}
+            // We need to capture this change in the cache as well...
+            if (meta.getCacheSize() >= 0) {
+              Object[] values = getCacheValues(rowMeta, row, technicalKey, valueVersion, valueDateFrom, valueDateTo);
+              addToCache(lookupRow, values);
+            }
+          } else {
+            if (log.isRowLevel())
+              logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.SkipLine")); //$NON-NLS-1$
+            // Don't do anything, everything is file in de dimension.
+            incrementLinesSkipped();
+          }
+        } else {
+          if (log.isRowLevel())
+            logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.InsertNewVersion") + technicalKey.toString()); //$NON-NLS-1$
 
-        // Finaly, check the date range!
-        /*
-         * TODO: WTF is this??? 
-         * [May be it makes sense to keep the return date from-to fields within min/max range, but even then the code below is wrong].
-		Value date;
-		if (data.datefieldnr>=0) date = row.getValue(data.datefieldnr);
-		else				date = new Value("date", new Date()); // system date //$NON-NLS-1$
-		
-		if (data.min_date.compare(date)>0) data.min_date.setValue( date.getDate() ); 
-		if (data.max_date.compare(date)<0) data.max_date.setValue( date.getDate() ); 
-         */
-        
-        return outputRow;
-	}
+          Long valueNewVersion = valueVersion + 1;
+          // From date (valueDate) is calculated at the start of this method to
+          // be either the system date or the value in a column
+          //
+          valueDateFrom = valueDate;
+          valueDateTo = data.max_date; //$NON-NLS-1$
+
+          // First try to use an AUTOINCREMENT field
+          if (meta.getDatabaseMeta().supportsAutoinc() && isAutoIncrement()) {
+            technicalKey = new Long(0L); // value to accept new key...
+          } else
+          // Try to get the value by looking at a SEQUENCE (oracle mostly)
+          if (meta.getDatabaseMeta().supportsSequences() && meta.getSequenceName() != null && meta.getSequenceName().length() > 0) {
+            technicalKey = data.db.getNextSequenceValue(data.realSchemaName, meta.getSequenceName(), meta.getKeyField());
+            if (technicalKey != null && log.isRowLevel())
+              logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.FoundNextSequence2") + technicalKey.toString()); //$NON-NLS-1$
+          } else
+          // Use our own sequence here...
+          {
+            // What's the next value for the technical key?
+            technicalKey = data.db.getNextValue(getTransMeta().getCounters(), data.realSchemaName, data.realTableName, meta.getKeyField());
+          }
+
+          // update our technicalKey with the return of the insert
+          technicalKey = dimInsert(rowMeta, row, technicalKey, false, valueNewVersion, valueDateFrom, valueDateTo);
+          incrementLinesOutput();
+
+          // We need to capture this change in the cache as well...
+          if (meta.getCacheSize() >= 0) {
+            Object[] values = getCacheValues(rowMeta, row, technicalKey, valueNewVersion, valueDateFrom, valueDateTo);
+            addToCache(lookupRow, values);
+          }
+        }
+        if (punch) // On of the fields we have to punch through has changed!
+        {
+          /*
+           * This means we have to update all versions:
+           * 
+           * UPDATE dim SET punchf1 = val1, punchf2 = val2, ... WHERE
+           * fieldlookup[] = ? ;
+           * 
+           * --> update ALL versions in the dimension table.
+           */
+          dimPunchThrough(rowMeta, row);
+          incrementLinesUpdated();
+        }
+
+        returnRow = new Object[data.returnRowMeta.size()];
+        returnRow[0] = technicalKey;
+        if (log.isRowLevel())
+          logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.TechnicalKey") + technicalKey); //$NON-NLS-1$
+      }
+    }
+
+    if (log.isRowLevel())
+      logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.AddValuesToRow") + data.returnRowMeta.getString(returnRow)); //$NON-NLS-1$
+
+    // Copy the results to the output row...
+    //
+    // First copy the input row values to the output..
+    //
+    for (int i = 0; i < rowMeta.size(); i++)
+      outputRow[i] = row[i];
+
+    int outputIndex = rowMeta.size();
+    int inputIndex = 0;
+
+    // Then the technical key...
+    //
+    outputRow[outputIndex++] = data.returnRowMeta.getInteger(returnRow, inputIndex++);
+
+    // skip the version in the input
+    inputIndex++;
+
+    // Then get the "extra fields"...
+    // don't return date from-to fields, they can be returned when explicitly
+    // specified in lookup fields.
+    while (inputIndex < returnRow.length && outputIndex < outputRow.length) {
+      outputRow[outputIndex] = returnRow[inputIndex];
+      outputIndex++;
+      inputIndex++;
+    }
+
+    // Finaly, check the date range!
+    /*
+     * TODO: WTF is this??? [May be it makes sense to keep the return date
+     * from-to fields within min/max range, but even then the code below is
+     * wrong]. Value date; if (data.datefieldnr>=0) date =
+     * row.getValue(data.datefieldnr); else date = new Value("date", new
+     * Date()); // system date //$NON-NLS-1$
+     * 
+     * if (data.min_date.compare(date)>0) data.min_date.setValue( date.getDate()
+     * ); if (data.max_date.compare(date)<0) data.max_date.setValue(
+     * date.getDate() );
+     */
+
+    return outputRow;
+  }
     
     /**
      * table: dimension table keys[]: which dim-fields do we use to look up key? retval: name of the key to return
@@ -811,386 +820,403 @@ public class DimensionLookup extends BaseStep implements StepInterface
     }
     
     
-    // This inserts new record into dimension
-    // Optionally, if the entry already exists, update date range from previous version
-    // of the entry.
-    // 
-    public Long dimInsert( RowMetaInterface inputRowMeta, Object[] row, Long technicalKey, boolean newEntry, Long versionNr, Date dateFrom, Date dateTo ) throws KettleException
+  /**
+   * This inserts new record into dimension Optionally, if the entry already
+   * exists, update date range from previous version of the entry.
+   */
+  public Long dimInsert(RowMetaInterface inputRowMeta, Object[] row, Long technicalKey, boolean newEntry, Long versionNr, Date dateFrom, Date dateTo) throws KettleException {
+    DatabaseMeta databaseMeta = meta.getDatabaseMeta();
+
+    if (data.prepStatementInsert == null && data.prepStatementUpdate == null) // first
+                                                                              // time:
+                                                                              // construct
+                                                                              // prepared
+                                                                              // statement
     {
-        DatabaseMeta databaseMeta = meta.getDatabaseMeta();
-        
-        if (data.prepStatementInsert==null && data.prepStatementUpdate==null) // first time: construct prepared statement
-        {
-            RowMetaInterface insertRowMeta = new RowMeta();
+      RowMetaInterface insertRowMeta = new RowMeta();
 
-            /* Construct the SQL statement...
-             *
-             * INSERT INTO 
-             * d_customer(keyfield, versionfield, datefrom,    dateto,   key[], fieldlookup[], last_updated, last_inserted, last_version)
-             * VALUES    (val_key ,val_version , val_datfrom, val_datto, keynrs[], fieldnrs[], last_updated, last_inserted, last_version)
-             * ;
-             */
-             
-            String sql="INSERT INTO "+data.schemaTable+"( ";
-            
-            if (!isAutoIncrement())
-            {
-                sql+=databaseMeta.quoteField(meta.getKeyField())+", "; // NO AUTOINCREMENT
-                insertRowMeta.addValueMeta( data.outputRowMeta.getValueMeta(inputRowMeta.size()) ); // the first return value after the input 
-            }
-            else
-            {
-            	if (databaseMeta.needsPlaceHolder()) {
-                    sql+="0, "; // placeholder on informix!    
-                }
-            }
-            
-            sql+=databaseMeta.quoteField(meta.getVersionField())+", "+databaseMeta.quoteField(meta.getDateFrom())+", "+databaseMeta.quoteField(meta.getDateTo());
-            insertRowMeta.addValueMeta( new ValueMeta(meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER));
-            insertRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE));
-            insertRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE));
-            
-            for (int i=0;i<meta.getKeyLookup().length;i++)
-            {
-                sql+=", "+databaseMeta.quoteField(meta.getKeyLookup()[i]);
-                insertRowMeta.addValueMeta( inputRowMeta.getValueMeta( data.keynrs[i] ));
-            }
-            
-            for (int i=0;i<meta.getFieldLookup().length;i++)
-            {
-            	// Ignore last_version, last_updated etc, they are handled below (at the back of the row).
-            	//
-                if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) { 
-	                sql+=", "+databaseMeta.quoteField(meta.getFieldLookup()[i]);
-	                insertRowMeta.addValueMeta( inputRowMeta.getValueMeta( data.fieldnrs[i] ));
-                }
-            }
-            
-			// Finally, the special update fields...
-			//
-			for (int i=0;i<meta.getFieldUpdate().length;i++) {
-				ValueMetaInterface valueMeta = null;
-				switch(meta.getFieldUpdate()[i]) {
-				case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP    : 
-				case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED : valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE); break;
-				case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION  : valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_BOOLEAN); break;
-				}
-				if (valueMeta!=null) {
-					sql+=", "+databaseMeta.quoteField(valueMeta.getName());
-					insertRowMeta.addValueMeta(valueMeta);
-				}
-			}
-            
-            sql+=") VALUES (";
-            
-            if (!isAutoIncrement())
-            {
-                sql+="?, ";
-            }
-            sql+="?, ?, ?";
+      /*
+       * Construct the SQL statement...
+       * 
+       * INSERT INTO d_customer(keyfield, versionfield, datefrom, dateto, key[],
+       * fieldlookup[], last_updated, last_inserted, last_version) VALUES
+       * (val_key ,val_version , val_datfrom, val_datto, keynrs[], fieldnrs[],
+       * last_updated, last_inserted, last_version) ;
+       */
 
-            for (int i=0;i<data.keynrs.length;i++)
-            {
-                sql+=", ?";
-            }
-            
-            for (int i=0;i<meta.getFieldLookup().length;i++)
-            {
-        		// Ignore last_version, last_updated, etc.  These are handled below...
-        		//
-            	if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) { 
-            		sql+=", ?";
-            	}
-            }
-            
-			// The special update fields...
-			//
-			for (int i=0;i<meta.getFieldUpdate().length;i++) {
-				switch(meta.getFieldUpdate()[i]) {
-				case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP    : 
-				case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED : 
-				case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION  : sql+=", ?"; break;
-				}
-			}
+      String sql = "INSERT INTO " + data.schemaTable + "( ";
 
-            sql+=" )";
-            
-            try
-            {
-                if (technicalKey==null)
-                {
-                    logDetailed("SQL w/ return keys=["+sql+"]");
-                    data.prepStatementInsert=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql), Statement.RETURN_GENERATED_KEYS);
-                }
-                else
-                {
-                    logDetailed("SQL=["+sql+"]");
-                    data.prepStatementInsert=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
-                }
-                //pstmt=con.prepareStatement(sql, new String[] { "klant_tk" } );
-            }
-            catch(SQLException ex) 
-            {
-                throw new KettleDatabaseException("Unable to prepare dimension insert :"+Const.CR+sql, ex);
-            }
-
-            /* 
-            * UPDATE d_customer
-            * SET    dateto = val_datnow,
-            *        last_updated = <now>
-            *        last_version = false
-            * WHERE  keylookup[] = keynrs[]
-            * AND    versionfield = val_version - 1
-            * ;
-            */
-            RowMetaInterface updateRowMeta = new RowMeta();
-            
-            String sql_upd="UPDATE "+data.schemaTable+Const.CR;
-
-            // The end of the date range
-            //
-            sql_upd+="SET "+databaseMeta.quoteField(meta.getDateTo())+" = ?"+Const.CR;
-            updateRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE));
-            
-			// The special update fields...
-			//
-			for (int i=0;i<meta.getFieldUpdate().length;i++) {
-				ValueMetaInterface valueMeta = null;
-				switch(meta.getFieldUpdate()[i]) {
-				case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP    : 
-				case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED  : valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE); break;
-				case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION  : valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_BOOLEAN); break;
-				}
-				if (valueMeta!=null) {
-					sql_upd+=", "+databaseMeta.quoteField(valueMeta.getName())+" = ?"+Const.CR;
-					updateRowMeta.addValueMeta(valueMeta);
-				}
-			}
-            
-            sql_upd+="WHERE ";
-            for (int i=0;i<meta.getKeyLookup().length;i++)
-            {
-                if (i>0) sql_upd+="AND   ";
-                sql_upd+=databaseMeta.quoteField(meta.getKeyLookup()[i])+" = ?"+Const.CR;
-                updateRowMeta.addValueMeta( inputRowMeta.getValueMeta( data.keynrs[i] ));
-            }
-            sql_upd+="AND   "+databaseMeta.quoteField(meta.getVersionField())+" = ? ";
-            updateRowMeta.addValueMeta( new ValueMeta(meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER));
-
-            try
-            {
-                logDetailed("Preparing update: "+Const.CR+sql_upd+Const.CR);
-                data.prepStatementUpdate=data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql_upd));
-            }
-            catch(SQLException ex) 
-            {
-                throw new KettleDatabaseException("Unable to prepare dimension update :"+Const.CR+sql_upd, ex);
-            }
-            
-            data.insertRowMeta = insertRowMeta;
-            data.updateRowMeta = updateRowMeta;
+      if (!isAutoIncrement()) {
+        sql += databaseMeta.quoteField(meta.getKeyField()) + ", "; // NO
+                                                                   // AUTOINCREMENT
+        insertRowMeta.addValueMeta(data.outputRowMeta.getValueMeta(inputRowMeta.size())); // the
+                                                                                          // first
+                                                                                          // return
+                                                                                          // value
+                                                                                          // after
+                                                                                          // the
+                                                                                          // input
+      } else {
+        if (databaseMeta.needsPlaceHolder()) {
+          sql += "0, "; // placeholder on informix!
         }
-        
-        Object[] insertRow=new Object[data.insertRowMeta.size()];
-        int insertIndex=0;
-        if (!isAutoIncrement()) 
-        {
-            insertRow[insertIndex++] = technicalKey;
+      }
+
+      sql += databaseMeta.quoteField(meta.getVersionField()) + ", " + databaseMeta.quoteField(meta.getDateFrom()) + ", " + databaseMeta.quoteField(meta.getDateTo());
+      insertRowMeta.addValueMeta(new ValueMeta(meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER));
+      insertRowMeta.addValueMeta(new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE));
+      insertRowMeta.addValueMeta(new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE));
+
+      for (int i = 0; i < meta.getKeyLookup().length; i++) {
+        sql += ", " + databaseMeta.quoteField(meta.getKeyLookup()[i]);
+        insertRowMeta.addValueMeta(inputRowMeta.getValueMeta(data.keynrs[i]));
+      }
+
+      for (int i = 0; i < meta.getFieldLookup().length; i++) {
+        // Ignore last_version, last_updated etc, they are handled below (at the
+        // back of the row).
+        //
+        if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) {
+          sql += ", " + databaseMeta.quoteField(meta.getFieldLookup()[i]);
+          insertRowMeta.addValueMeta(inputRowMeta.getValueMeta(data.fieldnrs[i]));
         }
+      }
 
-        // Caller is responsible for setting proper version number depending
-        // on if newEntry == true
-        insertRow[insertIndex++] = versionNr;
-        
-        switch(data.startDateChoice) {
-        case DimensionLookupMeta.START_DATE_ALTERNATIVE_NONE           : insertRow[insertIndex++] = dateFrom; break;
-        case DimensionLookupMeta.START_DATE_ALTERNATIVE_SYSDATE        : insertRow[insertIndex++] = new Date(); break;
-        case DimensionLookupMeta.START_DATE_ALTERNATIVE_START_OF_TRANS : insertRow[insertIndex++] = getTrans().getStartDate(); break; 
-        case DimensionLookupMeta.START_DATE_ALTERNATIVE_NULL           : insertRow[insertIndex++] = null; break;
-        case DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE   : insertRow[insertIndex++] = inputRowMeta.getDate(row, data.startDateFieldIndex); break;
-        default: 
-        	throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.IllegalStartDateSelection", Integer.toString(data.startDateChoice)));
+      // Finally, the special update fields...
+      //
+      for (int i = 0; i < meta.getFieldUpdate().length; i++) {
+        ValueMetaInterface valueMeta = null;
+        switch (meta.getFieldUpdate()[i]) {
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED:
+          valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE);
+          break;
+        case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
+          valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_BOOLEAN);
+          break;
         }
-
-        insertRow[insertIndex++] = dateTo;
-        
-        for (int i=0;i<data.keynrs.length;i++)
-        {
-            insertRow[insertIndex++] = row[ data.keynrs[i] ];
+        if (valueMeta != null) {
+          sql += ", " + databaseMeta.quoteField(valueMeta.getName());
+          insertRowMeta.addValueMeta(valueMeta);
         }
-        for (int i=0;i<data.fieldnrs.length;i++)
-        {
-        	if (data.fieldnrs[i]>=0) {
-        		// Ignore last_version, last_updated, etc.  These are handled below...
-        		//
-	            insertRow[insertIndex++] = row[ data.fieldnrs[i] ];
-        	}
+      }
+
+      sql += ") VALUES (";
+
+      if (!isAutoIncrement()) {
+        sql += "?, ";
+      }
+      sql += "?, ?, ?";
+
+      for (int i = 0; i < data.keynrs.length; i++) {
+        sql += ", ?";
+      }
+
+      for (int i = 0; i < meta.getFieldLookup().length; i++) {
+        // Ignore last_version, last_updated, etc. These are handled below...
+        //
+        if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) {
+          sql += ", ?";
         }
-		// The special update fields...
-		//
-		for (int i=0;i<meta.getFieldUpdate().length;i++) {
-			switch(meta.getFieldUpdate()[i]) {
-			case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP    : 
-			case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED : insertRow[insertIndex++] = new Date(); break;
-			case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION  : insertRow[insertIndex++] = Boolean.TRUE; break; // Always the last version on insert.
-			}
-		}
+      }
 
-        if (log.isDebug()) logDebug("rins, size="+data.insertRowMeta.size()+", values="+data.insertRowMeta.getString(insertRow));
-        
-        // INSERT NEW VALUE!
-        data.db.setValues(data.insertRowMeta, insertRow, data.prepStatementInsert);
-        data.db.insertRow(data.prepStatementInsert);
-            
-        if (log.isDebug()) logDebug("Row inserted!");
-        if (isAutoIncrement())
-        {
-            try
-            {
-                RowMetaAndData keys = data.db.getGeneratedKeys(data.prepStatementInsert);
-                if (keys.getRowMeta().size()>0)
-                {
-                    technicalKey = keys.getRowMeta().getInteger(keys.getData(), 0);
-                }
-                else
-                {
-                    throw new KettleDatabaseException("Unable to retrieve value of auto-generated technical key : no value found!");
-                }
-            }
-            catch(Exception e)
-            {
-                throw new KettleDatabaseException("Unable to retrieve value of auto-generated technical key : unexpected error: ", e);
-            }
+      // The special update fields...
+      //
+      for (int i = 0; i < meta.getFieldUpdate().length; i++) {
+        switch (meta.getFieldUpdate()[i]) {
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED:
+        case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
+          sql += ", ?";
+          break;
         }
-        
-        if (!newEntry) // we have to update the previous version in the dimension! 
-        {
-            /* 
-            * UPDATE d_customer
-            * SET    dateto = val_datfrom
-            *      , last_updated = <now>
-            *      , last_version = false
-            * WHERE  keylookup[] = keynrs[]
-            * AND    versionfield = val_version - 1
-            * ;
-            */
-            Object[] updateRow = new Object[data.updateRowMeta.size()];
-            int updateIndex=0;
-            
-            updateRow[updateIndex++] = dateFrom;
+      }
 
-    		// The special update fields...
-    		//
-    		for (int i=0;i<meta.getFieldUpdate().length;i++) {
-    			switch(meta.getFieldUpdate()[i]) {
-    			case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP    : 
-    			case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED : updateRow[updateIndex++] = new Date(); break;
-    			case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION  : updateRow[updateIndex++] = Boolean.FALSE; break; // Never the last version on this update
-    			}
-    		}
+      sql += " )";
 
-            for (int i=0;i<data.keynrs.length;i++)
-            {
-                updateRow[updateIndex] = row[data.keynrs[i] ];
-                updateIndex++;
-            }
-
-            updateRow[updateIndex] = versionNr - 1;
-            updateIndex++;
-            
-            if (log.isRowLevel()) logRowlevel("UPDATE using rupd="+data.updateRowMeta.getString(updateRow));
-
-            // UPDATE VALUES
-            data.db.setValues(data.updateRowMeta, updateRow, data.prepStatementUpdate);  // set values for update
-            if (log.isDebug()) logDebug("Values set for update ("+data.updateRowMeta.size()+")");
-            data.db.insertRow(data.prepStatementUpdate); // do the actual update
-            if (log.isDebug()) logDebug("Row updated!");
+      try {
+        if (technicalKey == null) {
+          logDetailed("SQL w/ return keys=[" + sql + "]");
+          data.prepStatementInsert = data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql), Statement.RETURN_GENERATED_KEYS);
+        } else {
+          logDetailed("SQL=[" + sql + "]");
+          data.prepStatementInsert = data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql));
         }
-        
-        return technicalKey;
+        // pstmt=con.prepareStatement(sql, new String[] { "klant_tk" } );
+      } catch (SQLException ex) {
+        throw new KettleDatabaseException("Unable to prepare dimension insert :" + Const.CR + sql, ex);
+      }
+
+      /*
+       * UPDATE d_customer SET dateto = val_datnow, last_updated = <now>
+       * last_version = false WHERE keylookup[] = keynrs[] AND versionfield =
+       * val_version - 1 ;
+       */
+      RowMetaInterface updateRowMeta = new RowMeta();
+
+      String sql_upd = "UPDATE " + data.schemaTable + Const.CR;
+
+      // The end of the date range
+      //
+      sql_upd += "SET " + databaseMeta.quoteField(meta.getDateTo()) + " = ?" + Const.CR;
+      updateRowMeta.addValueMeta(new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE));
+
+      // The special update fields...
+      //
+      for (int i = 0; i < meta.getFieldUpdate().length; i++) {
+        ValueMetaInterface valueMeta = null;
+        switch (meta.getFieldUpdate()[i]) {
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED:
+          valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE);
+          break;
+        case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
+          valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_BOOLEAN);
+          break;
+        }
+        if (valueMeta != null) {
+          sql_upd += ", " + databaseMeta.quoteField(valueMeta.getName()) + " = ?" + Const.CR;
+          updateRowMeta.addValueMeta(valueMeta);
+        }
+      }
+
+      sql_upd += "WHERE ";
+      for (int i = 0; i < meta.getKeyLookup().length; i++) {
+        if (i > 0)
+          sql_upd += "AND   ";
+        sql_upd += databaseMeta.quoteField(meta.getKeyLookup()[i]) + " = ?" + Const.CR;
+        updateRowMeta.addValueMeta(inputRowMeta.getValueMeta(data.keynrs[i]));
+      }
+      sql_upd += "AND   " + databaseMeta.quoteField(meta.getVersionField()) + " = ? ";
+      updateRowMeta.addValueMeta(new ValueMeta(meta.getVersionField(), ValueMetaInterface.TYPE_INTEGER));
+
+      try {
+        logDetailed("Preparing update: " + Const.CR + sql_upd + Const.CR);
+        data.prepStatementUpdate = data.db.getConnection().prepareStatement(databaseMeta.stripCR(sql_upd));
+      } catch (SQLException ex) {
+        throw new KettleDatabaseException("Unable to prepare dimension update :" + Const.CR + sql_upd, ex);
+      }
+
+      data.insertRowMeta = insertRowMeta;
+      data.updateRowMeta = updateRowMeta;
     }
+
+    Object[] insertRow = new Object[data.insertRowMeta.size()];
+    int insertIndex = 0;
+    if (!isAutoIncrement()) {
+      insertRow[insertIndex++] = technicalKey;
+    }
+
+    // Caller is responsible for setting proper version number depending
+    // on if newEntry == true
+    insertRow[insertIndex++] = versionNr;
+
+    switch (data.startDateChoice) {
+    case DimensionLookupMeta.START_DATE_ALTERNATIVE_NONE:
+      insertRow[insertIndex++] = dateFrom;
+      break;
+    case DimensionLookupMeta.START_DATE_ALTERNATIVE_SYSDATE:
+      insertRow[insertIndex++] = new Date();
+      break;
+    case DimensionLookupMeta.START_DATE_ALTERNATIVE_START_OF_TRANS:
+      insertRow[insertIndex++] = getTrans().getStartDate();
+      break;
+    case DimensionLookupMeta.START_DATE_ALTERNATIVE_NULL:
+      insertRow[insertIndex++] = null;
+      break;
+    case DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE:
+      insertRow[insertIndex++] = inputRowMeta.getDate(row, data.startDateFieldIndex);
+      break;
+    default:
+      throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.IllegalStartDateSelection", Integer.toString(data.startDateChoice)));
+    }
+
+    insertRow[insertIndex++] = dateTo;
+
+    for (int i = 0; i < data.keynrs.length; i++) {
+      insertRow[insertIndex++] = row[data.keynrs[i]];
+    }
+    for (int i = 0; i < data.fieldnrs.length; i++) {
+      if (data.fieldnrs[i] >= 0) {
+        // Ignore last_version, last_updated, etc. These are handled below...
+        //
+        insertRow[insertIndex++] = row[data.fieldnrs[i]];
+      }
+    }
+    // The special update fields...
+    //
+    for (int i = 0; i < meta.getFieldUpdate().length; i++) {
+      switch (meta.getFieldUpdate()[i]) {
+      case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
+      case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED:
+        insertRow[insertIndex++] = new Date();
+        break;
+      case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
+        insertRow[insertIndex++] = Boolean.TRUE;
+        break; // Always the last version on insert.
+      }
+    }
+
+    if (log.isDebug())
+      logDebug("rins, size=" + data.insertRowMeta.size() + ", values=" + data.insertRowMeta.getString(insertRow));
+
+    // INSERT NEW VALUE!
+    data.db.setValues(data.insertRowMeta, insertRow, data.prepStatementInsert);
+    data.db.insertRow(data.prepStatementInsert);
+
+    if (log.isDebug())
+      logDebug("Row inserted!");
+    if (isAutoIncrement()) {
+      try {
+        RowMetaAndData keys = data.db.getGeneratedKeys(data.prepStatementInsert);
+        if (keys.getRowMeta().size() > 0) {
+          technicalKey = keys.getRowMeta().getInteger(keys.getData(), 0);
+        } else {
+          throw new KettleDatabaseException("Unable to retrieve value of auto-generated technical key : no value found!");
+        }
+      } catch (Exception e) {
+        throw new KettleDatabaseException("Unable to retrieve value of auto-generated technical key : unexpected error: ", e);
+      }
+    }
+
+    if (!newEntry) // we have to update the previous version in the dimension!
+    {
+      /*
+       * UPDATE d_customer SET dateto = val_datfrom , last_updated = <now> ,
+       * last_version = false WHERE keylookup[] = keynrs[] AND versionfield =
+       * val_version - 1 ;
+       */
+      Object[] updateRow = new Object[data.updateRowMeta.size()];
+      int updateIndex = 0;
+
+      updateRow[updateIndex++] = dateFrom;
+
+      // The special update fields...
+      //
+      for (int i = 0; i < meta.getFieldUpdate().length; i++) {
+        switch (meta.getFieldUpdate()[i]) {
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED:
+          updateRow[updateIndex++] = new Date();
+          break;
+        case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
+          updateRow[updateIndex++] = Boolean.FALSE;
+          break; // Never the last version on this update
+        }
+      }
+
+      for (int i = 0; i < data.keynrs.length; i++) {
+        updateRow[updateIndex] = row[data.keynrs[i]];
+        updateIndex++;
+      }
+
+      updateRow[updateIndex] = versionNr - 1;
+      updateIndex++;
+
+      if (log.isRowLevel())
+        logRowlevel("UPDATE using rupd=" + data.updateRowMeta.getString(updateRow));
+
+      // UPDATE VALUES
+      
+      // set values for update
+      //
+      data.db.setValues(data.updateRowMeta, updateRow, data.prepStatementUpdate); 
+      if (log.isDebug()) {
+        logDebug("Values set for update (" + data.updateRowMeta.size() + ")");
+      }
+      data.db.insertRow(data.prepStatementUpdate); // do the actual update
+      if (log.isDebug()) {
+        logDebug("Row updated!");
+      }
+    }
+
+    return technicalKey;
+  }
     
-    public void dimUpdate(RowMetaInterface rowMeta, Object[] row, Long dimkey) throws KettleDatabaseException
+  public void dimUpdate(RowMetaInterface rowMeta, Object[] row, Long dimkey, Date valueDate) throws KettleDatabaseException {
+    if (data.prepStatementDimensionUpdate == null) // first time: construct
+                                                   // prepared statement
     {
-        if (data.prepStatementDimensionUpdate==null) // first time: construct prepared statement
-        {
-            data.dimensionUpdateRowMeta = new RowMeta();
-            
-            // Construct the SQL statement...
-            /*
-             * UPDATE d_customer
-             * SET    fieldlookup[] = row.getValue(fieldnrs)
-             *      , last_updated = <now>
-             * WHERE  returnkey = dimkey
-             * ;
-             */
-             
-            String sql="UPDATE "+data.schemaTable+Const.CR+"SET ";
-            boolean comma=false;
-            for (int i=0;i<meta.getFieldLookup().length;i++)
-            {
-            	if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) 
-            	{
-	                if (comma) sql+=", "; else sql+="  ";
-	                comma=true;
-	                sql+= meta.getDatabaseMeta().quoteField(meta.getFieldLookup()[i])+" = ?"+Const.CR;
-	                data.dimensionUpdateRowMeta.addValueMeta( rowMeta.getValueMeta(data.fieldnrs[i]) );
-            	}
-            }
-            
-			// The special update fields...
-			//
-			for (int i=0;i<meta.getFieldUpdate().length;i++) {
-				ValueMetaInterface valueMeta = null;
-				switch(meta.getFieldUpdate()[i]) {
-				case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP    : 
-				case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED  : valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE); break;
-				}
-				if (valueMeta!=null) {
-	                if (comma) sql+=", "; else sql+="  ";
-	                comma=true;
-					sql+=meta.getDatabaseMeta().quoteField(valueMeta.getName()) +" = ?"+Const.CR;
-					data.dimensionUpdateRowMeta.addValueMeta(valueMeta);
-				}
-			}
+      data.dimensionUpdateRowMeta = new RowMeta();
 
-            sql+="WHERE  "+meta.getDatabaseMeta().quoteField(meta.getKeyField())+" = ?";
-            data.dimensionUpdateRowMeta.addValueMeta( new ValueMeta(meta.getKeyField(), ValueMetaInterface.TYPE_INTEGER) ); // The tk
-            
-            try
-            {
-                if (log.isDebug()) logDebug("Preparing statement: ["+sql+"]");
-                data.prepStatementDimensionUpdate=data.db.getConnection().prepareStatement(meta.getDatabaseMeta().stripCR(sql));
-            }
-            catch(SQLException ex) 
-            {
-                throw new KettleDatabaseException("Couldn't prepare statement :"+Const.CR+sql, ex);
-            }
+      // Construct the SQL statement...
+      /*
+       * UPDATE d_customer SET fieldlookup[] = row.getValue(fieldnrs) ,
+       * last_updated = <now> WHERE returnkey = dimkey ;
+       */
+
+      String sql = "UPDATE " + data.schemaTable + Const.CR + "SET ";
+      boolean comma = false;
+      for (int i = 0; i < meta.getFieldLookup().length; i++) {
+        if (!DimensionLookupMeta.isUpdateTypeWithoutArgument(meta.isUpdate(), meta.getFieldUpdate()[i])) {
+          if (comma)
+            sql += ", ";
+          else
+            sql += "  ";
+          comma = true;
+          sql += meta.getDatabaseMeta().quoteField(meta.getFieldLookup()[i]) + " = ?" + Const.CR;
+          data.dimensionUpdateRowMeta.addValueMeta(rowMeta.getValueMeta(data.fieldnrs[i]));
         }
-        
-        // Assemble information
-        // New
-        Object[] dimensionUpdateRow = new Object[data.dimensionUpdateRowMeta.size()];
-        int updateIndex=0;
-        for (int i=0;i<data.fieldnrs.length;i++)
-        {
-    		// Ignore last_version, last_updated, etc.  These are handled below...
-    		//
-        	if (data.fieldnrs[i]>=0) {
-        		dimensionUpdateRow[updateIndex++] = row[data.fieldnrs[i]];
-        	}
+      }
+
+      // The special update fields...
+      //
+      for (int i = 0; i < meta.getFieldUpdate().length; i++) {
+        ValueMetaInterface valueMeta = null;
+        switch (meta.getFieldUpdate()[i]) {
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED:
+          valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE);
+          break;
         }
-        for (int i=0;i<meta.getFieldUpdate().length;i++) {
-        	switch(meta.getFieldUpdate()[i]) {
-			case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP    : 
-			case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED  : dimensionUpdateRow[updateIndex++] = new Date(); break;
-			}	
+        if (valueMeta != null) {
+          if (comma)
+            sql += ", ";
+          else
+            sql += "  ";
+          comma = true;
+          sql += meta.getDatabaseMeta().quoteField(valueMeta.getName()) + " = ?" + Const.CR;
+          data.dimensionUpdateRowMeta.addValueMeta(valueMeta);
         }
-        dimensionUpdateRow[updateIndex++] = dimkey;
-        
-        data.db.setValues(data.dimensionUpdateRowMeta, dimensionUpdateRow, data.prepStatementDimensionUpdate);
-        data.db.insertRow(data.prepStatementDimensionUpdate);
+      }
+
+      sql += "WHERE  " + meta.getDatabaseMeta().quoteField(meta.getKeyField()) + " = ?";
+      data.dimensionUpdateRowMeta.addValueMeta(new ValueMeta(meta.getKeyField(), ValueMetaInterface.TYPE_INTEGER)); // The
+                                                                                                                    // tk
+
+      try {
+        if (log.isDebug())
+          logDebug("Preparing statement: [" + sql + "]");
+        data.prepStatementDimensionUpdate = data.db.getConnection().prepareStatement(meta.getDatabaseMeta().stripCR(sql));
+      } catch (SQLException ex) {
+        throw new KettleDatabaseException("Couldn't prepare statement :" + Const.CR + sql, ex);
+      }
     }
+
+    // Assemble information
+    // New
+    Object[] dimensionUpdateRow = new Object[data.dimensionUpdateRowMeta.size()];
+    int updateIndex = 0;
+    for (int i = 0; i < data.fieldnrs.length; i++) {
+      // Ignore last_version, last_updated, etc. These are handled below...
+      //
+      if (data.fieldnrs[i] >= 0) {
+        dimensionUpdateRow[updateIndex++] = row[data.fieldnrs[i]];
+      }
+    }
+    for (int i = 0; i < meta.getFieldUpdate().length; i++) {
+      switch (meta.getFieldUpdate()[i]) {
+      case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
+      case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED:
+        dimensionUpdateRow[updateIndex++] = valueDate;
+        break;
+      }
+    }
+    dimensionUpdateRow[updateIndex++] = dimkey;
+
+    data.db.setValues(data.dimensionUpdateRowMeta, dimensionUpdateRow, data.prepStatementDimensionUpdate);
+    data.db.insertRow(data.prepStatementDimensionUpdate);
+  }
 
     
     // This updates all versions of a dimension entry.
