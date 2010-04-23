@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPException;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;
-import org.pentaho.di.trans.steps.sapinput.sap.SAPResultSet;
+import org.pentaho.di.trans.steps.sapinput.sap.impl.SAPRowIterator;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPRow;
 
 /**
@@ -104,13 +104,14 @@ public class SapInput extends BaseStep implements StepInterface
 		
 		// Get the output...
 		//
-		SAPResultSet resultSet;
+		SAPRowIterator resultSet;
 		try {
-			resultSet = data.sapConnection.executeFunction(meta.getFunction(), input, data.output);
+			resultSet = data.sapConnection.executeFunctionCursored(meta.getFunction(), input, data.output);
 		} catch (SAPException e) {
 			throw new KettleException(e);
 		}
-		for (SAPRow sapRow : resultSet.getRows()) {
+		while (resultSet.hasNext()) {
+			SAPRow sapRow = resultSet.next();
 			Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
 			int outputIndex = 0; // Makes it easier to add all sorts of fields later on, like row number, input fields, etc.
 			

@@ -99,7 +99,7 @@ public class SAPConnectionMockTest {
 		output.add(new SAPField("Adress", "", "output_single"));
 		output.add(new SAPField("Zipcode", "", "output_single"));
 		output.add(new SAPField("CustomerGroup", "", "output_single"));
-		SAPResultSet sfr = sc.executeFunction(sf, input, output);
+		SAPResultSet sfr = sc.executeFunctionUncursored(sf, input, output);
 		for (SAPRow row : sfr.getRows()) {
 			System.out.println(row);
 		}

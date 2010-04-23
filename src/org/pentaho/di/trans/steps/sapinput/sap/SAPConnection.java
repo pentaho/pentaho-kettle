@@ -3,6 +3,7 @@ package org.pentaho.di.trans.steps.sapinput.sap;
 import java.util.Collection;
 
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.trans.steps.sapinput.sap.impl.SAPRowIterator;
 
 /* Copyright (c) 2010 Aschauer EDV GmbH.  All rights reserved. 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -42,14 +43,25 @@ public interface SAPConnection {
 	 */
 	void close();
 
+	/////////////////////
 	// methods for UI
+	/////////////////////
+	
 	Collection<SAPFunction> getFunctions(String query) throws SAPException;
 
 	SAPFunction getFunction(String name) throws SAPException;
 
 	SAPFunctionSignature getFunctionSignature(SAPFunction function) throws SAPException;
 
+	/////////////////////
 	// methods for data
-	SAPResultSet executeFunction(SAPFunction function,
+	/////////////////////
+
+	// use this for possibly large amounts of data
+	SAPRowIterator executeFunctionCursored(SAPFunction function,
+			Collection<SAPField> input, Collection<SAPField> output) throws SAPException;
+
+	// use this for small amounts of data (e.g. for testcases)
+	SAPResultSet executeFunctionUncursored(SAPFunction function,
 			Collection<SAPField> input, Collection<SAPField> output) throws SAPException;
 }

@@ -31,6 +31,7 @@ import org.pentaho.di.trans.steps.sapinput.sap.SAPFunction;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPFunctionSignature;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPResultSet;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPRow;
+import org.pentaho.di.trans.steps.sapinput.sap.impl.SAPRowIterator;
 
 public class SAPConnectionMock implements SAPConnection {
 
@@ -112,7 +113,7 @@ public class SAPConnectionMock implements SAPConnection {
 		return sfs;
 	}
 
-	public SAPResultSet executeFunction(SAPFunction function,
+	public SAPResultSet executeFunctionUncursored(SAPFunction function,
 			Collection<SAPField> input, Collection<SAPField> output) throws SAPException{
 		SAPResultSet srs = new SAPResultSet();
 		if (function.getName().equalsIgnoreCase("SearchCustomer")) {
@@ -135,5 +136,13 @@ public class SAPConnectionMock implements SAPConnection {
 			}
 		}
 		return srs;
+	}
+
+	// this method cannot be mocked
+	// for testcases use the executeFunctionUncursored
+	public SAPRowIterator executeFunctionCursored(SAPFunction function,
+			Collection<SAPField> input, Collection<SAPField> output)
+			throws SAPException {
+		return null;
 	}
 }
