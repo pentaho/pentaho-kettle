@@ -964,64 +964,58 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
-    {
-        try
-        {
-            rep.saveStepAttribute(id_transformation, id_step, "schema", schemaName); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "table", tableName); //$NON-NLS-1$
-			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
-            rep.saveStepAttribute(id_transformation, id_step, "commit", commitSize); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "update", update); //$NON-NLS-1$
+  public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+    try {
+      rep.saveStepAttribute(id_transformation, id_step, "schema", schemaName); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "table", tableName); //$NON-NLS-1$
+      rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
+      rep.saveStepAttribute(id_transformation, id_step, "commit", commitSize); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "update", update); //$NON-NLS-1$
 
-            for (int i = 0; i < keyStream.length; i++)
-            {
-                rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name", keyStream[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field", keyLookup[i]); //$NON-NLS-1$
-            }
+      for (int i = 0; i < keyStream.length; i++) {
+        rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name", keyStream[i]); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field", keyLookup[i]); //$NON-NLS-1$
+      }
 
-            rep.saveStepAttribute(id_transformation, id_step, "date_name", dateField); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "date_from", dateFrom); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "date_to", dateTo); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "date_name", dateField); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "date_from", dateFrom); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "date_to", dateTo); //$NON-NLS-1$
 
-            if (fieldStream != null) for (int i = 0; i < fieldStream.length; i++)
-            {
-                if (fieldStream[i] != null)
-                {
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldStream[i]); //$NON-NLS-1$
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_lookup", fieldLookup[i]); //$NON-NLS-1$
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_update", getUpdateTypeCode(update, fieldUpdate[i])); //$NON-NLS-1$
-                }
-            }
-
-            rep.saveStepAttribute(id_transformation, id_step, "return_name", keyField); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "return_rename", keyRename); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "creation_method", techKeyCreation); //$NON-NLS-1$
-            // For the moment still save 'use_autoinc' for backwards compatibility (Sven Boden).
-            rep.saveStepAttribute(id_transformation, id_step, "use_autoinc", autoIncrement); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "version_field", versionField); //$NON-NLS-1$
-
-            rep.saveStepAttribute(id_transformation, id_step, "sequence", sequenceName); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "min_year", minYear); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "max_year", maxYear); //$NON-NLS-1$
-
-            rep.saveStepAttribute(id_transformation, id_step, "cache_size", cacheSize); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "preload_cache", preloadingCache); //$NON-NLS-1$
-
-            rep.saveStepAttribute(id_transformation, id_step, "use_start_date_alternative", usingStartDateAlternative); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "start_date_alternative", getStartDateAlternativeCode(startDateAlternative)); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "start_date_field_name", startDateFieldName); //$NON-NLS-1$ 
-
-            // Also, save the step-database relationship!
-            if (databaseMeta != null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getObjectId());
-            
-            
+      if (fieldStream != null)
+        for (int i = 0; i < fieldStream.length; i++) {
+          rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldStream[i]); //$NON-NLS-1$
+          rep.saveStepAttribute(id_transformation, id_step, i, "field_lookup", fieldLookup[i]); //$NON-NLS-1$
+          rep.saveStepAttribute(id_transformation, id_step, i, "field_update", getUpdateTypeCode(update, fieldUpdate[i])); //$NON-NLS-1$
         }
-        catch (KettleDatabaseException dbe)
-        {
-            throw new KettleException(BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToLoadDimensionLookupInfoFromRepository"), dbe); //$NON-NLS-1$
-        }
+
+      rep.saveStepAttribute(id_transformation, id_step, "return_name", keyField); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "return_rename", keyRename); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "creation_method", techKeyCreation); //$NON-NLS-1$
+      
+      // For the moment still save 'use_autoinc' for backwards compatibility
+      // (Sven Boden).
+      rep.saveStepAttribute(id_transformation, id_step, "use_autoinc", autoIncrement); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "version_field", versionField); //$NON-NLS-1$
+
+      rep.saveStepAttribute(id_transformation, id_step, "sequence", sequenceName); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "min_year", minYear); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "max_year", maxYear); //$NON-NLS-1$
+
+      rep.saveStepAttribute(id_transformation, id_step, "cache_size", cacheSize); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "preload_cache", preloadingCache); //$NON-NLS-1$
+
+      rep.saveStepAttribute(id_transformation, id_step, "use_start_date_alternative", usingStartDateAlternative); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "start_date_alternative", getStartDateAlternativeCode(startDateAlternative)); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "start_date_field_name", startDateFieldName); //$NON-NLS-1$ 
+
+      // Also, save the step-database relationship!
+      if (databaseMeta != null)
+        rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getObjectId());
+
+    } catch (KettleDatabaseException dbe) {
+      throw new KettleException(BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToLoadDimensionLookupInfoFromRepository"), dbe); //$NON-NLS-1$
     }
+  }
 
 	public Date getMinDate()
 	{
