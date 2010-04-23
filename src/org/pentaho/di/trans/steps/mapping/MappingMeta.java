@@ -33,7 +33,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
@@ -248,9 +247,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface {
     // Backward compatibility...
     //
     if (nrInput > 0 || nrOutput > 0) {
-      MappingIODefinition inputMappingDefinition = new MappingIODefinition(); // null
-                                                                              // means:
-                                                                              // auto-detect
+      MappingIODefinition inputMappingDefinition = new MappingIODefinition(); 
       inputMappingDefinition.setMainDataPath(true);
 
       for (int i = 0; i < nrInput; i++) {
@@ -259,9 +256,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface {
         inputMappingDefinition.getValueRenames().add(new MappingValueRename(inputField, inputMapping));
       }
 
-      MappingIODefinition outputMappingDefinition = new MappingIODefinition(); // null
-                                                                               // means:
-                                                                               // auto-detect
+      MappingIODefinition outputMappingDefinition = new MappingIODefinition();
       outputMappingDefinition.setMainDataPath(true);
 
       for (int i = 0; i < nrOutput; i++) {
@@ -280,8 +275,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface {
       // before.
       mappingParameters = new MappingParameters();
     } else {
-      nrInput = rep.countNrStepAttributes(id_step, "input_input_step"); //$NON-NLS-1$
-      nrOutput = rep.countNrStepAttributes(id_step, "output_input_step"); //$NON-NLS-1$
+      nrInput = rep.countNrStepAttributes(id_step, "input_main_path"); //$NON-NLS-1$
+      nrOutput = rep.countNrStepAttributes(id_step, "output_main_path"); //$NON-NLS-1$
 
       for (int i = 0; i < nrInput; i++) {
         inputMappings.add(new MappingIODefinition(rep, id_step, "input_", i));
@@ -301,16 +296,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface {
     rep.saveStepAttribute(id_transformation, id_step, "trans_object_id", transObjectId==null ? null : transObjectId.toString());
     rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
     rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
-
-    // Verify import from repository explorer into different directory...
-    //
-    RepositoryDirectoryInterface importLocation = RepositoryImportLocation.getRepositoryImportLocation();
-    if (importLocation != null && !importLocation.isRoot()) {
-      directoryPath = importLocation.getPath() + directoryPath;
-    }
-
-    // Now we can save it with the correct reference...
-    //
     rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
 
     for (int i = 0; i < inputMappings.size(); i++) {
