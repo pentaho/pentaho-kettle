@@ -124,7 +124,7 @@ public class KettleFileRepository implements Repository {
 		return directory.toString();
 	}
 	
-	private String calcRelativeElementDirectory(RepositoryDirectoryInterface dir) {
+	public String calcRelativeElementDirectory(RepositoryDirectoryInterface dir) {
 		if (dir!=null) {
 			return dir.getPath();
 		} else {

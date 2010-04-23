@@ -779,6 +779,7 @@ public class ValueDataUtil
      * @return Number of days
      * @throws KettleValueException
      */
+    @SuppressWarnings("deprecation")
     public static Object DateDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
         if (metaA.isDate() && metaB.isDate())

@@ -66,7 +66,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
@@ -551,7 +550,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			if (  hi.isUnconditional() || ( jobEntryCopy.evaluates() && ( ! ( hi.getEvaluation() ^ result.getResult() ) ) ) ) 
 			{				
 				// Start this next step!
-				if(log.isBasic()) log.logBasic(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.StartingEntry",nextEntry.getName()));
+				if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "Job.Log.StartingEntry",nextEntry.getName()));
                 
                 // Pass along the previous result, perhaps the next job can use it...
                 // However, set the number of errors back to 0 (if it should be reset)
@@ -628,7 +627,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	                threadExceptions.add(new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()), e));
 				}
 			}
-			// if(log.isBasic()) log.logBasic(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.FinishedJobEntry",startpoint.getName(),res.getResult()+""));
+			// if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "Job.Log.FinishedJobEntry",startpoint.getName(),res.getResult()+""));
 		}
 		
 		// Perhaps we don't have next steps??

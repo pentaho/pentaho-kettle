@@ -36,7 +36,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.GUIOption;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;

@@ -54,7 +54,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
@@ -410,21 +409,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   //
   public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
     try {
-      RepositoryDirectoryInterface importLocation = RepositoryImportLocation.getRepositoryImportLocation();
-
-      if (importLocation != null && !importLocation.isRoot()) {
-        directory = importLocation.getPath() + directoryPath;
-      }
-
-      if (directory == null) {
-        if (importLocation != null) {
-          directory = importLocation.getPath();
-        } else {
-          directory = new RepositoryDirectory().getPath(); // just pick the root
-                                                           // directory
-        }
-      }
-
       rep.saveJobEntryAttribute(id_job, getObjectId(), "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
       rep.saveJobEntryAttribute(id_job, getObjectId(), "job_object_id", jobObjectId==null ? null : jobObjectId.toString());
       rep.saveJobEntryAttribute(id_job, getObjectId(), "name", getJobName());
@@ -1025,7 +1009,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return jobMeta.getSQLStatements(repository, null);
   }
 
-  private JobMeta getJobMeta(Repository rep, VariableSpace space) throws KettleException {
+  public JobMeta getJobMeta(Repository rep, VariableSpace space) throws KettleException {
     try {
       switch(specificationMethod) {
       case FILENAME:

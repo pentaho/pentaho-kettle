@@ -700,13 +700,34 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToLoadJobFromXMLFile") + fname + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-	
+
 	public JobMeta(InputStream inputStream, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
 	  loadXML(XMLHandler.loadXMLFile(inputStream, null, false, false), rep, prompter);
 	}
 
+  /**
+   * Create a new JobMeta object by loading it from a a DOM node.   
+   * 
+   * @param jobnode The node to load from
+   * @param rep The reference to a repository to load additional information from
+   * @param prompter The prompter to use in case a shared object gets overwritten
+   * @throws KettleXMLException
+   */
 	public JobMeta(Node jobnode, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
-		loadXML(jobnode, rep, prompter);
+		loadXML(jobnode, rep, false, prompter);
+	}
+
+	 /**
+   * Create a new JobMeta object by loading it from a a DOM node.   
+   * 
+   * @param jobnode The node to load from
+   * @param rep The reference to a repository to load additional information from
+   * @param ignoreRepositorySharedObjects Do not load shared objects, handled separately
+   * @param prompter The prompter to use in case a shared object gets overwritten
+   * @throws KettleXMLException
+   */
+  public JobMeta(Node jobnode, Repository rep, boolean ignoreRepositorySharedObjects, OverwritePrompter prompter) throws KettleXMLException {
+	   loadXML(jobnode, rep, ignoreRepositorySharedObjects, prompter);
 	}
 
 	public boolean isRepReference() {
@@ -726,6 +747,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public void loadXML(Node jobnode, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
+	  loadXML(jobnode, rep, false, prompter);
+  }
+
+	/**
+	 * Load a block of XML from an DOM node.   
+	 * 
+	 * @param jobnode The node to load from
+	 * @param rep The reference to a repository to load additional information from
+	 * @param ignoreRepositorySharedObjects Do not load shared objects, handled separately
+	 * @param prompter The prompter to use in case a shared object gets overwritten
+	 * @throws KettleXMLException
+	 */
+	public void loadXML(Node jobnode, Repository rep, boolean ignoreRepositorySharedObjects, OverwritePrompter prompter) throws KettleXMLException {
 		Props props = null;
 		if (Props.isInitialized())
 			props = Props.getInstance();
@@ -782,7 +816,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			// Read objects from the shared XML file & the repository
 			try {
 				sharedObjectsFile = XMLHandler.getTagValue(jobnode, "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
-				sharedObjects = rep!=null ? rep.readJobMetaSharedObjects(this) : readSharedObjects();
+				if (rep==null || ignoreRepositorySharedObjects) {
+				  sharedObjects = readSharedObjects();
+				} else {
+				  sharedObjects = rep.readJobMetaSharedObjects(this);
+				}
 			} catch (Exception e) {
 				throw new KettleXMLException(BaseMessages.getString(PKG, "JobMeta.ErrorReadingSharedObjects.Message"), e); // $NON-NLS-1$ // //$NON-NLS-1$
 			}

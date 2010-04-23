@@ -5,14 +5,24 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.job.JobEntryJob;
+import org.pentaho.di.job.entries.trans.JobEntryTrans;
+import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.mapping.MappingMeta;
 
 public class RepositoryExporter {
 
@@ -104,11 +114,15 @@ public class RepositoryExporter {
 	            {
 	                try
 	                {
-	                    JobMeta ji = repository.loadJob(jobs[i], repdir, null, null); // reads last version
+	                    JobMeta jobMeta = repository.loadJob(jobs[i], repdir, null, null); // reads last version
 	                    System.out.println("Loading/Exporting job ["+repdir.getPath()+" : "+jobs[i]+"]");
 	                    if (monitor!=null) monitor.subTask("Exporting job ["+jobs[i]+"]");
 	                    
-	                    writer.write(ji.getXML()+Const.CR);
+	                    // Check file repository export
+	                    //
+	                    convertFromFileRepository(jobMeta);
+	                    
+	                    writer.write(jobMeta.getXML()+Const.CR);
 	                }
 	                catch(KettleException ke)
 	                {
@@ -122,6 +136,110 @@ public class RepositoryExporter {
     	}
     }
     
+    private void convertFromFileRepository(JobMeta jobMeta) {
+
+      if (repository instanceof KettleFileRepository) {
+        
+        KettleFileRepository fileRep = (KettleFileRepository)repository;
+        
+        // The id of the job is the filename.
+        // Setting the filename also sets internal variables needed to load the trans/job referenced.
+        //
+        String jobMetaFilename = fileRep.calcFilename(jobMeta.getObjectId());
+        jobMeta.setFilename(jobMetaFilename);
+        
+        for (JobEntryCopy copy : jobMeta.getJobCopies()) {
+          JobEntryInterface entry = copy.getEntry();
+          if (entry instanceof JobEntryTrans) {
+            // convert to a named based reference.
+            //
+            JobEntryTrans trans = (JobEntryTrans) entry;
+            if (trans.getSpecificationMethod()==ObjectLocationSpecificationMethod.FILENAME) {
+              try {
+                TransMeta meta = trans.getTransMeta(repository, jobMeta);
+                FileObject fileObject = KettleVFS.getFileObject(meta.getFilename());
+                trans.setSpecificationMethod(ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
+                trans.setFileName(null);
+                trans.setTransname(meta.getName());
+                trans.setDirectory(Const.NVL(calcRepositoryDirectory(fileRep, fileObject), "/"));
+              } catch(Exception e) {
+                log.logError("Unable to load transformation specified in job entry '"+trans.getName()+"'", e);
+                // Ignore this error, just leave everything the way it is.
+              }
+            }
+          }
+
+          if (entry instanceof JobEntryJob) {
+            // convert to a named based reference.
+            //
+            JobEntryJob job = (JobEntryJob) entry;
+            if (job.getSpecificationMethod()==ObjectLocationSpecificationMethod.FILENAME) {
+              try {
+                JobMeta meta = job.getJobMeta(repository, jobMeta);
+                FileObject fileObject = KettleVFS.getFileObject(meta.getFilename());
+                job.setSpecificationMethod(ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
+                job.setFileName(null);
+                job.setJobName(meta.getName());
+                job.setDirectory(Const.NVL(calcRepositoryDirectory(fileRep, fileObject), "/"));
+              } catch(Exception e) {
+                log.logError("Unable to load job specified in job entry '"+job.getName()+"'", e);
+                // Ignore this error, just leave everything the way it is.
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    private void convertFromFileRepository(TransMeta transMeta) {
+
+      if (repository instanceof KettleFileRepository) {
+        
+        KettleFileRepository fileRep = (KettleFileRepository)repository;
+        
+        // The id of the transformation is the relative filename.
+        // Setting the filename also sets internal variables needed to load the trans/job referenced.
+        //
+        String transMetaFilename = fileRep.calcFilename(transMeta.getObjectId());
+        transMeta.setFilename(transMetaFilename);
+        
+        for (StepMeta stepMeta : transMeta.getSteps()) {
+          if (stepMeta.isMapping()) {
+            MappingMeta mappingMeta = (MappingMeta) stepMeta.getStepMetaInterface();
+
+            // convert to a named based reference.
+            //
+            if (mappingMeta.getSpecificationMethod()==ObjectLocationSpecificationMethod.FILENAME) {
+              try {
+                TransMeta meta = MappingMeta.loadMappingMeta(mappingMeta, repository, transMeta);
+                FileObject fileObject = KettleVFS.getFileObject(meta.getFilename());
+                mappingMeta.setSpecificationMethod(ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
+                mappingMeta.setFileName(null);
+                mappingMeta.setTransName(meta.getName());
+                mappingMeta.setDirectoryPath(Const.NVL(calcRepositoryDirectory(fileRep, fileObject), "/"));
+              } catch(Exception e) {
+                log.logError("Unable to load transformation specified in map '"+mappingMeta.getName()+"'", e);
+                // Ignore this error, just leave everything the way it is.
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+    private String calcRepositoryDirectory(KettleFileRepository fileRep, FileObject fileObject) throws FileSystemException{
+      String path = fileObject.getParent().getName().getPath(); 
+      String baseDirectory = fileRep.getRepositoryMeta().getBaseDirectory();
+      // Double check!
+      //
+      if (path.startsWith(baseDirectory)) {
+        return path.substring(baseDirectory.length());
+      } else {
+        return path;
+      }
+    }
+
     private void exportTransformations(ProgressMonitorListener monitor, RepositoryDirectoryInterface dirTree, OutputStreamWriter writer) throws KettleException
     {
     	try {
@@ -142,11 +260,13 @@ public class RepositoryExporter {
 	            {
 	                try
 	                {
-	                    TransMeta ti = repository.loadTransformation(trans[i], repdir, null, true, null); // reads last version
-	                    System.out.println("Loading/Exporting transformation ["+repdir.getPath()+" : "+trans[i]+"]  ("+ti.getRepositoryDirectory().getPath()+")");
+	                    TransMeta transMeta = repository.loadTransformation(trans[i], repdir, null, true, null); // reads last version
+	                    System.out.println("Loading/Exporting transformation ["+repdir.getPath()+" : "+trans[i]+"]  ("+transMeta.getRepositoryDirectory().getPath()+")");
 	                    if (monitor!=null) monitor.subTask("Exporting transformation ["+trans[i]+"]");
 	                    
-	                    writer.write(ti.getXML()+Const.CR);
+	                    convertFromFileRepository(transMeta);
+	                    
+	                    writer.write(transMeta.getXML()+Const.CR);
 	                }
 	                catch(KettleException ke)
 	                {
