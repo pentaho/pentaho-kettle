@@ -993,7 +993,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
         wDirectory.setText(sod.getDirectory().getPath());
         // Copy it to the job entry name too...
         wName.setText(wJobname.getText());
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
         setRadioButtons();
       }
     }

@@ -2248,9 +2248,11 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         // Open the job or create a new one...
         //
         RepositoryDirectoryInterface repDir = spoon.rep.loadRepositoryDirectoryTree().findDirectory(entry.getDirectory()); 
-        boolean exists = spoon.rep.exists(exactJobname, repDir, RepositoryObjectType.TRANSFORMATION);
+        boolean exists = spoon.rep.exists(exactJobname, repDir, RepositoryObjectType.JOB);
         if (!exists) {
           launchJobMeta = new JobMeta();
+          launchJobMeta.setName(exactJobname);
+          launchJobMeta.setRepositoryDirectory(repDir);
         } 
         else {
           // Always reads last revision
