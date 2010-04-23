@@ -12,9 +12,7 @@
 */
 package org.pentaho.di.ui.spoon;
 
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.xul.swt.tab.TabItem;
 
 public class TabMapEntry
@@ -58,7 +56,7 @@ public class TabMapEntry
     	TabMapEntry entry = (TabMapEntry) obj;
     
     	boolean sameType = objectType.equals(entry.objectType); 
-    	boolean sameName = objectName.equals(entry.objectName);
+    	boolean sameName = objectName!=null && entry.objectName!=null && objectName.equals(entry.objectName);
     	boolean sameFile = (filename==null && entry.filename==null) || (filename!=null && filename.equals(entry.filename));
     	boolean sameVersion = (versionLabel==null && entry.versionLabel==null) || (versionLabel!=null && versionLabel.equals(entry.versionLabel)) ;
     	boolean sameDirectory = (repositoryDirectory==null && entry.repositoryDirectory==null) ||  
