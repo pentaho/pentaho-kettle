@@ -1096,7 +1096,6 @@ public class DimensionLookup extends BaseStep implements StepInterface
       for (int i = 0; i < meta.getFieldUpdate().length; i++) {
         switch (meta.getFieldUpdate()[i]) {
         case DimensionLookupMeta.TYPE_UPDATE_DATE_INSUP:
-        case DimensionLookupMeta.TYPE_UPDATE_DATE_INSERTED:
           updateRow[updateIndex++] = new Date();
           break;
         case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
@@ -1106,12 +1105,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
       }
 
       for (int i = 0; i < data.keynrs.length; i++) {
-        updateRow[updateIndex] = row[data.keynrs[i]];
-        updateIndex++;
+        updateRow[updateIndex++] = row[data.keynrs[i]];
       }
 
-      updateRow[updateIndex] = versionNr - 1;
-      updateIndex++;
+      updateRow[updateIndex++] = versionNr - 1;
 
       if (log.isRowLevel())
         logRowlevel("UPDATE using rupd=" + data.updateRowMeta.getString(updateRow));
