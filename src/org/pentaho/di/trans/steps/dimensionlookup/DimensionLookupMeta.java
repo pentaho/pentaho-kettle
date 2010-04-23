@@ -661,89 +661,6 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 
-	private void readData(Node stepnode, List<? extends SharedObjectInterface> databases) throws KettleXMLException
-	{
-		try
-		{
-			String upd;
-			int nrkeys, nrfields;
-			String commit;
-
-            schemaName = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
-			tableName = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
-			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			databaseMeta = DatabaseMeta.findDatabase(databases, con);
-			commit = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
-			commitSize = Const.toInt(commit, 0);
-
-			upd = XMLHandler.getTagValue(stepnode, "update"); //$NON-NLS-1$
-			if (upd.equalsIgnoreCase("Y")) //$NON-NLS-1$
-				update = true;
-			else
-				update = false;
-
-			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-
-			nrkeys = XMLHandler.countNodes(fields, "key"); //$NON-NLS-1$
-			nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
-
-			allocate(nrkeys, nrfields);
-
-			// Read keys to dimension
-			for (int i = 0; i < nrkeys; i++)
-			{
-				Node knode = XMLHandler.getSubNodeByNr(fields, "key", i); //$NON-NLS-1$
-
-				keyStream[i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
-				keyLookup[i] = XMLHandler.getTagValue(knode, "lookup"); //$NON-NLS-1$
-			}
-
-			// Only one date is supported
-			// No datefield: use system date...
-			Node dnode = XMLHandler.getSubNode(fields, "date"); //$NON-NLS-1$
-			dateField = XMLHandler.getTagValue(dnode, "name"); //$NON-NLS-1$
-			dateFrom = XMLHandler.getTagValue(dnode, "from"); //$NON-NLS-1$
-			dateTo = XMLHandler.getTagValue(dnode, "to"); //$NON-NLS-1$
-
-			for (int i = 0; i < nrfields; i++)
-			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
-
-				fieldStream[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
-				fieldLookup[i] = XMLHandler.getTagValue(fnode, "lookup"); //$NON-NLS-1$
-				upd = XMLHandler.getTagValue(fnode, "update"); //$NON-NLS-1$
-				fieldUpdate[i] = getUpdateType(update, upd);
-			}
-
-			if (update)
-			{
-				// If this is empty: use auto-increment field!
-				sequenceName = XMLHandler.getTagValue(stepnode, "sequence"); //$NON-NLS-1$
-			}
-
-			maxYear = Const.toInt(XMLHandler.getTagValue(stepnode, "max_year"), Const.MAX_YEAR); //$NON-NLS-1$
-			minYear = Const.toInt(XMLHandler.getTagValue(stepnode, "min_year"), Const.MIN_YEAR); //$NON-NLS-1$
-
-			keyField = XMLHandler.getTagValue(fields, "return", "name"); //$NON-NLS-1$ //$NON-NLS-2$
-			keyRename = XMLHandler.getTagValue(fields, "return", "rename"); //$NON-NLS-1$ //$NON-NLS-2$
-			autoIncrement = !"N".equalsIgnoreCase(XMLHandler.getTagValue(fields, "return", "use_autoinc")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			versionField = XMLHandler.getTagValue(fields, "return", "version"); //$NON-NLS-1$ //$NON-NLS-2$
-			
-			setTechKeyCreation(XMLHandler.getTagValue(fields, "return", "creation_method")); //$NON-NLS-1$
-            
-            cacheSize = Const.toInt(XMLHandler.getTagValue(stepnode, "cache_size"), -1); //$NON-NLS-1$
-            preloadingCache = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "preload_cache")); //$NON-NLS-1$
-            
-            usingStartDateAlternative = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_start_date_alternative")); //$NON-NLS-1$
-            startDateAlternative = getStartDateAlternative(XMLHandler.getTagValue(stepnode, "start_date_alternative")); //$NON-NLS-1$
-            startDateFieldName = XMLHandler.getTagValue(stepnode, "start_date_field_name"); //$NON-NLS-1$ 
-		}
-		catch (Exception e)
-		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
-		}
-	}
-
 	public void setDefault()
 	{
 		int nrkeys, nrfields;
@@ -857,69 +774,139 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
-	public String getXML()
-	{
-        StringBuffer retval = new StringBuffer(512);
-		
-        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("      ").append(XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("update", update)); //$NON-NLS-1$ //$NON-NLS-2$
+  public String getXML() {
+    StringBuffer retval = new StringBuffer(512);
 
-		retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
-		for (int i = 0; i < keyStream.length; i++)
-		{
-			retval.append("        <key>").append(Const.CR); //$NON-NLS-1$
-			retval.append("          ").append(XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("          ").append(XMLHandler.addTagValue("lookup", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </key>").append(Const.CR); //$NON-NLS-1$
-		}
+    retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    retval.append("      ").append(XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("update", update)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		retval.append("        <date>").append(Const.CR); //$NON-NLS-1$
-		retval.append("          ").append(XMLHandler.addTagValue("name", dateField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          ").append(XMLHandler.addTagValue("from", dateFrom)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          ").append(XMLHandler.addTagValue("to", dateTo)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        </date>").append(Const.CR); //$NON-NLS-1$
+    retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
+    for (int i = 0; i < keyStream.length; i++) {
+      retval.append("        <key>").append(Const.CR); //$NON-NLS-1$
+      retval.append("          ").append(XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("          ").append(XMLHandler.addTagValue("lookup", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("        </key>").append(Const.CR); //$NON-NLS-1$
+    }
 
-		if (fieldStream != null)
-        {
-			for (int i = 0; i < fieldStream.length; i++)
-			{
-				if (fieldStream[i] != null)
-				{
-					retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
-					retval.append("          ").append(XMLHandler.addTagValue("name", fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-					retval.append("          ").append(XMLHandler.addTagValue("lookup", fieldLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-					retval.append("          ").append(XMLHandler.addTagValue("update", getUpdateTypeCode(update, fieldUpdate[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-					retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
-				}
-			}
-        }
-		retval.append("        <return>").append(Const.CR); //$NON-NLS-1$
-		retval.append("          ").append(XMLHandler.addTagValue("name", keyField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          ").append(XMLHandler.addTagValue("rename", keyRename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          ").append(XMLHandler.addTagValue("creation_method", techKeyCreation)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          ").append(XMLHandler.addTagValue("use_autoinc", autoIncrement)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          ").append(XMLHandler.addTagValue("version", versionField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        </return>").append(Const.CR); //$NON-NLS-1$
+    retval.append("        <date>").append(Const.CR); //$NON-NLS-1$
+    retval.append("          ").append(XMLHandler.addTagValue("name", dateField)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("          ").append(XMLHandler.addTagValue("from", dateFrom)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("          ").append(XMLHandler.addTagValue("to", dateTo)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("        </date>").append(Const.CR); //$NON-NLS-1$
 
-		retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
+    if (fieldStream != null) {
+      for (int i = 0; i < fieldStream.length; i++) {
+          retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
+          retval.append("          ").append(XMLHandler.addTagValue("name", Const.NVL(fieldStream[i], ""))); //$NON-NLS-1$ //$NON-NLS-2$
+          retval.append("          ").append(XMLHandler.addTagValue("lookup", Const.NVL(fieldLookup[i], ""))); //$NON-NLS-1$ //$NON-NLS-2$
+          retval.append("          ").append(XMLHandler.addTagValue("update", getUpdateTypeCode(update, fieldUpdate[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+          retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
+      }
+    }
 
-		// If sequence is empty: use auto-increment field!
-		retval.append("      ").append(XMLHandler.addTagValue("sequence", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("min_year", minYear)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      ").append(XMLHandler.addTagValue("max_year", maxYear)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("        <return>").append(Const.CR); //$NON-NLS-1$
+    retval.append("          ").append(XMLHandler.addTagValue("name", keyField)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("          ").append(XMLHandler.addTagValue("rename", keyRename)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("          ").append(XMLHandler.addTagValue("creation_method", techKeyCreation)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("          ").append(XMLHandler.addTagValue("use_autoinc", autoIncrement)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("          ").append(XMLHandler.addTagValue("version", versionField)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("        </return>").append(Const.CR); //$NON-NLS-1$
 
-        retval.append("      ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("preload_cache", preloadingCache)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
 
-        retval.append("      ").append(XMLHandler.addTagValue("use_start_date_alternative", usingStartDateAlternative)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("start_date_alternative", getStartDateAlternativeCode(startDateAlternative))); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      ").append(XMLHandler.addTagValue("start_date_field_name", startDateFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+    // If sequence is empty: use auto-increment field!
+    retval.append("      ").append(XMLHandler.addTagValue("sequence", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("min_year", minYear)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("max_year", maxYear)); //$NON-NLS-1$ //$NON-NLS-2$
 
-        return retval.toString();
-	}
+    retval.append("      ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("preload_cache", preloadingCache)); //$NON-NLS-1$ //$NON-NLS-2$
+
+    retval.append("      ").append(XMLHandler.addTagValue("use_start_date_alternative", usingStartDateAlternative)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("start_date_alternative", getStartDateAlternativeCode(startDateAlternative))); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("start_date_field_name", startDateFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+
+    return retval.toString();
+  }
+	
+  private void readData(Node stepnode, List<? extends SharedObjectInterface> databases) throws KettleXMLException {
+    try {
+      String upd;
+      int nrkeys, nrfields;
+      String commit;
+
+      schemaName = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
+      tableName = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
+      String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
+      databaseMeta = DatabaseMeta.findDatabase(databases, con);
+      commit = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
+      commitSize = Const.toInt(commit, 0);
+
+      upd = XMLHandler.getTagValue(stepnode, "update"); //$NON-NLS-1$
+      if (upd.equalsIgnoreCase("Y")) //$NON-NLS-1$
+        update = true;
+      else
+        update = false;
+
+      Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+
+      nrkeys = XMLHandler.countNodes(fields, "key"); //$NON-NLS-1$
+      nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+
+      allocate(nrkeys, nrfields);
+
+      // Read keys to dimension
+      for (int i = 0; i < nrkeys; i++) {
+        Node knode = XMLHandler.getSubNodeByNr(fields, "key", i); //$NON-NLS-1$
+
+        keyStream[i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
+        keyLookup[i] = XMLHandler.getTagValue(knode, "lookup"); //$NON-NLS-1$
+      }
+
+      // Only one date is supported
+      // No datefield: use system date...
+      Node dnode = XMLHandler.getSubNode(fields, "date"); //$NON-NLS-1$
+      dateField = XMLHandler.getTagValue(dnode, "name"); //$NON-NLS-1$
+      dateFrom = XMLHandler.getTagValue(dnode, "from"); //$NON-NLS-1$
+      dateTo = XMLHandler.getTagValue(dnode, "to"); //$NON-NLS-1$
+
+      for (int i = 0; i < nrfields; i++) {
+        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+
+        fieldStream[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+        fieldLookup[i] = XMLHandler.getTagValue(fnode, "lookup"); //$NON-NLS-1$
+        upd = XMLHandler.getTagValue(fnode, "update"); //$NON-NLS-1$
+        fieldUpdate[i] = getUpdateType(update, upd);
+      }
+
+      if (update) {
+        // If this is empty: use auto-increment field!
+        sequenceName = XMLHandler.getTagValue(stepnode, "sequence"); //$NON-NLS-1$
+      }
+
+      maxYear = Const.toInt(XMLHandler.getTagValue(stepnode, "max_year"), Const.MAX_YEAR); //$NON-NLS-1$
+      minYear = Const.toInt(XMLHandler.getTagValue(stepnode, "min_year"), Const.MIN_YEAR); //$NON-NLS-1$
+
+      keyField = XMLHandler.getTagValue(fields, "return", "name"); //$NON-NLS-1$ //$NON-NLS-2$
+      keyRename = XMLHandler.getTagValue(fields, "return", "rename"); //$NON-NLS-1$ //$NON-NLS-2$
+      autoIncrement = !"N".equalsIgnoreCase(XMLHandler.getTagValue(fields, "return", "use_autoinc")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      versionField = XMLHandler.getTagValue(fields, "return", "version"); //$NON-NLS-1$ //$NON-NLS-2$
+
+      setTechKeyCreation(XMLHandler.getTagValue(fields, "return", "creation_method")); //$NON-NLS-1$
+
+      cacheSize = Const.toInt(XMLHandler.getTagValue(stepnode, "cache_size"), -1); //$NON-NLS-1$
+      preloadingCache = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "preload_cache")); //$NON-NLS-1$
+
+      usingStartDateAlternative = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_start_date_alternative")); //$NON-NLS-1$
+      startDateAlternative = getStartDateAlternative(XMLHandler.getTagValue(stepnode, "start_date_alternative")); //$NON-NLS-1$
+      startDateFieldName = XMLHandler.getTagValue(stepnode, "start_date_field_name"); //$NON-NLS-1$ 
+    } catch (Exception e) {
+      throw new KettleXMLException(BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
+    }
+  }
 
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
