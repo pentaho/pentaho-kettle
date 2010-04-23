@@ -21,6 +21,7 @@
 
 package org.pentaho.di.trans.steps.scriptvalues_mod;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -76,6 +77,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.steps.loadfileinput.LoadFileInput;
 
 
 
@@ -101,6 +103,9 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "indexOf", "getOutputRowMeta", "getInputRowMeta", "createRowCopy", "putRow", 
         "deleteFile","createFolder","copyFile","getFileSize","isFile","isFolder","getShortFilename",
         "getFileExtension","getParentFoldername","getLastModifiedTime", "trunc", "truncDate","moveFile",
+        "execProcess","isEmpty","isMailValid",
+        "escapeXml","removeDigits","initCap","protectXMLCDATA","unEscapeXml","escapeSQL","escapeHtml","unEscapeHtml"
+        ,"loadFileContent", "getOcuranceString", "removeCRLF"
         };
 	
 	// This is only used for reading, so no concurrency problems.
@@ -2208,7 +2213,241 @@ public static void moveFile(Context actualContext, Scriptable actualObject, Obje
 			throw Context.reportRuntimeError(e.toString());
 		}
 	}
+	
+	public static String execProcess(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		String retval=null;
+		if(!isNull(ArgList) && !isUndefined(ArgList)){
+			Process processrun =null;
+			try{
+		
+				String ligne="";
+				StringBuffer buffer=new StringBuffer();
+				processrun = Runtime.getRuntime().exec(Context.toString(ArgList[0]));
+	
+	            // Get process response
+	            BufferedReader br = new BufferedReader(new InputStreamReader(processrun.getInputStream()));
+	
+	            // Read response lines
+	            while ((ligne = br.readLine()) != null)
+	            {
+	                buffer.append(ligne);
+	            }
+	            //if (processrun.exitValue()!=0)	throw Context.reportRuntimeError("Error while running " +  ArgList[0]);
+				
+	            retval=buffer.toString();
+	           
+				
+			}catch(Exception er){
+				throw Context.reportRuntimeError(er.toString());
+			}finally
+			{
+				 if(processrun!=null) processrun.destroy();
+			}
+		}else{
+			throw Context.reportRuntimeError("The function call execProcess is not valid.");
+		}
+		return  retval;
+	}
+	public static Boolean isEmpty(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		if(ArgList.length==1){
+			try{
+				if(isUndefined(ArgList[0])) throw new Exception (ArgList[0] +" is  undefined!");
+				if(isNull(ArgList[0])) return Boolean.TRUE;
+				if(Context.toString(ArgList[0]).length()==0) return Boolean.TRUE;
+				else return Boolean.FALSE;
 
-	
-	
+			}catch(Exception e){
+				throw Context.reportRuntimeError("Error in isEmpty function: "+ e.getMessage());
+			}
+		}else{
+			throw Context.reportRuntimeError("The function call isEmpty is not valid");
+		}
+	}
+	public static Boolean isMailValid(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		Boolean retval=Boolean.FALSE;
+		if(ArgList.length==1){
+			try{
+				if(isUndefined(ArgList[0])) throw new Exception (ArgList[0] +" is  undefined!");
+				if(isNull(ArgList[0])) return Boolean.FALSE;
+				if(Context.toString(ArgList[0]).length()==0) return Boolean.FALSE;
+
+				String email=Context.toString(ArgList[0]);
+				if(email.indexOf('@') == -1 || email.indexOf('.') == -1) return Boolean.FALSE;
+				
+				retval=Boolean.TRUE;
+
+			}catch(Exception e){
+				throw Context.reportRuntimeError("Error in isMailValid function: "+ e.getMessage());
+			}
+			return retval;
+		}else{
+			throw Context.reportRuntimeError("The function call isMailValid is not valid");
+		}
+	}
+	public static String escapeXml(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext)
+	  {
+		if(ArgList.length==1)
+		{
+		    return Const.escapeXML(Context.toString(ArgList[0]));
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call escapeXml requires 1 argument.");
+
+		}
+	  }
+	public static String escapeHtml(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext)
+	  {
+			if(ArgList.length==1)
+			{
+			    return Const.escapeHtml(Context.toString(ArgList[0]));
+			}
+			else
+			{
+				throw Context.reportRuntimeError("The function call escapeHtml requires 1 argument.");
+			}
+		  }
+	public static String unEscapeHtml(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext)
+	  {
+			if(ArgList.length==1)
+			{
+			    return Const.unEscapeHtml(Context.toString(ArgList[0]));
+			}
+			else
+			{
+				throw Context.reportRuntimeError("The function call unEscapeHtml requires 1 argument.");
+			}
+		  }
+	public static String unEscapeXml(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext)
+	  {
+		if(ArgList.length==1)
+		{
+		    return Const.unEscapeXml(Context.toString(ArgList[0]));
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call unEscapeXml requires 1 argument.");
+
+		}
+	  }
+	public static String escapeSQL(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext)
+	  {
+		if(ArgList.length==1)
+		{
+		    return Const.escapeSQL(Context.toString(ArgList[0]));
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call escapeSQL requires 1 argument.");
+
+		}
+	  }
+	public static String protectXMLCDATA(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext)
+	  {
+		if(ArgList.length==1)
+		{
+		    return Const.protectXMLCDATA(Context.toString(ArgList[0]));
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call protectXMLCDATA requires 1 argument.");
+
+		}
+	  }
+	public static String removeDigits(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext)
+	  {
+		if(ArgList.length==1)
+		{
+		    return Const.removeDigits(Context.toString(ArgList[0]));
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call removeDigits requires 1 argument.");
+
+		}
+	  }
+	public static String initCap(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext)
+	  {
+		if(ArgList.length==1)
+		{
+		    return Const.initCap(Context.toString(ArgList[0]));
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call initCap requires 1 argument.");
+
+		}
+	  }
+	public static Object loadFileContent(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		Object oRC=new Object();
+		try{
+
+			switch(ArgList.length){
+			case 0:
+				throw  Context.reportRuntimeError("Please provide a filename to the function call loadFileContent.");
+			case 1:
+				try{
+					if(isNull(ArgList)) return null;
+					else if(isUndefined(ArgList)) return Context.getUndefinedValue();
+					// Returns file content
+					oRC=LoadFileInput.getTextFileContent(Context.toString(ArgList[0]), null);
+				}catch(Exception e){
+					throw Context.reportRuntimeError("The function call loadFileContent throw an error : " + e.toString());
+				}
+				break;
+			case 2:
+				try{
+					if(ArgList[0].equals(null)) return null;
+		    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
+					String encoding= null;
+					if(!isUndefined(ArgList[1]) && !ArgList[1].equals(null)) encoding=Context.toString(ArgList[0]);
+					// Returns file content
+					oRC=LoadFileInput.getTextFileContent(Context.toString(ArgList[0]), encoding);
+				}catch(Exception e){
+					throw Context.reportRuntimeError("The function call loadFileContent throw an error : " + e.toString());
+				}
+				break;
+										
+			default:
+				throw Context.reportRuntimeError("The function call loadFileContentrequires 1 ou 2 arguments.");
+			}
+
+		}catch(Exception e){
+			throw Context.reportRuntimeError(e.toString());
+		}
+		return oRC;
+	}
+	public static int getOcuranceString(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+        int nr=0;
+        if(ArgList.length==2) {
+            try{
+                if(isNull(ArgList[0])) return 0;
+                else if(isUndefined(ArgList[0])) return (Integer)Context.getUndefinedValue();
+                if(isNull(ArgList[1])) return 0;
+                else if(isUndefined(ArgList[1])) return (Integer)Context.getUndefinedValue();
+                String string = Context.toString(ArgList[0]);
+                String searchFor = Context.toString(ArgList[1]);
+                nr = Const.getOcuranceString(string, searchFor);
+            }catch(Exception e){
+                throw Context.reportRuntimeError("The function call getOcuranceString is not valid");
+            }
+        } else {
+            throw Context.reportRuntimeError("The function call getOcuranceString is not valid");
+        }
+        return nr;
+    }
+	 public static String removeCRLF(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+	        if(ArgList.length==1) {
+	            try{
+	                if(isNull(ArgList[0])) return null;
+	                else if(isUndefined(ArgList[0])) return (String)Context.getUndefinedValue();
+
+	                return Const.removeCRLF(Context.toString(ArgList[0]));
+	            }catch(Exception e){
+	                throw Context.reportRuntimeError("The function call removeCRLF is not valid");
+	            }
+	        } else {
+	            throw Context.reportRuntimeError("The function call removeCRLF is not valid");
+	        }
+	    }
 }

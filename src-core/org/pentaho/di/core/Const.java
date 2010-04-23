@@ -37,6 +37,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.pentaho.di.core.exception.KettleException;
@@ -2420,5 +2422,32 @@ public class Const
 		out.append(BaseMessages.getString(PKG, "Props.Kettle.Properties.Sample.Line10")+CR);
 		
 		return out.toString();
+	}
+	 /**
+	 * 	Mask XML content.
+	 *  i.e. protect with CDATA;
+	 * 	@param content content
+	 * 	@return protected content
+	 */
+	public static String protectXMLCDATA (String content)
+	{
+		if (isEmpty(content))	return content;
+		return  "<![CDATA["+content+"]]>";
+	}
+	/**
+	 * 	Get the number of occurances of searchFor in string.
+	 * 	@param string String to be searched
+	 * 	@param searchFor to be counted string
+	 * 	@return number of occurances
+	 */
+	public static int getOcuranceString (String string, String searchFor)
+	{
+	  if (string == null || string.length() == 0)
+		  return 0;
+	  Pattern p = Pattern.compile(searchFor);
+	  Matcher m = p.matcher(string);
+	  int count = 0;
+	  while (m.find()) { ++count; }
+	  return count;
 	}
 }

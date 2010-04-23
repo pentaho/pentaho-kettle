@@ -1564,6 +1564,258 @@ moveFile(sourcefile,destinationfile,false);</sample>
          <argument id="1">var,var,var</argument>
       </Arguments>
    </jsFunction>  
+    <jsFunction name="execProcess">
+      <help>Execute an external processus</help>
+      <sample>// Execute a processus.
+// 
+// Usage:
+//execProcess(processus);
+// 1: String - The external processus to execute.
+// Return - type : String containing the response
+// 02/05/2008
+var processus="The processus to execute";
+execProcess(processus);</sample>
+       <type>4</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>   
+      <jsFunction name="isEmpty">
+      <help>Check if the given String is empty.</help>
+     <sample>// Returns true, if the given String is empty.
+// 
+// Usage:
+// isEmpty(var);
+// 1: var - The String to check.
+//
+// 2008-05-06
+//
+var d = "Hello World";      
+Alert(isEmpty(d));
+</sample>
+       <type>3</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction> 
+  
+      <jsFunction name="isMailValid">
+      <help>Check if the given email is valid.</help>
+     <sample>// Returns true, if the given email is valid.
+// 
+// Usage:
+// isMailValid(var);
+// 1: var - The email to check.
+//
+// 2008-05-20
+//
+
+</sample>
+       <type>3</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction> 
+      
+   	<jsFunction name="escapeXml">
+      <help>Mask XML content</help>
+      <sample>// Returns masked content 
+// 
+// Usage:
+// escapeXml(var);
+// 1: var - The XML content to mask
+//
+// 2008-10-07
+//
+var str1 = "value" ;    
+Alert(escapeXml(str1));
+ </sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>
+   	<jsFunction name="removeDigits">
+      <help>Remove digits from from a String.</help>
+      <sample>/
+// 
+// Usage:
+// removeDigits(var);
+// 1: var - The Variable to check.
+//
+// 2007-09-11
+//
+var str1 = "abc123cde";      
+Alert(getDigitsOnly(str1));
+      </sample>
+      <type>4</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>
+ <jsFunction name="initCap">
+      <help>Sets the first character of each word in upper-case.</help>
+      <sample>// Returns String
+// 
+// Usage:
+// initCap(var);
+// 1: var - The Variable to process.
+//
+// 2007-09-11
+//
+var str1 = "my home";      
+Alert(initCap(str1));
+      </sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>  
+    <jsFunction name="protectXMLCDATA">
+      <help>Protect XML with CDATA.</help>
+      <sample>// Returns protected String
+// 
+// Usage:
+// protectXMLCDATA(var);
+// 1: var - The Variable to protect.
+//
+// 2007-09-11
+//
+var str1 = "my home";      
+Alert(protectXMLCDATA(str1));
+      </sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>    
+    <jsFunction name="unEscapeXml">
+      <help>Unescapes a string containing XML entity escapes to a string containing the actual Unicode characters corresponding to the escapes</help>
+      <sample>// Returns unescaped String
+// 
+// Usage:
+// unEscapeXml(var);
+// 1: var - The Variable to unescape.
+//
+// 2007-09-11
+//
+var str1 = "my home";      
+Alert(unEscapeXml(str1));
+      </sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>   
+       <jsFunction name="escapeSQL">
+      <help>Escapes the characters in a String to be suitable to pass to an SQL query</help>
+      <sample>// Returns escaped String
+// 
+// Usage:
+// "escapeSQL"(var);
+// 1: var - The Variable to escape.
+//
+// 2007-09-11
+//
+var str1 = "SELECT * FROM CUSTOMER WHERE NAME='" + escapeSQL("McHale's Navy") + "'";    
+//At present, this method only turns single-quotes into doubled single-quotes
+// ("McHale's Navy" => "McHale''s Navy"
+Alert(str1);
+      </sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>  
+       <jsFunction name="escapeHtml">
+      <help>Escapes a string containing entity escapes to a string containing the actual 
+      Unicode characters corresponding to the escapes. Supports HTML 4.0 entities</help>
+      <sample>// Returns escaped String
+		// 
+		// Usage:
+		// "escapeHtml"(var);
+		// 1: var - The Variable to escape.
+		//
+		// 2007-09-11
+		//
+
+      </sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>   
+       <jsFunction name="unEscapeHtml">
+      <help>Unescapes a string containing entity escapes to a string containing the actual 
+      Unicode characters corresponding to the escapes. Supports HTML 4.0 entities</help>
+      <sample>// Returns escaped String
+		// 
+		// Usage:
+		// "unEscapeHtml"(var);
+		// 1: var - The Variable to escape.
+		//
+		// 2007-09-11
+		//
+
+      </sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>
+   <jsFunction name="loadFileContent">
+      <help>Load the content of a file</help>
+      <sample>// Returns file content
+// 
+// Usage:
+// "loadFileContent";
+// 1: loadFileContent(filename) - Load file content from a full path
+// 2: loadFileContent(filename, encoding) - Load file content from a full path
+// 2007-09-11
+//
+
+      </sample>
+      <type>5</type>
+      <Arguments>
+         <argument id="1">var</argument>
+         <argument id="2">var,var</argument>
+      </Arguments>
+   </jsFunction>
+   
+      <jsFunction name="getOcuranceString">
+      <help>Get the number of ocurances of searchFor in string.</help>
+      <sample>// Return number of ocurances
+// 
+// Usage:
+// getOcuranceString(string, searchFor)
+//	string is the string to be searched
+//  searchFor is the string to be counted
+// 2007-09-11
+//
+
+      </sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="2">var,var</argument>
+      </Arguments>
+   </jsFunction>
+   
+         <jsFunction name="removeCRLF">
+      <help>Remove CR / LF from String</help>
+      <sample>// Return cleaned string
+// 
+// Usage:
+// removeCRLF(string)
+//	string is the string from which CR end LF will be removed
+// 2007-09-11
+//
+
+      </sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>
 </jsFunctions>
 
 
