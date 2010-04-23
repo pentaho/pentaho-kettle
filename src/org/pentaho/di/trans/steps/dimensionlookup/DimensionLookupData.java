@@ -82,6 +82,13 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
 
 	public List<Integer>	preloadIndexes;
 
+  public List<Integer> lazyList;
+
+  /**
+   * The input row metadata, but converted to normal storage type
+   */
+  public RowMetaInterface inputRowMeta;
+
 	/**
 	 * 
 	 */

@@ -112,14 +112,27 @@ public class DimensionLookup extends BaseStep implements StepInterface
             
             data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(data.realSchemaName, data.realTableName);
             
+            data.inputRowMeta = getInputRowMeta().clone();
             data.outputRowMeta = getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
                         
+            // Get the fields that need conversion to normal storage...
+            // Modify the storage type of the input data...
+            //
+            data.lazyList = new ArrayList<Integer>();
+            for (int i=0;i<data.inputRowMeta.size();i++) {
+              ValueMetaInterface valueMeta = data.inputRowMeta.getValueMeta(i);
+              if (valueMeta.isStorageBinaryString()) {
+                data.lazyList.add(i);
+                valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+              }
+            }
+            
             // The start date value column (if applicable)
             //
             data.startDateFieldIndex = -1;
             if (data.startDateChoice==DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE) {
-            	data.startDateFieldIndex = getInputRowMeta().indexOfValue(meta.getStartDateFieldName());
+            	data.startDateFieldIndex = data.inputRowMeta.indexOfValue(meta.getStartDateFieldName());
             	if (data.startDateFieldIndex<0) {
             		throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.StartDateValueColumnNotFound", meta.getStartDateFieldName()));
             	}
@@ -130,7 +143,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             for (int i=0;i<meta.getKeyStream().length;i++)
             {
                 //logDetailed("Lookup values key["+i+"] --> "+key[i]+", row==null?"+(row==null));
-                data.keynrs[i]=getInputRowMeta().indexOfValue(meta.getKeyStream()[i]);
+                data.keynrs[i]=data.inputRowMeta.indexOfValue(meta.getKeyStream()[i]);
                 if (data.keynrs[i]<0) // couldn't find field!
                 {
                     throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.KeyFieldNotFound",meta.getKeyStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -165,7 +178,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	                data.cacheKeyRowMeta = new RowMeta();
 	                for (int i=0;i<data.keynrs.length;i++)
 	                {
-	                    ValueMetaInterface key = getInputRowMeta().getValueMeta(data.keynrs[i]);
+	                    ValueMetaInterface key = data.inputRowMeta.getValueMeta(data.keynrs[i]);
 	                    data.cacheKeyRowMeta.addValueMeta( key.clone());
 	                }
 	                
@@ -175,7 +188,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
             if (meta.getDateField()!=null && meta.getDateField().length()>0)
             { 
-                data.datefieldnr = getInputRowMeta().indexOfValue(meta.getDateField());
+                data.datefieldnr = data.inputRowMeta.indexOfValue(meta.getDateField());
             }
             else 
             {
@@ -189,7 +202,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
             if (meta.getDateField()!=null && data.datefieldnr>=0)
             {
-                data.valueDateNow = getInputRowMeta().getDate(r, data.datefieldnr);
+                data.valueDateNow = data.inputRowMeta.getDate(r, data.datefieldnr);
             }
             else
             {
@@ -201,9 +214,16 @@ public class DimensionLookup extends BaseStep implements StepInterface
             setDimLookup(data.outputRowMeta);
         }
         
+        // convert row to normal storage...
+        //
+        for (int lazyFieldIndex : data.lazyList) {
+          ValueMetaInterface valueMeta = getInputRowMeta().getValueMeta(lazyFieldIndex);
+          r[lazyFieldIndex] = valueMeta.convertToNormalStorageType(r[lazyFieldIndex]);
+        }
+        
         try
         {
-            Object[] outputRow = lookupValues(getInputRowMeta(), r); // add new values to the row in rowset[0].
+            Object[] outputRow = lookupValues(data.inputRowMeta, r); // add new values to the row in rowset[0].
             putRow(data.outputRowMeta, outputRow);       // copy row to output rowset(s);
             
             if (checkFeedback(getLinesRead())) 
@@ -271,7 +291,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			//
 			data.preloadIndexes = new ArrayList<Integer>();
 			for (int i=0;i<meta.getKeyStream().length;i++) {
-				int index = getInputRowMeta().indexOfValue(meta.getKeyStream()[i]);
+				int index = data.inputRowMeta.indexOfValue(meta.getKeyStream()[i]);
 				if (index<0) {
 					// Just to be safe...
 					//
@@ -460,7 +480,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				 *   ;
 				 */
 				
-				technicalKey = dimInsert(getInputRowMeta(), row, technicalKey, true, valueVersion, valueDateFrom, valueDateTo); 
+				technicalKey = dimInsert(data.inputRowMeta, row, technicalKey, true, valueVersion, valueDateFrom, valueDateTo); 
 								
 				incrementLinesOutput();
 				returnRow = new Object[data.returnRowMeta.size()];
@@ -516,40 +536,44 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				
 				for (int i=0;i<meta.getFieldStream().length;i++)
 				{
-					if (data.fieldnrs[i]>=0) {
-						// Only compare real fields, not last updated row, last version, etc
-						//
-	                    ValueMetaInterface v1  = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
-	                    Object valueData1 = row[data.fieldnrs[i]]; 
-	                    ValueMetaInterface v2  = data.returnRowMeta.getValueMeta(i+2);
-	                    Object valueData2 = returnRow[i+2];
-	                        
-						cmp = v1.compare(valueData1, v2, valueData2);
-						  
-						  // Not the same and update = 'N' --> insert
-						  if (cmp!=0) identical=false;
-	                      
-	                      // Field flagged for insert: insert
-						  if (cmp!=0 && meta.getFieldUpdate()[i]==DimensionLookupMeta.TYPE_UPDATE_DIM_INSERT)
-						  { 
-						  	insert=true;
-						  }
-	                      
-	                      // Field flagged for punchthrough
-						  if (cmp!=0 && meta.getFieldUpdate()[i]==DimensionLookupMeta.TYPE_UPDATE_DIM_PUNCHTHROUGH) 
-	                      {
-	                            punch=true;
-	                      }
-						  
-						  if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.ComparingValues",""+v1,""+v2,String.valueOf(cmp),String.valueOf(identical),String.valueOf(insert),String.valueOf(punch))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-					}
+          if (data.fieldnrs[i] >= 0) {
+            // Only compare real fields, not last updated row, last version, etc
+            //
+            ValueMetaInterface v1 = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
+            Object valueData1 = row[data.fieldnrs[i]];
+            ValueMetaInterface v2 = data.returnRowMeta.getValueMeta(i + 2);
+            Object valueData2 = returnRow[i + 2];
+
+            try {
+              cmp = v1.compare(valueData1, v2, valueData2);
+            } catch(ClassCastException e) {
+              throw e;
+            }
+
+            // Not the same and update = 'N' --> insert
+            if (cmp != 0)
+              identical = false;
+
+            // Field flagged for insert: insert
+            if (cmp != 0 && meta.getFieldUpdate()[i] == DimensionLookupMeta.TYPE_UPDATE_DIM_INSERT) {
+              insert = true;
+            }
+
+            // Field flagged for punchthrough
+            if (cmp != 0 && meta.getFieldUpdate()[i] == DimensionLookupMeta.TYPE_UPDATE_DIM_PUNCHTHROUGH) {
+              punch = true;
+            }
+
+            if (log.isRowLevel())
+              logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.ComparingValues", "" + v1, "" + v2, String.valueOf(cmp), String.valueOf(identical), String.valueOf(insert), String.valueOf(punch))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+          }
 				}
 				
 				if (!insert)  // Just an update of row at key = valueKey
 				{
 					if (!identical)
 					{
-						if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.UpdateRowWithValues")+getInputRowMeta().getString(row)); //$NON-NLS-1$
+						if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "DimensionLookup.Log.UpdateRowWithValues")+data.inputRowMeta.getString(row)); //$NON-NLS-1$
 						/*
 						 * UPDATE d_customer
 						 * SET    fieldlookup[] = row.getValue(fieldnrs)

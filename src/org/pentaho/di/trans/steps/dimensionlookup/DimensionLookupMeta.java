@@ -791,75 +791,71 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
         preloadingCache = false;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
-	{
-        ValueMetaInterface v = new ValueMeta(keyField, ValueMetaInterface.TYPE_INTEGER);
-		if (keyRename != null && keyRename.length() > 0)
-			v.setName(keyRename);
+  public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    
+    // Change all the fields to normal storage, this is the fastest way to handle lazy conversion.
+    // It doesn't make sense to use it in the SCD context but people try it anyway
+    //
+    for (ValueMetaInterface valueMeta : row.getValueMetaList()) {
+      valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+    }
+    
+    ValueMetaInterface v = new ValueMeta(keyField, ValueMetaInterface.TYPE_INTEGER);
+    if (keyRename != null && keyRename.length() > 0)
+      v.setName(keyRename);
 
-		v.setLength(9);
-        v.setPrecision(0);
-		v.setOrigin(name);
-		row.addValueMeta(v);
+    v.setLength(9);
+    v.setPrecision(0);
+    v.setOrigin(name);
+    row.addValueMeta(v);
 
-		// retrieve extra fields on lookup?
-        // Don't bother if there are no return values specified.
-		if (!update && fieldLookup.length>0)
-		{
-			Database db = null;
-            try
-            {
-                // Get the rows from the table...
-                if (databaseMeta!=null)
-                {
-                    db = new Database(loggingObject, databaseMeta);
-                    // First try without connecting to the database... (can be  S L O W)
-                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
-                    RowMetaInterface extraFields = db.getTableFields(schemaTable);
-                    if (extraFields==null) // now we need to connect
-                    {
-                    	db.connect();
-                    	extraFields = db.getTableFields(schemaTable);
-                    }
-                    
-                    for (int i = 0; i < fieldLookup.length; i++)
-                    {
-                        v = extraFields.searchValueMeta(fieldLookup[i]);
-                        if (v==null)
-                        {
-                            String message = BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToFindReturnField",fieldLookup[i]); //$NON-NLS-1$ //$NON-NLS-2$
-                            logError(message);
-                            throw new KettleStepException(message);
-                        }
-                        
-                        // If the field needs to be renamed, rename
-                        if (fieldStream[i] != null && fieldStream[i].length() > 0)
-                        {
-                            v.setName(fieldStream[i]);
-                        }
-                        v.setOrigin(name);
-                        row.addValueMeta(v);
-                    }
-                }
-                else
-                {
-                    String message = BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToRetrieveDataTypeOfReturnField"); //$NON-NLS-1$
-                    logError(message);
-                    throw new KettleStepException(message);
-                }
+    // retrieve extra fields on lookup?
+    // Don't bother if there are no return values specified.
+    if (!update && fieldLookup.length > 0) {
+      Database db = null;
+      try {
+        // Get the rows from the table...
+        if (databaseMeta != null) {
+          db = new Database(loggingObject, databaseMeta);
+          // First try without connecting to the database... (can be S L O W)
+          String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+          RowMetaInterface extraFields = db.getTableFields(schemaTable);
+          if (extraFields == null) // now we need to connect
+          {
+            db.connect();
+            extraFields = db.getTableFields(schemaTable);
+          }
+
+          for (int i = 0; i < fieldLookup.length; i++) {
+            v = extraFields.searchValueMeta(fieldLookup[i]);
+            if (v == null) {
+              String message = BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToFindReturnField", fieldLookup[i]); //$NON-NLS-1$ //$NON-NLS-2$
+              logError(message);
+              throw new KettleStepException(message);
             }
-            catch(Exception e)
-            {
-                String message = BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToRetrieveDataTypeOfReturnField2"); //$NON-NLS-1$
-                logError(message);
-                throw new KettleStepException(message, e);
+
+            // If the field needs to be renamed, rename
+            if (fieldStream[i] != null && fieldStream[i].length() > 0) {
+              v.setName(fieldStream[i]);
             }
-            finally
-            {
-            	if (db!=null) db.disconnect();
-            }
-   		}
-	}
+            v.setOrigin(name);
+            row.addValueMeta(v);
+          }
+        } else {
+          String message = BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToRetrieveDataTypeOfReturnField"); //$NON-NLS-1$
+          logError(message);
+          throw new KettleStepException(message);
+        }
+      } catch (Exception e) {
+        String message = BaseMessages.getString(PKG, "DimensionLookupMeta.Exception.UnableToRetrieveDataTypeOfReturnField2"); //$NON-NLS-1$
+        logError(message);
+        throw new KettleStepException(message, e);
+      } finally {
+        if (db != null)
+          db.disconnect();
+      }
+    }
+  }
 
 	public String getXML()
 	{
