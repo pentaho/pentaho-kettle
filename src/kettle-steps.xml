@@ -1225,4 +1225,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.WebServiceAvailable</tooltip>
 		<iconfile>ui/images/WSA.png</iconfile>
 	</step>	
+		<step id="LoadFileInput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.LoadFileInput</description>
+		<classname>org.pentaho.di.trans.steps.loadfileinput.LoadFileInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LoadFileInput</tooltip>
+		<iconfile>ui/images/LFI.png</iconfile>
+	</step>
 </steps>
