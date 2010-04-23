@@ -364,7 +364,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
                 public void widgetSelected(SelectionEvent e) 
                 {
                     FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-                    dialog.setFilterExtensions(new String[] {"*.mdb;*.MDB", "*"});
+					dialog.setFilterExtensions(new String[] {"*.mdb;*.MDB;*.accdb;*.ACCDB", "*"});
 
                     if (!Const.isEmpty(wFilename.getText()))
                     {

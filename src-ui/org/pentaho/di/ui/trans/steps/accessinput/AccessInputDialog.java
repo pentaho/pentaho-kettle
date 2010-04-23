@@ -1010,14 +1010,15 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 					else
 					{
 						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-						dialog.setFilterExtensions(new String[] {"*mdb;*.MDB", "*"});
+						dialog.setFilterExtensions(new String[] {"*.mdb;*.MDB;*.accdb;*.ACCDB", "*"});
 						if (wFilename.getText()!=null)
 						{
 							String fname = "";//StringUtil.environmentSubstitute(wFilename.getText());
 							dialog.setFileName( fname );
 						}
 						
-						dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "AccessInputDialog.FileType.AccessFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
+						dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "AccessInputDialog.FileType.AccessFiles"), 
+								BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 						
 						if (dialog.open()!=null)
 						{

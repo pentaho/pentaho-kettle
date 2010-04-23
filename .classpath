@@ -121,7 +121,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/jtds-1.2.5.jar"/>
 	<classpathentry kind="lib" path="libext/ftp4che-0.7.1.jar"/>
 	<classpathentry kind="lib" path="libext/ascsapjco3wrp.jar"/>
-	<classpathentry kind="lib" path="libext/jackcess-1.1.21.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/olap4j-0.9.7.302.jar"/>
 	<classpathentry kind="lib" path="libext/syslog4j-0.9.34.jar"/>
 	<classpathentry kind="lib" path="libext/livetribe-jsr223-2.0.6.jar"/>
@@ -130,5 +129,6 @@
 	<classpathentry kind="lib" path="libext/palo-core.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/rome-1.0.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/xalan-2.4.1.jar"/>
+	<classpathentry kind="lib" path="libext/jackcess-1.2.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
