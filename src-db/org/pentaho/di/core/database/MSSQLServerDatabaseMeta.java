@@ -357,7 +357,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "jtds-1.2.jar" };
+        return new String[] { "jtds-1.2.5jar" };
     }
     
     public String getExtraOptionsHelpText()
