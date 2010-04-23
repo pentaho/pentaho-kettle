@@ -116,7 +116,7 @@ public class SapInput extends BaseStep implements StepInterface
 			int outputIndex = 0; // Makes it easier to add all sorts of fields later on, like row number, input fields, etc.
 			
 			for (SAPField field : sapRow.getFields()) {
-				// TODO: Here we should check as well wether or not the correct data types are delivered from SAP.  
+				// TODO: Here we should check as well whether or not the correct data types are delivered from SAP.  
 				// Make sure that we don't pass the appropriate data types : String, long, double, Date, BigDecimal, Boolean, byte[] ONLY!!
 				//
 				outputRowData[outputIndex++] = field.getValue();
