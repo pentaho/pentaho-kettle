@@ -52,7 +52,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
@@ -427,15 +426,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	//
 	public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
 		try {
-		  RepositoryDirectoryInterface importLocation = RepositoryImportLocation.getRepositoryImportLocation();
-			if (directory == null) {
-				if (importLocation!=null) {
-					directory = importLocation.getPath();
-				} else {
-					directory = new RepositoryDirectory().getPath(); // just pick the root directory
-				}
-			}
-
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "trans_object_id", transObjectId==null ? null : transObjectId.toString());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "name", getTransname());
@@ -593,7 +583,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         // Throws an exception if it was not possible to load the transformation.  For example, the XML file doesn't exist or the repository is down.
         // Log the stack trace and return an error condition from this
         //
-        TransMeta transMeta = getTransMeta(rep);
+        TransMeta transMeta = getTransMeta(rep, this);
 
         int iteration = 0;
         String args1[] = arguments;
@@ -938,8 +928,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     }
                     
                     // set the parent job on the transformation, variables are taken from here...
+                    //
                     trans.setParentJob(parentJob);
-                    trans.setParentVariableSpace(parentJob);                    
+                    trans.setParentVariableSpace(parentJob);     
+                    
+                    // Mappings need the repository to load from
+                    //
+                    trans.setRepository(rep);
 
                     // First get the root job
                     //
@@ -1063,62 +1058,60 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return resultat;
 	}
 	
-	private TransMeta getTransMeta(Repository rep) throws KettleException
-    {
-		try
-		{
-	        TransMeta transMeta = null;
-	        switch(specificationMethod) {
-	        case FILENAME:
-            String filename = environmentSubstitute(getFilename());
-            logBasic("Loading transformation from XML file ["+filename+"]");
-            transMeta = new TransMeta(filename, null, true, this);
-            break;
-	        case REPOSITORY_BY_NAME:
-            String transname = environmentSubstitute(getTransname());
-            String realDirectory = environmentSubstitute(getDirectory());
-            logBasic(BaseMessages.getString(PKG, "JobTrans.Log.LoadingTransRepDirec", transname, realDirectory));
-  
-            if ( rep != null )
-            {
-              //
-              // It only makes sense to try to load from the repository when the repository is also filled in.
-              //
-              RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory(realDirectory);
-              transMeta = rep.loadTransformation(transname, repositoryDirectory, null, true, null); // reads last version
-            }
-            else
-            {
-              throw new KettleException(BaseMessages.getString(PKG, "JobTrans.Exception.NoRepDefined"));
-            }
-  	        break;
-	        case REPOSITORY_BY_REFERENCE:
-	          if (rep!=null) {
-	            transMeta = rep.loadTransformation(transObjectId, null); // load the last version
-	          }
-	          break;
-	        default: 
-	          throw new KettleException("The specified object location specification method '"+specificationMethod+"' is not yet supported in this job entry.");
-	        }
-	        
-          if (transMeta!=null) {
-            // copy parent variables to this loaded variable space.
-            //
-            transMeta.copyVariablesFrom(this);
-            
-            // Set the arguments...
-            //
-            transMeta.setArguments(arguments);
-          }
+  public TransMeta getTransMeta(Repository rep, VariableSpace space) throws KettleException {
+    try {
+      TransMeta transMeta = null;
+      switch (specificationMethod) {
+      case FILENAME:
+        String filename = space.environmentSubstitute(getFilename());
+        logBasic("Loading transformation from XML file [" + filename + "]");
+        transMeta = new TransMeta(filename, null, true, this);
+        break;
+      case REPOSITORY_BY_NAME:
+        String transname = space.environmentSubstitute(getTransname());
+        String realDirectory = space.environmentSubstitute(getDirectory());
+        logBasic(BaseMessages.getString(PKG, "JobTrans.Log.LoadingTransRepDirec", transname, realDirectory));
 
-	        return transMeta;
-		}
-		catch(Exception e)
-		{
-			
-			throw new KettleException(BaseMessages.getString(PKG, "JobTrans.Exception.MetaDataLoad"), e);
-		}
+        if (rep != null) {
+          //
+          // It only makes sense to try to load from the repository when the
+          // repository is also filled in.
+          // 
+          // It reads last the last revision from the repository.
+          //
+          RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory(realDirectory);
+          transMeta = rep.loadTransformation(transname, repositoryDirectory, null, true, null); 
+        } else {
+          throw new KettleException(BaseMessages.getString(PKG, "JobTrans.Exception.NoRepDefined"));
+        }
+        break;
+      case REPOSITORY_BY_REFERENCE:
+        if (rep != null) {
+          // Load the last revision
+          //
+          transMeta = rep.loadTransformation(transObjectId, null); 
+        }
+        break;
+      default:
+        throw new KettleException("The specified object location specification method '" + specificationMethod + "' is not yet supported in this job entry.");
+      }
+
+      if (transMeta != null) {
+        // copy parent variables to this loaded variable space.
+        //
+        transMeta.copyVariablesFrom(this);
+
+        // Set the arguments...
+        //
+        transMeta.setArguments(arguments);
+      }
+
+      return transMeta;
+    } catch (Exception e) {
+
+      throw new KettleException(BaseMessages.getString(PKG, "JobTrans.Exception.MetaDataLoad"), e);
     }
+  }
 
     public boolean evaluates()
 	{
@@ -1133,7 +1126,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     public List<SQLStatement> getSQLStatements(Repository repository, VariableSpace space) throws KettleException
     {
     	this.copyVariablesFrom(space);
-        TransMeta transMeta = getTransMeta(repository);
+        TransMeta transMeta = getTransMeta(repository, this);
 
         return transMeta.getSQLStatements();
     }
@@ -1219,7 +1212,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		// First load the transformation metadata...
 		//
 		copyVariablesFrom(space);
-		TransMeta transMeta = getTransMeta(repository);
+		TransMeta transMeta = getTransMeta(repository, space);
 
 		// Also go down into the transformation and export the files there. (mapping recursively down)
 		//
