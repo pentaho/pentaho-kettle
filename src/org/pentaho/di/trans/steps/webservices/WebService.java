@@ -525,7 +525,8 @@ public class WebService extends BaseStep implements StepInterface
 	    	// 
         Transformer transformer = null;
         try {
-          TransformerFactory transformerFactory = TransformerFactory.newInstance("org.apache.xalan.processor.TransformerFactoryImpl", null);
+          Class<?> clazz = Class.forName("org.apache.xalan.processor.TransformerFactoryImpl");
+          TransformerFactory transformerFactory = (TransformerFactory)clazz.newInstance();
           transformer = transformerFactory.newTransformer();
         } catch (Throwable t) { 
           TransformerFactory transformerFactory = TransformerFactory.newInstance();
