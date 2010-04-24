@@ -336,7 +336,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 						 if ((info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
 							if (log.isDetailed())
-								logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.DeletingFile",info.getFile().toString())); //$NON-NLS-1$
+								logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CheckingFile",info.getFile().toString())); //$NON-NLS-1$
 							
 							returncode= true; 				
 							 

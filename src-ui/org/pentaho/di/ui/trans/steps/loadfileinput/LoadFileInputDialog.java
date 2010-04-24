@@ -1042,7 +1042,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 			if(r!=null) wFilenameField.setItems(r.getFieldNames());
 			if(field!=null) wFilenameField.setText(field);			
 		 }catch(KettleException ke){
-				new ErrorDialog(shell, BaseMessages.getString(PKG, "GenerateAirDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GenerateAirDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "LoadFileInputDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "LoadFileInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		 gotPreviousFields=true;
 		 }
