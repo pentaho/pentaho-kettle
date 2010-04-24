@@ -95,6 +95,7 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_ADD_MONTHS             = 62;
     public static final int CALC_CHECK_XML_FILE_WELL_FORMED         = 63;
     public static final int CALC_CHECK_XML_WELL_FORMED         = 64;
+    public static final int CALC_GET_FILE_ENCODING         = 65;
     
     public static final String calc_desc[] = 
         { 
@@ -162,7 +163,8 @@ public class CalculatorMetaFunction implements Cloneable
             "DATE_WORKING_DIFF",
             "ADD_MONTHS",
             "CHECK_XML_FILE_WELL_FORMED",
-            "CHECK_XML_WELL_FORMED"
+            "CHECK_XML_WELL_FORMED",
+            "GET_FILE_ENCODING"
         };
     
     public static final String calcLongDesc[] = 
@@ -232,6 +234,7 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DatePlusMonths"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.CheckXmlFileWellFormed"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.CheckXmlWellFormed"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.GetFileEncoding"),
         };
    
     private String fieldName;

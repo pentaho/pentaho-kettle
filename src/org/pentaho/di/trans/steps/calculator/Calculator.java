@@ -634,6 +634,12 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_BOOLEAN;
                 }
                 break;
+                case CalculatorMetaFunction.CALC_GET_FILE_ENCODING      : // Get file encoding from a file A
+                {
+                    calcData[index] = ValueDataUtil.getFileEncoding(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING;
+                }
+                break;
                 default:
                     throw new KettleValueException(BaseMessages.getString(PKG, "Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }

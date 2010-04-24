@@ -1232,4 +1232,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LoadFileInput</tooltip>
 		<iconfile>ui/images/LFI.png</iconfile>
 	</step>
+	<step id="ChangeFileEncoding">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ChangeFileEncoding</description>
+		<classname>org.pentaho.di.trans.steps.changefileencoding.ChangeFileEncodingMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ChangeFileEncoding</tooltip>
+		<iconfile>ui/images/CFE.png</iconfile>
+	</step>	
 </steps>

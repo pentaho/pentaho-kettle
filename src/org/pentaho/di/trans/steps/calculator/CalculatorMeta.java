@@ -373,6 +373,9 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_CHECK_XML_WELL_FORMED     : // XML string A well formed
             	defaultResultType=ValueMetaInterface.TYPE_BOOLEAN;
                 break;
+            case CalculatorMetaFunction.CALC_GET_FILE_ENCODING     : // get file encoding
+            	defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
             default:
                 break;
             }

@@ -14,6 +14,7 @@ package org.pentaho.di.core.row;
 
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -36,6 +37,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.fileinput.CharsetToolkit;
 
 public class ValueDataUtil
 {
@@ -1336,5 +1338,20 @@ public class ValueDataUtil
     		return XMLCheck.isXMLWellFormed(new ByteArrayInputStream(metaA.getBinary(dataA)));
     	}catch(Exception e) {}
     	return false;
+    }
+    /**
+     * Get file encoding.
+     * @param metaA The ValueMetaInterface 
+     * @param dataA The value (filename) 
+     * @return file encoding.
+     */
+    public static String getFileEncoding(ValueMetaInterface metaA, Object dataA)  throws KettleValueException
+    {
+    	if(dataA==null) return null;
+    	try {
+			 return CharsetToolkit.guessEncodingName(new File(metaA.getString(dataA)));
+    	}catch(Exception e) {
+    		throw new KettleValueException(e);
+    	}
     }
 }
