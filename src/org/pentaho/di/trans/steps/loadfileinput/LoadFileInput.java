@@ -79,7 +79,7 @@ public class LoadFileInput extends BaseStep implements StepInterface
 			   
 			   if (data.readrow==null) // finished processing!
 	           {
-	           	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LoadFileInput.Log.FinishedProcessing"));
+	           	if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "LoadFileInput.Log.FinishedProcessing"));
 	               return false;
 	           }
 			   
@@ -130,7 +130,7 @@ public class LoadFileInput extends BaseStep implements StepInterface
 			   // get field value
 			   String Fieldvalue= data.inputRowMeta.getString(data.readrow, data.indexOfFilenameField);
 				
-			   if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LoadFileInput.Log.Stream", meta.getDynamicFilenameField(),Fieldvalue));
+			   if(isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LoadFileInput.Log.Stream", meta.getDynamicFilenameField(),Fieldvalue));
 
 			   FileObject file=null;
 				try
@@ -147,7 +147,7 @@ public class LoadFileInput extends BaseStep implements StepInterface
 			{
 	            if (data.filenr>=data.files.nrOfFiles()) // finished processing!
 	            {
-	            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LoadFileInput.Log.FinishedProcessing"));
+	            	if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "LoadFileInput.Log.FinishedProcessing"));
 	                return false;
 	            }
 	            
@@ -168,14 +168,14 @@ public class LoadFileInput extends BaseStep implements StepInterface
 				
 			}else
 			{
-				if (log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LoadFileInput.Log.OpeningFile", data.file.toString()));
+				if (isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LoadFileInput.Log.OpeningFile", data.file.toString()));
 				
 				// get File content
 				getFileContent();
 				
 				addFileToResultFilesname(data.file);
 	
-	            if (log.isDetailed()) 
+	            if (isDetailed()) 
 	            {
 	            	logDetailed(BaseMessages.getString(PKG, "LoadFileInput.Log.FileOpened", data.file.toString()));
 	            }
@@ -204,7 +204,7 @@ public class LoadFileInput extends BaseStep implements StepInterface
 		        return false; // end of data or error.
 		     }
 			 
-			 if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "LoadFileInput.Log.ReadRow",data.outputRowMeta.getString(outputRowData)));
+			 if (isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "LoadFileInput.Log.ReadRow",data.outputRowMeta.getString(outputRowData)));
 
 			 putRow(data.outputRowMeta, outputRowData);
 			 
@@ -229,14 +229,10 @@ public class LoadFileInput extends BaseStep implements StepInterface
 	{
 		try{
 			data.filecontent=getTextFileContent(data.file.toString(), meta.getEncoding());
-		}
-		catch(java.lang.OutOfMemoryError o)
-		{
-			log.logError(toString(), "Il n'y a pas assez de mémoire disponible pour charger le contenu du fichier ["+data.file.getName()+"]");
+		} catch(java.lang.OutOfMemoryError o) {
+			log.logError(toString(), "There is no enaugh memory to load the content of the file ["+data.file.getName()+"]");
 			throw new KettleException(o);
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			throw new KettleException(e);
 		}
 	}
