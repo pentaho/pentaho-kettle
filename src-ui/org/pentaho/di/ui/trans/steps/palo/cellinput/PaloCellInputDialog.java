@@ -105,6 +105,7 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
     final Display display = getParent().getDisplay();
     shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     props.setLook(shell);
+    setShellImage(shell, meta);
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = Const.FORM_MARGIN;
     formLayout.marginHeight = Const.FORM_MARGIN;
