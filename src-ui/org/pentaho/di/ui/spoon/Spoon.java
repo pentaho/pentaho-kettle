@@ -1403,12 +1403,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     return TransGraph.editProperties(getActiveTransformation(), this, rep, true);
   }
 
-  public void editProperties() {
+  public boolean editProperties() {
     if (getActiveTransformation() != null) {
-      editTransformationProperties();
+      return editTransformationProperties();
     } else if (getActiveJob() != null) {
-      editJobProperties("job-settings");
+      return editJobProperties("job-settings");
     }
+    // no properties were edited, so no cancel was clicked
+    return true;
   }
 
   public void executeJob() {
@@ -2280,12 +2282,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
 
-  public void editJobProperties(String id) {
+  public boolean editJobProperties(String id) {
     if ("job-settings".equals(id)) {
-      JobGraph.editProperties(getActiveJob(), this, rep, true);
+      return JobGraph.editProperties(getActiveJob(), this, rep, true);
     } else if ("job-inst-settings".equals(id)) {
-      JobGraph.editProperties((JobMeta) selectionObject, this, rep, true);
+      return JobGraph.editProperties((JobMeta) selectionObject, this, rep, true);
     }
+    return false;
   }
 
   public void addJobLog() {
@@ -4575,7 +4578,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           meta.setFilename(fname);
           // If the user hits cancel here, don't save anything
           //
-          if (!editTransformationProperties()) {
+          if (!editProperties()) {
             // Revert the changes!
             //
             meta.setFilename(beforeFilename);
