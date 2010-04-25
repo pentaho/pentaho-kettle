@@ -394,7 +394,7 @@
 		<classname>org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MemoryGroupby</tooltip>
-		<iconfile>ui/images/GRP.png</iconfile>
+		<iconfile>ui/images/MGB.png</iconfile>
 	</step>
 
 	<step id="AnalyticQuery">
