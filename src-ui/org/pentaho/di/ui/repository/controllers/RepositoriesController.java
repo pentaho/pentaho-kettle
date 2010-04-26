@@ -155,6 +155,9 @@ public class RepositoriesController extends AbstractXulEventHandler {
   }
 
   public void login() {
+    if(loginModel.isValid() == false){
+      return;
+    }
     XulWaitBox box;
     try {
       box = (XulWaitBox) document.createElement("waitbox");
