@@ -1254,7 +1254,7 @@ public class ValueMeta implements ValueMetaInterface
             case TYPE_STRING:
                 switch(storageType)
                 {
-                case STORAGE_TYPE_NORMAL:         string = (String)object; break;
+                case STORAGE_TYPE_NORMAL:         string = object==null ? null : object.toString(); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = (String)convertBinaryStringToNativeType((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = object==null ? null : (String) index[((Integer)object).intValue()];  break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
@@ -2831,7 +2831,7 @@ public class ValueMeta implements ValueMetaInterface
 	        // If it's a string and the string is empty, it's a null value as well
 	        //
 	        if (isString()) {
-	        	if (((String)value).length()==0) return true;
+	        	if (value.toString().length()==0) return true;
 	        }
 	        
 	        // We tried everything else so we assume this value is not null.
