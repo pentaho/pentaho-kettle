@@ -14,6 +14,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -467,6 +468,13 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 	                        stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.                        
 	                    }
 	                }
+	                
+	                // Load all the log tables for the transformation...
+	                //
+	                RepositoryAttributeInterface attributeInterface = new KettleDatabaseRepositoryTransAttribute(repository.connectionDelegate, transMeta.getObjectId());
+	                for (LogTableInterface logTable : transMeta.getLogTables()) {
+	                  logTable.loadFromRepository(attributeInterface);
+	                }	                
 	                
 	                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SortingStepsTask.Title")); //$NON-NLS-1$
 	                transMeta.sortSteps();

@@ -30,6 +30,7 @@ import java.util.Locale;
 
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -1254,7 +1255,7 @@ public class ValueMeta implements ValueMetaInterface
             case TYPE_STRING:
                 switch(storageType)
                 {
-                case STORAGE_TYPE_NORMAL:         string = (String)object; break;
+                case STORAGE_TYPE_NORMAL:         string = object==null ? null : object.toString(); break;
                 case STORAGE_TYPE_BINARY_STRING:  string = (String)convertBinaryStringToNativeType((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = object==null ? null : (String) index[((Integer)object).intValue()];  break;
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
@@ -2814,6 +2815,10 @@ public class ValueMeta implements ValueMetaInterface
 		try{
 	        Object value = data;
 	        
+	        if (value instanceof DatabaseMeta) {
+	          System.out.println("blah");
+	        }
+	        
 	        if (isStorageBinaryString()) {
 	        	if (value==null || !EMPTY_STRING_AND_NULL_ARE_DIFFERENT && ((byte[])value).length==0) return true; // shortcut
 	        	value = convertBinaryStringToNativeType((byte[])data);
@@ -2831,7 +2836,7 @@ public class ValueMeta implements ValueMetaInterface
 	        // If it's a string and the string is empty, it's a null value as well
 	        //
 	        if (isString()) {
-	        	if (((String)value).length()==0) return true;
+	        	if (value.toString().length()==0) return true;
 	        }
 	        
 	        // We tried everything else so we assume this value is not null.
@@ -2840,6 +2845,7 @@ public class ValueMeta implements ValueMetaInterface
 		}
 		catch(ClassCastException e)
 		{
+		  e.printStackTrace();
 			throw new RuntimeException("Unable to verify if ["+toString()+"] is null or not because of an error:"+e.toString(), e);
 		}
     }
