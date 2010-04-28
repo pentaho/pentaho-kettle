@@ -50,11 +50,12 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   
   public UIRepositoryDirectories getChildren(){
     // We've been here before.. use the cache
-    if (kidDirectoryCache != null){
+    if (kidDirectoryCache != null && kidDirectoryCache.isEmpty() == false){
       return kidDirectoryCache;
     }
-    
-    kidDirectoryCache = new UIRepositoryDirectories();
+    if(kidDirectoryCache == null){
+      kidDirectoryCache = new UIRepositoryDirectories();
+    }
     if (rd.getChildren()==null){
       return kidDirectoryCache;
     }
@@ -77,12 +78,14 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   // TODO: We will need a way to reset this cache when a directory or element changes
   public UIRepositoryObjects getRepositoryObjects() throws KettleException {
     // We've been here before.. use the cache
-    if (kidElementCache != null){
+    
+    if (kidElementCache != null && !kidElementCache.isEmpty() ){
       return kidElementCache;
     }
     
-    kidElementCache = new UIRepositoryObjects();
-
+    if(kidElementCache == null){
+      kidElementCache = new UIRepositoryObjects();
+    }
     for (UIRepositoryObject child : getChildren()) {
       kidElementCache.add(child);
     }
@@ -181,7 +184,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
       newDir = new UIRepositoryDirectory(dir, this, rep);
     }
     getChildren().add(newDir);
-    kidElementCache=null; // rebuild the element cache for correct positioning.
+    kidElementCache.clear(); // rebuild the element cache for correct positioning.
     return newDir;
   }
 
@@ -225,12 +228,16 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
    */
   public void refresh() {
     try {
+      if(kidElementCache != null){
+        kidElementCache.clear();
+      }
+      if(kidDirectoryCache != null){
+        kidDirectoryCache.clear();
+      }
       if(this == getRootDirectory()) {
         RepositoryDirectoryInterface localRoot = rep.loadRepositoryDirectoryTree().findDirectory(rd.getObjectId());
         rd = localRoot;
         //Rebuild caches
-        kidElementCache = null;
-        kidDirectoryCache = null;
         fireCollectionChanged();
       } else {
         getRootDirectory().refresh();

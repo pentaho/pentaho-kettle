@@ -125,7 +125,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
     public void propertyChange(PropertyChangeEvent arg0) {
       try {
-        selectedItemsBinding.fireSourceChanged();
+        firePropertyChange("selectedRepoDirChildren", null, getSelectedRepoDirChildren()); //$NON-NLS-1$
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -665,16 +665,21 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void setRepositoryDirectories(List<UIRepositoryDirectory> selectedFolderItems) {
-    // Remove children listener
-    if(this.repositoryDirectories != null && this.repositoryDirectories.size() > 0){
-      this.repositoryDirectories.get(0).removePropertyChangeListener(fileChildrenListener);
-    }
+    try {
+      // Remove children listener
+      if(this.repositoryDirectories != null && this.repositoryDirectories.size() > 0){
+        this.repositoryDirectories.get(0).getRepositoryObjects().removePropertyChangeListener(fileChildrenListener);
+      }
+        
+      this.repositoryDirectories = selectedFolderItems;
       
-    this.repositoryDirectories = selectedFolderItems;
-    
-    // Add children Listener
-    if(this.repositoryDirectories != null && this.repositoryDirectories.size() > 0){
-      this.repositoryDirectories.get(0).addPropertyChangeListener("children", fileChildrenListener);
+      // Add children Listener
+      if(this.repositoryDirectories != null && this.repositoryDirectories.size() > 0){
+          this.repositoryDirectories.get(0).getRepositoryObjects().addPropertyChangeListener("children", fileChildrenListener);
+       
+      } 
+    } catch (KettleException e) {
+      throw new RuntimeException(e);
     }
     fireFoldersAndItemsChange();
   }
