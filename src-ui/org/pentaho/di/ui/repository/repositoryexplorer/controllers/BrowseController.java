@@ -18,6 +18,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -119,6 +120,18 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
    * tree.
    */
   protected Map<ObjectId, UIRepositoryDirectory> dirMap;
+  
+  private PropertyChangeListener fileChildrenListener = new PropertyChangeListener(){
+
+    public void propertyChange(PropertyChangeEvent arg0) {
+      try {
+        selectedItemsBinding.fireSourceChanged();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+    
+  };
 
   public BrowseController() {
   }
@@ -652,7 +665,17 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void setRepositoryDirectories(List<UIRepositoryDirectory> selectedFolderItems) {
+    // Remove children listener
+    if(this.repositoryDirectories != null && this.repositoryDirectories.size() > 0){
+      this.repositoryDirectories.get(0).removePropertyChangeListener(fileChildrenListener);
+    }
+      
     this.repositoryDirectories = selectedFolderItems;
+    
+    // Add children Listener
+    if(this.repositoryDirectories != null && this.repositoryDirectories.size() > 0){
+      this.repositoryDirectories.get(0).addPropertyChangeListener("children", fileChildrenListener);
+    }
     fireFoldersAndItemsChange();
   }
 
