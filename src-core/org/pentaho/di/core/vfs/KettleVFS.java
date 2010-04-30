@@ -293,6 +293,7 @@ public class KettleVFS
         FileName fileName = fileObject.getName();
         String root = fileName.getRootURI();
         if (!root.startsWith("file:")) return fileName.getURI(); // nothing we can do about non-normal files. //$NON-NLS-1$
+        if (root.startsWith("file:////")) return fileName.getURI(); // we'll see 4 forward slashes for a windows/smb network share
         if (root.endsWith(":/")) // Windows //$NON-NLS-1$
         {
             root = root.substring(8,10);
