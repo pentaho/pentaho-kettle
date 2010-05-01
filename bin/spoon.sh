@@ -23,23 +23,6 @@ export GDK_NATIVE_WINDOWS=1
 BASEDIR=`dirname $0`
 cd $BASEDIR
 
-
-# **************************************************
-# ** Spoon Plugin libraries                       **
-# **************************************************
-
-PLUGINPATH=NONE
-
-#for f in `find $BASEDIR/plugins/spoon -maxdepth 2 -type d -name "lib"` 
-#do
-#if [ "$PLUGINPATH" != "NONE" ]
-#then
-#	PLUGINPATH=$PLUGINPATH:../$f
-#else
-#	PLUGINPATH=../$f
-#fi
-#done
-
 # **************************************************
 # ** Platform specific libraries ...              **
 # **************************************************
@@ -129,27 +112,6 @@ esac
 
 export LIBPATH
 
-# **************************************************
-# ** Merge PLUGINPATH and LIBPATH into LIBSPATH   **
-# **************************************************
-
-LIBSPATH=
-
-if [ "$LIBPATH" != "NONE" ]
-then
- if [ "$PLUGINPATH" != "NONE" ]
- then
-	LIBSPATH="-lib $LIBPATH:$PLUGINPATH"
- else 
-	LIBSPATH="-lib $LIBPATH"
- fi 
-else
- if [ "$PLUGINPATH" != "NONE" ]
- then
-    LIBSPATH="-lib $PLUGINPATH"
- fi
-fi
-
 # ******************************************************************
 # ** Set java runtime options                                     **
 # ** Change 256m to higher values in case you run out of memory.  **
@@ -160,4 +122,4 @@ OPT="$OPT -Xmx256m -Xms256m -XX:MaxPermSize=128m -Djava.library.path=$LIBPATH -D
 # ***************
 # ** Run...    **
 # ***************
-$JAVA_BIN $OPT $STARTUP $LIBSPATH "${1+$@}"
+$JAVA_BIN $OPT $STARTUP -lib $LIBPATH "${1+$@}"

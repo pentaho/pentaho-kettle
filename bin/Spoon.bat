@@ -26,7 +26,7 @@ REM **************************************************
 REM set PATH=C:\j2sdk1.4.2_01\bin;.;%PATH%
 
 REM **************************************************
-REM   Spoon Plugins and Platform Specific SWT       **
+REM   Platform Specific SWT       **
 REM **************************************************
 
 REM The following line is predicated on the 64-bit Sun
@@ -51,16 +51,6 @@ REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
 set LIBSPATH=..\libswt\win64
 :CONTINUE
-
-REM FOR /D %%F IN (plugins\spoon\*) DO call :addpp %%F
-
-goto extlibe
-
-:addpp
-set LIBSPATH=%LIBSPATH%;..\%1\lib
-goto :eof
-
-:extlibe
 
 REM **********************
 REM   Collect arguments
