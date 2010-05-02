@@ -1239,4 +1239,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ChangeFileEncoding</tooltip>
 		<iconfile>ui/images/CFE.png</iconfile>
 	</step>	
+	<step id="FuzzyMatch">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FuzzyMatch</description>
+		<classname>org.pentaho.di.trans.steps.fuzzymatch.FuzzyMatchMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FuzzyMatch</tooltip>
+		<iconfile>ui/images/FZM.png</iconfile>
+	</step>	
 </steps>
