@@ -427,7 +427,7 @@ public class LoadFileInput extends BaseStep implements StepInterface
 				}
 				catch(Exception e)
 				{
-					logError("Erreur lors de l'initialisation de l'étape: "+e.toString());
+					logError("Error at step initialization: "+e.toString());
 					logError(Const.getStackTracker(e));
 					return false;
 				}
