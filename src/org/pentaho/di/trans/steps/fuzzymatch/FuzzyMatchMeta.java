@@ -127,9 +127,53 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 	/**	get closer matching value				**/
 	private boolean closervalue;
 	
+	/**return these field values from lookup*/
+	private String value[];              
+	
+	/**rename to this after lookup*/
+	private String valueName[];    
+	
 	public FuzzyMatchMeta()
 	{
 		super(); // allocate BaseStepMeta
+	}
+	 /**
+     * @return Returns the value.
+     */
+    public String[] getValue()
+    {
+        return value;
+    }
+    
+    /**
+     * @param value The value to set.
+     */
+    public void setValue(String[] value)
+    {
+        this.value = value;
+    }
+    public void allocate(int nrvalues)
+	{
+		
+		value        	= new String[nrvalues];
+		valueName    	= new String[nrvalues];
+	}
+
+	public Object clone()
+	{
+		FuzzyMatchMeta retval = (FuzzyMatchMeta)super.clone();
+
+		int nrvalues = value.length;
+
+		retval.allocate(nrvalues);
+
+		for (int i=0;i<nrvalues;i++)
+		{
+			retval.value[i]            = value[i];
+			retval.valueName[i]    	   = valueName[i];
+		}
+		
+		return retval;
 	}
 	
 	
@@ -204,6 +248,21 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
         return closervalue;
     }
     
+    /**
+     * @return Returns the valueName.
+     */
+    public String[] getValueName()
+    {
+        return valueName;
+    }
+    
+    /**
+     * @param valueName The valueName to set.
+     */
+    public void setValueName(String[] valueName)
+    {
+        this.valueName = valueName;
+    }
     /**
      * @param closervalue The closervalue to set.
      */
@@ -337,6 +396,23 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
             outputvaluefield = XMLHandler.getTagValue(stepnode, "outputvaluefield");
   
 			algorithm = getAlgorithmTypeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"algorithm"), ""));
+			
+			
+			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
+			int nrvalues = XMLHandler.countNodes(lookup, "value"); //$NON-NLS-1$
+	
+			allocate(nrvalues);
+			
+	
+			for (int i=0;i<nrvalues;i++)
+			{
+				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); //$NON-NLS-1$
+				
+				value[i]        = XMLHandler.getTagValue(vnode, "name"); //$NON-NLS-1$
+				valueName[i]    = XMLHandler.getTagValue(vnode, "rename"); //$NON-NLS-1$
+				if (valueName[i]==null) valueName[i]=value[i]; // default: same name to return!
+			}
+			
 		}
 		catch(Exception e)
 		{
@@ -350,27 +426,41 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	public void setDefault()
 	{
+		value=null;
+		valueName=null;
 		separator=DEFAULT_SEPARATOR;
 		closervalue=true;
 		minimalValue = "0";
-		maximalValue = "5";
+		maximalValue = "1";
 		caseSensitive=false;
 		lookupfield = null;
         mainstreamfield  =null;
         outputmatchfield= BaseMessages.getString(PKG, "FuzzyMatchMeta.OutputMatchFieldname");
         outputvaluefield= BaseMessages.getString(PKG, "FuzzyMatchMeta.OutputValueFieldname");
+        
+		int nrvalues = 0;
+
+		allocate(nrvalues);
+
+		for (int i=0;i<nrvalues;i++)
+		{
+			value[i]        = "value"+i; //$NON-NLS-1$
+			valueName[i]    = "valuename"+i; //$NON-NLS-1$
+		}
+        
+        
 	}
 	
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{   
-
+		// Add match field
 		ValueMetaInterface v=new ValueMeta(space.environmentSubstitute(getOutputMatchField()), ValueMeta.TYPE_STRING);
 		v.setOrigin(name);
 		v.setStorageType(ValueMeta.STORAGE_TYPE_NORMAL);
 		inputRowMeta.addValueMeta(v);	
 		
 		String mainField=space.environmentSubstitute(getOutputValueField());
-		if(!Const.isEmpty(mainField)) {
+		if(!Const.isEmpty(mainField) && isGetCloserValue()) {
 			switch (getAlgorithmType()) {
     		case FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN:
     		case FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN:
@@ -390,7 +480,42 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 			v.setStorageType(ValueMeta.STORAGE_TYPE_NORMAL);
 			v.setOrigin(name);
 			inputRowMeta.addValueMeta(v);	
-		}	
+		}
+		
+		 boolean activateAdditionalFields = isGetCloserValue() || 
+		 (getAlgorithmType()==FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE)
+		  ||(getAlgorithmType()==FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX)
+		  ||(getAlgorithmType()==FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX)
+		  ||(getAlgorithmType()==FuzzyMatchMeta.OPERATION_TYPE_METAPHONE); 
+		
+		if(activateAdditionalFields) {
+			if (info!=null && info.length==1 && info[0]!=null) {
+	            for (int i=0;i<valueName.length;i++)
+				{
+					v = info[0].searchValueMeta(value[i]);
+					if (v!=null) // Configuration error/missing resources...
+					{
+						v.setName(valueName[i]);
+						v.setOrigin(name);
+						v.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL); // Only normal storage goes into the cache
+						inputRowMeta.addValueMeta(v);
+					}
+					else
+					{
+						throw new KettleStepException(BaseMessages.getString(PKG, "FuzzyMatchMeta.Exception.ReturnValueCanNotBeFound",value[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				}
+			}
+			else
+			{
+				for (int i=0;i<valueName.length;i++)
+				{
+					v=new ValueMeta(valueName[i], ValueMeta.TYPE_STRING);
+					v.setOrigin(name);
+					inputRowMeta.addValueMeta(v);		
+				}
+			}
+		}
 	}
 
 	public String getXML()
@@ -411,6 +536,17 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    "+XMLHandler.addTagValue("separator", separator));
         
         retval.append("    ").append(XMLHandler.addTagValue("algorithm",getAlgorithmTypeCode(algorithm)));
+        
+		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
+		for (int i=0;i<value.length;i++)
+		{
+			retval.append("      <value>"+Const.CR); //$NON-NLS-1$
+			retval.append("        "+XMLHandler.addTagValue("name",    value[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("rename",  valueName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </value>"+Const.CR); //$NON-NLS-1$
+		}
+		retval.append("    </lookup>"+Const.CR); //$NON-NLS-1$
+		
         
 		return retval.toString();
 	}
@@ -435,6 +571,15 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 			separator = rep.getStepAttributeString(id_step, "separator");
 			
         	algorithm = getAlgorithmTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "algorithm"), ""));
+        	
+            
+			int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); //$NON-NLS-1$
+	
+			for (int i=0;i<nrvalues;i++)
+			{
+				value[i]        =                rep.getStepAttributeString(id_step, i, "return_value_name"); //$NON-NLS-1$
+				valueName[i]    =                rep.getStepAttributeString(id_step, i, "return_value_rename"); //$NON-NLS-1$
+			}
 		}
 		catch(Exception e)
 		{
@@ -459,6 +604,12 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "maximalValue", maximalValue);
             rep.saveStepAttribute(id_transformation, id_step, "separator", separator);
             rep.saveStepAttribute(id_transformation, id_step, "algorithm", getAlgorithmTypeCode(algorithm));
+            
+    		for (int i=0;i<value.length;i++)
+			{
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_name",      value[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "return_value_rename",    valueName[i]); //$NON-NLS-1$
+			}
 		}
 		catch(Exception e)
 		{
@@ -515,7 +666,29 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			remarks.add(cr);
 			
+			String  error_message=""; //$NON-NLS-1$
+			boolean error_found=false;
 			
+			// Check the values to retrieve from the lookup stream! 
+			for (int i=0;i< value.length;i++)
+			{
+				idx = info.indexOfValue(value[i]);
+				if (idx<0)
+				{
+					error_message+="\t\t"+value[i]+Const.CR; //$NON-NLS-1$
+					error_found=true;
+				} 
+			}
+			if (error_found) 
+			{
+				error_message=BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.FieldsNotFoundInLookupStream2")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
+			}
+			else
+			{
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FuzzyMatchMeta.CheckResult.AllFieldsFoundInTheLookupStream2"), stepMeta); //$NON-NLS-1$
+			}
+			remarks.add(cr);
 		}
 		else
 		{
@@ -598,7 +771,7 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 
     		ioMeta = new StepIOMeta(true, true, false, false, false, false);
     	
-	    	StreamInterface stream = new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "StreamLookupMeta.InfoStream.Description"), StreamIcon.INFO, null);
+	    	StreamInterface stream = new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "FuzzyMatchMeta.InfoStream.Description"), StreamIcon.INFO, null);
 	    	ioMeta.addStream(stream);
     	}
     	

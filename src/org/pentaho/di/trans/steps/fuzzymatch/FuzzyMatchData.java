@@ -31,15 +31,12 @@ public class FuzzyMatchData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface outputRowMeta;
 	
     /** used to store values in used to look up things */
-	public HashSet<String> look;
+	public HashSet<Object[]> look;
 
 	public boolean readLookupValues;
 	
 	/**	index of main stream field		**/
 	public int indexOfMainField;
-	
-	/**	index of lookup stream field		**/
-	public int indexOfLookupField;
 	
 	public int minimalDistance;
 	
@@ -56,15 +53,22 @@ public class FuzzyMatchData extends BaseStepData implements StepDataInterface
 	public StreamInterface	infoStream;
 	
 	public boolean addValueFieldName;
+	public boolean addAdditionalFields;
+	
+	/**	index of return fields from lookup stream		**/
+	public int[] indexOfCachedFields;
+	public int nrCachedFields;
+	public RowMetaInterface infoCache;
 	
 	public FuzzyMatchData()
 	{
         super();
-        this.look = new HashSet<String>();
+        this.look = new HashSet<Object[]>();
         this.indexOfMainField=-1;
-        this.indexOfLookupField=-1;
         this.addValueFieldName=false;
         this.valueSeparator="";
+        this.nrCachedFields=1;
+        this.addAdditionalFields=false;
 	}
 
 }

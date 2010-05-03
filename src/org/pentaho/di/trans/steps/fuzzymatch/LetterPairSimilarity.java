@@ -3,6 +3,8 @@ package org.pentaho.di.trans.steps.fuzzymatch;
 
 import java.util.ArrayList;
 
+import org.pentaho.di.core.Const;
+
 public class LetterPairSimilarity
 {
 
@@ -40,6 +42,7 @@ public class LetterPairSimilarity
 	/** @return lexical similarity value in the range [0,1] */
 	
 	public static double getSimiliarity(String str1, String str2) {
+		if(Const.isEmpty(str1) && Const.isEmpty(str2)) return new Double(1);
 	    ArrayList<String> pairs1 = wordLetterPairs(str1.toUpperCase());
 	    ArrayList<String> pairs2 = wordLetterPairs(str2.toUpperCase());
 	    int intersection = 0;

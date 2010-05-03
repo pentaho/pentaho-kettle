@@ -30,6 +30,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -81,17 +82,46 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 			if(firstRun) {
 	            data.infoMeta = rowSet.getRowMeta().clone();
 				// Check lookup field
-				data.indexOfLookupField = data.infoMeta.indexOfValue(environmentSubstitute(meta.getLookupField()));
-				if (data.indexOfLookupField<0) {
+				int indexOfLookupField = data.infoMeta.indexOfValue(environmentSubstitute(meta.getLookupField()));
+				if (indexOfLookupField<0) {
 					// The field is unreachable !
 					throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatch.Exception.CouldnotFindLookField",meta.getLookupField())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
+				data.infoCache= new RowMeta();
+				data.infoCache.addValueMeta(data.infoMeta.getValueMeta(indexOfLookupField));
+				// Add key
+				data.indexOfCachedFields[0] = indexOfLookupField;
+				
+				// Check additional fields
+				if(data.addAdditionalFields) {
+					for(int i=0; i<meta.getValue().length; i++) {
+						int fi=i+1;
+						data.indexOfCachedFields[fi]= data.infoMeta.indexOfValue(meta.getValue()[i]);
+						if (data.indexOfCachedFields[fi]<0) {
+							// The field is unreachable !
+							throw new KettleException(BaseMessages.getString(PKG, "FuzzyMatch.Exception.CouldnotFindLookField",meta.getValue()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+						data.infoCache.addValueMeta(data.infoMeta.getValueMeta(data.indexOfCachedFields[fi]));
+					}
+					data.nrCachedFields+=meta.getValue().length;
+				}
 			}
 			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FuzzyMatch.Log.ReadLookupRow")+rowSet.getRowMeta().getString(rowData)); //$NON-NLS-1$
-            
+			
             // Look up the keys in the source rows
 		    // and store values in cache
-            addToCache(rowSet.getRowMeta().getString(rowData, data.indexOfLookupField));
+	
+			Object[] storeData = new Object[data.nrCachedFields];
+			// Add key field
+			storeData[0]= rowData[data.indexOfCachedFields[0]]==null?"":rowData[data.indexOfCachedFields[0]];
+			
+			// Add additional fields?
+			for(int i=1; i<data.nrCachedFields; i++) {
+				storeData[i]= rowData[data.indexOfCachedFields[i]];
+			}
+			if(isDebug()) logDebug(BaseMessages.getString(PKG, "FuzzyMatch.Log.AddingValueToCache", data.infoCache.getString(storeData)));
+
+    		addToCache(storeData);
 			
             rowData=getRowFrom(rowSet);
 			
@@ -100,7 +130,6 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		
 		return true;
 	}
-
 
     private Object[] lookupValues(RowMetaInterface rowMeta, Object[] row) throws KettleException
 	{
@@ -127,10 +156,9 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 	     return RowDataUtil.addRowData(row, rowMeta.size(), add);
 	}
 	
-    private void addToCache(String value) throws KettleException
+    private void addToCache(Object[] value) throws KettleException
     {
     	try {
-    		if(isDebug()) logDebug(BaseMessages.getString(PKG, "FuzzyMatch.Log.AddingValueToCache", value));
     		data.look.add(value);
     	} catch(java.lang.OutOfMemoryError o){
 			// exception out of memory
@@ -140,7 +168,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
     
 	private Object[] getFromCache(Object[] keyRow) throws KettleValueException
     {
-    	if(isDebug()) logDebug(BaseMessages.getString(PKG, "FuzzyMatch.Log.ReadingMainStreamRow", keyRow.toString()));
+    	if(isDebug()) logDebug(BaseMessages.getString(PKG, "FuzzyMatch.Log.ReadingMainStreamRow", getInputRowMeta().getString(keyRow)));
 		Object[] retval=null;
 		switch (meta.getAlgorithmType()) {
     		case FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN:
@@ -166,170 +194,215 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 
         return retval;
     }
-    private Object[] doDistance(Object[] row) {
+  
+	private Object[] doDistance(Object[] row) {
+    	// Reserve room
+		Object[] rowData = buildEmptyRow();
 		
-    	Iterator<String> it = data.look.iterator();
+    	Iterator<Object[]> it = data.look.iterator();
 		
 		long distance=-1;	
-		String fuzzyValue=null;
 		
 		Object o=row[data.indexOfMainField];
-		if(o!=null) {
-			String lookupvalue= (String) o;	
+		String lookupvalue = (o==null?"":(String) o);	
+		
+		while (it.hasNext()){
+			// Get cached row data
+			Object[] cachedData = (Object[]) it.next(); 
+			// Key value is the first value
+			String cacheValue= (String) cachedData[0];
+
+			int cdistance = -1;
+			String usecacheValue=cacheValue;
+			String uselookupvalue=lookupvalue;
+			if(!meta.isCaseSensitive()) {
+				usecacheValue=cacheValue.toLowerCase();
+				uselookupvalue=lookupvalue.toLowerCase();	
+			}
 			
-			while (it.hasNext()){
-				String cacheValue = (String) it.next(); 
-	
-				int cdistance = -1;
-				String usecacheValue=cacheValue;
-				String uselookupvalue=lookupvalue;
-				if(!meta.isCaseSensitive()) {
-					usecacheValue=cacheValue.toLowerCase();
-					uselookupvalue=lookupvalue.toLowerCase();	
-				}
-				
-				switch (meta.getAlgorithmType()) {
-		    		case FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN:
-		    			cdistance = Utils.getDamerauLevenshteinDistance(usecacheValue,uselookupvalue);
-		    			break;
-		    		case FuzzyMatchMeta.OPERATION_TYPE_NEEDLEMAN_WUNSH:
-		    			cdistance= Math.abs((int) new NeedlemanWunsch().score(usecacheValue, uselookupvalue));
-		    			break;
-		    		default:
-		    			cdistance = StringUtils.getLevenshteinDistance(usecacheValue,uselookupvalue);	
-		    			break;
-				}
-				
-				if (data.minimalDistance <= cdistance && cdistance <= data.maximalDistance) {
-					if(meta.isGetCloserValue()) {
-						if(cdistance<distance || distance==-1)   {
-							// Get closer value
-							// minimal distance
-							distance= cdistance;
-							fuzzyValue=cacheValue;
+			switch (meta.getAlgorithmType()) {
+	    		case FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN:
+	    			cdistance = Utils.getDamerauLevenshteinDistance(usecacheValue,uselookupvalue);
+	    			break;
+	    		case FuzzyMatchMeta.OPERATION_TYPE_NEEDLEMAN_WUNSH:
+	    			cdistance= Math.abs((int) new NeedlemanWunsch().score(usecacheValue, uselookupvalue));
+	    			break;
+	    		default:
+	    			cdistance = StringUtils.getLevenshteinDistance(usecacheValue,uselookupvalue);	
+	    			break;
+			}
+			
+			if (data.minimalDistance <= cdistance && cdistance <= data.maximalDistance) {
+				if(meta.isGetCloserValue()) {
+					if(cdistance<distance || distance==-1)   {
+						// Get closer value
+						// minimal distance
+						distance= cdistance;
+						rowData[0]=cacheValue;
+						// Add metric value?
+						if(data.addValueFieldName) 	{
+							rowData[1]= distance;
 						}
-					}else {
-						// get all values separated by values separator
-						if(fuzzyValue==null) fuzzyValue=cacheValue; else fuzzyValue+=data.valueSeparator + cacheValue;
+						// Add additional return values?
+						if(data.addAdditionalFields) {
+							for(int i=0; i<meta.getValue().length; i++) {
+								int nf=i+2;
+								int nr=i+1;
+								rowData[nf] = cachedData[nr];
+							}
+						}
 					}
+				}else {
+					// get all values separated by values separator
+					if(rowData[0]==null) rowData[0]=cacheValue; else rowData[0]= (String)rowData[0] + data.valueSeparator + cacheValue;
 				}
 			}
 		}
 		
-
-		Object[] retval;
-		if(data.addValueFieldName) 
-			retval = new Object[] {fuzzyValue};
-		else
-			retval=new Object[] {fuzzyValue, distance};
 		
-		return retval;
+		return rowData;
     }
     
     private Object[] doPhonetic(Object[] row) {
+    	// Reserve room
+		Object[] rowData = buildEmptyRow();
 		
-    	Iterator<String> it = data.look.iterator();
+    	Iterator<Object[]> it = data.look.iterator();
 		
-		String fuzzyValue=null;
 		String lookupValueMF=null;
 		
 		Object o=row[data.indexOfMainField];
-		if(o!=null) {
-			String lookupvalue=(String) o;	
+		String lookupvalue=(String) o;	
+		
+		lookupValueMF=(new Metaphone()).metaphone(lookupvalue);
+		
+		while (it.hasNext()){
+			// Get cached row data
+			Object[] cachedData = (Object[]) it.next(); 
+			// Key value is the first value
+			String cacheValue= (String) cachedData[0];
 			
-			lookupValueMF=(new Metaphone()).metaphone(lookupvalue);
-			
-			while (it.hasNext()){
-				// get value from cache
-				String cacheValue = (String) it.next(); 
-				String cacheValueMF="";
-				switch (meta.getAlgorithmType()) {
-		    		case FuzzyMatchMeta.OPERATION_TYPE_METAPHONE:
-		    			// get metaphone of cache value
-						cacheValueMF=(new Metaphone()).metaphone(cacheValue);
-		    			break;
-		    		case FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE:
-						cacheValueMF=((new DoubleMetaphone()).doubleMetaphone(cacheValue));
-		    			break;
-		    		case FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX:
-						cacheValueMF= (new Soundex()).encode(cacheValue);
-		    			break;
-		    		case FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX:
-		    			cacheValueMF=(new RefinedSoundex()).encode(cacheValue);
-		    			break;
-		    		default:
-		    			break;
-				}
-				
-
-				if(lookupValueMF.equals(cacheValueMF))   {
-					fuzzyValue=cacheValue;
-				}
-	
-			}
-		}
-
-		Object[] retval;
-		if(data.addValueFieldName) 
-			retval=new Object[] {fuzzyValue, lookupValueMF};
-		else
-			retval = new Object[] {fuzzyValue};
-		
-		return retval;
-    }
-    
-
-    private Object[] doSimilarity(Object[] row) {
-		
-    	Iterator<String> it = data.look.iterator();
-		
-		double similarity=-1;
-		String fuzzyValue=null;
-		
-		Object o = row[data.indexOfMainField];
-		if(o!=null) {
-			String lookupvalue= (String) o;	
-			
-			while (it.hasNext()){
-				String cacheValue = (String) it.next(); 
-	
-				double csimilarity = 0;
-	
-				switch (meta.getAlgorithmType()) {
-	    		case FuzzyMatchMeta.OPERATION_TYPE_JARO:
-	    			csimilarity= new Jaro().score(cacheValue, lookupvalue);
+			String cacheValueMF="";
+			switch (meta.getAlgorithmType()) {
+	    		case FuzzyMatchMeta.OPERATION_TYPE_METAPHONE:
+					cacheValueMF=(new Metaphone()).metaphone(cacheValue);
 	    			break;
-	    		case FuzzyMatchMeta.OPERATION_TYPE_JARO_WINKLER:
-	    			csimilarity= new JaroWinkler().score(cacheValue, lookupvalue);
+	    		case FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE:
+					cacheValueMF=((new DoubleMetaphone()).doubleMetaphone(cacheValue));
+	    			break;
+	    		case FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX:
+					cacheValueMF= (new Soundex()).encode(cacheValue);
+	    			break;
+	    		case FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX:
+	    			cacheValueMF=(new RefinedSoundex()).encode(cacheValue);
 	    			break;
 	    		default:
-	    			// Letters pair similarity	
-	    			csimilarity=LetterPairSimilarity.getSimiliarity(cacheValue,lookupvalue);	
 	    			break;
+			}
+			
+			if(lookupValueMF.equals(cacheValueMF))   {
+				
+				// Add match value
+				rowData[0]=cacheValue;
+	
+				// Add metric value?
+				if(data.addValueFieldName) 	{
+					rowData[1]= cacheValueMF;
 				}
-				if (data.minimalSimilarity <= csimilarity && csimilarity <= data.maximalSimilarity) {
-					if(meta.isGetCloserValue()) {
-						if(csimilarity>similarity || similarity==-1)   {
-							similarity= csimilarity;
-							fuzzyValue=cacheValue;
-						}
-					} else {
-						// get all values separated by values separator
-						if(fuzzyValue==null) fuzzyValue=cacheValue; else fuzzyValue+=data.valueSeparator + cacheValue;
+				// Add additional return values?
+				if(data.addAdditionalFields) {
+					for(int i=0; i<meta.getValue().length; i++) {
+						int nf=i+2;
+						int nr=i+1;
+						rowData[nf] = cachedData[nr];
 					}
 				}
 			}
 		}
-
-		Object[] retval;
-		if(data.addValueFieldName) 
-			retval=new Object[] {fuzzyValue, similarity};
-		else
-			retval = new Object[] {fuzzyValue};
 		
-		return retval;
+		return rowData;
+    }
+
+    private Object[] doSimilarity(Object[] row) {
+		
+    	// Reserve room
+		Object[] rowData = buildEmptyRow();
+    	// prepare to read from cache ...
+    	Iterator<Object[]> it = data.look.iterator();
+		double similarity=0;
+		
+		// get current value from main stream
+		Object o = row[data.indexOfMainField];
+	
+		String lookupvalue= o==null?"":(String) o;	
+		
+		while (it.hasNext()){
+			// Get cached row data
+			Object[] cachedData = (Object[]) it.next(); 
+			// Key value is the first value
+			String cacheValue= (String) cachedData[0];
+
+			double csimilarity = new Double(0);
+
+			switch (meta.getAlgorithmType()) {
+	    		case FuzzyMatchMeta.OPERATION_TYPE_JARO:
+	    			csimilarity= new Jaro().score(cacheValue, lookupvalue);
+	    		break;
+	    		case FuzzyMatchMeta.OPERATION_TYPE_JARO_WINKLER:
+	    			csimilarity= new JaroWinkler().score(cacheValue, lookupvalue);
+	    		break;
+	    		default:
+	    			// Letters pair similarity	
+	    			csimilarity=LetterPairSimilarity.getSimiliarity(cacheValue,lookupvalue);	
+	    		break;
+			}
+
+			if (data.minimalSimilarity <= csimilarity && csimilarity <= data.maximalSimilarity) {
+				if(meta.isGetCloserValue()) {
+					if(csimilarity>similarity || (csimilarity==0 && cacheValue.equals(lookupvalue)))   {
+						similarity= csimilarity;
+						// Update match value
+						rowData[0]=cacheValue;
+						// Adde metric value?
+						if(data.addValueFieldName) 	{
+							rowData[1]= new Double(similarity);
+						}
+
+						// Add additional return values?
+						if(data.addAdditionalFields) {
+							for(int i=0; i<meta.getValue().length; i++) {
+								int nf=i+2;
+								int nr=i+1;
+								rowData[nf] = cachedData[nr];
+							}
+						}
+					}
+				} else {
+					// get all values separated by values separator
+					if(rowData[0]==null) rowData[0]=cacheValue; 
+					else rowData[0]=(String)rowData[0]+data.valueSeparator + cacheValue;
+				}
+			}
+		}
+	
+		
+		return rowData;
     }
     
+
+	/**
+	 * Build an empty row based on the meta-data...
+	 * 
+	 * @return
+	 */
+
+	private Object[] buildEmptyRow()
+	{
+        Object[] rowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+ 
+		 return rowData;
+	}
+	
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 	    meta = (FuzzyMatchMeta)smi;
@@ -413,16 +486,36 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 				logError(BaseMessages.getString(PKG, "FuzzyMatch.Error.LookupStreamFieldMissing"));
 				return false;
 	    	}
-	       	
-	    	// Checks output fields
 	    	
-	       	data.addValueFieldName=!Const.isEmpty(environmentSubstitute(meta.getOutputValueField()));
-
+	    	// Checks output fields
 	       	String matchField=environmentSubstitute(meta.getOutputMatchField());
 	    	if(Const.isEmpty(matchField)) {
 				logError(BaseMessages.getString(PKG, "FuzzyMatch.Error.OutputMatchFieldMissing"));
 				return false;
 	    	}
+	    	
+	    	// We need to add metrics (distance, similarity, ...)
+	    	// only when the fieldname is provided
+	    	// and user want to return the closer value
+	       	data.addValueFieldName=(!Const.isEmpty(environmentSubstitute(meta.getOutputValueField())) && meta.isGetCloserValue());
+
+	       	// Set the number of fields to cache
+	       	// default value is one
+	       	int nrFields=1;
+	       	
+	       	if(meta.getValue()!=null && meta.getValue().length>0) {
+	       		
+	   		 if(meta.isGetCloserValue() || 
+			 (meta.getAlgorithmType()==FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE)
+			  ||(meta.getAlgorithmType()==FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX)
+			  ||(meta.getAlgorithmType()==FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX)
+			  ||(meta.getAlgorithmType()==FuzzyMatchMeta.OPERATION_TYPE_METAPHONE)) {
+	       			// cache also additional fields
+	       			data.addAdditionalFields = true;
+	       			nrFields+=meta.getValue().length;
+	       		}
+	       	}
+	       	data.indexOfCachedFields= new int [nrFields];
 	    	
 	    	switch (meta.getAlgorithmType()) {
     		case FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN:

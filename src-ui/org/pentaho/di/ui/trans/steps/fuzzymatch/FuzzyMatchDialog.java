@@ -22,8 +22,16 @@
 package org.pentaho.di.ui.trans.steps.fuzzymatch;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -36,6 +44,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -43,9 +52,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.trans.steps.fuzzymatch.FuzzyMatchMeta;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -55,7 +66,9 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -95,6 +108,11 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 	private Group wOutputFieldsGroup ;
 	private FormData fdOutputFieldsGroup ;
 	
+    private ColumnInfo[] ciReturn;
+	private Label        wlReturn;
+	private TableView    wReturn;
+	private FormData     fdlReturn, fdReturn;
+	
 	private Label wlmatchField;
 	private TextVar wmatchField;
 	private FormData fdlmatchField;
@@ -124,6 +142,19 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
     private Label wlseparator;
     private TextVar wseparator;
     private FormData fdseparator,fdlseparator;
+    
+	private CTabFolder   wTabFolder;
+	private FormData     fdTabFolder;
+	
+	private Composite    wGeneralComp;
+	private FormData     fdGeneralComp;	
+	private CTabItem wGeneralTab, wFieldsTab;
+	
+	private Composite    wFieldsComp;
+	private FormData     fdFieldsComp;	
+	
+    private Button       wGetLU;
+    private Listener     lsGetLU;
     
 	private FuzzyMatchMeta input;
 	private boolean gotPreviousFields=false;
@@ -156,6 +187,7 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 			public void widgetSelected(SelectionEvent e) 
 			{
 				input.setChanged();
+				setComboBoxesLookup();
 			}
 		};
 		changed = input.hasChanged();
@@ -189,11 +221,29 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 		
+
+		wTabFolder = new CTabFolder(shell, SWT.BORDER);
+ 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+ 		
+		//////////////////////////
+		// START OF General TAB   ///
+		//////////////////////////
+		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
+		wGeneralTab.setText(BaseMessages.getString(PKG, "FuzzyMatchDialog.General.Tab"));
+		
+		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wGeneralComp);
+
+		FormLayout GeneralLayout = new FormLayout();
+		GeneralLayout.marginWidth  = 3;
+		GeneralLayout.marginHeight = 3;
+		wGeneralComp.setLayout(GeneralLayout);
+		
 		// /////////////////////////////////
 		// START OF Lookup  Fields GROUP
 		// /////////////////////////////////
 
-		wLookupGroup = new Group(shell, SWT.SHADOW_NONE);
+		wLookupGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wLookupGroup);
 		wLookupGroup.setText(BaseMessages.getString(PKG, "FuzzyMatchDialog.Group.Lookup.Label"));
 		
@@ -277,7 +327,7 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		// START OF MainStream  Fields GROUP
 		// /////////////////////////////////
 
-		wMainStreamGroup = new Group(shell, SWT.SHADOW_NONE);
+		wMainStreamGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wMainStreamGroup);
 		wMainStreamGroup.setText(BaseMessages.getString(PKG, "FuzzyMatchDialog.Group.MainStreamGroup.Label"));
 		
@@ -337,7 +387,7 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		// START OF Settings  Fields GROUP
 		// /////////////////////////////////
 
-		wSettingsGroup = new Group(shell, SWT.SHADOW_NONE);
+		wSettingsGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
 		props.setLook(wSettingsGroup);
 		wSettingsGroup.setText(BaseMessages.getString(PKG, "FuzzyMatchDialog.Group.SettingsGroup.Label"));
 		
@@ -493,11 +543,49 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		// / END OF Settings  GROUP
 		// ///////////////////////////////////////////////////////////
 		
+		
+		fdGeneralComp=new FormData();
+		fdGeneralComp.left  = new FormAttachment(0, 0);
+		fdGeneralComp.top   = new FormAttachment(0, 0);
+		fdGeneralComp.right = new FormAttachment(100, 0);
+		fdGeneralComp.bottom= new FormAttachment(100, 0);
+		wGeneralComp.setLayoutData(fdGeneralComp);
+	
+		wGeneralComp.layout();
+		wGeneralTab.setControl(wGeneralComp);
+		
+		/////////////////////////////////////////////////////////////
+		/// END OF General TAB
+		/////////////////////////////////////////////////////////////
+		
+		
+		// THE BUTTONS
+		wOK=new Button(shell, SWT.PUSH);
+		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wCancel=new Button(shell, SWT.PUSH);
+		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
+		
+		//////////////////////////
+		// START OF Fields TAB   ///
+		//////////////////////////
+		wFieldsTab=new CTabItem(wTabFolder, SWT.NONE);
+		wFieldsTab.setText(BaseMessages.getString(PKG, "FuzzyMatchDialog.Fields.Tab"));
+		
+		wFieldsComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wFieldsComp);
+
+		FormLayout FieldsLayout = new FormLayout();
+		FieldsLayout.marginWidth  = 3;
+		FieldsLayout.marginHeight = 3;
+		wFieldsComp.setLayout(FieldsLayout);
+		
+		
 		// /////////////////////////////////
 		// START OF OutputFields  Fields GROUP
 		// /////////////////////////////////
 
-		wOutputFieldsGroup = new Group(shell, SWT.SHADOW_NONE);
+		wOutputFieldsGroup = new Group(wFieldsComp, SWT.SHADOW_NONE);
 		props.setLook(wOutputFieldsGroup);
 		wOutputFieldsGroup.setText(BaseMessages.getString(PKG, "FuzzyMatchDialog.Group.OutputFieldsGroup.Label"));
 		
@@ -541,7 +629,6 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		fdvalueField.right= new FormAttachment(100, 0);
 		wvalueField.setLayoutData(fdvalueField);
 
-
 		fdOutputFieldsGroup = new FormData();
 		fdOutputFieldsGroup.left = new FormAttachment(0, margin);
 		fdOutputFieldsGroup.top = new FormAttachment(wSettingsGroup, margin);
@@ -553,23 +640,76 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		// ///////////////////////////////////////////////////////////
 		
 
-	
-	
-		// THE BUTTONS
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		// THE UPDATE/INSERT TABLE
+		wlReturn=new Label(wFieldsComp, SWT.NONE);
+		wlReturn.setText(BaseMessages.getString(PKG, "FuzzyMatchDialog.ReturnFields.Label")); //$NON-NLS-1$
+ 		props.setLook(wlReturn);
+		fdlReturn=new FormData();
+		fdlReturn.left  = new FormAttachment(0, 0);
+		fdlReturn.top   = new FormAttachment(wOutputFieldsGroup, margin);
+		wlReturn.setLayoutData(fdlReturn);
+		
+		wGetLU=new Button(wFieldsComp, SWT.PUSH);
+		wGetLU.setText(BaseMessages.getString(PKG, "FuzzyMatchDialog.GetLookupFields.Button")); //$NON-NLS-1$
+		FormData fdlu = new FormData();
+		fdlu.top = new FormAttachment(wlReturn, margin);
+		fdlu.right = new FormAttachment(100, 0);
+		wGetLU.setLayoutData(fdlu);
+		
+		
+		int UpInsCols=2;
+		int UpInsRows= (input.getValue()!=null?input.getValue().length:1);
+		
+		ciReturn=new ColumnInfo[UpInsCols];
+		ciReturn[0]=new ColumnInfo(BaseMessages.getString(PKG, "FuzzyMatchDialog.ColumnInfo.FieldReturn"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[1]=new ColumnInfo(BaseMessages.getString(PKG, "FuzzyMatchDialog.ColumnInfo.NewName"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		
+		wReturn=new TableView(transMeta, wFieldsComp, 
+							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
+							  ciReturn, 
+							  UpInsRows,  
+							  lsMod,
+							  props
+							  );
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wOutputFieldsGroup);
+		fdReturn=new FormData();
+		fdReturn.left  = new FormAttachment(0, 0);
+		fdReturn.top   = new FormAttachment(wlReturn, margin);
+		fdReturn.right = new FormAttachment(wGetLU, -margin);
+		fdReturn.bottom= new FormAttachment(100, -3*margin);
+		wReturn.setLayoutData(fdReturn);
+
+
+		fdFieldsComp=new FormData();
+		fdFieldsComp.left  = new FormAttachment(0, 0);
+		fdFieldsComp.top   = new FormAttachment(0, 0);
+		fdFieldsComp.right = new FormAttachment(100, 0);
+		fdFieldsComp.bottom= new FormAttachment(100, 0);
+		wFieldsComp.setLayoutData(fdFieldsComp);
+	
+		wFieldsComp.layout();
+		wFieldsTab.setControl(wFieldsComp);
+		
+		/////////////////////////////////////////////////////////////
+		/// END OF Fields TAB
+		/////////////////////////////////////////////////////////////
+		
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(wStepname, margin);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(wOK, -margin);
+		wTabFolder.setLayoutData(fdTabFolder);
+
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();    } };
+		lsGetLU    = new Listener() { public void handleEvent(Event e) { getlookup(); } };
 		
 		wOK.addListener    (SWT.Selection, lsOK    );
 		wCancel.addListener(SWT.Selection, lsCancel);
-		
+		wGetLU.addListener (SWT.Selection, lsGetLU );
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
 		wStepname.addSelectionListener( lsDef );
@@ -577,11 +717,12 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
-
+		wTabFolder.setSelection(0);
 		// Set the shell size, based upon previous time...
 		setSize();
 		
 		getData();
+        setComboBoxesLookup();
 		activeAlgorithm();
 		activegetCloserValue();
 		input.setChanged(changed);
@@ -613,10 +754,22 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		if(input.getOutputValueField()!=null) wvalueField.setText(input.getOutputValueField());
 		if(input.getSeparator()!=null) wseparator.setText(input.getSeparator());
 		
+		if (input.getValue()!=null)
+			for (int i=0;i<input.getValue().length;i++)
+			{
+				TableItem item = wReturn.table.getItem(i);
+				if (input.getValue()[i]!=null     ) item.setText(1, input.getValue()[i]);
+				if (input.getValueName()[i]!=null && !input.getValueName()[i].equals(input.getValue()[i]))
+					item.setText(2, input.getValueName()[i]);
+			}
+		
+		
 		StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
 		wStep.setText( Const.NVL(infoStream.getStepname(), "") );
 		
 		wStepname.selectAll();
+		wReturn.setRowNums();
+		wReturn.optWidth(true);
 	}
 	
 	private void cancel()
@@ -642,6 +795,19 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		input.setOutputMatchField(wmatchField.getText());
 		input.setOutputValueField(wvalueField.getText());
 		input.setSeparator(wseparator.getText());
+		
+		
+		int nrvalues           = wReturn.nrNonEmpty();
+		input.allocate(nrvalues);
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "FuzzyMatchDialog.Log.FoundFields",nrvalues+"")); //$NON-NLS-1$ //$NON-NLS-2$
+		for (int i=0;i<nrvalues;i++)
+		{
+			TableItem item        = wReturn.getNonEmpty(i);
+			input.getValue()[i]        = item.getText(1);
+			input.getValueName()[i]    = item.getText(2);
+			if (input.getValueName()[i]==null || input.getValueName()[i].length()==0)
+				input.getValueName()[i] = input.getValue()[i];
+		}
 		
 		StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
 		infoStream.setStepMeta( transMeta.findStep( wStep.getText() ) );
@@ -717,6 +883,22 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 
 		 wlseparator.setEnabled(enableRange);
 		 wseparator.setEnabled(enableRange);
+		 wlvalueField.setEnabled(wgetCloserValue.getSelection());
+		 wvalueField.setEnabled(wgetCloserValue.getSelection());
+
+		 activeAddFields();
+	 }
+	 private void activeAddFields()
+	 {
+		 boolean activate = wgetCloserValue.getSelection() || 
+		 (FuzzyMatchMeta.getAlgorithmTypeByDesc(wAlgorithm.getText())==FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE)
+		  ||(FuzzyMatchMeta.getAlgorithmTypeByDesc(wAlgorithm.getText())==FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX)
+		  ||(FuzzyMatchMeta.getAlgorithmTypeByDesc(wAlgorithm.getText())==FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX)
+		  ||(FuzzyMatchMeta.getAlgorithmTypeByDesc(wAlgorithm.getText())==FuzzyMatchMeta.OPERATION_TYPE_METAPHONE);
+		 
+		 wlReturn.setEnabled(activate);
+		 wReturn.setEnabled(activate);
+		 wGetLU.setEnabled(activate);
 	 }
 	private void activeAlgorithm()
 	{
@@ -752,4 +934,79 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		 wcaseSensitive.setEnabled(enableCaseSensitive);
 		 activegetCloserValue();
 	}
+	private void getlookup()
+	{
+		try
+		{
+			String stepFrom = wStep.getText();
+			if (!Const.isEmpty(stepFrom))
+			{
+				RowMetaInterface r = transMeta.getStepFields(stepFrom);
+				if (r!=null && !r.isEmpty())
+				{
+                    BaseStepDialog.getFieldsFromPrevious(r, wReturn, 1, new int[] { 1 }, new int[] { 4 }, -1, -1, null);
+				}
+				else
+				{
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(BaseMessages.getString(PKG, "FuzzyMatchDialog.CouldNotFindFields.DialogMessage")); //$NON-NLS-1$
+					mb.setText(BaseMessages.getString(PKG, "FuzzyMatchDialog.CouldNotFindFields.DialogTitle")); //$NON-NLS-1$
+					mb.open(); 
+				}
+			}
+			else
+			{
+				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+				mb.setMessage(BaseMessages.getString(PKG, "FuzzyMatchDialog.StepNameRequired.DialogMessage")); //$NON-NLS-1$
+				mb.setText(BaseMessages.getString(PKG, "FuzzyMatchDialog.StepNameRequired.DialogTitle")); //$NON-NLS-1$
+				mb.open(); 
+			}
+		}
+		catch(KettleException ke)
+		{
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "FuzzyMatchDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "FuzzyMatchDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+
+	}
+	protected void setComboBoxesLookup()
+    {
+		Runnable fieldLoader = new Runnable() {
+			public void run() {
+		        StepMeta lookupStepMeta = transMeta.findStep(wStep.getText());
+                if (lookupStepMeta!=null)
+                {
+                    try
+                    {
+                        RowMetaInterface row = transMeta.getStepFields(lookupStepMeta);
+                        Map<String, Integer> lookupFields =new HashMap<String, Integer>();
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            lookupFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+                        }
+                        
+                        // Something was changed in the row.
+        		        //
+        				final Map<String, Integer> fields = new HashMap<String, Integer>();
+        		        
+        		        // Add the currentMeta fields...
+        		        fields.putAll(lookupFields);
+        		        
+        		        Set<String> keySet = fields.keySet();
+        		        List<String> entries = new ArrayList<String>(keySet);
+        		        
+        		        String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
+        		        Const.sortStrings(fieldNames);
+        		        // return fields
+        		        ciReturn[0].setComboValues(fieldNames);
+                    }
+                    catch(KettleException e)
+                    {
+                    	 logError("It was not possible to retrieve the list of fields for step [" + wStep.getText() + "]!");
+                    }
+                }
+			}
+		};
+		shell.getDisplay().asyncExec(fieldLoader);
+    }
 }
