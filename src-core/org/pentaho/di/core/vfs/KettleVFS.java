@@ -60,7 +60,9 @@ public class KettleVFS
     	// This will clean up temporary files in vfs_cache
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
         	public void run() {
-        		fsm.close();
+        	  if (fsm != null) {
+        		  fsm.close();
+        	  }
 	        }
         })); 
     }
