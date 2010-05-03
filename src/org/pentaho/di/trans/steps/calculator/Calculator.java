@@ -640,6 +640,48 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_STRING;
                 }
                 break;
+                case CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN  : // DAMERAULEVENSHTEIN DISTANCE 
+                {
+                    calcData[index] = ValueDataUtil.getDamerauLevenshtein_Distance(metaA, dataA,metaB, dataB);
+                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH  : // NEEDLEMANWUNSH DISTANCE 
+                {
+                    calcData[index] = ValueDataUtil.getNeedlemanWunsch_Distance(metaA, dataA,metaB, dataB);
+                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_JARO  : // Jaro DISTANCE 
+                {
+                    calcData[index] = ValueDataUtil.getJaro_Similitude(metaA, dataA,metaB, dataB);
+                    resultType=ValueMetaInterface.TYPE_NUMBER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_JARO_WINKLER  : // Jaro DISTANCE 
+                {
+                    calcData[index] = ValueDataUtil.getJaroWinkler_Similitude(metaA, dataA,metaB, dataB);
+                    resultType=ValueMetaInterface.TYPE_NUMBER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_PAIR_SIMILARITY  : 
+                {
+                    calcData[index] = ValueDataUtil.getPairLetters_Similitude(metaA, dataA,metaB, dataB);
+                    resultType=ValueMetaInterface.TYPE_NUMBER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_SOUNDEX  : // SOUNDEX 
+                {
+                    calcData[index] = ValueDataUtil.get_SoundEx(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_REFINED_SOUNDEX : // REFINEDSOUNDEX 
+                {
+                    calcData[index] = ValueDataUtil.get_RefinedSoundEx(metaA, dataA);
+                    resultType=ValueMetaInterface.TYPE_STRING;
+                }
+                break;
                 default:
                     throw new KettleValueException(BaseMessages.getString(PKG, "Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }

@@ -29,6 +29,8 @@ import java.security.MessageDigest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.DoubleMetaphone;
+import org.apache.commons.codec.language.RefinedSoundex;
+import org.apache.commons.codec.language.Soundex;
 
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLCheck;
@@ -38,6 +40,12 @@ import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.CharsetToolkit;
+import org.pentaho.di.trans.steps.fuzzymatch.LetterPairSimilarity;
+import org.pentaho.di.trans.steps.fuzzymatch.Utils;
+
+import com.wcohen.ss.Jaro;
+import com.wcohen.ss.JaroWinkler;
+import com.wcohen.ss.NeedlemanWunsch;
 
 public class ValueDataUtil
 {
@@ -89,7 +97,48 @@ public class ValueDataUtil
     	if(dataA==null || dataB==null) return null;
     	return new Long(StringUtils.getLevenshteinDistance(dataA.toString(),dataB.toString()));
     }
-    
+    /**DamerauLevenshtein distance is a measure of the similarity between two strings, 
+     * which we will refer to as the source string (s) and the target string (t). 
+     * The distance is the number of deletions, insertions, or substitutions required to transform s into t. 
+     */
+    public static Long getDamerauLevenshtein_Distance(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
+    {
+    	if(dataA==null || dataB==null) return null;
+    	return new Long(Utils.getDamerauLevenshteinDistance(dataA.toString(),dataB.toString()));
+    }
+    /**NeedlemanWunsch distance is a measure of the similarity between two strings, 
+     * which we will refer to as the source string (s) and the target string (t). 
+     * The distance is the number of deletions, insertions, or substitutions required to transform s into t. 
+     */
+    public static Long getNeedlemanWunsch_Distance(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
+    {
+    	if(dataA==null || dataB==null) return null;
+    	return new Long((int) new NeedlemanWunsch().score(dataA.toString(),dataB.toString()));
+    }
+    /**Jaro similitude is a measure of the similarity between two strings, 
+     * which we will refer to as the source string (s) and the target string (t).  
+     */
+    public static Double getJaro_Similitude(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
+    {
+    	if(dataA==null || dataB==null) return null;
+    	return new Double(new Jaro().score(dataA.toString(),dataB.toString()));
+    }
+    /**JaroWinkler similitude is a measure of the similarity between two strings, 
+     * which we will refer to as the source string (s) and the target string (t).  
+     */
+    public static Double getJaroWinkler_Similitude(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
+    {
+    	if(dataA==null || dataB==null) return null;
+    	return new Double(new JaroWinkler().score(dataA.toString(),dataB.toString()));
+    }
+    /**PairLetters similitude is a measure of the similarity between two strings, 
+     * which we will refer to as the source string (s) and the target string (t).  
+     */
+    public static Double getPairLetters_Similitude(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
+    {
+    	if(dataA==null || dataB==null) return null;
+    	return new Double(LetterPairSimilarity.getSimiliarity(dataA.toString(),dataB.toString()));
+    }
     public static String get_Metaphone(ValueMetaInterface metaA, Object dataA)
     {
     	if(dataA==null) return null;
@@ -100,6 +149,16 @@ public class ValueDataUtil
     {
     	if(dataA==null) return null;
     	return (new DoubleMetaphone()).doubleMetaphone(dataA.toString());
+    }
+    public static String get_SoundEx(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return (new Soundex()).encode(dataA.toString());
+    }
+    public static String get_RefinedSoundEx(ValueMetaInterface metaA, Object dataA)
+    {
+    	if(dataA==null) return null;
+    	return (new RefinedSoundex()).encode(dataA.toString());
     }
     public static String initCap(ValueMetaInterface metaA, Object dataA)
     {

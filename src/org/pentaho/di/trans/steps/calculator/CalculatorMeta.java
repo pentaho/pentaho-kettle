@@ -376,6 +376,27 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_GET_FILE_ENCODING     : // get file encoding
             	defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break;
+            case CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN     : 
+            	defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_NEEDLEMAN_WUNSH     : 
+            	defaultResultType=ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_JARO     : 
+            	defaultResultType=ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_JARO_WINKLER     : 
+            	defaultResultType=ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_PAIR_SIMILARITY     : 
+            	defaultResultType=ValueMetaInterface.TYPE_NUMBER;
+                break;
+            case CalculatorMetaFunction.CALC_SOUNDEX     : 
+            	defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
+            case CalculatorMetaFunction.CALC_REFINED_SOUNDEX     : 
+            	defaultResultType=ValueMetaInterface.TYPE_STRING;
+                break;
             default:
                 break;
             }
