@@ -101,9 +101,8 @@ public class CalculatorMetaFunction implements Cloneable
 	public static final int CALC_NEEDLEMAN_WUNSH = 67 ;
 	public static final int CALC_JARO = 68;
 	public static final int CALC_JARO_WINKLER = 69;
-	public static final int CALC_PAIR_SIMILARITY= 70;
-	public static final int CALC_SOUNDEX= 71;
-	public static final int CALC_REFINED_SOUNDEX= 72;
+	public static final int CALC_SOUNDEX= 70;
+	public static final int CALC_REFINED_SOUNDEX= 71;
    
     public static final String calc_desc[] = 
         { 
@@ -177,7 +176,6 @@ public class CalculatorMetaFunction implements Cloneable
         	"NEEDLEMAN_WUNSH",
         	"JARO",
         	"JARO_WINKLER",
-        	"PAIR_SIMILARITY",
         	"SOUNDEX",
         	"REFINED_SOUNDEX"
         };
@@ -254,7 +252,6 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.NeedlemanWunsch"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.Jaro"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.JaroWinkler"),
-            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.PairSimilarity"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.SoundEx"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.RefinedSoundEx"),
         };
