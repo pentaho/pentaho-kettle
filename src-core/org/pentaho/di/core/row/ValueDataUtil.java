@@ -40,7 +40,6 @@ import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.CharsetToolkit;
-import org.pentaho.di.trans.steps.fuzzymatch.LetterPairSimilarity;
 import org.pentaho.di.trans.steps.fuzzymatch.Utils;
 
 import com.wcohen.ss.Jaro;
@@ -130,14 +129,6 @@ public class ValueDataUtil
     {
     	if(dataA==null || dataB==null) return null;
     	return new Double(new JaroWinkler().score(dataA.toString(),dataB.toString()));
-    }
-    /**PairLetters similitude is a measure of the similarity between two strings, 
-     * which we will refer to as the source string (s) and the target string (t).  
-     */
-    public static Double getPairLetters_Similitude(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB)
-    {
-    	if(dataA==null || dataB==null) return null;
-    	return new Double(LetterPairSimilarity.getSimiliarity(dataA.toString(),dataB.toString()));
     }
     public static String get_Metaphone(ValueMetaInterface metaA, Object dataA)
     {

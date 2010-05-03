@@ -664,12 +664,6 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_NUMBER;
                 }
                 break;
-                case CalculatorMetaFunction.CALC_PAIR_SIMILARITY  : 
-                {
-                    calcData[index] = ValueDataUtil.getPairLetters_Similitude(metaA, dataA,metaB, dataB);
-                    resultType=ValueMetaInterface.TYPE_NUMBER;
-                }
-                break;
                 case CalculatorMetaFunction.CALC_SOUNDEX  : // SOUNDEX 
                 {
                     calcData[index] = ValueDataUtil.get_SoundEx(metaA, dataA);
