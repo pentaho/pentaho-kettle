@@ -3809,6 +3809,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // No refresh done yet, do so
       refreshTree();
     }
+    loadPerspective(MainSpoonPerspective.ID);
   }
 
   public void newJobFile() {
@@ -3852,6 +3853,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         // No refresh done yet, do so
         refreshTree();
       }
+      loadPerspective(MainSpoonPerspective.ID);
     } catch (Exception e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorCreatingNewJob.Title"), BaseMessages
           .getString(PKG, "Spoon.Exception.ErrorCreatingNewJob.Message"), e);
