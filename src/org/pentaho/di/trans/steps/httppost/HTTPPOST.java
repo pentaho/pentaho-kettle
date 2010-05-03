@@ -161,9 +161,18 @@ public class HTTPPOST extends BaseStep implements StepInterface
                 String body=null;
                 if( statusCode != -1 )
                 {
-               	 	// guess encoding
-                    String encoding = post.getResponseHeader("Content-Type").getValue().replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim(); 
-                    if (encoding == null) encoding = "ISO-8859-1"; 
+                    // guess encoding
+                    //
+                    String encoding = meta.getEncoding();
+                    
+                    // Try to determine the encoding from the Content-Type value
+                    //
+                    if (Const.isEmpty(encoding)) {
+                      String contentType = post.getResponseHeader("Content-Type").getValue();
+                      if (contentType!=null && contentType.contains("charset")) {
+                        encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim();
+                      }
+                    }
                     
                     if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.Encoding",encoding));
 
