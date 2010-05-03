@@ -1,4 +1,4 @@
-package org.pentaho.di.trans.steps.fuzzymatch;
+package org.pentaho.di.core.util;
 
 /* Levenshtein in Java, originally from Josh Drew's code at
  * http://joshdrew.com/
