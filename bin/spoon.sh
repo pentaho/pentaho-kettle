@@ -41,11 +41,10 @@ case `uname -s` in
 		;;
 
 	Darwin)
-		LIBPATH=$BASEDIR/../libswt/osx/
-		JAVA_BIN=$BASEDIR/libswt/osx/java_swt
-        STARTUP=" -cp launcher/launcher.jar org.pentaho.commons.launcher.Launcher"
-        OPT="-XstartOnFirstThread=true "
-		chmod +x $JAVA_BIN
+		echo "Starting Data Integration using 'Spoon.sh' from OS X is not supported."
+		echo "Please start using 'Data Integration 32-bit' or"
+		echo "'Data Integration 64-bit' as appropriate."
+		exit
 		;;
 
 	Linux)
