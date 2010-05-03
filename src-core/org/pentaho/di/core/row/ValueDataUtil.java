@@ -40,7 +40,6 @@ import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.CharsetToolkit;
-import org.pentaho.di.trans.steps.fuzzymatch.Utils;
 
 import com.wcohen.ss.Jaro;
 import com.wcohen.ss.JaroWinkler;

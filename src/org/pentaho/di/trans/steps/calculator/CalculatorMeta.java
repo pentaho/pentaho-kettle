@@ -388,9 +388,6 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_JARO_WINKLER     : 
             	defaultResultType=ValueMetaInterface.TYPE_NUMBER;
                 break;
-            case CalculatorMetaFunction.CALC_PAIR_SIMILARITY     : 
-            	defaultResultType=ValueMetaInterface.TYPE_NUMBER;
-                break;
             case CalculatorMetaFunction.CALC_SOUNDEX     : 
             	defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break;
