@@ -25,8 +25,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.Deflater;
@@ -35,6 +35,9 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileSelector;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -85,7 +88,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	private boolean SpecifyFormat;
 	private String date_time_format;
 	private boolean createMoveToDirectory;
-	
+	private boolean includingSubFolders;
+
 	/**
 	 * Default constructor.
 	 */
@@ -110,6 +114,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		createMoveToDirectory=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.ZIP_FILE);
+		includingSubFolders=true;
 	}
 
 	public JobEntryZipFile()
@@ -149,6 +154,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("SpecifyFormat",  SpecifyFormat));
 		retval.append("      ").append(XMLHandler.addTagValue("date_time_format",  date_time_format));
 		retval.append("      ").append(XMLHandler.addTagValue("createMoveToDirectory",  createMoveToDirectory));
+        retval.append("      ").append(XMLHandler.addTagValue("include_subfolders",  includingSubFolders));
 		
 		return retval.toString();
 	}
@@ -175,6 +181,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			SpecifyFormat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "SpecifyFormat"));	
 			date_time_format = XMLHandler.getTagValue(entrynode, "date_time_format");
 			createMoveToDirectory = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "createMoveToDirectory"));
+            includingSubFolders = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_subfolders"));
 		}
 		catch(KettleXMLException xe)
 		{
@@ -205,6 +212,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			SpecifyFormat=rep.getJobEntryAttributeBoolean(id_jobentry, "SpecifyFormat");
 			date_time_format = rep.getJobEntryAttributeString(id_jobentry, "date_time_format");
 			createMoveToDirectory=rep.getJobEntryAttributeBoolean(id_jobentry, "createMoveToDirectory");
+            includingSubFolders=rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders");
 		}
 		catch(KettleException dbe)
 		{
@@ -235,7 +243,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "SpecifyFormat", SpecifyFormat);
 			rep.saveJobEntryAttribute(id_job, getID(), "date_time_format", date_time_format);
 			rep.saveJobEntryAttribute(id_job, getID(), "createMoveToDirectory", createMoveToDirectory);
-			
+            rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includingSubFolders);			
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -283,416 +291,460 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		return result;
 	}
 	
-	public boolean processRowFile(Job parentJob, Result result,String realZipfilename,
-			String realWildcard,String realWildcardExclude, String realSourceDirectoryOrFile,
-			String realMovetodirectory, boolean createparentfolder)
-	{
-		LogWriter log = LogWriter.getInstance();
-		boolean Fileexists=false;
-		File tempFile = null;
-		File fileZip =null;
-		boolean resultat=false;		
-		boolean renameOk = false;	
-		boolean orginexist=false;
-		
-		// Check if target file/folder exists!
-		FileObject OriginFile = null;
-		ZipInputStream zin=null;					
-		byte[] buffer = null;
-		FileOutputStream dest = null;
-		BufferedOutputStream buff = null;
-		ZipOutputStream out = null;
-		ZipEntry entry =null;
-		String localSourceFilename=realSourceDirectoryOrFile;
-		
-		try
-		{
-			OriginFile = KettleVFS.getFileObject(realSourceDirectoryOrFile, this);
-			localSourceFilename=KettleVFS.getFilename(OriginFile);
-			orginexist=OriginFile.exists();
-		}catch(Exception e){}finally {if (OriginFile != null )	{try {OriginFile.close();}
-		catch ( IOException ex ) {};}}
-		
-		String localrealZipfilename=realZipfilename;
-		if (realZipfilename!=null  && orginexist)
-		{
-            
+    public boolean processRowFile(Job parentJob, Result result,String realZipfilename,
+        String realWildcard, String realWildcardExclude, String realSourceDirectoryOrFile,
+        String realMoveToDirectory, boolean createParentFolder)
+    {
+        LogWriter log = LogWriter.getInstance();
+        boolean fileExists=false;
+        File tempFile = null;
+        File fileZip =null;
+        boolean resultat=false;     
+        boolean renameOk = false;   
+        boolean orgineExist=false;
+        
+        // Check if target file/folder exists!
+        FileObject originFile = null;
+        ZipInputStream zin=null;                    
+        byte[] buffer = null;
+        FileOutputStream dest = null;
+        BufferedOutputStream buff = null;
+        ZipOutputStream out = null;
+        ZipEntry entry =null;
+        String localSourceFilename=realSourceDirectoryOrFile;
+        
+        try
+        {
+            originFile = KettleVFS.getFileObject(realSourceDirectoryOrFile, this);
+            localSourceFilename=KettleVFS.getFilename(originFile);
+            orgineExist=originFile.exists();
+        }catch(Exception e){}finally {if (originFile != null )  {try {originFile.close();}
+        catch ( IOException ex ) {};}}
+        
+        String localRealZipfilename=realZipfilename;
+        if (realZipfilename!=null  && orgineExist)
+        {
             FileObject fileObject = null;
-			try {
-				fileObject = KettleVFS.getFileObject(localrealZipfilename, this);
-				localrealZipfilename=KettleVFS.getFilename(fileObject);
-				// Check if Zip File exists
-				if (fileObject.exists())
-				{
-					Fileexists =true;
-					if(log.isDebug())
-						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileExists1.Label")+ localrealZipfilename 
-											+ Messages.getString("JobZipFiles.Zip_FileExists2.Label"));
-				} 
-				// Let's see if we need to create parent folder of destination zip filename
-				if(createparentfolder){createParentFolder(localrealZipfilename);}					
-
-				// Let's start the process now
-				if (ifzipfileexists==3 && Fileexists)
-				{
-					// the zip file exists and user want to Fail
-					resultat = false;
-				}
-				else if(ifzipfileexists==2 && Fileexists)
-				{
-					// the zip file exists and user want to do nothing					
-					if (addfiletoresult)
-					{
-						// Add file to result files name
-	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , fileObject, parentJob.getJobname(), toString());
-	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-					}					
-					resultat = true;
-				}
-				else if(afterzip==2 && realMovetodirectory== null)
-				{
-					// After Zip, Move files..User must give a destination Folder
-					resultat = false;
-					log.logError(toString(), Messages.getString("JobZipFiles.AfterZip_No_DestinationFolder_Defined.Label"));
-				}				
-				else 
-					// After Zip, Move files..User must give a destination Folder
-				{
-					// Let's see if we deal with file or folder
-					String [] filelist =null;
-					
-					File f = new File(localSourceFilename);
-					if(f.isDirectory()){
-						// Target is a directory
-						// Get all the files in the directory...
-						filelist = f.list();
-					}else{
-						// Target is a file
-						filelist = new String[1];
-						filelist[0] =f.getName();
-					}
-					if(filelist.length==0)
-					{
-						resultat=false;
-						log.logError(toString(), Messages.getString("JobZipFiles.Log.FolderIsEmpty",
-								localSourceFilename));
-					}else if(!checkContainsFile(localSourceFilename, filelist, f.isDirectory()))
-					{
-						resultat=false;
-						log.logError(toString(), Messages.getString("JobZipFiles.Log.NoFilesInFolder",
-								localSourceFilename));
-					}else{
-						if(ifzipfileexists==0 && Fileexists)
-						{
-							// the zip file exists and user want to create new one with unique name
-							//Format Date
-							
-							//do we have already a .zip at the end?
-							if (localrealZipfilename.toLowerCase().endsWith(".zip")) {
-								//strip this off
-								localrealZipfilename = localrealZipfilename.substring(0, localrealZipfilename.length()-4);
-							}
-							
-							localrealZipfilename+= "_" + StringUtil.getFormattedDateTimeNow(true) +".zip";		
-							if(log.isDebug())
-								log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + localrealZipfilename + 
-													Messages.getString("JobZipFiles.Zip_FileNameChange1.Label"));
-						}
-						else if(ifzipfileexists==1 && Fileexists)
-						{
-							// the zip file exists and user want to append						
-							// get a temp file
-							fileZip = new File(localrealZipfilename);
-							tempFile = File.createTempFile(fileZip.getName(), null);
-					        
-							// delete it, otherwise we cannot rename existing zip to it.
-							tempFile.delete();
-							
-							renameOk=fileZip.renameTo(tempFile);
-							
-							if (!renameOk)
-							{
-								log.logError(toString(), Messages.getString("JobZipFiles.Cant_Rename_Temp1.Label")+ fileZip.getAbsolutePath() + Messages.getString("JobZipFiles.Cant_Rename_Temp2.Label") 
-											+ tempFile.getAbsolutePath() + Messages.getString("JobZipFiles.Cant_Rename_Temp3.Label"));
-							}						
-							if(log.isDebug())
-								log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileAppend1.Label") + localrealZipfilename + 
-											Messages.getString("JobZipFiles.Zip_FileAppend2.Label"));
-						}				
-						
-						if(log.isDetailed())	
-							log.logDetailed(toString(), Messages.getString("JobZipFiles.Files_Found1.Label") +filelist.length+ 
-											Messages.getString("JobZipFiles.Files_Found2.Label") + localSourceFilename + 
-											Messages.getString("JobZipFiles.Files_Found3.Label"));
-						
-						Pattern pattern = null;
-						Pattern patternexclude = null;
-						// Let's prepare pattern..only if target is a folder !
-						if(f.isDirectory())
-						{
-							if (!Const.isEmpty(realWildcard)) 
-							{pattern = Pattern.compile(realWildcard);}
-							
-							if (!Const.isEmpty(realWildcardExclude)) 
-							{patternexclude = Pattern.compile(realWildcardExclude);	}
-						}
-						
-						// Prepare Zip File
-						buffer = new byte[18024];
-						dest = new FileOutputStream(localrealZipfilename);
-						buff = new BufferedOutputStream(dest);
-						out = new ZipOutputStream(buff);
-						
-						HashSet<String> fileSet = new HashSet<String>() ;
-											
-						if( renameOk)
-						{
-							// User want to append files to existing Zip file						
-							// The idea is to rename the existing zip file to a temporary file 
-							// and then adds all entries in the existing zip along with the new files, 
-							// excluding the zip entries that have the same name as one of the new files.
-							
-							zin = new ZipInputStream(new FileInputStream(tempFile));
-							entry = zin.getNextEntry();				
-							
-						     while (entry != null) 
-						     {
-									String name = entry.getName();
-									
-									if (!fileSet.contains(name))
-									{
-									
-										// Add ZIP entry to output stream.
-										out.putNextEntry(new ZipEntry(name));
-										// Transfer bytes from the ZIP file to the output file
-										int len;
-										while ((len = zin.read(buffer)) > 0) 
-										{
-											out.write(buffer, 0, len);
-										}
-										
-										fileSet.add(name);
-									}
-									entry = zin.getNextEntry();
-								}
-								// Close the streams		
-								zin.close();
-						}	
-						
-						// Set the method
-						out.setMethod(ZipOutputStream.DEFLATED);
-						// Set the compression level
-						if (compressionrate==0)
-						{
-							out.setLevel(Deflater.NO_COMPRESSION);						
-						}
-						else if (compressionrate==1)
-						{
-							out.setLevel(Deflater.DEFAULT_COMPRESSION);
-						}
-						if (compressionrate==2)
-						{
-							out.setLevel(Deflater.BEST_COMPRESSION);
-						}
-						if (compressionrate==3)
-						{
-							out.setLevel(Deflater.BEST_SPEED);
-						}
-						// Specify Zipped files (After that we will move,delete them...)
-						String[] zippedFiles = new String[filelist.length];
-						int fileNum=0;			
-	
-						// Get the files in the list...
-						for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
-						{						
-							boolean getIt = true;
-							boolean getItexclude = false;			
-					
-							// First see if the file matches the regular expression!
-							// ..only if target is a folder !
-							if(f.isDirectory())
-							{
-								if (pattern!=null)
-								{
-									Matcher matcher = pattern.matcher(filelist[i]);
-									getIt = matcher.matches();
-								}
-		
-								if (patternexclude!=null)
-								{
-									Matcher matcherexclude = patternexclude.matcher(filelist[i]);
-									getItexclude = matcherexclude.matches();
-								}
-							}
-							// Get processing File
-							String targetFilename = localSourceFilename+Const.FILE_SEPARATOR+filelist[i];
-							if(f.isFile()) targetFilename=localSourceFilename;
-							
-							File file = new File(targetFilename);
-	
-							if (getIt && !getItexclude && !file.isDirectory() && !fileSet.contains(filelist[i]))
-							{
-	
-								// We can add the file to the Zip Archive
-								if(log.isDebug())
-									log.logDebug(toString(), Messages.getString("JobZipFiles.Add_FilesToZip1.Label")+filelist[i]+
-											Messages.getString("JobZipFiles.Add_FilesToZip2.Label")+localSourceFilename+
-											Messages.getString("JobZipFiles.Add_FilesToZip3.Label"));
-								
-								// Associate a file input stream for the current file
-								FileInputStream in = new FileInputStream(targetFilename);															
-	
-								// Add ZIP entry to output stream.
-								out.putNextEntry(new ZipEntry(filelist[i]));
-								
-						
-								int len;
-								while ((len = in.read(buffer)) > 0)
-								{
-									out.write(buffer, 0, len);
-								}
-								out.flush();
-								out.closeEntry();
-	
-								// Close the current file input stream
-								in.close(); 
-	
-								// Get Zipped File
-								zippedFiles[fileNum] = filelist[i];
-								fileNum=fileNum+1;
-							}
-						}						
-						// Close the ZipOutPutStream
-						out.close();
-						buff.close();
-						dest.close();
-						
-						if(log.isBasic()) log.logBasic(toString(), Messages.getString("JobZipFiles.Log.TotalZippedFiles", ""+zippedFiles.length));
-						// Delete Temp File
-						if (tempFile !=null)
-						{
-							tempFile.delete();
-						}
-						
-						//-----Get the list of Zipped Files and Move or Delete Them
-						if (afterzip == 1 || afterzip == 2)
-						{	
-							// iterate through the array of Zipped files
-							for (int i = 0; i < zippedFiles.length; i++) 
-							{
-								if ( zippedFiles[i] != null)
-								{								
-									// Delete File
-									FileObject fileObjectd = KettleVFS.getFileObject(localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i], this);
-									if(f.isFile()) fileObjectd = KettleVFS.getFileObject(localSourceFilename, this);
-									
-									// Here gc() is explicitly called if e.g. createfile is used in the same
-									// job for the same file. The problem is that after creating the file the
-									// file object is not properly garbaged collected and thus the file cannot
-									// be deleted anymore. This is a known problem in the JVM.
-									
-									System.gc();
-									
-									// Here we can move, delete files
-									if (afterzip == 1)
-									{						
-										// Delete File
-										boolean deleted = fileObjectd.delete();
-										if ( ! deleted )
-										{	
-											resultat = false;
-											log.logError(toString(), Messages.getString("JobZipFiles.Cant_Delete_File1.Label")+
-													localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i]+
-													Messages.getString("JobZipFiles.Cant_Delete_File2.Label"));
-	
-										}
-										// File deleted
-										if(log.isDebug())
-											log.logDebug(toString(), Messages.getString("JobZipFiles.File_Deleted1.Label") + 
-													localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i] + 
-											Messages.getString("JobZipFiles.File_Deleted2.Label"));
-									}
-									else if(afterzip == 2)
-									{
-										// Move File	
-										try
-										{
-											FileObject fileObjectm = KettleVFS.getFileObject(realMovetodirectory + Const.FILE_SEPARATOR+zippedFiles[i], this);
-											fileObjectd.moveTo(fileObjectm);
-										}
-										catch (IOException e) 
-										{
-											log.logError(toString(), Messages.getString("JobZipFiles.Cant_Move_File1.Label") +zippedFiles[i]+
-												Messages.getString("JobZipFiles.Cant_Move_File2.Label") + e.getMessage());
-											resultat = false;
-										}
-										// File moved
-										if(log.isDebug())
-											log.logDebug(toString(), Messages.getString("JobZipFiles.File_Moved1.Label") + zippedFiles[i] + 
-													Messages.getString("JobZipFiles.File_Moved2.Label"));
-									 }
-								}
-							}
-						}
-											
-						if (addfiletoresult)
-						{
-							// Add file to result files name
-		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , fileObject, parentJob.getJobname(), toString());
-		                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-						}
-						
-						resultat = true;
-					}
-				}
-			}
-			catch (Exception e) 
-			{
-       			log.logError(toString(), Messages.getString("JobZipFiles.Cant_CreateZipFile1.Label") +localrealZipfilename+
-		       							 Messages.getString("JobZipFiles.Cant_CreateZipFile2.Label") + e.getMessage());
-       			resultat = false;
-			}
-			finally 
-			{
-				if ( fileObject != null )
-				{
-					try  {fileObject.close();fileObject=null;}
-					catch ( IOException ex ) {};
-				}
-
-				try{
-					if(out!=null) out.close();
-					if(buff!=null) buff.close();
-					if(dest!=null) dest.close();
-					if(zin!=null) zin.close();
-					if(entry!=null) entry=null;
-					
-				}catch ( IOException ex ) {};
-			}
-		}
-		else
-		{	
-			resultat=true;
-			if (localrealZipfilename==null) log.logError(toString(), Messages.getString("JobZipFiles.No_ZipFile_Defined.Label"));
-			if (!orginexist) log.logError(toString(), Messages.getString("JobZipFiles.No_FolderCible_Defined.Label",localSourceFilename));			
-		}			
-		//return  a verifier
-		return resultat;
-	}
-	private boolean checkContainsFile(String realSourceDirectoryOrFile,String []  filelist, boolean isDirectory)
-	{
-		boolean retval=false;
-		for(int i=0;i<filelist.length;i++){
-			File file;
-			if (isDirectory) {
-				file=new File(realSourceDirectoryOrFile  + Const.FILE_SEPARATOR + filelist[i]);
-			} else { // we have already a file in there
-				file=new File(realSourceDirectoryOrFile);
-			}
-			if((file.exists() && file.isFile())) retval=true;
-		}
-		return retval;
-	}
+            try {
+                fileObject = KettleVFS.getFileObject(localRealZipfilename, this);
+                localRealZipfilename=KettleVFS.getFilename(fileObject);
+                // Check if Zip File exists
+                if (fileObject.exists())
+                {
+                    fileExists =true;
+                    if(log.isDebug())
+                        log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileExists1.Label")+ localRealZipfilename 
+                                            + Messages.getString("JobZipFiles.Zip_FileExists2.Label"));
+                } 
+                // Let's see if we need to create parent folder of destination zip filename
+                if(createParentFolder){createParentFolder(localRealZipfilename);}                   
+    
+                // Let's start the process now
+                if (ifzipfileexists==3 && fileExists)
+                {
+                    // the zip file exists and user want to Fail
+                    resultat = false;
+                }
+                else if(ifzipfileexists==2 && fileExists)
+                {
+                    // the zip file exists and user want to do nothing                  
+                    if (addfiletoresult)
+                    {
+                        // Add file to result files name
+                        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , fileObject, parentJob.getJobname(), toString());
+                        result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+                    }                   
+                    resultat = true;
+                }
+                else if (afterzip==2 && realMoveToDirectory== null)
+                {
+                    // After Zip, Move files..User must give a destination Folder
+                    resultat = false;
+                    log.logError(toString(), Messages.getString("JobZipFiles.AfterZip_No_DestinationFolder_Defined.Label"));
+                }               
+                else 
+                    // After Zip, Move files..User must give a destination Folder
+                {
+                    // Let's see if we deal with file or folder
+                    FileObject[] fileList =null;
+                    
+                    FileObject sourceFileOrFolder = KettleVFS.getFileObject(localSourceFilename);
+                    boolean isSourceDirectory = sourceFileOrFolder.getType().equals(FileType.FOLDER);
+                    final Pattern pattern;
+                    final Pattern patternexclude;
+    
+                    if (isSourceDirectory) {
+                      // Let's prepare the pattern matcher for performance reasons.
+                      // We only do this if the target is a folder !
+                      //
+                      if (!Const.isEmpty(realWildcard)) pattern = Pattern.compile(realWildcard); else pattern=null;
+                      if (!Const.isEmpty(realWildcardExclude)) patternexclude = Pattern.compile(realWildcardExclude); else patternexclude=null;
+    
+                      // Target is a directory
+                      // Get all the files in the directory...
+                      //
+                      if (includingSubFolders) {
+                        fileList = sourceFileOrFolder.findFiles(new FileSelector() {
+                          
+                          public boolean traverseDescendents(FileSelectInfo fileInfo) throws Exception {
+                            return true;
+                          }
+                          
+                          public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
+                            boolean include;
+                            
+                            // Only include files in the sub-folders...
+                            // When we include sub-folders we match the whole filename, not just the base-name
+                            //
+                            if (fileInfo.getFile().getType().equals(FileType.FILE)) {
+                              include=true;
+                              if (pattern!=null) {
+                                String name = fileInfo.getFile().getName().getPath();
+                                include = pattern.matcher(name).matches();
+                              }
+                              if (include && patternexclude!=null) {
+                                String name = fileInfo.getFile().getName().getPath();
+                                include = !pattern.matcher(name).matches();
+                              }
+                            } else {
+                              include=false;
+                            }
+                            return include;
+                          }
+                        });
+                      } else {
+                        fileList = sourceFileOrFolder.getChildren();
+                      }
+                    } else {
+                      pattern=null;
+                      patternexclude=null;
+                      
+                      // Target is a file
+                      fileList = new FileObject[] { sourceFileOrFolder };
+                    }
+                    if(fileList.length==0)
+                    {
+                        resultat=false;
+                        log.logError(toString(), Messages.getString("JobZipFiles.Log.FolderIsEmpty",
+                                localSourceFilename));
+                    } else if (!checkContainsFile(localSourceFilename, fileList, isSourceDirectory))
+                    {
+                        resultat=false;
+                        log.logError(toString(), Messages.getString("JobZipFiles.Log.NoFilesInFolder",
+                                localSourceFilename));
+                    }else{
+                        if(ifzipfileexists==0 && fileExists)
+                        {
+                            // the zip file exists and user want to create new one with unique name
+                            //Format Date
+                            
+                            //do we have already a .zip at the end?
+                            if (localRealZipfilename.toLowerCase().endsWith(".zip")) {
+                                //strip this off
+                                localRealZipfilename = localRealZipfilename.substring(0, localRealZipfilename.length()-4);
+                            }
+                            
+                            localRealZipfilename+= "_" + StringUtil.getFormattedDateTimeNow(true) +".zip";      
+                            if(log.isDebug())
+                                log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + localRealZipfilename + 
+                                                    Messages.getString("JobZipFiles.Zip_FileNameChange1.Label"));
+                        }
+                        else if(ifzipfileexists==1 && fileExists)
+                        {
+                            // the zip file exists and user want to append                      
+                            // get a temp file
+                            fileZip = new File(localRealZipfilename);
+                            tempFile = File.createTempFile(fileZip.getName(), null);
+                            
+                            // delete it, otherwise we cannot rename existing zip to it.
+                            tempFile.delete();
+                            
+                            renameOk=fileZip.renameTo(tempFile);
+                            
+                            if (!renameOk)
+                            {
+                                log.logError(toString(), Messages.getString("JobZipFiles.Cant_Rename_Temp1.Label")+ fileZip.getAbsolutePath() + Messages.getString("JobZipFiles.Cant_Rename_Temp2.Label") 
+                                            + tempFile.getAbsolutePath() + Messages.getString("JobZipFiles.Cant_Rename_Temp3.Label"));
+                            }                       
+                            if (log.isDebug())
+                                log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileAppend1.Label") + localRealZipfilename + 
+                                            Messages.getString("JobZipFiles.Zip_FileAppend2.Label"));
+                        }               
+                        
+                        if (log.isDetailed())    
+                            log.logDetailed(toString(), Messages.getString("JobZipFiles.Files_Found1.Label") +fileList.length+ 
+                                            Messages.getString("JobZipFiles.Files_Found2.Label") + localSourceFilename + 
+                                            Messages.getString("JobZipFiles.Files_Found3.Label"));
+                                                
+                        // Prepare Zip File
+                        buffer = new byte[18024];
+                        dest = new FileOutputStream(localRealZipfilename);
+                        buff = new BufferedOutputStream(dest);
+                        out = new ZipOutputStream(buff);
+                        
+                        HashSet<String> fileSet = new HashSet<String>() ;
+                                            
+                        if( renameOk)
+                        {
+                            // User want to append files to existing Zip file                       
+                            // The idea is to rename the existing zip file to a temporary file 
+                            // and then adds all entries in the existing zip along with the new files, 
+                            // excluding the zip entries that have the same name as one of the new files.
+                            
+                            zin = new ZipInputStream(new FileInputStream(tempFile));
+                            entry = zin.getNextEntry();             
+                            
+                             while (entry != null) 
+                             {
+                                    String name = entry.getName();
+                                    
+                                    if (!fileSet.contains(name))
+                                    {
+                                        // Add ZIP entry to output stream.
+                                        out.putNextEntry(new ZipEntry(name));
+                                        // Transfer bytes from the ZIP file to the output file
+                                        int len;
+                                        while ((len = zin.read(buffer)) > 0) 
+                                        {
+                                            out.write(buffer, 0, len);
+                                        }
+                                        
+                                        fileSet.add(name);
+                                    }
+                                    entry = zin.getNextEntry();
+                                }
+                                // Close the streams        
+                                zin.close();
+                        }   
+                        
+                        // Set the method
+                        out.setMethod(ZipOutputStream.DEFLATED);
+                        // Set the compression level
+                        if (compressionrate==0)
+                        {
+                            out.setLevel(Deflater.NO_COMPRESSION);                      
+                        }
+                        else if (compressionrate==1)
+                        {
+                            out.setLevel(Deflater.DEFAULT_COMPRESSION);
+                        }
+                        if (compressionrate==2)
+                        {
+                            out.setLevel(Deflater.BEST_COMPRESSION);
+                        }
+                        if (compressionrate==3)
+                        {
+                            out.setLevel(Deflater.BEST_SPEED);
+                        }
+                        // Specify Zipped files (After that we will move,delete them...)
+                        FileObject[] zippedFiles = new FileObject[fileList.length];
+                        int fileNum=0;          
+    
+                        // Get the files in the list...
+                        for (int i=0;i<fileList.length && !parentJob.isStopped();i++)
+                        {                       
+                            boolean getIt = true;
+                            boolean getItexclude = false;           
+                    
+                            // First see if the file matches the regular expression!
+                            // ..only if target is a folder !
+                            if (isSourceDirectory) {
+                              // If we include sub-folders, we match on the whole name, not just the basename
+                              // 
+                              String filename;
+                              if (includingSubFolders) {
+                                filename = fileList[i].getName().getPath();
+                              } else {
+                                filename = fileList[i].getName().getBaseName();
+                              }
+                              if (pattern != null) {
+                                // Matches the base name of the file (backward compatible!)
+                                //
+                                Matcher matcher = pattern.matcher(filename);
+                                getIt = matcher.matches();
+                              }
+              
+                              if (patternexclude != null) {
+                                Matcher matcherexclude = patternexclude.matcher(filename);
+                                getItexclude = matcherexclude.matches();
+                              }
+                            }
+                            // Get processing File
+                            String targetFilename = KettleVFS.getFilename(fileList[i]);
+                            if(sourceFileOrFolder.getType().equals(FileType.FILE)) {
+                              targetFilename=localSourceFilename;
+                            }
+                            
+                            // Keep using the File construct here to make sure we're referencing local files only
+                            // 
+                            File file = new File(targetFilename);
+    
+                            if (getIt && !getItexclude && !file.isDirectory() && !fileSet.contains(fileList[i]))
+                            {
+    
+                                // We can add the file to the Zip Archive
+                                if(log.isDebug())
+                                    log.logDebug(toString(), Messages.getString("JobZipFiles.Add_FilesToZip1.Label")+fileList[i]+
+                                            Messages.getString("JobZipFiles.Add_FilesToZip2.Label")+localSourceFilename+
+                                            Messages.getString("JobZipFiles.Add_FilesToZip3.Label"));
+                                
+                                // Associate a file input stream for the current file
+                                FileInputStream in = new FileInputStream(targetFilename);                                                           
+    
+                                // Add ZIP entry to output stream.
+                                //
+                                String relativeName;
+                                String fullName = fileList[i].getName().getPath();
+                                String basePath = sourceFileOrFolder.getName().getPath();
+                                if (isSourceDirectory) {
+                                  if (fullName.startsWith(basePath)) {
+                                    relativeName = fullName.substring(basePath.length()+1);
+                                  } else {
+                                    relativeName = fullName; 
+                                  }
+                                } else {
+                                  relativeName = fileList[i].getName().getBaseName();
+                                }
+                                out.putNextEntry(new ZipEntry(relativeName));
+                                
+                                int len;
+                                while ((len = in.read(buffer)) > 0)
+                                {
+                                    out.write(buffer, 0, len);
+                                }
+                                out.flush();
+                                out.closeEntry();
+    
+                                // Close the current file input stream
+                                in.close(); 
+    
+                                // Get Zipped File
+                                zippedFiles[fileNum] = fileList[i];
+                                fileNum=fileNum+1;
+                            }
+                        }                       
+                        // Close the ZipOutPutStream
+                        out.close();
+                        buff.close();
+                        dest.close();
+                        
+                        if (log.isBasic()) log.logBasic(toString(), Messages.getString("JobZipFiles.Log.TotalZippedFiles", ""+zippedFiles.length));
+                        // Delete Temp File
+                        if (tempFile !=null)
+                        {
+                            tempFile.delete();
+                        }
+                        
+                        //-----Get the list of Zipped Files and Move or Delete Them
+                        if (afterzip == 1 || afterzip == 2)
+                        {   
+                            // iterate through the array of Zipped files
+                            for (int i = 0; i < zippedFiles.length; i++) 
+                            {
+                                if ( zippedFiles[i] != null)
+                                {                               
+                                    // Delete File
+                                    FileObject fileObjectd = zippedFiles[i];
+                                    if(sourceFileOrFolder.getType().equals(FileType.FILE)) {
+                                      fileObjectd = KettleVFS.getFileObject(localSourceFilename, this);     
+                                    }
+                                    
+                                    // Here we can move, delete files
+                                    if (afterzip == 1)
+                                    {                       
+                                        // Delete File
+                                        boolean deleted = fileObjectd.delete();
+                                        if (!deleted )
+                                        {   
+                                            resultat = false;
+                                            log.logError(toString(), Messages.getString("JobZipFiles.Cant_Delete_File1.Label")+
+                                                    localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i]+
+                                                    Messages.getString("JobZipFiles.Cant_Delete_File2.Label"));
+    
+                                        }
+                                        // File deleted
+                                        if(log.isDebug())
+                                            log.logDebug(toString(), Messages.getString("JobZipFiles.File_Deleted1.Label") + 
+                                                    localSourceFilename+Const.FILE_SEPARATOR+zippedFiles[i] + 
+                                            Messages.getString("JobZipFiles.File_Deleted2.Label"));
+                                    }
+                                    else if(afterzip == 2)
+                                    {
+                                        // Move File    
+                                        try
+                                        {
+                                            FileObject fileObjectm = KettleVFS.getFileObject(realMoveToDirectory + Const.FILE_SEPARATOR+zippedFiles[i], this);
+                                            fileObjectd.moveTo(fileObjectm);
+                                        }
+                                        catch (IOException e) 
+                                        {
+                                            log.logError(toString(), Messages.getString("JobZipFiles.Cant_Move_File1.Label") +zippedFiles[i]+
+                                                Messages.getString("JobZipFiles.Cant_Move_File2.Label") + e.getMessage());
+                                            resultat = false;
+                                        }
+                                        // File moved
+                                        if (log.isDebug())
+                                            log.logDebug(toString(), Messages.getString("JobZipFiles.File_Moved1.Label") + zippedFiles[i] + 
+                                                    Messages.getString("JobZipFiles.File_Moved2.Label"));
+                                     }
+                                }
+                            }
+                        }
+                                            
+                        if (addfiletoresult)
+                        {
+                            // Add file to result files name
+                            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , fileObject, parentJob.getJobname(), toString());
+                            result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+                        }
+                        
+                        resultat = true;
+                    }
+                }
+            }
+            catch (Exception e) 
+            {
+                log.logError(toString(), Messages.getString("JobZipFiles.Cant_CreateZipFile1.Label") +localRealZipfilename+
+                                         Messages.getString("JobZipFiles.Cant_CreateZipFile2.Label") + e.getMessage());
+                resultat = false;
+            }
+            finally 
+            {
+                if ( fileObject != null )
+                {
+                    try  {fileObject.close();fileObject=null;}
+                    catch ( IOException ex ) {};
+                }
+    
+                try{
+                    if(out!=null) out.close();
+                    if(buff!=null) buff.close();
+                    if(dest!=null) dest.close();
+                    if(zin!=null) zin.close();
+                    if(entry!=null) entry=null;
+                    
+                }catch ( IOException ex ) {};
+            }
+        }
+        else
+        {   
+            resultat=true;
+            if (localRealZipfilename==null) log.logError(toString(), Messages.getString("JobZipFiles.No_ZipFile_Defined.Label"));
+            if (!orgineExist) log.logError(toString(), Messages.getString("JobZipFiles.No_FolderCible_Defined.Label",localSourceFilename));            
+        }           
+        //return  a verifier
+        return resultat;
+    }
+    private boolean checkContainsFile(String realSourceDirectoryOrFile, FileObject[]  filelist, boolean isDirectory) throws FileSystemException
+    {
+        boolean retval=false;
+        for (int i=0;i<filelist.length;i++){
+            FileObject file = filelist[i];
+            if((file.exists() && file.getType().equals(FileType.FILE))) retval=true;
+        }
+        return retval;
+    
+    }
 	
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
@@ -1022,4 +1074,18 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	    andValidator().validate(this, "sourceDirectory", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
 
 	}
+
+	  /**
+	   * @return true if the search for files to zip in a folder include sub-folders
+	   */
+	  public boolean isIncludingSubFolders() {
+	    return includingSubFolders;
+	  }
+
+	  /**
+	   * @param includesSubFolders Set to true if the search for files to zip in a folder needs to include sub-folders
+	   */
+	  public void setIncludingSubFolders(boolean includesSubFolders) {
+	    this.includingSubFolders = includesSubFolders;
+	  }
 }
