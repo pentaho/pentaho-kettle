@@ -239,16 +239,17 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 						// Get closer value
 						// minimal distance
 						distance= cdistance;
-						rowData[0]=cacheValue;
+						int index=0;
+						rowData[index++]=cacheValue;
 						// Add metric value?
 						if(data.addValueFieldName) 	{
-							rowData[1]= distance;
+							rowData[index++]= distance;
 						}
 						// Add additional return values?
 						if(data.addAdditionalFields) {
 							for(int i=0; i<meta.getValue().length; i++) {
-								int nf=i+2;
 								int nr=i+1;
+								int nf=i+index;
 								rowData[nf] = cachedData[nr];
 							}
 						}
@@ -304,16 +305,17 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 			if(lookupValueMF.equals(cacheValueMF))   {
 				
 				// Add match value
-				rowData[0]=cacheValue;
+				int index=0;
+				rowData[index++]=cacheValue;
 	
 				// Add metric value?
 				if(data.addValueFieldName) 	{
-					rowData[1]= cacheValueMF;
+					rowData[index++]= cacheValueMF;
 				}
 				// Add additional return values?
 				if(data.addAdditionalFields) {
 					for(int i=0; i<meta.getValue().length; i++) {
-						int nf=i+2;
+						int nf=i+index;
 						int nr=i+1;
 						rowData[nf] = cachedData[nr];
 					}
@@ -363,16 +365,17 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 					if(csimilarity>similarity || (csimilarity==0 && cacheValue.equals(lookupvalue)))   {
 						similarity= csimilarity;
 						// Update match value
-						rowData[0]=cacheValue;
-						// Adde metric value?
+						int index=0;
+						rowData[index++]=cacheValue;
+						// Add metric value?
 						if(data.addValueFieldName) 	{
-							rowData[1]= new Double(similarity);
+							rowData[index++]= new Double(similarity);
 						}
 
 						// Add additional return values?
 						if(data.addAdditionalFields) {
 							for(int i=0; i<meta.getValue().length; i++) {
-								int nf=i+2;
+								int nf=i+index;
 								int nr=i+1;
 								rowData[nf] = cachedData[nr];
 							}
