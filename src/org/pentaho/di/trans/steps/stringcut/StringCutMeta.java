@@ -306,18 +306,6 @@ public class StringCutMeta extends BaseStepMeta implements StepMetaInterface {
 				}
 			}
 
-			// Check if all input fields are distinct.
-			for (int idx = 0; idx < fieldInStream.length; idx++) {
-				for (int jdx = 0; jdx < fieldInStream.length; jdx++) {
-					if (fieldInStream[idx].equals(fieldInStream[jdx])
-							&& idx != jdx && idx < jdx) {
-						error_message = Messages.getString("StringCutMeta.CheckResult.FieldInputError", fieldInStream[idx]); //$NON-NLS-1$
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,error_message, stepinfo);
-						remarks.add(cr);
-					}
-				}
-			}
-
 		}
 	}
 
