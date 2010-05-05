@@ -25,15 +25,21 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.w3c.dom.Node;
 
 /**
@@ -43,13 +49,6 @@ import org.w3c.dom.Node;
 public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
-	private String   headStepName;
-	private StepMeta headStepMeta;
-
-	private String   tailStepName;  
-	private StepMeta tailStepMeta;
-
 	
     public AppendMeta()
 	{
@@ -60,80 +59,6 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		readData(stepnode);
 	}
 
-	/**
-     * @return Returns the hopname to be used as tail
-     */
-    public String getTailStepName()
-    {
-		if (tailStepMeta!=null && 
-	        tailStepMeta.getName()!=null &&
-	        tailStepMeta.getName().length()>0
-		   ) 
-			return tailStepMeta.getName();
-		return null;
-   }
- 
-	/**
-     * @return Returns the hopname to be used as head
-     */
-    public String getHeadStepName()
-    {
-		if (headStepMeta!=null && 
-	        headStepMeta.getName()!=null &&
-	        headStepMeta.getName().length()>0
-		   ) 
-			return headStepMeta.getName();
-		return null;
-    }
-    
-    /**
-     * @param tailStepname The tailStepname to set.
-     */
-    public void setTailStepName(String tailStepname)
-    {
-        this.tailStepName = tailStepname;
-    }
-    
-    /**
-     * @param headStepname The headStepname to set.
-     */
-    public void setHeadStepName(String headStepname)
-    {
-        this.headStepName = headStepname;
-    }
-    
-    /**
-     * @return Returns the tailStep.
-     */
-    public StepMeta getTailStepMeta()
-    {
-        return tailStepMeta;
-    }
-    
-    /**
-     * @return Returns the headStep.
-     */
-    public StepMeta getHeadStepMeta()
-    {
-        return headStepMeta;
-    }
-    
-    /**
-     * @param tailStep The tailStep to set.
-     */
-    public void setTailStepMeta(StepMeta tailStep)
-    {
-        this.tailStepMeta = tailStep;
-    }
-	
-    /**
-     * @param headStep The headStep to set.
-     */
-    public void setHeadStepMeta(StepMeta headStep)
-    {
-        this.headStepMeta = headStep;
-    }
-	
 	public Object clone()
 	{
 		AppendMeta retval = (AppendMeta)super.clone();
@@ -145,8 +70,9 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuilder retval = new StringBuilder();
 
-		retval.append(XMLHandler.addTagValue("head_name", getHeadStepName()));	//$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("tail_name", getTailStepName()));	//$NON-NLS-1$
+        List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+		retval.append(XMLHandler.addTagValue("head_name", infoStreams.get(0).getStepname()));	//$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("tail_name", infoStreams.get(1).getStepname()));	//$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -156,8 +82,11 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{ 
-			headStepName = XMLHandler.getTagValue(stepnode, "head_name");  //$NON-NLS-1$
-			tailStepName = XMLHandler.getTagValue(stepnode, "tail_name");  //$NON-NLS-1$			
+            List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+            StreamInterface headStream = infoStreams.get(0);
+            StreamInterface tailStream = infoStreams.get(1);
+			headStream.setSubject( XMLHandler.getTagValue(stepnode, "head_name") );  //$NON-NLS-1$
+			tailStream.setSubject( XMLHandler.getTagValue(stepnode, "tail_name") );  //$NON-NLS-1$			
 		}
 		catch(Exception e)
 		{
@@ -168,30 +97,17 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDefault()
 	{
 	}
-    
-    public String[] getInfoSteps()
-    {
-        return new String[] { headStepName, tailStepName }; 
-    }
 
-    /**
-     * @param infoSteps The info-step(s) to set
-     */
-    public void setInfoSteps(StepMeta[] infoSteps)
-    {
-        if (infoSteps!=null && infoSteps.length==2)
-        {
-            headStepMeta = infoSteps[0];
-            tailStepMeta = infoSteps[1];
-        }
-    }
 
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
 	{
 		try
 		{
-			headStepName =  rep.getStepAttributeString (id_step, "head_name");  //$NON-NLS-1$
-			tailStepName =  rep.getStepAttributeString (id_step, "tail_name");  //$NON-NLS-1$
+            List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+            StreamInterface headStream = infoStreams.get(0);
+            StreamInterface tailStream = infoStreams.get(1);
+            headStream.setSubject( rep.getStepAttributeString (id_step, "head_name") );  //$NON-NLS-1$
+            tailStream.setSubject( rep.getStepAttributeString (id_step, "tail_name") );  //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -199,13 +115,15 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
-		throws KettleException
+	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "head_name", getHeadStepName()); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "tail_name", getTailStepName()); //$NON-NLS-1$
+            List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+            StreamInterface headStream = infoStreams.get(0);
+            StreamInterface tailStream = infoStreams.get(1);
+			rep.saveStepAttribute(id_transformation, id_step, "head_name", headStream.getStepname()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "tail_name", tailStream.getStepname()); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -213,11 +131,12 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void searchInfoAndTargetSteps(List<StepMeta> steps)
-	{
-		headStepMeta = StepMeta.findStep(steps, headStepName);
-		tailStepMeta = StepMeta.findStep(steps, tailStepName);
-	}
+    @Override
+    public void searchInfoAndTargetSteps(List<StepMeta> steps) {
+      for (StreamInterface stream : getStepIOMeta().getInfoStreams()) {
+        stream.setStepMeta(StepMeta.findStep(steps, (String) stream.getSubject()));
+      }
+    }
 
 	public boolean chosesTargetSteps()
 	{
@@ -236,8 +155,9 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
         //
         if (info!=null)
         {
-        	if ( info.length > 0 )            
+        	if ( info.length > 0 && info[0]!=null) {            
                 r.mergeRowMeta(info[0]);
+        	}
         }
     }
 
@@ -245,12 +165,16 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		CheckResult cr;
 		
-		if (getHeadStepName()!=null && getTailStepName()!=null)
+        List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+        StreamInterface headStream = infoStreams.get(0);
+        StreamInterface tailStream = infoStreams.get(1);
+		
+		if (headStream.getStepname()!=null && tailStream.getStepname()!=null)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "AppendMeta.CheckResult.SourceStepsOK"), stepMeta);
 			remarks.add(cr);
 		}
-		else if (getHeadStepName()==null && getTailStepName()==null)
+		else if (headStream.getStepname()==null && tailStream.getStepname()==null)
 		{
 			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "AppendMeta.CheckResult.SourceStepsMissing"), stepMeta);
 			remarks.add(cr);
@@ -271,4 +195,23 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new AppendData();
 	}
+	
+	   /**
+     * Returns the Input/Output metadata for this step.
+     */
+    public StepIOMetaInterface getStepIOMeta() {
+        if (ioMeta==null) {
+
+            ioMeta = new StepIOMeta(true, true, false, false, false, false);
+        
+            ioMeta.addStream( new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "AppendMeta.InfoStream.FirstStream.Description"), StreamIcon.INFO, null) );
+            ioMeta.addStream( new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "AppendMeta.InfoStream.SecondStream.Description"), StreamIcon.INFO, null) );
+        }
+        
+        return ioMeta;
+    }
+
+    @Override
+    public void resetStepIoMeta() {
+    }
 }

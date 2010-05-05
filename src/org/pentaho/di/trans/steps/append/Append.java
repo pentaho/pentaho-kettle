@@ -11,6 +11,8 @@
 
 package org.pentaho.di.trans.steps.append;
 
+import java.util.List;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -22,6 +24,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 
 /**
@@ -122,15 +125,20 @@ public class Append extends BaseStep implements StepInterface
         	data.processHead = true;
         	data.processTail = false;
         	data.firstTail = true;
-            if (meta.getHeadStepName()==null || meta.getTailStepName()==null)
+        	
+            List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
+            StreamInterface headStream = infoStreams.get(0);
+            StreamInterface tailStream = infoStreams.get(1);
+
+            if (headStream.getStepname()==null || tailStream.getStepname()==null)
             {
                 logError(BaseMessages.getString(PKG, "AppendRows.Log.BothHopsAreNeeded")); //$NON-NLS-1$
             }
             else
             {
             	try {
-	            	data.headRowSet = findInputRowSet(meta.getHeadStepName());
-	            	data.tailRowSet = findInputRowSet(meta.getTailStepName());
+	            	data.headRowSet = findInputRowSet(headStream.getStepname());
+	            	data.tailRowSet = findInputRowSet(tailStream.getStepname());
 	                return true;
             	}
             	catch(Exception e) {
