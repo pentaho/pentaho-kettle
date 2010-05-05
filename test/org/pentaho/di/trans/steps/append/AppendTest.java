@@ -225,7 +225,7 @@ public class AppendTest extends TestCase
         AppendMeta am = new AppendMeta();
         List<StreamInterface> infoStreams = am.getStepIOMeta().getInfoStreams();
         infoStreams.get(0).setStepMeta(injectorStep1);
-        infoStreams.get(0).setStepMeta(injectorStep2);
+        infoStreams.get(1).setStepMeta(injectorStep2);
         
         String appendPid = registry.getPluginId(StepPluginType.class, am);
         StepMeta append = new StepMeta(appendPid, appendName, (StepMetaInterface)am);
