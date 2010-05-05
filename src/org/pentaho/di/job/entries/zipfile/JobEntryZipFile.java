@@ -579,7 +579,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                             // 
                             File file = new File(targetFilename);
     
-                            if (getIt && !getItexclude && !file.isDirectory() && !fileSet.contains(fileList[i]))
+                            if (getIt && !getItexclude && !file.isDirectory() && !fileSet.contains(targetFilename))
                             {
     
                                 // We can add the file to the Zip Archive
@@ -735,6 +735,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         //return  a verifier
         return resultat;
     }
+
     private boolean checkContainsFile(String realSourceDirectoryOrFile, FileObject[]  filelist, boolean isDirectory) throws FileSystemException
     {
         boolean retval=false;
