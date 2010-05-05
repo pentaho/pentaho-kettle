@@ -33,7 +33,8 @@ public class KettleVariablesList {
 		return kettleVariablesList;
 	}
 	
-	private Map<String, String> variablesMap;
+	private Map<String, String> descriptionMap;
+    private Map<String, String> defaultValueMap;
 	
 	public static void init() throws KettleException {
 		
@@ -55,8 +56,10 @@ public class KettleVariablesList {
 				Node varNode = XMLHandler.getSubNodeByNr(varsNode, "kettle-variable", i);
 				String description = XMLHandler.getTagValue(varNode, "description");
 				String variable = XMLHandler.getTagValue(varNode, "variable");
+                String defaultValue = XMLHandler.getTagValue(varNode, "default-value");
 				
-				variablesList.getVariablesMap().put(variable, description);
+				variablesList.getDescriptionMap().put(variable, description);
+                variablesList.getDefaultValueMap().put(variable, defaultValue);
 			}
 			
 		} catch(Exception e) {
@@ -65,13 +68,22 @@ public class KettleVariablesList {
 	}
 	
 	private KettleVariablesList() {
-		variablesMap=new HashMap<String, String>();
+		descriptionMap=new HashMap<String, String>();
+        defaultValueMap=new HashMap<String, String>();
 	}
 	
 	/**
 	 * @return A mapping between the name of a standard kettle variable and its description.
 	 */
-	public Map<String, String> getVariablesMap() {
-		return variablesMap;
+	public Map<String, String> getDescriptionMap() {
+		return descriptionMap;
 	}
+
+	/**
+	 * @return A mapping between the name of a standard kettle variable and its default value.
+	 */
+	public Map<String, String> getDefaultValueMap() {
+      return defaultValueMap;
+    }
+	
 }

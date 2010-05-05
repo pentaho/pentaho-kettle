@@ -205,11 +205,12 @@ public class KettlePropertiesFileDialog extends Dialog
 			
 			// Add the standard variables to the properties if they are not in there already
 			//
-			for (String key : variablesList.getVariablesMap().keySet()) {
-				if (properties.get(key)==null) {
-					properties.put(key, "");
-				}
-			}
+            for (String key : variablesList.getDescriptionMap().keySet()) {
+              if (Const.isEmpty((String)properties.get(key))) {
+                String defaultValue = variablesList.getDefaultValueMap().get(key);
+                properties.put(key, Const.NVL(defaultValue, ""));
+              }
+            }
 
 			// Obtain and sort the list of keys...
 			//
@@ -226,7 +227,7 @@ public class KettlePropertiesFileDialog extends Dialog
 	        {
 				String key = keys.get(i);
 				String value = properties.getProperty(key, "");
-				String description = Const.NVL(variablesList.getVariablesMap().get(key), "");
+				String description = Const.NVL(variablesList.getDescriptionMap().get(key), "");
 				
 	            TableItem item = new TableItem(wFields.table, SWT.NONE);
 				item.setBackground(3, GUIResource.getInstance().getColorLightGray());
