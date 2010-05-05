@@ -530,7 +530,9 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
         // To where?
         wLabel.setText(BaseMessages.getString(PKG, "RepositoryImportDialog.WhichDir.Label"));
-        askDirectory = false; // just use the specified base directory
+        makeDirectory = true; // don't prompt, just create folders.
+        askDirectory = false;
+        
 
         // Read it using SAX...
         //
