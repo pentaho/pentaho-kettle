@@ -2486,6 +2486,17 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 }
             }
             
+            if (databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta || databaseMeta.getDatabaseInterface() instanceof GreenplumDatabaseMeta)
+            {
+              // undefined size => arbitrary precision
+              if (type == java.sql.Types.NUMERIC && length == 0 && precision == 0)
+              {
+                valtype = ValueMetaInterface.TYPE_BIGNUMBER;
+                length = -1;
+                precision = -1;
+              }
+            }
+            
             if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta)
             {
             	if (precision == 0 && length == 38 )
