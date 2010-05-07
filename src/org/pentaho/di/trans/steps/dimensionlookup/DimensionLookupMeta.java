@@ -715,6 +715,11 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     //
     for (ValueMetaInterface valueMeta : row.getValueMetaList()) {
       valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+      
+      // Also change the trim type to "None" as this can cause trouble 
+      // during compare of the data when there are leading/trailing spaces in the target table
+      //
+      valueMeta.setTrimType(ValueMetaInterface.TRIM_TYPE_NONE);
     }
     
     ValueMetaInterface v = new ValueMeta(keyField, ValueMetaInterface.TYPE_INTEGER);
