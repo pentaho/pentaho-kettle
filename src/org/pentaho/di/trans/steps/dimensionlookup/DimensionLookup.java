@@ -1050,8 +1050,16 @@ public class DimensionLookup extends BaseStep implements StepInterface
             Object[] updateRow = new Object[data.updateRowMeta.size()];
             int updateIndex=0;
             
-            updateRow[updateIndex++] = dateFrom;
-
+            switch(data.startDateChoice) { 
+            case DimensionLookupMeta.START_DATE_ALTERNATIVE_NONE : updateRow[updateIndex++] = dateFrom; break; 
+            case DimensionLookupMeta.START_DATE_ALTERNATIVE_SYSDATE : updateRow[updateIndex++] = new Date(); break; 
+            case DimensionLookupMeta.START_DATE_ALTERNATIVE_START_OF_TRANS : updateRow[updateIndex++] = getTrans().getCurrentDate(); break; 
+            case DimensionLookupMeta.START_DATE_ALTERNATIVE_NULL : updateRow[updateIndex++] = null; break; 
+            case DimensionLookupMeta.START_DATE_ALTERNATIVE_COLUMN_VALUE : updateRow[updateIndex++] = inputRowMeta.getDate(row, data.startDateFieldIndex); break; 
+            default: 
+                throw new KettleStepException(Messages.getString("DimensionLookup.Exception.IllegalStartDateSelection", Integer.toString(data.startDateChoice))); 
+            } 
+            
     		// The special update fields...
     		//
     		for (int i=0;i<meta.getFieldUpdate().length;i++) {
