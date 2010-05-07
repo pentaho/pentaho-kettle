@@ -423,6 +423,7 @@ public class Kitchen
 		}
 		catch(KettleJobException je)
 		{
+		    log.logError(job.getJobname(), Messages.getString("Kitchen.Error.SeriousError", je.getMessage()));
             if (result==null)
             {
                 result = new Result();
@@ -436,7 +437,6 @@ public class Kitchen
 			catch(KettleJobException je2)
 			{
 				log.logError(job.getJobname(), Messages.getString("Kitchen.Error.SeriousError",je2.getMessage()));
-                log.logError(job.getJobname(), Messages.getString("Kitchen.Error.SeriousError",je.getMessage()));
 				
                 returnCode = 2;
 			}
