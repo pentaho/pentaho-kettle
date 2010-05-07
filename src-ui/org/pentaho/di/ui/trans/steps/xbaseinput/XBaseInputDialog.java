@@ -488,16 +488,17 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		wLimit.setText(Integer.toString(input.getRowLimit())); //$NON-NLS-1$
 		wAddRownr.setSelection(input.isRowNrAdded());
-		if (input.getRowNrField()!=null) wFieldRownr.setText(input.getRowNrField());
+		wFieldRownr.setText(Const.NVL(input.getRowNrField(), ""));
 
         wInclFilename.setSelection(input.includeFilename());
-        if (input.getFilenameField()!=null) wInclFilenameField.setText(input.getFilenameField());
+        wInclFilenameField.setText(Const.NVL(input.getFilenameField(), ""));
 
         wAccFilenames.setSelection(input.isAcceptingFilenames());
-        if (input.getAcceptingField()!=null) wAccField.setText(input.getAcceptingField());
-        if (input.getAcceptingStep()!=null) wAccStep.setText(input.getAcceptingStep().getName());
-		
-        setFlags();
+        wAccField.setText(Const.NVL(input.getAcceptingField(), ""));
+        wAccStep.setText(Const.NVL(input.getAcceptingStep().getName(), ""));
+		wCharactersetName.setText(Const.NVL(input.getCharactersetName(), ""));
+
+		setFlags();
 		
 		wStepname.selectAll();
 	}
@@ -524,7 +525,8 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         meta.setAcceptingFilenames( wAccFilenames.getSelection() );
         meta.setAcceptingField( wAccField.getText() );
         meta.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
-
+        meta.setCharactersetName( wCharactersetName.getText() );
+        
 		if (Const.isEmpty(meta.getDbfFileName()) && !meta.isAcceptingFilenames())
 		{
 			throw new KettleStepException(Messages.getString("XBaseInputDialog.Exception.SpecifyAFileToUse")); //$NON-NLS-1$
