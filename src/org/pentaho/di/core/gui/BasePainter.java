@@ -43,7 +43,6 @@ public class BasePainter {
     
     protected List<AreaOwner> areaOwners;
 
-    protected int          shadowsize;
     protected Point        offset;
     protected Point        drop_candidate;
     protected int          iconsize;
@@ -158,7 +157,7 @@ public class BasePainter {
 		// Draw shadow around note?
 		if(notePadMeta.isDrawShadow())
 		{
-			int s = shadowsize;
+			int s = shadowSize;
 			int shadowa[] = new int[] { note.x+s, note.y+s, // Top left
 				note.x + width + 2 * margin+s, note.y+s, // Top right
 				note.x + width + 2 * margin+s, note.y + height+s, // bottom right 1

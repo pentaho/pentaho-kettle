@@ -78,7 +78,7 @@ public class JobPainter extends BasePainter {
 		// If there is a shadow, we draw the transformation first with an alpha
 		// setting
 		//
-		if (shadowsize > 0) {
+		if (shadowSize > 0) {
 			gc.setAlpha(20);
 			gc.setTransform(translationX, translationY, shadowSize, magnification);
 			shadow = true;
@@ -175,6 +175,8 @@ public class JobPainter extends BasePainter {
 	protected void drawJobEntryCopy(JobEntryCopy jobEntryCopy) {
 		if (!jobEntryCopy.isDrawn())
 			return;
+
+        int alpha = gc.getAlpha();
 
 		Point pt = jobEntryCopy.getLocation();
 		if (pt==null) {
@@ -320,6 +322,9 @@ public class JobPainter extends BasePainter {
         	}        	
         }        
 
+        // Restore the previous alpha value
+        //
+        gc.setAlpha(alpha);
 	}
 
 	private JobEntryResult findJobEntryResult(JobEntryCopy jobEntryCopy) {
