@@ -154,7 +154,6 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
     }
     public void allocate(int nrvalues)
 	{
-		
 		value        	= new String[nrvalues];
 		valueName    	= new String[nrvalues];
 	}
@@ -403,7 +402,6 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 	
 			allocate(nrvalues);
 			
-	
 			for (int i=0;i<nrvalues;i++)
 			{
 				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i); //$NON-NLS-1$
@@ -572,13 +570,13 @@ public class FuzzyMatchMeta extends BaseStepMeta implements StepMetaInterface
 			
         	algorithm = getAlgorithmTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "algorithm"), ""));
         	
-            
-			int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); //$NON-NLS-1$
+            int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); //$NON-NLS-1$
+			allocate(nrvalues);
 	
 			for (int i=0;i<nrvalues;i++)
 			{
-				value[i]        =                rep.getStepAttributeString(id_step, i, "return_value_name"); //$NON-NLS-1$
-				valueName[i]    =                rep.getStepAttributeString(id_step, i, "return_value_rename"); //$NON-NLS-1$
+				value[i]        = rep.getStepAttributeString(id_step, i, "return_value_name"); //$NON-NLS-1$
+				valueName[i]    = rep.getStepAttributeString(id_step, i, "return_value_rename"); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
