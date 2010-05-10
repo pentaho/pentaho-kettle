@@ -681,11 +681,9 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
-			 new ColumnInfo(
-         BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Name.Column"),
-         ColumnInfo.COLUMN_TYPE_TEXT,
-         false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Name.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
          new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Attribute.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
+    	 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.FetchAttributeAs.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,LDAPInputField.FetchAttributeAsDesc,true ),
 		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
 		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Format.Column"),
          ColumnInfo.COLUMN_TYPE_FORMAT, 3),
@@ -932,25 +930,28 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	            TableItem item = new TableItem(wFields.table, SWT.NONE);
 	            item.setText(1, fieldName);
 	            item.setText(2, fieldName);
-	            
+	            if(LDAPInputField.binaryAttributes.contains(fieldName)) {
+	            	item.setText(3, BaseMessages.getString(PKG, "LDAPInputField.FetchAttributeAs.Binary"));
+	            }else {
+	            	item.setText(3, BaseMessages.getString(PKG, "LDAPInputField.FetchAttributeAs.String"));
+	            }
 	            String attributeValue=attr.getID();
 	            // Try to get the Type
 	            if(IsDate(attributeValue))
         		{
-        			item.setText(3, "Date");
+        			item.setText(4, "Date");
         		}
 	            else if(IsInteger(attributeValue))
         		{
-        			item.setText(3, "Integer");
+        			item.setText(4, "Integer");
         		}
 	            else if(IsNumber(attributeValue))
         		{
-        			item.setText(3, "Number");
+        			item.setText(4, "Number");
         		}	
-	           
 	            else
 	            {
-	            	item.setText(3, "String");	    		            
+	            	item.setText(4, "String");	    		            
 	            }  
 	    	    
 	        }
@@ -1070,6 +1071,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     			TableItem item  = wFields.table.getItem(i);
     			String name     = field.getName();
     			String xpath	= field.getAttribute();
+    			String returntype     = field.getFetchAttributeAsDesc();
     			String type     = field.getTypeDesc();
     			String format   = field.getFormat();
     			String length   = ""+field.getLength();
@@ -1082,15 +1084,16 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     			
                 if (name    !=null) item.setText( 1, name);
                 if (xpath   !=null) item.setText( 2, xpath);
-    			if (type    !=null) item.setText( 3, type);
-    			if (format  !=null) item.setText( 4, format);
-    			if (length  !=null && !"-1".equals(length)) item.setText( 5, length);
-    			if (prec    !=null && !"-1".equals(prec)) item.setText( 6, prec);
-    			if (curr    !=null) item.setText( 7, curr);
-    			if (decim   !=null) item.setText( 8, decim);
-    			if (group   !=null) item.setText( 9, group);
-    			if (trim    !=null) item.setText(10, trim);
-    			if (rep     !=null) item.setText(11, rep);                
+    			if (returntype    !=null) item.setText( 3, returntype);
+    			if (type    !=null) item.setText( 4, type);
+    			if (format  !=null) item.setText( 5, format);
+    			if (length  !=null && !"-1".equals(length)) item.setText( 6, length);
+    			if (prec    !=null && !"-1".equals(prec)) item.setText( 7, prec);
+    			if (curr    !=null) item.setText( 8, curr);
+    			if (decim   !=null) item.setText( 9, decim);
+    			if (group   !=null) item.setText( 10, group);
+    			if (trim    !=null) item.setText(11, trim);
+    			if (rep     !=null) item.setText(12, rep);                
             }
 		}
         
@@ -1159,15 +1162,16 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
             
 			field.setName( item.getText(1) );
 			field.setAttribute(item.getText(2));
-			field.setType(ValueMeta.getType(item.getText(3)));
-			field.setFormat( item.getText(4) );
-			field.setLength( Const.toInt(item.getText(5), -1) );
-			field.setPrecision( Const.toInt(item.getText(6), -1) );
-			field.setCurrencySymbol( item.getText(7) );
-			field.setDecimalSymbol( item.getText(8) );
-			field.setGroupSymbol( item.getText(9) );
-			field.setTrimType( LDAPInputField.getTrimTypeByDesc(item.getText(10)) );
-			field.setRepeated( BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
+			field.setFetchAttributeAs(LDAPInputField.getFetchAttributeAsByDesc(item.getText(3)));
+			field.setType(ValueMeta.getType(item.getText(4)));
+			field.setFormat( item.getText(5) );
+			field.setLength( Const.toInt(item.getText(6), -1) );
+			field.setPrecision( Const.toInt(item.getText(7), -1) );
+			field.setCurrencySymbol( item.getText(8) );
+			field.setDecimalSymbol( item.getText(9) );
+			field.setGroupSymbol( item.getText(10) );
+			field.setTrimType( LDAPInputField.getTrimTypeByDesc(item.getText(11)) );
+			field.setRepeated( BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(12)) );		
             
 			in.getInputFields()[i] = field;
 		}	
