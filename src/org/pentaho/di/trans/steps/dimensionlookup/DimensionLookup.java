@@ -544,10 +544,6 @@ public class DimensionLookup extends BaseStep implements StepInterface
         boolean insert = false;
         boolean identical = true;
         boolean punch = false;
-        
-        if (rowMeta.getInteger(row, "customernumber", 0L) == 177L) {
-          System.out.println(rowMeta.getString(row));
-        }
 
         for (int i = 0; i < meta.getFieldStream().length; i++) {
           if (data.fieldnrs[i] >= 0) {
