@@ -4290,7 +4290,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     delegates.tabs.renameTabs(); // filename or name of transformation might
     // have changed.
     refreshTree();
-
+    if(saved) {
+      TabMapEntry tabEntry = delegates.tabs.findTabMapEntry(meta);
+      TabItem tabItem = tabEntry.getTabItem();
+      if(meta.getFileType().equals(LastUsedFile.FILE_TYPE_TRANSFORMATION)) {
+        tabItem.setImage(GUIResource.getInstance().getImageTransGraph());  
+      } else if(meta.getFileType().equals(LastUsedFile.FILE_TYPE_JOB)) {
+        tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
+      }
+    }
     return saved;
   }
 
