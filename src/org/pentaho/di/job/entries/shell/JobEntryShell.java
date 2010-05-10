@@ -128,8 +128,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("insertScript", insertScript));
 		retval.append("      ").append(XMLHandler.addTagValue("script", script));
 		
-		
-		retval.append("      ").append(XMLHandler.addTagValue("loglevel", logFileLevel.getCode()));
+    retval.append("      ").append(XMLHandler.addTagValue("loglevel", (logFileLevel == null) ? null : logFileLevel.getCode()));
 
 		if (arguments != null)
 			for (int i = 0; i < arguments.length; i++)

@@ -849,7 +849,9 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         wAddDate.setSelection(jobEntry.addDate);
         wAddTime.setSelection(jobEntry.addTime);
         wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
-        wLoglevel.select(jobEntry.logFileLevel.getLevel());
+        if(jobEntry.logFileLevel != null) {
+          wLoglevel.select(jobEntry.logFileLevel.getLevel());
+        }
         
         wInsertScript.setSelection(jobEntry.insertScript);
         if (jobEntry.getScript() != null)

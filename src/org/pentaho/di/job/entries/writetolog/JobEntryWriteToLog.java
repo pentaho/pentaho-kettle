@@ -80,7 +80,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	
 		retval.append(super.getXML());
 		retval.append("      ").append(XMLHandler.addTagValue("logmessage",      logmessage));
-		retval.append("      ").append(XMLHandler.addTagValue("loglevel",        entryLogLevel.getCode()));
+		retval.append("      ").append(XMLHandler.addTagValue("loglevel",        (entryLogLevel == null) ? null : entryLogLevel.getCode()));
 		retval.append("      ").append(XMLHandler.addTagValue("logsubject",      logsubject));
 
 		return retval.toString();
