@@ -1239,7 +1239,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
       mb.open();
       return;
     }
-    jobEntry.setJobName(wJobname.getText());
+    jobEntry.setName(wName.getText());
     jobEntry.setSpecificationMethod(specificationMethod);
     switch (specificationMethod) {
     case FILENAME:
