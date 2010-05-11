@@ -154,7 +154,7 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
 		// Buttons to the right of the screen...
 		wbdSourceFileFolder=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbdSourceFileFolder);
-		wbdSourceFileFolder.setText("Supprimer");
+		wbdSourceFileFolder.setText(BaseMessages.getString(PKG, "JobCheckDbConnections.DeleteEntry"));
 		wbdSourceFileFolder.setToolTipText(BaseMessages.getString(PKG, "JobCheckDbConnections.DeleteSourceFileButton.Label"));
 		fdbdSourceFileFolder=new FormData();
 		fdbdSourceFileFolder.right = new FormAttachment(100, -margin);
@@ -165,8 +165,8 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
 		// Buttons to the right of the screen...
 		wbgetConnections=new Button(shell, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbgetConnections);
-		wbgetConnections.setText("Connexions");
-		wbgetConnections.setToolTipText("R�cup�rer les connexions disponibles");
+		wbgetConnections.setText(BaseMessages.getString(PKG, "JobCheckDbConnections.GetConnections"));
+		wbgetConnections.setToolTipText(BaseMessages.getString(PKG, "JobCheckDbConnections.GetConnections.Tooltip"));
 		fdbgetConnections=new FormData();
 		fdbgetConnections.right = new FormAttachment(100, -margin);
 		fdbgetConnections.top  = new FormAttachment (wlFields, 20);
