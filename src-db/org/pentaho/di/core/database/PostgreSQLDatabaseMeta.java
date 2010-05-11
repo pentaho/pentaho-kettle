@@ -485,4 +485,9 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     string = string.replaceAll("\\r", "\\\\r");
     return "E'"+string+"'"; 
   }
+  
+  @Override
+  public boolean requiresCastToVariousForIsNull() {
+    return true;
+  }
 }
