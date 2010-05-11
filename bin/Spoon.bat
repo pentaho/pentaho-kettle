@@ -26,44 +26,38 @@ REM **************************************************
 REM set PATH=C:\j2sdk1.4.2_01\bin;.;%PATH%
 
 REM **************************************************
-REM ** Libraries used by Kettle:                    **
+REM   Spoon Plugins and Platform Specific SWT       **
 REM **************************************************
 
-set CLASSPATH=.
+REM The following line is predicated on the 64-bit Sun
+REM java output from -version which
+REM looks like this (at the time of this writing):
+REM
+REM java version "1.6.0_17"
+REM Java(TM) SE Runtime Environment (build 1.6.0_17-b04)
+REM Java HotSpot(TM) 64-Bit Server VM (build 14.3-b01, mixed mode)
+REM
+FOR /F %%a IN ('java -version 2^>^&1^|find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+IF %IS64BITJAVA% == 1 GOTO :USE64
+:USE32
+REM ===========================================
+REM Using 32bit Java, so include 32bit SWT Jar
+REM ===========================================
+set LIBSPATH=..\libswt\win32
+GOTO :CONTINUE
+:USE64
+REM ===========================================
+REM Using 64bit java, so include 64bit SWT Jar
+REM ===========================================
+set LIBSPATH=..\libswt\win64
+:CONTINUE
 
-REM ******************
-REM   KETTLE Library
-REM ******************
-
-set CLASSPATH=%CLASSPATH%;lib\kettle-core.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-db.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-engine.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-ui-swt.jar
-
-REM **********************
-REM   External Libraries
-REM **********************
-
-REM Loop the libext directory and add the classpath.
-REM The following command would only add the last jar: FOR %%F IN (libext\*.jar) DO call set CLASSPATH=%CLASSPATH%;%%F
-REM So the circumvention with a subroutine solves this ;-)
-
-FOR %%F IN (libext\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\JDBC\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\webservices\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\commons\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\web\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\pentaho\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\spring\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\jfree\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\mondrian\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\salesforce\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\feeds\*.jar) DO call :addcp %%F
+REM FOR /D %%F IN (plugins\spoon\*) DO call :addpp %%F
 
 goto extlibe
 
-:addcp
-set CLASSPATH=%CLASSPATH%;%1
+:addpp
+set LIBSPATH=%LIBSPATH%;..\%1\lib
 goto :eof
 
 :extlibe
@@ -81,25 +75,15 @@ goto TopArg
 :EndArg
 
 
-REM *****************
-REM   SWT Libraries
-REM *****************
-
-set CLASSPATH=%CLASSPATH%;libswt\runtime.jar
-set CLASSPATH=%CLASSPATH%;libswt\jface.jar
-set CLASSPATH=%CLASSPATH%;libswt\common.jar
-set CLASSPATH=%CLASSPATH%;libswt\commands.jar
-set CLASSPATH=%CLASSPATH%;libswt\win32\swt.jar
-
 REM ******************************************************************
 REM ** Set java runtime options                                     **
 REM ** Change 256m to higher values in case you run out of memory.  **
 REM ******************************************************************
 
-set OPT=-Xmx256m -cp %CLASSPATH% -Djava.library.path=libswt\win32\ -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%" -DKETTLE_PLUGIN_PACKAGES="%KETTLE_PLUGIN_PACKAGES%" -DKETTLE_LOG_SIZE_LIMIT="%KETTLE_LOG_SIZE_LIMIT%"
+set OPT=-Xmx256m -Xms256m -Djava.library.path=%LIBSPATH% -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%" -DKETTLE_PLUGIN_PACKAGES="%KETTLE_PLUGIN_PACKAGES%" -DKETTLE_LOG_SIZE_LIMIT="%KETTLE_LOG_SIZE_LIMIT%"
 
 REM ***************
 REM ** Run...    **
 REM ***************
 
-start javaw %OPT% org.pentaho.di.ui.spoon.Spoon %_cmdline%
+start javaw %OPT% -jar launcher\launcher-1.0.0.jar -lib %LIBSPATH% %_cmdline%
