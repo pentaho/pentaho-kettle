@@ -1061,7 +1061,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		if (in.getSearchBase()!= null)  wSearchBase.setText(in.getSearchBase());
 		
 		
-		logDebug(BaseMessages.getString(PKG, "LDAPInputDialog.Log.GettingFieldsInfo"));
+		if(isDebug()) logDebug(BaseMessages.getString(PKG, "LDAPInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    LDAPInputField field = in.getInputFields()[i];

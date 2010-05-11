@@ -264,11 +264,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		String retval=null;
 		if(field.getReturnType() == LDAPInputField.FETCH_ATTRIBUTE_AS_BINARY && field.getType() ==  ValueMetaInterface.TYPE_STRING) {
 			// Convert byte[] to string
-			if (field.isObjectSid()) {
-				return extractBytesAndConvertToString(attr, true);
-			}else {
-				return extractBytesAndConvertToString(attr, false);
-			}
+			return extractBytesAndConvertToString(attr, field.isObjectSid());
 		}
 		
 		// extract as string
