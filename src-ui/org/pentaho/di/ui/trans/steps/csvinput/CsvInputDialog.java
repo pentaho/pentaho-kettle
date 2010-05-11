@@ -753,7 +753,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
             
             // Split the string, header or data into parts...
             //
-            String[] fieldNames = Const.splitString(line, delimiter); 
+            String[] fieldNames = CsvInput.guessStringsFromLine(log, line, delimiter, meta.getEnclosure(), meta.getEscapeCharacter());
             
             if (!meta.isHeaderPresent()) {
             	// Don't use field names from the header...

@@ -25,6 +25,7 @@ import org.pentaho.di.core.exception.KettleConversionException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -155,14 +156,14 @@ public class CsvInput extends BaseStep implements StepInterface
 				StringBuffer errorFields = new StringBuffer(50);
 				for (int i=0;i<e.getCauses().size();i++) {
 					if (i>0) {
-						errorDescriptions.append(", ");
-						errorFields.append(", ");
+						errorDescriptions.append(", "); //$NON-NLS-1$
+						errorFields.append(", "); //$NON-NLS-1$
 					}
 					errorDescriptions.append(e.getCauses().get(i).getMessage());
 					errorFields.append(e.getFields().get(i).toStringMeta());
 				}
 				
-				putError(data.outputRowMeta, e.getRowData(), e.getCauses().size(), errorDescriptions.toString(), errorFields.toString(), "CSVINPUT001");
+				putError(data.outputRowMeta, e.getRowData(), e.getCauses().size(), errorDescriptions.toString(), errorFields.toString(), "CSVINPUT001"); //$NON-NLS-1$
 			}
 		}
 			
@@ -230,10 +231,10 @@ public class CsvInput extends BaseStep implements StepInterface
 	        }
 	        
 	        if (data.filenames.length > 0)
-	        	logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long.toString(data.fileSizes.get(data.filenr)), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead)));
+	        	logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long.toString(data.fileSizes.get(data.filenr)), Long.toString(data.bytesToSkipInFirstFile), Long.toString(data.blockToRead))); //$NON-NLS-1$
 		}
 		catch(Exception e) {
-			throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Exception.ErrorPreparingParallelRun"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Exception.ErrorPreparingParallelRun"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -252,7 +253,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				String filenameField = environmentSubstitute(meta.getFilenameField());
 				index = getInputRowMeta().indexOfValue(filenameField);
 				if (index<0) {
-					throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Exception.FilenameFieldNotFound", filenameField));
+					throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Exception.FilenameFieldNotFound", filenameField)); //$NON-NLS-1$
 				}
 			}
 				
@@ -264,7 +265,7 @@ public class CsvInput extends BaseStep implements StepInterface
 		
 		data.filenames = filenames.toArray(new String[filenames.size()]);
 		
-		logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length)));
+		logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length))); //$NON-NLS-1$
 	}
 
 	private boolean openNextFile() throws KettleException {
@@ -290,7 +291,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			if (!(fileObject instanceof LocalFile)) {
 				// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
 				//
-				throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Log.OnlyLocalFilesAreSupported"));
+				throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Log.OnlyLocalFilesAreSupported")); //$NON-NLS-1$
 			}
 			
 			if (meta.isLazyConversionActive()) {
@@ -334,7 +335,7 @@ public class CsvInput extends BaseStep implements StepInterface
 					(data.parallel && data.bytesToSkipInFirstFile<=0)
 					) {
 					readOneRow(false); // skip this row.
-					logBasic(BaseMessages.getString(PKG, "CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr-1]));
+					logBasic(BaseMessages.getString(PKG, "CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr-1])); //$NON-NLS-1$
 				}
 			}
 			
@@ -692,7 +693,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				String filename = environmentSubstitute(meta.getFilename());
 
 				if (Const.isEmpty(filename)) {
-					logError(BaseMessages.getString(PKG, "CsvInput.MissingFilename.Message"));
+					logError(BaseMessages.getString(PKG, "CsvInput.MissingFilename.Message")); //$NON-NLS-1$
 					return false;
 				}
 
@@ -751,5 +752,203 @@ public class CsvInput extends BaseStep implements StepInterface
 			throw new KettleException("Unable to close file channel for file '"+data.filenames[data.filenr-1],e);
 		}
 	}
+	
+	/**
+	 * This method is borrowed from TextFileInput
+	 * 
+	 * @param log
+	 * @param line
+	 * @param delimiter
+	 * @param enclosure
+	 * @param escapeCharacter
+	 * @return
+	 * @throws KettleException
+	 */
+	public static final String[] guessStringsFromLine(LogChannelInterface log, String line, String delimiter, String enclosure, String escapeCharacter) throws KettleException
+  {
+    List<String> strings = new ArrayList<String>();
+        int fieldnr;
+        
+    String pol; // piece of line
+
+    try
+    {
+      if (line == null) return null;
+
+      // Split string in pieces, only for CSV!
+
+      fieldnr = 0;
+      int pos = 0;
+      int length = line.length();
+      boolean dencl = false;
+
+              int len_encl = (enclosure == null ? 0 : enclosure.length());
+              int len_esc = (escapeCharacter == null ? 0 : escapeCharacter.length());
+
+      while (pos < length)
+      {
+        int from = pos;
+        int next;
+
+        boolean encl_found;
+        boolean contains_escaped_enclosures = false;
+        boolean contains_escaped_separators = false;
+
+        // Is the field beginning with an enclosure?
+        // "aa;aa";123;"aaa-aaa";000;...
+        if (len_encl > 0 && line.substring(from, from + len_encl).equalsIgnoreCase(enclosure))
+        {
+                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRow",line.substring(from, from + len_encl))); //$NON-NLS-1$ //$NON-NLS-2$
+          encl_found = true;
+          int p = from + len_encl;
+
+          boolean is_enclosure = len_encl > 0 && p + len_encl < length
+              && line.substring(p, p + len_encl).equalsIgnoreCase(enclosure);
+          boolean is_escape = len_esc > 0 && p + len_esc < length
+              && line.substring(p, p + len_esc).equalsIgnoreCase(escapeCharacter);
+
+          boolean enclosure_after = false;
+          
+          // Is it really an enclosure? See if it's not repeated twice or escaped!
+          if ((is_enclosure || is_escape) && p < length - 1) 
+          {
+            String strnext = line.substring(p + len_encl, p + 2 * len_encl);
+            if (strnext.equalsIgnoreCase(enclosure))
+            {
+              p++;
+              enclosure_after = true;
+              dencl = true;
+
+              // Remember to replace them later on!
+              if (is_escape) contains_escaped_enclosures = true; 
+            }
+          }
+
+          // Look for a closing enclosure!
+          while ((!is_enclosure || enclosure_after) && p < line.length())
+          {
+            p++;
+            enclosure_after = false;
+            is_enclosure = len_encl > 0 && p + len_encl < length && line.substring(p, p + len_encl).equals(enclosure);
+            is_escape = len_esc > 0 && p + len_esc < length && line.substring(p, p + len_esc).equals(escapeCharacter);
+
+            // Is it really an enclosure? See if it's not repeated twice or escaped!
+            if ((is_enclosure || is_escape) && p < length - 1) // Is
+            {
+              String strnext = line.substring(p + len_encl, p + 2 * len_encl);
+              if (strnext.equals(enclosure))
+              {
+                p++;
+                enclosure_after = true;
+                dencl = true;
+
+                // Remember to replace them later on!
+                if (is_escape) contains_escaped_enclosures = true; // remember
+              }
+            }
+          }
+
+          if (p >= length) next = p;
+          else next = p + len_encl;
+
+                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.EndOfEnclosure", ""+ p)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+        else
+        {
+          encl_found = false;
+          boolean found = false;
+          int startpoint = from;
+          int tries = 1;
+          do
+          {
+            next = line.indexOf(delimiter, startpoint); 
+
+            // See if this position is preceded by an escape character.
+            if (len_esc > 0 && next - len_esc > 0)
+            {
+              String before = line.substring(next - len_esc, next);
+
+              if (escapeCharacter != null && escapeCharacter.equals(before))
+              {
+                // take the next separator, this one is escaped...
+                startpoint = next + 1; 
+                tries++;
+                contains_escaped_separators = true;
+              }
+              else
+              {
+                found = true;
+              }
+            }
+            else
+            {
+              found = true;
+            }
+          }
+          while (!found && next >= 0);
+        }
+        if (next == -1) next = length;
+
+        if (encl_found)
+        {
+          pol = line.substring(from + len_encl, next - len_encl);
+                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.EnclosureFieldFound", ""+ pol)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+        else
+        {
+          pol = line.substring(from, next);
+                      if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.NormalFieldFound",""+ pol)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+
+        if (dencl)
+        {
+          StringBuilder sbpol = new StringBuilder(pol);
+          int idx = sbpol.indexOf(enclosure + enclosure);
+          while (idx >= 0)
+          {
+            sbpol.delete(idx, idx + (enclosure == null ? 0 : enclosure.length()) );
+            idx = sbpol.indexOf(enclosure + enclosure);
+          }
+          pol = sbpol.toString();
+        }
+
+        //  replace the escaped enclosures with enclosures... 
+        if (contains_escaped_enclosures) 
+        {
+          String replace = escapeCharacter + enclosure;
+          String replaceWith = enclosure;
+
+          pol = Const.replace(pol, replace, replaceWith);
+        }
+
+        //replace the escaped separators with separators...
+        if (contains_escaped_separators) 
+        {
+          String replace = escapeCharacter + delimiter;
+          String replaceWith = delimiter;
+          
+          pol = Const.replace(pol, replace, replaceWith);
+        }
+
+        // Now add pol to the strings found!
+        strings.add(pol);
+
+        pos = next + delimiter.length();
+        fieldnr++;
+      }
+      if ( pos == length )
+      {
+        if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "CsvInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "CsvInput.Log.EndOfEmptyLineFound")); //$NON-NLS-1$ //$NON-NLS-2$
+        strings.add(""); //$NON-NLS-1$
+                  fieldnr++;
+      }
+    }
+    catch (Exception e)
+    {
+      throw new KettleException(BaseMessages.getString(PKG, "CsvInput.Log.Error.ErrorConvertingLine",e.toString()), e); //$NON-NLS-1$
+    }
+
+    return strings.toArray(new String[strings.size()]);
+  }
 
 }
