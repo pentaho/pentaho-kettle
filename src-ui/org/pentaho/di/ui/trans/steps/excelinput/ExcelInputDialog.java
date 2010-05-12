@@ -1894,7 +1894,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 								if (fieldname!=null && fieldtype!=ValueMetaInterface.TYPE_NONE)
 								{
 									ValueMetaInterface field = new ValueMeta(fieldname, fieldtype);
-									if (fields.indexOfValue(field.getName())<0) fields.addValueMeta(field);
+									fields.addValueMeta(field);
 								}
 								else
 								{

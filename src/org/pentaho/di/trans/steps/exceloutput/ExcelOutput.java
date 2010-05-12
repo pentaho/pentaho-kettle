@@ -301,7 +301,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
                         DateTime dateTime = new DateTime(data.positionX, data.positionY, vMeta.getDate(v), cellFormat);
                         data.sheet.addCell(dateTime);
                     }
-                    else
+                    else if (!meta.isNullBlank())
                     {
                         data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
                     }
@@ -321,7 +321,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
                         Label label = new Label(data.positionX, data.positionY, vMeta.getString(v), cellFormat);
                         data.sheet.addCell(label);
                     }
-                    else
+                    else if (!meta.isNullBlank())
                     {
                         data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
                     }
@@ -351,7 +351,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	                    jxl.write.Number number = new jxl.write.Number(data.positionX, data.positionY, vMeta.getNumber(v), cellFormat);
 	                    data.sheet.addCell(number);
 	                }
-	                else
+	                else if (!meta.isNullBlank())
 	                {
 	                    data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
 	                }

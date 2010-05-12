@@ -29,6 +29,9 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.provider.http.HttpFileObject;
+import org.apache.commons.vfs.provider.local.LocalFile;
+import java.net.URL;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -207,21 +210,20 @@ public class XsdValidator extends BaseStep implements StepInterface
 				
 			// Get XSD filename
 			FileObject xsdfile = null;		
-			String validationmsg=null;
+	        String validationmsg=null;
 			try 
 			{
 						
 				SchemaFactory factoryXSDValidator = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 				
 			    xsdfile = KettleVFS.getFileObject(xsdfilename, getTransMeta());
-				File XSDFile = new File(KettleVFS.getFilename(xsdfile));
-					
+			    		    					
 				//	Get XML stream		
 				Source sourceXML = new StreamSource(new StringReader(XMLFieldvalue));
 				
 				if(meta.getXMLSourceFile())
 				{
-					
+				    
 					// We deal with XML file
 					// Get XML File
 					File xmlfileValidator = new File(XMLFieldvalue);
@@ -233,9 +235,20 @@ public class XsdValidator extends BaseStep implements StepInterface
 					sourceXML = new StreamSource(xmlfileValidator);
 				}
 				
-				// Create XSD schema
-				Schema SchematXSD = factoryXSDValidator.newSchema(XSDFile);
-				
+				//  create the schema 
+                Schema SchematXSD = null;
+                if (xsdfile instanceof LocalFile) {
+                    SchematXSD = factoryXSDValidator.newSchema(new File(KettleVFS.getFilename(xsdfile)));
+                }
+                else if (xsdfile instanceof HttpFileObject) {
+                    SchematXSD = factoryXSDValidator.newSchema(new URL(KettleVFS.getFilename(xsdfile)));
+                }
+                else {
+                     //  we should not get here as anything entered in that does not look like
+                     //  a url should be made a FileObject.
+                     throw new KettleStepException(BaseMessages.getString(PKG, "XsdValidator.Exception.CannotCreateSchema", xsdfile.getClass().getName()));
+                }
+                                
 				if (meta.getXSDSource().equals(meta.NO_NEED))
 				{
 					// ---Some documents specify the schema they expect to be validated against, 

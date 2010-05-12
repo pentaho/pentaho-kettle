@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -51,7 +52,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class SortRows extends BaseStep implements StepInterface
 {
-	private SortRowsMeta meta;
+    private static Class<?> PKG = SortRows.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+    private SortRowsMeta meta;
 	private SortRowsData data;
 	
 	public SortRows(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
@@ -391,9 +394,7 @@ public class SortRows extends BaseStep implements StepInterface
 				data.fieldnrs[i]=getInputRowMeta().indexOfValue( meta.getFieldName()[i] );
 				if (data.fieldnrs[i]<0)
 				{
-					logError("Sort field ["+meta.getFieldName()[i]+"] not found!");
-					setOutputDone();
-					return false;
+				    throw new KettleException(BaseMessages.getString(PKG, "SortRowsMeta.CheckResult.StepFieldNotInInputStream", meta.getFieldName()[i], getStepname()));
 				}
 				data.convertKeysToNative[i] = getInputRowMeta().getValueMeta(data.fieldnrs[i]).isStorageBinaryString();
  			}
