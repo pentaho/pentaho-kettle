@@ -85,7 +85,6 @@
 	<classpathentry kind="lib" path="libext/ini4j-0.5.1.jar"/>
 	<classpathentry kind="lib" path="libext/edtftpj2.0.4.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.42.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/infobright-core-2.7.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
@@ -130,5 +129,6 @@
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2.0.13583.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/olap4j-0.9.7.309.jar"/>
 	<classpathentry kind="lib" path="libext/secondstring.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.0-remote.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
