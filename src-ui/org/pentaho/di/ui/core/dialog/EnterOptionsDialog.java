@@ -16,6 +16,7 @@
 package org.pentaho.di.ui.core.dialog;
 
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -1656,14 +1657,22 @@ public class EnterOptionsDialog extends Dialog
 			failoverLocaleIndex = 0;
 		}
 
-		LanguageChoice.getInstance().setDefaultLocale(
-				new Locale(GlobalMessages.localeCodes[defaultLocaleIndex]));
-		LanguageChoice.getInstance().setFailoverLocale(
-				new Locale(GlobalMessages.localeCodes[failoverLocaleIndex]));
-		LanguageChoice.getInstance().saveSettings();
+    String defaultLocale = GlobalMessages.localeCodes[defaultLocaleIndex];
+    StringTokenizer defaultLocaleTokens = new StringTokenizer(defaultLocale, "_"); //$NON-NLS-1$
+    
+    LanguageChoice.getInstance().setDefaultLocale(
+        new Locale(defaultLocaleTokens.nextToken(), defaultLocaleTokens.nextToken()));
+    
+    String failoverLocale = GlobalMessages.localeCodes[failoverLocaleIndex];
+    StringTokenizer failoverLocaleTokens = new StringTokenizer(failoverLocale, "_"); //$NON-NLS-1$
+    
+    LanguageChoice.getInstance().setFailoverLocale(
+        new Locale(failoverLocaleTokens.nextToken(), failoverLocaleTokens.nextToken()));    
+    
+    LanguageChoice.getInstance().saveSettings();
 
-		props.saveProps();
+    props.saveProps();
 
-		dispose();
+    dispose();
 	}
 }

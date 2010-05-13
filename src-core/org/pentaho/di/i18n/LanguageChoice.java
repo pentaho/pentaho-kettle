@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.pentaho.di.core.Const;
 
@@ -107,8 +108,14 @@ public class LanguageChoice
             // Ignore closure exceptions
           }
         }
-        defaultLocale  = new Locale( properties.getProperty(STRING_DEFAULT_LOCALE,  Const.DEFAULT_LOCALE.toString()) );
-        failoverLocale = new Locale( properties.getProperty(STRING_FAILOVER_LOCALE, "en_US") );
+        
+        String defaultLocaleStr = properties.getProperty(STRING_DEFAULT_LOCALE,  Const.DEFAULT_LOCALE.toString());
+        StringTokenizer defaultLocaleTokens = new StringTokenizer(defaultLocaleStr, "_"); //$NON-NLS-1$
+        defaultLocale  = new Locale(defaultLocaleTokens.nextToken(), defaultLocaleTokens.nextToken());
+        
+        String failoverLocaleStr = properties.getProperty(STRING_FAILOVER_LOCALE, "en_US");  //$NON-NLS-1$
+        StringTokenizer failoverLocaleTokens = new StringTokenizer(failoverLocaleStr, "_"); //$NON-NLS-1$
+        failoverLocale = new Locale(failoverLocaleTokens.nextToken(), failoverLocaleTokens.nextToken() );
     }
     
     public void saveSettings()
