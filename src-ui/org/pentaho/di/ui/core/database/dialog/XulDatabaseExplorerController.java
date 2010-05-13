@@ -30,6 +30,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.DatabaseMetaInformation;
+import org.pentaho.di.core.database.Schema;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -115,10 +117,10 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		  theCancelButton.setLabel(BaseMessages.getString(getClass(), "DatabaseExplorer.Button.Cancel"));
 		  theAcceptButton.setDisabled(true);
 		}
-    
+
+    this.dbExplorerDialog = (SwtDialog) this.document.getElementById("databaseExplorerDialog");
 
 		createDatabaseNodes();
-		this.dbExplorerDialog = (SwtDialog) this.document.getElementById("databaseExplorerDialog");
 		this.bf.setDocument(super.document);
 		this.bf.setBindingType(Type.ONE_WAY);
 
@@ -372,6 +374,10 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			Database theDatabase = new Database(null, this.model.getDatabaseMeta());
 			theDatabase.connect();
 
+	    GetDatabaseInfoProgressDialog gdipd = new GetDatabaseInfoProgressDialog((Shell)this.dbExplorerDialog.getRootObject(),  this.model.getDatabaseMeta());
+	    DatabaseMetaInformation dmi = gdipd.open();
+	    
+
 			// Adds the main database node.
 			DatabaseExplorerNode theDatabaseNode = new DatabaseExplorerNode();
 			theDatabaseNode.setName(this.model.getDatabaseMeta().getName());
@@ -397,27 +403,29 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			theDatabaseNode.add(theViewsNode);
 			
 			// Adds the database schemas.
-			String[] theSchemaNames = theDatabase.getSchemas();
+			//String[] theSchemaNames = theDatabase.getSchemas();
+
+      Schema[] schemas = dmi.getSchemas();
       DatabaseExplorerNode theSchemaNode = null;
-      for (int i = 0; i < theSchemaNames.length; i++) {
+      for (int i = 0; i < schemas.length; i++) {
         theSchemaNode = new DatabaseExplorerNode();
-        theSchemaNode.setName(theSchemaNames[i]);
+        theSchemaNode.setName(schemas[i].getSchemaName());
         theSchemaNode.setImage(SCHEMA_IMAGE);
         theSchemaNode.setIsSchema(true);
         theSchemasNode.add(theSchemaNode);
         
         // Adds the database tables for the given schema.
-        String[] theTableNames = theDatabase.getTablenames(theSchemaNames[i], false);
-        DatabaseExplorerNode theTableNode = null;
+        String[] theTableNames = schemas[i].getItems();
         for (int i2 = 0; i2 < theTableNames.length; i2++) {
-          theTableNode = new DatabaseExplorerNode();
+          DatabaseExplorerNode theTableNode = new DatabaseExplorerNode();
           theTableNode.setIsTable(true);
-          theTableNode.setSchema(theSchemaNames[i]);
+          theTableNode.setSchema(schemas[i].getSchemaName());
           theTableNode.setName(theTableNames[i2]);
           theTableNode.setImage(TABLE_IMAGE);
           theSchemaNode.add(theTableNode);
           theTableNode.setParent(theSchemaNode);
         }
+        
         
       }			
 			
@@ -444,6 +452,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			}
 		} catch (Exception e) {
 			logger.info(e);
+			e.printStackTrace();
 		}
 	}
 	
