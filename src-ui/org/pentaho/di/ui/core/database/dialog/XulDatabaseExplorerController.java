@@ -19,6 +19,7 @@
 package org.pentaho.di.ui.core.database.dialog;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -30,11 +31,18 @@ import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.logging.LoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransProfileFactory;
+import org.pentaho.di.ui.core.database.dialog.XulDatabaseExplorerModel.XulDatabaseExplorerNode;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
@@ -63,7 +71,6 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	// private Binding selectedSchemaBinding;
 	private XulTree databaseTree;
 	private XulButton expandCollapseButton;
-	private XulLabel actionLabel;
 	private BindingFactory bf;
 	private Shell shell;
 	private SwtDialog dbExplorerDialog;
@@ -75,6 +82,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 	private static final String DATABASE_IMAGE = "ui/images/folder_connection.png";
 	private static final String FOLDER_IMAGE = "ui/images/BOL.png";
+  private static final String SCHEMA_IMAGE = "ui/images/schema.png";
 	private static final String TABLE_IMAGE = "ui/images/table.png";
 	private static final String EXPAND_ALL_IMAGE = "ui/images/ExpandAll.png";
 	private static final String COLLAPSE_ALL_IMAGE = "ui/images/CollapseAll.png";
@@ -96,14 +104,21 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 	public void init() {
 
+    SwtButton theAcceptButton = (SwtButton) this.document.getElementById("databaseExplorerDialog_accept");
+    SwtButton theCancelButton = (SwtButton) this.document.getElementById("databaseExplorerDialog_cancel");
 		if (this.isJustLook) {
-			SwtButton theAcceptButton = (SwtButton) this.document.getElementById("databaseExplorerDialog_accept");
 			theAcceptButton.setVisible(false);
+			theCancelButton.setLabel(BaseMessages.getString(getClass(), "DatabaseExplorer.Button.Ok"));
+			theAcceptButton.setDisabled(false);
+      
+		} else {
+		  theCancelButton.setLabel(BaseMessages.getString(getClass(), "DatabaseExplorer.Button.Cancel"));
+		  theAcceptButton.setDisabled(true);
 		}
+    
 
 		createDatabaseNodes();
 		this.dbExplorerDialog = (SwtDialog) this.document.getElementById("databaseExplorerDialog");
-		this.actionLabel = (XulLabel) document.getElementById("action_label");
 		this.bf.setDocument(super.document);
 		this.bf.setBindingType(Type.ONE_WAY);
 
@@ -111,6 +126,23 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		this.databaseTree = (XulTree) document.getElementById("databaseTree");
 		this.databaseTreeBinding = bf.createBinding(this.model, "database", this.databaseTree, "elements");
 
+		bf.createBinding(model, "table", theAcceptButton, "disabled", new BindingConvertor<DatabaseExplorerNode, Boolean>(){
+
+      @Override
+      public Boolean sourceToTarget(DatabaseExplorerNode arg0) {
+        return (!isJustLook && arg0 == null);
+        
+      }
+
+      @Override
+      public DatabaseExplorerNode targetToSource(Boolean arg0) {
+        // TODO Auto-generated method stub
+        return null;
+      }
+		  
+		});
+		
+		
 		BindingConvertor<DatabaseExplorerNode, String> theTableNameConvertor = new BindingConvertor<DatabaseExplorerNode, String>() {
 
 			public String sourceToTarget(DatabaseExplorerNode aValue) {
@@ -126,38 +158,52 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			}
 		};
 		
-		BindingConvertor<DatabaseExplorerNode, String> theTableSchemaConvertor = new BindingConvertor<DatabaseExplorerNode, String>() {
 
-      public String sourceToTarget(DatabaseExplorerNode aValue) {
-        String theSchema = null;
-        if (aValue != null && aValue.isTable()) {
-          theSchema = aValue.getSchema();
+    
+    bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
+		this.bf.createBinding(this.databaseTree, "selectedItems", this.model, "table", new BindingConvertor<List<DatabaseExplorerNode>, DatabaseExplorerNode>(){
+
+      @Override
+      public DatabaseExplorerNode sourceToTarget(List<DatabaseExplorerNode> arg0) {
+        if(arg0 == null || arg0.size() == 0){
+          return null; 
         }
-        return theSchema;
-      }
-
-      public DatabaseExplorerNode targetToSource(String aValue) {
+        DatabaseExplorerNode node = arg0.get(0);
+        if(node.isTable()){
+          return node;
+        }
         return null;
       }
-    };
-		
-		this.bf.createBinding(this.databaseTree, "selectedItem", this.model, "table", theTableNameConvertor);
-		this.bf.createBinding(this.databaseTree, "selectedItem", this.model, "schema", theTableSchemaConvertor);
 
-		BindingConvertor<String, List<DatabaseExplorerNode>> theSelectedItemsConvertor = new BindingConvertor<String, List<DatabaseExplorerNode>>() {
+      @Override
+      public List<DatabaseExplorerNode> targetToSource(DatabaseExplorerNode arg0) {
+        return Collections.singletonList(arg0);
+      }
+      
+    });
 
-			public String targetToSource(List<DatabaseExplorerNode> aValue) {
-				return null;
-			}
+		this.bf.createBinding(this.databaseTree, "selectedItems", this.model, "schema", new BindingConvertor<List<DatabaseExplorerNode>, DatabaseExplorerNode>(){
 
-			public List<DatabaseExplorerNode> sourceToTarget(String aValue) {
-				DatabaseExplorerNode theNode = XulDatabaseExplorerController.this.model.findBy(aValue);
-				List<DatabaseExplorerNode> theResult = new ArrayList<DatabaseExplorerNode>();
-				theResult.add(theNode);
-				return theResult;
-			}
-		};
-		this.selectedTableBinding = this.bf.createBinding(this.model, "table", this.databaseTree, "selectedItems", theSelectedItemsConvertor);
+      @Override
+      public DatabaseExplorerNode sourceToTarget(List<DatabaseExplorerNode> arg0) {
+        if(arg0 == null || arg0.size() == 0){
+          return null; 
+        }
+        DatabaseExplorerNode node = arg0.get(0);
+        if(node.isSchema()){
+          return node;
+        } else if(node.isTable()){
+          return (DatabaseExplorerNode) node.getParent();
+        }
+        return null;
+      }
+
+      @Override
+      public List<DatabaseExplorerNode> targetToSource(DatabaseExplorerNode arg0) {
+        return Collections.singletonList(arg0);
+      }
+      
+    });
 		// this.selectedSchemaBinding = this.bf.createBinding(this.model, "schema",
 		// this.databaseTree, "selectedItems", theSelectedItemsConvertor);
 
@@ -170,8 +216,9 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				return null;
 			}
 		};
+    bf.setBindingType(Binding.Type.ONE_WAY);
 		this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUp", "disabled", isDisabledConvertor);
-		this.bf.createBinding(this.databaseTree, "selectedItem", actionLabel, "disabled", isDisabledConvertor);
+    this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUpImg", "disabled", isDisabledConvertor);
 		fireBindings();
 	}
 
@@ -184,11 +231,11 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void setSelectedTable(String aTable) {
-		this.model.setTable(aTable);
+    this.model.setTable(model.findBy(aTable));
 	}
 
 	public String getSelectedTable() {
-		return this.model.getTable();
+		return (model.getTable() == null)? null : model.getTable().getName();
 	}
 
 	public DatabaseMeta getDatabaseMeta() {
@@ -196,15 +243,17 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void setSelectedSchema(String aSchema) {
-		this.model.setSchema(aSchema);
+	  this.model.setSchema(model.findBy(aSchema));
 	}
 
 	public String getSelectedSchema() {
-		return this.model.getSchema();
+		return (model.getSchema() != null)? model.getSchema().getName() : null;
 	}
 
 	public void accept() {
-		this.dbExplorerDialog.setVisible(false);
+	  if(this.model.getTable() != null){
+	    this.dbExplorerDialog.setVisible(false);
+	  }
 	}
 
 	public void cancel() {
@@ -223,14 +272,14 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void showLayout() {
-		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable(), null);
+		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable().getName(), null);
 		theStepFieldsDialog.open(false);
 	}
 
 	public void displayRowCount() {
 
 		try {
-			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.shell, this.model.getDatabaseMeta(), this.model.getTable());
+			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.shell, this.model.getDatabaseMeta(), this.model.getTable().getName());
 			Long theCount = pd.open();
 			if (theCount != null) {
 				XulMessageBox theMessageBox = (XulMessageBox) document.createElement("messagebox");
@@ -263,10 +312,14 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void preview(boolean askLimit) {
+	  if(model.getTable() == null){
+	    return;
+	  }
 		try {
 			PromptCallback theCallback = new PromptCallback();
 			@SuppressWarnings("unused")
       boolean execute = true;
+			int limit = 100;
 			if (askLimit) {
 				XulPromptBox thePromptBox = (XulPromptBox) this.document.createElement("promptbox");
 				thePromptBox.setModalParent(this.dbExplorerDialog.getShell());
@@ -275,6 +328,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				thePromptBox.addDialogCallback(theCallback);
 				thePromptBox.open();
 				execute = theCallback.getLimit() != -1;
+				limit = theCallback.getLimit();
 			}
 
 //			if (execute) {
@@ -282,13 +336,13 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 //				thePreviewRowsDialog.open();
 //			}
 			
-			GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(shell, this.model.getDatabaseMeta(), this.model.getSchema(), this.model.getTable(), theCallback.getLimit());
+			GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(shell, this.model.getDatabaseMeta(), (model.getSchema() != null)? model.getSchema().getName():null, (model.getTable() != null)? model.getTable().getName():null, limit);
       List<Object[]> rows = pd.open();
       if (rows!=null) // otherwise an already shown error...
       {
       if (rows.size()>0)
       {
-        PreviewRowsDialog prd = new PreviewRowsDialog(shell, this.model.getDatabaseMeta(), SWT.None, this.model.getTable(), pd.getRowMeta(), rows);
+        PreviewRowsDialog prd = new PreviewRowsDialog(shell, this.model.getDatabaseMeta(), SWT.None, this.model.getTable().getName(), pd.getRowMeta(), rows);
         prd.open();
       }
       else
@@ -302,6 +356,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			
 		} catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 		}
 	}
 
@@ -327,19 +382,19 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			DatabaseExplorerNode theSchemasNode = new DatabaseExplorerNode();
 			theSchemasNode.setName(STRING_SCHEMAS);
 			theSchemasNode.setImage(FOLDER_IMAGE);
-			theDatabaseNode.addChild(theSchemasNode);
+			theDatabaseNode.add(theSchemasNode);
 
 			// Adds the Tables database node.
 			DatabaseExplorerNode theTablesNode = new DatabaseExplorerNode();
 			theTablesNode.setName(STRING_TABLES);
 			theTablesNode.setImage(FOLDER_IMAGE);
-			theDatabaseNode.addChild(theTablesNode);
+			theDatabaseNode.add(theTablesNode);
 
 			// Adds the Views database node.
 			DatabaseExplorerNode theViewsNode = new DatabaseExplorerNode();
 			theViewsNode.setName(STRING_VIEWS);
 			theViewsNode.setImage(FOLDER_IMAGE);
-			theDatabaseNode.addChild(theViewsNode);
+			theDatabaseNode.add(theViewsNode);
 			
 			// Adds the database schemas.
 			String[] theSchemaNames = theDatabase.getSchemas();
@@ -347,8 +402,9 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
       for (int i = 0; i < theSchemaNames.length; i++) {
         theSchemaNode = new DatabaseExplorerNode();
         theSchemaNode.setName(theSchemaNames[i]);
-        theSchemaNode.setImage(FOLDER_IMAGE);
-        theSchemasNode.addChild(theSchemaNode);
+        theSchemaNode.setImage(SCHEMA_IMAGE);
+        theSchemaNode.setIsSchema(true);
+        theSchemasNode.add(theSchemaNode);
         
         // Adds the database tables for the given schema.
         String[] theTableNames = theDatabase.getTablenames(theSchemaNames[i], false);
@@ -359,7 +415,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
           theTableNode.setSchema(theSchemaNames[i]);
           theTableNode.setName(theTableNames[i2]);
           theTableNode.setImage(TABLE_IMAGE);
-          theSchemaNode.addChild(theTableNode);
+          theSchemaNode.add(theTableNode);
+          theTableNode.setParent(theSchemaNode);
         }
         
       }			
@@ -372,7 +429,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				theTableNode.setIsTable(true);
 				theTableNode.setName(theTableNames[i]);
 				theTableNode.setImage(TABLE_IMAGE);
-				theTablesNode.addChild(theTableNode);
+				theTablesNode.add(theTableNode);
 			}
 
 			// Adds the database views.
@@ -383,7 +440,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				theViewNode.setIsTable(true);
 				theViewNode.setName(theViewNames[i]);
 				theViewNode.setImage(TABLE_IMAGE);
-				theViewsNode.addChild(theViewNode);
+				theViewsNode.add(theViewNode);
 			}
 		} catch (Exception e) {
 			logger.info(e);
@@ -418,8 +475,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		Database db = new Database(null, this.model.getDatabaseMeta());
 		try {
 			db.connect();
-			RowMetaInterface r = db.getTableFields(this.model.getTable());
-			String sql = db.getCreateTableStatement(this.model.getTable(), r, null, false, null, true);
+			RowMetaInterface r = db.getTableFields(this.model.getTable().getName());
+			String sql = db.getCreateTableStatement(this.model.getTable().getName(), r, null, false, null, true);
 			SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
 			se.open();
 		} catch (KettleDatabaseException dbe) {
@@ -436,7 +493,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			try {
 				db.connect();
 
-				RowMetaInterface r = db.getTableFields(this.model.getTable());
+				RowMetaInterface r = db.getTableFields(this.model.getTable().getName());
 
 				// Now select the other connection...
 
@@ -458,7 +515,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 					DatabaseMeta targetdbi = DatabaseMeta.findDatabase(dbs, target);
 					Database targetdb = new Database(null, targetdbi);
 
-					String sql = targetdb.getCreateTableStatement(this.model.getTable(), r, null, false, null, true);
+					String sql = targetdb.getCreateTableStatement(this.model.getTable().getName(), r, null, false, null, true);
 					SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
 					se.open();
 				}
@@ -473,6 +530,45 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			mb.setText(BaseMessages.getString(PKG, "DatabaseExplorerDialog.NoConnectionsKnown.Title"));
 			mb.open();
 		}
+	}
+	
+	public void dataProfile(){
+	  Shell dbShell = (Shell) dbExplorerDialog.getRootObject();
+    try {
+      TransProfileFactory profileFactory = new TransProfileFactory(this.model.getDatabaseMeta(), model.getTable().getName());
+      TransMeta transMeta = profileFactory.generateTransformation(new LoggingObject(model.getTable()));
+      TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(dbShell, 
+          transMeta, 
+          new String[] { TransProfileFactory.RESULT_STEP_NAME, }, new int[] { 25000, } );
+      
+      progressDialog.open();
+
+      if (!progressDialog.isCancelled())
+      {
+          Trans trans = progressDialog.getTrans();
+          String loggingText = progressDialog.getLoggingText();
+          
+          if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+          {
+            EnterTextDialog etd = new EnterTextDialog(dbShell, BaseMessages.getString(PKG,"System.Dialog.PreviewError.Title"),  
+                BaseMessages.getString(PKG,"System.Dialog.PreviewError.Message"), loggingText, true );
+            etd.setReadOnly();
+            etd.open();
+          }
+                   
+          PreviewRowsDialog prd = new PreviewRowsDialog(dbShell, transMeta, SWT.NONE, TransProfileFactory.RESULT_STEP_NAME,
+          progressDialog.getPreviewRowsMeta(TransProfileFactory.RESULT_STEP_NAME), progressDialog
+          .getPreviewRows(TransProfileFactory.RESULT_STEP_NAME), loggingText);
+          prd.open();
+          
+      }
+
+      
+    } catch(Exception e) {
+      new ErrorDialog(shell, BaseMessages.getString(PKG,"DatabaseExplorerDialog.UnexpectedProfilingError.Title"),
+          BaseMessages.getString(PKG,"DatabaseExplorerDialog.UnexpectedProfilingError.Message"), e);
+    }
+    
 	}
 
 	class PromptCallback implements XulDialogCallback {

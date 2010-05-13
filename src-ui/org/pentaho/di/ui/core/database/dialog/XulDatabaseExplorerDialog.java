@@ -73,20 +73,22 @@ public class XulDatabaseExplorerDialog {
 
 	    this.controller = new XulDatabaseExplorerController((Shell) theExplorerDialog.getRootObject(), this.databaseMeta, this.databases, look);
 	    
-	    this.controller.setSplitSchemaAndTable(splitSchemaAndTable);
-	    this.controller.setSelectedSchema(schemaName);
-	    this.controller.setSelectedTable(selectedTable);
 	    
 			this.container.addEventHandler(this.controller);
 
 			this.runner = new SwtXulRunner();
 			this.runner.addContainer(this.container);
 			this.runner.initialize();
+			
+      this.controller.setSplitSchemaAndTable(splitSchemaAndTable);
+      this.controller.setSelectedSchema(schemaName);
+      this.controller.setSelectedTable(selectedTable);
 
 			theExplorerDialog.show();
 
 		} catch (Exception e) {
 			logger.info(e);
+			e.printStackTrace();
 		}
 		return this.controller.getSelectedTable();
 	}
