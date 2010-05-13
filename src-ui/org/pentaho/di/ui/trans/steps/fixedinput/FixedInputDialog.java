@@ -394,7 +394,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel , wPreview, wGet }, margin, null);
+		setButtonPositions(new Button[] { wOK , wGet, wPreview, wCancel }, margin, null);
 
 
 		// Fields

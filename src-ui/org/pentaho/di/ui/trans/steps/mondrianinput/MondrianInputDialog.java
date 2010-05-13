@@ -154,7 +154,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel , wPreview }, margin, null);
+		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
 
 		// Catalog location...
 		//

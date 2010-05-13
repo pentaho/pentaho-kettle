@@ -289,7 +289,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel , wSQL }, margin, null);
+		setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, null);
 
 		// The field Table
 		wlReturn = new Label(shell, SWT.NONE);

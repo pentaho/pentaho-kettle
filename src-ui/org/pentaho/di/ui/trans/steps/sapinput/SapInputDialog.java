@@ -284,7 +284,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		wAbout=new Button(shell, SWT.PUSH);
 		wAbout.setText(BaseMessages.getString(PKG, "SapInputDialog.About.Button"));
-		setButtonPositions(new Button[] { wOK, wCancel, wAbout , wGet, }, margin, null);
+		setButtonPositions(new Button[] { wOK, wAbout , wGet, wCancel}, margin, null);
 		
 		
 		// The output fields...

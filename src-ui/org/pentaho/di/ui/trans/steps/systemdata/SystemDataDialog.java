@@ -186,7 +186,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-		setButtonPositions(new Button[] { wOK, wCancel, wPreview }, margin, wFields);
+		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wFields);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };

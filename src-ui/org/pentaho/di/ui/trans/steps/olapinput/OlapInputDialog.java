@@ -222,7 +222,7 @@ public class OlapInputDialog extends BaseStepDialog implements
 		wAbout = new Button(shell, SWT.PUSH);
 		wAbout.setText(BaseMessages.getString(PKG,
 				"OlapInputDialog.About.Button"));
-		setButtonPositions(new Button[] { wOK, wCancel, wPreview, wAbout },
+		setButtonPositions(new Button[] { wOK, wPreview, wAbout, wCancel },
 				margin, null);
 
 		// Catalog location...
