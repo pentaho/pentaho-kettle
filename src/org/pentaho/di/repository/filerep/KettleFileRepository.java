@@ -1150,4 +1150,8 @@ public class KettleFileRepository implements Repository {
     RepositoryObject jobInfo = getObjectInformation(idTransformation, RepositoryObjectType.TRANSFORMATION);
     return loadTransformation(jobInfo.getName(), jobInfo.getRepositoryDirectory(), null, true, versionLabel);
   }
+
+  public String getConnectMessage() {
+    return null;
+  }
 }

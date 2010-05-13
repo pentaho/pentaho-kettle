@@ -192,6 +192,13 @@ public class RepositoriesController extends AbstractXulEventHandler {
                 loginDialog.hide();
                 okButton.setDisabled(false);
                 cancelButton.setDisabled(false);
+
+                if (helper.getConnectedRepository().getConnectMessage() != null) {
+                  getMessageBox().setTitle(BaseMessages.getString(RepositoriesController.class, "ConnectMessageTitle")); //$NON-NLS-1$
+                  getMessageBox().setMessage(helper.getConnectedRepository().getConnectMessage());
+                  getMessageBox().open();
+                }
+
                 getCallback().onSuccess(helper.getConnectedRepository());
               }
             });

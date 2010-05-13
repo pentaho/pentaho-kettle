@@ -494,4 +494,12 @@ public interface Repository {
    * @throws KettleException In case there was a loading problem.
    */
   public RepositoryObject getObjectInformation(ObjectId objectId, RepositoryObjectType objectType) throws KettleException;
+  
+  /**
+   * This is an informational message that a repository can display on connecting within Spoon.
+   * If a null is returned, no message is displayed to the end user.
+   * 
+   * @return message
+   */
+  public String getConnectMessage();
 }
