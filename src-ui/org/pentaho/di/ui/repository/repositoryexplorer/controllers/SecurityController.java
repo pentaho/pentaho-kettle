@@ -76,9 +76,9 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
 
   private XulTextbox username;
 
-  private XulTextbox userPassword;
+  protected XulTextbox userPassword;
 
-  private XulTextbox userDescription;
+  protected XulTextbox userDescription;
 
   private XulButton userAddButton;
   
@@ -122,7 +122,7 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
       createBindings();
     }
     if(!managed) {
-      enableButtons(false, false, false);
+      showButtons(false, false, false);
     }
     setInitialDeck();
   }
@@ -359,5 +359,11 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
     userAddButton.setDisabled(!enableNew);
     userEditButton.setDisabled(!enableEdit);
     userRemoveButton.setDisabled(!enableRemove);
+  }
+  
+  protected void showButtons(boolean showNew, boolean showEdit, boolean showRemove) {
+    userAddButton.setVisible(showNew);
+    userEditButton.setVisible(showEdit);
+    userRemoveButton.setVisible(showRemove);    
   }
 }
