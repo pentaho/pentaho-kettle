@@ -351,7 +351,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		Listener lsAbout    = new Listener() { public void handleEvent(Event e) { about();     } };
             
 		wOK.addListener    (SWT.Selection, lsOK    );
-		wPreview.addListener(SWT.Selection, lsPreview);
+		// wPreview.addListener(SWT.Selection, lsPreview);
 		wGet.addListener   (SWT.Selection, lsGet   );
 		wCancel.addListener(SWT.Selection, lsCancel);
 		this.wAbout.addListener(SWT.Selection, lsAbout);
@@ -517,6 +517,8 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 	}
 	
 	// Preview the data
+	// unused
+	// preserve for later
     private void preview()
     {
         // Create the XML input step

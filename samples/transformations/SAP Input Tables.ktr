@@ -66,10 +66,10 @@
   </info>
   <notepads>
     <notepad>
-      <note>Select the dummy steps, right click and select &quot;preview&quot;</note>
-      <xloc>120</xloc>
+      <note>Select the last step, right click and select &quot;preview&quot;</note>
+      <xloc>60</xloc>
       <yloc>450</yloc>
-      <width>429</width>
+      <width>392</width>
       <heigth>29</heigth>
       <fontname>Lucida Grande</fontname>
       <fontsize>13</fontsize>
@@ -91,6 +91,27 @@
       <xloc>60</xloc>
       <yloc>360</yloc>
       <width>156</width>
+      <heigth>29</heigth>
+      <fontname>Lucida Grande</fontname>
+      <fontsize>13</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Get data of a table</note>
+      <xloc>270</xloc>
+      <yloc>360</yloc>
+      <width>150</width>
       <heigth>29</heigth>
       <fontname>Lucida Grande</fontname>
       <fontsize>13</fontsize>
@@ -134,7 +155,7 @@
     </attributes>
   </connection>
   <order>
-  <hop> <from>Generate Rows</from><to>RFC_READ_TABLE</to><enabled>Y</enabled> </hop>  <hop> <from>RFC_READ_TABLE</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Generate Rows</from><to>RFC_READ_TABLE</to><enabled>Y</enabled> </hop>  <hop> <from>RFC_READ_TABLE</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 2</from><to>RFC_READ_TABLE 2</to><enabled>Y</enabled> </hop>  <hop> <from>RFC_READ_TABLE 2</from><to>Split Fields</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Dummy (do nothing)</name>
     <type>Dummy</type>
@@ -165,6 +186,38 @@
            </partitioning>
     <fields>
       <field>
+        <name>QUERY_TABLE</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>SKAT</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <limit>1</limit>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>120</xloc>
+      <yloc>30</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate Rows 2</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
         <name>DELIMITER</name>
         <type>String</type>
         <format/>
@@ -172,17 +225,6 @@
         <decimal/>
         <group/>
         <nullif>;</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>NO_DATA</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>n.a.</nullif>
         <length>-1</length>
         <precision>-1</precision>
       </field>
@@ -219,11 +261,22 @@
         <length>-1</length>
         <precision>-1</precision>
       </field>
+      <field>
+        <name>FIELDNAME</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>MANDT;SPRAS;KTOPL;SAKNR;TXT20;TXT50;MCOD1</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
     </fields>
     <limit>1</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>120</xloc>
+      <xloc>330</xloc>
       <yloc>30</yloc>
       <draw>Y</draw>
       </GUI>
@@ -248,11 +301,7 @@
     <host/>
     </function>
     <parameters>
-    <parameter><field_name>DELIMITER</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>DELIMITER</parameter_name>    </parameter>
-    <parameter><field_name>NO_DATA</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>NO_DATA</parameter_name>    </parameter>
     <parameter><field_name>QUERY_TABLE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>QUERY_TABLE</parameter_name>    </parameter>
-    <parameter><field_name>ROWCOUNT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWCOUNT</parameter_name>    </parameter>
-    <parameter><field_name>ROWSKIPS</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWSKIPS</parameter_name>    </parameter>
     </parameters>
     <fields>
     <field><field_name>FIELDNAME</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><new_name>FIELDNAME</new_name><target_type>String</target_type>    </field>
@@ -265,6 +314,146 @@
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>120</xloc>
       <yloc>150</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>RFC_READ_TABLE 2</name>
+    <type>SapInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>Kinamu</connection>
+    <function>
+    <name>RFC_READ_TABLE</name>
+    <description>External access to R&#47;3 tables via RFC</description>
+    <group>SDTX</group>
+    <application>S</application>
+    <host/>
+    </function>
+    <parameters>
+    <parameter><field_name>DELIMITER</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>DELIMITER</parameter_name>    </parameter>
+    <parameter><field_name>QUERY_TABLE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>QUERY_TABLE</parameter_name>    </parameter>
+    <parameter><field_name>ROWCOUNT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWCOUNT</parameter_name>    </parameter>
+    <parameter><field_name>ROWSKIPS</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWSKIPS</parameter_name>    </parameter>
+    <parameter><field_name>FIELDNAME</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><parameter_name>FIELDNAME</parameter_name>    </parameter>
+    </parameters>
+    <fields>
+    <field><field_name>WA</field_name><sap_type>TABLE</sap_type><table_name>DATA</table_name><new_name>WA</new_name><target_type>String</target_type>    </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>330</xloc>
+      <yloc>150</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Split Fields</name>
+    <type>FieldSplitter</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+   <splitfield>WA</splitfield>
+   <delimiter>;</delimiter>
+    <fields>      <field>        <name>Mandant</name>
+        <id/>
+        <idrem>N</idrem>
+        <type>Integer</type>
+        <format/>
+        <group/>
+        <decimal/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <nullif/>
+        <ifnull/>
+        <trimtype>none</trimtype>
+      </field>      <field>        <name>Code1</name>
+        <id/>
+        <idrem>N</idrem>
+        <type>String</type>
+        <format/>
+        <group/>
+        <decimal/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <nullif/>
+        <ifnull/>
+        <trimtype>none</trimtype>
+      </field>      <field>        <name>Kto</name>
+        <id/>
+        <idrem>N</idrem>
+        <type>String</type>
+        <format/>
+        <group/>
+        <decimal/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <nullif/>
+        <ifnull/>
+        <trimtype>none</trimtype>
+      </field>      <field>        <name>Nr</name>
+        <id/>
+        <idrem>N</idrem>
+        <type>Integer</type>
+        <format/>
+        <group/>
+        <decimal/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <nullif/>
+        <ifnull/>
+        <trimtype>none</trimtype>
+      </field>      <field>        <name>Text20</name>
+        <id/>
+        <idrem>N</idrem>
+        <type>String</type>
+        <format/>
+        <group/>
+        <decimal/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <nullif/>
+        <ifnull/>
+        <trimtype>none</trimtype>
+      </field>      <field>        <name>Text50</name>
+        <id/>
+        <idrem>N</idrem>
+        <type>String</type>
+        <format/>
+        <group/>
+        <decimal/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <nullif/>
+        <ifnull/>
+        <trimtype>none</trimtype>
+      </field>      <field>        <name>Code2</name>
+        <id/>
+        <idrem>N</idrem>
+        <type>String</type>
+        <format/>
+        <group/>
+        <decimal/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <nullif/>
+        <ifnull/>
+        <trimtype>none</trimtype>
+      </field>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>330</xloc>
+      <yloc>270</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
