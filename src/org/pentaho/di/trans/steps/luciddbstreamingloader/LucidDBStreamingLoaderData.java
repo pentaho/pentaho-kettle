@@ -20,7 +20,7 @@ import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
- * Stores data for the Farrago Streaming Loader step.
+ * Stores data for the LucidDB Streaming Loader step.
  * 
  * @author Matt
  * @since Jan-05-2010

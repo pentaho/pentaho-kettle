@@ -4,7 +4,7 @@
  * This software was developed by DynamoBI Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
- * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Farrago 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is LucidDB 
  * Streaming Loader.  The Initial Developer is DynamoBI Corporation.
  * 
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
@@ -44,7 +44,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 /**
- * Description: Hold data for Farrago Streaming loader dialog/UI
+ * Description: Hold data for LucidDB Streaming loader dialog/UI
  * 
  * @author Ray Zhang
  * @since Jan-05-2010
@@ -283,20 +283,26 @@ public class LucidDBStreamingLoaderMeta
             throw new KettleXMLException(
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
+                    "LucidDBStreamingLoaderMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
         }
     }
 
     public void setDefault()
     {
         databaseMeta = null;
-        schemaName = ""; //$NON-NLS-1$
+        schemaName = BaseMessages.getString(
+            PKG,
+        "LucidDBStreamingLoaderMeta.DefaultSchemaName"); //$NON-NLS-1$      
         tableName = BaseMessages.getString(
             PKG,
-            "FarragoStreamingLoaderMeta.DefaultTableName"); //$NON-NLS-1$      
-        host = "http://";
-        port = "0";
-        operation = "MERGE";
+            "LucidDBStreamingLoaderMeta.DefaultTableName"); //$NON-NLS-1$      
+        host = BaseMessages.getString(
+            PKG,
+            "LucidDBStreamingLoaderMeta.DefaultHostName"); //$NON-NLS-1$ 
+        port = BaseMessages.getString(
+            PKG,
+            "LucidDBStreamingLoaderMeta.DefaultPort"); //$NON-NLS-1$
+        operation = "INSERT";
         allocate(0, 0, 0);
     }
 
@@ -411,7 +417,7 @@ public class LucidDBStreamingLoaderMeta
             throw new KettleException(
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
+                    "LucidDBStreamingLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
         }
     }
 
@@ -501,7 +507,7 @@ public class LucidDBStreamingLoaderMeta
             throw new KettleException(
                 BaseMessages.getString(
                     PKG,
-                    "FarragoStreamingLoaderMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); //$NON-NLS-1$
+                    "LucidDBStreamingLoaderMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -613,7 +619,7 @@ public class LucidDBStreamingLoaderMeta
                         if (insOrUptFlag[i]
                             && !(BaseMessages.getString(
                                 PKG,
-                                "FarragoStreamingLoaderDialog.Operation.CCombo.Item2").equals(operation)))
+                                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2").equals(operation)))
                         {
 
                             myUpdateStatement.append(fieldTableForFields[i]
@@ -646,7 +652,7 @@ public class LucidDBStreamingLoaderMeta
             // for MERGE
             if (BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.Operation.CCombo.Item1").equals(
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item1").equals(
                 operation))
             {
 
@@ -670,7 +676,7 @@ public class LucidDBStreamingLoaderMeta
                 // for INSERT
             } else if (BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.Operation.CCombo.Item2").equals(
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2").equals(
                 operation))
             {
 
@@ -681,7 +687,7 @@ public class LucidDBStreamingLoaderMeta
                 // for UPDATE
             } else if (BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderDialog.Operation.CCombo.Item3").equals(
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item3").equals(
                 operation))
             {
 
@@ -803,19 +809,19 @@ public class LucidDBStreamingLoaderMeta
                         throw new KettleException(
                             BaseMessages.getString(
                                 PKG,
-                                "FarragoStreamingLoaderMeta.Exception.TableNotFound"));
+                                "LucidDBStreamingLoaderMeta.Exception.TableNotFound"));
                     }
                 } else {
                     throw new KettleException(
                         BaseMessages.getString(
                             PKG,
-                            "FarragoStreamingLoaderMeta.Exception.TableNotSpecified"));
+                            "LucidDBStreamingLoaderMeta.Exception.TableNotSpecified"));
                 }
             } catch (Exception e) {
                 throw new KettleException(
                     BaseMessages.getString(
                         PKG,
-                        "FarragoStreamingLoaderMeta.Exception.ErrorGettingFields"),
+                        "LucidDBStreamingLoaderMeta.Exception.ErrorGettingFields"),
                     e);
             } finally {
                 db.disconnect();
@@ -823,7 +829,7 @@ public class LucidDBStreamingLoaderMeta
         } else {
             throw new KettleException(BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoaderMeta.Exception.ConnectionNotDefined"));
+                "LucidDBStreamingLoaderMeta.Exception.ConnectionNotDefined"));
         }
 
     }
