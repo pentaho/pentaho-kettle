@@ -13,6 +13,7 @@ package org.pentaho.di.trans.steps.csvinput;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -706,7 +707,18 @@ public class CsvInput extends BaseStep implements StepInterface
 			
 			data.totalBytesRead=0L;
 							
-			data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes();
+			//PDI-2489 - set the delimiter byte value to the code point of the 
+			//character as represented in the input file's encoding
+			try {
+			  if(Const.isEmpty(meta.getEncoding())) {
+			    data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes();
+			  } else {
+			    data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes(meta.getEncoding());
+			  }
+      } catch (UnsupportedEncodingException e) {
+        logError(BaseMessages.getString(PKG, "CsvInput.BadEncoding.Message"), e); //$NON-NLS-1$
+        return false;
+      }
 
 			if( Const.isEmpty(meta.getEnclosure()) ) {
 				data.enclosure = null;
