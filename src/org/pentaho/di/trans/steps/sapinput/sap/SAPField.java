@@ -26,6 +26,10 @@ public class SAPField {
 	private String type;
 	private String typePentaho;
 	private Object value;
+	// not used
+	private String description;
+	// not used
+	private String defaultvalue;
 
 	public SAPField(String name, String table, String type) {
 		super();
@@ -86,6 +90,22 @@ public class SAPField {
 
 	public void setTypePentaho(String typepentaho) {
 		this.typePentaho = typepentaho;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDefaultvalue() {
+		return defaultvalue;
+	}
+
+	public void setDefaultvalue(String defaultvalue) {
+		this.defaultvalue = defaultvalue;
 	}
 
 }
