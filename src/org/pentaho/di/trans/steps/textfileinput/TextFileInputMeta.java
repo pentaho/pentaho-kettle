@@ -697,18 +697,26 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-        if (info!=null && isPassingThruFields())
-        {
-            boolean found=false;
-            for (int i=0;i<info.length && !found;i++) 
-            {
-                if (info[i]!=null)
-                {
-                    row.mergeRowMeta(info[i]);
-                    found=true;
-                }
-            }
-        }
+		if(!isPassingThruFields()) 
+		{
+			// all incoming fields are not transmitted !
+			row.clear();
+		} 
+		else 
+		{
+	        if (info!=null)
+	        {
+	            boolean found=false;
+	            for (int i=0;i<info.length && !found;i++) 
+	            {
+	                if (info[i]!=null)
+	                {
+	                    row.mergeRowMeta(info[i]);
+	                    found=true;
+	                }
+	            }
+	        }
+		}
 
 		for (int i = 0; i < inputFields.length; i++)
 		{
