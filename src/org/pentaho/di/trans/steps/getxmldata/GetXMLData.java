@@ -298,7 +298,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 						if (data.indexOfXmlField<0)
 						{
 							// The field is unreachable !
-							logError(Messages.getString("GetXMLData.Log.ErrorFindingField")+ "[" + meta.getXMLField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(Messages.getString("GetXMLData.Log.ErrorFindingField", meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 							throw new KettleException(Messages.getString("GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
