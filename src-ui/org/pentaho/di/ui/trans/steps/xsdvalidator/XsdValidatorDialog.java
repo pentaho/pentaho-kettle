@@ -60,6 +60,7 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.core.Props;
 
 
+
 public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInterface
 {
 	
@@ -93,6 +94,8 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 	private CTabItem     wGeneralTab;
 	private Composite    wGeneralComp;
 	private FormData     fdGeneralComp;
+	
+	private boolean gotPrevious=false;
 	
 	public XsdValidatorDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -228,7 +231,7 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
                 {
                     Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
                     shell.setCursor(busy);
-                    PopulateFields(wXMLStream);
+                    PopulateFields();
                     shell.setCursor(null);
                     busy.dispose();
                 }
@@ -476,7 +479,7 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
                 {
                     Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
                     shell.setCursor(busy);
-                    PopulateFields(wXSDDefinedColumn);
+                    PopulateFields();
                     shell.setCursor(null);
                     busy.dispose();
                 }
@@ -647,30 +650,28 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 			wXSDDefinedColumn.setEnabled(false);
 		}
 	}
-	
-	 private void PopulateFields(CCombo cc)
+	 private void PopulateFields()
 	 {
-		 try{
-	           
-				cc.removeAll();
-				RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-				if (r!=null)
-				{
-		             r.getFieldNames();
-		             
-		             for (int i=0;i<r.getFieldNames().length;i++)
-						{	
-							cc.add(r.getFieldNames()[i]);					
-							
-						}
+		 if(!gotPrevious) {
+			gotPrevious=true;
+				
+	         String fieldXML=wXMLStream.getText();
+	         String fieldXSD=wXSDDefinedColumn.getText();
+			 try{
+		            wXMLStream.removeAll();
+		            wXSDDefinedColumn.removeAll();
+					
+		            RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+					if(r!=null) {
+						wXMLStream.setItems(r.getFieldNames());
+						wXSDDefinedColumn.setItems(r.getFieldNames());
+					}
+			 }catch(KettleException ke){
+					new ErrorDialog(shell, Messages.getString("XsdValidatorDialog.FailedToGetFields.DialogTitle"), Messages.getString("XsdValidatorDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-
-		 }catch(KettleException ke){
-				new ErrorDialog(shell, Messages.getString("XsdValidatorDialog.FailedToGetFields.DialogTitle"), Messages.getString("XsdValidatorDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-	
-
-
+			if(fieldXML!=null)  wXMLStream.setText(fieldXML);
+			if(fieldXSD!=null)  wXSDDefinedColumn.setText(fieldXSD);
+		 }
 	 }
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
