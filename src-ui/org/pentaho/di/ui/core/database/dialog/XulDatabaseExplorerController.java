@@ -114,7 +114,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			theAcceptButton.setDisabled(false);
       
 		} else {
-      theCancelButton.setLabel(BaseMessages.getString(getClass(), "DatabaseExplorer.Button.Ok"));
+		  theAcceptButton.setLabel(BaseMessages.getString(getClass(), "DatabaseExplorer.Button.Ok"));
 		  theCancelButton.setLabel(BaseMessages.getString(getClass(), "DatabaseExplorer.Button.Cancel"));
 		  theAcceptButton.setDisabled(true);
 		}
