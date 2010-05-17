@@ -126,7 +126,7 @@ public class Validation implements Cloneable {
 		xml.append(XMLHandler.addTagValue("error_description", errorDescription));
 
 		xml.append(XMLHandler.addTagValue("is_sourcing_values", sourcingValues));
-		xml.append(XMLHandler.addTagValue("sourcing_step", sourcingStepName));
+		xml.append(XMLHandler.addTagValue("sourcing_step", sourcingStep==null ? sourcingStepName : sourcingStep.getName()));
 		xml.append(XMLHandler.addTagValue("sourcing_field", sourcingField));
 
 		xml.append(XMLHandler.openTag(XML_TAG_ALLOWED));

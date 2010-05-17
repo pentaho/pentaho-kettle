@@ -324,17 +324,25 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     public void handleStreamSelection(StreamInterface stream) {
-    	if (stream==newValidation) {
-    		
-			// Add the info..
-			//
-    		Validation validation = new Validation();
-    		validation.setName(stream.getStepname());
-    		validation.setSourcingStep(stream.getStepMeta());
-    		validation.setSourcingValues(true);
-			validations.add(validation);
-    	}
-    	
-    	resetStepIoMeta(); // force stepIo to be recreated when it is next needed.
+      // A hack to prevent us from losing information in the Trans UI because
+      // of the resetStepIoMeta() call at the end of this method.
+      //
+      List<StreamInterface> streams = getStepIOMeta().getInfoStreams();
+      for (int i=0;i<validations.size();i++) {
+        validations.get(i).setSourcingStep(streams.get(i).getStepMeta()); 
+      }
+      
+      if (stream == newValidation) {
+  
+        // Add the info..
+        //
+        Validation validation = new Validation();
+        validation.setName(stream.getStepname());
+        validation.setSourcingStep(stream.getStepMeta());
+        validation.setSourcingValues(true);
+        validations.add(validation);
+      }
+  
+      resetStepIoMeta(); // force stepIo to be recreated when it is next needed.
     }
 }
