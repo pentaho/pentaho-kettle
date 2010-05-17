@@ -641,12 +641,13 @@ public class TextFileInput extends BaseStep implements StepInterface
         {
             // System.out.println("Convertings line to string ["+line+"]");
             String[] strings = convertLineToStrings(textFileLine.line, info);
-
+            int shiftFields=(passThruFields==null?0:nrPassThruFields);
             for (fieldnr = 0; fieldnr < nrfields; fieldnr++)
             {
                 TextFileInputField f = info.getInputFields()[fieldnr];
-                ValueMetaInterface valueMeta = outputRowMeta.getValueMeta(fieldnr);
-                ValueMetaInterface convertMeta = convertRowMeta.getValueMeta(fieldnr);
+                int valuenr=shiftFields + fieldnr;
+                ValueMetaInterface valueMeta = outputRowMeta.getValueMeta(valuenr);
+                ValueMetaInterface convertMeta = convertRowMeta.getValueMeta(valuenr);
                 
                 Object value;
 
@@ -722,12 +723,12 @@ public class TextFileInput extends BaseStep implements StepInterface
             {
                 for (int i = fieldnr; i < info.getInputFields().length; i++)
                 {
-                    r[i] = null;
+                    r[shiftFields+i] = null;
                 }
             }
 
             // Add the error handling fields...
-            int index = nrfields;
+            int index = shiftFields+nrfields;
             if (errorCount != null) 
             {
                 r[index]=errorCount;
@@ -763,10 +764,16 @@ public class TextFileInput extends BaseStep implements StepInterface
             throw new KettleException(Messages.getString("TextFileInput.Log.Error.ErrorConvertingLineText"), e);
         }
 
-        if (passThruFields != null)
-            return RowDataUtil.addRowData(passThruFields, nrPassThruFields, r);
-        else
-            return r;
+        if (passThruFields != null) 
+        {
+        	// Simply add all fields from source files step
+        	for(int i=0; i<nrPassThruFields; i++) 
+        	{
+        		r[i] = passThruFields[i];
+        	}
+        }
+
+        return r;
 
     }
                     
