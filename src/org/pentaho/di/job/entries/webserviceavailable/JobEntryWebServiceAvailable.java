@@ -157,7 +157,7 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
 		Result result = previousResult;
 		result.setResult( false );
 
-        String realURL = getURL();
+        String realURL = environmentSubstitute(getURL());
         
 		if (!Const.isEmpty(realURL)){
 			int connectTimeOut = Const.toInt(environmentSubstitute(getConnectTimeOut()),0);
