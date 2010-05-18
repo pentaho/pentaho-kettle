@@ -497,11 +497,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	public void getDDLForOther() {
 
 		if (databases != null) {
-			Database db = new Database(null, this.model.getDatabaseMeta());
 			try {
-				db.connect();
-
-				RowMetaInterface r = db.getTableFields(this.model.getTable().getName());
 
 				// Now select the other connection...
 
@@ -522,15 +518,19 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				if (target != null) {
 					DatabaseMeta targetdbi = DatabaseMeta.findDatabase(dbs, target);
 					Database targetdb = new Database(null, targetdbi);
-
-					String sql = targetdb.getCreateTableStatement(this.model.getTable().getName(), r, null, false, null, true);
-					SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
-					se.open();
+					try{
+						targetdb.connect();
+						RowMetaInterface r = targetdb.getTableFields(this.model.getTable().getName());
+						
+						String sql = targetdb.getCreateTableStatement(this.model.getTable().getName(), r, null, false, null, true);
+						SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
+						se.open();
+					} finally {
+						targetdb.disconnect();
+					}
 				}
 			} catch (KettleDatabaseException dbe) {
 				new ErrorDialog(this.dbExplorerDialog.getShell(), BaseMessages.getString(PKG, "Dialog.Error.Header"), BaseMessages.getString(PKG, "DatabaseExplorerDialog.Error.GenDDL"), dbe);
-			} finally {
-				db.disconnect();
 			}
 		} else {
 			MessageBox mb = new MessageBox(this.dbExplorerDialog.getShell(), SWT.NONE | SWT.ICON_INFORMATION);
