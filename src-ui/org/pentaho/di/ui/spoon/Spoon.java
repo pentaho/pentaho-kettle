@@ -4083,7 +4083,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public boolean saveToRepository(EngineMetaInterface meta, boolean ask_name) throws KettleException {
-
+    
     // Verify repository security first...
     //
     if (meta.getFileType().equals(LastUsedFile.FILE_TYPE_TRANSFORMATION)) {
@@ -4104,6 +4104,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (rep != null) {
       boolean answer = true;
       boolean ask = ask_name;
+
+      // If the repository directory is root then get the default save directory
+      if(meta.getRepositoryDirectory() == null || meta.getRepositoryDirectory().isRoot()) {
+        meta.setRepositoryDirectory(rep.getDefaultSaveDirectory(meta));
+      }
       while (answer && (ask || Const.isEmpty(meta.getName()))) {
         if (!ask) {
           MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
