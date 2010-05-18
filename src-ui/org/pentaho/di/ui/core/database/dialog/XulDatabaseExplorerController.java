@@ -404,31 +404,29 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			theDatabaseNode.add(theViewsNode);
 			
 			// Adds the database schemas.
-			//String[] theSchemaNames = theDatabase.getSchemas();
-
       Schema[] schemas = dmi.getSchemas();
-      DatabaseExplorerNode theSchemaNode = null;
-      for (int i = 0; i < schemas.length; i++) {
-        theSchemaNode = new DatabaseExplorerNode();
-        theSchemaNode.setName(schemas[i].getSchemaName());
-        theSchemaNode.setImage(SCHEMA_IMAGE);
-        theSchemaNode.setIsSchema(true);
-        theSchemasNode.add(theSchemaNode);
-        
-        // Adds the database tables for the given schema.
-        String[] theTableNames = schemas[i].getItems();
-        for (int i2 = 0; i2 < theTableNames.length; i2++) {
-          DatabaseExplorerNode theTableNode = new DatabaseExplorerNode();
-          theTableNode.setIsTable(true);
-          theTableNode.setSchema(schemas[i].getSchemaName());
-          theTableNode.setName(theTableNames[i2]);
-          theTableNode.setImage(TABLE_IMAGE);
-          theSchemaNode.add(theTableNode);
-          theTableNode.setParent(theSchemaNode);
+      if(schemas != null) {
+        DatabaseExplorerNode theSchemaNode = null;
+        for (int i = 0; i < schemas.length; i++) {
+          theSchemaNode = new DatabaseExplorerNode();
+          theSchemaNode.setName(schemas[i].getSchemaName());
+          theSchemaNode.setImage(SCHEMA_IMAGE);
+          theSchemaNode.setIsSchema(true);
+          theSchemasNode.add(theSchemaNode);
+          
+          // Adds the database tables for the given schema.
+          String[] theTableNames = schemas[i].getItems();
+          for (int i2 = 0; i2 < theTableNames.length; i2++) {
+            DatabaseExplorerNode theTableNode = new DatabaseExplorerNode();
+            theTableNode.setIsTable(true);
+            theTableNode.setSchema(schemas[i].getSchemaName());
+            theTableNode.setName(theTableNames[i2]);
+            theTableNode.setImage(TABLE_IMAGE);
+            theSchemaNode.add(theTableNode);
+            theTableNode.setParent(theSchemaNode);
+          }
         }
-        
-        
-      }			
+      }
 			
 			// Adds the database tables.
 			String[] theTableNames = theDatabase.getTablenames("", false); //$NON-NLS-1$
