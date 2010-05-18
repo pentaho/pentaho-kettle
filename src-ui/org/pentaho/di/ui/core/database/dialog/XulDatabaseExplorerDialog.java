@@ -18,6 +18,7 @@
  */
 package org.pentaho.di.ui.core.database.dialog;
 
+import java.io.File;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -28,9 +29,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
+import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.impl.DefaultSettingsManager;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
@@ -62,6 +65,8 @@ public class XulDatabaseExplorerDialog {
 		try {
 
 			SwtXulLoader theLoader = new SwtXulLoader();
+      theLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
+			theLoader.setSettingsManager(new DefaultSettingsManager(new File("xulSettings.properties")));
 			theLoader.setOuterContext(this.shell);
 
 			this.container = theLoader.loadXul(XUL, new XulDatabaseExplorerResourceBundle());

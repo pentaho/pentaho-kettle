@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -52,6 +53,7 @@ public class XulStepFieldsDialog {
 		try {
 			SwtXulLoader theLoader = new SwtXulLoader();
 			theLoader.setOuterContext(this.shell);
+      theLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
 			this.container = theLoader.loadXul(XUL);
 
 			this.controller = new XulStepFieldsController(this.shell, this.databaseMeta, this.table, this.rowMeta);

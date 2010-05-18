@@ -37,6 +37,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
+import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.di.ui.spoon.trans.LogBrowser;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -144,6 +145,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
 
     try {
       XulLoader loader = new SwtXulLoader();
+      loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_LOG_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);

@@ -261,6 +261,7 @@ import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.XulSettingsManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.WaitBoxRunnable;
@@ -680,6 +681,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     try {
       xulLoader = new SwtXulLoader();
       xulLoader.setOuterContext(shell);
+      xulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
 
       mainSpoonContainer = xulLoader.loadXul(XUL_FILE_MAIN, new XulSpoonResourceBundle());
 

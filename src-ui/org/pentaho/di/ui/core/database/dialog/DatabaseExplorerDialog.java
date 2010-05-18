@@ -38,3 +38,15 @@ public class DatabaseExplorerDialog extends XulDatabaseExplorerDialog {
 		super(parent, conn, databases, aLook);
 	}
 }
+/*
+public class DatabaseExplorerDialog extends DatabaseExplorerDialogLegacy {
+
+public DatabaseExplorerDialog(Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases) {
+  super(parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN, conn, databases, false);
+}
+
+public DatabaseExplorerDialog(Shell parent, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean aLook) {
+  super(parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN, conn, databases, aLook);
+}
+}
+*/

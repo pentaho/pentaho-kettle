@@ -23,6 +23,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.repository.controllers.RepositoriesController;
+import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
@@ -57,7 +58,8 @@ public class RepositoriesDialog {
       this.callback = callback;
       SwtXulLoader swtLoader = new SwtXulLoader();
       swtLoader.setOuterContext(shell);
-      container = new SwtXulLoader().loadXul("org/pentaho/di/ui/repository/xul/repositories.xul", resourceBundle); //$NON-NLS-1$
+      swtLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
+      container = swtLoader.loadXul("org/pentaho/di/ui/repository/xul/repositories.xul", resourceBundle); //$NON-NLS-1$
       final XulRunner runner = new SwtXulRunner();
       runner.addContainer(container);
 

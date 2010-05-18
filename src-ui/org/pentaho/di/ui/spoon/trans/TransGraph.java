@@ -150,6 +150,7 @@ import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.spoon.SwtScrollBar;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
+import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
@@ -364,6 +365,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     try {
       XulLoader loader = new SwtXulLoader();
+      loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer container = loader.loadXul(XUL_FILE_TRANS_TOOLBAR, bundle);
       container.addEventHandler(this);
