@@ -85,7 +85,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             if (!Const.isEmpty(data.realHttpLogin))
             {
                 HTTPPOSTclient.getParams().setAuthenticationPreemptive(true);
-                Credentials defaultcreds = new UsernamePasswordCredentials(environmentSubstitute(data.realHttpLogin), data.realHttpPassword);
+                Credentials defaultcreds = new UsernamePasswordCredentials(data.realHttpLogin, data.realHttpPassword);
                 HTTPPOSTclient.getState().setCredentials(AuthScope.ANY, defaultcreds);
             }
             
@@ -419,7 +419,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			// get autentication settings once
+			// get authentication settings once
 			data.realProxyHost=environmentSubstitute(meta.getProxyHost());
 			data.realProxyPort= Const.toInt(environmentSubstitute(meta.getProxyPort()), 8080);
 			data.realHttpLogin=environmentSubstitute(meta.getHttpLogin());
