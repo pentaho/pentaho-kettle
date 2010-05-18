@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -4682,28 +4684,40 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public boolean save(EngineMetaInterface meta, String fname, boolean export) {
-    boolean saved = false;
-    FileListener listener = null;
-    // match by extension first
-    int idx = fname.lastIndexOf('.');
-    if (idx != -1) {
-      String extension = fname.substring(idx + 1);
-      listener = fileExtensionMap.get(extension);
-    }
-    if (listener == null) {
-      String xt = meta.getDefaultExtension();
-      listener = fileExtensionMap.get(xt);
-    }
-
-    if (listener != null) {
-      String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
-      if (Boolean.parseBoolean(sync)) {
-        listener.syncMetaName(meta, Const.createName(fname));
-        delegates.tabs.renameTabs();
+      boolean saved = false;
+      Pattern pattern = Pattern.compile("\\p{ASCII}+");
+      Matcher matcher = pattern.matcher(fname);
+      if(matcher.matches()) {
+        FileListener listener = null;
+        // match by extension first
+        int idx = fname.lastIndexOf('.');
+        if (idx != -1) {
+          String extension = fname.substring(idx + 1);
+          listener = fileExtensionMap.get(extension);
+        }
+        if (listener == null) {
+          String xt = meta.getDefaultExtension();
+          listener = fileExtensionMap.get(xt);
+        }
+    
+        if (listener != null) {
+          String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
+          if (Boolean.parseBoolean(sync)) {
+            listener.syncMetaName(meta, Const.createName(fname));
+            delegates.tabs.renameTabs();
+          }
+          saved = listener.save(meta, fname, export);
+        }
+      } else {
+        /*
+         * Temporary fix for AGILEBI-405 Don't allow saving of files that contain special characters until AGILEBI-394 is resolved.
+         * AGILEBI-394 Naming an analyzer report with spanish accents gives error when publishing.
+         * */
+        MessageBox box = new MessageBox(staticSpoon.shell, SWT.ICON_ERROR | SWT.OK);
+        box.setMessage("Special characters are not allowed in the filename. Please use ASCII characters only");
+        box.setText(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"));
+        box.open();
       }
-      saved = listener.save(meta, fname, export);
-
-    }
     return saved;
   }
 
