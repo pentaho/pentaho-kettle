@@ -4609,6 +4609,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
         
         saved=save(meta, fname, export);
+        if(!saved) {
+          meta.setFilename(beforeFilename);
+          meta.setName(beforeName);
+        }
       }
     }
     return saved;
