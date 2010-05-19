@@ -1254,7 +1254,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     wFollowingAbortRemotely.setSelection(jobEntry.isFollowingAbortRemotely());
     wAppendLogfile.setSelection(jobEntry.setAppendLogfile);
     wCreateParentFolder.setSelection(jobEntry.createParentFolder);
-    wLoglevel.select(jobEntry.logFileLevel.getLevel());
+    if (jobEntry.logFileLevel!=null) {
+      wLoglevel.select(jobEntry.logFileLevel.getLevel());
+    }
   }
 
   private void getByReferenceData(RepositoryElementMetaInterface transInf) {
@@ -1361,7 +1363,12 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
     jobEntry.logfile = wLogfile.getText();
     jobEntry.logext = wLogext.getText();
-    jobEntry.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+    
+    if (wLoglevel.getSelectionIndex()>=0) {
+      jobEntry.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+    } else {
+      jobEntry.logFileLevel = LogLevel.BASIC;
+    }
 
     jobEntry.argFromPrevious = wPrevious.getSelection();
     jobEntry.paramsFromPrevious = wPrevToParams.getSelection();

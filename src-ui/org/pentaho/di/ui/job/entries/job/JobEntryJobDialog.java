@@ -1320,7 +1320,11 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     jobEntry.addTime = wAddTime.getSelection();
     jobEntry.logfile = wLogfile.getText();
     jobEntry.logext = wLogext.getText();
-    jobEntry.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+    if (wLoglevel.getSelectionIndex()>=0) {
+      jobEntry.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+    } else {
+      jobEntry.logFileLevel = LogLevel.BASIC;
+    }
     jobEntry.argFromPrevious = wPrevious.getSelection();
     jobEntry.paramsFromPrevious = wPrevToParams.getSelection();
     jobEntry.execPerRow = wEveryRow.getSelection();
