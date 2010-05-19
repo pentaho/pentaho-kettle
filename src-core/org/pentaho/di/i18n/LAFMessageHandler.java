@@ -74,44 +74,47 @@ public class LAFMessageHandler extends GlobalMessages {
     	return new String(replaceWith + packageName.substring(offset));
     }
     
-    private String internalCalc(String packageName, String global, String key, Object[] parameters) {
+    private String internalCalc(String packageName, String global, String key, Object[] parameters, Class<?> resourceClass) {
     	String string = null;
-    	
+
     	// Then try the original package
-        try { string = findString(packageName, langChoice.getDefaultLocale(), key, parameters); } catch(MissingResourceException e) {};
+        try { string = findString(packageName, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
         if (string!=null) {
         	//System.out.println("found: "+key+"/"+string+" in "+packageName+" lang "+langChoice.getDefaultLocale());
         	return string;
         }
         
         // Then try to find it in the i18n package, in the system messages of the preferred language.
-        try { string = findString(global, langChoice.getDefaultLocale(), key, parameters); } catch(MissingResourceException e) {};
+        try { string = findString(global, langChoice.getDefaultLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
         if (string!=null) {
         	//System.out.println("found: "+key+"/"+string+" in "+global+" lang "+langChoice.getDefaultLocale());
         	return string;
         }
         
         // Then try the failover locale, in the local package
-        try { string = findString(packageName, langChoice.getFailoverLocale(), key, parameters); } catch(MissingResourceException e) {};
+        try { string = findString(packageName, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
         if (string!=null) {
         	//System.out.println("found: "+key+"/"+string+" in "+packageName+" lang "+langChoice.getFailoverLocale());
         	return string;
         }
         
         // Then try to find it in the i18n package, in the system messages of the failover language.
-        try { string = findString(global, langChoice.getFailoverLocale(), key, parameters); } catch(MissingResourceException e) {};
+        try { string = findString(global, langChoice.getFailoverLocale(), key, parameters, resourceClass); } catch(MissingResourceException e) {};
         //System.out.println("found: "+key+"/"+string+" in "+global+" lang "+langChoice.getFailoverLocale());
         return string; 
     }
     
-    protected String calculateString(String packageName, String key, Object[] parameters)
+    protected String calculateString(String packageName, String key, Object[] parameters, Class<?> resourceClass)
     {
         String string=null;        
         if (replaceWith!=null) {
-        	string = internalCalc(replacePackage(packageName),replaceSysBundle,key, parameters);
-            if (string!=null) return string;            
+        	string = internalCalc(replacePackage(packageName),replaceSysBundle,key, parameters, resourceClass);
+            if (string!=null) {
+              return string;            
+            }
         }
-        string = internalCalc(packageName,SYSTEM_BUNDLE_PACKAGE, key, parameters);
+        
+        string = internalCalc(packageName,SYSTEM_BUNDLE_PACKAGE, key, parameters, resourceClass);
         if (string != null) return string;
         
         string = "!"+key+"!";
@@ -120,7 +123,7 @@ public class LAFMessageHandler extends GlobalMessages {
         	log.logDetailed(Const.getStackTracker(new KettleException(message)));
         }
 
-        return string;
+        return super.calculateString(packageName, key, parameters, resourceClass);
     }
 
 }
