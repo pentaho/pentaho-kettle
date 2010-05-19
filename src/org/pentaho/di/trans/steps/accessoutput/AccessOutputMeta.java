@@ -482,7 +482,14 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         {
             ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
             Object valueData = rowData[i];
-            
+
+            // Prevent a NullPointerException below
+            if (valueData == null || valueMeta == null)
+            {
+              values[i] = null;
+              continue;
+            }
+
             int length = valueMeta.getLength();
             
             switch(valueMeta.getType())
