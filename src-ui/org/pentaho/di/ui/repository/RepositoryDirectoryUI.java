@@ -51,9 +51,10 @@ public class RepositoryDirectoryUI {
      * @param getJobs Include jobs in the tree or not
      * @throws KettleDatabaseException
      */
-	public static void getTreeWithNames(TreeItem ti, Repository rep, Map<String, RepositoryElementMetaInterface> objectMap, Color dircolor, int sortPosition, boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectoryInterface dir, String filterString, Pattern pattern) throws KettleDatabaseException
+	public static void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, int sortPosition, boolean includeDeleted, boolean ascending, boolean getTransformations, boolean getJobs, RepositoryDirectoryInterface dir, String filterString, Pattern pattern) throws KettleDatabaseException
 	{
 		ti.setText(dir.getName());
+		ti.setData(dir);
 		ti.setForeground(dircolor);
 		int nrAdded=0;
 		
@@ -63,7 +64,7 @@ public class RepositoryDirectoryUI {
 			RepositoryDirectory subdir = dir.getSubdirectory(i);
 			TreeItem subti = new TreeItem(ti, SWT.NONE);
 			subti.setImage(GUIResource.getInstance().getImageArrow());
-			getTreeWithNames(subti, rep, objectMap, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir, filterString, pattern);
+			getTreeWithNames(subti, rep, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir, filterString, pattern);
 		}
 		
 		try
@@ -132,6 +133,7 @@ public class RepositoryDirectoryUI {
                 {
                 	nrAdded++;
 	                TreeItem tiObject = new TreeItem(ti, SWT.NONE);
+	                tiObject.setData(repositoryObject);
 	                if(repositoryObject.getObjectType()==RepositoryObjectType.TRANSFORMATION) {
 	                	tiObject.setImage(GUIResource.getInstance().getImageTransGraph());
 	                } else if(repositoryObject.getObjectType()==RepositoryObjectType.JOB) {
@@ -148,11 +150,6 @@ public class RepositoryDirectoryUI {
 	                if (repositoryObject.isDeleted()) {
 	                	tiObject.setForeground(GUIResource.getInstance().getColorRed());
 	                }
-
-	                // Store the displayed repository object in the map...
-	                //
-	                String fullPath = ConstUI.getTreePath(tiObject, 0);
-	                objectMap.put(fullPath, repositoryObject);
                 }
             }
 
