@@ -29,6 +29,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -52,7 +53,6 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -758,10 +758,12 @@ public class SpoonJobDelegate extends SpoonDelegate
 						jetrans.setTransname(transMeta.getName());
 						if (spoon.getRepository() != null)
 						{
+						    jetrans.setSpecificationMethod(ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME);
 							jetrans.setDirectory(transMeta.getRepositoryDirectory().getPath());
 						} 
 						else
 						{
+                            jetrans.setSpecificationMethod(ObjectLocationSpecificationMethod.FILENAME);
 							jetrans.setFileName(Const.createFilename("${"+ Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}", transMeta.getName(), "."+Const.STRING_TRANS_DEFAULT_EXT)); //$NON-NLS-1$  //$NON-NLS-2$
 						}
 	
