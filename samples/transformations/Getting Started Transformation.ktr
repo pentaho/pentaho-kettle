@@ -98,7 +98,7 @@ To test this transformation, you will need to:
     <type>H2</type>
     <access>Native</access>
     <database>sampledata</database>
-    <port/>
+    <port>9092</port>
     <username>sa</username>
     <password>Encrypted </password>
     <servername/>
@@ -108,6 +108,7 @@ To test this transformation, you will need to:
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>9092</attribute></attribute>
       <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
       <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
       <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
