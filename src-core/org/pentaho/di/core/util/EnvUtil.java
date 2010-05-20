@@ -238,32 +238,21 @@ public class EnvUtil
      * The localeCode code can be case insensitive, if it is available
      * the method will find it and return it.
      * 
-     * Returns null if an invalid or unavailable localeCode is provided.
-     * 
      * @param localeCode
      * @return java.util.Locale.
      */
     public static Locale createLocale(String localeCode) {
-
       Locale resultLocale = null;
       if (localeCode != null) {
-        // Creates a new java.util.Locale regardless of the given code.
-        Locale validatingLocale = null;
         StringTokenizer parser = new StringTokenizer(localeCode, "_"); //$NON-NLS-1$
         if (parser.countTokens() == 2) {
-          validatingLocale = new Locale(parser.nextToken(), parser.nextToken());
+          resultLocale = new Locale(parser.nextToken(), parser.nextToken());
         } else {
-          validatingLocale = new Locale(localeCode);
-        }
-
-        //Validates that the new java.util.Locale is available.
-        for (Locale currentLocale : Locale.getAvailableLocales()) {
-          if (validatingLocale.equals(currentLocale)) {
-            resultLocale = currentLocale;
-            break;
-          }
+          resultLocale = new Locale(localeCode);
         }
       }
       return resultLocale;
     }
+    
+
 }
