@@ -34,6 +34,7 @@ import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
@@ -2450,7 +2451,7 @@ public class ValueMeta implements ValueMetaInterface
             }
             else
             {
-                dateFormatLocale = new Locale(strDateFormatLocale);
+                dateFormatLocale = EnvUtil.createLocale(strDateFormatLocale);
             }
         }
         catch(EOFException e)
@@ -2615,7 +2616,7 @@ public class ValueMeta implements ValueMetaInterface
         String dateFormatLocaleString = XMLHandler.getTagValue(node, "date_format_locale");
         if (!Const.isEmpty( dateFormatLocaleString ))
         {
-        	dateFormatLocale = new Locale(dateFormatLocaleString);
+        	dateFormatLocale = EnvUtil.createLocale(dateFormatLocaleString);
         }
 	}
 

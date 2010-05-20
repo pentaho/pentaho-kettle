@@ -17,9 +17,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 
 public class LanguageChoice
 {
@@ -110,12 +110,10 @@ public class LanguageChoice
         }
         
         String defaultLocaleStr = properties.getProperty(STRING_DEFAULT_LOCALE,  Const.DEFAULT_LOCALE.toString());
-        StringTokenizer defaultLocaleTokens = new StringTokenizer(defaultLocaleStr, "_"); //$NON-NLS-1$
-        defaultLocale  = new Locale(defaultLocaleTokens.nextToken(), defaultLocaleTokens.nextToken());
+        defaultLocale = EnvUtil.createLocale(defaultLocaleStr);
         
         String failoverLocaleStr = properties.getProperty(STRING_FAILOVER_LOCALE, "en_US");  //$NON-NLS-1$
-        StringTokenizer failoverLocaleTokens = new StringTokenizer(failoverLocaleStr, "_"); //$NON-NLS-1$
-        failoverLocale = new Locale(failoverLocaleTokens.nextToken(), failoverLocaleTokens.nextToken() );
+        failoverLocale = EnvUtil.createLocale(failoverLocaleStr);
     }
     
     public void saveSettings()

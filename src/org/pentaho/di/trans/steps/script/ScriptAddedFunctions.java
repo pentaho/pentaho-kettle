@@ -58,6 +58,7 @@ import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -896,7 +897,7 @@ public class ScriptAddedFunctions {
 					sArg2 = (String) ArgList[1];
 					sArg3 = (String) ArgList[2];
 					if(sArg3.length() == 2){
-						Locale dfLocale = new Locale(sArg3);
+						Locale dfLocale = EnvUtil.createLocale(sArg3);
 						dfFormatter = new SimpleDateFormat(sArg2, dfLocale);
 						oRC = dfFormatter.parseObject(sArg1);
 					}else{
@@ -921,7 +922,7 @@ public class ScriptAddedFunctions {
 					TimeZone tz = TimeZone.getTimeZone(sArg4);								
 					
 					if(sArg3.length() == 2){
-						Locale dfLocale = new Locale(sArg3);
+						Locale dfLocale = EnvUtil.createLocale(sArg3);
 						dfFormatter = new SimpleDateFormat(sArg2, dfLocale);
 						dfFormatter.setTimeZone(tz);
 						oRC = dfFormatter.parseObject(sArg1);
@@ -976,7 +977,7 @@ public class ScriptAddedFunctions {
 					String sArg2 = (String) ArgList[1];
 					String sArg3 = (String) ArgList[2];
 					if(sArg3.length() == 2){
-						Locale dfLocale = new Locale(sArg3.toLowerCase());
+						Locale dfLocale = EnvUtil.createLocale(sArg3.toLowerCase());
 						dfFormatter = new SimpleDateFormat(sArg2, dfLocale);
 						oRC = dfFormatter.format(dArg1);
 					}else{
@@ -1001,7 +1002,7 @@ public class ScriptAddedFunctions {
 					TimeZone tz = TimeZone.getTimeZone(sArg4);
 					
 					if(sArg3.length() == 2){
-						Locale dfLocale = new Locale(sArg3.toLowerCase());
+						Locale dfLocale = EnvUtil.createLocale(sArg3.toLowerCase());
 						dfFormatter = new SimpleDateFormat(sArg2, dfLocale);
 						dfFormatter.setTimeZone(tz);
 						oRC = dfFormatter.format(dArg1);
@@ -1156,7 +1157,7 @@ public class ScriptAddedFunctions {
 					String sArg2 = (String) ArgList[1];
 					String sArg3 = (String) ArgList[2];
 					if(sArg3.length() == 2){
-						DecimalFormatSymbols dfs = new DecimalFormatSymbols(new Locale(sArg3.toLowerCase()));
+						DecimalFormatSymbols dfs = new DecimalFormatSymbols(EnvUtil.createLocale(sArg3.toLowerCase()));
 						DecimalFormat formatter = new DecimalFormat(sArg2, dfs);
 						sRC = formatter.format(sArg1); 
 					}
@@ -1211,7 +1212,7 @@ public class ScriptAddedFunctions {
 					String sArg2 = (String) ArgList[1];
 					String sArg3 = (String) ArgList[2];
 					if(sArg3.length() == 2){
-						DecimalFormatSymbols dfs = new DecimalFormatSymbols(new Locale(sArg3.toLowerCase()));
+						DecimalFormatSymbols dfs = new DecimalFormatSymbols(EnvUtil.createLocale(sArg3.toLowerCase()));
 						DecimalFormat formatter = new DecimalFormat(sArg2, dfs);
 						dRC= (formatter.parse(sArg1)).doubleValue(); 
 						return new Double(dRC);

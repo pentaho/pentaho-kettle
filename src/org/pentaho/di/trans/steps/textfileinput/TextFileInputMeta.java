@@ -36,6 +36,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -1033,7 +1034,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			String dateLocale = XMLHandler.getTagValue(stepnode, "date_format_locale");
 			if (dateLocale != null)
 			{
-				dateFormatLocale = new Locale(dateLocale);
+				dateFormatLocale = EnvUtil.createLocale(dateLocale);
 			}
 			else
 			{
@@ -1186,7 +1187,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			String dateLocale = rep.getStepAttributeString(id_step, 0, "date_format_locale");
 			if (dateLocale != null)
 			{
-				dateFormatLocale = new Locale(dateLocale);
+				dateFormatLocale = EnvUtil.createLocale(dateLocale);
 			}
 			else
 			{
