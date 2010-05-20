@@ -32,6 +32,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -456,8 +457,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			{
 				LogWriter.getInstance().removeAppender(appender);
 				appender.close();
+				
+		        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, appender.getFile(), parentJob.getJobname(), getName());
+		        result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 			}
-
 		}
 
 		return result;
