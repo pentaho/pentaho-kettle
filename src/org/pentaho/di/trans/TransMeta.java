@@ -2399,9 +2399,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             props=Props.getInstance();
         }
         
-        if (parentVariableSpace!=null) {
-        	initializeVariablesFrom(parentVariableSpace);
-        }
+        initializeVariablesFrom(parentVariableSpace);
         
         try
         {
