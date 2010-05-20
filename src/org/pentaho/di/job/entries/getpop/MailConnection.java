@@ -632,6 +632,12 @@ public class MailConnection {
 		try {
 			String disposition = part.getDisposition();
 		
+			// The RFC2183 doesn't REQUIRE Content-Disposition header field so we'll create one to
+			// fake out the code below.
+			if (disposition == null || disposition.length() < 1) {		                                                       
+			  disposition = Part.ATTACHMENT;
+			}
+			
 			if ((disposition != null) && ( disposition.equalsIgnoreCase(Part.ATTACHMENT) 
 					|| disposition.equalsIgnoreCase(Part.INLINE) ) ) {
 				String MimeText=null;
