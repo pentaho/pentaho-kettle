@@ -1578,6 +1578,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         public void onError(Throwable t) {
           new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
               BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+          
         }
 
         public void onCancel() {
@@ -3188,8 +3189,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       public void onError(Throwable t) {
         closeRepository();
-        new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
-            BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+        mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t.getLocalizedMessage()));
+        mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"));
+        mb.open();
 
       }
 
@@ -6369,8 +6372,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 "Spoon.Dialog.LoginFailed.Title"), t.getLocalizedMessage());
             dialog.open();
           } else {
-           new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
-                BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+            mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t.getLocalizedMessage()));
+            mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"));
+            mb.open();
           }
         }
 
@@ -6407,8 +6412,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             }
 
             public void onError(Throwable t) {
-              new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
-                  BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+              MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+              mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t.getLocalizedMessage()));
+              mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"));
+              mb.open();
             }
 
             public void onCancel() {
