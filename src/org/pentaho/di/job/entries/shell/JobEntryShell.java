@@ -310,7 +310,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		String retval = "";
 		if (setLogfile)
 		{
-			retval += logfile;
+		    retval+=logfile==null?"":logfile;
 			Calendar cal = Calendar.getInstance();
 			if (addDate)
 			{
@@ -336,9 +336,19 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		LogLevel shellLogLevel = parentJob.getLogLevel();
 		if (setLogfile)
 		{
+			String realLogFilename=environmentSubstitute(getLogFilename());
+		      // We need to check here the log filename
+		      // if we do not have one, we must fail
+		      if(Const.isEmpty(realLogFilename)) {
+		          logError(BaseMessages.getString(PKG, "JobEntryShell.Exception.LogFilenameMissing"));
+		          result.setNrErrors(1);
+		          result.setResult(false);
+		          return result;
+		      }
+		      
 			try
 			{
-				appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true,setAppendLogfile);
+				appender = LogWriter.createFileAppender(realLogFilename, true,setAppendLogfile);
 				LogWriter.getInstance().addAppender(appender);
 			} catch (KettleException e)
 			{

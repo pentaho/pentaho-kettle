@@ -180,7 +180,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		String retval="";
 		if (setLogfile)
 		{
-			retval+=logfile;
+			retval+=logfile==null?"":logfile;
 			Calendar cal = Calendar.getInstance();
 			if (addDate)
 			{
@@ -525,6 +525,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           
         	realLogFilename=environmentSubstitute(getLogFilename());
         	
+            // We need to check here the log filename
+            // if we do not have one, we must fail
+            if(Const.isEmpty(realLogFilename)) {
+                logError(BaseMessages.getString(PKG, "JobTrans.Exception.LogFilenameMissing"));
+                result.setNrErrors(1);
+                result.setResult(false);
+                return result;
+            }
         	// create parent folder?
         	if(!createParentFolder(realLogFilename)) 
         	{
