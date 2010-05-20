@@ -35,8 +35,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.HTTPProtocol;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.http.JobEntryHTTP;
@@ -45,6 +47,8 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -154,12 +158,18 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     private TextVar wNonProxyHosts;
 
     private FormData fdlNonProxyHosts, fdNonProxyHosts;
+    
+    private TableView wHeaders;
+    
+    private FormData fdHeaders, fdHeadersGroup;
+    
+    private ColumnInfo[] colinf;
 
     private Button wOK, wCancel;
 
     private Listener lsOK, lsCancel;
     
-    private Group wAuthentication, wUpLoadFile, wTargetFileGroup;
+    private Group wAuthentication, wUpLoadFile, wTargetFileGroup, wHeadersGroup;
     private FormData fdAuthentication, fdUpLoadFile, fdTargetFileGroup;
     
     private Label wlAddFilenameToResult;
@@ -290,6 +300,59 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdFieldURL.right = new FormAttachment(100, 0);
         wFieldURL.setLayoutData(fdFieldURL);
         
+        ///////////////////////////
+        // START OF Headers Group 
+        //
+        wHeadersGroup= new Group(shell, SWT.SHADOW_NONE);
+        props.setLook(wHeadersGroup);
+        wHeadersGroup.setText(BaseMessages.getString(PKG, "JobHTTP.Headers.Group.Label"));
+
+        FormLayout  headersGroupLayout = new FormLayout();
+        headersGroupLayout .marginWidth = 10;
+        headersGroupLayout .marginHeight = 10;
+        wHeadersGroup.setLayout(headersGroupLayout);
+        
+        int rows = jobEntry.getHeaderName() == null ? 1
+                    : (jobEntry.getHeaderName().length == 0
+                     ? 0
+                    : jobEntry.getHeaderName().length);
+        
+
+        colinf=new ColumnInfo[] {
+                
+               new ColumnInfo(BaseMessages.getString(PKG, "JobHTTP.ColumnInfo.Name"),      
+                                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                                HTTPProtocol.getRequestHeaders(),
+                                false),
+                                 
+               new ColumnInfo(BaseMessages.getString(PKG, "JobHTTP.ColumnInfo.Value"),
+                                ColumnInfo.COLUMN_TYPE_TEXT,   
+                                false), //$NON-NLS-1$
+        };
+        colinf[0].setUsingVariables(true);
+        colinf[1].setUsingVariables(true);
+        
+        wHeaders =new TableView(jobMeta, wHeadersGroup,
+                          SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+                          colinf,
+                          rows,
+                          lsMod,
+                          props
+                   );
+        
+        fdHeaders =new FormData();
+        fdHeaders.left  = new FormAttachment(0, margin);
+        fdHeaders.top   = new FormAttachment(wFieldURL, margin);
+        fdHeaders.right = new FormAttachment(100, -margin);
+        wHeaders.setLayoutData(fdHeaders);       
+     
+        fdHeadersGroup =new FormData();
+        fdHeadersGroup.left  = new FormAttachment(0, margin);
+        fdHeadersGroup.top   = new FormAttachment(wFieldURL, margin);
+        fdHeadersGroup.right = new FormAttachment(100, -margin);
+        fdHeaders.bottom = new FormAttachment(0, 100);
+        wHeadersGroup.setLayoutData(fdHeadersGroup); 
+        
 	     // ////////////////////////
 	     // START OF AuthenticationGROUP///
 	     // /
@@ -302,15 +365,14 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 	    AuthenticationgroupLayout .marginHeight = 10;
 	    wAuthentication.setLayout(AuthenticationgroupLayout );
 
-
-	    
+        
         // UserName line
         wlUserName = new Label(wAuthentication, SWT.RIGHT);
         wlUserName.setText(BaseMessages.getString(PKG, "JobHTTP.UploadUser.Label"));
         props.setLook(wlUserName);
         fdlUserName = new FormData();
         fdlUserName.left = new FormAttachment(0, 0);
-        fdlUserName.top = new FormAttachment(wFieldURL, margin);
+        fdlUserName.top = new FormAttachment(wHeadersGroup, margin);
         fdlUserName.right = new FormAttachment(middle, -margin);
         wlUserName.setLayoutData(fdlUserName);
         wUserName = new TextVar(jobMeta, wAuthentication, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -319,7 +381,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
         fdUserName.left = new FormAttachment(middle, 0);
-        fdUserName.top = new FormAttachment(wFieldURL, margin);
+        fdUserName.top = new FormAttachment(wHeadersGroup, margin);
         fdUserName.right = new FormAttachment(100, 0);
         wUserName.setLayoutData(fdUserName);
 
@@ -403,7 +465,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
 	    fdAuthentication= new FormData();
 	    fdAuthentication.left = new FormAttachment(0, margin);
-	    fdAuthentication.top = new FormAttachment(wFieldURL, margin);
+	    fdAuthentication.top = new FormAttachment(wHeadersGroup, margin);
 	    fdAuthentication.right = new FormAttachment(100, -margin);
 	    wAuthentication.setLayoutData(fdAuthentication);
 	    // ///////////////////////////////////////////////////////////
@@ -755,7 +817,22 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wProxyServer.setText(Const.NVL(jobEntry.getProxyHostname(), ""));
         wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
         wNonProxyHosts.setText(Const.NVL(jobEntry.getNonProxyHosts(), ""));
-		wAddFilenameToResult.setSelection(jobEntry.isAddFilenameToResult());
+        
+        String[] headerNames = jobEntry.getHeaderName();
+        String[] headerValues = jobEntry.getHeaderValue();
+        if (headerNames != null)
+        {
+           for (int i = 0; i < headerNames.length; i++)
+           {
+              TableItem ti = wHeaders.table.getItem(i);
+              if (headerNames[i] != null) ti.setText(1, headerNames[i]);
+              if (headerValues[i] != null) ti.setText(2, headerValues[i]);
+           }
+           wHeaders.setRowNums();
+           wHeaders.optWidth(true);
+        }
+		
+        wAddFilenameToResult.setSelection(jobEntry.isAddFilenameToResult());
         setFlags();
     }
 
@@ -796,6 +873,32 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         jobEntry.setNonProxyHosts(wNonProxyHosts.getText());
 		jobEntry.setAddFilenameToResult(wAddFilenameToResult.getSelection());
 		
+		int nritems = wHeaders.nrNonEmpty();
+		int nr = 0;
+		for (int i = 0; i < nritems; i++)
+		{
+		   String arg = wHeaders.getNonEmpty(i).getText(1);
+		   if (arg != null && arg.length() != 0) nr++;
+		}
+		String[] headerNames = new String[nr];
+		String[] headerValues = new String[nr];
+		
+		nr = 0;
+		for (int i = 0; i < nritems; i++)
+		{
+		    String varname = wHeaders.getNonEmpty(i).getText(1);
+		    String varvalue = wHeaders.getNonEmpty(i).getText(2);
+		       
+		    if (varname != null && varname.length() != 0)
+		    {
+		        headerNames[nr] = varname;
+		        headerValues[nr] = varvalue;
+		        nr++;
+		    }
+		}
+		jobEntry.setHeaderName(headerNames);
+		jobEntry.setHeaderValue(headerValues);
+
         dispose();
     }
 
