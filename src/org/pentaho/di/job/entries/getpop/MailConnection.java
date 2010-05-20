@@ -638,8 +638,7 @@ public class MailConnection {
 			  disposition = Part.ATTACHMENT;
 			}
 			
-			if ((disposition != null) && ( disposition.equalsIgnoreCase(Part.ATTACHMENT) 
-					|| disposition.equalsIgnoreCase(Part.INLINE) ) ) {
+			if ( disposition.equalsIgnoreCase(Part.ATTACHMENT) || disposition.equalsIgnoreCase(Part.INLINE) ) {
 				String MimeText=null;
 				try{
 					MimeText=MimeUtility.decodeText(part.getFileName());
