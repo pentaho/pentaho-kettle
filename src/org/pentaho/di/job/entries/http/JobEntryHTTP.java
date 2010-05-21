@@ -503,8 +503,10 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         if (!Const.isEmpty(headerName)) {
             log.logDebug(BaseMessages.getString(PKG, "JobHTTP.Log.HeadersProvided"));
             for (int j = 0; j < headerName.length; j++) {
-                connection.setRequestProperty(environmentSubstitute(headerName[j]), headerValue[j]);
-                log.logDebug(BaseMessages.getString(PKG, "JobHTTP.Log.HeaderSet", environmentSubstitute(headerName[j]), environmentSubstitute(headerValue[j])));
+                if (!Const.isEmpty(headerValue[j])) {
+                    connection.setRequestProperty(environmentSubstitute(headerName[j]), headerValue[j]);
+                    log.logDebug(BaseMessages.getString(PKG, "JobHTTP.Log.HeaderSet", environmentSubstitute(headerName[j]), environmentSubstitute(headerValue[j])));
+                }
             }
         }
        
