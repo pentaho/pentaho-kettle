@@ -362,7 +362,7 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			isFoldernameDynamic  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "foldername_dynamic"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
-			dynamicFoldernameField    = XMLHandler.getTagValue(stepnode, "foldername_Field");
+			dynamicFoldernameField    = XMLHandler.getTagValue(stepnode, "foldername_field");
 			
 			// Is there a limit on the number of rows we process?
 			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
@@ -392,7 +392,7 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			int nrfiles = rep.countNrStepAttributes(id_step, "file_name");
 			
-			dynamicFoldernameField  = rep.getStepAttributeString(id_step, "foldername_Field");
+			dynamicFoldernameField  = rep.getStepAttributeString(id_step, "foldername_field");
 			
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
 			isFoldernameDynamic  = rep.getStepAttributeBoolean(id_step, "foldername_dynamic");
