@@ -619,6 +619,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       } else if (contains(TYPE.CANCEL, pollResults)) {
         folderTree.setSelectedItems(this.selectedFolderItems);
       }
+    } else {
+      setRepositoryDirectories(selectedFolderItems);
     }
   }
 
@@ -635,6 +637,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       } else if (contains(TYPE.CANCEL, pollResults)) {
         fileTable.setSelectedItems(this.selectedFileItems);
       }
+    } else {
+      setRepositoryObjects(selectedFileItems);
     }
   }
 
