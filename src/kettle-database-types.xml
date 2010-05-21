@@ -45,6 +45,11 @@
     <classname>org.pentaho.di.core.database.GreenplumDatabaseMeta</classname>
   </database-type>                                                           
 
+  <database-type id="INFINIDB">
+    <description>Calpont InfiniDB</description>
+    <classname>org.pentaho.di.core.database.InfiniDbDatabaseMeta</classname>
+  </database-type>
+ 
   <database-type id="SQLBASE">
     <description>Gupta SQL Base</description>
     <classname>org.pentaho.di.core.database.GuptaDatabaseMeta</classname>
@@ -184,6 +189,5 @@
     <description>Vertica</description>
     <classname>org.pentaho.di.core.database.VerticaDatabaseMeta</classname>
   </database-type>
- 
  
  </database-types>

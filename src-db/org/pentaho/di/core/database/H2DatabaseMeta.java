@@ -52,7 +52,8 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	}
     
 	public int getDefaultDatabasePort() {
-	  return 8082;
+    if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 8082;
+    return -1;
 	}
 	
     public String getURL(String hostname, String port, String databaseName)
