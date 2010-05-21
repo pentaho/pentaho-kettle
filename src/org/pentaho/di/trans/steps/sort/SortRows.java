@@ -28,6 +28,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -539,6 +540,18 @@ public class SortRows extends BaseStep implements StepInterface
     if ( (data.fis != null) && (data.fis.size() > 0) ) {
       for (InputStream is : data.fis) {
         BaseStep.closeQuietly(is);
+      }
+    }
+    // remove temp files
+    for (int f=0;f<data.files.size();f++)
+    {
+      FileObject fileToDelete = data.files.get(f);
+      try {
+        if (fileToDelete != null && fileToDelete.exists()) {
+          fileToDelete.delete();
+        }
+      } catch (FileSystemException e) {
+        logError(e.getLocalizedMessage(), e);
       }
     }
 		super.dispose(smi, sdi);
