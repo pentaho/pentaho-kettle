@@ -11,10 +11,10 @@ REM COLOR F0
 :: ** Kettle home                                  **
 :: **************************************************
 
-if "%KETTLE_HOME%"=="" set KETTLE_HOME=%~dp0
-if %KETTLE_HOME:~-1%==\ set KETTLE_HOME=%KETTLE_HOME:~0,-1%
+if "%KETTLE_DIR%"=="" set KETTLE_DIR=%~dp0
+if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 
-cd %KETTLE_HOME%
+cd %KETTLE_DIR%
 
 REM **************************************************
 REM   Platform Specific SWT       **

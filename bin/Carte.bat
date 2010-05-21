@@ -5,10 +5,10 @@ setlocal
 :: ** Kettle home                                  **
 :: **************************************************
 
-if "%KETTLE_HOME%"=="" set KETTLE_HOME=%~dp0
-if %KETTLE_HOME:~-1%==\ set KETTLE_HOME=%KETTLE_HOME:~0,-1%
+if "%KETTLE_DIR%"=="" set KETTLE_DIR=%~dp0
+if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 
-cd %KETTLE_HOME%
+cd %KETTLE_DIR%
 
 REM **************************************************
 REM ** Set up usage of JAVA_EXT_LIBS                **
@@ -42,21 +42,21 @@ REM ******************
 REM   KETTLE Library
 REM *****************
 
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_HOME%\lib
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\lib
 
 REM **********************
 REM   External Libraries
 REM **********************
 
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_HOME%\libext
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_HOME%\libext\JDBC
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_HOME%\libext\webservices
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_HOME%\libext\spring
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_HOME%\libext\commons
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_HOME%\libext\web
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_HOME%\libext\pentaho
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_HOME%\libext\mondrian
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_HOME%\libext\salesforce
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\JDBC
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\webservices
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\spring
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\commons
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\web
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\pentaho
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\mondrian
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\salesforce
 
 REM **************************************************
 REM   Platform Specific SWT       **
@@ -76,13 +76,13 @@ IF %IS64BITJAVA% == 1 GOTO :USE64
 REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
 REM ===========================================
-set LIBSPATH=%KETTLE_HOME%\libswt\win32
+set LIBSPATH=%KETTLE_DIR%\libswt\win32
 GOTO :CONTINUE
 :USE64
 REM ===========================================
 REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
-set LIBSPATH=%KETTLE_HOME%\libswt\win64
+set LIBSPATH=%KETTLE_DIR%\libswt\win64
 :CONTINUE
 
 echo %LIBSPATH%
