@@ -111,6 +111,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -978,6 +979,23 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}else{
 			bInputOK = true;
 		}
+		
+    if (bInputOK && wCompatible.getSelection()) {
+      // If in compatibility mode the "replace" column must not be "Yes"
+      int nrfields = wFields.nrNonEmpty();
+      for (int i=0;i<nrfields;i++){
+        TableItem item = wFields.getNonEmpty(i);
+        if (YES_NO_COMBO[1].equalsIgnoreCase(item.getText(6))) {
+          bInputOK = false;
+        }
+      }
+      if (!bInputOK) {
+        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_ERROR );
+        mb.setMessage(BaseMessages.getString("ScriptValuesDialogMod.ReplaceNotAllowedInCompatibilityMode")); //$NON-NLS-1$
+        mb.setText(BaseMessages.getString("ScriptValuesDialogMod.ERROR.Label")); //$NON-NLS-1$
+        mb.open();
+      }
+    }
 		
 		if(bInputOK){
 			getInfo(input);
