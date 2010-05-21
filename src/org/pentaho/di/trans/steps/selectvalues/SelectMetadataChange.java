@@ -43,6 +43,8 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	private String groupingSymbol; 
 	/** The currency symbol for number conversions */
 	private String currencySymbol;
+	/** The encoding to use when decoding binary data to Strings */
+  private String encoding;
 	
 	public SelectMetadataChange() {
 		storageType=-1; // storage type is not used by default!
@@ -83,6 +85,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		retval.append("        ").append(XMLHandler.addTagValue("length",          length)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("        ").append(XMLHandler.addTagValue("precision",       precision)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("        ").append(XMLHandler.addTagValue("conversion_mask", conversionMask)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("        ").append(XMLHandler.addTagValue("encoding",        encoding)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("        ").append(XMLHandler.addTagValue("decimal_symbol",  decimalSymbol)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("        ").append(XMLHandler.addTagValue("grouping_symbol", groupingSymbol)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("        ").append(XMLHandler.addTagValue("currency_symbol", currencySymbol)); //$NON-NLS-1$ //$NON-NLS-2$		
@@ -99,6 +102,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		precision      = Const.toInt(XMLHandler.getTagValue(metaNode, "precision"), -2); //$NON-NLS-1$
 		storageType    = ValueMeta.getStorageType( XMLHandler.getTagValue(metaNode, "storage_type") ); //$NON-NLS-1$
 		conversionMask = XMLHandler.getTagValue(metaNode, "conversion_mask"); //$NON-NLS-1$
+		encoding       = XMLHandler.getTagValue(metaNode, "encoding"); //$NON-NLS-1$
 		decimalSymbol  = XMLHandler.getTagValue(metaNode, "decimal_symbol"); //$NON-NLS-1$
 		groupingSymbol = XMLHandler.getTagValue(metaNode, "grouping_symbol"); //$NON-NLS-1$
 		currencySymbol = XMLHandler.getTagValue(metaNode, "currency_symbol"); //$NON-NLS-1$
@@ -252,6 +256,20 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	public void setCurrencySymbol(String currencySymbol) {
 		this.currencySymbol = currencySymbol;
 	}
+
+	/**
+	 * @return the encoding to use when decoding binary data to strings
+	 */
+  public String getEncoding() {
+    return encoding;
+  }
+  
+  /**
+   * @param encoding the encoding to use when decoding binary data to strings
+   */
+  public void setEncoding(String encoding) {
+    this.encoding = encoding;
+  }
 	
 	
 }
