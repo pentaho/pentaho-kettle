@@ -208,14 +208,15 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			spoon.enableMenus();
 		} else {
 			TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry(transMeta);
-			
-			int idx = spoon.tabfolder.indexOf(tabEntry.getTabItem());
-
-			// keep the focus on the graph
-			spoon.tabfolder.setSelected(idx);
-
-			spoon.setUndoMenu(transMeta);
-			spoon.enableMenus();
+			if (tabEntry!=null) {
+    			int idx = spoon.tabfolder.indexOf(tabEntry.getTabItem());
+    
+    			// keep the focus on the graph
+    			spoon.tabfolder.setSelected(idx);
+    
+    			spoon.setUndoMenu(transMeta);
+    			spoon.enableMenus();
+			}
 		}
 	}
 
