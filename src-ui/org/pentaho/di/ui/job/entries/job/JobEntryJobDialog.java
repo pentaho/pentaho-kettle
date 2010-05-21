@@ -17,7 +17,9 @@
 package org.pentaho.di.ui.job.entries.job;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -76,6 +78,8 @@ import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+
+
 /**
  * This dialog allows you to edit the job job entry (JobEntryJob)
  * 
@@ -85,6 +89,11 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?>                   PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
+  private static final String[] FILE_FILTERLOGNAMES = new String[] {
+      BaseMessages.getString(PKG, "JobJob.Fileformat.TXT"),
+      BaseMessages.getString(PKG, "JobJob.Fileformat.LOG"),
+      BaseMessages.getString(PKG, "JobJob.Fileformat.All") };
+  
   private Label                             wlName;
   private Text                              wName;
 
@@ -106,6 +115,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
   private Label                             wlLogfile;
   private TextVar                           wLogfile;
   private FormData                          fdlLogfile, fdLogfile;
+  
+  private Button 							wbLogFilename;
+  private FormData 							fdbLogFilename;
 
   private Label                             wlCreateParentFolder;
   private Button                            wCreateParentFolder;
@@ -693,13 +705,24 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     fdlLogfile.top = new FormAttachment(wAppendLogfile, margin);
     fdlLogfile.right = new FormAttachment(middle, -margin);
     wlLogfile.setLayoutData(fdlLogfile);
+    
+    
+    wbLogFilename = new Button(wLogging, SWT.PUSH | SWT.CENTER);
+    props.setLook(wbLogFilename);
+    wbLogFilename.setText(BaseMessages.getString(PKG, "JobJob.Browse.Label"));
+    fdbLogFilename = new FormData();
+    fdbLogFilename.top = new FormAttachment(wAppendLogfile, margin);
+    fdbLogFilename.right = new FormAttachment(100, 0);
+    wbLogFilename.setLayoutData(fdbLogFilename);
+    
+    
     wLogfile = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     wLogfile.setText("");
     props.setLook(wLogfile);
     fdLogfile = new FormData();
     fdLogfile.left = new FormAttachment(middle, 0);
     fdLogfile.top = new FormAttachment(wAppendLogfile, margin);
-    fdLogfile.right = new FormAttachment(100, 0);
+    fdLogfile.right = new FormAttachment(wbLogFilename, -margin);
     wLogfile.setLayoutData(fdLogfile);
 
     // create parent folder?
@@ -962,7 +985,39 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
         selectJobByReference();
       }
     });
+    
+    wbLogFilename.addSelectionListener(new SelectionAdapter()
+    {
+        public void widgetSelected(SelectionEvent e)
+        {
 
+        	 FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+                dialog.setFilterExtensions(new String[] { "*.txt", "*.log", "*" });
+                dialog.setFilterNames(FILE_FILTERLOGNAMES);
+
+        		if (wLogfile.getText()!=null)
+        			dialog.setFileName(jobMeta.environmentSubstitute(wLogfile.getText()) );
+        		
+        		if (dialog.open()!=null)
+        		{
+        			wLogfile.setText(dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName());
+        			String filename=dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName();
+        			FileObject file = null;
+        			try
+        			{
+        				file=KettleVFS.getFileObject(filename);
+        				// Set file extension ..
+        				wLogext.setText(file.getName().getExtension());
+        				// Set filename without extension ...
+        				wLogfile.setText(wLogfile.getText().substring(0,wLogfile.getText().length()-wLogext.getText().length()-1));	
+        			}
+        			catch (Exception ex){};
+        			if ( file != null ) {try  {file.close();}catch ( IOException ex ) {};}
+        		}
+        	
+        }
+    });
+    
     // Detect [X] or ALT-F4 or something that kills this window...
     shell.addShellListener(new ShellAdapter() {
       public void shellClosed(ShellEvent e) {
@@ -1108,6 +1163,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     radioByName.setEnabled(rep != null);
     radioByReference.setEnabled(rep != null);
     wFilename.setEnabled(radioFilename.getSelection());
+    wbLogFilename.setEnabled(wSetLogfile.getSelection());
     wJobname.setEnabled(rep != null && radioByName.getSelection());
     wbJobname.setEnabled(rep != null);
     wDirectory.setEnabled(rep != null && radioByName.getSelection());

@@ -17,6 +17,8 @@
 package org.pentaho.di.ui.job.entries.http;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -27,6 +29,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -39,6 +42,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.HTTPProtocol;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.http.JobEntryHTTP;
@@ -52,6 +56,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
 
 /**
  * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql
@@ -161,7 +166,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     
     private TableView wHeaders;
     
-    private FormData fdHeaders, fdHeadersGroup;
+    private FormData fdHeaders;
     
     private ColumnInfo[] colinf;
 
@@ -169,7 +174,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
     private Listener lsOK, lsCancel;
     
-    private Group wAuthentication, wUpLoadFile, wTargetFileGroup, wHeadersGroup;
+    private Group wAuthentication, wUpLoadFile, wTargetFileGroup;
     private FormData fdAuthentication, fdUpLoadFile, fdTargetFileGroup;
     
     private Label wlAddFilenameToResult;
@@ -183,6 +188,13 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     private SelectionAdapter lsDef;
 
     private boolean changed;
+    
+	private CTabFolder   wTabFolder;
+	private Composite    wGeneralComp, wHeadersComp;	
+	private CTabItem     wGeneralTab, wHeadersTab;
+	private FormData	 fdGeneralComp, fdHeadersComp;
+	private FormData     fdTabFolder;
+
 
     public JobEntryHTTPDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -237,9 +249,25 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdName.top = new FormAttachment(0, margin);
         fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
+        
+        wTabFolder = new CTabFolder(shell, SWT.BORDER);
+ 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+ 		
+ 		//////////////////////////
+		// START OF GENERAL TAB   ///
+		//////////////////////////
+
+		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
+		wGeneralTab.setText(BaseMessages.getString(PKG, "JobHTTP.Tab.General.Label"));
+		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wGeneralComp);
+		FormLayout generalLayout = new FormLayout();
+		generalLayout.marginWidth  = 3;
+		generalLayout.marginHeight = 3;
+		wGeneralComp.setLayout(generalLayout);
 
         // URL line
-        wlURL = new Label(shell, SWT.RIGHT);
+        wlURL = new Label(wGeneralComp, SWT.RIGHT);
         wlURL.setText(BaseMessages.getString(PKG, "JobHTTP.URL.Label"));
         props.setLook(wlURL);
         fdlURL = new FormData();
@@ -247,7 +275,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlURL.top = new FormAttachment(wName, 2*margin);
         fdlURL.right = new FormAttachment(middle, -margin);
         wlURL.setLayoutData(fdlURL);
-        wURL = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(PKG, "JobHTTP.URL.Tooltip"));
+        wURL = new TextVar(jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(PKG, "JobHTTP.URL.Tooltip"));
         props.setLook(wURL);
         wURL.addModifyListener(lsMod);
         fdURL = new FormData();
@@ -257,7 +285,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wURL.setLayoutData(fdURL);
 
         // RunEveryRow line
-        wlRunEveryRow = new Label(shell, SWT.RIGHT);
+        wlRunEveryRow = new Label(wGeneralComp, SWT.RIGHT);
         wlRunEveryRow.setText(BaseMessages.getString(PKG, "JobHTTP.RunForEveryRow.Label"));
         props.setLook(wlRunEveryRow);
         fdlRunEveryRow = new FormData();
@@ -265,7 +293,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlRunEveryRow.top = new FormAttachment(wURL, margin);
         fdlRunEveryRow.right = new FormAttachment(middle, -margin);
         wlRunEveryRow.setLayoutData(fdlRunEveryRow);
-        wRunEveryRow = new Button(shell, SWT.CHECK);
+        wRunEveryRow = new Button(wGeneralComp, SWT.CHECK);
         wRunEveryRow.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.RunForEveryRow.Tooltip"));
         props.setLook(wRunEveryRow);
         fdRunEveryRow = new FormData();
@@ -282,7 +310,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         });
 
         // FieldURL line
-        wlFieldURL = new Label(shell, SWT.RIGHT);
+        wlFieldURL = new Label(wGeneralComp, SWT.RIGHT);
         wlFieldURL.setText(BaseMessages.getString(PKG, "JobHTTP.InputField.Label"));
         props.setLook(wlFieldURL);
         fdlFieldURL = new FormData();
@@ -290,7 +318,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdlFieldURL.top = new FormAttachment(wRunEveryRow, margin);
         fdlFieldURL.right = new FormAttachment(middle, -margin);
         wlFieldURL.setLayoutData(fdlFieldURL);
-        wFieldURL = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFieldURL = new TextVar(jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFieldURL);
         wFieldURL.setToolTipText(BaseMessages.getString(PKG, "JobHTTP.InputField.Tooltip"));
         wFieldURL.addModifyListener(lsMod);
@@ -299,64 +327,13 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         fdFieldURL.top = new FormAttachment(wRunEveryRow, margin);
         fdFieldURL.right = new FormAttachment(100, 0);
         wFieldURL.setLayoutData(fdFieldURL);
-        
-        ///////////////////////////
-        // START OF Headers Group 
-        //
-        wHeadersGroup= new Group(shell, SWT.SHADOW_NONE);
-        props.setLook(wHeadersGroup);
-        wHeadersGroup.setText(BaseMessages.getString(PKG, "JobHTTP.Headers.Group.Label"));
-
-        FormLayout  headersGroupLayout = new FormLayout();
-        headersGroupLayout .marginWidth = 10;
-        headersGroupLayout .marginHeight = 10;
-        wHeadersGroup.setLayout(headersGroupLayout);
-        
-        int rows = jobEntry.getHeaderName() == null ? 1
-                    : (jobEntry.getHeaderName().length == 0
-                     ? 0
-                    : jobEntry.getHeaderName().length);
-        
-
-        colinf=new ColumnInfo[] {
-                
-               new ColumnInfo(BaseMessages.getString(PKG, "JobHTTP.ColumnInfo.Name"),      
-                                ColumnInfo.COLUMN_TYPE_CCOMBO,
-                                HTTPProtocol.getRequestHeaders(),
-                                false),
-                                 
-               new ColumnInfo(BaseMessages.getString(PKG, "JobHTTP.ColumnInfo.Value"),
-                                ColumnInfo.COLUMN_TYPE_TEXT,   
-                                false), //$NON-NLS-1$
-        };
-        colinf[0].setUsingVariables(true);
-        colinf[1].setUsingVariables(true);
-        
-        wHeaders =new TableView(jobMeta, wHeadersGroup,
-                          SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
-                          colinf,
-                          rows,
-                          lsMod,
-                          props
-                   );
-        
-        fdHeaders =new FormData();
-        fdHeaders.left  = new FormAttachment(0, margin);
-        fdHeaders.top   = new FormAttachment(wFieldURL, margin);
-        fdHeaders.right = new FormAttachment(100, -margin);
-        wHeaders.setLayoutData(fdHeaders);       
-     
-        fdHeadersGroup =new FormData();
-        fdHeadersGroup.left  = new FormAttachment(0, margin);
-        fdHeadersGroup.top   = new FormAttachment(wFieldURL, margin);
-        fdHeadersGroup.right = new FormAttachment(100, -margin);
-        fdHeaders.bottom = new FormAttachment(0, 100);
-        wHeadersGroup.setLayoutData(fdHeadersGroup); 
+      
+      
         
 	     // ////////////////////////
 	     // START OF AuthenticationGROUP///
 	     // /
-	    wAuthentication= new Group(shell, SWT.SHADOW_NONE);
+	    wAuthentication= new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wAuthentication);
 	    wAuthentication.setText(BaseMessages.getString(PKG, "JobHTTP.Authentication.Group.Label"));
 
@@ -372,7 +349,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         props.setLook(wlUserName);
         fdlUserName = new FormData();
         fdlUserName.left = new FormAttachment(0, 0);
-        fdlUserName.top = new FormAttachment(wHeadersGroup, margin);
+        fdlUserName.top = new FormAttachment(wFieldURL, margin);
         fdlUserName.right = new FormAttachment(middle, -margin);
         wlUserName.setLayoutData(fdlUserName);
         wUserName = new TextVar(jobMeta, wAuthentication, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -381,7 +358,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
         fdUserName.left = new FormAttachment(middle, 0);
-        fdUserName.top = new FormAttachment(wHeadersGroup, margin);
+        fdUserName.top = new FormAttachment(wFieldURL, margin);
         fdUserName.right = new FormAttachment(100, 0);
         wUserName.setLayoutData(fdUserName);
 
@@ -465,7 +442,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 
 	    fdAuthentication= new FormData();
 	    fdAuthentication.left = new FormAttachment(0, margin);
-	    fdAuthentication.top = new FormAttachment(wHeadersGroup, margin);
+	    fdAuthentication.top = new FormAttachment(wFieldURL, margin);
 	    fdAuthentication.right = new FormAttachment(100, -margin);
 	    wAuthentication.setLayoutData(fdAuthentication);
 	    // ///////////////////////////////////////////////////////////
@@ -475,7 +452,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 	     // ////////////////////////
 	     // START OF UpLoadFileGROUP///
 	     // /
-	    wUpLoadFile= new Group(shell, SWT.SHADOW_NONE);
+	    wUpLoadFile= new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wUpLoadFile);
 	    wUpLoadFile.setText(BaseMessages.getString(PKG, "JobHTTP.UpLoadFile.Group.Label"));
 
@@ -557,7 +534,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 	     // ////////////////////////
 	     // START OF TargetFileGroupGROUP///
 	     // /
-	    wTargetFileGroup= new Group(shell, SWT.SHADOW_NONE);
+	    wTargetFileGroup= new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wTargetFileGroup);
 	    wTargetFileGroup.setText(BaseMessages.getString(PKG, "JobHTTP.TargetFileGroup.Group.Label"));
 
@@ -707,13 +684,102 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
 	    // ///////////////////////////////////////////////////////////
 	    // / END OF TargetFileGroupGROUP GROUP
 	    // ///////////////////////////////////////////////////////////
+	    
+	    fdGeneralComp=new FormData();
+		fdGeneralComp.left  = new FormAttachment(0, 0);
+		fdGeneralComp.top   = new FormAttachment(wName, 0);
+		fdGeneralComp.right = new FormAttachment(100, 0);
+		fdGeneralComp.bottom= new FormAttachment(100, 0);
+		wGeneralComp.setLayoutData(fdGeneralComp);
+		
+		wGeneralComp.layout();
+		wGeneralTab.setControl(wGeneralComp);
+ 		
+ 		
+		/////////////////////////////////////////////////////////////
+		/// END OF GENERAL TAB
+		/////////////////////////////////////////////////////////////
+		
+ 		//////////////////////////
+		// START OF Headers TAB   ///
+		//////////////////////////
+
+		wHeadersTab=new CTabItem(wTabFolder, SWT.NONE);
+		wHeadersTab.setText(BaseMessages.getString(PKG, "JobHTTP.Tab.Headers.Label"));
+		wHeadersComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wHeadersComp);
+		FormLayout HeadersLayout = new FormLayout();
+		HeadersLayout.marginWidth  = 3;
+		HeadersLayout.marginHeight = 3;
+		wHeadersComp.setLayout(HeadersLayout);
+		
+		
+		  
+        int rows = jobEntry.getHeaderName() == null ? 1
+                    : (jobEntry.getHeaderName().length == 0
+                     ? 0
+                    : jobEntry.getHeaderName().length);
+        
+
+        colinf=new ColumnInfo[] {
+                
+               new ColumnInfo(BaseMessages.getString(PKG, "JobHTTP.ColumnInfo.Name"),      
+                                ColumnInfo.COLUMN_TYPE_CCOMBO,
+                                HTTPProtocol.getRequestHeaders(),
+                                false),
+                                 
+               new ColumnInfo(BaseMessages.getString(PKG, "JobHTTP.ColumnInfo.Value"),
+                                ColumnInfo.COLUMN_TYPE_TEXT,   
+                                false), //$NON-NLS-1$
+        };
+        colinf[0].setUsingVariables(true);
+        colinf[1].setUsingVariables(true);
+        
+        wHeaders =new TableView(jobMeta, wHeadersComp,
+                          SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+                          colinf,
+                          rows,
+                          lsMod,
+                          props
+                   );
+        
+        fdHeaders =new FormData();
+        fdHeaders.left  = new FormAttachment(0, margin);
+        fdHeaders.top   = new FormAttachment(wName, margin);
+        fdHeaders.right = new FormAttachment(100, -margin);
+        fdHeaders.bottom= new FormAttachment(100, -margin);
+        wHeaders.setLayoutData(fdHeaders);       
+		
+		fdHeadersComp=new FormData();
+		fdHeadersComp.left  = new FormAttachment(0, 0);
+		fdHeadersComp.top   = new FormAttachment(0, 0);
+		fdHeadersComp.right = new FormAttachment(100, 0);
+		fdHeadersComp.bottom= new FormAttachment(100, 0);
+		wHeadersComp.setLayoutData(fdHeadersComp);
+		
+		wHeadersComp.layout();
+		wHeadersTab.setControl(wHeadersComp);
+ 		
+		/////////////////////////////////////////////////////////////
+		/// END OF Headers TAB
+		/////////////////////////////////////////////////////////////
+
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(wName, margin);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(100, -50);
+		wTabFolder.setLayoutData(fdTabFolder);
+		
+	    
+	    
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin,	wTargetFileGroup);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin,	wTabFolder);
 
         // Add listeners
         lsCancel = new Listener()
@@ -756,7 +822,7 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
         });
 
         getData();
-
+		wTabFolder.setSelection(0);
         BaseStepDialog.setSize(shell);
 
         shell.open();
