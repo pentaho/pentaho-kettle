@@ -219,20 +219,20 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
    * role
    * @throws Exception
    */
-  protected void addUser() throws Exception {
+  protected void addUser() {
     if (service != null) {
       try {
         service.saveUserInfo(securityUser.getUserInfo());
         security.addUser(UIObjectRegistry.getInstance().constructUIRepositoryUser(securityUser.getUserInfo()));
-      } catch (KettleException ke) {
+        userDialog.hide();        
+      } catch (Throwable th) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
         messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
         messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
-            "AddUser.UnableToAddUser", ke.getLocalizedMessage()));//$NON-NLS-1$
+            "AddUser.UnableToAddUser", th.getLocalizedMessage()));//$NON-NLS-1$
         messageBox.open();
       }
     }
-    userDialog.hide();
   }
 
   public void showEditUserDialog() throws Exception {
@@ -251,7 +251,7 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
    * @throws Exception
    */
 
-  protected void updateUser() throws Exception {
+  protected void updateUser() {
     if (service != null) {
       try {
         IUIUser uiUser = security.getSelectedUser();
@@ -259,15 +259,15 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
         uiUser.setPassword(securityUser.getPassword());
         service.updateUser(uiUser.getUserInfo());
         security.updateUser(uiUser);
-      } catch (KettleException ke) {
+        userDialog.hide();        
+      } catch (Throwable th) {
         messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
         messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
         messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
-            "UpdateUser.UnableToUpdateUser", ke.getLocalizedMessage()));//$NON-NLS-1$
+            "UpdateUser.UnableToUpdateUser", th.getLocalizedMessage()));//$NON-NLS-1$
         messageBox.open();
       }
     }
-    userDialog.hide();
   }
 
 
@@ -291,11 +291,11 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
               try {
                 service.delUser(security.getSelectedUser().getName());
                 security.removeUser(security.getSelectedUser().getName());
-              } catch (KettleException ke) {
+              } catch (Throwable th) {
                 messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
                 messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
                 messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
-                    "RemoveUser.UnableToRemoveUser", ke.getLocalizedMessage()));//$NON-NLS-1$
+                    "RemoveUser.UnableToRemoveUser", th.getLocalizedMessage()));//$NON-NLS-1$
                 messageBox.open();
               }
             } else {
