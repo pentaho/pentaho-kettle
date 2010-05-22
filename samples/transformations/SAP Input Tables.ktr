@@ -108,10 +108,10 @@
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Get data of a table</note>
+      <note>Get data of a table (using filters)</note>
       <xloc>270</xloc>
       <yloc>360</yloc>
-      <width>150</width>
+      <width>252</width>
       <heigth>29</heigth>
       <fontname>Lucida Grande</fontname>
       <fontsize>13</fontsize>
@@ -257,7 +257,7 @@
         <currency/>
         <decimal/>
         <group/>
-        <nullif>100</nullif>
+        <nullif>0</nullif>
         <length>-1</length>
         <precision>-1</precision>
       </field>
@@ -269,6 +269,17 @@
         <decimal/>
         <group/>
         <nullif>MANDT;SPRAS;KTOPL;SAKNR;TXT20;TXT50;MCOD1</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>FILTER</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>SPRAS EQ &apos;EN&apos; OR SPRAS EQ &apos;DE&apos;</nullif>
         <length>-1</length>
         <precision>-1</precision>
       </field>
@@ -342,6 +353,7 @@
     <parameter><field_name>ROWCOUNT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWCOUNT</parameter_name>    </parameter>
     <parameter><field_name>ROWSKIPS</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWSKIPS</parameter_name>    </parameter>
     <parameter><field_name>FIELDNAME</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><parameter_name>FIELDNAME</parameter_name>    </parameter>
+    <parameter><field_name>FILTER</field_name><sap_type>TABLE</sap_type><table_name>OPTIONS</table_name><parameter_name>TEXT</parameter_name>    </parameter>
     </parameters>
     <fields>
     <field><field_name>WA</field_name><sap_type>TABLE</sap_type><table_name>DATA</table_name><new_name>WA</new_name><target_type>String</target_type>    </field>
