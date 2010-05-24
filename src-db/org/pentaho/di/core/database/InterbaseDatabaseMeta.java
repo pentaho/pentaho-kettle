@@ -339,4 +339,8 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
     {
         return new String[] { "interclient.jar" };
     }
+    
+    public boolean supportsGetBlob() {
+      return false;
+    }
 }
