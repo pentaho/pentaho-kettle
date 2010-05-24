@@ -66,7 +66,7 @@ public class Const
     /**
      *  Release Type 
      */ 
-    public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW}
+    public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA}
 
 	/**
 	 * Sleep time waiting when buffer is empty
