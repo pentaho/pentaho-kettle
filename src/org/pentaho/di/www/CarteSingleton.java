@@ -111,7 +111,7 @@ public class CarteSingleton {
 
       log.logBasic("Installing timer to purge stale objects after " + config.getObjectTimeoutMinutes() + " minutes.");
 
-      Timer timer = new Timer();
+      Timer timer = new Timer(true);
 
       final AtomicBoolean busy = new AtomicBoolean(false);
       TimerTask timerTask = new TimerTask() {
