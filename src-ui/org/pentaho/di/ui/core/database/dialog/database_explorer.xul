@@ -1,71 +1,66 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
-<window id="database-explorer" title="${DatabaseExplorer.Title}" 
-	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="800" onload="dbexplorer.init()"
-    xmlns:pen="http://www.pentaho.org/2008/xul" >
-      
-    <dialog width="600" height="400" id="databaseExplorerDialog" title="${DatabaseExplorer.Title}"
-     ondialogaccept="dbexplorer.accept()"  
-     ondialogcancel="dbexplorer.cancel()">
-	    <vbox flex="1" id="mainVBox">
-			<hbox>
-				<spacer flex="1"/>
-				<button image="ui/images/refresh.png" onclick="dbexplorer.refresh()" tooltiptext="${tooltip_refresh}"/>
-				<button id="expandCollapseButton" image="ui/images/ExpandAll.png" onclick="dbexplorer.expandCollapse()" tooltiptext="${tooltip_expand_collapse}"/>
-				<!--<label value="Actions" id="action_label"/>-->
-				<spacer width="25"/>
-        <button label="${DatabaseExplorer.Actions}" id="buttonMenuPopUp" image="" menu="action_popup" disabled="true"/>
-        <button id="buttonMenuPopUpImg" image="ui/images/9x9_arrow_down.gif" menu="action_popup" disabled="true"/>
-			</hbox>
-			
- 			<tree id="databaseTree" flex="1" editable="false" expanded="false"  context="action_popup" command="dbexplorer.accept()">
-				<treecols>
-              		<treecol flex="1" label="" primary="true" editable="false" pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" />
-            	</treecols>
-				 <treechildren>
-					<treeitem container="true" open="true">
-				    	<treerow>
-				        	<treecell label="Schema" />
-				        </treerow>
-				        <treechildren>
-					    	<treeitem container="true" open="true">
-					        	<treerow>
-					            	<treecell label="Tables" />
-					            </treerow>
-						        <treechildren>
-						        	<treeitem container="true" open="true">
-						              	<treerow>
-						                	<treecell label="Table" />
-						                </treerow>
-						                <treechildren>
-						                </treechildren>
-						            </treeitem>
-					            </treechildren>
-					        </treeitem>
-				    	</treechildren>
-					</treeitem>
-				</treechildren>
-			</tree>
-	    </vbox>
-	    
-	    
-		<menupopup id="action_popup">
-		  <menuitem label="${DatabaseExplorer.Preview100}" command="dbexplorer.preview(false)"/>
-		  <menuitem label="${DatabaseExplorer.PreviewX}" command="dbexplorer.preview(true)"/>
-		  <menuitem label="${DatabaseExplorer.RowCount}" command="dbexplorer.displayRowCount()"/>
-		  <menuitem label="${DatabaseExplorer.ShowLayout}" command="dbexplorer.showLayout()"/>
-		  <menu label="${DatabaseExplorer.DDL}">
-	        <menupopup>
-	          <menuitem label="${DatabaseExplorer.UseCurrent}" command="dbexplorer.getDDL()"/>
-	    	  <menuitem label="${DatabaseExplorer.SelectConnection}" command="dbexplorer.getDDLForOther()"/>
-	        </menupopup>
-	      </menu>
-		  <menuitem label="${DatabaseExplorer.ViewSQL}" command="dbexplorer.viewSql()"/>
-		  <menuitem label="${DatabaseExplorer.Truncate}" command="dbexplorer.truncate()"/>
-      <menuitem label="${DatabaseExplorer.DataProfile}" command="dbexplorer.dataProfile()"/>
-		</menupopup>
+<dialog width="600" height="400" id="databaseExplorerDialog" title="${DatabaseExplorer.Title}"
+   ondialogaccept="dbexplorer.accept()"  
+   ondialogcancel="dbexplorer.cancel()" onload="dbexplorer.init()" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" xmlns:pen="http://www.pentaho.org/2008/xul" >
+    <vbox flex="1" id="mainVBox">
+		<hbox>
+			<spacer flex="1"/>
+			<button image="ui/images/refresh.png" onclick="dbexplorer.refresh()" tooltiptext="${tooltip_refresh}"/>
+			<button id="expandCollapseButton" image="ui/images/ExpandAll.png" onclick="dbexplorer.expandCollapse()" tooltiptext="${tooltip_expand_collapse}"/>
+			<!--<label value="Actions" id="action_label"/>-->
+			<spacer width="25"/>
+      <button label="${DatabaseExplorer.Actions}" id="buttonMenuPopUp" image="" menu="action_popup" disabled="true"/>
+      <button id="buttonMenuPopUpImg" image="ui/images/9x9_arrow_down.gif" menu="action_popup" disabled="true"/>
+		</hbox>
+		
+		<tree id="databaseTree" flex="1" editable="false" expanded="false"  context="action_popup" command="dbexplorer.accept()">
+			<treecols>
+            		<treecol flex="1" label="" primary="true" editable="false" pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" />
+          	</treecols>
+			 <treechildren>
+				<treeitem container="true" open="true">
+			    	<treerow>
+			        	<treecell label="Schema" />
+			        </treerow>
+			        <treechildren>
+				    	<treeitem container="true" open="true">
+				        	<treerow>
+				            	<treecell label="Tables" />
+				            </treerow>
+					        <treechildren>
+					        	<treeitem container="true" open="true">
+					              	<treerow>
+					                	<treecell label="Table" />
+					                </treerow>
+					                <treechildren>
+					                </treechildren>
+					            </treeitem>
+				            </treechildren>
+				        </treeitem>
+			    	</treechildren>
+				</treeitem>
+			</treechildren>
+		</tree>
+    </vbox>
+    
+    
+	<menupopup id="action_popup">
+	  <menuitem label="${DatabaseExplorer.Preview100}" command="dbexplorer.preview(false)"/>
+	  <menuitem label="${DatabaseExplorer.PreviewX}" command="dbexplorer.preview(true)"/>
+	  <menuitem label="${DatabaseExplorer.RowCount}" command="dbexplorer.displayRowCount()"/>
+	  <menuitem label="${DatabaseExplorer.ShowLayout}" command="dbexplorer.showLayout()"/>
+	  <menu label="${DatabaseExplorer.DDL}">
+        <menupopup>
+          <menuitem label="${DatabaseExplorer.UseCurrent}" command="dbexplorer.getDDL()"/>
+    	  <menuitem label="${DatabaseExplorer.SelectConnection}" command="dbexplorer.getDDLForOther()"/>
+        </menupopup>
+      </menu>
+	  <menuitem label="${DatabaseExplorer.ViewSQL}" command="dbexplorer.viewSql()"/>
+	  <menuitem label="${DatabaseExplorer.Truncate}" command="dbexplorer.truncate()"/>
+    <menuitem label="${DatabaseExplorer.DataProfile}" command="dbexplorer.dataProfile()"/>
+	</menupopup>
+
+</dialog>
 	
-	</dialog>
-	
-</window>
