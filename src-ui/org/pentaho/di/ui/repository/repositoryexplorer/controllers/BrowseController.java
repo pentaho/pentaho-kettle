@@ -181,15 +181,15 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     } else {
       folderTree.setHiddenrootnode(false);
     }
-    BindingConvertor<List<UIRepositoryObject>, Boolean> checkIfMultipleItemsAreSelected = new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
+    BindingConvertor<List, Boolean> checkIfMultipleItemsAreSelected = new BindingConvertor<List, Boolean>() {
 
       @Override
-      public Boolean sourceToTarget(List<UIRepositoryObject> value) {
+      public Boolean sourceToTarget(List value) {
         return value != null && value.size() == 1 && value.get(0) != null;
       }
 
       @Override
-      public List<UIRepositoryObject> targetToSource(Boolean value) {
+      public List targetToSource(Boolean value) {
         return null;
       }
     };
