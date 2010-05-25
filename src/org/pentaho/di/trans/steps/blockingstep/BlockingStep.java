@@ -224,13 +224,6 @@ public class BlockingStep extends BaseStep implements StepInterface {
 					data.dis.remove(0);
 					data.fis.remove(0);
 					if (gzfi != null) data.gzis.remove(0);
-	        // Fix for too many files open exception...
-				} finally {
-				  // DI is always there and always wraps the underlying
-				  // stream(s). So all that's necessary is to close the di -
-				  // The stream holding resources (the inputstream returned
-				  // from KettleVFS) will be closed with this one close
-          BaseStep.closeQuietly(di);
 				}
 			}
 		}
