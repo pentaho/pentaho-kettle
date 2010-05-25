@@ -169,7 +169,7 @@ public class SapInput extends BaseStep implements StepInterface
 			}
 			catch(SAPException e)
 			{
-				logError("An error occurred while connecting to SAP R/3, processing will be stopped:", e);
+				logError("An error occurred while connecting to SAP ERP, processing will be stopped:", e);
 				setErrors(1);
 				stopAll();
 			}

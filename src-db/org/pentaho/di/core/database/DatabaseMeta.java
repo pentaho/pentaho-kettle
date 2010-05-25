@@ -326,7 +326,7 @@ public class DatabaseMeta
 	public static final int TYPE_ACCESS_OCI           =  2;
 
     /**
-     * Connect to the database using plugin specific method. (SAP R/3)
+     * Connect to the database using plugin specific method. (SAP ERP)
      */
     public static final int TYPE_ACCESS_PLUGIN        =  3;
     

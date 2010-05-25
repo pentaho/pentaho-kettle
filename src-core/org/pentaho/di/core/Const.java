@@ -603,7 +603,7 @@ public class Const
 	public static final String	KETTLE_SAP_CONNECTION_FACTORY	= "KETTLE_SAP_CONNECTION_FACTORY";
 
 	/**
-	 * The default SAP R/3 connection factory
+	 * The default SAP ERP connection factory
 	 */
 	public static final String	KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME	= "org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory";
 

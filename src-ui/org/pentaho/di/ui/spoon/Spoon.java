@@ -2583,7 +2583,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         spoonMenu = (XulMenupopup) menuMap.get("step-plugin");
       } else if (selection instanceof DatabaseMeta) {
         spoonMenu = (XulMenupopup) menuMap.get("database-inst");
-        // disable for now if the connection is an SAP R/3 type of database...
+        // disable for now if the connection is an SAP ERP type of database...
         //
         XulMenuitem item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById("database-inst-explore");
         if (item != null) {
