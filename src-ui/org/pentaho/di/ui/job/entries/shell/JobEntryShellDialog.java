@@ -905,7 +905,11 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
 
         jobEntry.logfile = wLogfile.getText();
         jobEntry.logext = wLogext.getText();
-        jobEntry.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+        if (wLoglevel.getSelectionIndex()>=0) {
+            jobEntry.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+          } else {
+            jobEntry.logFileLevel = LogLevel.BASIC;
+          }
         jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
         jobEntry.setScript(wScript.getText());
         jobEntry.insertScript=wInsertScript.getSelection();
