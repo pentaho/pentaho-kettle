@@ -149,8 +149,8 @@ public class GPBulkDataOutput
 		for (int i=0;i<fieldNumbers.length;i++) 
 		{
 			if ( i!=0 ) output.print(",");
-			v = mi.getValueMeta(i);
 			number = fieldNumbers[i];
+			v = mi.getValueMeta(number);
 			if ( row[number] == null)
 			{
 				// TODO (SB): special check for null in case of Strings.
