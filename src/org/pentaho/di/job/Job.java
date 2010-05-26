@@ -39,6 +39,7 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
+import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.Log4jBufferAppender;
 import org.pentaho.di.core.logging.LogChannel;
@@ -758,6 +759,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     if (jobLogTable.isDefined()) {
 
       DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
+      String schemaName = jobMeta.getJobLogTable().getSchemaName();
       String tableName = jobMeta.getJobLogTable().getTableName();
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
@@ -785,7 +787,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
           // Now this next lookup will stall on the other connections
           //
-          id_batch = ldb.getNextValue(null, tableName, "ID_JOB");
+          id_batch = ldb.getNextValue(null, schemaName, tableName, jobLogTable.getKeyField().getFieldName());
 
           setBatchId(id_batch.longValue());
           if (getPassedBatchId() <= 0) {
@@ -869,6 +871,22 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         ldb.disconnect();
       }
     }
+    
+    // If we need to write out the job entry logging information, do so at the end of the job:
+    //
+    JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
+    if (jobEntryLogTable.isDefined()) {
+        addJobListener(new JobListener() {
+            public void jobFinished(Job job) throws KettleException {
+                try {
+                    writeJobEntryLogInformation();
+                } catch(KettleException e) {
+                    throw new KettleException(BaseMessages.getString(PKG, "Job.Exception.UnableToPerformLoggingAtJobEnd"), e);
+                }
+            }
+        });
+    }
+
 
     // If we need to write the log channel hierarchy and lineage information,
     // add a listener for that too...
@@ -972,7 +990,26 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		}
 	}
 
-	
+    protected void writeJobEntryLogInformation() throws KettleException {
+      Database db = null;
+      JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
+      try {
+        db = new Database(this, jobEntryLogTable.getDatabaseMeta());
+        db.shareVariablesWith(this);
+        db.connect();
+        
+        for (JobEntryCopy copy : jobMeta.getJobCopies()) {
+          db.writeLogRecord(jobEntryLogTable, LogStatus.END, copy);
+        }
+  
+      } catch (Exception e) {
+        throw new KettleException(BaseMessages.getString(PKG, "Job.Exception.UnableToJobEntryInformationToLogTable"), e);
+      } finally {
+        db.disconnect();
+      }
+  
+    }
+  	
 	public boolean isActive()
 	{
 		return active.get();
