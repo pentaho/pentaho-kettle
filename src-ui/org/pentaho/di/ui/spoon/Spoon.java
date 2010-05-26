@@ -3303,11 +3303,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         refreshTree();
         refreshGraph();
       } catch (Exception e) {
-        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-        mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpeningById.Message") + objectId + Const.CR
-            + e.getMessage());// "Error opening : "
-        mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"));
-        mb.open();
+        new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
+            "Spoon.Dialog.ErrorOpeningById.Message", objectId), e.getMessage(), e); //$NON-NLS-1$
       }
     } else
     // Try to open the selected job.
@@ -3326,11 +3323,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         refreshTree();
         refreshGraph();
       } catch (Exception e) {
-        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-        mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpeningById.Message") + objectId + Const.CR
-            + e.getMessage());// "Error opening : "
-        mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"));
-        mb.open();
+        new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
+            "Spoon.Dialog.ErrorOpeningById.Message", objectId), e.getMessage(), e); //$NON-NLS-1$
       }
     }
   }
