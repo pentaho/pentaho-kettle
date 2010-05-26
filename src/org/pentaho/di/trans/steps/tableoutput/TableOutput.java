@@ -560,6 +560,10 @@ public class TableOutput extends BaseStep implements StepInterface
                 	data.batchMode = false;
                 	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "TableOutput.Log.BatchModeDisabled"));
                 }
+                
+                if (meta.getDatabaseMeta()==null) {
+                  throw new KettleException(BaseMessages.getString(PKG, "TableOutput.Exception.DatabaseNeedsToBeSelected"));
+                }
 
                 data.db=new Database(this, meta.getDatabaseMeta());
                 data.db.shareVariablesWith(this);
@@ -668,7 +672,7 @@ public class TableOutput extends BaseStep implements StepInterface
             {
                 try
                 {
-                    data.db.rollback();
+                    if (data.db!=null) data.db.rollback();
                 }
                 catch(KettleDatabaseException e)
                 {

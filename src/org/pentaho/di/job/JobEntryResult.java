@@ -39,6 +39,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
     
     private Date   logDate;
 	private String	jobEntryFilename;
+	private String logChannelId;
 
 	/**
 	 * Creates a new empty job entry result...
@@ -54,7 +55,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
      * @param comment an optional comment
      * @param jobEntry the job entry for which this is the result.
 	 */
-	public JobEntryResult(Result result, String comment, String reason, String jobEntryName, int jobEntryNr, String jobEntryFilename)
+	public JobEntryResult(Result result, String logChannelId, String comment, String reason, String jobEntryName, int jobEntryNr, String jobEntryFilename)
 	{
         this();
 		if (result!=null) 
@@ -65,6 +66,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
         { 
             this.result = null;
         }
+		this.logChannelId = logChannelId;
         this.comment = comment;
         this.reason = reason;
         this.jobEntryName = jobEntryName;
@@ -75,7 +77,7 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
 	@Deprecated
 	public JobEntryResult(Result result, String comment, String reason, JobEntryCopy copy) {
 
-		this(result, comment, reason, copy!=null ? copy.getName() : null, copy!=null ? copy.getNr() : 0, copy==null ? null : ( copy.getEntry()!=null ? copy.getEntry().getFilename() : null) );
+		this(result, copy.getEntry().getLogChannel().getLogChannelId(), comment, reason, copy!=null ? copy.getName() : null, copy!=null ? copy.getNr() : 0, copy==null ? null : ( copy.getEntry()!=null ? copy.getEntry().getFilename() : null) );
 	}
 
 	public Object clone()
@@ -210,7 +212,9 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
 	public int compareTo(JobEntryResult two) {
 		return compare(this, two);
 	}
-    
-    
+
+	public String getLogChannelId() {
+      return logChannelId;
+	}
 }
 

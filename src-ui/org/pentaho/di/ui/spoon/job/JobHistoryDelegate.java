@@ -548,7 +548,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
             params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), jobMeta.getName()); //$NON-NLS-1$
         }
 
-        if (keyField != null) {
+        if (keyField!=null && keyField.isEnabled()) {
           sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; //$NON-NLS-1$ //$NON-NLS-2$
         }
 
@@ -612,7 +612,10 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       LogTableField logField = logTables.get(tabIndex).getLogField();
       if (logField != null) {
         int index = fields.indexOf(logField);
-        String logText = row[index].toString();
+        String logText = null;
+        if (row[index]!=null) {
+          logText = row[index].toString();
+        }
 
         text.setText(Const.NVL(logText, "")); //$NON-NLS-1$
 

@@ -507,7 +507,7 @@ public class DatabaseMeta
 
     public void replaceMeta(DatabaseMeta databaseMeta)
     {
-        this.setValues(databaseMeta.getName(), databaseMeta.getDatabaseTypeDesc(), databaseMeta.getAccessTypeDesc(), 
+        this.setValues(databaseMeta.getName(), databaseMeta.getPluginId(), databaseMeta.getAccessTypeDesc(), 
                 databaseMeta.getHostname(), databaseMeta.getDatabaseName(), databaseMeta.getDatabasePortNumberString(), 
                 databaseMeta.getUsername(), databaseMeta.getPassword()
                 );
@@ -852,55 +852,49 @@ public class DatabaseMeta
 	 * @param con The Node to read the data from
 	 * @throws KettleXMLException
 	 */
-	public DatabaseMeta(Node con) throws KettleXMLException
-	{
-        this();
-        
-		try
-		{
-			String type = XMLHandler.getTagValue(con, "type");
-			try
-			{
-				databaseInterface = getDatabaseInterface(type);
+  public DatabaseMeta(Node con) throws KettleXMLException {
+    this();
 
-			}
-			catch(KettleDatabaseException kde)
-			{
-				throw new KettleXMLException("Unable to create new database interface", kde);
-			}
-			
-			setName( XMLHandler.getTagValue(con, "name") );
-			setHostname( XMLHandler.getTagValue(con, "server") );
-			String acc  = XMLHandler.getTagValue(con, "access");
-			setAccessType( getAccessType(acc) );
+    try {
+      String type = XMLHandler.getTagValue(con, "type");
+      try {
+        databaseInterface = getDatabaseInterface(type);
 
-			setDBName( XMLHandler.getTagValue(con, "database") );
-			setDBPort( XMLHandler.getTagValue(con, "port") );
-			setUsername( XMLHandler.getTagValue(con, "username") );
-			setPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(con, "password") ) );
-			setServername( XMLHandler.getTagValue(con, "servername") );
-			setDataTablespace( XMLHandler.getTagValue(con, "data_tablespace") );
-			setIndexTablespace( XMLHandler.getTagValue(con, "index_tablespace") );
-				
-            // Also, read the database attributes...
-            Node attrsnode = XMLHandler.getSubNode(con, "attributes");
-            if (attrsnode!=null)
-            {
-                int nr = XMLHandler.countNodes(attrsnode, "attribute");
-                for (int i=0;i<nr;i++)
-                {
-                    Node attrnode = XMLHandler.getSubNodeByNr(attrsnode, "attribute", i);
-                    String code      = XMLHandler.getTagValue(attrnode, "code");
-                    String attribute = XMLHandler.getTagValue(attrnode, "attribute");
-                    if (code!=null && attribute!=null) getAttributes().put(code, attribute);
-                }
-            }
-		}
-		catch(Exception e)
-		{
-			throw new KettleXMLException("Unable to load database connection info from XML node", e);
-		}
-	}
+      } catch (KettleDatabaseException kde) {
+        throw new KettleXMLException("Unable to create new database interface", kde);
+      }
+
+      setName(XMLHandler.getTagValue(con, "name"));
+      setHostname(XMLHandler.getTagValue(con, "server"));
+      String acc = XMLHandler.getTagValue(con, "access");
+      setAccessType(getAccessType(acc));
+
+      setDBName(XMLHandler.getTagValue(con, "database"));
+
+      // The DB port is read here too for backward compatibility!
+      //
+      setDBPort(XMLHandler.getTagValue(con, "port")); 
+      setUsername(XMLHandler.getTagValue(con, "username"));
+      setPassword(Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(con, "password")));
+      setServername(XMLHandler.getTagValue(con, "servername"));
+      setDataTablespace(XMLHandler.getTagValue(con, "data_tablespace"));
+      setIndexTablespace(XMLHandler.getTagValue(con, "index_tablespace"));
+
+      // Also, read the database attributes...
+      Node attrsnode = XMLHandler.getSubNode(con, "attributes");
+      if (attrsnode != null) {
+        List<Node> attrnodes = XMLHandler.getNodes(attrsnode, "attribute");
+        for (Node attrnode : attrnodes) {
+          String code = XMLHandler.getTagValue(attrnode, "code");
+          String attribute = XMLHandler.getTagValue(attrnode, "attribute");
+          if (code != null && attribute != null)
+            getAttributes().put(code, attribute);getDatabasePortNumberString();
+        }
+      }
+    } catch (Exception e) {
+      throw new KettleXMLException("Unable to load database connection info from XML node", e);
+    }
+  }
 	
 	@SuppressWarnings("unchecked")
 	public String getXML()
@@ -910,7 +904,7 @@ public class DatabaseMeta
 		retval.append("  <").append(XML_TAG).append('>').append(Const.CR);
 		retval.append("    ").append(XMLHandler.addTagValue("name",       getName()));
 		retval.append("    ").append(XMLHandler.addTagValue("server",     getHostname()));
-		retval.append("    ").append(XMLHandler.addTagValue("type",       getDatabaseTypeDesc()));
+		retval.append("    ").append(XMLHandler.addTagValue("type",       getPluginId()));
 		retval.append("    ").append(XMLHandler.addTagValue("access",     getAccessTypeDesc()));
 		retval.append("    ").append(XMLHandler.addTagValue("database",   getDatabaseName()));
 		retval.append("    ").append(XMLHandler.addTagValue("port",       getDatabasePortNumberString()));

@@ -35,6 +35,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
 import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
 import org.pentaho.di.i18n.BaseMessages;
@@ -45,6 +46,15 @@ public class KettleVFS
 
 	private static final KettleVFS kettleVFS = new KettleVFS();
 	private final DefaultFileSystemManager fsm;
+	
+	private static VariableSpace defaultVariableSpace;
+	
+	static {
+	  // Create a new empty variable space...
+      //
+      defaultVariableSpace=new Variables();
+      defaultVariableSpace.initializeVariablesFrom(null);
+	}
   
     private KettleVFS()
     {
@@ -54,7 +64,7 @@ public class KettleVFS
 			fsm.init();
 		} catch (FileSystemException e) {
 			e.printStackTrace();
-		}
+		}		
 		
     	// Install a shutdown hook to make sure that the file system manager is closed
     	// This will clean up temporary files in vfs_cache
@@ -76,7 +86,7 @@ public class KettleVFS
     }
     
     public static FileObject getFileObject(String vfsFilename) throws KettleFileException {
-      return getFileObject(vfsFilename, null);
+      return getFileObject(vfsFilename, defaultVariableSpace);
     }
     
     

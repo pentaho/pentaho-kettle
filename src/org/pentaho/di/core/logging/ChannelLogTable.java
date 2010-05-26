@@ -133,7 +133,7 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
 	 * @param id the id to use or -1 if no id is needed
 	 * @param status the log status to use
 	 */
-	public RowMetaAndData getLogRecord(LogStatus status, Object subject) {
+	public RowMetaAndData getLogRecord(LogStatus status, Object subject, Object parent) {
 		if (subject==null || subject instanceof LoggingHierarchy) {
 			
 			LoggingHierarchy loggingHierarchy = (LoggingHierarchy) subject;

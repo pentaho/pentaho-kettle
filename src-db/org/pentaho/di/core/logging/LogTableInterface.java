@@ -41,7 +41,15 @@ public interface LogTableInterface {
 	public String getSchemaName();
 	public String getTableName();
 	
-	public RowMetaAndData getLogRecord(LogStatus status, Object subject);
+	/**
+	 * Assemble the log record from the logging subject.
+	 * 
+	 * @param status The status to log
+	 * @param subject The subject object to log
+	 * @param parent The parent object to log
+	 * @return The log record to write
+	 */
+	public RowMetaAndData getLogRecord(LogStatus status, Object subject, Object parent);
 	
 	public String getLogTableType();
 	
