@@ -1287,20 +1287,25 @@ public class DatabaseMeta
 			return allDatabaseInterfaces;
 		}
 		
+		// If multiple threads call this method at the same time, there may be extra work done until 
+		// the allDatabaseInterfaces is finally set. Before we were not using a local map to populate,
+		// and parallel threads were getting an incomplete list, causing null pointers.
+		
 		PluginRegistry registry = PluginRegistry.getInstance();
 		
 		List<PluginInterface> plugins = registry.getPlugins(DatabasePluginType.class);
-		allDatabaseInterfaces = new HashMap<String, DatabaseInterface>();
+		HashMap<String, DatabaseInterface> tmpAllDatabaseInterfaces = new HashMap<String, DatabaseInterface>();
 		for (PluginInterface plugin : plugins) {
 			try {
 				DatabaseInterface databaseInterface = (DatabaseInterface)registry.loadClass(plugin);
 				databaseInterface.setPluginId(plugin.getIds()[0]);
 				databaseInterface.setPluginName(plugin.getName());
-				allDatabaseInterfaces.put(plugin.getIds()[0], databaseInterface);
+				tmpAllDatabaseInterfaces.put(plugin.getIds()[0], databaseInterface);
 			} catch(Exception e) {
 				throw new RuntimeException("Error creating class for: "+plugin, e);
 			}
 		}
+		allDatabaseInterfaces = tmpAllDatabaseInterfaces;
 		return allDatabaseInterfaces;
 	}
 
