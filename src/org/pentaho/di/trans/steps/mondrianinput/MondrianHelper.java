@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.HashSet;
 
 import mondrian.olap.Axis;
 import mondrian.olap.Cell;
@@ -168,40 +169,71 @@ public class MondrianHelper {
         
         outputRowMeta = new RowMeta();
 
-        // Just scan the first row to see what data types we received...
-        //
-        for (int i=0 ; i<rows.size() && i<1 ; i++) {
-        	
-        	List<Object> rowValues = rows.get(i);
-        	
-            for (int c=0 ;c<rowValues.size();c++) {
-        		ValueMetaInterface valueMeta = new ValueMeta(headings.get(c));
-            	Object             valueData = rowValues.get(c);
-
-            	if (valueData instanceof String) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_STRING);
-            	}
-            	else if (valueData instanceof Date) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_DATE);
-            	}
-            	else if (valueData instanceof Boolean) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_BOOLEAN);
-            	}
-            	else if (valueData instanceof Long) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
-            	}
-            	else if (valueData instanceof Double) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
-            	}
-            	else if (valueData instanceof BigDecimal) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_BIGNUMBER);
-            	}
-            	else {
-            		throw new KettleDatabaseException("Unhandled data type found '"+valueData.getClass().toString()+"'");
-            	}
-            	
-            	outputRowMeta.addValueMeta(valueMeta);
+        // Scan the rows for the data types. Important case: if we get null on a
+        // column, keep scanning until we find one line that has an actual value
+        if (rows.size() > 0) {
+          int columnCount = rows.get(0).size();
+          HashSet<Integer> controlHash = new HashSet<Integer>();
+          List<ValueMetaInterface> metaValues = new ArrayList<ValueMetaInterface>(columnCount);
+  
+          for (int i=0 ; i<rows.size(); i++) {
+          	
+          	List<Object> rowValues = rows.get(i);
+          	
+              for (int c=0 ;c<rowValues.size();c++) {
+  
+                if (controlHash.contains(new Integer(c)))
+                  continue; // we have this value already
+  
+                ValueMetaInterface valueMeta = new ValueMeta(headings.get(c));
+              	Object             valueData = rowValues.get(c);
+  
+                if(valueData == null)
+                  continue; //skip this row and look for the metadata in a new one
+  
+              	if (valueData instanceof String) {
+              		valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+              	}
+              	else if (valueData instanceof Date) {
+              		valueMeta.setType(ValueMetaInterface.TYPE_DATE);
+              	}
+              	else if (valueData instanceof Boolean) {
+              		valueMeta.setType(ValueMetaInterface.TYPE_BOOLEAN);
+              	}
+              	else if (valueData instanceof Long) {
+              		valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+              	}
+              	else if (valueData instanceof Double) {
+              		valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
+              	}
+              	else if (valueData instanceof BigDecimal) {
+              		valueMeta.setType(ValueMetaInterface.TYPE_BIGNUMBER);
+              	}
+              	else {
+              		throw new KettleDatabaseException("Unhandled data type found '"+valueData.getClass().toString()+"'");
+              	}
+  
+                metaValues.add(c, valueMeta);
+                controlHash.add(new Integer(c));
+              	
+              }
+  
+              if (controlHash.size() == columnCount)
+                break; // we're done
+          }
+  
+          // If the entire column is null, assume the missing data as String. Irrelevant, anyway
+          if (controlHash.size() != columnCount){
+            for (int c = 0; c < columnCount; c++) {
+              if (controlHash.contains(new Integer(c)))
+                  continue; // we have this value already
+              ValueMetaInterface valueMeta = new ValueMeta(headings.get(c),
+                      ValueMetaInterface.TYPE_STRING);
+              metaValues.add(c, valueMeta);
             }
+          }
+
+          outputRowMeta.setValueMetaList(metaValues);
         }
         
         // Now that we painstakingly found the meta data that comes out of the Mondrian database, cache it please...
