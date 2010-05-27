@@ -816,7 +816,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     		stepPerformanceSnapShotTimer = new Timer();
     		TimerTask timerTask = new TimerTask() {
 				public void run() {
+				  if (!isFinished()) {
 					addStepPerformanceSnapShot();
+				  }
 				}
 			};
     		stepPerformanceSnapShotTimer.schedule(timerTask, 100, transMeta.getStepPerformanceCapturingDelay());
