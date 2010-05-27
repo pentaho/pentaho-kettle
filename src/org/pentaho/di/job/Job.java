@@ -39,6 +39,7 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
+import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.Log4jBufferAppender;
 import org.pentaho.di.core.logging.LogChannel;
@@ -102,6 +103,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     /** The job that's launching this (sub-) job. This gives us access to the whole chain, including the parent variables, etc. */
     private Job parentJob;
     
+    /** The parent logging interface to reference */
+    private LoggingObjectInterface parentLoggingObject;
+    
 	/**
 	 * Keep a list of the job entries that were executed. org.pentaho.di.core.logging.CentralLogStore.getInstance()
 	 */
@@ -150,16 +154,17 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     private AtomicBoolean finished;
 	private SocketRepository	socketRepository;
 
-    public Job(String name, String file, String args[])
-    {
-    	this();
-    jobMeta = new JobMeta();
-    if (name!=null) setName(name+" ("+super.getName()+")");
-    jobMeta.setName(name);
-		jobMeta.setFilename(file);
-		jobMeta.setArguments(args);
-		
-		init();
+    public Job(String name, String file, String args[]) {
+        this();
+        jobMeta = new JobMeta();
+        if (name != null)
+            setName(name + " (" + super.getName() + ")");
+        jobMeta.setName(name);
+        jobMeta.setFilename(file);
+        jobMeta.setArguments(args);
+    
+        init();
+        this.log = new LogChannel(this);
     }
     
   public void init() {
@@ -180,8 +185,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     passedBatchId = -1;
 
     result = null;
-
-    this.log = new LogChannel(this);
   }
 
 	public Job(Repository repository, JobMeta jobMeta)
@@ -193,9 +196,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	{
         this.rep        = repository;
         this.jobMeta    = jobMeta;
-        if (parentLogging!=null && parentLogging instanceof Job) {
-          this.parentJob  = (Job)parentJob;
-        }
+        this.parentLoggingObject = parentLogging;
         
         init();
         
@@ -303,7 +304,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			} catch(KettleException e) {
 				result.setNrErrors(1);
 				result.setResult(false);
-				log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()));
+				log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()), e);
 			}
 		}
 	}
@@ -324,7 +325,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
 
         // Start the tracking...
-        JobEntryResult jerStart = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), BaseMessages.getString(PKG, "Job.Reason.Started"), null, 0, null);
+        JobEntryResult jerStart = new JobEntryResult(null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), BaseMessages.getString(PKG, "Job.Reason.Started"), null, 0, null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
 
         active.set(true);
@@ -343,7 +344,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
         }
         // Save this result...
-        JobEntryResult jerEnd = new JobEntryResult(res, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
+        JobEntryResult jerEnd = new JobEntryResult(res, jes.getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
         log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobFinished"));
         
@@ -433,7 +434,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		jobEntryInterface.getLogChannel().setLogLevel(logLevel);
 
         // Track the fact that we are going to launch the next job entry...
-        JobEntryResult jerBefore = new JobEntryResult(null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), reason, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
+        JobEntryResult jerBefore = new JobEntryResult(null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), reason, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerBefore));
 
         Result prevResult = null;
@@ -482,7 +483,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         {
         	String throughput = result.getReadWriteThroughput((int)((end-start) / 1000));
         	if (throughput != null) {
-        		log.logMinimal(cloneJei.getName(), throughput);
+        		log.logMinimal(throughput);
         	}
         }
         for (JobEntryListener jobEntryListener : jobEntryListeners) {
@@ -495,12 +496,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		// Also capture the logging text after the execution...
 		//
 		Log4jBufferAppender appender = CentralLogStore.getAppender();
-		StringBuffer logTextBuffer = appender.getBuffer(cloneJei.getLogChannel().getLogChannelId(), true);
+		StringBuffer logTextBuffer = appender.getBuffer(cloneJei.getLogChannel().getLogChannelId(), false);
 		result.setLogText( logTextBuffer.toString() );
 		
         // Save this result as well...
 		//
-        JobEntryResult jerAfter = new JobEntryResult(result, BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
+        JobEntryResult jerAfter = new JobEntryResult(result, cloneJei.getLogChannel().getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
         jobEntryResults.add(jerAfter);
 			
@@ -758,6 +759,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     if (jobLogTable.isDefined()) {
 
       DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
+      String schemaName = jobMeta.getJobLogTable().getSchemaName();
       String tableName = jobMeta.getJobLogTable().getTableName();
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
@@ -785,7 +787,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
           // Now this next lookup will stall on the other connections
           //
-          id_batch = ldb.getNextValue(null, tableName, "ID_JOB");
+          id_batch = ldb.getNextValue(null, schemaName, tableName, jobLogTable.getKeyField().getFieldName());
 
           setBatchId(id_batch.longValue());
           if (getPassedBatchId() <= 0) {
@@ -808,7 +810,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
         depDate = currentDate;
 
-        ldb.writeLogRecord(jobMeta.getJobLogTable(), LogStatus.START, this);
+        ldb.writeLogRecord(jobMeta.getJobLogTable(), LogStatus.START, this, null);
 
         if (lockedTable) {
 
@@ -869,6 +871,22 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         ldb.disconnect();
       }
     }
+    
+    // If we need to write out the job entry logging information, do so at the end of the job:
+    //
+    JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
+    if (jobEntryLogTable.isDefined()) {
+        addJobListener(new JobListener() {
+            public void jobFinished(Job job) throws KettleException {
+                try {
+                    writeJobEntryLogInformation();
+                } catch(KettleException e) {
+                    throw new KettleException(BaseMessages.getString(PKG, "Job.Exception.UnableToPerformJobEntryLoggingAtJobEnd"), e);
+                }
+            }
+        });
+    }
+
 
     // If we need to write the log channel hierarchy and lineage information,
     // add a listener for that too...
@@ -927,7 +945,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 				try
 				{
 					ldb.connect();
-					ldb.writeLogRecord(jobMeta.getJobLogTable(), status, this);
+					ldb.writeLogRecord(jobMeta.getJobLogTable(), status, this, null);
 				}
 				catch(KettleDatabaseException dbe)
 				{
@@ -958,7 +976,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
 			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
-				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy);
+				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy, null);
 			}
 			
 			// Also time-out the log records in here...
@@ -972,7 +990,25 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		}
 	}
 
-	
+    protected void writeJobEntryLogInformation() throws KettleException {
+      Database db = null;
+      JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
+      try {
+        db = new Database(this, jobEntryLogTable.getDatabaseMeta());
+        db.shareVariablesWith(this);
+        db.connect();
+        
+        for (JobEntryCopy copy : jobMeta.getJobCopies()) {
+          db.writeLogRecord(jobEntryLogTable, LogStatus.END, copy, this);
+        }
+  
+      } catch (Exception e) {
+        throw new KettleException(BaseMessages.getString(PKG, "Job.Exception.UnableToJobEntryInformationToLogTable"), e);
+      } finally {
+        db.disconnect();
+      }
+    }
+  	
 	public boolean isActive()
 	{
 		return active.get();
@@ -1527,7 +1563,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	}
 
 	public LoggingObjectInterface getParent() {
-		return parentJob;
+		return parentLoggingObject;
 	}
 
 	public RepositoryDirectoryInterface getRepositoryDirectory() {
@@ -1604,5 +1640,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   public void setContainerObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
+  }
+  
+  public LoggingObjectInterface getParentLoggingObject() {
+    return parentLoggingObject;
   }
 }

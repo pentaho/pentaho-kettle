@@ -127,7 +127,7 @@ public class JobTracker
      */
     public JobTracker findJobTracker(JobEntryCopy jobEntryCopy)
     {
-        for (int i=0;i<jobTrackers.size();i++) {
+        for (int i=jobTrackers.size()-1;i>=0;i--) {
             JobTracker tracker = getJobTracker(i);
             JobEntryResult result = tracker.getJobEntryResult();
             if (result!=null) {

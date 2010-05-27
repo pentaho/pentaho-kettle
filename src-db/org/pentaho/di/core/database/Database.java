@@ -3560,9 +3560,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		return par;
 	}
 	
-	public void writeLogRecord(LogTableInterface logTable, LogStatus status, Object subject) throws KettleException {
+	public void writeLogRecord(LogTableInterface logTable, LogStatus status, Object subject, Object parent) throws KettleException {
 		try {
-			RowMetaAndData logRecord = logTable.getLogRecord(status, subject);
+			RowMetaAndData logRecord = logTable.getLogRecord(status, subject, parent);
+			if (logRecord==null) return;
+			
 			boolean update = (logTable.getKeyField()!=null) && !status.equals(LogStatus.START);
 			String schemaTable = databaseMeta.getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
 			RowMetaInterface rowMeta = logRecord.getRowMeta();

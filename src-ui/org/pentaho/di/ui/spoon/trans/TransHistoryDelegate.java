@@ -45,6 +45,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.ChannelLogTable;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
@@ -410,6 +411,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
             try {
               rows = getHistoryData(logTables.get(i));
             } catch (KettleException e) {
+              LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+logTables.get(i), e);
               rows = new ArrayList<Object[]>();
             }
             rowList.add(rows);
@@ -481,7 +483,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
             params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
-        if (keyField != null) {
+        if (keyField != null && keyField.isEnabled()) {
           sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; //$NON-NLS-1$//$NON-NLS-2$
         }
 

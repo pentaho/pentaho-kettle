@@ -153,7 +153,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		TransLogTable table = new TransLogTable(space, databasesInterface);
 		
 		table.fields.add( new LogTableField(ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString(PKG, "TransLogTable.FieldName.BatchID"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.BatchID"), ValueMetaInterface.TYPE_INTEGER, 8) );
-		table.fields.add( new LogTableField(ID.CHANNEL_ID.id, false, false, "CHANNEL_ID", BaseMessages.getString(PKG, "TransLogTable.FieldName.ChannelID"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ChannelID"), ValueMetaInterface.TYPE_STRING, 255) );
+		table.fields.add( new LogTableField(ID.CHANNEL_ID.id, true, false, "CHANNEL_ID", BaseMessages.getString(PKG, "TransLogTable.FieldName.ChannelID"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ChannelID"), ValueMetaInterface.TYPE_STRING, 255) );
 		table.fields.add( new LogTableField(ID.TRANSNAME.id, true, false, "TRANSNAME", BaseMessages.getString(PKG, "TransLogTable.FieldName.TransName"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.TransName"), ValueMetaInterface.TYPE_STRING, 255) );
 		table.fields.add( new LogTableField(ID.STATUS.id, true, false, "STATUS", BaseMessages.getString(PKG, "TransLogTable.FieldName.Status"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.Status"), ValueMetaInterface.TYPE_STRING, 15) );
 		table.fields.add( new LogTableField(ID.LINES_READ.id, true, true, "LINES_READ", BaseMessages.getString(PKG, "TransLogTable.FieldName.LinesRead"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesRead"), ValueMetaInterface.TYPE_INTEGER, 18) );
@@ -161,7 +161,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		table.fields.add( new LogTableField(ID.LINES_UPDATED.id, true, true, "LINES_UPDATED", BaseMessages.getString(PKG, "TransLogTable.FieldName.LinesUpdated"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesUpdated"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.LINES_INPUT.id, true, true, "LINES_INPUT", BaseMessages.getString(PKG, "TransLogTable.FieldName.LinesInput"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesInput"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.LINES_OUTPUT.id, true, true, "LINES_OUTPUT", BaseMessages.getString(PKG, "TransLogTable.FieldName.LinesOutput"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesOutput"), ValueMetaInterface.TYPE_INTEGER, 18) );
-		table.fields.add( new LogTableField(ID.LINES_REJECTED.id, false, true, "LINES_REJECTED", BaseMessages.getString(PKG, "TransLogTable.FieldName.LinesRejected"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesRejected"), ValueMetaInterface.TYPE_INTEGER, 18) );
+		table.fields.add( new LogTableField(ID.LINES_REJECTED.id, true, true, "LINES_REJECTED", BaseMessages.getString(PKG, "TransLogTable.FieldName.LinesRejected"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LinesRejected"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.ERRORS.id, true, false, "ERRORS", BaseMessages.getString(PKG, "TransLogTable.FieldName.Errors"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.Errors"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.STARTDATE.id, true, false, "STARTDATE", BaseMessages.getString(PKG, "TransLogTable.FieldName.StartDateRange"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.StartDateRange"), ValueMetaInterface.TYPE_DATE, -1) );
 		table.fields.add( new LogTableField(ID.ENDDATE.id, true, false, "ENDDATE", BaseMessages.getString(PKG, "TransLogTable.FieldName.EndDateRange"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.EndDateRange"), ValueMetaInterface.TYPE_DATE, -1) );
@@ -300,7 +300,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 	 * @param status the log status to use
 	 * @param subject the subject to query, in this case a Trans object
 	 */
-	public RowMetaAndData getLogRecord(LogStatus status, Object subject) {
+	public RowMetaAndData getLogRecord(LogStatus status, Object subject, Object parent) {
 		if (subject==null || subject instanceof Trans) {
 			Trans trans = (Trans) subject;
 			Result result = null;

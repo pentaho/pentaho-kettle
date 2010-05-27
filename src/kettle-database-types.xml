@@ -156,7 +156,7 @@
   </database-type>                                                       
 
   <database-type id="SAPR3">
-    <description>SAP R/3 System</description>
+    <description>SAP ERP System</description>
     <classname>org.pentaho.di.core.database.SAPR3DatabaseMeta</classname>
   </database-type>                                                       
 

@@ -39,11 +39,11 @@ import org.pentaho.di.trans.steps.sapinput.sap.impl.SAPRowIterator;
 public interface SAPConnection {
 
 	/**
-	 * Open a connection to SAP R/3 Note: method for init()
+	 * Open a connection to SAP ERP Note: method for init()
 	 * 
 	 * 
 	 * @param sapConnection
-	 *            The SAP Connection to use, needs to be of type SAP R/3
+	 *            The SAP Connection to use, needs to be of type SAP ERP
 	 * @throws SAPException
 	 *             in case something went wrong during the connection phase.
 	 */

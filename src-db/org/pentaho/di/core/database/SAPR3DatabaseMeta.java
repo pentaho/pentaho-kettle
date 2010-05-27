@@ -18,7 +18,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 
 /**
- * Contains SAP R/3 system specific information through static final members 
+ * Contains SAP ERP system specific information through static final members 
  * 
  * @author Matt
  * @since  03-07-2005

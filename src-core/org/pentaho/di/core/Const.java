@@ -66,7 +66,7 @@ public class Const
     /**
      *  Release Type 
      */ 
-    public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA}
+    public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW}
 
 	/**
 	 * Sleep time waiting when buffer is empty
@@ -603,7 +603,7 @@ public class Const
 	public static final String	KETTLE_SAP_CONNECTION_FACTORY	= "KETTLE_SAP_CONNECTION_FACTORY";
 
 	/**
-	 * The default SAP R/3 connection factory
+	 * The default SAP ERP connection factory
 	 */
 	public static final String	KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME	= "org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory";
 
@@ -653,7 +653,7 @@ public class Const
     /**
      * The release type of this compilation
      */
-    public static final ReleaseType RELEASE = ReleaseType.GA;
+    public static final ReleaseType RELEASE = ReleaseType.RELEASE_CANDIDATE;
     
     /** 
      *  rounds double f to any number of places after decimal point

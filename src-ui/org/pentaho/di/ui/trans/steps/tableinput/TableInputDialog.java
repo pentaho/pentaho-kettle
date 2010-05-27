@@ -16,6 +16,8 @@
 
 package org.pentaho.di.ui.trans.steps.tableinput;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
@@ -235,9 +237,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		wDatefrom=new CCombo(shell, SWT.BORDER );
  		props.setLook(wDatefrom);
 
-		for (int i=0;i<transMeta.findNrPrevSteps(stepname);i++)
-		{
-			StepMeta stepMeta = transMeta.findPrevStep(stepname, i);
+ 		List<StepMeta> previousSteps = transMeta.findPreviousSteps(transMeta.findStep(stepname));
+ 		for (StepMeta stepMeta : previousSteps) {
 			wDatefrom.add(stepMeta.getName());
 		}
 		

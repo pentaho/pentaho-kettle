@@ -2583,7 +2583,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         spoonMenu = (XulMenupopup) menuMap.get("step-plugin");
       } else if (selection instanceof DatabaseMeta) {
         spoonMenu = (XulMenupopup) menuMap.get("database-inst");
-        // disable for now if the connection is an SAP R/3 type of database...
+        // disable for now if the connection is an SAP ERP type of database...
         //
         XulMenuitem item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById("database-inst-explore");
         if (item != null) {
@@ -3304,7 +3304,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         refreshGraph();
       } catch (Exception e) {
         new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
-            "Spoon.Dialog.ErrorOpeningById.Message", objectId), e.getMessage(), e); //$NON-NLS-1$
+        "Spoon.Dialog.ErrorOpeningById.Message", objectId), e.getMessage(), e); //$NON-NLS-1$
       }
     } else
     // Try to open the selected job.
@@ -4778,8 +4778,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         releaseText = BaseMessages.getString(PKG, "Spoon.Candidate.HelpAboutText");
     } else if (Const.RELEASE.equals(Const.ReleaseType.MILESTONE)) {
       releaseText = BaseMessages.getString(PKG, "Spoon.Milestone.HelpAboutText");
-    } else if (Const.RELEASE.equals(Const.ReleaseType.GA)) {
-      releaseText = BaseMessages.getString(PKG, "Spoon.GA.HelpAboutText");
     }
 
     //  build a message

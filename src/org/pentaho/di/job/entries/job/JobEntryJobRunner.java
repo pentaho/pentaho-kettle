@@ -39,11 +39,11 @@ public class JobEntryJobRunner implements Runnable
     /**
      * 
      */
-    public JobEntryJobRunner(Job job, Result result, int entryNr)
+    public JobEntryJobRunner(Job job, Result result, int entryNr, LogChannelInterface log)
     {
         this.job = job;
         this.result = result;
-        this.log = job.getLogChannel();
+        this.log = log;
         this.entryNr = entryNr;
         finished=false;
     }
@@ -55,7 +55,7 @@ public class JobEntryJobRunner implements Runnable
             if (job.isStopped() || job.getParentJob()!=null && job.getParentJob().isStopped()) return;
             
             // This JobEntryRunner is a replacement for the Job thread.
-            // The job thread is never started because we simpy want to wait for the result.
+            // The job thread is never started because we simply want to wait for the result.
             
 			result = job.execute(entryNr+1, result);
 		}

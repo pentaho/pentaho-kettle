@@ -17,6 +17,8 @@
 
 package org.pentaho.di.ui.trans.steps.joinrows;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -239,10 +241,9 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		wlMainStep.setLayoutData(fdlMainStep);
 		wMainStep=new CCombo(shell, SWT.BORDER );
  		props.setLook(wMainStep);
-
-		for (int i=0;i<transMeta.findNrPrevSteps(stepname);i++)
-		{
-			StepMeta stepMeta = transMeta.findPrevStep(stepname, i);
+ 		
+ 		List<StepMeta> prevSteps = transMeta.findPreviousSteps(transMeta.findStep(stepname));
+		for (StepMeta stepMeta : prevSteps) {
 			wMainStep.add(stepMeta.getName());
 		}
 		
