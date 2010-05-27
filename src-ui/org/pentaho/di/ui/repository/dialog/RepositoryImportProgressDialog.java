@@ -249,8 +249,12 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
       }
 
       if (makeDirectory) {
-        addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
-        targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);
+        RepositoryDirectoryInterface baseDir = rep.loadRepositoryDirectoryTree().findDirectory(baseDirectory.getPath());
+        targetDirectory = baseDir.findDirectory(directoryPath);
+        if (targetDirectory==null) {
+          addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
+          targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);
+        }
       } else {
         targetDirectory = baseDirectory;
       }
@@ -480,8 +484,12 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
       }
 
       if (makeDirectory) {
-        addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
-        targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);
+        RepositoryDirectoryInterface baseDir = rep.loadRepositoryDirectoryTree().findDirectory(baseDirectory.getPath());
+        targetDirectory = baseDir.findDirectory(directoryPath);
+        if (targetDirectory==null) {
+          addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
+          targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);
+        }
       } else {
         targetDirectory = baseDirectory;
       }
