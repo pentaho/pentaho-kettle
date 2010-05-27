@@ -18,7 +18,6 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +32,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoerCollection;
@@ -115,6 +113,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   private XulConfirmBox confirmBox;
 
+  private List<UIRepositoryObject> currentSelectedFileList;
+  
+  private List<UIRepositoryDirectory>  currentSelectedFolderList;
   /**
    * Allows for lookup of a UIRepositoryDirectory by ObjectId. This allows the reuse of instances that are inside a UI
    * tree.
@@ -193,6 +194,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         return null;
       }
     };
+    bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(fileTable, "selectedItems", "file-context-rename", "!disabled", checkIfMultipleItemsAreSelected); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -611,16 +613,22 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void setSelectedFolderItems(List<UIRepositoryDirectory> selectedFolderItems) {
-    if (!compareFolderList(selectedFolderItems, this.selectedFolderItems)) {
+    if (!compareFolderList(selectedFolderItems, this.selectedFolderItems) && !compareFolderList(selectedFolderItems, currentSelectedFolderList)) {
       List<TYPE> pollResults = pollContextChangeVetoResults();
       if (!contains(TYPE.CANCEL, pollResults)) {
         this.selectedFolderItems = selectedFolderItems;
         setRepositoryDirectories(selectedFolderItems);
       } else if (contains(TYPE.CANCEL, pollResults)) {
         folderTree.setSelectedItems(this.selectedFolderItems);
+        currentSelectedFolderList = new ArrayList<UIRepositoryDirectory>();
+        currentSelectedFolderList.addAll(selectedFolderItems);
       }
-    } else {
+    } else if (compareFolderList(selectedFolderItems, this.selectedFolderItems) && !compareFolderList(selectedFolderItems, currentSelectedFolderList)) {
       setRepositoryDirectories(selectedFolderItems);
+    } else {
+      if(currentSelectedFolderList.size() > 0) {
+        currentSelectedFolderList.clear();
+      }
     }
   }
 
@@ -629,16 +637,22 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void setSelectedFileItems(List<UIRepositoryObject> selectedFileItems) {
-    if (!compareFileList(selectedFileItems, this.selectedFileItems)) {
+    if (!compareFileList(selectedFileItems, this.selectedFileItems) && !compareFileList(selectedFileItems,currentSelectedFileList)) {
       List<TYPE> pollResults = pollContextChangeVetoResults();
       if (!contains(TYPE.CANCEL, pollResults)) {
         this.selectedFileItems = selectedFileItems;
         setRepositoryObjects(selectedFileItems);
       } else if (contains(TYPE.CANCEL, pollResults)) {
         fileTable.setSelectedItems(this.selectedFileItems);
+        currentSelectedFileList = new ArrayList<UIRepositoryObject>();
+        currentSelectedFileList.addAll(selectedFileItems);
       }
-    } else {
+    } else if (compareFileList(selectedFileItems, this.selectedFileItems) && !compareFileList(selectedFileItems,currentSelectedFileList)) {
       setRepositoryObjects(selectedFileItems);
+    } else { 
+      if(currentSelectedFileList.size() > 0) {
+        currentSelectedFileList.clear();
+      }
     }
   }
 
