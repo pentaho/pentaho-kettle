@@ -204,7 +204,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	 */
 	public String getDropColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
-		return "ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR;
+		return "ALTER TABLE "+tablename+" DROP COLUMN "+v.getName();
 	}
 
 	/**
@@ -220,8 +220,19 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		String retval="";
-		retval+="ALTER TABLE "+tablename+" DROP COLUMN "+v.getName()+Const.CR+";"+Const.CR;
-		retval+="ALTER TABLE "+tablename+" ADD COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
+
+		ValueMetaInterface tmpColumn = v.clone(); 
+        
+        tmpColumn.setName(v.getName()+"_KTL");
+        
+       // Create a new tmp column
+        retval+=getAddColumnStatement(tablename, tmpColumn, tk, use_autoinc, pk, semicolon)+";"+Const.CR;
+        // copy the old data over to the tmp column
+        retval+="UPDATE "+tablename+" SET "+tmpColumn.getName()+"="+v.getName()+";"+Const.CR;
+        // drop the old column
+        retval+=getDropColumnStatement(tablename, v, tk, use_autoinc, pk, semicolon)+";"+Const.CR;
+        // rename the temp column to replace the removed column
+        retval+="ALTER TABLE "+tablename+" RENAME "+tmpColumn.getName()+" TO "+v.getName()+";"+Const.CR;
 		return retval;
 	}
 
