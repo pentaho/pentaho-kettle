@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.HashSet;
+import java.util.HashMap;
 
 import mondrian.olap.Axis;
 import mondrian.olap.Cell;
@@ -173,8 +173,7 @@ public class MondrianHelper {
         // column, keep scanning until we find one line that has an actual value
         if (rows.size() > 0) {
           int columnCount = rows.get(0).size();
-          HashSet<Integer> controlHash = new HashSet<Integer>();
-          List<ValueMetaInterface> metaValues = new ArrayList<ValueMetaInterface>(columnCount);
+          HashMap<Integer,ValueMetaInterface> valueMetaHash = new HashMap<Integer,ValueMetaInterface>();
   
           for (int i=0 ; i<rows.size(); i++) {
           	
@@ -182,9 +181,10 @@ public class MondrianHelper {
           	
               for (int c=0 ;c<rowValues.size();c++) {
   
-                if (controlHash.contains(new Integer(c)))
+                if (valueMetaHash.containsKey(new Integer(c))){
                   continue; // we have this value already
-  
+                }
+                
                 ValueMetaInterface valueMeta = new ValueMeta(headings.get(c));
               	Object             valueData = rowValues.get(c);
   
@@ -213,29 +213,34 @@ public class MondrianHelper {
               		throw new KettleDatabaseException("Unhandled data type found '"+valueData.getClass().toString()+"'");
               	}
   
-                metaValues.add(c, valueMeta);
-                controlHash.add(new Integer(c));
+                valueMetaHash.put(c, valueMeta);
+                
               	
               }
   
-              if (controlHash.size() == columnCount)
+              if (valueMetaHash.size() == columnCount)
                 break; // we're done
           }
+          
   
-          // If the entire column is null, assume the missing data as String. Irrelevant, anyway
-          if (controlHash.size() != columnCount){
-            for (int c = 0; c < columnCount; c++) {
-              if (controlHash.contains(new Integer(c)))
-                  continue; // we have this value already
-              ValueMetaInterface valueMeta = new ValueMeta(headings.get(c),
-                      ValueMetaInterface.TYPE_STRING);
-              metaValues.add(c, valueMeta);
+          // Build the list of valueMetas
+          List<ValueMetaInterface> valueMetaList = new ArrayList<ValueMetaInterface>();
+  
+          for (int c = 0; c < columnCount; c++) {
+            if(valueMetaHash.containsKey(new Integer(c))){
+              valueMetaList.add(valueMetaHash.get(new Integer(c)));
             }
+            else
+            {
+              // If the entire column is null, assume the missing data as String. Irrelevant, anyway
+              ValueMetaInterface valueMeta = new ValueMeta(headings.get(c),ValueMetaInterface.TYPE_STRING);
+              valueMetaList.add(valueMeta);
+            }
+  
           }
-
-          outputRowMeta.setValueMetaList(metaValues);
+          
+          outputRowMeta.setValueMetaList(valueMetaList);
         }
-        
         // Now that we painstakingly found the meta data that comes out of the Mondrian database, cache it please...
         //
         DBCacheEntry cacheEntry = new DBCacheEntry(databaseMeta.getName(), queryString);

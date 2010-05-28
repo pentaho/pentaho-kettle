@@ -126,7 +126,7 @@
 	<classpathentry kind="lib" path="libext/webservices/xalan-2.4.1.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.2.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/orai18n.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2.0.13583.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2.0.13643.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/olap4j-0.9.7.309.jar"/>
 	<classpathentry kind="lib" path="libext/secondstring.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.0-remote.jar"/>
