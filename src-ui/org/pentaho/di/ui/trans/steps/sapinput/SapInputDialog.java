@@ -262,6 +262,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPType"),          ColumnInfo.COLUMN_TYPE_CCOMBO, SapType.getDescriptions()),
 			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TableOrStruct"),    ColumnInfo.COLUMN_TYPE_TEXT, false,   false), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPParameterName"), ColumnInfo.COLUMN_TYPE_TEXT, false,   false), //$NON-NLS-1$
+	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TargetType"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
 		};
 		inputFieldColumns.add(ciKey[0]);
 		
@@ -454,6 +455,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 			item.setText(colnr++, parameter.getSapType().getDescription());
 			item.setText(colnr++, Const.NVL(parameter.getTableName(), ""));
 			item.setText(colnr++, Const.NVL(parameter.getParameterName(), ""));
+			item.setText(colnr++, ValueMeta.getTypeDesc(parameter.getTargetType()));
 		}
 		wInput.setRowNums();
 		wInput.optWidth(true);
@@ -588,7 +590,8 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 			SapType sapType = SapType.findTypeForDescription( item.getText(colnr++) );
 			String tableName = item.getText(colnr++);
 			String parameterName = item.getText(colnr++);
-			meta.getParameters().add( new SapParameter(fieldName, sapType, tableName, parameterName) );
+			int targetType = ValueMeta.getType( item.getText(colnr++) );
+			meta.getParameters().add( new SapParameter(fieldName, sapType, tableName, parameterName, targetType) );
 		}
 		
 		// and the output fields.
@@ -676,6 +679,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 						item.setText(colnr++, type==null ? "" : type.getDescription());
 						item.setText(colnr++, Const.NVL(field.getTable(), ""));
 						item.setText(colnr++, Const.NVL(field.getName(), ""));
+						item.setText(colnr++, field.getTypePentaho());
 					}
 					wInput.setRowNums();
 					wInput.optWidth(true);
