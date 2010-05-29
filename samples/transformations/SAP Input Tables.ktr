@@ -312,7 +312,7 @@
     <host/>
     </function>
     <parameters>
-    <parameter><field_name>QUERY_TABLE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>QUERY_TABLE</parameter_name>    </parameter>
+    <parameter><field_name>QUERY_TABLE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>QUERY_TABLE</parameter_name><target_type>String</target_type>    </parameter>
     </parameters>
     <fields>
     <field><field_name>FIELDNAME</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><new_name>FIELDNAME</new_name><target_type>String</target_type>    </field>
@@ -348,12 +348,12 @@
     <host/>
     </function>
     <parameters>
-    <parameter><field_name>DELIMITER</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>DELIMITER</parameter_name>    </parameter>
-    <parameter><field_name>QUERY_TABLE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>QUERY_TABLE</parameter_name>    </parameter>
-    <parameter><field_name>ROWCOUNT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWCOUNT</parameter_name>    </parameter>
-    <parameter><field_name>ROWSKIPS</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWSKIPS</parameter_name>    </parameter>
-    <parameter><field_name>FIELDNAME</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><parameter_name>FIELDNAME</parameter_name>    </parameter>
-    <parameter><field_name>FILTER</field_name><sap_type>TABLE</sap_type><table_name>OPTIONS</table_name><parameter_name>TEXT</parameter_name>    </parameter>
+    <parameter><field_name>DELIMITER</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>DELIMITER</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>QUERY_TABLE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>QUERY_TABLE</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>ROWCOUNT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWCOUNT</parameter_name><target_type>Integer</target_type>    </parameter>
+    <parameter><field_name>ROWSKIPS</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWSKIPS</parameter_name><target_type>Integer</target_type>    </parameter>
+    <parameter><field_name>FIELDNAME</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><parameter_name>FIELDNAME</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>FILTER</field_name><sap_type>TABLE</sap_type><table_name>OPTIONS</table_name><parameter_name>TEXT</parameter_name><target_type>String</target_type>    </parameter>
     </parameters>
     <fields>
     <field><field_name>WA</field_name><sap_type>TABLE</sap_type><table_name>DATA</table_name><new_name>WA</new_name><target_type>String</target_type>    </field>
