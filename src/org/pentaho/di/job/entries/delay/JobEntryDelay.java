@@ -134,23 +134,26 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     String Waitscale;
 
     // Scale time
-    if (scaleTime == 0)
-    {
-      // Second
-      Multiple = 1000;
-      Waitscale = BaseMessages.getString(PKG, "JobEntryDelay.SScaleTime.Label"); //$NON-NLS-1$
-
-    } else if (scaleTime == 1)
-    {
-      // Minute
-      Multiple = 60000;
-      Waitscale = BaseMessages.getString(PKG, "JobEntryDelay.MnScaleTime.Label"); //$NON-NLS-1$
-    } else
-    {
-      // Hour
-      Multiple = 3600000;
-      Waitscale = BaseMessages.getString(PKG, "JobEntryDelay.HrScaleTime.Label"); //$NON-NLS-1$
-    }
+	switch (scaleTime)
+	{
+		case 0:				
+			// Second
+		   Multiple = 1000;
+		   Waitscale = BaseMessages.getString(PKG, "JobEntryDelay.SScaleTime.Label"); //$NON-NLS-1$
+		break;
+		case 1:
+		   // Minute
+		   Multiple = 60000;
+		   Waitscale = BaseMessages.getString(PKG, "JobEntryDelay.MnScaleTime.Label"); //$NON-NLS-1$
+		break;
+		default:
+		   // Hour
+		   Multiple = 3600000;
+		   Waitscale = BaseMessages.getString(PKG, "JobEntryDelay.HrScaleTime.Label"); //$NON-NLS-1$
+		break;
+	}
+	
+   
     try
     {
       // starttime (in seconds ,Minutes or Hours)
@@ -158,10 +161,9 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 
       long iMaximumTimeout = Const.toInt(getrealMaximumTimeout(), Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
 
-      if (log.isDetailed())
+      if (isDetailed())
       {
-        logDetailed(BaseMessages.getString(PKG, "JobEntryDelay.LetsWaitFor.Label", String //$NON-NLS-1$
-            .valueOf(iMaximumTimeout), String.valueOf(Waitscale)));
+        logDetailed(BaseMessages.getString(PKG, "JobEntryDelay.LetsWaitFor.Label", iMaximumTimeout, Waitscale));
       }
 
       boolean continueLoop = true;
