@@ -798,6 +798,10 @@ public class GetXMLData extends BaseStep implements StepInterface
 			data.rownr = 1L;
 			data.nrInputFields=meta.getInputFields().length;
 			data.PathValue=environmentSubstitute(meta.getLoopXPath());
+			if(Const.isEmpty(data.PathValue)) {
+				logError(Messages.getString("GetXMLData.Error.EmptyPath"));
+				return false;
+			}
 			if(!data.PathValue.substring(0,1).equals("/")) data.PathValue="/" + data.PathValue;
 			if(log.isDetailed()) log.logDetailed(toString(),Messages.getString("GetXMLData.Log.LoopXPath",data.PathValue));
 			
