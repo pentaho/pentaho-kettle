@@ -133,7 +133,7 @@
     <host/>
     </function>
     <parameters>
-    <parameter><field_name>BILLINGDOCUMENT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>BILLINGDOCUMENT</parameter_name>    </parameter>
+    <parameter><field_name>BILLINGDOCUMENT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>BILLINGDOCUMENT</parameter_name><target_type>String</target_type>    </parameter>
     </parameters>
     <fields>
     <field><field_name>BILLINGDOC</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILLINGDOC</new_name><target_type>String</target_type>    </field>
@@ -174,10 +174,10 @@
     <host/>
     </function>
     <parameters>
-    <parameter><field_name>SIGN</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>SIGN</parameter_name>    </parameter>
-    <parameter><field_name>OPTION</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>OPTION</parameter_name>    </parameter>
-    <parameter><field_name>REF_DOC_LOW1</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_LOW</parameter_name>    </parameter>
-    <parameter><field_name>REF_DOC_HIGH1</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_HIGH</parameter_name>    </parameter>
+    <parameter><field_name>SIGN</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>SIGN</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>OPTION</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>OPTION</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>LOW</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_LOW</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>HIGH</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_HIGH</parameter_name><target_type>String</target_type>    </parameter>
     </parameters>
     <fields>
     <field><field_name>BILLINGDOC</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILLINGDOC</new_name><target_type>String</target_type>    </field>
@@ -341,7 +341,7 @@
         <precision>-1</precision>
       </field>
       <field>
-        <name>REF_DOC_LOW1</name>
+        <name>LOW</name>
         <type>String</type>
         <format/>
         <currency/>
@@ -352,7 +352,7 @@
         <precision>-1</precision>
       </field>
       <field>
-        <name>REF_DOC_HIGH1</name>
+        <name>HIGH</name>
         <type>String</type>
         <format/>
         <currency/>
@@ -423,9 +423,9 @@
     <host/>
     </function>
     <parameters>
-    <parameter><field_name>FUNCNAME</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>FUNCNAME</parameter_name>    </parameter>
-    <parameter><field_name>GROUPNAME</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>GROUPNAME</parameter_name>    </parameter>
-    <parameter><field_name>LANGUAGE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>LANGUAGE</parameter_name>    </parameter>
+    <parameter><field_name>FUNCNAME</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>FUNCNAME</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>GROUPNAME</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>GROUPNAME</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>LANGUAGE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>LANGUAGE</parameter_name><target_type>String</target_type>    </parameter>
     </parameters>
     <fields>
     <field><field_name>FUNCNAME</field_name><sap_type>TABLE</sap_type><table_name>FUNCTIONS</table_name><new_name>FUNCNAME</new_name><target_type>String</target_type>    </field>

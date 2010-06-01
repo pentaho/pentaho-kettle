@@ -17,6 +17,7 @@ public class SapParameter {
 	private SapType sapType;
 	private String tableName;
 	private String parameterName;
+	private int targetType;
 	
 	/**
 	 * @param fieldName
@@ -24,11 +25,12 @@ public class SapParameter {
 	 * @param tableName
 	 * @param parameterName
 	 */
-	public SapParameter(String fieldName, SapType sapType, String tableName, String parameterName) {
+	public SapParameter(String fieldName, SapType sapType, String tableName, String parameterName, int targetType) {
 		this.fieldName = fieldName;
 		this.sapType = sapType;
 		this.tableName = tableName;
 		this.parameterName = parameterName;
+		this.targetType = targetType;
 	}
 	/**
 	 * @return the fieldName
@@ -78,6 +80,19 @@ public class SapParameter {
 	public void setParameterName(String parameterName) {
 		this.parameterName = parameterName;
 	}
-	
+
+	/**
+	 * @return the targetType
+	 */
+	public int getTargetType() {
+		return targetType;
+	}
+
+	/**
+	 * @param targetType the targetType to set
+	 */
+	public void setTargetType(int targetType) {
+		this.targetType = targetType;
+	}
 	
 }

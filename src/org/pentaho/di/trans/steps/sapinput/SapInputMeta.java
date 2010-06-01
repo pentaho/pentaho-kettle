@@ -165,6 +165,7 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append(XMLHandler.addTagValue("sap_type", parameter.getSapType().getCode(), false));
 			retval.append(XMLHandler.addTagValue("table_name", parameter.getTableName(), false));
 			retval.append(XMLHandler.addTagValue("parameter_name", parameter.getParameterName(), false));
+			retval.append(XMLHandler.addTagValue("target_type", ValueMeta.getTypeDesc(parameter.getTargetType()), false));
 			retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARAMETER)).append(Const.CR);
 		}
 		retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARAMETERS)).append(Const.CR);
@@ -207,8 +208,9 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface
 				String fieldName = XMLHandler.getTagValue(paramNode, "field_name");
 				SapType sapType = SapType.findTypeForCode( XMLHandler.getTagValue(paramNode, "sap_type") );
 				String tableName = XMLHandler.getTagValue(paramNode, "table_name");
+				int targetType = ValueMeta.getType( XMLHandler.getTagValue(paramNode, "target_type") );
 				String parameterName = XMLHandler.getTagValue(paramNode, "parameter_name");
-				parameters.add( new SapParameter(fieldName, sapType, tableName, parameterName) );
+				parameters.add( new SapParameter(fieldName, sapType, tableName, parameterName, targetType) );
 			}
 
 			Node fieldsNode = XMLHandler.getSubNode(stepnode, XML_TAG_FIELDS);
@@ -247,6 +249,7 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "parameter_sap_type", parameter.getSapType()==null ? null : parameter.getSapType().getCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "parameter_table_name", parameter.getTableName());
 				rep.saveStepAttribute(id_transformation, id_step, i, "parameter_name", parameter.getParameterName());
+				rep.saveStepAttribute(id_transformation, id_step, i, "parameter_target_type", ValueMeta.getTypeDesc( parameter.getTargetType()));
 			}
 			
 			for (int i=0;i<outputFields.size();i++) {
@@ -287,8 +290,9 @@ public class SapInputMeta extends BaseStepMeta implements StepMetaInterface
 				String fieldName = rep.getStepAttributeString(id_step, i, "parameter_field_name");
 				SapType sapType = SapType.findTypeForCode( rep.getStepAttributeString(id_step, i, "parameter_sap_type") );
 				String tableName = rep.getStepAttributeString(id_step, i, "parameter_table_name");
+				int targetType = ValueMeta.getType( rep.getStepAttributeString(id_step, i, "parameter_target_type") );
 				String parameterName = rep.getStepAttributeString(id_step, i, "parameter_name");
-				parameters.add( new SapParameter(fieldName, sapType, tableName, parameterName) );
+				parameters.add( new SapParameter(fieldName, sapType, tableName, parameterName, targetType) );
 			}
 
 			int nrFields = rep.countNrStepAttributes(id_step, "field_sap_field_name");

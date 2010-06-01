@@ -105,39 +105,19 @@
            </partitioning>
     <connection>Kinamu</connection>
     <function>
-    <name>BAPI_ACC_CO_DOCUMENT_FIND</name>
-    <description>Lesen CO-Beleg zu manuellen Istbuchungen</description>
-    <group>K23G</group>
+    <name>C100_RFC_ENTRY_INQUIERY</name>
+    <description>EHS: Aufruf der Stoffsauskunft via RFC (mit Übergabe von Material-ID&apos;s)</description>
+    <group>C100</group>
     <application/>
     <host/>
     </function>
     <parameters>
-    <parameter><field_name>RETURN_ITEMS</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>RETURN_ITEMS</parameter_name>    </parameter>
-    <parameter><field_name>CO_AREA</field_name><sap_type>STRUCTURE</sap_type><table_name>DOCUMENT</table_name><parameter_name>CO_AREA</parameter_name>    </parameter>
-    <parameter><field_name>PERIOD</field_name><sap_type>STRUCTURE</sap_type><table_name>DOCUMENT</table_name><parameter_name>PERIOD</parameter_name>    </parameter>
-    <parameter><field_name>FISC_YEAR</field_name><sap_type>STRUCTURE</sap_type><table_name>DOCUMENT</table_name><parameter_name>FISC_YEAR</parameter_name>    </parameter>
+    <parameter><field_name>I_CALLID</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>I_CALLID</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>I_FLG_SIMPLE_LIST</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>I_FLG_SIMPLE_LIST</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>I_VALDAT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>I_VALDAT</parameter_name><target_type>String</target_type>    </parameter>
     </parameters>
     <fields>
-    <field><field_name>CO_AREA</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>CO_AREA</new_name><target_type>String</target_type>    </field>
-    <field><field_name>DOC_NO</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>DOC_NO</new_name><target_type>String</target_type>    </field>
-    <field><field_name>FISC_YEAR</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>FISC_YEAR</new_name><target_type>Integer</target_type>    </field>
-    <field><field_name>PERIOD</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>PERIOD</new_name><target_type>Integer</target_type>    </field>
-    <field><field_name>VERSION</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>VERSION</new_name><target_type>String</target_type>    </field>
-    <field><field_name>CO_TRANSAC</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>CO_TRANSAC</new_name><target_type>String</target_type>    </field>
-    <field><field_name>DOCDATE</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>DOCDATE</new_name><target_type>String</target_type>    </field>
-    <field><field_name>POSTGDATE</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>POSTGDATE</new_name><target_type>String</target_type>    </field>
-    <field><field_name>DOC_HDR_TX</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>DOC_HDR_TX</new_name><target_type>String</target_type>    </field>
-    <field><field_name>USERNAME</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>USERNAME</new_name><target_type>String</target_type>    </field>
-    <field><field_name>REVERSEDOC</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>REVERSEDOC</new_name><target_type>String</target_type>    </field>
-    <field><field_name>REVERSED</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>REVERSED</new_name><target_type>String</target_type>    </field>
-    <field><field_name>VARIANT</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>VARIANT</new_name><target_type>String</target_type>    </field>
-    <field><field_name>OBJ_KEY</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>OBJ_KEY</new_name><target_type>String</target_type>    </field>
-    <field><field_name>OBJ_TYPE</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>OBJ_TYPE</new_name><target_type>String</target_type>    </field>
-    <field><field_name>OBJ_SYS</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>OBJ_SYS</new_name><target_type>String</target_type>    </field>
-    <field><field_name>OBJ_KEY_R</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>OBJ_KEY_R</new_name><target_type>String</target_type>    </field>
-    <field><field_name>ORIG_TRANSAC</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>ORIG_TRANSAC</new_name><target_type>String</target_type>    </field>
-    <field><field_name>CO_AREA_CURR</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>CO_AREA_CURR</new_name><target_type>String</target_type>    </field>
-    <field><field_name>CO_AREA_CURR_ISO</field_name><sap_type>TABLE</sap_type><table_name>DOC_HEADERS</table_name><new_name>CO_AREA_CURR_ISO</new_name><target_type>String</target_type>    </field>
+    <field><field_name>MATNR</field_name><sap_type>TABLE</sap_type><table_name>I_MATNR_TAB</table_name><new_name>MATNR</new_name><target_type>String</target_type>    </field>
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -217,6 +197,39 @@
         <decimal/>
         <group/>
         <nullif>D</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>I_CALLID</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>A</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>I_FLG_SIMPLE_LIST</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>B</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>I_VALDAT</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>C</nullif>
         <length>-1</length>
         <precision>-1</precision>
       </field>
