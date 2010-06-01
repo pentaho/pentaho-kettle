@@ -52,11 +52,13 @@ public class Log4jBufferAppender implements Appender
      * If no records are present in the buffer, 0 is returned.
      */
     public int getLastBufferLineNr() {
-    	if (buffer.size()>0) {
-    		return buffer.get(buffer.size()-1).getNr();
-    	} else {
-    		return 0;
-    	}
+      synchronized(buffer) {
+      	if (buffer.size()>0) {
+      		return buffer.get(buffer.size()-1).getNr();
+      	} else {
+      		return 0;
+      	}
+      }
     }
     
     /**
