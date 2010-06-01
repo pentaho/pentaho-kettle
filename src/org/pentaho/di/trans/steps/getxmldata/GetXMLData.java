@@ -592,7 +592,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 //	        return false; // end of data or error.
 //	     }
 		 
-		 if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetXMLData.Log.ReadRow", getInputRowMeta().getString(r)));
+		 if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetXMLData.Log.ReadRow", data.outputRowMeta.getString(r)));
 		 incrementLinesInput();
 		 data.rownr++;
 		 putRow(data.outputRowMeta, r);  // copy row to output rowset(s);
