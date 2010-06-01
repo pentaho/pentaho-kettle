@@ -129,6 +129,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/olap4j-0.9.7.309.jar"/>
 	<classpathentry kind="lib" path="libext/secondstring.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.0-remote.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2.0.13658.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2.0.13661.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
