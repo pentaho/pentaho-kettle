@@ -41,6 +41,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -1229,7 +1230,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			// So let's change the filename from relative to absolute by grabbing the file object...
 			// In case the name of the file comes from previous steps, forget about this!
 			//
-			List<String> newFilenames = new ArrayList<String>();
+            List<FileObject> newFiles = new ArrayList<FileObject>();
 			
 			if (!acceptingFilenames) {
 				FileInputList fileList = getFileList(space);
@@ -1243,16 +1244,25 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 						if (fileObject.exists()) {
 							// Convert to an absolute path and add it to the list.
 							// 
-							newFilenames.add(fileObject.getName().getPath());
+							newFiles.add(fileObject);
 						}
 					}
 					
 					// Still here: set a new list of absolute filenames!
 					//
-					fileName = newFilenames.toArray(new String[newFilenames.size()]);
-					fileMask = new String[newFilenames.size()]; // all null since converted to absolute path.
-					fileRequired = new String[newFilenames.size()]; // all null, turn to "Y" :
-					for (int i=0;i<newFilenames.size();i++) fileRequired[i]="Y";
+					fileName = new String[newFiles.size()];
+					fileMask = new String[newFiles.size()]; // all null since converted to absolute path.
+					fileRequired = new String[newFiles.size()]; // all null, turn to "Y" :
+					
+					for (int i=0;i<newFiles.size();i++) {
+					  FileObject fileObject = newFiles.get(i);
+					  fileName[i] = resourceNamingInterface.nameResource(
+					      fileObject.getName().getBaseName(), 
+					      fileObject.getParent().getName().getPath(), 
+					      space.toString(), 
+					      FileNamingType.DATA_FILE);
+					  fileRequired[i]="Y";
+					}
 				}
 			}
 			return null;
