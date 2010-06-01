@@ -324,22 +324,20 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
    */
   public RepositoryDirectoryInterface createRepositoryDirectory(RepositoryDirectoryInterface parentDirectory, String directoryPath)
       throws KettleException {
-    RepositoryDirectoryInterface refreshedParentDir = repository.loadRepositoryDirectoryTree().findDirectory(parentDirectory.getPath());
-
+    
+    // RepositoryDirectoryInterface refreshedParentDir = repository.loadRepositoryDirectoryTree().findDirectory(parentDirectory.getPath());
+    
+    RepositoryDirectoryInterface refreshedParentDir = parentDirectory;
     String path[] = Const.splitPath(directoryPath, RepositoryDirectory.DIRECTORY_SEPARATOR);
 
     RepositoryDirectoryInterface parent = refreshedParentDir;
-    for (int level = 1; level <= path.length; level++) {
-      String subPath[] = new String[level];
-      for (int i = 0; i < level; i++) {
-        subPath[i] = path[i];
-      }
+    for (int level = 0; level < path.length; level++) {
 
-      RepositoryDirectoryInterface rd = parent.findDirectory(subPath);
+      RepositoryDirectoryInterface rd = parent.findChild(path[level]);
       if (rd == null) {
-        // This directory doesn't exists, let's add it!
+        // This child directory doesn't exists, let's add it!
         //
-        rd = new RepositoryDirectory(parent, subPath[level - 1]);
+        rd = new RepositoryDirectory(parent, path[level]);
         saveRepositoryDirectory(rd);
 
         // Don't forget to add this directory to the tree!

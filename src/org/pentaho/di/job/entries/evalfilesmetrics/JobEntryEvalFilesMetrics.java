@@ -344,7 +344,12 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 		List<RowMetaAndData> rows = result.getRows();
 	    RowMetaAndData resultRow = null;
 		
-		initMetrics();
+	    try {
+	    	initMetrics();
+	    }catch(Exception e) {
+			logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.Init", e.toString()));
+			return result;
+	    }
 
 		// Get source and destination files, also wildcard
 		String vsourcefilefolder[] = source_filefolder;
@@ -536,14 +541,17 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 		
 		return retval;
 	}
-	private void initMetrics() {
+	private void initMetrics() throws Exception {
 		evaluationValue=new BigDecimal(0);
 		filesCount=new BigDecimal(0);
 		nrErrors=0;
 	
-		compareValue= new BigDecimal(environmentSubstitute(getCompareValue()));
-		minValue= new BigDecimal(environmentSubstitute(getMinValue()));
-		maxValue= new BigDecimal(environmentSubstitute(getMaxValue()));
+		if(successnumbercondition==JobEntrySimpleEval.SUCCESS_NUMBER_CONDITION_BETWEEN) {
+			minValue= new BigDecimal(environmentSubstitute(getMinValue()));
+			maxValue= new BigDecimal(environmentSubstitute(getMaxValue()));
+		}else {
+			compareValue= new BigDecimal(environmentSubstitute(getCompareValue()));
+		}
 		
 		if(evaluationType== EVALUATE_TYPE_SIZE) {
 			int multyply=1;
@@ -561,10 +569,12 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 				break;
 			}
 
-			compareValue=compareValue.multiply(BigDecimal.valueOf(multyply));
-			minValue=minValue.multiply(BigDecimal.valueOf(multyply));
-			maxValue=maxValue.multiply(BigDecimal.valueOf(multyply));
-			
+			if(successnumbercondition==JobEntrySimpleEval.SUCCESS_NUMBER_CONDITION_BETWEEN) {
+				minValue=minValue.multiply(BigDecimal.valueOf(multyply));
+				maxValue=maxValue.multiply(BigDecimal.valueOf(multyply));
+			}else {
+				compareValue=compareValue.multiply(BigDecimal.valueOf(multyply));
+			}
 		}
 		arg_from_previous= (getSourceFiles()== SOURCE_FILES_PREVIOUS_RESULT);
 	}

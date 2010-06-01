@@ -175,14 +175,18 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
     fdLogging.bottom = new FormAttachment(wClose, -Const.MARGIN);
     wLogging.setLayoutData(fdLogging);
 
-    // Detect X or ALT-F4 or something that kills this window...
-    shell.addShellListener(new ShellAdapter() {
-      public void shellClosed(ShellEvent e) {
-        dispose();
+    new Thread(new Runnable() {
+      public void run() {
+        // Detect X or ALT-F4 or something that kills this window...
+        shell.addShellListener(new ShellAdapter() {
+          public void shellClosed(ShellEvent e) {
+            dispose();
+          }
+        });
       }
-    });
+    }).start();
 
-    BaseStepDialog.setSize(shell, 640, 480, true);
+    BaseStepDialog.setSize(shell, 1024, 768, true);
 
     shell.open();
 
@@ -204,9 +208,11 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
   }
 
   private void addLog(String line) {
-    String rest = wLogging.getText();
-    wLogging.setText(rest + line + Const.CR);
-    wLogging.setSelection(wLogging.getText().length()); // make it scroll
+    StringBuffer rest = new StringBuffer(wLogging.getText());
+    rest.append(XMLHandler.date2string(new Date())).append(" : ");
+    rest.append(line).append(Const.CR);
+    wLogging.setText(rest.toString());
+    wLogging.setSelection(rest.length()); // make it scroll
   }
 
   /**
@@ -249,8 +255,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
       }
 
       if (makeDirectory) {
-        RepositoryDirectoryInterface baseDir = rep.loadRepositoryDirectoryTree().findDirectory(baseDirectory.getPath());
-        targetDirectory = baseDir.findDirectory(directoryPath);
+        targetDirectory = baseDirectory.findDirectory(directoryPath);
         if (targetDirectory==null) {
           addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
           targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);
@@ -484,8 +489,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
       }
 
       if (makeDirectory) {
-        RepositoryDirectoryInterface baseDir = rep.loadRepositoryDirectoryTree().findDirectory(baseDirectory.getPath());
-        targetDirectory = baseDir.findDirectory(directoryPath);
+        targetDirectory = baseDirectory.findDirectory(directoryPath);
         if (targetDirectory==null) {
           addLog(BaseMessages.getString(PKG, "RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
           targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);

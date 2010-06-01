@@ -1072,7 +1072,7 @@
 	<step id="UserDefinedJavaClass">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.UserDefinedJavaClass</description>
 		<classname>org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.UserDefinedJavaClass</tooltip>
 		<iconfile>ui/images/sScript.png</iconfile>
 	</step>
