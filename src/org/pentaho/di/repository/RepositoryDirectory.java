@@ -587,30 +587,24 @@ public class RepositoryDirectory
 	    String path[] = Const.splitPath(directoryPath, DIRECTORY_SEPARATOR);
 
 	    RepositoryDirectory parent = this;
-	    for (int level=1;level<=path.length;level++)
+	    for (int level=0;level<path.length;level++)
 	    {
-	        String subPath[] = new String[level];
-	        for (int i=0;i<level;i++)
-	        {
-	            subPath[i] = path[i];
-	        }
-	 
-	        RepositoryDirectory rd = findDirectory(subPath);
+	        RepositoryDirectory rd = findChild(path[level]);
 	        if (rd==null)
 	        {
 	            // This directory doesn't exists, let's add it!
-	            rd = new RepositoryDirectory(parent, subPath[level-1]);
-	            System.out.println("New directory: ["+rd.getPath()+"]");
+	            rd = new RepositoryDirectory(parent, path[level]);
+	            // System.out.println("New directory: ["+rd.getPath()+"]");
 	            if (rd.addToRep(rep))
 	            {
 	                // Don't forget to add this directory to the tree!
 	                parent.addSubdirectory(rd);
-		            System.out.println("Created directory ["+rd.getPath()+"], id = "+rd.getID());
+		            // System.out.println("Created directory ["+rd.getPath()+"], id = "+rd.getID());
 	                parent = rd;
 	            }
 	            else
 	            {
-	                throw new KettleDatabaseException("Unable to create repository directory ["+subPath[level-1]+"] in directory ["+parent.getPath()+"]");
+	                throw new KettleDatabaseException("Unable to create repository directory ["+path[level]+"] in directory ["+parent.getPath()+"]");
 	            }
 	        }
 	        else
@@ -637,4 +631,12 @@ public class RepositoryDirectory
             return getPath()+RepositoryDirectory.DIRECTORY_SEPARATOR+transName;
         }
     }
+    
+    public RepositoryDirectory findChild(String name) {
+      for (RepositoryDirectory child : children) {
+          if (child.getDirectoryName().equalsIgnoreCase(name)) 
+            return (RepositoryDirectory)child;
+      }
+      return null;
+  }
 }
