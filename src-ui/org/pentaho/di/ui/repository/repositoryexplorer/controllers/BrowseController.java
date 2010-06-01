@@ -143,9 +143,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     firePropertyChange("repositoryDirectory", null, repositoryDirectory);
   }
 
-  private void fireFoldersAndItemsChange() {
-    firePropertyChange("repositoryDirectories", null, getRepositoryDirectories()); //$NON-NLS-1$
-    firePropertyChange("selectedRepoDirChildren", null, getSelectedRepoDirChildren()); //$NON-NLS-1$
+  private void fireFoldersAndItemsChange(List<UIRepositoryDirectory> previousValue, UIRepositoryObjects previousRepoObjects) {
+    firePropertyChange("repositoryDirectories", previousValue, getRepositoryDirectories()); //$NON-NLS-1$
+    firePropertyChange("selectedRepoDirChildren", previousRepoObjects, getSelectedRepoDirChildren()); //$NON-NLS-1$
   }
 
   // end PDI-3326 hack
@@ -620,6 +620,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         setRepositoryDirectories(selectedFolderItems);
       } else if (contains(TYPE.CANCEL, pollResults)) {
         folderTree.setSelectedItems(this.selectedFolderItems);
+        fileTable.setSelectedItems(this.selectedFileItems);
         currentSelectedFolderList = new ArrayList<UIRepositoryDirectory>();
         currentSelectedFolderList.addAll(selectedFolderItems);
       }
@@ -683,7 +684,15 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void setRepositoryDirectories(List<UIRepositoryDirectory> selectedFolderItems) {
+    List<UIRepositoryDirectory> previousVal = null;
+    UIRepositoryObjects previousRepoObjects = null;
     try {
+      if(repositoryDirectories != null && repositoryDirectories.size() > 0) {
+        previousVal = new ArrayList<UIRepositoryDirectory>();
+        previousVal.addAll(repositoryDirectories);
+        previousRepoObjects = getSelectedRepoDirChildren();
+      }
+
       // Remove children listener
       if(this.repositoryDirectories != null && this.repositoryDirectories.size() > 0){
         this.repositoryDirectories.get(0).getRepositoryObjects().removePropertyChangeListener(fileChildrenListener);
@@ -699,7 +708,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     } catch (KettleException e) {
       throw new RuntimeException(e);
     }
-    fireFoldersAndItemsChange();
+    fireFoldersAndItemsChange(previousVal, previousRepoObjects);
   }
 
   public UIRepositoryObjects getSelectedRepoDirChildren() {
