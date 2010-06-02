@@ -133,4 +133,10 @@ public class RepositoryExplorer {
     dialog.show();
 
   }
+  
+  public void dispose(){
+    getDialogArea().dispose();
+    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
+    ((Shell) dialog.getRootObject()).dispose();
+  }
 }
