@@ -41,7 +41,6 @@
 	<classpathentry kind="lib" path="libext/webservices/jsr173_api.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/qname.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/wsdl4j.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/wstx-asl-3.2.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/derbyclient.jar"/>
 	<classpathentry kind="lib" path="libext/ldapjdk.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/derby.jar"/>
@@ -130,5 +129,6 @@
 	<classpathentry kind="lib" path="libext/secondstring.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.0-remote.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2.0.13661.jar"/>
+	<classpathentry kind="lib" path="libext/webservices/wstx-asl-3.2.9.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
