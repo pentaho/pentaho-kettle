@@ -17,7 +17,6 @@
 
 package org.pentaho.di.trans.steps.getsubfolders;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,10 +34,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
@@ -516,36 +516,15 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
 			// So let's change the filename from relative to absolute by grabbing the file object...
 			// In case the name of the file comes from previous steps, forget about this!
 			//
-			List<FileObject> newFilenames = new ArrayList<FileObject>();
-			
 			if (!isFoldernameDynamic) {
-				FileInputList fileList = getFolderList(space);
-				if (fileList.getFiles().size()>0) {
-					for (FileObject fileObject : fileList.getFiles()) {
-						// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.csv
-						// To   : /home/matt/test/files/foo/bar.csv
-						//
-						// If the file doesn't exist, forget about this effort too!
-						//
-						if (fileObject.exists()) {
-							// Convert to an absolute path and add it to the list.
-							// 
-							newFilenames.add(fileObject);
-						}
-					}
-					
-					// Still here: set a new list of absolute filenames!
-					//
-					folderName=new String[newFilenames.size()];
-					// folderMask=new String[newFilenames.size()];
-					folderRequired=new String[newFilenames.size()];
-					for (int i=0;i<newFilenames.size();i++) {
-						FileObject fileObject = newFilenames.get(i);
-						folderName[i] = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
-						//folderMask[i] = null;
-						folderRequired[i] = "Y";
-					}
-				}
+	            for (int i=0;i<folderName.length;i++) {
+	              FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(folderName[i]), space);
+	              String prefix = fileObject.getName().getBaseName(); 
+	              String path = fileObject.getParent().getName().getPath();
+	              folderName[i] = resourceNamingInterface.nameResource(
+	                  prefix, path, space.toString(), FileNamingType.DATA_FILE
+	                );
+	            }
 			}
 			return null;
 		} catch (Exception e) {

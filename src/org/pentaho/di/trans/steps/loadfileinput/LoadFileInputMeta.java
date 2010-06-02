@@ -16,6 +16,7 @@ import java.util.Map;
 
 
 import org.w3c.dom.Node;
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -29,10 +30,14 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -84,7 +89,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     private  String DynamicFilenameField;
     
     /**  Is In fields     */
-    private  boolean IsInFields;
+    private  boolean fileinfield;
     
     /** Flag: add result filename **/
     private boolean addresultfile;
@@ -178,13 +183,13 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /**  */
     public boolean getIsInFields()
     {
-        return IsInFields;
+        return fileinfield;
     }
     
     /**  */ 
     public void setIsInFields(boolean IsInFields)
     {
-        this.IsInFields = IsInFields;
+        this.fileinfield = IsInFields;
     }
     
        
@@ -406,7 +411,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
         retval.append("    "+XMLHandler.addTagValue("limit", rowLimit));
         
-        retval.append("    "+XMLHandler.addTagValue("IsInFields", IsInFields));
+        retval.append("    "+XMLHandler.addTagValue("IsInFields", fileinfield));
         
         retval.append("    "+XMLHandler.addTagValue("DynamicFilenameField", DynamicFilenameField));
 
@@ -456,7 +461,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			// Is there a limit on the number of rows we process?
 			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
 			
-			IsInFields = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsInFields"));
+			fileinfield = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsInFields"));
 
 			DynamicFilenameField = XMLHandler.getTagValue(stepnode, "DynamicFilenameField");
 			
@@ -508,7 +513,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 		rowLimit=0;
 		
-		IsInFields    = false;
+		fileinfield    = false;
 		DynamicFilenameField = null;
 	}
 	
@@ -611,7 +616,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
                 
 				inputFields[i] = field;
 			}
-			IsInFields        =      rep.getStepAttributeBoolean (id_step, "IsInFields");
+			fileinfield        =      rep.getStepAttributeBoolean (id_step, "IsInFields");
 			
 			DynamicFilenameField          =      rep.getStepAttributeString (id_step, "DynamicFilenameField");
             
@@ -663,7 +668,7 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type",     field.getTrimTypeCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",        field.isRepeated());
 			}
-			rep.saveStepAttribute(id_transformation, id_step, "IsInFields",       IsInFields);
+			rep.saveStepAttribute(id_transformation, id_step, "IsInFields",       fileinfield);
 			
             rep.saveStepAttribute(id_transformation, id_step, "DynamicFilenameField",        DynamicFilenameField);
 			
@@ -735,6 +740,36 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		
 	}
+	
+	@Override
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+      try {
+        // The object that we're modifying here is a copy of the original!
+        // So let's change the filename from relative to absolute by grabbing the file object...
+        //
+        if (!fileinfield) {
+            for (int i=0;i<fileName.length;i++) {
+              FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName[i]), space);
+              String prefix;
+              String path;
+              if (Const.isEmpty(fileMask[i])) {
+                prefix = fileObject.getName().getBaseName(); 
+                path = fileObject.getParent().getName().getPath();
+              } else {
+                prefix = "";
+                path = fileObject.getName().getPath();
+              }
+              
+              fileName[i] = resourceNamingInterface.nameResource(
+                  prefix, path, space.toString(), FileNamingType.DATA_FILE
+                );
+            }
+        }
+        return null;
+      } catch (Exception e) {
+          throw new KettleException(e); //$NON-NLS-1$
+      }
+    }
 
 
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
