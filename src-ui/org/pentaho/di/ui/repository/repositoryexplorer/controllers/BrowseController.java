@@ -100,12 +100,14 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected List<UIRepositoryDirectory> selectedFolderItems;
 
   protected List<UIRepositoryObject> selectedFileItems;
-
+  
   protected List<UIRepositoryDirectory> repositoryDirectories;
 
   protected Repository repository;
 
   List<UIRepositoryObject> repositoryObjects;
+  
+  List<UIRepositoryObject> repositoryItems;
 
   private MainController mainController;
 
@@ -625,7 +627,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         currentSelectedFolderList.addAll(selectedFolderItems);
       }
     } else if (compareFolderList(selectedFolderItems, this.selectedFolderItems) && !compareFolderList(selectedFolderItems, currentSelectedFolderList)) {
-      setRepositoryDirectories(selectedFolderItems);
+        setRepositoryDirectories(selectedFolderItems);
     } else {
       if(currentSelectedFolderList.size() > 0) {
         currentSelectedFolderList.clear();
@@ -643,13 +645,14 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       if (!contains(TYPE.CANCEL, pollResults)) {
         this.selectedFileItems = selectedFileItems;
         setRepositoryObjects(selectedFileItems);
+        setRepositoryItems(selectedFileItems);
       } else if (contains(TYPE.CANCEL, pollResults)) {
         fileTable.setSelectedItems(this.selectedFileItems);
         currentSelectedFileList = new ArrayList<UIRepositoryObject>();
         currentSelectedFileList.addAll(selectedFileItems);
       }
     } else if (compareFileList(selectedFileItems, this.selectedFileItems) && !compareFileList(selectedFileItems,currentSelectedFileList)) {
-      setRepositoryObjects(selectedFileItems);
+      setRepositoryItems(selectedFileItems);        
     } else { 
       if(currentSelectedFileList.size() > 0) {
         currentSelectedFileList.clear();
@@ -676,6 +679,16 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     return repositoryObjects;
   }
 
+  public void setRepositoryItems(List<UIRepositoryObject> selectedItems) {
+    this.repositoryItems = selectedItems;
+    firePropertyChange("repositoryItems", null, repositoryItems);//$NON-NLS-1$
+  }
+
+  public List<UIRepositoryObject> getRepositoryItems() {
+    return repositoryItems;
+  }
+
+  
   public List<UIRepositoryDirectory> getRepositoryDirectories() {
     if (repositoryDirectories != null && repositoryDirectories.size() == 0) {
       return null;
