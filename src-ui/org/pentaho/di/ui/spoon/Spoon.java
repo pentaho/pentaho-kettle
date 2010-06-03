@@ -1899,10 +1899,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     coreObjectsTree.addMouseMoveListener(new MouseMoveListener() {
 
       public void mouseMove(MouseEvent move) {
-				// don't show tooltips in the tree if the option is not set
-				if(!getProperties().showToolTips())
-					return;
-				
+                // don't show tooltips in the tree if the option is not set
+                if(!getProperties().showToolTips())
+                    return;
+                
         toolTip.hide();
         TreeItem item = searchMouseOverTreeItem(coreObjectsTree.getItems(), move.x, move.y);
         if (item != null) {
@@ -3260,6 +3260,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                     RepositoryExplorer explorer = new RepositoryExplorer(shell, rep, cb, Variables.getADefaultVariableSpace());
                     box.stop();
                     explorer.show();
+                    explorer.dispose();
                     
                   } catch (final Throwable e) {
                     shell.getDisplay().asyncExec(new Runnable(){
