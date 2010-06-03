@@ -631,7 +631,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
         }
         catch(Exception e)
         {
-            log.logError("Can't turn auto commit "+onOff);
+            if (log.isDebug()) log.logDebug("Can't turn auto commit "+onOff);
         }
 	}
 	
@@ -3597,8 +3597,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 				insertRow(logTable.getSchemaName(), logTable.getTableName(), logRecord.getRowMeta(), logRecord.getData());
 
-			}
-			 
+			}			
 		} catch(Exception e) {
 			throw new KettleDatabaseException("Unable to write log record to log table " + logTable.getTableName(), e);
 		}

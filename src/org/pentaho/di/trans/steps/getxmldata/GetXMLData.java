@@ -584,14 +584,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 	}
 	
 	private boolean putRowOut(Object[] r) throws KettleException
-	{
-		// this is already done by the caller:
-//		 if (r==null)
-//	     {
-//	        setOutputDone();  // signal end to receiver(s)
-//	        return false; // end of data or error.
-//	     }
-		 
+	{		 
 		 if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetXMLData.Log.ReadRow", data.outputRowMeta.getString(r)));
 		 incrementLinesInput();
 		 data.rownr++;

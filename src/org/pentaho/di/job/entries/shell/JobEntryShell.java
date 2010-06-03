@@ -90,8 +90,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public boolean insertScript;
 	
 	public String script;
-	
-	private LogLevel logLevel;
 
 	public JobEntryShell(String name)
 	{
@@ -359,7 +357,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 				result.setResult(false);
 				return result;
 			}
-			shellLogLevel = logLevel;
+			shellLogLevel = logFileLevel;
 		}
 		
 		log.setLogLevel(shellLogLevel);
