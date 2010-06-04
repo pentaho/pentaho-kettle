@@ -703,6 +703,6 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
      */
 	public static String correctFilter(String filter)
 	{
-		return Const.isEmpty(filter)?"":filter.replace("\n\r", "").replace("\n", "");
+		return Const.isEmpty(filter)?"":filter.replaceAll("(\\r|\\n)", "");
 	}
 }
