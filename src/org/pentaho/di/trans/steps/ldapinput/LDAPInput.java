@@ -391,7 +391,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 			String username=environmentSubstitute(meta.getUserName());
 			String password=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getPassword()));
 	        //Set the filter string.  The more exact of the search string
-			data.filter=environmentSubstitute(meta.getFilterString()).replace("\n\r", "").replace("\n", "");
+			data.filter= LDAPInputMeta.correctFilter(environmentSubstitute(meta.getFilterString()));
 			//Set the Search base.This is the place where the search will
 			data.searchbase=environmentSubstitute(meta.getSearchBase());
 			 

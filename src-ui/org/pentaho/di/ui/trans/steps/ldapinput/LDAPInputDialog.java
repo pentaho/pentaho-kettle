@@ -895,16 +895,15 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     		String username=transMeta.environmentSubstitute(meta.getUserName());
     		String password=Encr.decryptPasswordOptionallyEncrypted(transMeta.environmentSubstitute(meta.getPassword()));
             //Set the filter string.  The more exact of the search string
-    		String filter=transMeta.environmentSubstitute(meta.getFilterString());
+    		String filter= LDAPInputMeta.correctFilter(transMeta.environmentSubstitute(meta.getFilterString()));
     		//Set the Search base.This is the place where the search will
     		String searchbase=transMeta.environmentSubstitute(meta.getSearchBase());
     	
     		NamingEnumeration<SearchResult> results=null;
     		
     		DirContext ctx = connectServerLdap(hostname,username, password,port);
-			
 		     
-		     log.logBasic("Connection", "Connected to server [{0}]",hostname);	      
+		    if(log.isBasic()) log.logBasic("Connection", "Connected to server [{0}]",hostname);	      
 		     
 		     SearchControls controls = new SearchControls();
 	         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
