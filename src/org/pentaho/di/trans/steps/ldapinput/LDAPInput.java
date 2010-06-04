@@ -314,7 +314,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		
 	        controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 	         
-	        data.results = data.ctx.search(searchbase,filter.replace("\n\r", "").replace("\n", ""), controls);
+	        data.results = data.ctx.search(searchbase,LDAPInputMeta.correctFilter(filter), controls);
 	        
 		 }catch (Exception e)
 		 {

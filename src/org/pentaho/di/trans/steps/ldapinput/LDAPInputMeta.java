@@ -696,5 +696,13 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return true;
     } 
-	
+    /**
+     * Remove CR and LF from filter string
+     * @param filter
+     * @return corrected filter
+     */
+	public static String correctFilter(String filter)
+	{
+		return Const.isEmpty(filter)?"":filter.replace("\n\r", "").replace("\n", "");
+	}
 }

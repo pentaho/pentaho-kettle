@@ -860,7 +860,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		     SearchControls controls = new SearchControls();
 	         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 	         // Set search
-	         results = ctx.search(searchbase,filter, controls);
+	         results = ctx.search(searchbase, LDAPInputMeta.correctFilter(filter), controls);
 	        
 	        // Get all attributes
 	        SearchResult searchAttr = results.next();
