@@ -41,7 +41,6 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.resource.ResourceUtil;

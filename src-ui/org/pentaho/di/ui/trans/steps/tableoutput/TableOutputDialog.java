@@ -793,7 +793,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		FormData fdFields=new FormData();
 		fdFields.left  = new FormAttachment(0, 0);
 		fdFields.top   = new FormAttachment(wlFields, margin);
-		fdFields.right = new FormAttachment(wDoMapping, -margin);
+		fdFields.right = new FormAttachment(wGetFields, -margin);
 		fdFields.bottom= new FormAttachment(100, -2 * margin);
 		wFields.setLayoutData(fdFields);
 		
