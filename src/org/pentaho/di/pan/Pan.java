@@ -43,6 +43,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.version.BuildVersion;
 import org.w3c.dom.Document;
+import org.pentaho.di.core.encryption.Encr;
 
 
 public class Pan
@@ -241,7 +242,7 @@ public class Pan
 									// Check username, password
 									if(log.isDebug()) log.logDebug("Pan", Messages.getString("Pan.Log.CheckSuppliedUserPass"));
 									
-									userinfo = new UserInfo(rep, optionUsername.toString(), optionPassword.toString());
+									userinfo = new UserInfo(rep, optionUsername.toString(), Encr.decryptPasswordOptionallyEncrypted(optionPassword.toString()));
 									if (userinfo.getID()>0)
 									{
 										// Load a transformation

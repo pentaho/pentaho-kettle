@@ -45,6 +45,7 @@ import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.version.BuildVersion;
+import org.pentaho.di.core.encryption.Encr;
 
 public class Kitchen
 {
@@ -223,7 +224,7 @@ public class Kitchen
 									// Check username, password
 									if(log.isDebug())log.logDebug(STRING_KITCHEN, Messages.getString("Kitchen.Log.CheckUserPass"));
 									
-									userinfo = new UserInfo(repository, optionUsername.toString(), optionPassword.toString());
+									userinfo = new UserInfo(repository, optionUsername.toString(), Encr.decryptPasswordOptionallyEncrypted(optionPassword.toString()));
 									if (userinfo.getID()>0)
 									{
 									    // Load a job
