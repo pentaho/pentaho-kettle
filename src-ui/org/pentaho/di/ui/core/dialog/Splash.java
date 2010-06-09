@@ -108,6 +108,9 @@ public class Splash {
         else if (Const.RELEASE.equals(Const.ReleaseType.GA)) {
             versionText = BaseMessages.getString(PKG, "SplashDialog.GA") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
           }
+        else if (Const.RELEASE.equals(Const.ReleaseType.STABLE)) {
+            versionText = BaseMessages.getString(PKG, "SplashDialog.Stable") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
+          }
 
         Font verFont = new Font(e.display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$
         e.gc.setFont(verFont);
