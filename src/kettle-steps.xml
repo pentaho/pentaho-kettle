@@ -1072,7 +1072,7 @@
 	<step id="UserDefinedJavaClass">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.UserDefinedJavaClass</description>
 		<classname>org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.UserDefinedJavaClass</tooltip>
 		<iconfile>ui/images/sScript.png</iconfile>
 	</step>
@@ -1238,5 +1238,12 @@
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ChangeFileEncoding</tooltip>
 		<iconfile>ui/images/CFE.png</iconfile>
+	</step>	
+	<step id="FuzzyMatch">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FuzzyMatch</description>
+		<classname>org.pentaho.di.trans.steps.fuzzymatch.FuzzyMatchMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FuzzyMatch</tooltip>
+		<iconfile>ui/images/FZM.png</iconfile>
 	</step>	
 </steps>

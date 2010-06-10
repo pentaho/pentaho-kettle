@@ -8,4 +8,4 @@ The Initial Developer is Pentaho Corporation.
 Software distributed under the GNU Lesser General Public License is
 distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
 express or implied. Please refer to the license for the specific language
-governing you rights and limitations.
+governing your rights and limitations.

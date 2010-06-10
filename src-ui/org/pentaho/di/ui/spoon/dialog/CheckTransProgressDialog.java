@@ -78,7 +78,7 @@ public class CheckTransProgressDialog
 		
 		try
 		{
-            // Run something in the background to cancel active database queries, forecably if needed!
+            // Run something in the background to cancel active database queries, force this if needed!
             Runnable run = new Runnable()
             {
                 public void run()

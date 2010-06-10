@@ -976,7 +976,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
-		setButtonPositions(new Button[] { wOK, wCancel , wPreview}, margin, wTabFolder);
+		setButtonPositions(new Button[] { wOK, wPreview, wCancel}, margin, wTabFolder);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -1894,7 +1894,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 								if (fieldname!=null && fieldtype!=ValueMetaInterface.TYPE_NONE)
 								{
 									ValueMetaInterface field = new ValueMeta(fieldname, fieldtype);
-									if (fields.indexOfValue(field.getName())<0) fields.addValueMeta(field);
+									fields.addValueMeta(field);
 								}
 								else
 								{

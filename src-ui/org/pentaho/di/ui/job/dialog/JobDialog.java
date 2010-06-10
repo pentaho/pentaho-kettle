@@ -1488,7 +1488,7 @@ public class JobDialog extends Dialog
 						db.shareVariablesWith(jobMeta);
 						db.connect();
 						
-						RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null).getRowMeta();
+						RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
 						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
 						String createTable = db.getDDL(schemaTable, fields);
 						

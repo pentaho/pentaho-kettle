@@ -11,6 +11,8 @@
 
 package org.pentaho.di.ui.trans.steps.append;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -34,6 +36,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.append.Append;
 import org.pentaho.di.trans.steps.append.AppendMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -201,8 +204,12 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 	 */ 
 	public void getData()
 	{
-		if (input.getHeadStepName() != null) wHeadHop.setText(input.getHeadStepName());
-		if (input.getTailStepName() != null) wTailHop.setText(input.getTailStepName());
+	    List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
+	    StreamInterface headStream = infoStreams.get(0);
+	    StreamInterface tailStream = infoStreams.get(1);
+        
+		wHeadHop.setText(Const.NVL(headStream.getStepname(), ""));
+		wTailHop.setText(Const.NVL(tailStream.getStepname(), ""));
         
         wStepname.selectAll();
 	}
@@ -218,8 +225,12 @@ public class AppendDialog extends BaseStepDialog implements StepDialogInterface
 	{		
 		if (Const.isEmpty(wStepname.getText())) return;
 
-		input.setHeadStepMeta( transMeta.findStep( wHeadHop.getText() ) );
-		input.setTailStepMeta( transMeta.findStep( wTailHop.getText() ) );
+	    List<StreamInterface> infoStreams = input.getStepIOMeta().getInfoStreams();
+        StreamInterface headStream = infoStreams.get(0);
+        StreamInterface tailStream = infoStreams.get(1);
+
+        headStream.setStepMeta( transMeta.findStep( wHeadHop.getText() ) );
+	    tailStream.setStepMeta( transMeta.findStep( wTailHop.getText() ) );
 
 		stepname = wStepname.getText(); // return value
 		

@@ -35,8 +35,8 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
@@ -482,7 +482,14 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         {
             ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
             Object valueData = rowData[i];
-            
+
+            // Prevent a NullPointerException below
+            if (valueData == null || valueMeta == null)
+            {
+              values[i] = null;
+              continue;
+            }
+
             int length = valueMeta.getLength();
             
             switch(valueMeta.getType())

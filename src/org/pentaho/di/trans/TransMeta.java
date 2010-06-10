@@ -1134,6 +1134,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @param stepname The name of the step to start from
      * @return The number of preceding steps.
+     * @deprecated
      */
     public int findNrPrevSteps(String stepname)
     {
@@ -1145,6 +1146,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      *
      * @param stepname The name of the step to start from
      * @return The number of preceding steps.
+     * @deprecated
      */
     public int findNrPrevSteps(String stepname, boolean info)
     {
@@ -1170,6 +1172,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param nr the location
      *
      * @return The preceding step found.
+     * @deprecated
      */
     public StepMeta findPrevStep(String stepname, int nr)
     {
@@ -1183,6 +1186,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      * @param nr The location
      * @param info true if we only want the informational steps.
      * @return The step information
+     * @deprecated
      */
     public StepMeta findPrevStep(String stepname, int nr, boolean info)
     {
@@ -2399,9 +2403,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             props=Props.getInstance();
         }
         
-        if (parentVariableSpace!=null) {
-        	initializeVariablesFrom(parentVariableSpace);
-        }
+        initializeVariablesFrom(parentVariableSpace);
         
         try
         {
@@ -3963,7 +3965,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	                        db.shareVariablesWith(this);
 	                        db.connect();
 
-	    	                RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null).getRowMeta();
+	    	                RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
 	    	                String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
 	    	                String sql = db.getDDL(schemaTable, fields);
 	    	                if (!Const.isEmpty(sql)) 
@@ -4203,7 +4205,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                                 cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", transLogTable.getTableName() ), null); //$NON-NLS-1$ //$NON-NLS-2$
                                 remarks.add(cr);
 
-                                RowMetaInterface fields = transLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
+                                RowMetaInterface fields = transLogTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
                                 String sql = logdb.getDDL(transLogTable.getTableName(), fields);
                                 if (sql == null || sql.length() == 0)
                                 {
@@ -5860,5 +5862,4 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   public void setCarteObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
   }
-	
 }

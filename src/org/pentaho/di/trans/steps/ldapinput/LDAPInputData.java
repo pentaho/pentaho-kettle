@@ -15,11 +15,7 @@
 
 package org.pentaho.di.trans.steps.ldapinput;
 
-import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
+import java.util.HashSet;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -42,14 +38,8 @@ public class LDAPInputData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface convertRowMeta;
 	public Object[] previousRow;
 	public int    nr_repeats;
-	
-	public NumberFormat         nf;
-	public DecimalFormat        df;
-	public DecimalFormatSymbols dfs;
-	public SimpleDateFormat     daf;
-	public DateFormatSymbols    dafs;
 
-    public long                rownr;
+    public long   rownr;
     
     public InitialLdapContext ctx;
     public NamingEnumeration<SearchResult> results;
@@ -64,16 +54,13 @@ public class LDAPInputData extends BaseStepData implements StepDataInterface
     public boolean pagingSet;
     public int pageSize;
     
+    public HashSet<String> attributesBinary;
+    
 	public LDAPInputData()
 	{
 		super();
 		previousRow = null;
 		thisline=null;
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat)nf;
-		dfs=new DecimalFormatSymbols();
-		daf = new SimpleDateFormat();
-		dafs= new DateFormatSymbols();
 
 		nr_repeats=0;
 		previousRow=null;

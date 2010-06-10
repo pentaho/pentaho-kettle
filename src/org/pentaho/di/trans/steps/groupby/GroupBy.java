@@ -481,10 +481,20 @@ public class GroupBy extends BaseStep implements StepInterface
 					}
 					break;
 				case GroupByMeta.TYPE_GROUP_MIN            :
-					if (subjMeta.compare(subj,valueMeta,value)<0) data.agg[i]=subj; 
+				  if(subjMeta.isSortedDescending()) {
+				    // Account for negation in ValueMeta.compare() - See PDI-2302
+				    if (subjMeta.compare(value,valueMeta,subj)<0) data.agg[i]=subj;
+				  } else {
+				    if (subjMeta.compare(subj,valueMeta,value)<0) data.agg[i]=subj;
+				  }
 					break; 
-				case GroupByMeta.TYPE_GROUP_MAX            : 
-					if (subjMeta.compare(subj,valueMeta,value)>0) data.agg[i]=subj; 
+				case GroupByMeta.TYPE_GROUP_MAX            :
+				  if(subjMeta.isSortedDescending()) {
+				    // Account for negation in ValueMeta.compare() - See PDI-2302
+				    if (subjMeta.compare(value,valueMeta,subj)>0) data.agg[i]=subj;
+				  } else {
+				    if (subjMeta.compare(subj,valueMeta,value)>0) data.agg[i]=subj;
+				  }
 					break; 
                 case GroupByMeta.TYPE_GROUP_FIRST          :
                     if (!(subj==null) && value==null) data.agg[i]=subj;

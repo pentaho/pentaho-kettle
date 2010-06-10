@@ -9,8 +9,8 @@
 # set MOZILLA_FIVE_HOME=/usr/local/mozilla
 # set LD_LIBRARY_PATH=/usr/local/mozilla
 
-set MOZILLA_FIVE_HOME=/usr/lib/xulrunner-1.8.1/
-set LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
+MOZILLA_FIVE_HOME=/usr/lib/xulrunner-1.8.1/
+LD_LIBRARY_PATH=${MOZILLA_FIVE_HOME}:${LD_LIBRARY_PATH}
 export MOZILLA_FIVE_HOME LD_LIBRARY_PATH
 
 # Fix for GTK Windows issues with SWT
@@ -22,23 +22,6 @@ export GDK_NATIVE_WINDOWS=1
 
 BASEDIR=`dirname $0`
 cd $BASEDIR
-
-
-# **************************************************
-# ** Spoon Plugin libraries                       **
-# **************************************************
-
-PLUGINPATH=NONE
-
-#for f in `find $BASEDIR/plugins/spoon -maxdepth 2 -type d -name "lib"` 
-#do
-#if [ "$PLUGINPATH" != "NONE" ]
-#then
-#	PLUGINPATH=$PLUGINPATH:../$f
-#else
-#	PLUGINPATH=../$f
-#fi
-#done
 
 # **************************************************
 # ** Platform specific libraries ...              **
@@ -58,18 +41,22 @@ case `uname -s` in
 		;;
 
 	Darwin)
-		LIBPATH=$BASEDIR/../libswt/osx/
-		JAVA_BIN=$BASEDIR/libswt/osx/java_swt
-        STARTUP=" -cp launcher/launcher.jar org.pentaho.commons.launcher.Launcher"
-        OPT="-XstartOnFirstThread=true "
-		chmod +x $JAVA_BIN
+		echo "Starting Data Integration using 'Spoon.sh' from OS X is not supported."
+		echo "Please start using 'Data Integration 32-bit' or"
+		echo "'Data Integration 64-bit' as appropriate."
+		exit
 		;;
 
 	Linux)
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=$BASEDIR/../libswt/linux/x86_64/
+				if $($JAVA_BIN -version 2>&1 | grep "64-Bit" > /dev/null )
+                                then
+				  LIBPATH=$BASEDIR/../libswt/linux/x86_64/
+                                else
+				  LIBPATH=$BASEDIR/../libswt/linux/x86/
+                                fi
 				;;
 
 			i[3-6]86)
@@ -129,27 +116,6 @@ esac
 
 export LIBPATH
 
-# **************************************************
-# ** Merge PLUGINPATH and LIBPATH into LIBSPATH   **
-# **************************************************
-
-LIBSPATH=
-
-if [ "$LIBPATH" != "NONE" ]
-then
- if [ "$PLUGINPATH" != "NONE" ]
- then
-	LIBSPATH="-lib $LIBPATH:$PLUGINPATH"
- else 
-	LIBSPATH="-lib $LIBPATH"
- fi 
-else
- if [ "$PLUGINPATH" != "NONE" ]
- then
-    LIBSPATH="-lib $PLUGINPATH"
- fi
-fi
-
 # ******************************************************************
 # ** Set java runtime options                                     **
 # ** Change 256m to higher values in case you run out of memory.  **
@@ -160,4 +126,4 @@ OPT="$OPT -Xmx256m -Xms256m -XX:MaxPermSize=128m -Djava.library.path=$LIBPATH -D
 # ***************
 # ** Run...    **
 # ***************
-$JAVA_BIN $OPT $STARTUP $LIBSPATH "${1+$@}"
+$JAVA_BIN $OPT $STARTUP -lib $LIBPATH "${1+$@}"

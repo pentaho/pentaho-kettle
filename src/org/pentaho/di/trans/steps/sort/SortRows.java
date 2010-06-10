@@ -28,6 +28,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -35,6 +36,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -51,7 +53,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class SortRows extends BaseStep implements StepInterface
 {
-	private SortRowsMeta meta;
+    private static Class<?> PKG = SortRows.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+    private SortRowsMeta meta;
 	private SortRowsData data;
 	
 	public SortRows(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
@@ -391,9 +395,7 @@ public class SortRows extends BaseStep implements StepInterface
 				data.fieldnrs[i]=getInputRowMeta().indexOfValue( meta.getFieldName()[i] );
 				if (data.fieldnrs[i]<0)
 				{
-					logError("Sort field ["+meta.getFieldName()[i]+"] not found!");
-					setOutputDone();
-					return false;
+				    throw new KettleException(BaseMessages.getString(PKG, "SortRowsMeta.CheckResult.StepFieldNotInInputStream", meta.getFieldName()[i], getStepname()));
 				}
 				data.convertKeysToNative[i] = getInputRowMeta().getValueMeta(data.fieldnrs[i]).isStorageBinaryString();
  			}
@@ -538,6 +540,18 @@ public class SortRows extends BaseStep implements StepInterface
     if ( (data.fis != null) && (data.fis.size() > 0) ) {
       for (InputStream is : data.fis) {
         BaseStep.closeQuietly(is);
+      }
+    }
+    // remove temp files
+    for (int f=0;f<data.files.size();f++)
+    {
+      FileObject fileToDelete = data.files.get(f);
+      try {
+        if (fileToDelete != null && fileToDelete.exists()) {
+          fileToDelete.delete();
+        }
+      } catch (FileSystemException e) {
+        logError(e.getLocalizedMessage(), e);
       }
     }
 		super.dispose(smi, sdi);

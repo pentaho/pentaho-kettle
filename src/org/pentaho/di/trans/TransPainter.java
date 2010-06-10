@@ -97,9 +97,9 @@ public class TransPainter extends BasePainter
         
         // If there is a shadow, we draw the transformation first with an alpha setting
         //
-        if (shadowsize>0) {
+        if (shadowSize>0) {
         	shadow = true;
-        	gc.setTransform(translationX, translationY, shadowsize, magnification);
+        	gc.setTransform(translationX, translationY, shadowSize, magnification);
             gc.setAlpha(20);
         	
         	drawTrans(thumb);
@@ -225,17 +225,10 @@ public class TransPainter extends BasePainter
     private void drawStep(StepMeta stepMeta)
     {
         if (stepMeta == null) return;
-        // int alpha = gc.getAlpha();
+        int alpha = gc.getAlpha();
         
         StepIOMetaInterface ioMeta = stepMeta.getStepMetaInterface().getStepIOMeta();
 
-        /*
-        boolean fade =  startHopStep!=null && (!ioMeta.isInputAcceptor() || startHopStep.equals(stepMeta));
-        fade=fade || mouseOverSteps.contains(stepMeta);
-        if (fade) {
-        	gc.setAlpha(150);
-        }
-        */
 
         Point pt = stepMeta.getLocation();
         if (pt==null) {
@@ -442,12 +435,6 @@ public class TransPainter extends BasePainter
     		}
         }
         
-        // Restore the previous alpha value
-        //
-        // if (fade) {
-        // 	gc.setAlpha(alpha);
-        // }
-
         // Optionally drawn the mouse-over information
         //
         if (mouseOverSteps.contains(stepMeta)) {
@@ -568,7 +555,11 @@ public class TransPainter extends BasePainter
         		
             	gc.setBackground(EColor.BACKGROUND);
         	}
-        }        
+        }
+        
+        // Restore the previous alpha value
+        //
+        gc.setAlpha(alpha);
     }
 
     public Point getNamePosition(String string, Point screen, int iconsize)

@@ -51,12 +51,12 @@ public class SAPConnectionFactoryMock implements DatabaseFactoryInterface {
 
 			// If the connection was successful
 			//
-			report.append("Connecting to SAP R/3 server [").append(
+			report.append("Connecting to SAP ERP server [").append(
 					databaseMeta.getName()).append(
 					"] succeeded without a problem.").append(Const.CR);
 
 		} catch (SAPException e) {
-			report.append("Unable to connect to the SAP R/3 server: ").append(
+			report.append("Unable to connect to the SAP ERP server: ").append(
 					e.getMessage()).append(Const.CR);
 			report.append(Const.getStackTracker(e));
 		} finally {

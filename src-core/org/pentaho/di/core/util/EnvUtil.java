@@ -18,8 +18,10 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -229,4 +231,28 @@ public class EnvUtil
         return getSystemProperty(key, null);
     }
     
+
+    /**
+     * Returns an available java.util.Locale object for the given localeCode.
+     * 
+     * The localeCode code can be case insensitive, if it is available
+     * the method will find it and return it.
+     * 
+     * @param localeCode
+     * @return java.util.Locale.
+     */
+    public static Locale createLocale(String localeCode) {
+      Locale resultLocale = null;
+      if (localeCode != null) {
+        StringTokenizer parser = new StringTokenizer(localeCode, "_"); //$NON-NLS-1$
+        if (parser.countTokens() == 2) {
+          resultLocale = new Locale(parser.nextToken(), parser.nextToken());
+        } else {
+          resultLocale = new Locale(localeCode);
+        }
+      }
+      return resultLocale;
+    }
+    
+
 }

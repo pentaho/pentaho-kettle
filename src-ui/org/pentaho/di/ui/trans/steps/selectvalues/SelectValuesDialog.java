@@ -17,8 +17,10 @@
 
 package org.pentaho.di.ui.trans.steps.selectvalues;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +110,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	private SelectValuesMeta input;
 	
 	private List<ColumnInfo> fieldColumns = new ArrayList<ColumnInfo>();
+	
+	private String[] charsets = null;
 	
 	/**
 	 * Fields from previous step
@@ -379,6 +383,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Precision"),     ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Storage.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Format"),        ColumnInfo.COLUMN_TYPE_FORMAT,   3),
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Encoding"),      ColumnInfo.COLUMN_TYPE_CCOMBO,   getCharsets(), false), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Decimal"),       ColumnInfo.COLUMN_TYPE_TEXT,     false),
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Grouping"),      ColumnInfo.COLUMN_TYPE_TEXT,     false),
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Currency"),      ColumnInfo.COLUMN_TYPE_TEXT,     false),
@@ -590,9 +595,10 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				item.setText( 5, change.getPrecision()<0?"":""+change.getPrecision()); //$NON-NLS-1$ //$NON-NLS-2$
 				item.setText( 6, change.getStorageType()==ValueMetaInterface.STORAGE_TYPE_NORMAL?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
 				item.setText( 7, Const.NVL(change.getConversionMask(), ""));
-				item.setText( 8, Const.NVL(change.getDecimalSymbol(), ""));
-				item.setText( 9, Const.NVL(change.getGroupingSymbol(), ""));
-				item.setText(10, Const.NVL(change.getCurrencySymbol(), ""));
+				item.setText( 8, Const.NVL(change.getEncoding(), ""));
+				item.setText( 9, Const.NVL(change.getDecimalSymbol(), ""));
+				item.setText(10, Const.NVL(change.getGroupingSymbol(), ""));
+				item.setText(11, Const.NVL(change.getCurrencySymbol(), ""));
 			}
 			wMeta.setRowNums();
 			wMeta.optWidth(true);
@@ -602,6 +608,20 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		wStepname.setFocus();
 		wStepname.selectAll();
 	}
+	
+  private String[] getCharsets()
+  {
+      if (charsets == null)
+      {
+          Collection<Charset> charsetCol = Charset.availableCharsets().values();
+          charsets = new String[charsetCol.size()];
+          int i=0;
+          for (Charset charset : charsetCol) {
+            charsets[i++] = charset.displayName();
+          }
+      }
+      return charsets;
+  }
 	
 	private void cancel()
 	{
@@ -659,6 +679,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				change.setRename(change.getName());
 			}
 			change.setType(ValueMeta.getType(item.getText(3)) );
+			
 			change.setLength(Const.toInt(item.getText(4), -2));
 			change.setPrecision(Const.toInt(item.getText(5), -2));
 			
@@ -670,9 +691,10 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			}
 			
 			change.setConversionMask(item.getText(7));
-			change.setDecimalSymbol(item.getText(8));
-			change.setGroupingSymbol(item.getText(9));
-			change.setCurrencySymbol(item.getText(10));
+			change.setEncoding(item.getText(8));
+			change.setDecimalSymbol(item.getText(9));
+			change.setGroupingSymbol(item.getText(10));
+			change.setCurrencySymbol(item.getText(11));
 		}
 		dispose();
 	}

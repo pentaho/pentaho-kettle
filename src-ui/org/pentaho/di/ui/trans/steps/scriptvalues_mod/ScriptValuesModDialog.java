@@ -1002,6 +1002,23 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			bInputOK = true;
 		}
 		
+		if (bInputOK && wCompatible.getSelection()) {
+		  // If in compatibility mode the "replace" column must not be "Yes"
+		  int nrfields = wFields.nrNonEmpty();
+		  for (int i=0;i<nrfields;i++){
+		    TableItem item = wFields.getNonEmpty(i);
+		    if (YES_NO_COMBO[1].equalsIgnoreCase(item.getText(6))) {
+		      bInputOK = false;
+		    }
+		  }
+		  if (!bInputOK) {
+		    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_ERROR );
+		    mb.setMessage(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ReplaceNotAllowedInCompatibilityMode")); //$NON-NLS-1$
+		    mb.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ERROR.Label")); //$NON-NLS-1$
+		    mb.open();
+		  }
+		}
+
 		if(bInputOK){
 			getInfo(input);
 			dispose();

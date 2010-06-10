@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.
+ */
 package org.pentaho.di.core.gui;
 
 import java.util.List;
@@ -31,7 +43,6 @@ public class BasePainter {
     
     protected List<AreaOwner> areaOwners;
 
-    protected int          shadowsize;
     protected Point        offset;
     protected Point        drop_candidate;
     protected int          iconsize;
@@ -146,7 +157,7 @@ public class BasePainter {
 		// Draw shadow around note?
 		if(notePadMeta.isDrawShadow())
 		{
-			int s = shadowsize;
+			int s = shadowSize;
 			int shadowa[] = new int[] { note.x+s, note.y+s, // Top left
 				note.x + width + 2 * margin+s, note.y+s, // Top right
 				note.x + width + 2 * margin+s, note.y + height+s, // bottom right 1

@@ -1,56 +1,66 @@
 @echo off
+setlocal
 
-REM **************************************************
-REM ** Make sure we use the correct J2SE version!   **
-REM ** Uncomment the PATH line in case of trouble   **
-REM **************************************************
+:: **************************************************
+:: ** Kettle home                                  **
+:: **************************************************
 
-REM set PATH=C:\j2sdk1.5....\bin;.;%PATH%
+if "%KETTLE_DIR%"=="" set KETTLE_DIR=%~dp0
+if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 
-REM **************************************************
-REM ** Libraries used by Kettle:                    **
-REM **************************************************
+:: **************************************************
+:: ** Set up usage of JAVA_EXT_LIBS                **
+:: **************************************************
 
-set CLASSPATH=.
+if defined JAVA_EXT_DIRS goto :externalExtDirs
+:noExternalExtDirs
+set JAVA_EXT_DIRS=.
+goto endExtDirs
+
+:externalExtDirs
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%~dp0
+
+:endExtDirs
+
+if DEFINED JAVA_HOME goto withJavaHome
+:noJavaHome
+goto endJavaHome
+
+:withJavaHome
+REM Every directory contains the null device. So check
+REM for directory existence:
+if exist %JAVA_HOME%\jre\lib\ext\nul set JAVA_EXT_DIRS=%JAVA_HOME%\jre\lib\ext;%JAVA_EXT_DIRS%
+if exist %JAVA_HOME%\lib\ext\nul set JAVA_EXT_DIRS=%JAVA_HOME%\lib\ext;%JAVA_EXT_DIRS%
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;lib
+goto endJavaHome
+
+:endJavaHome
 
 REM ******************
 REM   KETTLE Library
-REM ******************
+REM *****************
 
-set CLASSPATH=%CLASSPATH%;lib\kettle-core.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-db.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-engine.jar
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\lib
 
 REM **********************
 REM   External Libraries
 REM **********************
 
-REM Loop the libext directory and add the classpath.
-REM The following command would only add the last jar: FOR %%F IN (libext\*.jar) DO call set CLASSPATH=%CLASSPATH%;%%F
-REM So the circumvention with a subroutine solves this ;-)
-
-FOR %%F IN (libext\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\JDBC\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\webservices\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\commons\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\web\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\pentaho\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\spring\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\mondrian\*.jar) DO call :addcp %%F
-
-goto extlibe
-
-:addcp
-set CLASSPATH=%CLASSPATH%;%1
-goto :eof
-
-:extlibe
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\JDBC
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\webservices
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\spring
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\commons
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\web
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\pentaho
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\mondrian
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\salesforce
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **
 REM ******************************************************************
 
-set OPT=-cp %CLASSPATH%
+set OPT="-Djava.ext.dirs=%JAVA_EXT_DIRS%"
 
 REM ***************
 REM ** Run...    **

@@ -4,7 +4,7 @@
  * This software was developed by DynamoBI Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
- * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Farrago 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is LucidDB 
  * Streaming Loader.  The Initial Developer is DynamoBI Corporation.
  * 
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
@@ -189,48 +189,48 @@ public class LucidDBStreamingLoader
                     index);
                 Object valueData = r[index];
 
-                if (valueData != null) {
-                    switch (valueMeta.getType()) {
-                    case ValueMetaInterface.TYPE_STRING:
 
-                        if (log.isRowLevel())
-                            logRowlevel(valueMeta.getString(valueData) + ":"
-                                + valueMeta.getLength() + ":"
-                                + valueMeta.getTypeDesc());
-                        entity.add(valueMeta.getString(valueData));
+                switch (valueMeta.getType()) {
+                case ValueMetaInterface.TYPE_STRING:
 
-                        break;
-                    case ValueMetaInterface.TYPE_INTEGER:
+                    if (log.isRowLevel())
+                        logRowlevel(valueMeta.getString(valueData) + ":"
+                            + valueMeta.getLength() + ":"
+                            + valueMeta.getTypeDesc());
+                    entity.add(valueMeta.getString(valueData));
 
-                        if (log.isRowLevel())
-                            logRowlevel(valueMeta.getInteger(valueData) + ":"
-                                + valueMeta.getLength() + ":"
-                                + valueMeta.getTypeDesc());
-                        entity.add(valueMeta.getInteger(valueData));
-                        break;
-                    case ValueMetaInterface.TYPE_DATE:
+                    break;
+                case ValueMetaInterface.TYPE_INTEGER:
 
-                        Date date = valueMeta.getDate(valueData);
+                    if (log.isRowLevel())
+                        logRowlevel(valueMeta.getInteger(valueData) + ":"
+                            + valueMeta.getLength() + ":"
+                            + valueMeta.getTypeDesc());
+                    entity.add(valueMeta.getInteger(valueData));
+                    break;
+                case ValueMetaInterface.TYPE_DATE:
 
-                        if (log.isRowLevel())
-                            logRowlevel(XMLHandler.date2string(date) + ":"
-                                + valueMeta.getLength());
-                        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-                        entity.add(sqlDate);
-                        break;
-                    case ValueMetaInterface.TYPE_BOOLEAN:
+                    Date date = valueMeta.getDate(valueData);
 
-                        if (log.isRowLevel())
-                            logRowlevel(Boolean.toString(valueMeta.getBoolean(valueData))
-                                + ":" + valueMeta.getLength());
-                        entity.add(valueMeta.getBoolean(valueData));
-                        break;
-                    }
+                    if (log.isRowLevel())
+                        logRowlevel(XMLHandler.date2string(date) + ":"
+                            + valueMeta.getLength());
+                    java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+                    entity.add(sqlDate);
+                    break;
+                case ValueMetaInterface.TYPE_BOOLEAN:
+
+                    if (log.isRowLevel())
+                        logRowlevel(Boolean.toString(valueMeta.getBoolean(valueData))
+                            + ":" + valueMeta.getLength());
+                    entity.add(valueMeta.getBoolean(valueData));
+                    break;
                 }
 
             }
 
             data.objOut.writeObject(entity);
+            // NG: Are these both necessary?
             data.objOut.reset();
             data.objOut.flush();
 
@@ -238,7 +238,7 @@ public class LucidDBStreamingLoader
         } catch (Exception e) {
             logError(BaseMessages.getString(
                 PKG,
-                "FarragoStreamingLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+                "LucidDBStreamingLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
             setErrors(1);
             stopAll();
             setOutputDone(); // signal end to receiver(s)
@@ -261,6 +261,7 @@ public class LucidDBStreamingLoader
 
                 data.db = new Database(this, meta.getDatabaseMeta());
                 data.db.shareVariablesWith(this);
+
                 // Connect to the database
                 if (getTransMeta().isUsingUniqueConnections()) {
                     synchronized (getTrans()) {
@@ -271,6 +272,11 @@ public class LucidDBStreamingLoader
                 } else {
                     data.db.connect(getPartitionID());
                 }
+                
+                data.db.setAutoCommit(true);
+                //data.db.setCommit(-1);
+                
+                
 
                 if (log.isDebug())
                     logDebug("Connected to LucidDB");

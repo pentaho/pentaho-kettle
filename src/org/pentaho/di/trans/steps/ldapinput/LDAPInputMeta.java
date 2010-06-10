@@ -421,6 +421,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("      <field>").append(Const.CR);
 			retval.append("        ").append(XMLHandler.addTagValue("name",      inputFields[i].getName()) );
 			retval.append("        ").append(XMLHandler.addTagValue("attribute",      inputFields[i].getAttribute()));
+			retval.append("        ").append(XMLHandler.addTagValue("attribute_fetch_as", inputFields[i].getFetchAttributeAsCode()) );
 			retval.append("        ").append(XMLHandler.addTagValue("type",      inputFields[i].getTypeDesc()) );
             retval.append("        ").append(XMLHandler.addTagValue("format", inputFields[i].getFormat()));
             retval.append("        ").append(XMLHandler.addTagValue("length",    inputFields[i].getLength()) );
@@ -477,6 +478,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 				
 				inputFields[i].setName( XMLHandler.getTagValue(fnode, "name") );
 				inputFields[i].setAttribute(XMLHandler.getTagValue(fnode, "attribute") );
+				inputFields[i].setFetchAttributeAs( LDAPInputField.getFetchAttributeAsByCode(XMLHandler.getTagValue(fnode, "attribute_fetch_as")) );
 				inputFields[i].setType( ValueMeta.getType(XMLHandler.getTagValue(fnode, "type")) );
 				inputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
 				inputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
@@ -577,8 +579,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			return 0;
 		}
-	
-	
+
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	throws KettleException
 	{
@@ -613,6 +614,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			    
 				field.setName( rep.getStepAttributeString (id_step, i, "field_name") );
 				field.setAttribute( rep.getStepAttributeString (id_step, i, "field_attribute") );
+				field.setFetchAttributeAs( LDAPInputField.getFetchAttributeAsByCode(rep.getStepAttributeString (id_step, i, "field_attribute_fetch_as") ));
 				field.setType(ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type") ) );
 				field.setFormat( rep.getStepAttributeString (id_step, i, "field_format") );
 				field.setCurrencySymbol( rep.getStepAttributeString (id_step, i, "field_currency") );
@@ -659,6 +661,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			    
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribute",     field.getAttribute());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribute_fetch_as",     field.getFetchAttributeAsCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());

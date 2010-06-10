@@ -35,6 +35,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
@@ -173,7 +174,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public String getLogFilename() {
     String retval = "";
     if (setLogfile) {
-      retval += logfile;
+      retval+=logfile==null?"":logfile;
       Calendar cal = Calendar.getInstance();
       if (addDate) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -459,6 +460,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     LogLevel jobLogLevel = parentJob.getLogLevel();
     if (setLogfile) {
       String realLogFilename = environmentSubstitute(getLogFilename());
+      // We need to check here the log filename
+      // if we do not have one, we must fail
+      if(Const.isEmpty(realLogFilename)) {
+          logError(BaseMessages.getString(PKG, "JobJob.Exception.LogFilenameMissing"));
+          result.setNrErrors(1);
+          result.setResult(false);
+          return result;
+      }
 
       // create parent folder?
       if (!createParentFolder(realLogFilename)) {
@@ -679,7 +688,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
           // Create a new job
           // 
-          job = new Job(rep, jobMeta, parentJob);
+          job = new Job(rep, jobMeta, this);
+          job.setParentJob(parentJob);
           job.setLogLevel(jobLogLevel);
           job.shareVariablesWith(this);
           job.setInternalKettleVariables(this);
@@ -733,21 +743,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           // Link both ways!
           job.getJobTracker().setParentJobTracker(parentJob.getJobTracker());
 
-          // Tell this sub-job about its parent...
-          job.setParentJob(parentJob);
-
           if (parentJob.getJobMeta().isBatchIdPassed()) {
             job.setPassedBatchId(parentJob.getBatchId());
           }
 
           job.getJobMeta().setArguments(args);
-
-          JobEntryJobRunner runner = new JobEntryJobRunner(job, result, nr);
-          Thread jobRunnerThread = new Thread(runner);
-          jobRunnerThread.setName(Const.NVL(job.getJobMeta().getName(), job.getJobMeta().getFilename()));
-          jobRunnerThread.start();
-
-          while (!runner.isFinished() && !parentJob.isStopped()) {
+          job.start();
+          
+          while (!job.isFinished() && !parentJob.isStopped()) {
             try {
               Thread.sleep(0, 1);
             } catch (InterruptedException e) {
@@ -757,10 +760,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           // if the parent-job was stopped, stop the sub-job too...
           if (parentJob.isStopped()) {
             job.stopAll();
-            runner.waitUntilFinished(); // Wait until finished!
+            job.waitUntilFinished(); // Wait until finished!
           }
 
-          oneResult = runner.getResult();
+          CentralLogStore.getAppender().getBuffer(job.getLogChannelId(), false);
+          oneResult = job.getResult();
         } else {
           // Remote execution...
           //
@@ -849,10 +853,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         if (iteration == 0) {
           result.clear();
         }
-
+        
         result.add(oneResult);
-        if (oneResult.getResult() == false) // if one of them fails, set the
-                                            // number of errors
+        
+        // if one of them fails (in the loop), increase the number of errors
+        //
+        if (oneResult.getResult() == false) 
         {
           result.setNrErrors(result.getNrErrors() + 1);
         }

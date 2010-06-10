@@ -10,4 +10,19 @@
    <libraries>
     <library name="shapefilereader3.jar"/>
     </libraries>
+	   <localized_category>
+     <category locale="en_US">Input</category>
+     <category locale="nl_NL">Input</category>
+     <category locale="fr_FR">Extraction</category>
+   </localized_category>
+   <localized_description>
+     <description locale="en_US">ESRI Shapefile Reader</description>
+     <description locale="nl_NL">ESRI Shapefile Reader</description>
+     <description locale="fr_FR">Extraction depuis fichier ESRI</description>
+   </localized_description>
+   <localized_tooltip>
+     <tooltip locale="en_US">Reads shape file data from an ESRI shape file and linked DBF file</tooltip>
+     <tooltip locale="nl_NL">Reads shape file data from an ESRI shape file and linked DBF file</tooltip>
+     <tooltip locale="fr_FR">Lecture de donnes depuis un fichier ESRI</tooltip>
+   </localized_tooltip>
 </plugin>

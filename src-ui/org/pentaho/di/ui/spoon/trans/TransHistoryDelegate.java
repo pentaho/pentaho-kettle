@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.
+ */
 package org.pentaho.di.ui.spoon.trans;
 
 import java.sql.ResultSet;
@@ -33,6 +45,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.ChannelLogTable;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
@@ -49,6 +62,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
+import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulLoader;
@@ -299,6 +313,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
     try {
       XulLoader loader = new SwtXulLoader();
+      loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_GRID_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
@@ -396,6 +411,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
             try {
               rows = getHistoryData(logTables.get(i));
             } catch (KettleException e) {
+              LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+logTables.get(i), e);
               rows = new ArrayList<Object[]>();
             }
             rowList.add(rows);
@@ -467,7 +483,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
             params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
-        if (keyField != null) {
+        if (keyField != null && keyField.isEnabled()) {
           sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; //$NON-NLS-1$//$NON-NLS-2$
         }
 

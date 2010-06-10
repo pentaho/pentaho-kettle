@@ -191,7 +191,11 @@ public class GlobalMessages extends AbstractMessageHandler
             if (bundle == null)
             {
                 InputStream inputStream = resourceClass.getResourceAsStream(filename);
-                
+                if (inputStream==null) {
+                  // Retry with the system class loader, just in case we are dealing with a messy plug-in.
+                  //
+                  inputStream = ClassLoader.getSystemResourceAsStream(filename);
+                }
                 // Now get the bundle from the messages files input stream
                 //
             	if (inputStream!=null)

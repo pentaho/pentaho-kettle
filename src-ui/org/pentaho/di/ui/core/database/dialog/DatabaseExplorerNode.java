@@ -22,14 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.ui.xul.util.AbstractModelNode;
 
-public class DatabaseExplorerNode extends XulEventSourceAdapter {
+public class DatabaseExplorerNode extends AbstractModelNode<DatabaseExplorerNode> {
 
 	private String name;
 	private String schema;
 	private String image;
-	private List<DatabaseExplorerNode> children;
 	private boolean isTable;
+	private boolean isSchema;
 	
 
 	public DatabaseExplorerNode() {
@@ -55,17 +56,13 @@ public class DatabaseExplorerNode extends XulEventSourceAdapter {
 	public void setImage(String aImage) {
 		this.image = aImage;
 	}
-
-	public void addChild(DatabaseExplorerNode aNode) {
-		this.children.add(aNode);
+	
+	public void setIsSchema(boolean isSchema){
+	  this.isSchema = isSchema;
 	}
-
-	public List<DatabaseExplorerNode> getChildren() {
-		return this.children;
-	}
-
-	public void setChildren(List<DatabaseExplorerNode> aChildren) {
-		this.children = aChildren;
+	
+	public boolean isSchema(){
+	  return isSchema;
 	}
 	
 	public boolean isTable() {

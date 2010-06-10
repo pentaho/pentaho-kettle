@@ -11,4 +11,19 @@
     <library name="s3csvinput.jar"/>
     <library name="jets3t-0.7.0.jar"/>
     </libraries>
+   <localized_category>
+     <category locale="en_US">Input</category>
+     <category locale="nl_NL">Input</category>
+     <category locale="fr_FR">Extraction</category>
+   </localized_category>
+   <localized_description>
+     <description locale="en_US">S3 CSV Input</description>
+     <description locale="nl_NL">S3 CSV Input</description>
+     <description locale="fr_FR">Extraction depuis fichier CSV S3</description>
+   </localized_description>
+   <localized_tooltip>
+     <tooltip locale="en_US">S3 CSV Input</tooltip>
+     <tooltip locale="nl_NL">S3 CSV Input</tooltip>
+     <tooltip locale="fr_FR">S3 CSV Input</tooltip>
+   </localized_tooltip>
 </plugin>

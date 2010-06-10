@@ -28,8 +28,8 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 
 	private XulDatabaseExplorerNode database;
 	private DatabaseMeta databaseMeta;
-	private String table;
-	private String schema;
+	private DatabaseExplorerNode table;
+	private DatabaseExplorerNode schema;
 
 	public XulDatabaseExplorerModel(DatabaseMeta aDatabaseMeta) {
 		this.database = new XulDatabaseExplorerNode();
@@ -48,19 +48,21 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 		this.database = aDatabase;
 	}
 
-	public void setTable(String aTable) {
+	public void setTable(DatabaseExplorerNode aTable) {
+	  DatabaseExplorerNode prevVal = this.table;
 		this.table = aTable;
+		firePropertyChange("table", prevVal, this.table);
 	}
 
-	public String getTable() {
+	public DatabaseExplorerNode getTable() {
 		return this.table;
 	}
 
-	public void setSchema(String aSchema) {
+	public void setSchema(DatabaseExplorerNode aSchema) {
 		this.schema = aSchema;
 	}
 
-	public String getSchema() {
+	public DatabaseExplorerNode getSchema() {
 		return this.schema;
 	}
 
@@ -76,7 +78,7 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 			if (theNode.getName().equals(aName)) {
 				break;
 			} else {
-				theNode = drillDown(theNode.getChildren().listIterator(), aName);
+				theNode = drillDown(theNode.listIterator(), aName);
 				if (theNode != null) {
 					break;
 				}

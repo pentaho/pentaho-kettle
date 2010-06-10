@@ -110,6 +110,10 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 	private TextVar wWildcardExclude;
 	private FormData fdlWildcardExclude, fdWildcardExclude;
 
+    private Label wlIncludeSubfolders;
+    private Button wIncludeSubfolders;
+    private FormData fdlIncludeSubfolders, fdIncludeSubfolders;
+
 	private Label wlCompressionRate;
 	private  CCombo wCompressionRate;
 	private FormData fdlCompressionRate, fdCompressionRate;
@@ -368,7 +372,32 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdWildcardExclude.top = new FormAttachment(wWildcard, margin);
 		fdWildcardExclude.right = new FormAttachment(100, 0);
 		wWildcardExclude.setLayoutData(fdWildcardExclude);
-        
+
+	    // Include sub-folders?
+		//
+        wlIncludeSubfolders = new Label(wSourceFiles, SWT.RIGHT);
+        wlIncludeSubfolders.setText(BaseMessages.getString(PKG, "JobZipFiles.IncludeSubfolders.Label"));
+        props.setLook(wlIncludeSubfolders);
+        fdlIncludeSubfolders = new FormData();
+        fdlIncludeSubfolders.left = new FormAttachment(0, 0);
+        fdlIncludeSubfolders.top = new FormAttachment(wWildcardExclude, margin);
+        fdlIncludeSubfolders.right = new FormAttachment(middle, -margin);
+        wlIncludeSubfolders.setLayoutData(fdlIncludeSubfolders);
+        wIncludeSubfolders = new Button(wSourceFiles, SWT.CHECK);
+        props.setLook(wIncludeSubfolders);
+        wIncludeSubfolders.setToolTipText(BaseMessages.getString(PKG, "JobZipFiles.IncludeSubfolders.Tooltip"));
+        fdIncludeSubfolders = new FormData();
+        fdIncludeSubfolders.left = new FormAttachment(middle, 0);
+        fdIncludeSubfolders.top = new FormAttachment(wWildcardExclude, margin);
+        fdIncludeSubfolders.right = new FormAttachment(100, 0);
+        wIncludeSubfolders.setLayoutData(fdIncludeSubfolders);
+        wIncludeSubfolders.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                jobEntry.setChanged();
+            }
+        });
 
         fdSourceFiles = new FormData();
         fdSourceFiles.left = new FormAttachment(0, margin);
@@ -1094,10 +1123,10 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 			wIfFileExists.select(2); // NOTHING
 		}
 
-		if (jobEntry.getWildcard()!= null) wWildcard.setText( jobEntry.getWildcard() );
-		if (jobEntry.getWildcardExclude()!= null) wWildcardExclude.setText( jobEntry.getWildcardExclude() );
-		if (jobEntry.getSourceDirectory()!= null) wSourceDirectory.setText( jobEntry.getSourceDirectory() );
-		if (jobEntry.getMoveToDirectory()!= null) wMovetoDirectory.setText( jobEntry.getMoveToDirectory() );
+		wWildcard.setText( Const.NVL(jobEntry.getWildcard(), "") );
+		wWildcardExclude.setText( Const.NVL(jobEntry.getWildcardExclude(), "") );
+		wSourceDirectory.setText( Const.NVL(jobEntry.getSourceDirectory(), "") );
+		wMovetoDirectory.setText( Const.NVL(jobEntry.getMoveToDirectory(), "") );
 		if (jobEntry.afterzip>=0)
 		{
 			wAfterZip.select(jobEntry.afterzip );
@@ -1113,9 +1142,10 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		wAddDate.setSelection(jobEntry.isDateInFilename());
 		wAddTime.setSelection(jobEntry.isTimeInFilename());
 		
-		if (jobEntry.getDateTimeFormat()!= null) wDateTimeFormat.setText( jobEntry.getDateTimeFormat() );
+		wDateTimeFormat.setText( Const.NVL(jobEntry.getDateTimeFormat(), "") );
 		wSpecifyFormat.setSelection(jobEntry.isSpecifyFormat());
 		wcreateMoveToDirectory.setSelection(jobEntry.isCreateMoveToDirectory());
+		wIncludeSubfolders.setSelection(jobEntry.isIncludingSubFolders());
 	}
 
 	private void cancel()
@@ -1158,6 +1188,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		jobEntry.setSpecifyFormat(wSpecifyFormat.getSelection());
 		jobEntry.setDateTimeFormat(wDateTimeFormat.getText());
 		jobEntry.setCreateMoveToDirectory(wcreateMoveToDirectory.getSelection());
+		jobEntry.setIncludingSubFolders(wIncludeSubfolders.getSelection());
 		
 		dispose();
 	}

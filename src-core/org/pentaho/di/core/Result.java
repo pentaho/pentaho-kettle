@@ -391,6 +391,7 @@ public class Result implements Cloneable
         nrFilesRetrieved+=res.getNrFilesRetrieved();
         resultFiles.putAll(res.getResultFiles());
         logChannelId=res.getLogChannelId();
+        logText=res.getLogText();
         rows.addAll(res.getRows());        
     }
     

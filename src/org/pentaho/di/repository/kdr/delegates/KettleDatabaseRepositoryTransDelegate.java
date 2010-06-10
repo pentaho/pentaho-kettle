@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.
+ */
 package org.pentaho.di.repository.kdr.delegates;
 
 import java.util.ArrayList;
@@ -155,7 +167,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
 
-                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingNoteTask.Title") + (i + 1) + "/" + transMeta.nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
+                // if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingNoteTask.Title") + (i + 1) + "/" + transMeta.nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
                 NotePadMeta ni = transMeta.getNote(i);
                 repository.saveNotePadMeta(ni, transMeta.getObjectId());
                 if (ni.getObjectId() != null) {
@@ -169,7 +181,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
 
-                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + transMeta.nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
+                // if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + transMeta.nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
                 DatabaseMeta databaseMeta = transMeta.getDatabase(i);
                 // ONLY save the database connection if it has changed and nothing was saved in the repository
                 if(databaseMeta.hasChanged() || databaseMeta.getObjectId()==null)
@@ -190,7 +202,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
 
-                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingStepTask.Title") + (i + 1) + "/" + transMeta.nrSteps()); //$NON-NLS-1$ //$NON-NLS-2$
+                // if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingStepTask.Title") + (i + 1) + "/" + transMeta.nrSteps()); //$NON-NLS-1$ //$NON-NLS-2$
                 StepMeta stepMeta = transMeta.getStep(i);
                 repository.stepDelegate.saveStepMeta(stepMeta, transMeta.getObjectId());
 
@@ -203,13 +215,13 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(BaseMessages.getString(PKG, "TransMeta.Log.UserCancelledTransSave"));
 
-                if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingHopTask.Title") + (i + 1) + "/" + transMeta.nrTransHops()); //$NON-NLS-1$ //$NON-NLS-2$
+                // if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingHopTask.Title") + (i + 1) + "/" + transMeta.nrTransHops()); //$NON-NLS-1$ //$NON-NLS-2$
                 TransHopMeta hi = transMeta.getTransHop(i);
                 saveTransHopMeta(hi, transMeta.getObjectId());
                 if (monitor != null) monitor.worked(1);
             }
 
-            if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.FinishingTask.Title")); //$NON-NLS-1$
+            // if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.FinishingTask.Title")); //$NON-NLS-1$
             if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingTransformationInfo")); //$NON-NLS-1$
             
             insertTransformation(transMeta); // save the top level information for the transformation

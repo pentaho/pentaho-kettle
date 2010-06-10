@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
+
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
@@ -84,7 +85,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             if (!Const.isEmpty(data.realHttpLogin))
             {
                 HTTPPOSTclient.getParams().setAuthenticationPreemptive(true);
-                Credentials defaultcreds = new UsernamePasswordCredentials(environmentSubstitute(data.realHttpLogin), data.realHttpPassword);
+                Credentials defaultcreds = new UsernamePasswordCredentials(data.realHttpLogin, data.realHttpPassword);
                 HTTPPOSTclient.getState().setCredentials(AuthScope.ANY, defaultcreds);
             }
             
@@ -182,14 +183,18 @@ public class HTTPPOST extends BaseStep implements StepInterface
                     //  if the response is not 401: HTTP Authentication required
                     if (statusCode != 401) { 
                         
-                       // we process the response 
-                       // guess encoding
-                        String encoding = null;
-                        if (post.getResponseHeader("Content-Type") != null) {
-                            encoding = post.getResponseHeader("Content-Type").getValue().replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim(); 
-                        }
+                        // guess encoding
+                        //
+                        String encoding = meta.getEncoding();
                         
-                        if (encoding == null) encoding = "ISO-8859-1"; 
+                        // Try to determine the encoding from the Content-Type value
+                        //
+                        if (Const.isEmpty(encoding)) {
+                          String contentType = post.getResponseHeader("Content-Type").getValue();
+                          if (contentType!=null && contentType.contains("charset")) {
+                            encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim();
+                          }
+                        }
                         
                         if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.Encoding",encoding));
     
@@ -414,7 +419,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			// get autentication settings once
+			// get authentication settings once
 			data.realProxyHost=environmentSubstitute(meta.getProxyHost());
 			data.realProxyPort= Const.toInt(environmentSubstitute(meta.getProxyPort()), 8080);
 			data.realHttpLogin=environmentSubstitute(meta.getHttpLogin());

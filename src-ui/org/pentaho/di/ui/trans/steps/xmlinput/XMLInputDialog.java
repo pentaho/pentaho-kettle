@@ -672,7 +672,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-		setButtonPositions(new Button[] { wOK, wCancel , wPreview }, margin, wTabFolder);
+		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
 		// Add listeners
 		lsOK = new Listener()

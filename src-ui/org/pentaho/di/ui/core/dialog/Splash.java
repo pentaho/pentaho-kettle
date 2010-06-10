@@ -25,6 +25,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -104,13 +105,29 @@ public class Splash {
         else if (Const.RELEASE.equals(Const.ReleaseType.PREVIEW)) {
           versionText = BaseMessages.getString(PKG, "SplashDialog.PreviewRelease") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
         }
+        else if (Const.RELEASE.equals(Const.ReleaseType.GA)) {
+            versionText = BaseMessages.getString(PKG, "SplashDialog.GA") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
+          }
+        else if (Const.RELEASE.equals(Const.ReleaseType.STABLE)) {
+            versionText = BaseMessages.getString(PKG, "SplashDialog.Stable") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
+          }
 
         Font verFont = new Font(e.display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$
         e.gc.setFont(verFont);
         e.gc.drawText(versionText, 290, 205, true);
-        
-        Font licFont = new Font(e.display, "Helvetica", 8, SWT.NORMAL); //$NON-NLS-1$
+                
+        // try using the desired font size for the license text
+        int fontSize = 8;
+        Font licFont = new Font(e.display, "Helvetica", fontSize, SWT.NORMAL); //$NON-NLS-1$
         e.gc.setFont(licFont);
+
+        // if the text will not fit the allowed space 
+        while (!willLicenseTextFit(licenseText, e.gc)) {
+          fontSize--;
+          licFont = new Font(e.display, "Helvetica", fontSize, SWT.NORMAL); //$NON-NLS-1$
+          e.gc.setFont(licFont);          
+        }
+        
         e.gc.drawText(licenseText, 290, 290, true);
       }
     });
@@ -128,6 +145,22 @@ public class Splash {
     splash.setLocation(x, y);
 
     splash.open();
+  }
+  
+  // determine if the license text will fit the allocated space
+  private boolean willLicenseTextFit(String licenseText, GC gc) {
+    Point splashSize = splash.getSize();
+    Point licenseDrawLocation = new Point(290, 290);
+    Point requiredSize = gc.textExtent(licenseText);
+    
+    int width = splashSize.x - licenseDrawLocation.x;
+    int height = splashSize.y - licenseDrawLocation.y;
+    
+    boolean fitsVertically = width >= requiredSize.x;
+    boolean fitsHorizontally = height >= requiredSize.y;
+    
+    return (fitsVertically && fitsHorizontally);
+    
   }
   
   private void drawVersionWarning(PaintEvent e) {

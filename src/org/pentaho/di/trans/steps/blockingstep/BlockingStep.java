@@ -23,6 +23,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -227,13 +228,6 @@ public class BlockingStep extends BaseStep implements StepInterface {
 					data.dis.remove(0);
 					data.fis.remove(0);
 					if (gzfi != null) data.gzis.remove(0);
-	        // Fix for too many files open exception...
-				} finally {
-				  // DI is always there and always wraps the underlying
-				  // stream(s). So all that's necessary is to close the di -
-				  // The stream holding resources (the inputstream returned
-				  // from KettleVFS) will be closed with this one close
-          BaseStep.closeQuietly(di);
 				}
 			}
 		}
@@ -244,6 +238,18 @@ public class BlockingStep extends BaseStep implements StepInterface {
     if ( (data.dis != null) && (data.dis.size() > 0) ) {
       for (DataInputStream is : data.dis) {
         BaseStep.closeQuietly(is);
+      }
+    }
+    // remove temp files
+    for (int f=0;f<data.files.size();f++)
+    {
+      FileObject fileToDelete = data.files.get(f);
+      try {
+        if (fileToDelete != null && fileToDelete.exists()) {
+          fileToDelete.delete();
+        }
+      } catch (FileSystemException e) {
+        logError(e.getLocalizedMessage(), e);
       }
     }
     super.dispose(smi, sdi);

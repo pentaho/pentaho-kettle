@@ -1,4 +1,3 @@
-
 /*************************************************************************************** 
  * Copyright (C) 2007 Samatar.  All rights reserved. 
  * This software was developed by Samatar and is provided under the terms 

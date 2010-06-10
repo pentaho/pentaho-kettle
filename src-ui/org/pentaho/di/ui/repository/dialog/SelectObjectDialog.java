@@ -11,8 +11,6 @@
 
 package org.pentaho.di.ui.repository.dialog;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.eclipse.swt.SWT;
@@ -112,8 +110,6 @@ public class SelectObjectDialog extends Dialog {
   // private RepositoryCapabilities capabilities;
 
   private boolean                                     includeDeleted;
-
-  private Map<String, RepositoryElementMetaInterface> objectMap;
 
   private ToolItem                                    wbRegex;
 
@@ -259,7 +255,7 @@ public class SelectObjectDialog extends Dialog {
 
     // Some buttons
     wOK = new Button(shell, SWT.PUSH);
-    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));//$NON-NLS-1$
     lsOK = new Listener() {
       public void handleEvent(Event e) {
         ok();
@@ -417,20 +413,19 @@ public class SelectObjectDialog extends Dialog {
     try {
       wTree.removeAll();
       TreeItem ti = null;
-      objectMap = new HashMap<String, RepositoryElementMetaInterface>();
       // If the directory is a root directory and is visible to the user we will
       // display that on the UI otherwise we will hide it
       if (directoryTree.isRoot() && directoryTree.isVisible()) {
         ti = new TreeItem(wTree, SWT.NONE);
         ti.setImage(GUIResource.getInstance().getImageFolderConnections());
         ti.setExpanded(true);
-        RepositoryDirectoryUI.getTreeWithNames(ti, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString, pattern);
+        RepositoryDirectoryUI.getTreeWithNames(ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, directoryTree, filterString, pattern);
       } else {
         for (int i = 0; i < directoryTree.getNrSubdirectories(); i++) {
           RepositoryDirectory subdir = directoryTree.getSubdirectory(i);
           ti = new TreeItem(wTree, SWT.NONE);
           ti.setImage(GUIResource.getInstance().getImageArrow());
-          RepositoryDirectoryUI.getTreeWithNames(ti, rep, objectMap, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, subdir, filterString, pattern);
+          RepositoryDirectoryUI.getTreeWithNames(ti, rep, dircolor, sortColumn, includeDeleted, ascending, showTrans, showJobs, subdir, filterString, pattern);
         }
       }
     } catch (KettleException e) {
@@ -456,13 +451,12 @@ public class SelectObjectDialog extends Dialog {
     // Something has to be selected!
     if (wTree.getSelectionCount() > 0) {
       TreeItem ti = wTree.getSelection()[0];
-
+      
       // No directory!
       if (!ti.getForeground().equals(dircolor)) {
         int level = ConstUI.getTreeLevel(ti);
         if (level > 0) {
-          String fullPath = ConstUI.getTreePath(ti, 0);
-          repositoryObject = objectMap.get(fullPath);
+          repositoryObject = (RepositoryElementMetaInterface) ti.getData();
           if (repositoryObject != null) {
             objectName = repositoryObject.getName();
             objectDirectory = repositoryObject.getRepositoryDirectory();

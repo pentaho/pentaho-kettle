@@ -126,6 +126,9 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     
 	/** Flag : auto size columns? */
     private  boolean autosizecolums;
+    
+    /** Flag : write null field values as blank Excel cells? */
+    private  boolean nullIsBlank;
 
 	public ExcelOutputMeta()
 	{
@@ -242,7 +245,22 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.autosizecolums = autosizecolums;
     }
+
+    /**
+     * @return Returns whether or not null values are written as blank cells.
+     */
+    public boolean isNullBlank()
+    {
+        return nullIsBlank;
+    }  
     
+    /**
+     * @param setNullIsBlank The boolean indicating whether or not to write null values as blank cells
+     */
+    public void setNullIsBlank(boolean nullIsBlank)
+    {
+        this.nullIsBlank = nullIsBlank;
+    }
 
     /**
      * @return Returns the header.
@@ -534,7 +552,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			date_time_format         = XMLHandler.getTagValue(stepnode, "file","date_time_format");
 			
 			autosizecolums = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "autosizecolums"));
-			protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
+			nullIsBlank = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "nullisblank"));
+            protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
 			password     = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(stepnode, "file", "password") );
 			splitEvery   = Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
 			
@@ -605,6 +624,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		templateFileName = "template.xls";
 		sheetname="Sheet1";	
 		append   		 = false;
+		nullIsBlank      = false;
 		int i, nrfields=0;
 		allocate(nrfields);
 					
@@ -731,7 +751,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("date_time_format",  date_time_format));
 		retval.append("      ").append(XMLHandler.addTagValue("sheetname", sheetname));
 		retval.append("      ").append(XMLHandler.addTagValue("autosizecolums",   autosizecolums));
-		retval.append("      ").append(XMLHandler.addTagValue("protect_sheet",   protectsheet));
+		retval.append("      ").append(XMLHandler.addTagValue("nullisblank",   nullIsBlank));
+        retval.append("      ").append(XMLHandler.addTagValue("protect_sheet",   protectsheet));
 		retval.append("      ").append(XMLHandler.addTagValue("password",  Encr.encryptPasswordIfNotUsingVariables(password)));
 		retval.append("      ").append(XMLHandler.addTagValue("splitevery", splitEvery));
 		
@@ -790,8 +811,9 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			SpecifyFormat   =      rep.getStepAttributeBoolean(id_step, "SpecifyFormat");
 			date_time_format  =      rep.getStepAttributeString (id_step, "date_time_format");  
 			
-			autosizecolums          = rep.getStepAttributeBoolean(id_step, "autosizecolums");
-			protectsheet          = rep.getStepAttributeBoolean(id_step, "protect_sheet");
+			autosizecolums        = rep.getStepAttributeBoolean(id_step, "autosizecolums");
+			nullIsBlank           = rep.getStepAttributeBoolean(id_step, "nullisblank");
+            protectsheet          = rep.getStepAttributeBoolean(id_step, "protect_sheet");
 			password              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );
 
 			templateEnabled       = rep.getStepAttributeBoolean(id_step, "template_enabled");
@@ -840,7 +862,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "date_time_format",   date_time_format);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "autosizecolums",    autosizecolums);
-			rep.saveStepAttribute(id_transformation, id_step, "protect_sheet",    protectsheet);
+			rep.saveStepAttribute(id_transformation, id_step, "nullisblank",    nullIsBlank);
+            rep.saveStepAttribute(id_transformation, id_step, "protect_sheet",    protectsheet);
 			rep.saveStepAttribute(id_transformation, id_step, "password",  Encr.encryptPasswordIfNotUsingVariables(password) );
 			rep.saveStepAttribute(id_transformation, id_step, "template_enabled",  templateEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "template_append",   templateAppend);

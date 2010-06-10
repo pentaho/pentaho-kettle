@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.
+ */
 package org.pentaho.di.ui.spoon.job;
 
 import java.sql.ResultSet;
@@ -49,6 +61,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
+import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulLoader;
@@ -380,6 +393,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
     try {
       XulLoader loader = new SwtXulLoader();
+      loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       ResourceBundle bundle = new XulSpoonResourceBundle(Spoon.class);
       XulDomContainer xulDomContainer = loader.loadXul(XUL_FILE_TRANS_GRID_TOOLBAR, bundle);
       xulDomContainer.addEventHandler(this);
@@ -534,7 +548,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
             params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), jobMeta.getName()); //$NON-NLS-1$
         }
 
-        if (keyField != null) {
+        if (keyField!=null && keyField.isEnabled()) {
           sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; //$NON-NLS-1$ //$NON-NLS-2$
         }
 
@@ -598,7 +612,10 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       LogTableField logField = logTables.get(tabIndex).getLogField();
       if (logField != null) {
         int index = fields.indexOf(logField);
-        String logText = row[index].toString();
+        String logText = null;
+        if (row[index]!=null) {
+          logText = row[index].toString();
+        }
 
         text.setText(Const.NVL(logText, "")); //$NON-NLS-1$
 

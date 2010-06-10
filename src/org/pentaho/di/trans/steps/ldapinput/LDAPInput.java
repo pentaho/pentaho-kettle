@@ -15,6 +15,7 @@
 
 package org.pentaho.di.trans.steps.ldapinput;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -73,15 +74,10 @@ public class LDAPInput extends BaseStep implements StepInterface
             
             // Create convert meta-data objects that will contain Date & Number formatters
             //
-            data.convertRowMeta = data.outputRowMeta.clone();
-            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
 
-
-            // For String to <type> conversions, we allocate a conversion meta data row as well...
-			//
 			data.convertRowMeta = data.outputRowMeta.clone();
 			for (int i=0;i<data.convertRowMeta.size();i++) {
-				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
+					data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
 			}
    
 			// Try to connect to LDAP server
@@ -95,8 +91,7 @@ public class LDAPInput extends BaseStep implements StepInterface
         }
 	
         Object[] outputRowData=null;
-        boolean sendToErrorRow=false;
-		String errorMessage = null;
+
 		try 
 		{	
 			outputRowData =getOneRow();
@@ -120,6 +115,8 @@ public class LDAPInput extends BaseStep implements StepInterface
 		} 
 		catch(Exception e)
 		{
+	        boolean sendToErrorRow=false;
+			String errorMessage = null;
 			if (getStepMeta().isDoingErrorHandling())
 			{
 		         sendToErrorRow = true;
@@ -129,6 +126,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 			{
 				logError(BaseMessages.getString(PKG, "LDAPInput.log.Exception", e.getMessage()));
 				setErrors(1);
+				logError(Const.getStackTracker(e));
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
 				return false;				
@@ -208,52 +206,20 @@ public class LDAPInput extends BaseStep implements StepInterface
 				// Execute for each Input field...
 				for (int i=0;i<meta.getInputFields().length;i++)
 				{
+					LDAPInputField field = meta.getInputFields()[i];
 					// Get attribute value
 					
-					String attrvalue =null;
-					Attribute attr = attributes.get(environmentSubstitute(meta.getInputFields()[i].getAttribute())); 
+					Attribute attr = attributes.get(field.getRealAttribute()); 
 	                if (attr!=null) 
 	                {
-	                	//Let's try to get all values of this attribute
-	                	
-	                	StringBuilder attrStr = new StringBuilder();
-						for (NamingEnumeration<?> eattr = attr.getAll() ; eattr.hasMore();) 
-						{
-							if (attrStr.length() > 0) {
-								attrStr.append(data.multi_valuedFieldSeparator);
-							}
-							attrStr.append(eattr.next().toString());
-						}
-						attrvalue=attrStr.toString(); 	
-						
-						// DO Trimming!
-						switch (meta.getInputFields()[i].getTrimType())
-						{
-						case LDAPInputField.TYPE_TRIM_LEFT:
-							attrvalue = Const.ltrim(attrvalue);
-							break;
-						case LDAPInputField.TYPE_TRIM_RIGHT:
-							attrvalue = Const.rtrim(attrvalue);
-							break;
-						case LDAPInputField.TYPE_TRIM_BOTH:
-							attrvalue = Const.trim(attrvalue);
-							break;
-						default:
-							break;
-						}
-							      
+	                	//Let's try to get value of this attribute
+	                	outputRowData[i]= getAttributeValue(field, attr, i, outputRowData[i]);		      
 	                }
-					// DO CONVERSIONS...
-					//
-					ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
-					ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
-					outputRowData[i] = targetValueMeta.convertData(sourceValueMeta, attrvalue);
             
-                
 					// Do we need to repeat this field if it is null?
-					if (meta.getInputFields()[i].isRepeated())
+					if (field.isRepeated())
 					{
-						if (data.previousRow!=null && Const.isEmpty(attrvalue))
+						if (data.previousRow!=null && outputRowData[i]==null)
 						{
 							outputRowData[i] = data.previousRow[i];
 						}
@@ -283,7 +249,127 @@ public class LDAPInput extends BaseStep implements StepInterface
 		 }
 		return outputRowData;
 	}
-	 
+	private Object getAttributeValue(LDAPInputField field,Attribute attr, int i, Object outputRowData) throws Exception {
+
+		if(field.getType() ==  ValueMetaInterface.TYPE_BINARY) {
+			// It's a binary field
+			// no need to convert, just return the value as it
+			try  {
+				return (byte[])attr.get();
+			}catch(java.lang.ClassCastException e){
+				return attr.get().toString().getBytes();
+			}
+		}
+		
+		String retval=null;
+		if(field.getReturnType() == LDAPInputField.FETCH_ATTRIBUTE_AS_BINARY && field.getType() ==  ValueMetaInterface.TYPE_STRING) {
+			// Convert byte[] to string
+			return extractBytesAndConvertToString(attr, field.isObjectSid());
+		}
+		
+		// extract as string
+		retval=extractString(attr); 	
+		
+		// DO Trimming!
+		switch (field.getTrimType())
+		{
+			case LDAPInputField.TYPE_TRIM_LEFT:
+				retval = Const.ltrim(retval);
+			break;
+			case LDAPInputField.TYPE_TRIM_RIGHT:
+				retval = Const.rtrim(retval);
+			break;
+			case LDAPInputField.TYPE_TRIM_BOTH:
+				retval = Const.trim(retval);
+			break;
+			default:
+			break;
+		}
+		
+		// DO CONVERSIONS...
+		//
+		ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
+		ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
+		return targetValueMeta.convertData(sourceValueMeta, retval);
+		
+	}
+	private String extractString(Attribute attr) throws Exception {
+    	StringBuilder attrStr = new StringBuilder();
+		for (NamingEnumeration<?> eattr = attr.getAll() ; eattr.hasMore();) 
+		{
+			if (attrStr.length() > 0) {
+				attrStr.append(data.multi_valuedFieldSeparator);
+			}
+			attrStr.append(eattr.next().toString());
+		}
+		return attrStr.toString(); 	
+	}
+	private String extractBytesAndConvertToString(Attribute attr, boolean isSID) throws Exception {
+		byte[] b;
+		try {
+			b= (byte[])(byte[]) attr.get();
+		}catch(Exception e) {
+			// Get bytes from String
+			b =  attr.get().toString().getBytes();
+		}
+		if(isSID) return getSIDAsString(b);
+		else return byteToHexEncode( b);
+	}
+
+	
+   /**
+    *  Convert the SID into string format
+    * @param SID
+    * @return String representation of SID
+    */
+	private static String getSIDAsString(byte[] SID)
+	{
+		long version;
+		long authority;
+		long count;
+		long rid;
+		String strSID;
+		strSID = "S";
+		version = SID[0];
+		strSID = strSID + "-" + Long.toString(version);
+		authority = SID[4];
+		for (int i = 0;i<4;i++) {
+			authority <<= 8;
+			authority += SID[4+i] & 0xFF;
+		}
+		strSID = strSID + "-" + Long.toString(authority);
+		count = SID[2];
+		count <<= 8;
+		count += SID[1] & 0xFF;
+		for (int j=0;j<count;j++) {
+			rid = SID[11 + (j*4)] & 0xFF;
+			for (int k=1;k<4;k++) {
+				rid <<= 8;
+				rid += SID[11-k + (j*4)] & 0xFF;
+			}
+			strSID = strSID + "-" + Long.toString(rid);
+		}
+		return strSID;
+	}
+	
+	/**
+	* Converts the GUID to a readable string format
+	* @param inArr
+	* @return the formatted GUID
+	*/
+	private static String byteToHexEncode ( byte [] inArr )
+	{
+		StringBuffer guid = new StringBuffer ();
+		for ( int i = 0; i < inArr.length; i++ ) {
+			StringBuffer dblByte = new StringBuffer ( Integer.toHexString ( inArr [ i ] & 0xff ) );
+			if ( dblByte.length () == 1 ) {
+				guid.append ( "0" );
+			}
+			guid.append ( dblByte );
+		}
+		return guid.toString ();
+	}
+
 	 public void connectServerLdap() throws KettleException {
 		 //TODO : Add SSL Authentication
 			/*
@@ -318,13 +404,36 @@ public class LDAPInput extends BaseStep implements StepInterface
 	        else
 	        	env.put(Context.PROVIDER_URL, "ldap://"+hostname + ":" + portint);
 	        env.put(Context.SECURITY_AUTHENTICATION, "simple" );
-	        // TODO : Add referral handling
-	        if (meta.UseAuthentication())
-	        {
+	        
+			// Limit returned attributes to user selection
+			String[] attrReturned = new String [meta.getInputFields().length];
+			
+			data.attributesBinary= new HashSet<String>();
+			// Get user selection attributes
+			for (int i=0;i<meta.getInputFields().length;i++) {
+				LDAPInputField field = meta.getInputFields()[i];
+				// get real attribute name
+				String name =environmentSubstitute(field.getAttribute());
+				field.setRealAttribute(name);
+				
+				//specify attributes to be returned in binary format
+	        	if(field.getReturnType() == LDAPInputField.FETCH_ATTRIBUTE_AS_BINARY) {
+	    	        if(!data.attributesBinary.contains(name)) {
+		    	        env.put("java.naming.ldap.attributes.binary", name);
+	    	        	data.attributesBinary.add(name);
+	    	        }
+	        	}
+
+				attrReturned[i]=name;
+			}
+
+	       // TODO : Add referral handling
+	       if (meta.UseAuthentication())
+	       {
 	        	env.put(Context.SECURITY_PRINCIPAL, username);
 	        	env.put(Context.SECURITY_CREDENTIALS, password); 
-	        }
-
+	       }
+	       env.put(Context.REFERRAL, "follow");
 	       data.ctx=new InitialLdapContext(env, null);
 	       if (data.ctx==null)
 		   {
@@ -342,15 +451,6 @@ public class LDAPInput extends BaseStep implements StepInterface
 		    
 		   // Time Limit
 		   if(meta.getTimeLimit()>0)   data.controls.setTimeLimit(meta.getTimeLimit() * 1000);
-
-		   // Limit returned attributes to user selection
-		   String[] attrReturned = new String [meta.getInputFields().length];
-		   // Get user selection attributes
-		   for (int i=0;i<meta.getInputFields().length;i++)
-		   {
-		    	attrReturned[i]=environmentSubstitute(meta.getInputFields()[i].getAttribute());
-			
-		   }
 		   
 		   data.controls.setReturningAttributes(attrReturned);
 		     
@@ -389,7 +489,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		 {
 			 throw new KettleException(BaseMessages.getString(PKG, "LDAPinput.Exception.ErrorConnecting", e.getMessage()));
 		 }
-	    }
+	  }
 	
 	/**
 	 * Build an empty row based on the meta-data...
@@ -436,8 +536,9 @@ public class LDAPInput extends BaseStep implements StepInterface
 	             logError(BaseMessages.getString(PKG, "LDAPInput.Exception.ErrorDisconecting",e.toString()));
 	             logError(Const.getStackTracker(e));
 			}
-			
 		}
+		data.attributesBinary=null;
+		
 		super.dispose(smi, sdi);
 	}
 		

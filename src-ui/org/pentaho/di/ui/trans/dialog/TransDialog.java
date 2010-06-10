@@ -2229,7 +2229,7 @@ public class TransDialog extends Dialog
 						db.shareVariablesWith(transMeta);
 						db.connect();
 						
-						RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null).getRowMeta();
+						RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
 						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
 						String createTable = db.getDDL(schemaTable, fields);
 						

@@ -12,9 +12,14 @@
 package org.pentaho.di.trans.steps.http;
 
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.pentaho.di.core.Const;
@@ -82,59 +87,98 @@ public class HTTP extends BaseStep implements StepInterface
             // Prepare HTTP get
             // 
             HttpClient httpclient = new HttpClient();
-            HttpMethod method = new GetMethod(environmentSubstitute(url));
+            HttpMethod method = new GetMethod(url);
 
+            if (!Const.isEmpty(data.realHttpLogin))
+            {
+            	httpclient.getParams().setAuthenticationPreemptive(true);
+                Credentials defaultcreds = new UsernamePasswordCredentials(data.realHttpLogin, data.realHttpPassword);
+                httpclient.getState().setCredentials(AuthScope.ANY, defaultcreds);
+            }
+            
+            HostConfiguration hostConfiguration = new HostConfiguration();
+            if (!Const.isEmpty(data.realProxyHost))
+            {   
+                hostConfiguration.setProxy(data.realProxyHost, data.realProxyPort);
+            }
+            
+            InputStreamReader inputStreamReader=null;
+            Object[] newRow = null;
             // Execute request
             // 
             try
             {
-                int result = httpclient.executeMethod(method);
+                int statusCode = httpclient.executeMethod(hostConfiguration, method);
                 
                 // The status code
-                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTP.Log.ResponseStatusCode", ""+result));
+                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTP.Log.ResponseStatusCode", ""+statusCode));
+                String body=null;
+                if( statusCode != -1 )
+                {
+                    //  if the response is not 401: HTTP Authentication required
+                    if (statusCode != 401) { 
+		                // guess encoding
+		                //
+		                String encoding = meta.getEncoding();
+		                
+		                // Try to determine the encoding from the Content-Type value
+		                //
+		                if (Const.isEmpty(encoding)) {
+			                String contentType = method.getResponseHeader("Content-Type").getValue();
+			                if (contentType!=null && contentType.contains("charset")) {
+			                	encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim();
+			                }
+		                }
+		                
+		                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTP.Log.ResponseHeaderEncoding",encoding));
+		                
+		                // the response
+		                if (!Const.isEmpty(encoding)) {
+		                	inputStreamReader = new InputStreamReader(method.getResponseBodyAsStream(),encoding);
+		                } else {
+		                	inputStreamReader = new InputStreamReader(method.getResponseBodyAsStream());
+		                }
+		                StringBuffer bodyBuffer = new StringBuffer(); 
+		                 
+		                 int c;
+		                 while ( (c=inputStreamReader.read())!=-1) {
+		                	bodyBuffer.append((char)c);
+		                 }
+		                
+		                inputStreamReader.close(); 
+		                
+		                body = bodyBuffer.toString();
+		                if (log.isDebug()) logDebug("Response body: "+body);
                 
-                // guess encoding
-                //
-                String encoding = meta.getEncoding();
-                
-                // Try to determine the encoding from the Content-Type value
-                //
-                if (Const.isEmpty(encoding)) {
-	                String contentType = method.getResponseHeader("Content-Type").getValue();
-	                if (contentType!=null && contentType.contains("charset")) {
-	                	encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim();
-	                }
+		            }
+		            else {  //  the status is a 401
+		                throw new KettleStepException(BaseMessages.getString(PKG, "HTTP.Exception.Authentication", data.realUrl));
+		                
+		            }
+        		}
+                int returnFieldsOffset=rowMeta.size();
+                if (!Const.isEmpty(meta.getFieldName())) {
+                	newRow=RowDataUtil.addValueData(rowData, returnFieldsOffset, body);
+                	returnFieldsOffset++;
                 }
                 
-                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTP.Log.ResponseHeaderEncoding",encoding));
+                if (!Const.isEmpty(meta.getResultCodeFieldName())) {
+                	newRow=RowDataUtil.addValueData(rowData, returnFieldsOffset, new Long(statusCode));
+                }  
                 
-                // the response
-                InputStreamReader inputStreamReader =  null;
-                if (!Const.isEmpty(encoding)) {
-                	inputStreamReader = new InputStreamReader(method.getResponseBodyAsStream(),encoding);
-                } else {
-                	inputStreamReader = new InputStreamReader(method.getResponseBodyAsStream());
-                }
-                StringBuffer bodyBuffer = new StringBuffer(); 
-                 
-                 int c;
-                 while ( (c=inputStreamReader.read())!=-1) {
-                	bodyBuffer.append((char)c);
-                 }
-                
-                inputStreamReader.close(); 
-                
-                String body = bodyBuffer.toString();
-                if (log.isDebug()) logDebug("Response body: "+body);
-                
-                return RowDataUtil.addValueData(rowData, rowMeta.size(), body);
             }
             finally
             {
+            	if(inputStreamReader!=null) inputStreamReader.close(); 
                 // Release current connection to the connection pool once you are done
                 method.releaseConnection();
             }
+            return newRow;
         }
+    	catch (UnknownHostException uhe) 
+    	{
+       	   throw new KettleException(BaseMessages.getString(PKG, "HTTP.Error.UnknownHostException", uhe.getMessage()));
+       	}
         catch(Exception e)
         {
             throw new KettleException(BaseMessages.getString(PKG, "HTTP.Log.UnableGetResult",url), e);
@@ -267,6 +311,11 @@ public class HTTP extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
+			// get authentication settings once
+			data.realProxyHost=environmentSubstitute(meta.getProxyHost());
+			data.realProxyPort= Const.toInt(environmentSubstitute(meta.getProxyPort()), 8080);
+			data.realHttpLogin=environmentSubstitute(meta.getHttpLogin());
+			data.realHttpPassword=environmentSubstitute(meta.getHttpPassword());
 		    return true;
 		}
 		return false;

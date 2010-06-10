@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 

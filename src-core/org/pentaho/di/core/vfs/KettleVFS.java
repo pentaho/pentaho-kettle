@@ -35,6 +35,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
 import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
 import org.pentaho.di.i18n.BaseMessages;
@@ -45,6 +46,15 @@ public class KettleVFS
 
 	private static final KettleVFS kettleVFS = new KettleVFS();
 	private final DefaultFileSystemManager fsm;
+	
+	private static VariableSpace defaultVariableSpace;
+	
+	static {
+	  // Create a new empty variable space...
+      //
+      defaultVariableSpace=new Variables();
+      defaultVariableSpace.initializeVariablesFrom(null);
+	}
   
     private KettleVFS()
     {
@@ -54,13 +64,15 @@ public class KettleVFS
 			fsm.init();
 		} catch (FileSystemException e) {
 			e.printStackTrace();
-		}
+		}		
 		
     	// Install a shutdown hook to make sure that the file system manager is closed
     	// This will clean up temporary files in vfs_cache
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable(){
         	public void run() {
-        		fsm.close();
+        	  if (fsm != null) {
+        		  fsm.close();
+        	  }
 	        }
         })); 
     }
@@ -74,7 +86,7 @@ public class KettleVFS
     }
     
     public static FileObject getFileObject(String vfsFilename) throws KettleFileException {
-      return getFileObject(vfsFilename, null);
+      return getFileObject(vfsFilename, defaultVariableSpace);
     }
     
     
@@ -293,6 +305,7 @@ public class KettleVFS
         FileName fileName = fileObject.getName();
         String root = fileName.getRootURI();
         if (!root.startsWith("file:")) return fileName.getURI(); // nothing we can do about non-normal files. //$NON-NLS-1$
+        if (root.startsWith("file:////")) return fileName.getURI(); // we'll see 4 forward slashes for a windows/smb network share
         if (root.endsWith(":/")) // Windows //$NON-NLS-1$
         {
             root = root.substring(8,10);

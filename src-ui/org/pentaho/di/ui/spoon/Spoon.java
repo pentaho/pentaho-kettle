@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -259,6 +261,7 @@ import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.XulSettingsManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.WaitBoxRunnable;
@@ -678,6 +681,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     try {
       xulLoader = new SwtXulLoader();
       xulLoader.setOuterContext(shell);
+      xulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
 
       mainSpoonContainer = xulLoader.loadXul(XUL_FILE_MAIN, new XulSpoonResourceBundle());
 
@@ -1574,6 +1578,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         public void onError(Throwable t) {
           new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
               BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+          
         }
 
         public void onCancel() {
@@ -1894,6 +1899,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     coreObjectsTree.addMouseMoveListener(new MouseMoveListener() {
 
       public void mouseMove(MouseEvent move) {
+                // don't show tooltips in the tree if the option is not set
+                if(!getProperties().showToolTips())
+                    return;
+                
         toolTip.hide();
         TreeItem item = searchMouseOverTreeItem(coreObjectsTree.getItems(), move.x, move.y);
         if (item != null) {
@@ -2574,7 +2583,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         spoonMenu = (XulMenupopup) menuMap.get("step-plugin");
       } else if (selection instanceof DatabaseMeta) {
         spoonMenu = (XulMenupopup) menuMap.get("database-inst");
-        // disable for now if the connection is an SAP R/3 type of database...
+        // disable for now if the connection is an SAP ERP type of database...
         //
         XulMenuitem item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById("database-inst-explore");
         if (item != null) {
@@ -3180,8 +3189,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       public void onError(Throwable t) {
         closeRepository();
-        new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
-            BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+        mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t.getLocalizedMessage()));
+        mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"));
+        mb.open();
 
       }
 
@@ -3249,6 +3260,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                     RepositoryExplorer explorer = new RepositoryExplorer(shell, rep, cb, Variables.getADefaultVariableSpace());
                     box.stop();
                     explorer.show();
+                    explorer.dispose();
                     
                   } catch (final Throwable e) {
                     shell.getDisplay().asyncExec(new Runnable(){
@@ -3292,11 +3304,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         refreshTree();
         refreshGraph();
       } catch (Exception e) {
-        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-        mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpeningById.Message") + objectId + Const.CR
-            + e.getMessage());// "Error opening : "
-        mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"));
-        mb.open();
+        new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
+        "Spoon.Dialog.ErrorOpeningById.Message", objectId), e.getMessage(), e); //$NON-NLS-1$
       }
     } else
     // Try to open the selected job.
@@ -3315,11 +3324,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         refreshTree();
         refreshGraph();
       } catch (Exception e) {
-        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-        mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpeningById.Message") + objectId + Const.CR
-            + e.getMessage());// "Error opening : "
-        mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"));
-        mb.open();
+        new ErrorDialog(((Spoon) SpoonFactory.getInstance()).getShell(), BaseMessages.getString(Spoon.class,
+            "Spoon.Dialog.ErrorOpeningById.Message", objectId), e.getMessage(), e); //$NON-NLS-1$
       }
     }
   }
@@ -3809,6 +3815,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // No refresh done yet, do so
       refreshTree();
     }
+    loadPerspective(MainSpoonPerspective.ID);
   }
 
   public void newJobFile() {
@@ -3852,6 +3859,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         // No refresh done yet, do so
         refreshTree();
       }
+      loadPerspective(MainSpoonPerspective.ID);
     } catch (Exception e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorCreatingNewJob.Title"), BaseMessages
           .getString(PKG, "Spoon.Exception.ErrorCreatingNewJob.Message"), e);
@@ -4075,7 +4083,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public boolean saveToRepository(EngineMetaInterface meta, boolean ask_name) throws KettleException {
-
+    
     // Verify repository security first...
     //
     if (meta.getFileType().equals(LastUsedFile.FILE_TYPE_TRANSFORMATION)) {
@@ -4096,6 +4104,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (rep != null) {
       boolean answer = true;
       boolean ask = ask_name;
+
+      // If the repository directory is root then get the default save directory
+      if(meta.getRepositoryDirectory() == null || meta.getRepositoryDirectory().isRoot()) {
+        meta.setRepositoryDirectory(rep.getDefaultSaveDirectory(meta));
+      }
       while (answer && (ask || Const.isEmpty(meta.getName()))) {
         if (!ask) {
           MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
@@ -4288,7 +4301,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     delegates.tabs.renameTabs(); // filename or name of transformation might
     // have changed.
     refreshTree();
-
+    if(saved && (meta instanceof TransMeta || meta instanceof JobMeta)) {
+      TabMapEntry tabEntry = delegates.tabs.findTabMapEntry(meta);
+      TabItem tabItem = tabEntry.getTabItem();
+      if(meta.getFileType().equals(LastUsedFile.FILE_TYPE_TRANSFORMATION)) {
+        tabItem.setImage(GUIResource.getInstance().getImageTransGraph());  
+      } else if(meta.getFileType().equals(LastUsedFile.FILE_TYPE_JOB)) {
+        tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
+      }
+    }
     return saved;
   }
 
@@ -4588,6 +4609,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
         
         saved=save(meta, fname, export);
+        if(!saved) {
+          meta.setFilename(beforeFilename);
+          meta.setName(beforeName);
+        }
       }
     }
     return saved;
@@ -4668,28 +4693,40 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public boolean save(EngineMetaInterface meta, String fname, boolean export) {
-    boolean saved = false;
-    FileListener listener = null;
-    // match by extension first
-    int idx = fname.lastIndexOf('.');
-    if (idx != -1) {
-      String extension = fname.substring(idx + 1);
-      listener = fileExtensionMap.get(extension);
-    }
-    if (listener == null) {
-      String xt = meta.getDefaultExtension();
-      listener = fileExtensionMap.get(xt);
-    }
-
-    if (listener != null) {
-      String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
-      if (Boolean.parseBoolean(sync)) {
-        listener.syncMetaName(meta, Const.createName(fname));
-        delegates.tabs.renameTabs();
+      boolean saved = false;
+      Pattern pattern = Pattern.compile("\\p{ASCII}+");
+      Matcher matcher = pattern.matcher(fname);
+      if(matcher.matches()) {
+        FileListener listener = null;
+        // match by extension first
+        int idx = fname.lastIndexOf('.');
+        if (idx != -1) {
+          String extension = fname.substring(idx + 1);
+          listener = fileExtensionMap.get(extension);
+        }
+        if (listener == null) {
+          String xt = meta.getDefaultExtension();
+          listener = fileExtensionMap.get(xt);
+        }
+    
+        if (listener != null) {
+          String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
+          if (Boolean.parseBoolean(sync)) {
+            listener.syncMetaName(meta, Const.createName(fname));
+            delegates.tabs.renameTabs();
+          }
+          saved = listener.save(meta, fname, export);
+        }
+      } else {
+        /*
+         * Temporary fix for AGILEBI-405 Don't allow saving of files that contain special characters until AGILEBI-394 is resolved.
+         * AGILEBI-394 Naming an analyzer report with spanish accents gives error when publishing.
+         * */
+        MessageBox box = new MessageBox(staticSpoon.shell, SWT.ICON_ERROR | SWT.OK);
+        box.setMessage("Special characters are not allowed in the filename. Please use ASCII characters only");
+        box.setText(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"));
+        box.open();
       }
-      saved = listener.save(meta, fname, export);
-
-    }
     return saved;
   }
 
@@ -4742,6 +4779,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         releaseText = BaseMessages.getString(PKG, "Spoon.Candidate.HelpAboutText");
     } else if (Const.RELEASE.equals(Const.ReleaseType.MILESTONE)) {
       releaseText = BaseMessages.getString(PKG, "Spoon.Milestone.HelpAboutText");
+    } else if (Const.RELEASE.equals(Const.ReleaseType.GA)) {
+      releaseText = BaseMessages.getString(PKG, "Spoon.GA.HelpAboutText");
+    } else if (Const.RELEASE.equals(Const.ReleaseType.STABLE)) {
+      releaseText = BaseMessages.getString(PKG, "Spoon.Stable.HelpAboutText");
     }
 
     //  build a message
@@ -6330,8 +6371,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 "Spoon.Dialog.LoginFailed.Title"), t.getLocalizedMessage());
             dialog.open();
           } else {
-           new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
-                BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+            mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t.getLocalizedMessage()));
+            mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"));
+            mb.open();
           }
         }
 
@@ -6368,8 +6411,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             }
 
             public void onError(Throwable t) {
-              new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"),
-                  BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message"), t);
+              MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+              mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t.getLocalizedMessage()));
+              mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"));
+              mb.open();
             }
 
             public void onCancel() {

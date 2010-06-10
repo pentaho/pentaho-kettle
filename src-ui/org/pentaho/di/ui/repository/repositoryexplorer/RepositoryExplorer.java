@@ -35,6 +35,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainControlle
 import org.pentaho.di.ui.repository.repositoryexplorer.uisupport.IRepositoryExplorerUISupport;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
+import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
@@ -74,6 +75,7 @@ public class RepositoryExplorer {
       throws XulException {
     SwtXulLoader swtXulLoader = new SwtXulLoader();
     swtXulLoader.setOuterContext(shell);
+    swtXulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
     swtXulLoader.registerClassLoader(getClass().getClassLoader());
     container = swtXulLoader.loadXul("org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle); //$NON-NLS-1$
 
@@ -130,5 +132,11 @@ public class RepositoryExplorer {
     XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
     dialog.show();
 
+  }
+  
+  public void dispose(){
+    getDialogArea().dispose();
+    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
+    ((Shell) dialog.getRootObject()).dispose();
   }
 }

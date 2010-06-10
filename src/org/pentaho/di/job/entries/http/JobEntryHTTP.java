@@ -103,6 +103,11 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   private String password;
   
   private boolean addfilenameresult;
+  
+  private String[] headerName;
+  
+  private String[] headerValue;
+
 
   public JobEntryHTTP(String n)
   {
@@ -146,6 +151,17 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort));
     retval.append("      ").append(XMLHandler.addTagValue("non_proxy_hosts", nonProxyHosts));
     retval.append("      ").append(XMLHandler.addTagValue("addfilenameresult", addfilenameresult));
+    retval.append("      <headers>").append(Const.CR);
+    if (headerName != null) {
+        for (int i = 0; i < headerName.length; i++) {
+             retval.append("        <header>").append(Const.CR);
+             retval.append("          ").append(XMLHandler.addTagValue("header_name", headerName[i]));
+             retval.append("          ").append(XMLHandler.addTagValue("header_value", headerValue[i]));
+             retval.append("        </header>").append(Const.CR);
+        }
+    }
+    retval.append("      </headers>").append(Const.CR);
+
     
 
     return retval.toString();
@@ -174,7 +190,17 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port");
       nonProxyHosts = XMLHandler.getTagValue(entrynode, "non_proxy_hosts");
       addfilenameresult = "Y".equalsIgnoreCase(Const.NVL(XMLHandler.getTagValue(entrynode, "addfilenameresult"), "Y"));
+      Node headers = XMLHandler.getSubNode(entrynode, "headers");
       
+      // How many field headerName?
+      int nrHeaders = XMLHandler.countNodes(headers, "header");
+      headerName = new String[nrHeaders];
+      headerValue = new String[nrHeaders];
+      for (int i = 0; i < nrHeaders; i++) {
+          Node fnode = XMLHandler.getSubNodeByNr(headers, "header", i); //$NON-NLS-1$
+          headerName[i] = XMLHandler.getTagValue(fnode, "header_name"); //$NON-NLS-1$
+          headerValue[i] = XMLHandler.getTagValue(fnode, "header_value"); //$NON-NLS-1$
+      }      
     } catch (KettleXMLException xe)
     {
       throw new KettleXMLException("Unable to load job entry of type 'HTTP' from XML node", xe);
@@ -208,6 +234,14 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       nonProxyHosts = rep.getJobEntryAttributeString(id_jobentry, "non_proxy_hosts");
       addfilenameresult = "Y".equalsIgnoreCase(Const.NVL(rep.getJobEntryAttributeString(id_jobentry, "addfilenameresult"), "Y"));
       
+      // How many headerName?
+      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "header_name"); //$NON-NLS-1$
+      headerName = new String[argnr];
+      headerValue = new String[argnr];
+      for (int a = 0; a < argnr; a++) {
+          headerName[a] = rep.getJobEntryAttributeString(id_jobentry, a, "header_name"); //$NON-NLS-1$
+          headerValue[a] = rep.getJobEntryAttributeString(id_jobentry, a, "header_value"); //$NON-NLS-1$
+      }
     } catch (KettleException dbe)
     {
       throw new KettleException("Unable to load job entry of type 'HTTP' from the repository for id_jobentry="
@@ -237,7 +271,12 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getObjectId(), "proxy_port", proxyPort);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "non_proxy_hosts", nonProxyHosts);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "addfilenameresult", addfilenameresult);
-      
+      if (headerName != null) {
+         for (int i = 0; i < headerName.length; i++) {
+             rep.saveJobEntryAttribute(id_job, getObjectId(), i, "header_name", headerName[i]); //$NON-NLS-1$
+             rep.saveJobEntryAttribute(id_job, getObjectId(), i, "header_value", headerValue[i]); //$NON-NLS-1$
+         }
+      }
     } 
     catch (KettleDatabaseException dbe)
     {
@@ -333,6 +372,26 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   public void setUsername(String username)
   {
     this.username = username;
+  }
+
+  public String[] getHeaderName()
+  {
+    return headerName;
+  }
+  
+  public void setHeaderName(String[] headerName)
+  {
+    this.headerName = headerName;
+  }
+  
+  public String[] getHeaderValue()
+  {
+    return headerValue;
+  }
+  
+  public void setHeaderValue(String[] headerValue)
+  {
+    this.headerValue = headerValue;
   }
 
   /**
@@ -439,6 +498,18 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         // Get a stream for the specified URL
         server = new URL(urlToUse);
         URLConnection connection = server.openConnection();
+        
+        //  if we have HTTP headers, add them
+        if (!Const.isEmpty(headerName)) {
+            log.logDebug(BaseMessages.getString(PKG, "JobHTTP.Log.HeadersProvided"));
+            for (int j = 0; j < headerName.length; j++) {
+                if (!Const.isEmpty(headerValue[j])) {
+                    connection.setRequestProperty(environmentSubstitute(headerName[j]), headerValue[j]);
+                    log.logDebug(BaseMessages.getString(PKG, "JobHTTP.Log.HeaderSet", environmentSubstitute(headerName[j]), environmentSubstitute(headerValue[j])));
+                }
+            }
+        }
+       
         connection.setDoOutput(true);
 
         // See if we need to send a file over?

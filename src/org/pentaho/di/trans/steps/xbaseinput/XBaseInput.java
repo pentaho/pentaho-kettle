@@ -216,10 +216,10 @@ public class XBaseInput extends BaseStep implements StepInterface
         {
             data.xbi=new XBase(log, KettleVFS.getInputStream(data.file_dbf));
             data.xbi.setDbfFile(data.file_dbf.getName().getURI());
+            data.xbi.open();
             if (!Const.isEmpty(meta.getCharactersetName())) {
             	data.xbi.getReader().setCharactersetName(meta.getCharactersetName());
             }
-            data.xbi.open();
             
             logBasic(BaseMessages.getString(PKG, "XBaseInput.Log.OpenedXBaseFile")+" : ["+data.xbi+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             data.fields = data.xbi.getFields();

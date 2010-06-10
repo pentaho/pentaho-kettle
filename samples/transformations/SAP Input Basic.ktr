@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>MySAPConnectorTest</name>
+    <name>SAPInputBasicTest</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -52,6 +52,7 @@
     <shared_objects_file/>
     <capture_step_performance>N</capture_step_performance>
     <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <step_performance_capturing_size_limit/>
     <dependencies>
     </dependencies>
     <partitionschemas>
@@ -112,7 +113,7 @@
     </attributes>
   </connection>
   <order>
-  <hop> <from>Generate Rows</from><to>RFC_FUNCTION_SEARCH</to><enabled>Y</enabled> </hop>  <hop> <from>RFC_FUNCTION_SEARCH</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 2</from><to>BAPI_BILLINGDOC_GETLIST</to><enabled>Y</enabled> </hop>  <hop> <from>BAPI_BILLINGDOC_GETLIST</from><to>Dummy (do nothing) 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3</from><to>BAPI_BILLINGDOC_GETDETAIL</to><enabled>Y</enabled> </hop>  <hop> <from>BAPI_BILLINGDOC_GETDETAIL</from><to>Dummy (do nothing) 3</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 4</from><to>RFC_READ_TABLE</to><enabled>Y</enabled> </hop>  <hop> <from>RFC_READ_TABLE</from><to>Dummy (do nothing) 4</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Generate Rows</from><to>RFC_FUNCTION_SEARCH</to><enabled>Y</enabled> </hop>  <hop> <from>RFC_FUNCTION_SEARCH</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 2</from><to>BAPI_BILLINGDOC_GETLIST</to><enabled>Y</enabled> </hop>  <hop> <from>BAPI_BILLINGDOC_GETLIST</from><to>Dummy (do nothing) 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3</from><to>BAPI_BILLINGDOC_GETDETAIL</to><enabled>Y</enabled> </hop>  <hop> <from>BAPI_BILLINGDOC_GETDETAIL</from><to>Dummy (do nothing) 3</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>BAPI_BILLINGDOC_GETDETAIL</name>
     <type>SapInput</type>
@@ -132,7 +133,7 @@
     <host/>
     </function>
     <parameters>
-    <parameter><field_name>BILLINGDOCUMENT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>BILLINGDOCUMENT</parameter_name>    </parameter>
+    <parameter><field_name>BILLINGDOCUMENT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>BILLINGDOCUMENT</parameter_name><target_type>String</target_type>    </parameter>
     </parameters>
     <fields>
     <field><field_name>BILLINGDOC</field_name><sap_type>STRUCTURE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILLINGDOC</new_name><target_type>String</target_type>    </field>
@@ -173,10 +174,10 @@
     <host/>
     </function>
     <parameters>
-    <parameter><field_name>SIGN</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>SIGN</parameter_name>    </parameter>
-    <parameter><field_name>OPTION</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>OPTION</parameter_name>    </parameter>
-    <parameter><field_name>REF_DOC_LOW1</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_LOW</parameter_name>    </parameter>
-    <parameter><field_name>REF_DOC_HIGH1</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_HIGH</parameter_name>    </parameter>
+    <parameter><field_name>SIGN</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>SIGN</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>OPTION</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>OPTION</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>LOW</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_LOW</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>HIGH</field_name><sap_type>STRUCTURE</sap_type><table_name>REFDOCRANGE</table_name><parameter_name>REF_DOC_HIGH</parameter_name><target_type>String</target_type>    </parameter>
     </parameters>
     <fields>
     <field><field_name>BILLINGDOC</field_name><sap_type>TABLE</sap_type><table_name>BILLINGDOCUMENTDETAIL</table_name><new_name>BILLINGDOC</new_name><target_type>String</target_type>    </field>
@@ -247,24 +248,6 @@
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>600</xloc>
-      <yloc>270</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Dummy (do nothing) 4</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>810</xloc>
       <yloc>270</yloc>
       <draw>Y</draw>
       </GUI>
@@ -358,7 +341,7 @@
         <precision>-1</precision>
       </field>
       <field>
-        <name>REF_DOC_LOW1</name>
+        <name>LOW</name>
         <type>String</type>
         <format/>
         <currency/>
@@ -369,7 +352,7 @@
         <precision>-1</precision>
       </field>
       <field>
-        <name>REF_DOC_HIGH1</name>
+        <name>HIGH</name>
         <type>String</type>
         <format/>
         <currency/>
@@ -422,82 +405,6 @@
     </step>
 
   <step>
-    <name>Generate Rows 4</name>
-    <type>RowGenerator</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <fields>
-      <field>
-        <name>DELIMITER</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>;</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>NO_DATA</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>n.a.</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>QUERY_TABLE</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>SKAT</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>ROWCOUNT</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>100</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>ROWSKIPS</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>100</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-    </fields>
-    <limit>1</limit>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>810</xloc>
-      <yloc>30</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
     <name>RFC_FUNCTION_SEARCH</name>
     <type>SapInput</type>
     <description/>
@@ -516,9 +423,9 @@
     <host/>
     </function>
     <parameters>
-    <parameter><field_name>FUNCNAME</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>FUNCNAME</parameter_name>    </parameter>
-    <parameter><field_name>GROUPNAME</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>GROUPNAME</parameter_name>    </parameter>
-    <parameter><field_name>LANGUAGE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>LANGUAGE</parameter_name>    </parameter>
+    <parameter><field_name>FUNCNAME</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>FUNCNAME</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>GROUPNAME</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>GROUPNAME</parameter_name><target_type>String</target_type>    </parameter>
+    <parameter><field_name>LANGUAGE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>LANGUAGE</parameter_name><target_type>String</target_type>    </parameter>
     </parameters>
     <fields>
     <field><field_name>FUNCNAME</field_name><sap_type>TABLE</sap_type><table_name>FUNCTIONS</table_name><new_name>FUNCNAME</new_name><target_type>String</target_type>    </field>
@@ -530,46 +437,6 @@
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>120</xloc>
-      <yloc>150</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>RFC_READ_TABLE</name>
-    <type>SapInput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <connection>Kinamu</connection>
-    <function>
-    <name>RFC_READ_TABLE</name>
-    <description>External access to R&#47;3 tables via RFC</description>
-    <group>SDTX</group>
-    <application>S</application>
-    <host/>
-    </function>
-    <parameters>
-    <parameter><field_name>DELIMITER</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>DELIMITER</parameter_name>    </parameter>
-    <parameter><field_name>NO_DATA</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>NO_DATA</parameter_name>    </parameter>
-    <parameter><field_name>QUERY_TABLE</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>QUERY_TABLE</parameter_name>    </parameter>
-    <parameter><field_name>ROWCOUNT</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWCOUNT</parameter_name>    </parameter>
-    <parameter><field_name>ROWSKIPS</field_name><sap_type>SINGLE</sap_type><table_name/><parameter_name>ROWSKIPS</parameter_name>    </parameter>
-    </parameters>
-    <fields>
-    <field><field_name>FIELDNAME</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><new_name>FIELDNAME</new_name><target_type>String</target_type>    </field>
-    <field><field_name>OFFSET</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><new_name>OFFSET</new_name><target_type>Integer</target_type>    </field>
-    <field><field_name>LENGTH</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><new_name>LENGTH</new_name><target_type>Integer</target_type>    </field>
-    <field><field_name>TYPE</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><new_name>TYPE</new_name><target_type>String</target_type>    </field>
-    <field><field_name>FIELDTEXT</field_name><sap_type>TABLE</sap_type><table_name>FIELDS</table_name><new_name>FIELDTEXT</new_name><target_type>String</target_type>    </field>
-    </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>810</xloc>
       <yloc>150</yloc>
       <draw>Y</draw>
       </GUI>

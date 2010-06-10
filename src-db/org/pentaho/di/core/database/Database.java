@@ -631,7 +631,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
         }
         catch(Exception e)
         {
-            log.logError("Can't turn auto commit "+onOff);
+            if (log.isDebug()) log.logDebug("Can't turn auto commit "+onOff);
         }
 	}
 	
@@ -2486,6 +2486,17 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 }
             }
             
+            if (databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta || databaseMeta.getDatabaseInterface() instanceof GreenplumDatabaseMeta)
+            {
+              // undefined size => arbitrary precision
+              if (type == java.sql.Types.NUMERIC && length == 0 && precision == 0)
+              {
+                valtype = ValueMetaInterface.TYPE_BIGNUMBER;
+                length = -1;
+                precision = -1;
+              }
+            }
+            
             if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta)
             {
             	if (precision == 0 && length == 38 )
@@ -3549,9 +3560,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		return par;
 	}
 	
-	public void writeLogRecord(LogTableInterface logTable, LogStatus status, Object subject) throws KettleException {
+	public void writeLogRecord(LogTableInterface logTable, LogStatus status, Object subject, Object parent) throws KettleException {
 		try {
-			RowMetaAndData logRecord = logTable.getLogRecord(status, subject);
+			RowMetaAndData logRecord = logTable.getLogRecord(status, subject, parent);
+			if (logRecord==null) return;
+			
 			boolean update = (logTable.getKeyField()!=null) && !status.equals(LogStatus.START);
 			String schemaTable = databaseMeta.getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
 			RowMetaInterface rowMeta = logRecord.getRowMeta();
@@ -3584,8 +3597,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 				insertRow(logTable.getSchemaName(), logTable.getTableName(), logRecord.getRowMeta(), logRecord.getData());
 
-			}
-			 
+			}			
 		} catch(Exception e) {
 			throw new KettleDatabaseException("Unable to write log record to log table " + logTable.getTableName(), e);
 		}

@@ -816,7 +816,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     		stepPerformanceSnapShotTimer = new Timer();
     		TimerTask timerTask = new TimerTask() {
 				public void run() {
+				  if (!isFinished()) {
 					addStepPerformanceSnapShot();
+				  }
 				}
 			};
     		stepPerformanceSnapShotTimer.schedule(timerTask, 100, transMeta.getStepPerformanceCapturingDelay());
@@ -1327,6 +1329,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		
 		DatabaseMeta logConnection = transLogTable.getDatabaseMeta();
 		String logTable = transLogTable.getTableName();
+		String logSchema = transLogTable.getSchemaName();
 
         try
         {
@@ -1347,10 +1350,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            }
 	            
 			    transLogTableDatabaseConnection = new Database(this, logConnection);
+			    transLogTableDatabaseConnection.setCommit(0);
 			    transLogTableDatabaseConnection.shareVariablesWith(this);
 			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
 			    transLogTableDatabaseConnection.connect();
-			    transLogTableDatabaseConnection.setCommit(1);
 				
 				// See if we have to add a batch id...
 				// Do this first, before anything else to lock the complete table exclusively
@@ -1364,13 +1367,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					
 					// Now insert value -1 to create a real write lock blocking the other requests.. FCFS
 					//
-					String sql = "INSERT INTO "+logConnection.quoteField(logTable)+"("+logConnection.quoteField("ID_BATCH")+") values (-1)";
+					String sql = "INSERT INTO "+logConnection.quoteField(logTable)+"("+logConnection.quoteField(transLogTable.getKeyField().getFieldName())+") values (-1)";
 					transLogTableDatabaseConnection.execStatement(sql);
 					
 					
 					// Now this next lookup will stall on the other connections
 					//
-					Long id_batch = transLogTableDatabaseConnection.getNextValue(transMeta.getCounters(), logTable, "ID_BATCH");
+					Long id_batch = transLogTableDatabaseConnection.getNextValue(transMeta.getCounters(), logSchema, logTable, transLogTable.getKeyField().getFieldName());
 					setBatchId( id_batch.longValue() );
 				}
 
@@ -1398,6 +1401,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					if (maxcon!=null)
 					{
 						Database maxdb = new Database(this, maxcon);
+						maxdb.setCommit(0);
 						maxdb.shareVariablesWith(this);
 						try
 						{
@@ -1467,6 +1471,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 						if (depcon!=null)
 						{
 							Database depdb = new Database(this, depcon);
+							depdb.setCommit(0);
 							try
 							{
 								depdb.connect();
@@ -1544,7 +1549,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             if (lockedTable) {
             	// Remove the -1 record again...
             	//
-				String sql = "DELETE FROM "+logConnection.quoteField(logTable)+" WHERE "+logConnection.quoteField("ID_BATCH")+"= -1";
+				String sql = "DELETE FROM "+logConnection.quoteField(logTable)+" WHERE "+logConnection.quoteField(transLogTable.getKeyField().getFieldName())+"= -1";
 				transLogTableDatabaseConnection.execStatement(sql);
 				
             	transLogTableDatabaseConnection.unlockTables( new String[] { logTable, } );
@@ -1580,7 +1585,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             {
                 if (transLogTableDatabaseConnection!=null && !Const.isEmpty(logTable) && !Const.isEmpty(transMeta.getName()))
                 {
-                	transLogTableDatabaseConnection.writeLogRecord(transLogTable, LogStatus.START, this);
+                	transLogTableDatabaseConnection.writeLogRecord(transLogTable, LogStatus.START, this, null);
                     
                     // If we need to do periodic logging, make sure to install a timer for this...
                     //
@@ -1709,11 +1714,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
+			db.setCommit(0);
 			db.connect();
 			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
 			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
-				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy);
+				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy, null);
 			}
 			
 			// Also time-out the log records in here...
@@ -1733,10 +1739,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			db = new Database(this, stepLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
+			db.setCommit(0);
 			db.connect();
 			
 			for (StepMetaDataCombi combi : steps) {
-				db.writeLogRecord(stepLogTable, LogStatus.START, combi);
+				db.writeLogRecord(stepLogTable, LogStatus.START, combi, null);
 			}
 			
 		} catch(Exception e) {
@@ -1825,8 +1832,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				if (transLogTableDatabaseConnection==null) {
 					ldb = new Database(this, logcon);
 					ldb.shareVariablesWith(this);
+					ldb.setCommit(0);
 					ldb.connect();
-					ldb.setCommit(1);
 					transLogTableDatabaseConnection=ldb;
 				} else {
 					ldb = transLogTableDatabaseConnection;
@@ -1835,7 +1842,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				// Write to the standard transformation log table...
 				//
 				if (!Const.isEmpty(logTable)) {
-                	ldb.writeLogRecord(transLogTable, status, this);
+                	ldb.writeLogRecord(transLogTable, status, this, null);
 				}
 				
 				// Also time-out the log records in here...
@@ -1871,11 +1878,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			ldb = new Database(this, performanceLogTable.getDatabaseMeta());
 			ldb.shareVariablesWith(this);
+			ldb.setCommit(0);
 			ldb.connect();
 			
 			// Write to the step performance log table...
 			//
-			RowMetaInterface rowMeta = performanceLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
+			RowMetaInterface rowMeta = performanceLogTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
 			ldb.prepareInsert(rowMeta, performanceLogTable.getTableName());
 			
 			synchronized(stepPerformanceSnapShots) {
@@ -1888,7 +1896,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					    StepPerformanceSnapShot snapshot=snapshotsIterator.next();
               if (snapshot.getSeqNr()>=startSequenceNr && snapshot.getSeqNr()<=lastStepPerformanceSnapshotSeqNrAdded) {
                 
-                RowMetaAndData row = performanceLogTable.getLogRecord(LogStatus.START, snapshot);
+                RowMetaAndData row = performanceLogTable.getLogRecord(LogStatus.START, snapshot, null);
                 
                 ldb.setValuesInsert(row.getRowMeta(), row.getData());
                 ldb.insertRow(true);

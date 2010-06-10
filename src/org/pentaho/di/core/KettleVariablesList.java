@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.
+ */
 package org.pentaho.di.core;
 
 import java.io.InputStream;
@@ -21,7 +33,8 @@ public class KettleVariablesList {
 		return kettleVariablesList;
 	}
 	
-	private Map<String, String> variablesMap;
+	private Map<String, String> descriptionMap;
+    private Map<String, String> defaultValueMap;
 	
 	public static void init() throws KettleException {
 		
@@ -43,8 +56,10 @@ public class KettleVariablesList {
 				Node varNode = XMLHandler.getSubNodeByNr(varsNode, "kettle-variable", i);
 				String description = XMLHandler.getTagValue(varNode, "description");
 				String variable = XMLHandler.getTagValue(varNode, "variable");
+                String defaultValue = XMLHandler.getTagValue(varNode, "default-value");
 				
-				variablesList.getVariablesMap().put(variable, description);
+				variablesList.getDescriptionMap().put(variable, description);
+                variablesList.getDefaultValueMap().put(variable, defaultValue);
 			}
 			
 		} catch(Exception e) {
@@ -53,13 +68,22 @@ public class KettleVariablesList {
 	}
 	
 	private KettleVariablesList() {
-		variablesMap=new HashMap<String, String>();
+		descriptionMap=new HashMap<String, String>();
+        defaultValueMap=new HashMap<String, String>();
 	}
 	
 	/**
 	 * @return A mapping between the name of a standard kettle variable and its description.
 	 */
-	public Map<String, String> getVariablesMap() {
-		return variablesMap;
+	public Map<String, String> getDescriptionMap() {
+		return descriptionMap;
 	}
+
+	/**
+	 * @return A mapping between the name of a standard kettle variable and its default value.
+	 */
+	public Map<String, String> getDefaultValueMap() {
+      return defaultValueMap;
+    }
+	
 }

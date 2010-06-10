@@ -3,6 +3,7 @@
     <kettle-variable>
     	<description>The log size limit for all transformations and jobs that don't have the "log size limit" property set in their respective properties.</description>
 		<variable>KETTLE_LOG_SIZE_LIMIT</variable>
+		<default-value>0</default-value>
 	</kettle-variable>
 
 	<kettle-variable>
@@ -103,26 +104,31 @@
 	<kettle-variable>
 		<description>NULL vs Empty String. If this setting is set to Y, an empty string and null are different. Otherwise they are not.</description>
 		<variable>KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL</variable>
+		<default-value>N</default-value>
 	</kettle-variable>
 
 	<kettle-variable>
 		<description>The maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all rows (default)</description>
 		<variable>KETTLE_MAX_LOG_SIZE_IN_LINES</variable>
+		<default-value>0</default-value>
 	</kettle-variable>
 
 	<kettle-variable>
 		<description>The maximum age (in minutes) of a log line while being kept internally by Kettle. Set to 0 to keep all rows indefinitely (default)</description>
 		<variable>KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES</variable>
+		<default-value>0</default-value>
 	</kettle-variable>
 
 	<kettle-variable>
 		<description>A comma delimited list of classes to scan for plugin annotations</description>
 		<variable>KETTLE_PLUGIN_CLASSES</variable>
+		<default-value/>
 	</kettle-variable>
 
 	<kettle-variable>
 		<description>The maximum number of step performance snapshots to keep in memory. Set to 0 to keep all snapshots indefinitely (default)</description>
 		<variable>KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT</variable>
+		<default-value>0</default-value>
 	</kettle-variable>
 
 </kettle-variables>

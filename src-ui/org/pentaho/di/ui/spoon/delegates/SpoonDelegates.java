@@ -12,13 +12,6 @@
 */
 package org.pentaho.di.ui.spoon.delegates;
 
-import org.pentaho.di.ui.spoon.delegates.SpoonDBDelegate;
-import org.pentaho.di.ui.spoon.delegates.SpoonJobDelegate;
-import org.pentaho.di.ui.spoon.delegates.SpoonSlaveDelegate;
-import org.pentaho.di.ui.spoon.delegates.SpoonStepsDelegate;
-import org.pentaho.di.ui.spoon.delegates.SpoonTabsDelegate;
-import org.pentaho.di.ui.spoon.delegates.SpoonTransformationDelegate;
-import org.pentaho.di.ui.spoon.delegates.SpoonTreeDelegate;
 import org.pentaho.di.ui.spoon.InstanceCreationException;
 import org.pentaho.di.ui.spoon.Spoon;
 

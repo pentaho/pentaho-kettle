@@ -207,11 +207,14 @@ public class SpoonStepsDelegate extends SpoonDelegate
 		for (int i = transMeta.nrTransHops() - 1; i >= 0; i--)
 		{
 			TransHopMeta hi = transMeta.getTransHop(i);
-			if (hi.getFromStep().equals(stepMeta) || hi.getToStep().equals(stepMeta))
-			{
-				spoon.addUndoDelete(transMeta, new TransHopMeta[] { hi }, new int[] { transMeta
-						.indexOfTransHop(hi) }, true);
-				transMeta.removeTransHop(i);
+			if (hi.getFromStep().equals(stepMeta) || hi.getToStep().equals(stepMeta)) {
+				int idx = transMeta.indexOfTransHop(hi);
+			  spoon.addUndoDelete(transMeta, 
+                				    new TransHopMeta[] { (TransHopMeta)hi.clone() }, 
+                				    new int[] { idx }
+			                      //,true            // the true flag was causing the hops to not get restored on Undo delete step with hop(s)
+				);
+				transMeta.removeTransHop(idx);
 				spoon.refreshTree();
 			}
 		}

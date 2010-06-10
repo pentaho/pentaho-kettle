@@ -1,91 +1,78 @@
 @echo off
+setlocal
 
-REM **************************************************
-REM ** Set console window properties                **
-REM **************************************************
+:: **************************************************
+:: ** Kettle home                                  **
+:: **************************************************
+ 
+if "%KETTLE_DIR%"=="" set KETTLE_DIR=%~dp0
+if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 
-REM TITLE Chef console
-REM COLOR F0
+cd %KETTLE_DIR%
 
-REM **************************************************
-REM ** Make sure we use the correct J2SE version!   **
-REM ** Uncomment the PATH line in case of trouble   **
-REM **************************************************
+:: **************************************************
+:: ** Set up usage of JAVA_EXT_LIBS                **
+:: **************************************************
 
-REM set PATH=C:\j2sdk1.4.2_01\bin;.;%PATH%
+if defined JAVA_EXT_DIRS goto :externalExtDirs
+:noExternalExtDirs
+set JAVA_EXT_DIRS=.
+goto endExtDirs
 
-REM **************************************************
-REM ** Libraries used by Kettle:                    **
-REM **************************************************
+:externalExtDirs
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;
 
-set CLASSPATH=.
+:endExtDirs
 
-REM ******************
-REM   KETTLE Library
-REM ******************
+if DEFINED JAVA_HOME goto withJavaHome
+:noJavaHome
+goto endJavaHome
 
-set CLASSPATH=%CLASSPATH%;lib\kettle-core.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-db.jar
-set CLASSPATH=%CLASSPATH%;lib\kettle-engine.jar
+:withJavaHome
+REM Every directory contains the null device. So check
+REM for directory existence:
+if exist %JAVA_HOME%\jre\lib\ext\nul set JAVA_EXT_DIRS=%JAVA_HOME%\jre\lib\ext;%JAVA_EXT_DIRS%
+if exist %JAVA_HOME%\lib\ext\nul set JAVA_EXT_DIRS=%JAVA_HOME%\lib\ext;%JAVA_EXT_DIRS%
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;lib
+goto endJavaHome
 
-REM **********************
-REM   External Libraries
-REM **********************
+:endJavaHome
 
-REM Loop the libext directory and add the classpath.
-REM The following command would only add the last jar: FOR %%F IN (libext\*.jar) DO call set CLASSPATH=%CLASSPATH%;%%F
-REM So the circumvention with a subroutine solves this ;-)
+:: **************************************************
+:: ** Libraries used by Kettle:                    **
+:: **************************************************
 
-FOR %%F IN (libext\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\JDBC\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\webservices\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\commons\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\web\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\pentaho\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\spring\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\jfree\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\mondrian\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\salesforce\*.jar) DO call :addcp %%F
-FOR %%F IN (libext\feeds\*.jar) DO call :addcp %%F
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\lib
 
-goto extlibe
+:: **********************
+::   External Libraries
+:: **********************
 
-:addcp
-set CLASSPATH=%CLASSPATH%;%1
-goto :eof
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\JDBC
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\webservices
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\spring
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\commons
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\web
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\pentaho
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\mondrian
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%KETTLE_DIR%\libext\salesforce
 
-:extlibe
+:: *****************
+::   SWT Libraries
+:: *****************
 
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%~dp0libswt
 
-REM *****************
-REM   SWT Libraries
-REM *****************
+:: ******************************************************************
+:: ** Set java runtime options                                     **
+:: ** Change 512m to higher values in case you run out of memory.  **
+:: ******************************************************************
 
-set CLASSPATH=%CLASSPATH%;libswt\runtime.jar
-set CLASSPATH=%CLASSPATH%;libswt\jface.jar
-set CLASSPATH=%CLASSPATH%;libswt\win32\swt.jar
+set OPT=-Xmx512m "-Djava.ext.dirs=%JAVA_EXT_DIRS%" "-Djava.library.path=%~dp0libswt\win32" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
 
-REM **********************
-REM   Collect arguments
-REM **********************
+:: ***************
+:: ** Run...    **
+:: ***************
 
-set _cmdline=
-:TopArg
-if %1!==! goto EndArg
-set _cmdline=%_cmdline% %1
-shift
-goto TopArg
-:EndArg
-
-REM ******************************************************************
-REM ** Set java runtime options                                     **
-REM ** Change 512m to higher values in case you run out of memory.  **
-REM ******************************************************************
-
-set OPT=-Xmx512m -cp %CLASSPATH% -Djava.library.path=libswt\win32\ -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%" -DKETTLE_PLUGIN_PACKAGES="%KETTLE_PLUGIN_PACKAGES%" -DKETTLE_LOG_SIZE_LIMIT="%KETTLE_LOG_SIZE_LIMIT%"
-
-REM ***************
-REM ** Run...    **
-REM ***************
-
-java %OPT% org.pentaho.di.kitchen.Kitchen %_cmdline%
+java %OPT% org.pentaho.di.kitchen.Kitchen %*

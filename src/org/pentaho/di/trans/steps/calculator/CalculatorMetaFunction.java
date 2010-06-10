@@ -95,8 +95,15 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_ADD_MONTHS             = 62;
     public static final int CALC_CHECK_XML_FILE_WELL_FORMED         = 63;
     public static final int CALC_CHECK_XML_WELL_FORMED         = 64;
-    public static final int CALC_GET_FILE_ENCODING         = 65;
-    
+    public static final int CALC_GET_FILE_ENCODING         = 65;	
+	
+    public static final int CALC_DAMERAU_LEVENSHTEIN = 66;
+	public static final int CALC_NEEDLEMAN_WUNSH = 67 ;
+	public static final int CALC_JARO = 68;
+	public static final int CALC_JARO_WINKLER = 69;
+	public static final int CALC_SOUNDEX= 70;
+	public static final int CALC_REFINED_SOUNDEX= 71;
+   
     public static final String calc_desc[] = 
         { 
             "-", 
@@ -164,7 +171,13 @@ public class CalculatorMetaFunction implements Cloneable
             "ADD_MONTHS",
             "CHECK_XML_FILE_WELL_FORMED",
             "CHECK_XML_WELL_FORMED",
-            "GET_FILE_ENCODING"
+            "GET_FILE_ENCODING",
+            "DAMERAU_LEVENSHTEIN",
+        	"NEEDLEMAN_WUNSH",
+        	"JARO",
+        	"JARO_WINKLER",
+        	"SOUNDEX",
+        	"REFINED_SOUNDEX"
         };
     
     public static final String calcLongDesc[] = 
@@ -235,6 +248,12 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.CheckXmlFileWellFormed"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.CheckXmlWellFormed"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.GetFileEncoding"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DamerauLevenshtein"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.NeedlemanWunsch"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.Jaro"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.JaroWinkler"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.SoundEx"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.RefinedSoundEx"),
         };
    
     private String fieldName;

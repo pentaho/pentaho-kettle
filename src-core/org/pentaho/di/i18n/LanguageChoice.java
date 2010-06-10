@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 
 public class LanguageChoice
 {
@@ -107,8 +108,12 @@ public class LanguageChoice
             // Ignore closure exceptions
           }
         }
-        defaultLocale  = new Locale( properties.getProperty(STRING_DEFAULT_LOCALE,  Const.DEFAULT_LOCALE.toString()) );
-        failoverLocale = new Locale( properties.getProperty(STRING_FAILOVER_LOCALE, "en_US") );
+        
+        String defaultLocaleStr = properties.getProperty(STRING_DEFAULT_LOCALE,  Const.DEFAULT_LOCALE.toString());
+        defaultLocale = EnvUtil.createLocale(defaultLocaleStr);
+        
+        String failoverLocaleStr = properties.getProperty(STRING_FAILOVER_LOCALE, "en_US");  //$NON-NLS-1$
+        failoverLocale = EnvUtil.createLocale(failoverLocaleStr);
     }
     
     public void saveSettings()

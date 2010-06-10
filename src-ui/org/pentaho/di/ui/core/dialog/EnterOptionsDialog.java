@@ -15,8 +15,6 @@
 
 package org.pentaho.di.ui.core.dialog;
 
-import java.util.Locale;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -56,6 +54,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.GUIOption;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
@@ -127,8 +126,6 @@ public class EnterOptionsDialog extends Dialog
 	private Text wLineWidth;
 
 	private Text wShadowSize;
-
-	private Text wMaxUndo;
 
 	private Text wDefaultPreview;
 
@@ -294,7 +291,6 @@ public class EnterOptionsDialog extends Dialog
 		wIconsize.addSelectionListener(lsDef);
 		wLineWidth.addSelectionListener(lsDef);
 		wShadowSize.addSelectionListener(lsDef);
-		wMaxUndo.addSelectionListener(lsDef);
 		wMiddlePct.addSelectionListener(lsDef);
 		wDefaultPreview.addSelectionListener(lsDef);
 		wMaxNrLogLines.addSelectionListener(lsDef);
@@ -1019,24 +1015,6 @@ public class EnterOptionsDialog extends Dialog
 		props.setLook(wGeneralComp);
 		wGeneralComp.setLayout(generalLayout);
 
-		// MaxUndo line
-		Label wlMaxUndo = new Label(wGeneralComp, SWT.RIGHT);
-		wlMaxUndo.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.MaximumUndo.Label"));
-		props.setLook(wlMaxUndo);
-		FormData fdlMaxUndo = new FormData();
-		fdlMaxUndo.left = new FormAttachment(0, 0);
-		fdlMaxUndo.right = new FormAttachment(middle, -margin);
-		fdlMaxUndo.top = new FormAttachment(0, 0);
-		wlMaxUndo.setLayoutData(fdlMaxUndo);
-		wMaxUndo = new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wMaxUndo.setText(Integer.toString(props.getMaxUndo()));
-		props.setLook(wMaxUndo);
-		FormData fdMaxUndo = new FormData();
-		fdMaxUndo.left = new FormAttachment(middle, 0);
-		fdMaxUndo.right = new FormAttachment(100, -margin);
-		fdMaxUndo.top = new FormAttachment(0, 0);
-		wMaxUndo.setLayoutData(fdMaxUndo);
-
 		// Default preview size
 		Label wlDefaultPreview = new Label(wGeneralComp, SWT.RIGHT);
 		wlDefaultPreview.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.DefaultPreviewSize.Label"));
@@ -1044,7 +1022,7 @@ public class EnterOptionsDialog extends Dialog
 		FormData fdlDefaultPreview = new FormData();
 		fdlDefaultPreview.left = new FormAttachment(0, 0);
 		fdlDefaultPreview.right = new FormAttachment(middle, -margin);
-		fdlDefaultPreview.top = new FormAttachment(wMaxUndo, margin);
+		fdlDefaultPreview.top = new FormAttachment(0, margin);
 		wlDefaultPreview.setLayoutData(fdlDefaultPreview);
 		wDefaultPreview = new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wDefaultPreview.setText(Integer.toString(props.getDefaultPreviewSize()));
@@ -1052,7 +1030,7 @@ public class EnterOptionsDialog extends Dialog
 		FormData fdDefaultPreview = new FormData();
 		fdDefaultPreview.left = new FormAttachment(middle, 0);
 		fdDefaultPreview.right = new FormAttachment(100, -margin);
-		fdDefaultPreview.top = new FormAttachment(wMaxUndo, margin);
+		fdDefaultPreview.top = new FormAttachment(0, margin);
 		wDefaultPreview.setLayoutData(fdDefaultPreview);
 
 		// Max Nr of log lines
@@ -1642,7 +1620,6 @@ public class EnterOptionsDialog extends Dialog
 		props.setMaxNrLinesInLog(Const.toInt(wMaxNrLogLines.getText(), Const.MAX_NR_LOG_LINES));
 		props.setMaxLogLineTimeoutMinutes(Const.toInt(wMaxLogLineTimeout.getText(), Const.MAX_LOG_LINE_TIMEOUT_MINUTES));
 		props.setMaxNrLinesInHistory(Const.toInt(wMaxNrHistLines.getText(), Const.MAX_NR_HISTORY_LINES));
-		props.setMaxUndo(Const.toInt(wMaxUndo.getText(), props.getMaxUndo()));
 
 		props.setShowTips(wShowTips.getSelection());
 		props.setShowWelcomePageOnStartup(wShowWelcome.getSelection());
@@ -1678,14 +1655,16 @@ public class EnterOptionsDialog extends Dialog
 			failoverLocaleIndex = 0;
 		}
 
-		LanguageChoice.getInstance().setDefaultLocale(
-				new Locale(GlobalMessages.localeCodes[defaultLocaleIndex]));
-		LanguageChoice.getInstance().setFailoverLocale(
-				new Locale(GlobalMessages.localeCodes[failoverLocaleIndex]));
-		LanguageChoice.getInstance().saveSettings();
+    String defaultLocale = GlobalMessages.localeCodes[defaultLocaleIndex];
+    LanguageChoice.getInstance().setDefaultLocale(EnvUtil.createLocale(defaultLocale));
+    
+    String failoverLocale = GlobalMessages.localeCodes[failoverLocaleIndex];
+    LanguageChoice.getInstance().setFailoverLocale(EnvUtil.createLocale(failoverLocale));    
+    
+    LanguageChoice.getInstance().saveSettings();
 
-		props.saveProps();
+    props.saveProps();
 
-		dispose();
+    dispose();
 	}
 }

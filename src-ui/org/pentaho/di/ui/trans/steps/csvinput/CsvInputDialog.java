@@ -463,7 +463,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
 		wGet.setEnabled(!isReceivingInput);
 
-		setButtonPositions(new Button[] { wOK, wCancel, wPreview, wGet, }, margin, null);
+		setButtonPositions(new Button[] { wOK, wGet, wPreview, wCancel }, margin, null);
 
 
 		// Fields
@@ -753,7 +753,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
             
             // Split the string, header or data into parts...
             //
-            String[] fieldNames = Const.splitString(line, delimiter); 
+            String[] fieldNames = CsvInput.guessStringsFromLine(log, line, delimiter, meta.getEnclosure(), meta.getEscapeCharacter());
             
             if (!meta.isHeaderPresent()) {
             	// Don't use field names from the header...

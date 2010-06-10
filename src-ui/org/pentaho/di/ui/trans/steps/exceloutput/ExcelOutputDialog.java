@@ -186,6 +186,10 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private Button       wAutoSize;
 	private FormData     fdlAutoSize, fdAutoSize;
 	
+    private Label        wlNullIsBlank;
+    private Button       wNullIsBlank;
+    private FormData     fdlNullIsBlank, fdNullIsBlank;
+	
 	private Group wTemplateGroup;
 	private FormData fdTemplateGroup;
 	
@@ -775,6 +779,24 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 	);
 		
+	    // write null values as blank cells ?
+		wlNullIsBlank=new Label(wContentComp, SWT.RIGHT);
+		wlNullIsBlank.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.NullIsBlank.Label"));
+        props.setLook(wlNullIsBlank);
+        fdlNullIsBlank=new FormData();
+        fdlNullIsBlank.left = new FormAttachment(0, 0);
+        fdlNullIsBlank.top  = new FormAttachment(wAutoSize, margin);
+        fdlNullIsBlank.right= new FormAttachment(middle, -margin);
+        wlNullIsBlank.setLayoutData(fdlNullIsBlank);
+        wNullIsBlank=new Button(wContentComp, SWT.CHECK);
+        props.setLook(wNullIsBlank);
+        wNullIsBlank.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.NullIsBlank.Tooltip"));
+        fdNullIsBlank=new FormData();
+        fdNullIsBlank.left = new FormAttachment(middle, 0);
+        fdNullIsBlank.top  = new FormAttachment(wAutoSize, margin);
+        fdNullIsBlank.right= new FormAttachment(100, 0);
+        wNullIsBlank.setLayoutData(fdNullIsBlank);		
+		
 		
 		// ///////////////////////////////
 		// START OF Template Group GROUP //
@@ -795,14 +817,14 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
  		props.setLook(wlTemplate);
 		fdlTemplate=new FormData();
 		fdlTemplate.left = new FormAttachment(0, 0);
-		fdlTemplate.top  = new FormAttachment(wAutoSize, margin);
+		fdlTemplate.top  = new FormAttachment(wNullIsBlank, margin);
 		fdlTemplate.right= new FormAttachment(middle, -margin);
 		wlTemplate.setLayoutData(fdlTemplate);
 		wTemplate=new Button(wTemplateGroup, SWT.CHECK );
  		props.setLook(wTemplate);
 		fdTemplate=new FormData();
 		fdTemplate.left = new FormAttachment(middle, 0);
-		fdTemplate.top  = new FormAttachment(wAutoSize, margin);
+		fdTemplate.top  = new FormAttachment(wNullIsBlank, margin);
 		fdTemplate.right= new FormAttachment(100, 0);
 		wTemplate.setLayoutData(fdTemplate);
 		wTemplate.addSelectionListener(new SelectionAdapter() 
@@ -868,7 +890,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		fdTemplateGroup= new FormData();
 		fdTemplateGroup.left = new FormAttachment(0, margin);
-		fdTemplateGroup.top = new FormAttachment(wAutoSize, margin);
+		fdTemplateGroup.top = new FormAttachment(wNullIsBlank, margin);
 		fdTemplateGroup.right = new FormAttachment(100, -margin);
 		wTemplateGroup.setLayoutData(fdTemplateGroup);
 		
@@ -1232,6 +1254,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		wAddToResult.setSelection(input.isAddToResultFiles());
 		wAutoSize.setSelection(input.isAutoSizeColums());
+		wNullIsBlank.setSelection(input.isNullBlank());
 
 		wAddStepnr.setSelection(input.isStepNrInFilename());
 		wTemplate.setSelection(input.isTemplateEnabled());
@@ -1293,7 +1316,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		tfoi.setDateTimeFormat(wDateTimeFormat.getText());
 		tfoi.setSpecifyFormat(wSpecifyFormat.getSelection());
 		tfoi.setAutoSizeColums(wAutoSize.getSelection());
-		
+		tfoi.setNullIsBlank(wNullIsBlank.getSelection());
+        
 		tfoi.setAddToResultFiles( wAddToResult.getSelection() );
 		
 		tfoi.setProtectSheet( wProtectSheet.getSelection() );

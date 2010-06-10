@@ -40,6 +40,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
@@ -222,13 +223,10 @@ public class AppendTest extends TestCase
         //
         String appendName = "append step";            
         AppendMeta am = new AppendMeta();
-        am.setHeadStepMeta(injectorStep1);
-        am.setTailStepMeta(injectorStep2);
+        List<StreamInterface> infoStreams = am.getStepIOMeta().getInfoStreams();
+        infoStreams.get(0).setStepMeta(injectorStep1);
+        infoStreams.get(1).setStepMeta(injectorStep2);
         
-        // Followign are for GUI purposes only.
-        //am.setHeadStepName("injector step 1");        
-        //am.setTailStepName("injector step 2");        
-
         String appendPid = registry.getPluginId(StepPluginType.class, am);
         StepMeta append = new StepMeta(appendPid, appendName, (StepMetaInterface)am);
         transMeta.addStep(append);            

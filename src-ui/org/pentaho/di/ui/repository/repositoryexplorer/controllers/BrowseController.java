@@ -32,7 +32,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoerCollection;
@@ -101,12 +100,14 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected List<UIRepositoryDirectory> selectedFolderItems;
 
   protected List<UIRepositoryObject> selectedFileItems;
-
+  
   protected List<UIRepositoryDirectory> repositoryDirectories;
 
   protected Repository repository;
 
   List<UIRepositoryObject> repositoryObjects;
+  
+  List<UIRepositoryObject> repositoryItems;
 
   private MainController mainController;
 
@@ -114,11 +115,26 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   private XulConfirmBox confirmBox;
 
+  private List<UIRepositoryObject> currentSelectedFileList;
+  
+  private List<UIRepositoryDirectory>  currentSelectedFolderList;
   /**
    * Allows for lookup of a UIRepositoryDirectory by ObjectId. This allows the reuse of instances that are inside a UI
    * tree.
    */
   protected Map<ObjectId, UIRepositoryDirectory> dirMap;
+  
+  private PropertyChangeListener fileChildrenListener = new PropertyChangeListener(){
+
+    public void propertyChange(PropertyChangeEvent arg0) {
+      try {
+        firePropertyChange("selectedRepoDirChildren", null, getSelectedRepoDirChildren()); //$NON-NLS-1$
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+    
+  };
 
   public BrowseController() {
   }
@@ -129,9 +145,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     firePropertyChange("repositoryDirectory", null, repositoryDirectory);
   }
 
-  private void fireFoldersAndItemsChange() {
-    firePropertyChange("repositoryDirectories", null, getRepositoryDirectories()); //$NON-NLS-1$
-    firePropertyChange("selectedRepoDirChildren", null, getSelectedRepoDirChildren()); //$NON-NLS-1$
+  private void fireFoldersAndItemsChange(List<UIRepositoryDirectory> previousValue, UIRepositoryObjects previousRepoObjects) {
+    firePropertyChange("repositoryDirectories", previousValue, getRepositoryDirectories()); //$NON-NLS-1$
+    firePropertyChange("selectedRepoDirChildren", previousRepoObjects, getSelectedRepoDirChildren()); //$NON-NLS-1$
   }
 
   // end PDI-3326 hack
@@ -168,18 +184,19 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     } else {
       folderTree.setHiddenrootnode(false);
     }
-    BindingConvertor<List<UIRepositoryObject>, Boolean> checkIfMultipleItemsAreSelected = new BindingConvertor<List<UIRepositoryObject>, Boolean>() {
+    BindingConvertor<List, Boolean> checkIfMultipleItemsAreSelected = new BindingConvertor<List, Boolean>() {
 
       @Override
-      public Boolean sourceToTarget(List<UIRepositoryObject> value) {
+      public Boolean sourceToTarget(List value) {
         return value != null && value.size() == 1 && value.get(0) != null;
       }
 
       @Override
-      public List<UIRepositoryObject> targetToSource(Boolean value) {
+      public List targetToSource(Boolean value) {
         return null;
       }
     };
+    bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(fileTable, "selectedItems", "file-context-rename", "!disabled", checkIfMultipleItemsAreSelected); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding(fileTable, "selectedItems", this, "selectedFileItems"); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -598,13 +615,22 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void setSelectedFolderItems(List<UIRepositoryDirectory> selectedFolderItems) {
-    if (!compareFolderList(selectedFolderItems, this.selectedFolderItems)) {
+    if (!compareFolderList(selectedFolderItems, this.selectedFolderItems) && !compareFolderList(selectedFolderItems, currentSelectedFolderList)) {
       List<TYPE> pollResults = pollContextChangeVetoResults();
       if (!contains(TYPE.CANCEL, pollResults)) {
         this.selectedFolderItems = selectedFolderItems;
         setRepositoryDirectories(selectedFolderItems);
       } else if (contains(TYPE.CANCEL, pollResults)) {
         folderTree.setSelectedItems(this.selectedFolderItems);
+        fileTable.setSelectedItems(this.selectedFileItems);
+        currentSelectedFolderList = new ArrayList<UIRepositoryDirectory>();
+        currentSelectedFolderList.addAll(selectedFolderItems);
+      }
+    } else if (compareFolderList(selectedFolderItems, this.selectedFolderItems) && !compareFolderList(selectedFolderItems, currentSelectedFolderList)) {
+        setRepositoryDirectories(selectedFolderItems);
+    } else {
+      if(currentSelectedFolderList.size() > 0) {
+        currentSelectedFolderList.clear();
       }
     }
   }
@@ -614,13 +640,22 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void setSelectedFileItems(List<UIRepositoryObject> selectedFileItems) {
-    if (!compareFileList(selectedFileItems, this.selectedFileItems)) {
+    if (!compareFileList(selectedFileItems, this.selectedFileItems) && !compareFileList(selectedFileItems,currentSelectedFileList)) {
       List<TYPE> pollResults = pollContextChangeVetoResults();
       if (!contains(TYPE.CANCEL, pollResults)) {
         this.selectedFileItems = selectedFileItems;
         setRepositoryObjects(selectedFileItems);
+        setRepositoryItems(selectedFileItems);
       } else if (contains(TYPE.CANCEL, pollResults)) {
         fileTable.setSelectedItems(this.selectedFileItems);
+        currentSelectedFileList = new ArrayList<UIRepositoryObject>();
+        currentSelectedFileList.addAll(selectedFileItems);
+      }
+    } else if (compareFileList(selectedFileItems, this.selectedFileItems) && !compareFileList(selectedFileItems,currentSelectedFileList)) {
+      setRepositoryItems(selectedFileItems);        
+    } else { 
+      if(currentSelectedFileList.size() > 0) {
+        currentSelectedFileList.clear();
       }
     }
   }
@@ -644,6 +679,16 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     return repositoryObjects;
   }
 
+  public void setRepositoryItems(List<UIRepositoryObject> selectedItems) {
+    this.repositoryItems = selectedItems;
+    firePropertyChange("repositoryItems", null, repositoryItems);//$NON-NLS-1$
+  }
+
+  public List<UIRepositoryObject> getRepositoryItems() {
+    return repositoryItems;
+  }
+
+  
   public List<UIRepositoryDirectory> getRepositoryDirectories() {
     if (repositoryDirectories != null && repositoryDirectories.size() == 0) {
       return null;
@@ -652,8 +697,31 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void setRepositoryDirectories(List<UIRepositoryDirectory> selectedFolderItems) {
-    this.repositoryDirectories = selectedFolderItems;
-    fireFoldersAndItemsChange();
+    List<UIRepositoryDirectory> previousVal = null;
+    UIRepositoryObjects previousRepoObjects = null;
+    try {
+      if(repositoryDirectories != null && repositoryDirectories.size() > 0) {
+        previousVal = new ArrayList<UIRepositoryDirectory>();
+        previousVal.addAll(repositoryDirectories);
+        previousRepoObjects = getSelectedRepoDirChildren();
+      }
+
+      // Remove children listener
+      if(this.repositoryDirectories != null && this.repositoryDirectories.size() > 0){
+        this.repositoryDirectories.get(0).getRepositoryObjects().removePropertyChangeListener(fileChildrenListener);
+      }
+        
+      this.repositoryDirectories = selectedFolderItems;
+      
+      // Add children Listener
+      if(this.repositoryDirectories != null && this.repositoryDirectories.size() > 0){
+          this.repositoryDirectories.get(0).getRepositoryObjects().addPropertyChangeListener("children", fileChildrenListener);
+       
+      } 
+    } catch (KettleException e) {
+      throw new RuntimeException(e);
+    }
+    fireFoldersAndItemsChange(previousVal, previousRepoObjects);
   }
 
   public UIRepositoryObjects getSelectedRepoDirChildren() {

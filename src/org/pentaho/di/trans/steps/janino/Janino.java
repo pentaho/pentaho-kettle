@@ -99,6 +99,8 @@ public class Janino extends BaseStep implements StepInterface
         } catch(Exception e) {
         	if (getStepMeta().isDoingErrorHandling()) {
         		putError(getInputRowMeta(), r, 1L, e.toString(), null, "UJE001");
+        	} else {
+        	  throw new KettleException(e);
         	}
         }
 

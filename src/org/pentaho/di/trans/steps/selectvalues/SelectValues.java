@@ -287,6 +287,10 @@ public class SelectValues extends BaseStep implements StepInterface
 				{
 					valueMeta.setConversionMask(change.getConversionMask());
 				}
+				if (!Const.isEmpty(change.getEncoding()))
+				{
+				  valueMeta.setStringEncoding(change.getEncoding());
+				}
 				if (!Const.isEmpty(change.getDecimalSymbol()))
 				{
 					valueMeta.setDecimalSymbol(change.getDecimalSymbol());

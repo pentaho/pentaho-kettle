@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.
+ */
 package org.pentaho.di.repository.kdr.delegates;
 
 import org.pentaho.di.core.Const;
@@ -312,22 +324,20 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
    */
   public RepositoryDirectoryInterface createRepositoryDirectory(RepositoryDirectoryInterface parentDirectory, String directoryPath)
       throws KettleException {
-    RepositoryDirectoryInterface refreshedParentDir = repository.loadRepositoryDirectoryTree().findDirectory(parentDirectory.getPath());
-
+    
+    // RepositoryDirectoryInterface refreshedParentDir = repository.loadRepositoryDirectoryTree().findDirectory(parentDirectory.getPath());
+    
+    RepositoryDirectoryInterface refreshedParentDir = parentDirectory;
     String path[] = Const.splitPath(directoryPath, RepositoryDirectory.DIRECTORY_SEPARATOR);
 
     RepositoryDirectoryInterface parent = refreshedParentDir;
-    for (int level = 1; level <= path.length; level++) {
-      String subPath[] = new String[level];
-      for (int i = 0; i < level; i++) {
-        subPath[i] = path[i];
-      }
+    for (int level = 0; level < path.length; level++) {
 
-      RepositoryDirectoryInterface rd = parent.findDirectory(subPath);
+      RepositoryDirectoryInterface rd = parent.findChild(path[level]);
       if (rd == null) {
-        // This directory doesn't exists, let's add it!
+        // This child directory doesn't exists, let's add it!
         //
-        rd = new RepositoryDirectory(parent, subPath[level - 1]);
+        rd = new RepositoryDirectory(parent, path[level]);
         saveRepositoryDirectory(rd);
 
         // Don't forget to add this directory to the tree!

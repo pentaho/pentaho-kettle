@@ -741,7 +741,7 @@ public class LucidDBStreamingLoaderDialog
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-        setButtonPositions(new Button[] { wOK, wCancel, wSQL }, margin, null);
+        setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, null);
 
         // Add listeners
         lsOK = new Listener()

@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.
+ */
 package org.pentaho.di.ui.repository.controllers;
 
 import java.util.ResourceBundle;
@@ -155,6 +167,9 @@ public class RepositoriesController extends AbstractXulEventHandler {
   }
 
   public void login() {
+    if(loginModel.isValid() == false){
+      return;
+    }
     XulWaitBox box;
     try {
       box = (XulWaitBox) document.createElement("waitbox");
@@ -177,6 +192,13 @@ public class RepositoriesController extends AbstractXulEventHandler {
                 loginDialog.hide();
                 okButton.setDisabled(false);
                 cancelButton.setDisabled(false);
+
+                if (helper.getConnectedRepository().getConnectMessage() != null) {
+                  getMessageBox().setTitle(BaseMessages.getString(RepositoriesController.class, "ConnectMessageTitle")); //$NON-NLS-1$
+                  getMessageBox().setMessage(helper.getConnectedRepository().getConnectMessage());
+                  getMessageBox().open();
+                }
+
                 getCallback().onSuccess(helper.getConnectedRepository());
               }
             });

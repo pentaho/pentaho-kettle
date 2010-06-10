@@ -220,26 +220,38 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		fileLayout.marginHeight = 3;
 		wGeneralComp.setLayout(fileLayout);
 		
-		wlUrl=new Label(wGeneralComp, SWT.RIGHT);
+		 //////////////////////////
+        // START Settings GROUP
+
+        Group gSettings = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
+        gSettings.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.SettingsGroup.Label")); //$NON-NLS-1$;
+        FormLayout SettingsLayout = new FormLayout();
+        SettingsLayout.marginWidth = 3;
+        SettingsLayout.marginHeight = 3;
+        gSettings.setLayout(SettingsLayout);
+        props.setLook(gSettings);
+
+		
+		wlUrl=new Label(gSettings, SWT.RIGHT);
 		wlUrl.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.URL.Label")); //$NON-NLS-1$
  		props.setLook(wlUrl);
 		fdlUrl=new FormData();
 		fdlUrl.left = new FormAttachment(0, 0);
 		fdlUrl.right= new FormAttachment(middle, -margin);
-		fdlUrl.top  = new FormAttachment(wStepname, margin*2);
+		fdlUrl.top  = new FormAttachment(wStepname, margin);
 		wlUrl.setLayoutData(fdlUrl);
 		
-		wUrl=new TextVar(transMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wUrl=new TextVar(transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wUrl);
 		wUrl.addModifyListener(lsMod);
 		fdUrl=new FormData();
 		fdUrl.left = new FormAttachment(middle, 0);
-		fdUrl.top  = new FormAttachment(wStepname, margin*2);
+		fdUrl.top  = new FormAttachment(wStepname, margin);
 		fdUrl.right= new FormAttachment(100, 0);
 		wUrl.setLayoutData(fdUrl);
 		
 		// UrlInField line
-        wlUrlInField=new Label(wGeneralComp, SWT.RIGHT);
+        wlUrlInField=new Label(gSettings, SWT.RIGHT);
         wlUrlInField.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.UrlInField.Label"));
         props.setLook(wlUrlInField);
         fdlUrlInField=new FormData();
@@ -247,7 +259,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         fdlUrlInField.top  = new FormAttachment(wUrl, margin);
         fdlUrlInField.right= new FormAttachment(middle, -margin);
         wlUrlInField.setLayoutData(fdlUrlInField);
-        wUrlInField=new Button(wGeneralComp, SWT.CHECK );
+        wUrlInField=new Button(gSettings, SWT.CHECK );
         props.setLook(wUrlInField);
         fdUrlInField=new FormData();
         fdUrlInField.left = new FormAttachment(middle, 0);
@@ -265,7 +277,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         );
 
 		// UrlField Line
-		wlUrlField=new Label(wGeneralComp, SWT.RIGHT);
+		wlUrlField=new Label(gSettings, SWT.RIGHT);
 		wlUrlField.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.UrlField.Label")); //$NON-NLS-1$
  		props.setLook(wlUrlField);
 		fdlUrlField=new FormData();
@@ -274,7 +286,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		fdlUrlField.top  = new FormAttachment(wUrlInField, margin);
 		wlUrlField.setLayoutData(fdlUrlField);
 		
-        wUrlField=new ComboVar(transMeta, wGeneralComp, SWT.BORDER | SWT.READ_ONLY);
+        wUrlField=new ComboVar(transMeta, gSettings, SWT.BORDER | SWT.READ_ONLY);
         wUrlField.setEditable(true);
         props.setLook(wUrlField);
         wUrlField.addModifyListener(lsMod);
@@ -300,7 +312,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
             }
         );      
         
-        wlEncoding=new Label(wGeneralComp, SWT.RIGHT);
+        wlEncoding=new Label(gSettings, SWT.RIGHT);
         wlEncoding.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
@@ -308,7 +320,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         fdlEncoding.top  = new FormAttachment(wUrlField, margin);
         fdlEncoding.right= new FormAttachment(middle, -margin);
         wlEncoding.setLayoutData(fdlEncoding);
-        wEncoding=new ComboVar(transMeta, wGeneralComp, SWT.BORDER | SWT.READ_ONLY);
+        wEncoding=new ComboVar(transMeta, gSettings, SWT.BORDER | SWT.READ_ONLY);
         wEncoding.setEditable(true);
         props.setLook(wEncoding);
         wEncoding.addModifyListener(lsMod);
@@ -336,7 +348,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         
         
        // requestEntity Line
-		wlrequestEntity=new Label(wGeneralComp, SWT.RIGHT);
+		wlrequestEntity=new Label(gSettings, SWT.RIGHT);
 		wlrequestEntity.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.requestEntity.Label")); //$NON-NLS-1$
  		props.setLook(wlrequestEntity);
 		fdlrequestEntity=new FormData();
@@ -345,7 +357,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		fdlrequestEntity.top  = new FormAttachment(wEncoding, margin);
 		wlrequestEntity.setLayoutData(fdlrequestEntity);
 		
-        wrequestEntity=new ComboVar(transMeta, wGeneralComp, SWT.BORDER | SWT.READ_ONLY);
+        wrequestEntity=new ComboVar(transMeta, gSettings, SWT.BORDER | SWT.READ_ONLY);
         wrequestEntity.setEditable(true);
         props.setLook(wrequestEntity);
         wrequestEntity.addModifyListener(lsMod);
@@ -372,7 +384,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
     ); 
         
 		 // Post file?
-        wlPostAFile=new Label(wGeneralComp, SWT.RIGHT);
+        wlPostAFile=new Label(gSettings, SWT.RIGHT);
         wlPostAFile.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.postAFile.Label")); //$NON-NLS-1$
         props.setLook(wlPostAFile);
         FormData fdlPostAFile=new FormData();
@@ -380,7 +392,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         fdlPostAFile.right  = new FormAttachment(middle, -margin);
         fdlPostAFile.top    = new FormAttachment(wrequestEntity, margin);
         wlPostAFile.setLayoutData(fdlPostAFile);
-        wPostAFile=new Button(wGeneralComp, SWT.CHECK);
+        wPostAFile=new Button(gSettings, SWT.CHECK);
         wPostAFile.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.postAFile.Tooltip")); //$NON-NLS-1$
         props.setLook(wPostAFile);
         FormData fdPostAFile=new FormData();
@@ -388,42 +400,73 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         fdPostAFile.top  = new FormAttachment(wrequestEntity, margin);
         fdPostAFile.right= new FormAttachment(100, 0);
         wPostAFile.setLayoutData(fdPostAFile);
+        
+        FormData fdSettings = new FormData();
+        fdSettings.left = new FormAttachment(0, 0);
+        fdSettings.right = new FormAttachment(100, 0);
+        fdSettings.top = new FormAttachment(wStepname, margin);
+        gSettings.setLayoutData(fdSettings);
+
+        // END Output Settings GROUP
+        //////////////////////////
+
+        //////////////////////////
+        // START Output Fields GROUP
+
+        Group gOutputFields = new Group(wGeneralComp, SWT.SHADOW_ETCHED_IN);
+        gOutputFields.setText(BaseMessages.getString(PKG, "HTTPDialog.OutputFieldsGroup.Label")); //$NON-NLS-1$;
+        FormLayout OutputFieldsLayout = new FormLayout();
+        OutputFieldsLayout.marginWidth = 3;
+        OutputFieldsLayout.marginHeight = 3;
+        gOutputFields.setLayout(OutputFieldsLayout);
+        props.setLook(gOutputFields);
+
+        
 
 		// Result line...
-		wlResult=new Label(wGeneralComp, SWT.RIGHT);
+		wlResult=new Label(gOutputFields, SWT.RIGHT);
 		wlResult.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.Result.Label")); //$NON-NLS-1$
  		props.setLook(wlResult);
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
 		fdlResult.right= new FormAttachment(middle, -margin);
-		fdlResult.top  = new FormAttachment(wPostAFile, margin*2);
+		fdlResult.top  = new FormAttachment(wPostAFile, margin);
 		wlResult.setLayoutData(fdlResult);
-		wResult=new TextVar(transMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wResult=new TextVar(transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wResult);
 		wResult.addModifyListener(lsMod);
 		fdResult=new FormData();
 		fdResult.left = new FormAttachment(middle, 0);
-		fdResult.top  = new FormAttachment(wPostAFile, margin*2);
+		fdResult.top  = new FormAttachment(wPostAFile, margin);
 		fdResult.right= new FormAttachment(100, -margin);
 		wResult.setLayoutData(fdResult);
 
 		// Resultcode line...
-		wlResultCode=new Label(wGeneralComp, SWT.RIGHT);
+		wlResultCode=new Label(gOutputFields, SWT.RIGHT);
 		wlResultCode.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ResultCode.Label")); //$NON-NLS-1$
  		props.setLook(wlResultCode);
 		fdlResultCode=new FormData();
 		fdlResultCode.left = new FormAttachment(0, 0);
 		fdlResultCode.right= new FormAttachment(middle, -margin);
-		fdlResultCode.top  = new FormAttachment(wResult, margin*2);
+		fdlResultCode.top  = new FormAttachment(wResult, margin);
 		wlResultCode.setLayoutData(fdlResultCode);
-		wResultCode=new TextVar(transMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wResultCode=new TextVar(transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wResultCode);
 		wResultCode.addModifyListener(lsMod);
 		fdResultCode=new FormData();
 		fdResultCode.left = new FormAttachment(middle, 0);
-		fdResultCode.top  = new FormAttachment(wResult, margin*2);
+		fdResultCode.top  = new FormAttachment(wResult, margin);
 		fdResultCode.right= new FormAttachment(100, -margin);
 		wResultCode.setLayoutData(fdResultCode);
+		
+	    FormData fdOutputFields = new FormData();
+        fdOutputFields.left = new FormAttachment(0, 0);
+        fdOutputFields.right = new FormAttachment(100, 0);
+        fdOutputFields.top = new FormAttachment(gSettings, margin);
+        gOutputFields.setLayoutData(fdOutputFields);
+
+        // END Output Fields GROUP
+        //////////////////////////
 		
         //////////////////////////
         // START HTTP AUTH GROUP
@@ -478,7 +521,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         FormData fdHttpAuth = new FormData();
         fdHttpAuth.left = new FormAttachment(0, 0);
         fdHttpAuth.right = new FormAttachment(100, 0);
-        fdHttpAuth.top = new FormAttachment(wResultCode, margin);
+        fdHttpAuth.top = new FormAttachment(gOutputFields, margin);
         gHttpAuth.setLayoutData(fdHttpAuth);
 
         // END HTTP AUTH GROUP

@@ -398,6 +398,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 						v.setConversionMask(metaChange.getConversionMask());
 						v.setOrigin(name);
 					}
+					if (!Const.isEmpty(metaChange.getEncoding())) 
+					{ 
+					  v.setStringEncoding(metaChange.getEncoding());
+					  v.setOrigin(name);
+					}
 					if (!Const.isEmpty(metaChange.getDecimalSymbol())) 
 					{ 
 						v.setDecimalSymbol(metaChange.getDecimalSymbol());
@@ -489,6 +494,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				meta[i].setPrecision((int)rep.getStepAttributeInteger(id_step, i, "meta_precision")); //$NON-NLS-1$
 				meta[i].setStorageType(ValueMeta.getStorageType(rep.getStepAttributeString (id_step, i, "meta_storage_type"))); //$NON-NLS-1$ 
 				meta[i].setConversionMask(rep.getStepAttributeString (id_step, i, "meta_conversion_mask")); //$NON-NLS-1$
+				meta[i].setEncoding(rep.getStepAttributeString (id_step, i, "meta_encoding")); //$NON-NLS-1$
 				meta[i].setDecimalSymbol(rep.getStepAttributeString (id_step, i, "meta_decimal_symbol")); //$NON-NLS-1$
 				meta[i].setGroupingSymbol(rep.getStepAttributeString (id_step, i, "meta_grouping_symbol")); //$NON-NLS-1$
 				meta[i].setCurrencySymbol(rep.getStepAttributeString (id_step, i, "meta_currency_symbol")); //$NON-NLS-1$

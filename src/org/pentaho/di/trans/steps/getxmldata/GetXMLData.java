@@ -302,7 +302,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 						if (data.indexOfXmlField<0)
 						{
 							// The field is unreachable !
-							logError(BaseMessages.getString(PKG, "GetXMLData.Log.ErrorFindingField")+ "[" + meta.getXMLField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							logError(BaseMessages.getString(PKG, "GetXMLData.Log.ErrorFindingField", meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 							throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
@@ -584,15 +584,8 @@ public class GetXMLData extends BaseStep implements StepInterface
 	}
 	
 	private boolean putRowOut(Object[] r) throws KettleException
-	{
-		// this is already done by the caller:
-//		 if (r==null)
-//	     {
-//	        setOutputDone();  // signal end to receiver(s)
-//	        return false; // end of data or error.
-//	     }
-		 
-		 if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetXMLData.Log.ReadRow", getInputRowMeta().getString(r)));
+	{		 
+		 if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "GetXMLData.Log.ReadRow", data.outputRowMeta.getString(r)));
 		 incrementLinesInput();
 		 data.rownr++;
 		 putRow(data.outputRowMeta, r);  // copy row to output rowset(s);
@@ -847,6 +840,10 @@ public class GetXMLData extends BaseStep implements StepInterface
 			}
 			
 			data.PathValue=environmentSubstitute(meta.getLoopXPath());
+			if(Const.isEmpty(data.PathValue)) {
+				logError(BaseMessages.getString(PKG, "GetXMLData.Error.EmptyPath"));
+				return false;
+			}
 			if(!data.PathValue.substring(0,1).equals(GetXMLDataMeta.N0DE_SEPARATOR)) data.PathValue=GetXMLDataMeta.N0DE_SEPARATOR + data.PathValue;
 			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.LoopXPath",data.PathValue));
 			

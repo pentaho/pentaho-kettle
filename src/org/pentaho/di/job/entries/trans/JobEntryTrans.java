@@ -180,7 +180,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		String retval="";
 		if (setLogfile)
 		{
-			retval+=logfile;
+			retval+=logfile==null?"":logfile;
 			Calendar cal = Calendar.getInstance();
 			if (addDate)
 			{
@@ -229,7 +229,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     retval.append("      ").append(XMLHandler.addTagValue("logext", logext));
     retval.append("      ").append(XMLHandler.addTagValue("add_date", addDate));
     retval.append("      ").append(XMLHandler.addTagValue("add_time", addTime));
-    retval.append("      ").append(XMLHandler.addTagValue("loglevel", logFileLevel.getCode()));
+    retval.append("      ").append(XMLHandler.addTagValue("loglevel", logFileLevel!=null ? logFileLevel.getCode() : null));
     retval.append("      ").append(XMLHandler.addTagValue("cluster", clustering));
     retval.append("      ").append(XMLHandler.addTagValue("slave_server_name", remoteSlaveServerName));
     retval.append("      ").append(XMLHandler.addTagValue("set_append_logfile", setAppendLogfile));
@@ -441,7 +441,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logext", logext);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", logFileLevel.getCode());
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", logFileLevel!=null ? logFileLevel.getCode() : null);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "cluster", clustering);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "slave_server_name", remoteSlaveServerName);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "set_append_logfile", setAppendLogfile);
@@ -525,6 +525,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           
         	realLogFilename=environmentSubstitute(getLogFilename());
         	
+            // We need to check here the log filename
+            // if we do not have one, we must fail
+            if(Const.isEmpty(realLogFilename)) {
+                logError(BaseMessages.getString(PKG, "JobTrans.Exception.LogFilenameMissing"));
+                result.setNrErrors(1);
+                result.setResult(false);
+                return result;
+            }
         	// create parent folder?
         	if(!createParentFolder(realLogFilename)) 
         	{
@@ -915,7 +923,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 {
                 	// Create the transformation from meta-data
 	                //
-                    trans = new Trans(transMeta, parentJob);
+                    trans = new Trans(transMeta, this);
                     trans.setLogLevel(transLogLevel);
 
                     // Pass the socket repository as early as possible...
@@ -995,7 +1003,18 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     		}
             iteration++;
         }
+        
+        /*
+        for (String childId : LoggingRegistry.getInstance().getLogChannelChildren(parentJob.getLogChannelId())) {
+          LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(childId);
+          LoggingObjectInterface parent = loggingObject.getParent();
+          System.out.println("child log channel id="+childId+" : "+loggingObject.getObjectName()+":"+loggingObject.getObjectType()+"  parent="+(parent!=null?parent.getObjectName():""));
+        }
+        
+        CentralLogStore.getAppender().getBuffer(parentJob.getLogChannelId(), false);
 
+        */
+        
         if (setLogfile)
         {
             if (appender!=null)

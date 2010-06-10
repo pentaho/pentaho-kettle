@@ -1858,7 +1858,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			Database db = new Database(this, jobLogTable.getDatabaseMeta());
 			try {
 				db.connect();
-				RowMetaInterface fields = jobLogTable.getLogRecord(LogStatus.START, null).getRowMeta();
+				RowMetaInterface fields = jobLogTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
 				String sql = db.getDDL(jobLogTable.getTableName(), fields);
 				if (sql != null && sql.length() > 0) {
 					SQLStatement stat = new SQLStatement(BaseMessages.getString(PKG, "JobMeta.SQLFeedback.ThisJob"), jobLogTable.getDatabaseMeta(), sql); //$NON-NLS-1$

@@ -56,22 +56,28 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.sapinput.SapInputMeta;
 import org.pentaho.di.trans.steps.sapinput.SapOutputField;
 import org.pentaho.di.trans.steps.sapinput.SapParameter;
 import org.pentaho.di.trans.steps.sapinput.SapType;
-import org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
+import org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPField;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPFunction;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPFunctionSignature;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPLibraryTester;
+import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
+import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
@@ -256,6 +262,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPType"),          ColumnInfo.COLUMN_TYPE_CCOMBO, SapType.getDescriptions()),
 			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TableOrStruct"),    ColumnInfo.COLUMN_TYPE_TEXT, false,   false), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.SAPParameterName"), ColumnInfo.COLUMN_TYPE_TEXT, false,   false), //$NON-NLS-1$
+	        new ColumnInfo(BaseMessages.getString(PKG, "SapInputDialog.ColumnInfo.TargetType"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
 		};
 		inputFieldColumns.add(ciKey[0]);
 		
@@ -278,13 +285,17 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		// wPreview = new Button(shell, SWT.PUSH);
+		// wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
 		wGet.setText(BaseMessages.getString(PKG, "SapInputDialog.GetFields.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 		wAbout=new Button(shell, SWT.PUSH);
 		wAbout.setText(BaseMessages.getString(PKG, "SapInputDialog.About.Button"));
-		setButtonPositions(new Button[] { wOK, wCancel, wAbout , wGet, }, margin, null);
+		// Preview not possible without inputRowSets in BaseStep.getRow()
+		// setButtonPositions(new Button[] { wOK, wPreview, wAbout , wGet, wCancel}, margin, null);
+		setButtonPositions(new Button[] { wOK, wAbout , wGet, wCancel}, margin, null);
 		
 		
 		// The output fields...
@@ -335,11 +346,13 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
         // Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };
+		lsPreview  = new Listener() { public void handleEvent(Event e) { preview();   } };
 		lsGet      = new Listener() { public void handleEvent(Event e) { get();       } };
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();    } };
 		Listener lsAbout    = new Listener() { public void handleEvent(Event e) { about();     } };
             
 		wOK.addListener    (SWT.Selection, lsOK    );
+		// wPreview.addListener(SWT.Selection, lsPreview);
 		wGet.addListener   (SWT.Selection, lsGet   );
 		wCancel.addListener(SWT.Selection, lsCancel);
 		this.wAbout.addListener(SWT.Selection, lsAbout);
@@ -442,6 +455,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 			item.setText(colnr++, parameter.getSapType().getDescription());
 			item.setText(colnr++, Const.NVL(parameter.getTableName(), ""));
 			item.setText(colnr++, Const.NVL(parameter.getParameterName(), ""));
+			item.setText(colnr++, ValueMeta.getTypeDesc(parameter.getTargetType()));
 		}
 		wInput.setRowNums();
 		wInput.optWidth(true);
@@ -504,6 +518,45 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 		dispose();
 	}
 	
+	// Preview the data
+	// unused
+	// preserve for later
+    private void preview()
+    {
+        // Create the XML input step
+        SapInputMeta oneMeta = new SapInputMeta();
+        getInfo(oneMeta);
+        
+        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
+        transMeta.getVariable("Internal.Transformation.Filename.Directory");
+        previewMeta.getVariable("Internal.Transformation.Filename.Directory");
+        
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "CsvInputDialog.PreviewSize.DialogTitle"), BaseMessages.getString(PKG, "CsvInputDialog.PreviewSize.DialogMessage"));
+        int previewSize = numberDialog.open();
+        if (previewSize>0)
+        {
+            TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+            progressDialog.open();
+
+            Trans trans = progressDialog.getTrans();
+            String loggingText = progressDialog.getLoggingText();
+
+            if (!progressDialog.isCancelled())
+            {
+                if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+                {
+                	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
+                			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
+                	etd.setReadOnly();
+                	etd.open();
+                }
+            }
+            
+            PreviewRowsDialog prd =new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+            prd.open();
+        }
+    }
+	
 	private void about() {
 		new SapInputAboutDialog(SapInputDialog.this.shell).open();		
 	}
@@ -537,7 +590,8 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 			SapType sapType = SapType.findTypeForDescription( item.getText(colnr++) );
 			String tableName = item.getText(colnr++);
 			String parameterName = item.getText(colnr++);
-			meta.getParameters().add( new SapParameter(fieldName, sapType, tableName, parameterName) );
+			int targetType = ValueMeta.getType( item.getText(colnr++) );
+			meta.getParameters().add( new SapParameter(fieldName, sapType, tableName, parameterName, targetType) );
 		}
 		
 		// and the output fields.
@@ -625,6 +679,7 @@ public class SapInputDialog extends BaseStepDialog implements StepDialogInterfac
 						item.setText(colnr++, type==null ? "" : type.getDescription());
 						item.setText(colnr++, Const.NVL(field.getTable(), ""));
 						item.setText(colnr++, Const.NVL(field.getName(), ""));
+						item.setText(colnr++, field.getTypePentaho());
 					}
 					wInput.setRowNums();
 					wInput.optWidth(true);

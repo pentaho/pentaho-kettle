@@ -68,7 +68,6 @@ import org.pentaho.di.ui.core.widget.warning.SupportsWarningInterface;
 import org.pentaho.di.ui.core.widget.warning.TextVarWarning;
 import org.pentaho.di.ui.core.widget.warning.WarningInterface;
 import org.pentaho.di.ui.core.widget.warning.WarningMessageInterface;
-import org.pentaho.di.ui.core.widget.warning.WarningText;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ValidatorDialog extends BaseStepDialog implements StepDialogInterface
@@ -1143,6 +1142,7 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
 			
 			selectedField.setSourcingValues(wSourceValues.getSelection());
 			selectedField.setSourcingField(wSourceField.getText());
+			selectedField.setSourcingStep(transMeta.findStep(wSourceStep.getText()));
 
 			// Save the old info in the map
 			// 

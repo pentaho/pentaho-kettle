@@ -38,6 +38,7 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -555,21 +556,20 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			// The object that we're modifying here is a copy of the original!
 			// So let's change the filename from relative to absolute by grabbing the file object...
 			// 
-
 			// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.txt
 			// To   : /home/matt/test/files/foo/bar.txt
 			//
 			FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(filename), space);
 			
-			// If the file doesn't exist, forget about this effort too!
-			//
-			if (fileObject.exists()) {
-				// Convert to an absolute path...
-				// 
-				filename = fileObject.getName().getPath();
-				
-				return filename;
-			}
+            // If the file doesn't exist, forget about this effort too!
+            //
+            if (fileObject.exists()) {
+                // Convert to an absolute path...
+                // 
+                filename = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+                
+                return filename;
+            }
 			return null;
 		} catch (Exception e) {
 			throw new KettleException(e); //$NON-NLS-1$

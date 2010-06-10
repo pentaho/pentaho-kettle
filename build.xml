@@ -450,12 +450,6 @@
 	  				     excludes="**/.svn"/>
 	  			</copy>
 
-	        <!-- extra stuff -->
-	  		<mkdir dir="${distrib}/extra"/>
-	  		<copy todir="${distrib}/extra">
-	  			<fileset dir="${extra}" includes="**/*"/>
-	  			</copy>
-
 	  </target>
 
 	  <!--

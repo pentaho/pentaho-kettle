@@ -488,17 +488,16 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 			wFilename.setText(input.getDbfFileName());
 			wFilename.setToolTipText(transMeta.environmentSubstitute(input.getDbfFileName()));
 		}
-		wLimit.setText(Integer.toString(input.getRowLimit())); //$NON-NLS-1$
-		wAddRownr.setSelection(input.isRowNrAdded());
-		if (input.getRowNrField()!=null) wFieldRownr.setText(input.getRowNrField());
+        wFieldRownr.setText(Const.NVL(input.getRowNrField(), ""));
 
         wInclFilename.setSelection(input.includeFilename());
-        if (input.getFilenameField()!=null) wInclFilenameField.setText(input.getFilenameField());
+        wInclFilenameField.setText(Const.NVL(input.getFilenameField(), ""));
 
         wAccFilenames.setSelection(input.isAcceptingFilenames());
-        if (input.getAcceptingField()!=null) wAccField.setText(input.getAcceptingField());
-        if (input.getAcceptingStep()!=null) wAccStep.setText(input.getAcceptingStep().getName());
-		
+        wAccField.setText(Const.NVL(input.getAcceptingField(), ""));
+        wAccStep.setText(Const.NVL(input.getAcceptingStep()==null?"":input.getAcceptingStep().getName(), ""));
+        wCharactersetName.setText(Const.NVL(input.getCharactersetName(), ""));
+
         setFlags();
 		
 		wStepname.selectAll();
@@ -526,7 +525,8 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         meta.setAcceptingFilenames( wAccFilenames.getSelection() );
         meta.setAcceptingField( wAccField.getText() );
         meta.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
-
+        meta.setCharactersetName( wCharactersetName.getText() );
+        
 		if (Const.isEmpty(meta.getDbfFileName()) && !meta.isAcceptingFilenames())
 		{
 			throw new KettleStepException(BaseMessages.getString(PKG, "XBaseInputDialog.Exception.SpecifyAFileToUse")); //$NON-NLS-1$
@@ -541,7 +541,6 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			stepname = wStepname.getText(); // return value
 			getInfo(input);
-			dispose();
 		}
 		catch(KettleStepException e)
 		{
@@ -549,10 +548,8 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 			mb.setMessage(e.toString());
 			mb.setText(BaseMessages.getString(PKG, "System.Warning")); //$NON-NLS-1$
 			mb.open();
-			
-			// Close anyway!
-			dispose();
 		}
+		dispose();
 	}
 	
     // Preview the data

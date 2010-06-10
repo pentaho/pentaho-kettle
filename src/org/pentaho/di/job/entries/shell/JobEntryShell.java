@@ -32,6 +32,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -89,8 +90,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public boolean insertScript;
 	
 	public String script;
-	
-	private LogLevel logLevel;
 
 	public JobEntryShell(String name)
 	{
@@ -128,8 +127,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("insertScript", insertScript));
 		retval.append("      ").append(XMLHandler.addTagValue("script", script));
 		
-		
-		retval.append("      ").append(XMLHandler.addTagValue("loglevel", logFileLevel.getCode()));
+    retval.append("      ").append(XMLHandler.addTagValue("loglevel", (logFileLevel == null) ? null : logFileLevel.getCode()));
 
 		if (arguments != null)
 			for (int i = 0; i < arguments.length; i++)
@@ -311,7 +309,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		String retval = "";
 		if (setLogfile)
 		{
-			retval += logfile;
+		    retval+=logfile==null?"":logfile;
 			Calendar cal = Calendar.getInstance();
 			if (addDate)
 			{
@@ -337,9 +335,19 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		LogLevel shellLogLevel = parentJob.getLogLevel();
 		if (setLogfile)
 		{
+			String realLogFilename=environmentSubstitute(getLogFilename());
+		      // We need to check here the log filename
+		      // if we do not have one, we must fail
+		      if(Const.isEmpty(realLogFilename)) {
+		          logError(BaseMessages.getString(PKG, "JobEntryShell.Exception.LogFilenameMissing"));
+		          result.setNrErrors(1);
+		          result.setResult(false);
+		          return result;
+		      }
+		      
 			try
 			{
-				appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true,setAppendLogfile);
+				appender = LogWriter.createFileAppender(realLogFilename, true,setAppendLogfile);
 				LogWriter.getInstance().addAppender(appender);
 			} catch (KettleException e)
 			{
@@ -349,7 +357,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 				result.setResult(false);
 				return result;
 			}
-			shellLogLevel = logLevel;
+			shellLogLevel = logFileLevel;
 		}
 		
 		log.setLogLevel(shellLogLevel);
@@ -447,8 +455,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			{
 				LogWriter.getInstance().removeAppender(appender);
 				appender.close();
+				
+		        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, appender.getFile(), parentJob.getJobname(), getName());
+		        result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 			}
-
 		}
 
 		return result;

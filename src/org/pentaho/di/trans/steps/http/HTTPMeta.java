@@ -68,6 +68,17 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     
     private String urlField;
     
+    
+    private String proxyHost;
+    
+    private String proxyPort;
+    
+    private String httpLogin;
+    
+    private String httpPassword;
+    
+    private String	resultCodeFieldName;
+    
 
     public HTTPMeta()
     {
@@ -206,7 +217,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         }
 
         fieldName = "result"; //$NON-NLS-1$
-        
+        resultCodeFieldName="";
         encoding = "UTF-8";
     }
 
@@ -215,6 +226,13 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         if (!Const.isEmpty(fieldName))
         {
             ValueMetaInterface v = new ValueMeta(fieldName, ValueMeta.TYPE_STRING);
+            v.setOrigin(name);
+            inputRowMeta.addValueMeta(v);
+        }
+        if (!Const.isEmpty(resultCodeFieldName))
+        {
+        	ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultCodeFieldName), ValueMeta.TYPE_INTEGER);
+            v.setOrigin(name);
             inputRowMeta.addValueMeta(v);
         }
     }
@@ -227,6 +245,11 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    "+XMLHandler.addTagValue("urlInField",  urlInField));
         retval.append("    "+XMLHandler.addTagValue("urlField",  urlField));
         retval.append("    "+XMLHandler.addTagValue("encoding",  encoding));
+        retval.append("    " + XMLHandler.addTagValue("httpLogin", httpLogin));
+        retval.append("    " + XMLHandler.addTagValue("httpPassword", httpPassword));
+        retval.append("    " + XMLHandler.addTagValue("proxyHost", proxyHost));
+        retval.append("    " + XMLHandler.addTagValue("proxyPort", proxyPort));
+        
         retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
 
         for (int i = 0; i < argumentField.length; i++)
@@ -241,6 +264,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 
         retval.append("    <result>").append(Const.CR); //$NON-NLS-1$
         retval.append("      ").append(XMLHandler.addTagValue("name", fieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("code", resultCodeFieldName));
         retval.append("    </result>").append(Const.CR); //$NON-NLS-1$
 
         return retval.toString();
@@ -256,7 +280,12 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             urlInField="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "urlInField"));
             urlField = XMLHandler.getTagValue(stepnode, "urlField");
             encoding = XMLHandler.getTagValue(stepnode, "encoding");
-			
+            httpLogin = XMLHandler.getTagValue(stepnode, "httpLogin");
+            httpPassword = XMLHandler.getTagValue(stepnode, "httpPassword");
+            proxyHost = XMLHandler.getTagValue(stepnode, "proxyHost");
+            proxyPort = XMLHandler.getTagValue(stepnode, "proxyPort");
+            
+            
             Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
             nrargs = XMLHandler.countNodes(lookup, "arg"); //$NON-NLS-1$
 
@@ -270,7 +299,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
                 argumentParameter[i] = XMLHandler.getTagValue(anode, "parameter"); //$NON-NLS-1$
             }
 
-            fieldName = XMLHandler.getTagValue(stepnode, "result", "name"); // Optional, can be null //$NON-NLS-1$
+            fieldName = XMLHandler.getTagValue(stepnode, "result", "name"); 
+            resultCodeFieldName = XMLHandler.getTagValue(stepnode, "result", "code");
         }
         catch (Exception e)
         {
@@ -286,7 +316,11 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             urlInField = rep.getStepAttributeBoolean (id_step, "urlInField");
             urlField = rep.getStepAttributeString (id_step, "urlField");
             encoding = rep.getStepAttributeString (id_step, "encoding");
-			
+            httpLogin = rep.getStepAttributeString(id_step, "httpLogin");
+            httpPassword = rep.getStepAttributeString(id_step, "httpPassword");
+            proxyHost = rep.getStepAttributeString(id_step, "proxyHost");
+            proxyPort = rep.getStepAttributeString(id_step, "proxyPort");
+            
             int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$
             allocate(nrargs);
 
@@ -297,6 +331,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             }
 
             fieldName = rep.getStepAttributeString(id_step, "result_name"); //$NON-NLS-1$
+            resultCodeFieldName = rep.getStepAttributeString(id_step, "result_code"); //$NON-NLS-1$  
         }
         catch (Exception e)
         {
@@ -312,6 +347,10 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "urlInField",   urlInField);
 			rep.saveStepAttribute(id_transformation, id_step, "urlField",   urlField);
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",   encoding);
+			rep.saveStepAttribute(id_transformation, id_step, "httpLogin",   httpLogin);
+			rep.saveStepAttribute(id_transformation, id_step, "httpPassword",   httpPassword);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyHost",   proxyHost);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyPort",   proxyPort);
 			
             for (int i = 0; i < argumentField.length; i++)
             {
@@ -320,6 +359,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             }
 
             rep.saveStepAttribute(id_transformation, id_step, "result_name", fieldName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "result_code", resultCodeFieldName);
         }
         catch (Exception e)
         {
@@ -388,4 +428,82 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
 	}
+	/**
+	 * Setter
+	 * @param proxyHost
+	 */
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+	
+    /**
+     * Getter
+     * @return
+     */
+    public String getProxyHost() {
+        return proxyHost;
+    }
+    
+    
+    /**
+     * Setter
+     * @param proxyPort
+     */
+    public void setProxyPort(String proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+    
+    /**
+     * Getter
+     * @return
+     */
+    public String getProxyPort() {
+        return this.proxyPort;
+    }
+    
+    /**
+     * Setter
+     * @param httpLogin
+     */
+    public void setHttpLogin(String httpLogin) {
+        this.httpLogin = httpLogin;
+    }
+    
+    /**
+     * Getter
+     * @return
+     */
+    public String getHttpLogin() {
+        return httpLogin;
+    }
+    
+    /**
+     * Setter
+     * @param httpPassword
+     */
+    public void setHttpPassword(String httpPassword) {
+        this.httpPassword = httpPassword;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getHttpPassword() {
+        return httpPassword;
+    }
+    
+	/**
+	 * @return the resultCodeFieldName
+	 */
+	public String getResultCodeFieldName() {
+		return resultCodeFieldName;
+	}
+
+	/**
+	 * @param resultCodeFieldName the resultCodeFieldName to set
+	 */
+	public void setResultCodeFieldName(String resultCodeFieldName) {
+		this.resultCodeFieldName = resultCodeFieldName;
+	} 
 }

@@ -86,6 +86,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -459,7 +460,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
-		setButtonPositions(new Button[] { wOK, wCancel, wPreview}, margin, wTabFolder);
+		setButtonPositions(new Button[] { wOK, wPreview, wCancel}, margin, wTabFolder);
 
 		// Add listeners
 		lsOK          = new Listener() { public void handleEvent(Event e) { ok();           } };
@@ -2371,7 +2372,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         meta.setLineNumberFilesExtension( wLineNrExt.getText() );
         
         // Date format Locale
-        Locale locale = new Locale(wDateLocale.getText());
+        Locale locale = EnvUtil.createLocale(wDateLocale.getText());
         if (!locale.equals(Locale.getDefault()))
         {
         	meta.setDateFormatLocale(locale);

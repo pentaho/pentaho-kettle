@@ -28,6 +28,7 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -49,7 +50,7 @@ public class BlackBoxTests {
 	public static void setupBlackbox() {
 		
 		// set the locale to English so that log file comparisons work
-		GlobalMessages.setLocale( new Locale("en-US") );
+		GlobalMessages.setLocale(EnvUtil.createLocale("en-US")); //$NON-NLS-1$
 		
 		// Keep all log rows for at least 60 minutes as per BaseCluster.java
 		CentralLogStore.init(0, 60);

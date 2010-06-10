@@ -25,7 +25,10 @@ public class SAPField {
 	private String table;
 	private String type;
 	private String typePentaho;
+	private String typeSAP;
 	private Object value;
+	private String description;
+	private String defaultvalue;
 
 	public SAPField(String name, String table, String type) {
 		super();
@@ -45,7 +48,9 @@ public class SAPField {
 	@Override
 	public String toString() {
 		return "SAPField [name=" + name + ", table=" + table + ", type=" + type
-				+ ", typePentaho=" + typePentaho + ", value=" + value + "]";
+				+ ", typePentaho=" + typePentaho + ", typeSAP=" + typeSAP
+				+ ", value=" + value + ", defaultvalue=" + defaultvalue
+				+ ", description=" + description + "]";
 	}
 
 	public String getName() {
@@ -86,6 +91,30 @@ public class SAPField {
 
 	public void setTypePentaho(String typepentaho) {
 		this.typePentaho = typepentaho;
+	}
+
+	public String getTypeSAP() {
+		return typeSAP;
+	}
+
+	public void setTypeSAP(String typesap) {
+		this.typeSAP = typesap;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDefaultvalue() {
+		return defaultvalue;
+	}
+
+	public void setDefaultvalue(String defaultvalue) {
+		this.defaultvalue = defaultvalue;
 	}
 
 }

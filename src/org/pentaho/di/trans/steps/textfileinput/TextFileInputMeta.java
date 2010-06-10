@@ -36,12 +36,14 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -697,18 +699,26 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-        if (info!=null && isPassingThruFields())
-        {
-            boolean found=false;
-            for (int i=0;i<info.length && !found;i++) 
-            {
-                if (info[i]!=null)
-                {
-                    row.mergeRowMeta(info[i]);
-                    found=true;
-                }
-            }
-        }
+		if(!isPassingThruFields()) 
+		{
+			// all incoming fields are not transmitted !
+			row.clear();
+		} 
+		else 
+		{
+	        if (info!=null)
+	        {
+	            boolean found=false;
+	            for (int i=0;i<info.length && !found;i++) 
+	            {
+	                if (info[i]!=null)
+	                {
+	                    row.mergeRowMeta(info[i]);
+	                    found=true;
+	                }
+	            }
+	        }
+		}
 
 		for (int i = 0; i < inputFields.length; i++)
 		{
@@ -1025,7 +1035,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			String dateLocale = XMLHandler.getTagValue(stepnode, "date_format_locale");
 			if (dateLocale != null)
 			{
-				dateFormatLocale = new Locale(dateLocale);
+				dateFormatLocale = EnvUtil.createLocale(dateLocale);
 			}
 			else
 			{
@@ -1178,7 +1188,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			String dateLocale = rep.getStepAttributeString(id_step, 0, "date_format_locale");
 			if (dateLocale != null)
 			{
-				dateFormatLocale = new Locale(dateLocale);
+				dateFormatLocale = EnvUtil.createLocale(dateLocale);
 			}
 			else
 			{
@@ -1771,36 +1781,26 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			// So let's change the filename from relative to absolute by grabbing the file object...
 			// In case the name of the file comes from previous steps, forget about this!
 			//
-			List<FileObject> newFilenames = new ArrayList<FileObject>();
-			
 			if (!acceptingFilenames) {
-				FileInputList fileList = getTextFileList(space);
-				if (fileList.getFiles().size()>0) {
-					for (FileObject fileObject : fileList.getFiles()) {
-						// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.csv
-						// To   : /home/matt/test/files/foo/bar.csv
-						//
-						// If the file doesn't exist, forget about this effort too!
-						//
-						if (fileObject.exists()) {
-							// Convert to an absolute path and add it to the list.
-							// 
-							newFilenames.add(fileObject);
-						}
-					}
-					
-					// Still here: set a new list of absolute filenames!
-					//
-					fileName=new String[newFilenames.size()];
-					fileMask=new String[newFilenames.size()];
-					fileRequired=new String[newFilenames.size()];
-					for (int i=0;i<newFilenames.size();i++) {
-						FileObject fileObject = newFilenames.get(i);
-						fileName[i] = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
-						fileMask[i] = null;
-						fileRequired[i] = "Y";
-					}
-				}
+              
+              // Replace the filename ONLY (folder or filename)
+              // 
+              for (int i=0;i<fileName.length;i++) {
+                FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName[i]), space);
+                String prefix;
+                String path;
+                if (Const.isEmpty(fileMask[i])) {
+                  prefix = fileObject.getName().getBaseName(); 
+                  path = fileObject.getParent().getName().getPath();
+                } else {
+                  prefix = "";
+                  path = fileObject.getName().getPath();
+                }
+                
+                fileName[i] = resourceNamingInterface.nameResource(
+                    prefix, path, space.toString(), FileNamingType.DATA_FILE
+                  );
+              }
 			}
 			return null;
 		} catch (Exception e) {

@@ -14,6 +14,9 @@
  
 package org.pentaho.di.trans.steps.ldapinput;
 
+import java.util.HashSet;
+
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -29,6 +32,18 @@ public class LDAPInputField implements Cloneable
 {
 	private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	public static final String ATTRIBUTE_OBJECT_SID ="objectSid";
+	
+    public final static int FETCH_ATTRIBUTE_AS_STRING  = 0;
+    public final static int FETCH_ATTRIBUTE_AS_BINARY  = 1;
+    
+	public final static String FetchAttributeAsCode[] = { "string", "binary" };
+    
+    public final static String FetchAttributeAsDesc[] = {
+        BaseMessages.getString(PKG, "LDAPInputField.FetchAttributeAs.String"),
+        BaseMessages.getString(PKG, "LDAPInputField.FetchAttributeAs.Binary")
+      };
+	
     public final static int TYPE_TRIM_NONE  = 0;
     public final static int TYPE_TRIM_LEFT  = 1;
     public final static int TYPE_TRIM_RIGHT = 2;
@@ -47,7 +62,7 @@ public class LDAPInputField implements Cloneable
 	private String 	  name;
 	private String 	  attribute;
 
-	
+    private int       fetchAttributeAs;
     private int 	  type;
     private int       length;
     private String    format;
@@ -57,15 +72,19 @@ public class LDAPInputField implements Cloneable
 	private String 	  decimalSymbol;
 	private String 	  groupSymbol;
 	private boolean   repeat;
+	private String  realAttribute;
+	private boolean  objectSid;
 
     private String    samples[];
 
+	public static HashSet<String>	binaryAttributes;
     
 	public LDAPInputField(String fieldname)
 	{
 		this.name           = fieldname;
 		this.attribute      = "";
 		this.length         = -1;
+		this.fetchAttributeAs		= FETCH_ATTRIBUTE_AS_STRING;
 		this.type           = ValueMetaInterface.TYPE_STRING;
 		this.format         = "";
 		this.trimtype       = TYPE_TRIM_NONE;
@@ -74,15 +93,13 @@ public class LDAPInputField implements Cloneable
 		this.currencySymbol = "";
 		this.precision      = -1;
 		this.repeat         = false;
+		this.realAttribute = "";
 	}
     
     public LDAPInputField()
     {
         this(null);
     }
-
-  
-
 
     public final static int getTrimTypeByCode(String tt)
     {
@@ -94,7 +111,17 @@ public class LDAPInputField implements Cloneable
         }
         return 0;
     }
-       
+     
+    public final static int getFetchAttributeAsByCode(String tt)
+    {
+        if (tt==null) return 0;
+        
+        for (int i=0;i<FetchAttributeAsCode.length;i++)
+        {
+            if (FetchAttributeAsCode[i].equalsIgnoreCase(tt)) return i;
+        }
+        return 0;
+    }
     public final static int getTrimTypeByDesc(String tt)
     {
         if (tt==null) return 0;
@@ -106,18 +133,39 @@ public class LDAPInputField implements Cloneable
         return 0;
     }
     
+    public final static int getFetchAttributeAsByDesc(String tt)
+    {
+        if (tt==null) return 0;
+        
+        for (int i=0;i<FetchAttributeAsDesc.length;i++)
+        {
+            if (FetchAttributeAsDesc[i].equalsIgnoreCase(tt)) return i;
+        }
+        return 0;
+    }
+    
     public final static String getTrimTypeCode(int i)
     {
         if (i<0 || i>=trimTypeCode.length) return trimTypeCode[0];
         return trimTypeCode[i]; 
     }
     
+    public final static String getFetchAttributeAsCode(int i)
+    {
+        if (i<0 || i>=FetchAttributeAsCode.length) return FetchAttributeAsCode[0];
+        return FetchAttributeAsCode[i]; 
+    }
     public final static String getTrimTypeDesc(int i)
     {
         if (i<0 || i>=trimTypeDesc.length) return trimTypeDesc[0];
         return trimTypeDesc[i]; 
     }
     
+    public final static String getFetchAttributeAsDesc(int i)
+    {
+        if (i<0 || i>=FetchAttributeAsDesc.length) return FetchAttributeAsDesc[0];
+        return FetchAttributeAsDesc[i]; 
+    }
     public Object clone()
 	{
 		try
@@ -168,7 +216,10 @@ public class LDAPInputField implements Cloneable
 	{
 		return type;
 	}
-
+	public int getReturnType()
+	{
+		return fetchAttributeAs;
+	}
 	public String getTypeDesc()
 	{
 		return ValueMeta.getTypeDesc(type);
@@ -208,17 +259,29 @@ public class LDAPInputField implements Cloneable
 	{
 		return getTrimTypeCode(trimtype);
 	}
-  
+    
+    public String getFetchAttributeAsCode()
+	{
+		return getFetchAttributeAsCode(fetchAttributeAs);
+	}
 	public String getTrimTypeDesc()
 	{
 		return getTrimTypeDesc(trimtype);
 	}
 	
+	public String getFetchAttributeAsDesc()
+	{
+		return getFetchAttributeAsDesc(fetchAttributeAs);
+	}
 	public void setTrimType(int trimtype)
 	{
 		this.trimtype= trimtype;
 	}
 	
+	public void setFetchAttributeAs(int fetchAttributeAs)
+	{
+		this.fetchAttributeAs= fetchAttributeAs;
+	}
 	public String getGroupSymbol()
 	{
 		return groupSymbol;
@@ -273,6 +336,43 @@ public class LDAPInputField implements Cloneable
 	{
 		repeat = !repeat;		
 	}
-    
-   
+    public String getRealAttribute()
+    {
+    	return this.realAttribute;
+    }
+	public void setRealAttribute(String realfieldattribute)
+	{
+		this.realAttribute = realfieldattribute;
+		if(!Const.isEmpty(realfieldattribute)) {
+			if(realfieldattribute.equals(ATTRIBUTE_OBJECT_SID)) {
+				this.objectSid=true;
+			}
+		}
+	}
+    public boolean isObjectSid()
+    {
+    	return this.objectSid;
+    }
+
+    static {
+		binaryAttributes = new HashSet<String>();
+		binaryAttributes.add("photo");
+		binaryAttributes.add( "personalSignature");
+		binaryAttributes.add( "audio");
+		binaryAttributes.add( "jpegPhoto");
+		binaryAttributes.add( "javaSerializedData");
+		binaryAttributes.add( "thumbnailPhoto");
+		binaryAttributes.add( "thumbnailLogo");
+		binaryAttributes.add( "userPassword");
+		binaryAttributes.add( "userCertificate");
+		binaryAttributes.add( "cACertificate");
+		binaryAttributes.add( "authorityRevocationList");
+		binaryAttributes.add( "certificateRevocationList");
+		binaryAttributes.add( "crossCertificatePair");
+		binaryAttributes.add( "x500UniqueIdentifier");
+		binaryAttributes.add( "objectSid");
+		binaryAttributes.add( "objectGUID");
+		binaryAttributes.add( "GUID");
+	}
+
 }

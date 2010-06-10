@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.
+ */
 package org.pentaho.di.core.logging;
 
 import java.util.ArrayList;
@@ -13,6 +25,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -135,11 +148,14 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 	 * This method calculates all the values that are required
 	 * @param id the id to use or -1 if no id is needed
 	 * @param status the log status to use
+	 * @param subject the object to log
+	 * @param parent the parent to which the object belongs
 	 */
-	public RowMetaAndData getLogRecord(LogStatus status, Object subject) {
+	public RowMetaAndData getLogRecord(LogStatus status, Object subject, Object parent) {
 		if (subject==null || subject instanceof JobEntryCopy) {
 			
 			JobEntryCopy jobEntryCopy = (JobEntryCopy) subject; 
+			Job parentJob = (Job) parent;
 			
 			RowMetaAndData row = new RowMetaAndData();
 			
@@ -148,8 +164,8 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 					Object value = null;
 					if (subject!=null) {
 						
-						JobEntryInterface jobEntry = (JobEntryInterface) subject;
-						JobTracker jobTracker = jobEntry.getParentJob().getJobTracker();
+						JobEntryInterface jobEntry = jobEntryCopy.getEntry();
+						JobTracker jobTracker = parentJob.getJobTracker();
 						JobTracker entryTracker = jobTracker.findJobTracker(jobEntryCopy);
 						JobEntryResult jobEntryResult = null;
 						if (entryTracker!=null)  {
@@ -162,25 +178,26 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 						
 						switch(ID.valueOf(field.getId())){
 						
-						case ID_BATCH : value = new Long(jobEntry.getParentJob().getBatchId()); break;
+						case ID_BATCH : value = new Long(parentJob.getBatchId()); break;
 						case CHANNEL_ID : value = jobEntry.getLogChannel().getLogChannelId(); break;
 						case LOG_DATE : value = new Date(); break;
-						case JOBNAME : value = jobEntry.getParentJob().getJobname(); break;
+						case JOBNAME : value = parentJob.getJobname(); break;
 						case JOBENTRYNAME : value = jobEntry.getName(); break;
-						case LINES_READ : value = new Long(result.getNrLinesRead()); break;
-						case LINES_WRITTEN : value = new Long(result.getNrLinesWritten()); break;
-						case LINES_UPDATED : value = new Long(result.getNrLinesUpdated()); break;
-						case LINES_INPUT : value = new Long(result.getNrLinesInput()); break;
-						case LINES_OUTPUT : value = new Long(result.getNrLinesOutput()); break;
-						case LINES_REJECTED : value = new Long(result.getNrLinesRejected()); break;
-						case ERRORS : value = new Long(result.getNrErrors()); break;
-						case RESULT : value = new Boolean(result.getResult()); break;
-						case NR_RESULT_FILES : value = new Long(result.getResultFiles().size()); break;
-						case NR_RESULT_ROWS : value = new Long(result.getRows().size()); break;
+						case LINES_READ : value = new Long(result!=null ? result.getNrLinesRead() : 0); break;
+						case LINES_WRITTEN : value = new Long(result!=null ? result.getNrLinesWritten() : 0); break;
+						case LINES_UPDATED : value = new Long(result!=null ? result.getNrLinesUpdated() : 0); break;
+						case LINES_INPUT : value = new Long(result!=null ? result.getNrLinesInput() : 0); break;
+						case LINES_OUTPUT : value = new Long(result!=null ? result.getNrLinesOutput() : 0); break;
+						case LINES_REJECTED : value = new Long(result!=null ? result.getNrLinesRejected() : 0); break;
+						case ERRORS : value = new Long(result!=null ? result.getNrErrors() : 0); break;
+						case RESULT : value = new Boolean(result!=null ? result.getResult() : false); break;
+						case NR_RESULT_FILES : value = new Long(result!=null ? result.getResultFiles().size() : 0); break;
+						case NR_RESULT_ROWS : value = new Long(result!=null ? result.getRows().size() : 0); break;
 						case LOG_FIELD : 
-							StringBuffer buffer = CentralLogStore.getAppender().getBuffer(jobEntry.getLogChannel().getLogChannelId(), false);
-							value = buffer.toString();
-							break;
+						    if (result!=null) {
+							   value = result.getLogText();
+						    } 
+					        break;
 						}
 					}
 

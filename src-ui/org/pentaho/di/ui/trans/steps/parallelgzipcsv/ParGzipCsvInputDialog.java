@@ -463,7 +463,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 		wGet.setText(BaseMessages.getString(PKG, "System.Button.GetFields")); //$NON-NLS-1$
 		wGet.setEnabled(!isReceivingInput);
 
-		setButtonPositions(new Button[] { wOK, wCancel, wPreview, wGet, }, margin, null);
+		setButtonPositions(new Button[] { wOK, wPreview, wGet, wCancel }, margin, null);
 
 
 		// Fields

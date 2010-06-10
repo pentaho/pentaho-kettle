@@ -129,6 +129,7 @@ import org.pentaho.di.ui.spoon.SwtScrollBar;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
+import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
@@ -298,6 +299,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     
     try {
       XulLoader loader = new SwtXulLoader();
+      loader.setSettingsManager(XulSpoonSettingsManager.getInstance());
       ResourceBundle bundle = new XulSpoonResourceBundle(JobGraph.class);
       XulDomContainer container = loader.loadXul(XUL_FILE_JOB_GRAPH, bundle);
       container.addEventHandler(this);
