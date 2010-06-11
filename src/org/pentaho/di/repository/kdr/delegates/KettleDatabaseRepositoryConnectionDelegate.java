@@ -1380,9 +1380,9 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 	    	}
 	    	
 	    	RepositoryDirectoryInterface repositoryDirectory = new RepositoryDirectory();
+	    	repositoryDirectory.setObjectId(id_directory);
 	    	repository.directoryDelegate.loadRepositoryDirectory(new RepositoryDirectory(), id_directory);
-	    	
-	    	
+   	
 	        String sql = "SELECT "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME)+", "+
 	        	quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_USER)+", "+
 	        	quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_DATE)+", "+
