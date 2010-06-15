@@ -18,29 +18,29 @@
 	<!-- Import the common_build.xml file which contains all the default tasks -->	
 	<import file="build-res/subfloor-pkg.xml"/>
 
-	<property name="platform.dist.dir"
-	            value="."
-	            description="Location of platform assembly zip" />
-
-	<property name="report-designer-assembly.dir"
-		            value="../report-designer-assembly"
-		            description="Location of report designer assembly zip" />
-
-	<property name="platform.unzip.dir"
-	            value="${bin.dir}/platform-unzip"
-	            description="Location of platform assembly zip" />
+	<property name="libswt" location="libswt" />
+	<property name="swt.os" location="win32" />
 	
-	<property name="kettle.dist.dir"
-				value="../Kettle"
-    			description="Location of kettle spoon zip" />
+	<path id="cp-meta">
+	    <fileset dir="${libswt}" includes="*.jar" />
+	    <fileset dir="${libswt}/${swt.os}/" includes="*.jar" />
+	  </path>
 	
-	<property name="analyzer.dist.dir"
-				value="."
-				description="Location of Analyzer Agile BI plugin" />
-	
-	<property name="pdiwithagilebi"
-				value="pdi-ce-agile-bi" 
-				description="Name of the pdi distribution with agile bi"/>
+	<!-- override compile.compile to include custom classpath and do resource copying -->
+	<target name="compile.compile" depends="init">
+	  <javac destdir="${classes.dir}"
+	         debug="${javac.debug}"
+	         deprecation="${javac.deprecation}"
+	         fork="true"
+	         source="${javac.source}"
+	         target="${javac.target}">
+	    <classpath>
+	      <path refid="classpath" />
+	      <path refid="cp-meta" />
+	    </classpath>
+	    <src path="${src.dir}" />
+	  </javac>
+	</target>
 	
 	<target name="resolve"
 	          depends="resolve-default, resolve-test, ivy.check-releasable"
@@ -66,9 +66,6 @@
   </target>
 	
   <target name="assemble" depends="assemble.init,assemble.copy-libs">
-    <copy todir="${approot.stage.dir}" overwrite="true">
-      <fileset dir="${package.resdir}" />
-    </copy>
   	<delete>
 		<fileset dir="${approot.stage.dir}/lib">
 			
