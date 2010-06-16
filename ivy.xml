@@ -39,7 +39,7 @@
       changing="false" />
       
     
-    <dependency org="junit" name="junit" rev="4.4" transitive="false" conf="test->default" />
+    <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
 
   </dependencies>
 </ivy-module>

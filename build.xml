@@ -207,8 +207,8 @@
 	</target>
 	
 	<target name="install-plugin">
-		<delete dir="${kettle.dist.dir}/plugins/spoon/hadoop"/>
-		<unzip dest="${kettle.dist.dir}/plugins/spoon">
+		<delete dir="${kettle.dist.dir}/plugins/pdi-hadoop-plugin"/>
+		<unzip dest="${kettle.dist.dir}/plugins">
 			<fileset file="${dist.dir}/${package.basename}.zip"/>
 			</unzip>
 	</target>
