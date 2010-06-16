@@ -1,4 +1,4 @@
-package org.pentaho.di.job.entries.copyfiles;
+package org.pentaho.di.job.entries.hadoopcopyfiles;
 
 import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.job.entries.copyfiles.JobEntryCopyFiles;

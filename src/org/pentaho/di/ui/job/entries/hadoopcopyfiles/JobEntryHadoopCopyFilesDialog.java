@@ -1,4 +1,4 @@
-package org.pentaho.di.ui.job.entries.copyfiles;
+package org.pentaho.di.ui.job.entries.hadoopcopyfiles;
 
 /*
  * Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
