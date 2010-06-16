@@ -7,6 +7,9 @@ import org.pentaho.di.job.entries.copyfiles.JobEntryCopyFiles;
 public class JobEntryHadoopCopyFiles 
        extends JobEntryCopyFiles {
 
+	public JobEntryHadoopCopyFiles() {
+		this(""); //$NON-NLS-1$
+	}
     
     public JobEntryHadoopCopyFiles(String name) {
         super(name);
