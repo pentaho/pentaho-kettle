@@ -18,7 +18,7 @@
 				<treecols>
 					<treecol label="Fieldname" flex="1" editable="false" pen:binding="fieldName"/>
 					<treecol label="Type" flex="1" editable="false" pen:binding="type"/>
-					<treecol label="Lenght" flex="1" editable="false" pen:binding="length"/>
+					<treecol label="Length" flex="1" editable="false" pen:binding="length"/>
 					<treecol label="Precision" flex="1" editable="false" pen:binding="precision"/>
 					<treecol label="Step origin" flex="1" editable="false" pen:binding="origin"/>
 					<treecol label="Storage" flex="1" editable="false" pen:binding="storageType"/>
