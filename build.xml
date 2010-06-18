@@ -81,7 +81,7 @@
 			<include name="jface-*.jar"/>
 			<include name="commands-*.jar"/>
 			<!-- Pentaho's custom vfs browser -->
-			<include name="apache-vfs-browser-*.jar"/>
+			<include name="*-vfs-browser-*.jar"/>
 			<!-- servlet api -->
 			<include name="servlet-api-*.jar"/>
 			<!-- xul jars -->
