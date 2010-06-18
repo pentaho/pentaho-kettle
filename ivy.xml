@@ -41,6 +41,9 @@
     <dependency org="org.apache.hadoop" name="hadoop-core" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="default->default"
       changing="false" />
       
+    <dependency org="pentaho" name="apache-vfs-browser" rev="${dependency.pentaho-xul.revision}" transitive="false" conf="default->default"
+      changing="true" />
+      
     
     <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
 
