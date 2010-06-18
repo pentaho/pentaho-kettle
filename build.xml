@@ -20,6 +20,9 @@
 
 	<property name="libswt" location="libswt" />
 	<property name="swt.os" location="win32" />
+	<property name="pdiwithhadoopplugin"
+					value="pdi-ce-hadoop" 
+					description="Name of the pdi distribution with Hadoop plugin"/>
 	
 	<path id="cp-meta">
 	    <fileset dir="${libswt}" includes="*.jar" />
@@ -198,12 +201,12 @@
 				<include name="pdi-ce-*.zip"/>
 			</fileset>
 		</unzip>
-		<unzip dest="${bin.dir}/kettle-dist/plugins/spoon">
+		<unzip dest="${bin.dir}/kettle-dist/plugins/pdi-hadoop-plugin">
 			<fileset dir="${dist.dir}">
 				<include name="${package.basename}.zip"/>
 			</fileset>
 		</unzip>
-		<zip destfile="${dist.dir}/${pdiwithagilebi}.zip">
+		<zip destfile="${dist.dir}/${pdiwithhadoopplugin}.zip">
 			<zipfileset dir="${bin.dir}/kettle-dist" />
 		</zip>
 	</target>
