@@ -1,7 +1,23 @@
+/*
+ * Copyright 2007 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the Mozilla Public License, Version 1.1, or any later version. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.mozilla.org/MPL/MPL-1.1.txt. The Original Code is the Pentaho 
+ * BI Platform.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the Mozilla Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.
+ *
+ * @author Michael D'Amour
+ */
+
 package org.pentaho.di.core;
 
 import java.util.Arrays;
 
+import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
@@ -14,7 +30,11 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.vfs.HadoopVfsFileChooserDialog;
 import org.pentaho.hdfs.vfs.HDFSFileProvider;
+import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
+import org.pentaho.vfs.ui.IVfsFileChooser;
 
 @LifecyclePlugin (id = "HadoopSpoonPlugin", name="Hadoop Spoon Plugin")
 public class HadoopSpoonPlugin implements LifecycleListener, GUIOption {
@@ -34,6 +54,12 @@ public class HadoopSpoonPlugin implements LifecycleListener, GUIOption {
 		} catch (FileSystemException e) {
 			log.logError(BaseMessages.getString(PKG, "HadoopSpoonPlugin.StartupError.FailedToLoadHdfsDriver"));
 		}
+		
+		Spoon.getInstance().setVfsFileBrowserFactory(new IVfsFileBrowserFactory() {
+			public IVfsFileChooser getFileChooser(FileObject root, FileObject initial) {
+				return new HadoopVfsFileChooserDialog(root, initial);
+			}
+		});
 	}
 	
 	@Override
