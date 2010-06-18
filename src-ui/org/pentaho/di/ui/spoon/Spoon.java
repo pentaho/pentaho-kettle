@@ -276,6 +276,9 @@ import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.tags.SwtDeck;
 import org.pentaho.ui.xul.swt.tags.SwtMenupopup;
 import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
+import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
+import org.pentaho.vfs.factory.VfsFileBrowserFactory;
+import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabListener;
@@ -486,6 +489,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   private Map<String, XulComponent> menuMap = new HashMap<String, XulComponent>();
 
   private RepositoriesDialog loginDialog;
+  
+  private IVfsFileBrowserFactory vfsFileBrowserFactory = new VfsFileBrowserFactory();
 
   /**
    * This is the main procedure for Spoon.
@@ -3670,13 +3675,26 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       return;
     }
 
-    VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(rootFile, initialFile);
-    FileObject selectedFile = vfsFileChooser.open(shell, null, Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const
-        .getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
-    if (selectedFile != null) {
-      setLastFileOpened(selectedFile.getName().getFriendlyURI());
-      openFile(selectedFile.getName().getFriendlyURI(), false);
+    IVfsFileBrowserFactory vfbFactory = getVfsFileBrowserFactory();
+    
+    if(vfbFactory != null) {
+    	IVfsFileChooser vfsFileChooser = vfbFactory.getFileChooser(rootFile, initialFile);
+    	
+    	FileObject selectedFile = vfsFileChooser.open(shell, null, Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const
+    	        .getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
+	    if (selectedFile != null) {
+	      setLastFileOpened(selectedFile.getName().getFriendlyURI());
+	      openFile(selectedFile.getName().getFriendlyURI(), false);
+	    }
     }
+  }
+  
+  public void setVfsFileBrowserFactory(IVfsFileBrowserFactory vfsFileBrowserFactory) {
+	  this.vfsFileBrowserFactory = vfsFileBrowserFactory;
+  }
+  
+  public IVfsFileBrowserFactory getVfsFileBrowserFactory() {
+	  return vfsFileBrowserFactory;
   }
 
   public void addFileListener(FileListener listener) {
