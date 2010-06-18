@@ -201,7 +201,7 @@
 				<include name="pdi-ce-*.zip"/>
 			</fileset>
 		</unzip>
-		<unzip dest="${bin.dir}/kettle-dist/plugins/pdi-hadoop-plugin">
+		<unzip dest="${bin.dir}/kettle-dist/plugins">
 			<fileset dir="${dist.dir}">
 				<include name="${package.basename}.zip"/>
 			</fileset>
