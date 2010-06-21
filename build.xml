@@ -24,6 +24,9 @@
 					value="pdi-ce-hadoop" 
 					description="Name of the pdi distribution with Hadoop plugin"/>
 	
+	<property name="libext.stage.dir" location="${stage.dir}/libext" />
+	<property name="plugins.stage.dir" location="${stage.dir}/plugins" />
+	
 	<path id="cp-meta">
 	    <fileset dir="${libswt}" includes="*.jar" />
 	    <fileset dir="${libswt}/${swt.os}/" includes="*.jar" />
@@ -70,7 +73,11 @@
 	
   <target name="assemble" depends="assemble.init,assemble.copy-libs">
   	<delete>
-		<fileset dir="${approot.stage.dir}/lib">
+		<fileset dir="${stage.dir}/plugins/${ivy.artifact.id}/lib">
+			
+			<!-- Exclude jars that are to be placed in Kettle's lib-ext dir -->
+			<include name="hadoop-*.jar"/>
+			<include name="pentaho-hdfs-vfs*.jar"/>
 			
 			<!-- first remove duplicate jars -->
 			
@@ -174,7 +181,7 @@
 			<include name="jmiutils-*.jar"/>
 			<include name="xml-apis-*.jar"/>
 			
-			<exclude name="pentaho-database-model-*.jar"/>
+			<exclude name="pentaho-database-model-*.jar"/>			
 
       <include name="openide-util-*.jar"/>
 			<include name="xmlParserAPIs-*.jar"/>
@@ -186,10 +193,17 @@
   </target>
 	
 	  <target name="assemble.copy-libs">
-	    <copy todir="${approot.stage.dir}/lib">
+	  	<copy todir="${libext.stage.dir}/${ivy.artifact.id}">
+          <fileset dir="${lib.dir}">
+          	<!-- These files are required by the plugin to be in Kettle -->
+          	<include name="hadoop-*.jar"/>
+          	<include name="pentaho-hdfs-vfs-*.jar"/>
+          </fileset>
+	    </copy>
+	    <copy todir="${plugins.stage.dir}/${ivy.artifact.id}/lib">
 	      <fileset dir="${lib.dir}" />
 	    </copy>
-	    <copy todir="${approot.stage.dir}">
+	    <copy todir="${plugins.stage.dir}/${ivy.artifact.id}">
 	      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
 	    </copy>
 	  </target>
@@ -201,7 +215,7 @@
 				<include name="pdi-ce-*.zip"/>
 			</fileset>
 		</unzip>
-		<unzip dest="${bin.dir}/kettle-dist/plugins">
+		<unzip dest="${bin.dir}/kettle-dist">
 			<fileset dir="${dist.dir}">
 				<include name="${package.basename}.zip"/>
 			</fileset>
@@ -212,8 +226,9 @@
 	</target>
 	
 	<target name="install-plugin">
+		<delete dir="${kettle.dist.dir}/libext/pdi-hadoop-plugin"/>
 		<delete dir="${kettle.dist.dir}/plugins/pdi-hadoop-plugin"/>
-		<unzip dest="${kettle.dist.dir}/plugins">
+		<unzip dest="${kettle.dist.dir}">
 			<fileset file="${dist.dir}/${package.basename}.zip"/>
 			</unzip>
 	</target>
