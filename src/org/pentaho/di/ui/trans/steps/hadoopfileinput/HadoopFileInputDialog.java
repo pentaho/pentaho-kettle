@@ -45,6 +45,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -68,10 +69,8 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -83,8 +82,10 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -110,18 +111,24 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.core.widget.VariableButtonListenerFactory;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.DirectoryDialogButtonListenerFactory;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage1;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage2;
+import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
+import org.pentaho.vfs.ui.IVfsFileChooser;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 
 public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> BASE_PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	private static Class<?> PKG = HadoopFileInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
+	private LogChannel log = new LogChannel(this);
 
 	private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString(BASE_PKG, "System.Combo.No"), BaseMessages.getString(BASE_PKG, "System.Combo.Yes") };
 	
@@ -417,7 +424,7 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(BASE_PKG, "TextFileInputDialog.DialogTitle"));
+		shell.setText(BaseMessages.getString(PKG, "HadoopFileInputDialog.DialogTitle"));
 		
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
@@ -596,52 +603,54 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					if (wFilemask.getText()!=null && wFilemask.getText().length()>0) // A mask: a directory!
-					{
-						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
-						if (wFilename.getText()!=null)
-						{
-							String fpath = transMeta.environmentSubstitute(wFilename.getText());
-							dialog.setFilterPath( fpath );
+					try {
+						IVfsFileBrowserFactory fileBrowserFactory = Spoon.getInstance().getVfsFileBrowserFactory();
+						
+						if(fileBrowserFactory == null) {
+							log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FactoryNotAvailable"));
+							return;
 						}
 						
-						if (dialog.open()!=null)
-						{
-							String str= dialog.getFilterPath();
-							wFilename.setText(str);
-						}
-					}
-					else
-					{
-						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+						// Setup file type filtering
+						String[] fileFilters = null;
+						String[] fileFilterNames = null;
 						if (! wCompression.getText().equals("None"))
 						{
-							dialog.setFilterExtensions(new String[] {"*.zip;*.gz", "*.txt;*.csv", "*.csv", "*.txt", "*"});
+							fileFilters = new String[] {"*.zip;*.gz", "*.txt;*.csv", "*.csv", "*.txt", "*"};
+							fileFilterNames = new String[] {BaseMessages.getString(BASE_PKG, "System.FileType.ZIPFiles"), BaseMessages.getString(BASE_PKG, "TextFileInputDialog.FileType.TextAndCSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.CSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.TextFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.AllFiles")};
 						}
 						else
 						{
-							dialog.setFilterExtensions(new String[] {"*.txt;*.csv", "*.csv", "*.txt", "*"});
-						}
-						if (wFilename.getText()!=null)
-						{
-							String fname = transMeta.environmentSubstitute(wFilename.getText());
-							dialog.setFileName( fname );
+							fileFilters = new String[] {"*.txt;*.csv", "*.csv", "*.txt", "*"};
+							fileFilterNames = new String[] {BaseMessages.getString(BASE_PKG, "TextFileInputDialog.FileType.TextAndCSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.CSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.TextFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.AllFiles")};
 						}
 						
-						if (! wCompression.getText().equals("None"))
-						{
-							dialog.setFilterNames(new String[] {BaseMessages.getString(BASE_PKG, "System.FileType.ZIPFiles"), BaseMessages.getString(BASE_PKG, "TextFileInputDialog.FileType.TextAndCSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.CSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.TextFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.AllFiles")});
-						}
-						else
-						{
-							dialog.setFilterNames(new String[] {BaseMessages.getString(BASE_PKG, "TextFileInputDialog.FileType.TextAndCSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.CSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.TextFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.AllFiles")});
+						// Get current file
+						FileObject rootFile = null;
+						FileObject initialFile = null;
+						
+						if (wFilename.getText()!=null) {
+							String fileName = transMeta.environmentSubstitute(wFilename.getText());
+							if(fileName != null && !fileName.equals("")) {
+								initialFile = KettleVFS.getFileObject(fileName);
+							} else {
+								initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+							}
+							
+							rootFile = initialFile.getFileSystem().getRoot();
 						}
 						
-						if (dialog.open()!=null)
-						{
-							String str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
-							wFilename.setText(str);
-						}
+						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
+						
+						FileObject selectedFile = fileChooserDialog.open(shell, null, fileFilters, fileFilterNames,
+								VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
+					    if (selectedFile != null) {
+					      wFilename.setText(selectedFile.getURL().toString());
+					    }
+					} catch (KettleFileException ex) {
+						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.KettleFileException"));
+					} catch (FileSystemException ex) {
+						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FileSystemException"));
 					}
 				}
 			}
