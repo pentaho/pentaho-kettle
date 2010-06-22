@@ -365,7 +365,13 @@ public class LoadFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		int nrFields = inputFields.length;
 
 		retval.allocate(nrFiles, nrFields);
-		
+		for (int i = 0; i < nrFiles; i++)
+        {
+            retval.fileName[i]     = fileName[i];
+            retval.fileMask[i]     = fileMask[i];
+            retval.fileRequired[i] = fileRequired[i];
+            retval.includeSubFolders[i] = includeSubFolders[i];
+        }
 		for (int i=0;i<nrFields;i++)
 		{
             if (inputFields[i]!=null)
