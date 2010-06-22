@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -49,9 +51,11 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -66,8 +70,12 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
+import org.pentaho.vfs.ui.IVfsFileChooser;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 
 public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialogInterface
@@ -1149,36 +1157,88 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 			}
 		);
 		
+		// Listen to the Browse... button
 		wbFilename.addSelectionListener
 		(
 			new SelectionAdapter()
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-					dialog.setFilterExtensions(new String[] {"*.txt", "*.csv", "*"});
-					if (wFilename.getText()!=null)
-					{
-						dialog.setFileName(transMeta.environmentSubstitute(wFilename.getText()));
-					}
-					dialog.setFilterNames(new String[] {BaseMessages.getString(BASE_PKG, "System.FileType.TextFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.CSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.AllFiles")});
-					if (dialog.open()!=null)
-					{
-						String extension = wExtension.getText();
-						if ( extension != null && dialog.getFileName() != null &&
-								dialog.getFileName().endsWith("." + extension) )
-						{
-							// The extension is filled in and matches the end 
-							// of the selected file => Strip off the extension.
-							String fileName = dialog.getFileName();
-						    wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+
-						    		          fileName.substring(0, fileName.length() - (extension.length()+1)));
+					try {
+						IVfsFileBrowserFactory fileBrowserFactory = Spoon.getInstance().getVfsFileBrowserFactory();
+					
+						if(fileBrowserFactory == null) {
+							log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FactoryNotAvailable"));
+							return;
 						}
-						else
-						{
-						    wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
+						
+						// Setup file type filtering
+						String[] fileFilters = new String[] {"*.txt", "*.csv", "*"};
+						String[] fileFilterNames = new String[] {BaseMessages.getString(BASE_PKG, "System.FileType.TextFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.CSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.AllFiles")};
+						
+						// Get current file
+						FileObject rootFile = null;
+						FileObject initialFile = null;
+						
+						if (wFilename.getText()!=null) {
+							String fileName = transMeta.environmentSubstitute(wFilename.getText());
+							if(fileName != null && !fileName.equals("")) {
+								initialFile = KettleVFS.getFileObject(fileName);
+							} else {
+								initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+							}
+							
+							rootFile = initialFile.getFileSystem().getRoot();
 						}
+						
+						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
+						
+						FileObject selectedFile = fileChooserDialog.open(shell, null, fileFilters, fileFilterNames,
+								VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
+					    if (selectedFile != null) {
+					    	String filename = selectedFile.getURL().toString();
+					    	
+					    	String extension = wExtension.getText();
+							if ( extension != null && filename.endsWith("." + extension) )
+							{
+								// The extension is filled in and matches the end 
+								// of the selected file => Strip off the extension.
+							    wFilename.setText(filename.substring(0, filename.length() - (extension.length()+1)));
+							}
+							else
+							{
+							    wFilename.setText(filename);
+							}
+					    }
+					} catch (KettleFileException ex) {
+						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.KettleFileException"));
+					} catch (FileSystemException ex) {
+						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FileSystemException"));
 					}
+//					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+//					dialog.setFilterExtensions(new String[] {"*.txt", "*.csv", "*"});
+//					if (wFilename.getText()!=null)
+//					{
+//						dialog.setFileName(transMeta.environmentSubstitute(wFilename.getText()));
+//					}
+//					dialog.setFilterNames(new String[] {BaseMessages.getString(BASE_PKG, "System.FileType.TextFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.CSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.AllFiles")});
+//					if (dialog.open()!=null)
+//					{
+//						String extension = wExtension.getText();
+//						if ( extension != null && dialog.getFileName() != null &&
+//								dialog.getFileName().endsWith("." + extension) )
+//						{
+//							// The extension is filled in and matches the end 
+//							// of the selected file => Strip off the extension.
+//							String fileName = dialog.getFileName();
+//						    wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+
+//						    		          fileName.substring(0, fileName.length() - (extension.length()+1)));
+//						}
+//						else
+//						{
+//						    wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
+//						}
+//					}
 				}
 			}
 		);
