@@ -1215,30 +1215,6 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 					} catch (FileSystemException ex) {
 						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FileSystemException"));
 					}
-//					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-//					dialog.setFilterExtensions(new String[] {"*.txt", "*.csv", "*"});
-//					if (wFilename.getText()!=null)
-//					{
-//						dialog.setFileName(transMeta.environmentSubstitute(wFilename.getText()));
-//					}
-//					dialog.setFilterNames(new String[] {BaseMessages.getString(BASE_PKG, "System.FileType.TextFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.CSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.AllFiles")});
-//					if (dialog.open()!=null)
-//					{
-//						String extension = wExtension.getText();
-//						if ( extension != null && dialog.getFileName() != null &&
-//								dialog.getFileName().endsWith("." + extension) )
-//						{
-//							// The extension is filled in and matches the end 
-//							// of the selected file => Strip off the extension.
-//							String fileName = dialog.getFileName();
-//						    wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+
-//						    		          fileName.substring(0, fileName.length() - (extension.length()+1)));
-//						}
-//						else
-//						{
-//						    wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
-//						}
-//					}
 				}
 			}
 		);
