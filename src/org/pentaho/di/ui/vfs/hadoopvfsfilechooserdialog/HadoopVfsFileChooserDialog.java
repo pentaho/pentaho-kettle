@@ -10,42 +10,31 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
  *
- * @author Michael D'Amour
  */
 
 package org.pentaho.di.ui.vfs.hadoopvfsfilechooserdialog;
-
 import org.apache.commons.vfs.Capability;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.FontMetrics;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.widget.ComboVar;
-import org.pentaho.di.ui.core.widget.TextVar;
-
 import org.pentaho.vfs.ui.IVfsFileChooser;
+import org.pentaho.vfs.ui.VfsBrowser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 public class HadoopVfsFileChooserDialog 
@@ -67,36 +56,41 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
     private Text         wPort;
     private GridData     fdlPort, fdPort;
     
-    //  Username label and field
-    private Label        wlUsername;
-    private Text         wUsername;
-    private GridData     fdlUsername, fdUsername;
+    //  UserID label and field
+    private Label        wlUserID;
+    private Text         wUserID;
+    private GridData     fdlUserID, fdUserID;
     
-    //  Username label and field
+    //  Password label and field
     private Label        wlPassword;
     private Text         wPassword;
     private GridData     fdlPassword, fdPassword;
+    
+    //  Place holder - for creating a blank widget in a grid layout
+    private Label        wPlaceHolderLabel;
+    private GridData     fdlPlaceHolderLabel;
 
     //  Connection button
     private Button       wConnectionButton;
-    
+
+    //  local folder- when the Hadoop radio button is selected we use
+    //  this variable to save the local folder
+    String               localFolder; 
+
     public HadoopVfsFileChooserDialog(FileObject rootFile, FileObject initialFile) {
-		
-        //  
         super(rootFile, initialFile);
 	}
 	
 	@Override
 	public FileObject open(Shell applicationShell, String fileName, String[] fileFilters, String[] fileFilterNames, int fileDialogMode) {
-	    System.out.println("HadoopVfsFileChooserDialog.open() has been invoked.");
 	    this.fileDialogMode = fileDialogMode;
 	    this.fileFilters = fileFilters;
 	    this.fileFilterNames = fileFilterNames;
 	    dialog = new Shell(applicationShell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
 	    if (fileDialogMode != VFS_DIALOG_SAVEAS) {
-	      dialog.setText(BaseMessages.getString("VfsFileChooserDialog.openFile")); //$NON-NLS-1$
+	      dialog.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.openFile")); //$NON-NLS-1$
 	    } else {
-	      dialog.setText(BaseMessages.getString("VfsFileChooserDialog.saveAs")); //$NON-NLS-1$
+	      dialog.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.saveAs")); //$NON-NLS-1$
 	    }
 
 	    dialog.setLayout(new GridLayout());
@@ -117,19 +111,27 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    // create our ok/cancel buttons
 	    createButtonPanel(dialog);
 
-	    // set the initial file selection
-	    try {
-	      vfsBrowser.selectTreeItemByFileObject(initialFile != null ? initialFile : rootFile, true);
-	      // vfsBrowser.setSelectedFileObject(initialFile);
-	      openFileCombo.setText(initialFile != null ? initialFile.getName().getFriendlyURI() : rootFile.getName().getFriendlyURI());
-	      updateParentFileCombo(initialFile != null ? initialFile : rootFile);
-	    } catch (FileSystemException e) {
-	      MessageBox box = new MessageBox(applicationShell);
-	      box.setText(BaseMessages.getString("VfsFileChooserDialog.error")); //$NON-NLS-1$
-	      box.setMessage(e.getMessage());
-	      box.open();
-	    }
+	    if(wHadoopFSRadioButton.getSelection()) {
+	        
+	       //  We set the local folder to the initial file name 
+	       localFolder = (initialFile!= null?initialFile.getName().getFriendlyURI():"");
 
+	    }
+	    else {
+	        // set the initial file selection
+	        try {
+	          vfsBrowser.selectTreeItemByFileObject(initialFile != null ? initialFile : rootFile, true);
+	          // vfsBrowser.setSelectedFileObject(initialFile);
+	          openFileCombo.setText(initialFile != null ? initialFile.getName().getFriendlyURI() : rootFile.getName().getFriendlyURI());
+	          updateParentFileCombo(initialFile != null ? initialFile : rootFile);
+	        } catch (FileSystemException e) {
+	          MessageBox box = new MessageBox(applicationShell);
+	          box.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.error")); //$NON-NLS-1$
+	          box.setMessage(e.getMessage());
+	          box.open();
+	        }
+	    }
+	    
 	    // set the size and show the dialog
 	    int height = 400;
 	    int width = 600;
@@ -143,8 +145,8 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    if (rootFile != null && fileDialogMode == VFS_DIALOG_SAVEAS) {
 	      if (!rootFile.getFileSystem().hasCapability(Capability.WRITE_CONTENT)) {
 	        MessageBox messageDialog = new MessageBox(applicationShell, SWT.OK);
-	        messageDialog.setText(BaseMessages.getString("VfsFileChooserDialog.warning")); //$NON-NLS-1$
-	        messageDialog.setMessage(BaseMessages.getString("VfsFileChooserDialog.noWriteSupport")); //$NON-NLS-1$
+	        messageDialog.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.warning")); //$NON-NLS-1$
+	        messageDialog.setMessage(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.noWriteSupport")); //$NON-NLS-1$
 	        messageDialog.open();
 	      }
 	    }
@@ -178,8 +180,8 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	  }
 	
 	/**
-	 * Creates the File System Secltion and Connection panel.  These make
-	 * up the Haddop panel whcih this class provides in addition the base
+	 * Creates the File System Selection and Connection panel.  These make
+	 * up the Hadoop panel which this class provides in addition the base
 	 * classes panels.
 	 * 
 	 * @param dialog
@@ -187,7 +189,6 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	private void createHadoopPanel(Shell dialog) {
 	    createFileSystemSelectorPanel(dialog);
 	    createConnectionPanel(dialog);
-	    
 	}
 	
 	private void createFileSystemSelectorPanel(Shell dialog) {
@@ -207,7 +208,9 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    wHadoopFSRadioButton.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.FileSystemChoice.Hadoop.Label"));
 	    wHadoopFSRadioButton.addSelectionListener(new SelectionAdapter() {
 	        public void widgetSelected(SelectionEvent e) {
-	            System.out.println("Hadoop file system has been selected.");
+	            if (wHadoopFSRadioButton.getSelection()) {
+	                hadoopSelected();
+	            }
 	        }
 	    });
 
@@ -216,7 +219,9 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    wLocalFSRadioButton.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.FileSystemChoice.Local.Label"));
 	    wLocalFSRadioButton.addSelectionListener(new SelectionAdapter() {
 	        public void widgetSelected(SelectionEvent e) {
-	            System.out.println("Local file system has been selected.");
+	            if (wLocalFSRadioButton.getSelection()) {
+	                localSelected();
+	            }
 	        }
 	    });
 	    
@@ -231,81 +236,136 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
         Group connectionGroup = new Group(dialog, SWT.SHADOW_ETCHED_IN);
         connectionGroup.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.ConnectionGroup.Label")); //$NON-NLS-1$;
         GridLayout connectionGroupLayout = new GridLayout();
-        connectionGroupLayout.marginWidth = 3;
-        connectionGroupLayout.marginHeight = 3;
-        connectionGroupLayout.verticalSpacing = 3;
-        connectionGroupLayout.horizontalSpacing = 3;
+        connectionGroupLayout.marginWidth = 5;
+        connectionGroupLayout.marginHeight = 5;
+        connectionGroupLayout.verticalSpacing = 5;
+        connectionGroupLayout.horizontalSpacing = 5;
+        GridData gData = new GridData(SWT.FILL, SWT.FILL, true, false);
+        connectionGroup.setLayoutData(gData);
         connectionGroup.setLayout(connectionGroupLayout);
         
         //  The composite we need in the group
         Composite textFieldPanel = new Composite(connectionGroup, SWT.NONE);
 	    GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
 	    textFieldPanel.setLayoutData(gridData);
-	    textFieldPanel.setLayout(new GridLayout(4, false));
+	    textFieldPanel.setLayout(new GridLayout(5, false));
 	       	    
 	    //  URL label and text field
 	    wlUrl=new Label(textFieldPanel, SWT.RIGHT);
 	    wlUrl.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.URL.Label")); //$NON-NLS-1$
 	    fdlUrl=new GridData();
+	    fdlUrl.widthHint = 75;
 	    wlUrl.setLayoutData(fdlUrl);
-	        
 	    wUrl=new Text(textFieldPanel, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 
-	    //  Compute size of text fields - do this here as we need a Text
-	    //  and just created one.
-        int columns = 30;
-        GC gc = new GC (wUrl);
-        FontMetrics fm = gc.getFontMetrics ();
-        int width = columns * fm.getAverageCharWidth ();
-        int height = fm.getHeight ();
-        gc.dispose ();
-        wUrl.setSize (wUrl.computeSize (width, height));  
-
+        //wUrl.setSize(200, 20);
+        
 	    fdUrl=new GridData();
+	    fdUrl.widthHint = 150;
 	    wUrl.setLayoutData(fdUrl);
 	        
-	    //  Username label and field
-	    wlUsername=new Label(textFieldPanel, SWT.RIGHT); 
-	    wlUsername.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.Username.Label")); //$NON-NLS-1$
-	    fdlUsername=new GridData();
-	    wlUsername.setLayoutData(fdlUsername);
+	    //  UserID label and field
+	    wlUserID=new Label(textFieldPanel, SWT.RIGHT); 
+	    wlUserID.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.UserID.Label")); //$NON-NLS-1$
+	    fdlUserID=new GridData();
+	    fdlUserID.widthHint = 75;
+	    wlUserID.setLayoutData(fdlUserID);
 	           
-	    wUsername=new Text(textFieldPanel, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-	    wlUsername.setSize (wUsername.computeSize (width, height));
-	    fdUsername=new GridData();
-	    wUsername.setLayoutData(fdUsername);
+	    wUserID=new Text(textFieldPanel, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+	    //wlUserID.setSize(200, 20);
+	    fdUserID=new GridData();
+	    fdUserID.widthHint = 150;
+        wUserID.setLayoutData(fdUserID);
+	    
+	    //  Place holder
+	    wPlaceHolderLabel = new Label(textFieldPanel, SWT.RIGHT);
+	    wPlaceHolderLabel.setText("");
+	    fdlPlaceHolderLabel=new GridData();
+	    fdlPlaceHolderLabel.widthHint = 75;
+	    wlUserID.setLayoutData(fdlPlaceHolderLabel);
 	    
 	    // Port label and text field
 	    wlPort=new Label(textFieldPanel, SWT.RIGHT);
 	    wlPort.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.Port.Label")); //$NON-NLS-1$
 	    fdlPort=new GridData();
-	    wlPort.setLayoutData(fdlPort);
+	    fdlPort.widthHint = 75;
+        wlPort.setLayoutData(fdlPort);
 	            
 	    wPort=new Text(textFieldPanel, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-	    wPort.setSize (wPort.computeSize (width, height));
+	    //wPort.setSize(200, 20);
 	    fdPort=new GridData();
-	    wPort.setLayoutData(fdPort);
+	    fdPort.widthHint = 150;
+        wPort.setLayoutData(fdPort);
 	    
 	    //  password label and field
 	    wlPassword=new Label(textFieldPanel, SWT.RIGHT);
 	    wlPassword.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.Password.Label")); //$NON-NLS-1$
 	    fdlPassword=new GridData();
+	    fdlPassword.widthHint = 75;
 	    wlPassword.setLayoutData(fdlPassword);
 	               
 	    wPassword=new Text(textFieldPanel, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-	    wPassword.setSize (wPassword.computeSize (width, height));
+	    //wPassword.setSize(200, 20);
 	    wPassword.setEchoChar('*');
 	    fdPassword=new GridData();
-	    wPassword.setLayoutData(fdPassword);
+	    fdPassword.widthHint = 150;
+        wPassword.setLayoutData(fdPassword);
 	    
 	    //  Connection button
 	    wConnectionButton = new Button(textFieldPanel, SWT.RIGHT);
 	    wConnectionButton.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.ConnectionButton.Label"));
 	    wConnectionButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                System.out.println("The connection button has been pressed.");
+                openFileCombo.setText(buildHadoopFileSystemUrlString());
+                resolveVfsBrowser();
             }
         });
+	    
+	    //  set the tab order
+	    textFieldPanel.setTabList(
+	            new Control [] {wUrl, wPort, wUserID, wPassword, wConnectionButton});
+	}
+		
+	/**
+	 * Build a URL given Url and Port provided by the user.
+	 * @return
+	 */
+	public String buildHadoopFileSystemUrlString() {
+	    return "hdfs://"+wUrl.getText()+":"+wPort.getText();
+	}
 	
+	private String hadoopSelected() {
+	    String urlString = null;
+	    //  keep track of what local folder is
+        localFolder = openFileCombo.getText();
+        
+        if (!Const.isEmpty(wUrl.getText()) && !Const.isEmpty(wPort.getText())) {
+            urlString = buildHadoopFileSystemUrlString();
+            openFileCombo.setText(urlString);
+            resolveVfsBrowser();
+        }
+        else {
+            openFileCombo.setText("");
+            vfsBrowser.resetVfsRoot(null);
+        }
+        
+        return urlString;
+	}
+	
+	private void localSelected() {
+	    openFileCombo.setText(localFolder);
+	    resolveVfsBrowser();
+	}
+	
+	@Override
+	public void createVfsBrowser(Shell dialog) {
+	    String defaultFilter = null;
+	    if (fileFilters != null && fileFilters.length > 0) {
+	       defaultFilter = fileFilters[0];
+	    }
+	    vfsBrowser = new VfsBrowser(dialog, SWT.NONE, null, defaultFilter, fileDialogMode == VFS_DIALOG_SAVEAS ? true : false, false);
+	    vfsBrowser.addVfsBrowserListener(this);
+	    GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+	    vfsBrowser.setLayoutData(gridData);
 	}
 }
