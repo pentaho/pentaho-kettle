@@ -13,6 +13,8 @@ package org.pentaho.di.ui.job.entries.hadoopcopyfiles;
  * the license for the specific language governing your rights and limitations.
 */
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -40,6 +42,9 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.copyfiles.JobEntryCopyFiles;
@@ -53,7 +58,11 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
+import org.pentaho.vfs.ui.IVfsFileChooser;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 /**
  * This dialog allows you to edit the Copy Files job entry settings.
@@ -70,15 +79,19 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 	private static final String[] FILETYPES = new String[] 
 		{
 			BaseMessages.getString(BASE_PKG, "JobCopyFiles.Filetype.All") };
+
+	private LogChannel log = new LogChannel(this);
 	
 	private Label        wlName;
 	private Text         wName;
 	private FormData     fdlName, fdName;
 
 	private Label        wlSourceFileFolder;
-	private Button       wbSourceFileFolder,wbDestinationFileFolder,wbSourceDirectory,wbDestinationDirectory;
+//	private Button       wbSourceFileFolder,wbDestinationFileFolder,wbSourceBrowse,wbDestinationDirectory;
+	private Button       wbSourceBrowse,wbDestinationBrowse;
 	private TextVar      wSourceFileFolder;
-	private FormData     fdlSourceFileFolder, fdbSourceFileFolder, fdSourceFileFolder,fdbDestinationFileFolder,fdbSourceDirectory,fdbDestinationDirectory;
+//	private FormData     fdlSourceFileFolder, fdbSourceFileFolder, fdSourceFileFolder,fdbDestinationFileFolder,fdbSourceBrowse,fdbDestinationDirectory;
+	private FormData     fdlSourceFileFolder, fdSourceFileFolder, fdbSourceBrowse,fdbDestinationDirectory;
 	
 	private Label        wlCopyEmptyFolders;
 	private Button       wCopyEmptyFolders;
@@ -458,54 +471,65 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 		wlSourceFileFolder.setLayoutData(fdlSourceFileFolder);
 
 		// Browse Source folders button ...
-		wbSourceDirectory=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
-		props.setLook(wbSourceDirectory);
-		wbSourceDirectory.setText(BaseMessages.getString(BASE_PKG, "JobCopyFiles.BrowseFolders.Label"));
-		fdbSourceDirectory=new FormData();
-		fdbSourceDirectory.right= new FormAttachment(100, 0);
-		fdbSourceDirectory.top  = new FormAttachment(wSettings, margin);
-		wbSourceDirectory.setLayoutData(fdbSourceDirectory);
+		wbSourceBrowse=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbSourceBrowse);
+		wbSourceBrowse.setText(BaseMessages.getString(PKG, "JobCopyFiles.Browse.Label"));
+		fdbSourceBrowse=new FormData();
+		fdbSourceBrowse.right= new FormAttachment(100, 0);
+		fdbSourceBrowse.top  = new FormAttachment(wSettings, margin);
+		wbSourceBrowse.setLayoutData(fdbSourceBrowse);
 		
-		wbSourceDirectory.addSelectionListener
+		wbSourceBrowse.addSelectionListener
 		(
 			new SelectionAdapter()
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
-					if (wSourceFileFolder.getText()!=null)
-					{
-						ddialog.setFilterPath(jobMeta.environmentSubstitute(wSourceFileFolder.getText()) );
+					try {
+						IVfsFileBrowserFactory fileBrowserFactory = Spoon.getInstance().getVfsFileBrowserFactory();
+						
+						if(fileBrowserFactory == null) {
+							log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FactoryNotAvailable"));
+							return;
+						}
+						
+						// Get current file
+						FileObject rootFile = null;
+						FileObject initialFile = null;
+						
+						if (wSourceFileFolder.getText()!=null) {
+							String fileName = jobMeta.environmentSubstitute(wSourceFileFolder.getText());
+							if(fileName != null && !fileName.equals("")) {
+								initialFile = KettleVFS.getFileObject(fileName);
+							} else {
+								initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+							}
+							
+							rootFile = initialFile.getFileSystem().getRoot();
+						}
+						
+						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
+						
+						FileObject selectedFile = fileChooserDialog.open(shell, null, new String[]{"*.*"}, FILETYPES,
+								VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
+					    if (selectedFile != null) {
+					    	wSourceFileFolder.setText(selectedFile.getURL().toString());
+					    }
+					} catch (KettleFileException ex) {
+						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.KettleFileException"));
+					} catch (FileSystemException ex) {
+						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FileSystemException"));
 					}
-					
-					 // Calling open() will open and run the dialog.
-			        // It will return the selected directory, or
-			        // null if user cancels
-			        String dir = ddialog.open();
-			        if (dir != null) {
-			          // Set the text box to the new selection
-			        	wSourceFileFolder.setText(dir);
-			        }
-					
 				}
 			}
 		);
-		
-		// Browse Source files button ...
-		wbSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
-		props.setLook(wbSourceFileFolder);
-		wbSourceFileFolder.setText(BaseMessages.getString(BASE_PKG, "JobCopyFiles.BrowseFiles.Label"));
-		fdbSourceFileFolder=new FormData();
-		fdbSourceFileFolder.right= new FormAttachment(wbSourceDirectory, -margin);
-		fdbSourceFileFolder.top  = new FormAttachment(wSettings, margin);
-		wbSourceFileFolder.setLayoutData(fdbSourceFileFolder);
 		
 		// Browse Source file add button ...
 		wbaSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbaSourceFileFolder);
 		wbaSourceFileFolder.setText(BaseMessages.getString(BASE_PKG, "JobCopyFiles.FilenameAdd.Button"));
 		fdbaSourceFileFolder=new FormData();
-		fdbaSourceFileFolder.right= new FormAttachment(wbSourceFileFolder, -margin);
+		fdbaSourceFileFolder.right= new FormAttachment(wbSourceBrowse, -margin);
 		fdbaSourceFileFolder.top  = new FormAttachment(wSettings, margin);
 		wbaSourceFileFolder.setLayoutData(fdbaSourceFileFolder);
 
@@ -517,7 +541,7 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 		fdSourceFileFolder=new FormData();
 		fdSourceFileFolder.left = new FormAttachment(middle, 0);
 		fdSourceFileFolder.top  = new FormAttachment(wSettings, 2*margin);
-		fdSourceFileFolder.right= new FormAttachment(wbSourceFileFolder, -55);
+		fdSourceFileFolder.right= new FormAttachment(wbSourceBrowse, -55);
 		wSourceFileFolder.setLayoutData(fdSourceFileFolder);
 
 		// Whenever something changes, set the tooltip to the expanded version:
@@ -526,27 +550,6 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 			public void modifyText(ModifyEvent e)
 			{
 				wSourceFileFolder.setToolTipText(jobMeta.environmentSubstitute(wSourceFileFolder.getText() ) );
-			}
-		}
-			);
-
-		wbSourceFileFolder.addSelectionListener
-			(
-			new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				dialog.setFilterExtensions(new String[] {"*"});
-				if (wSourceFileFolder.getText()!=null)
-				{
-					dialog.setFileName(jobMeta.environmentSubstitute(wSourceFileFolder.getText()) );
-				}
-				dialog.setFilterNames(FILETYPES);
-				if (dialog.open()!=null)
-				{
-					wSourceFileFolder.setText(dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName());
-				}
 			}
 		}
 			);
@@ -564,54 +567,59 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 		
 		
 		// Browse Destination folders button ...
-		wbDestinationDirectory=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
-		props.setLook(wbDestinationDirectory);
-		wbDestinationDirectory.setText(BaseMessages.getString(BASE_PKG, "JobCopyFiles.BrowseFolders.Label"));
+		wbDestinationBrowse=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbDestinationBrowse);
+		wbDestinationBrowse.setText(BaseMessages.getString(PKG, "JobCopyFiles.Browse.Label"));
 		fdbDestinationDirectory=new FormData();
 		fdbDestinationDirectory.right= new FormAttachment(100, 0);
 		fdbDestinationDirectory.top  = new FormAttachment(wSourceFileFolder, margin);
-		wbDestinationDirectory.setLayoutData(fdbDestinationDirectory);
+		wbDestinationBrowse.setLayoutData(fdbDestinationDirectory);
 		
 		
-		wbDestinationDirectory.addSelectionListener
+		wbDestinationBrowse.addSelectionListener
 		(
 			new SelectionAdapter()
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
-					if (wDestinationFileFolder.getText()!=null)
-					{
-						ddialog.setFilterPath(jobMeta.environmentSubstitute(wDestinationFileFolder.getText()) );
+					try {
+						IVfsFileBrowserFactory fileBrowserFactory = Spoon.getInstance().getVfsFileBrowserFactory();
+						
+						if(fileBrowserFactory == null) {
+							log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FactoryNotAvailable"));
+							return;
+						}
+						
+						// Get current file
+						FileObject rootFile = null;
+						FileObject initialFile = null;
+						
+						if (wDestinationFileFolder.getText()!=null) {
+							String fileName = jobMeta.environmentSubstitute(wDestinationFileFolder.getText());
+							if(fileName != null && !fileName.equals("")) {
+								initialFile = KettleVFS.getFileObject(fileName);
+							} else {
+								initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+							}
+							
+							rootFile = initialFile.getFileSystem().getRoot();
+						}
+						
+						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
+						
+						FileObject selectedFile = fileChooserDialog.open(shell, null, new String[]{"*.*"}, FILETYPES,
+								VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
+					    if (selectedFile != null) {
+					    	wDestinationFileFolder.setText(selectedFile.getURL().toString());
+					    }
+					} catch (KettleFileException ex) {
+						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.KettleFileException"));
+					} catch (FileSystemException ex) {
+						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FileSystemException"));
 					}
-					
-					 // Calling open() will open and run the dialog.
-			        // It will return the selected directory, or
-			        // null if user cancels
-			        String dir = ddialog.open();
-			        if (dir != null) {
-			          // Set the text box to the new selection
-			        	wDestinationFileFolder.setText(dir);
-			        }
-					
 				}
 			}
 		);
-
-		
-		
-		
-		
-		// Browse Destination file browse button ...
-		wbDestinationFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
-		props.setLook(wbDestinationFileFolder);
-		wbDestinationFileFolder.setText(BaseMessages.getString(BASE_PKG, "JobCopyFiles.BrowseFiles.Label"));
-		fdbDestinationFileFolder=new FormData();
-		fdbDestinationFileFolder.right= new FormAttachment(wbDestinationDirectory, -margin);
-		fdbDestinationFileFolder.top  = new FormAttachment(wSourceFileFolder, margin);
-		wbDestinationFileFolder.setLayoutData(fdbDestinationFileFolder);
-		
-				
 		
 		wDestinationFileFolder = new TextVar(jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER); 
 		wDestinationFileFolder.setToolTipText(BaseMessages.getString(BASE_PKG, "JobCopyFiles.DestinationFileFolder.Tooltip"));
@@ -620,29 +628,8 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 		fdDestinationFileFolder = new FormData();
 		fdDestinationFileFolder.left = new FormAttachment(middle, 0);
 		fdDestinationFileFolder.top = new FormAttachment(wSourceFileFolder, margin);
-		fdDestinationFileFolder.right= new FormAttachment(wbSourceFileFolder, -55);
+		fdDestinationFileFolder.right= new FormAttachment(wbDestinationBrowse, -55);
 		wDestinationFileFolder.setLayoutData(fdDestinationFileFolder);
-		
-		wbDestinationFileFolder.addSelectionListener
-			(
-			new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				dialog.setFilterExtensions(new String[] {"*"});
-				if (wDestinationFileFolder.getText()!=null)
-				{
-					dialog.setFileName(jobMeta.environmentSubstitute(wDestinationFileFolder.getText()) );
-				}
-				dialog.setFilterNames(FILETYPES);
-				if (dialog.open()!=null)
-				{
-					wDestinationFileFolder.setText(dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName());
-				}
-			}
-		}
-			);
 
 		// Buttons to the right of the screen...
 		wbdSourceFileFolder=new Button(wGeneralComp, SWT.PUSH| SWT.CENTER);
@@ -683,7 +670,7 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 		fdWildcard = new FormData();
 		fdWildcard.left = new FormAttachment(middle, 0);
 		fdWildcard.top = new FormAttachment(wDestinationFileFolder, margin);
-		fdWildcard.right= new FormAttachment(wbSourceFileFolder, -55);
+		fdWildcard.right= new FormAttachment(wbSourceBrowse, -55);
 		wWildcard.setLayoutData(fdWildcard);
 
 		wlFields = new Label(wGeneralComp, SWT.NONE);
@@ -928,9 +915,9 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 		wFields.setEnabled(!wPrevious.getSelection());
 		wbdSourceFileFolder.setEnabled(!wPrevious.getSelection());
 		wbeSourceFileFolder.setEnabled(!wPrevious.getSelection());
-		wbSourceFileFolder.setEnabled(!wPrevious.getSelection());
+//		wbSourceFileFolder.setEnabled(!wPrevious.getSelection());
 		wbaSourceFileFolder.setEnabled(!wPrevious.getSelection());		
-		wbDestinationFileFolder.setEnabled(!wPrevious.getSelection());
+//		wbDestinationFileFolder.setEnabled(!wPrevious.getSelection());
 		wlDestinationFileFolder.setEnabled(!wPrevious.getSelection());
 		wDestinationFileFolder.setEnabled(!wPrevious.getSelection());
 		wlSourceFileFolder.setEnabled(!wPrevious.getSelection());
@@ -938,8 +925,8 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 		
 		wlWildcard.setEnabled(!wPrevious.getSelection());
 		wWildcard.setEnabled(!wPrevious.getSelection());	
-		wbSourceDirectory.setEnabled(!wPrevious.getSelection());
-		wbDestinationDirectory.setEnabled(!wPrevious.getSelection());
+		wbSourceBrowse.setEnabled(!wPrevious.getSelection());
+		wbDestinationBrowse.setEnabled(!wPrevious.getSelection());
 		
 		
 	}
