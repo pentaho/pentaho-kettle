@@ -212,6 +212,8 @@
 	<target name="kettle-w-plugin-dist">
 		<unzip dest="${bin.dir}/kettle-dist">
 			<fileset dir="${kettle.dist.dir}">
+				<exclude name="*-javadoc-*.zip"/>
+				<exclude name="*-src-*.zip"/>
 				<include name="pdi-ce-*.zip"/>
 			</fileset>
 		</unzip>
