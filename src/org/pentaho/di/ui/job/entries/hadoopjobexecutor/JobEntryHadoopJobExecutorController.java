@@ -16,5 +16,10 @@ package org.pentaho.di.ui.job.entries.hadoopjobexecutor;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
 public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler {
+
+	@Override
+	public String getName() {
+		return "jobEntryController";
+	}
 	
 }
