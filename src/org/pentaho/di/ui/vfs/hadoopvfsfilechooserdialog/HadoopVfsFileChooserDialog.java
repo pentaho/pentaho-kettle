@@ -32,15 +32,21 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.vfs.ui.IVfsFileChooser;
-import org.pentaho.vfs.ui.VfsBrowser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 public class HadoopVfsFileChooserDialog 
 extends VfsFileChooserDialog implements IVfsFileChooser {
    
+    //  for message resolution
     private static Class PKG = HadoopVfsFileChooserDialog.class;
+    
+    //  for logging    
+    private LogChannel log = new LogChannel(this);
     
     private Label        wlFileSystemChoice;
     private Button       wHadoopFSRadioButton;
@@ -72,10 +78,12 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 
     //  Connection button
     private Button       wConnectionButton;
-
-    //  local folder- when the Hadoop radio button is selected we use
-    //  this variable to save the local folder
-    String               localFolder; 
+    
+    //  File objects to keep track of when the user selects the radio buttons
+    FileObject localRootFile = null;
+    FileObject localInitialFile = null;
+    FileObject hadoopRootFile = null;
+    FileObject hadoopInitialFile = null;
 
     public HadoopVfsFileChooserDialog(FileObject rootFile, FileObject initialFile) {
         super(rootFile, initialFile);
@@ -111,25 +119,23 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    // create our ok/cancel buttons
 	    createButtonPanel(dialog);
 
-	    if(wHadoopFSRadioButton.getSelection()) {
-	        
-	       //  We set the local folder to the initial file name 
-	       localFolder = (initialFile!= null?initialFile.getName().getFriendlyURI():"");
-
+	    //  based on the initial file's protocol...
+	    if (initialFile.getName().getFriendlyURI().startsWith("hdfs:")) {
+	        setHadoopPanelEnabled(true);
+	    } else {
+	        setHadoopPanelEnabled(false);
 	    }
-	    else {
-	        // set the initial file selection
-	        try {
-	          vfsBrowser.selectTreeItemByFileObject(initialFile != null ? initialFile : rootFile, true);
-	          // vfsBrowser.setSelectedFileObject(initialFile);
-	          openFileCombo.setText(initialFile != null ? initialFile.getName().getFriendlyURI() : rootFile.getName().getFriendlyURI());
-	          updateParentFileCombo(initialFile != null ? initialFile : rootFile);
-	        } catch (FileSystemException e) {
-	          MessageBox box = new MessageBox(applicationShell);
-	          box.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.error")); //$NON-NLS-1$
-	          box.setMessage(e.getMessage());
-	          box.open();
-	        }
+
+	    try {
+	        vfsBrowser.selectTreeItemByFileObject(initialFile != null ? initialFile : rootFile, true);
+	        vfsBrowser.setSelectedFileObject(initialFile);
+	        openFileCombo.setText(initialFile != null ? initialFile.getName().getFriendlyURI() : rootFile.getName().getFriendlyURI());
+	        updateParentFileCombo(initialFile != null ? initialFile : rootFile);
+	    } catch (FileSystemException e) {
+	        MessageBox box = new MessageBox(applicationShell);
+	        box.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.error")); //$NON-NLS-1$
+	        box.setMessage(e.getMessage());
+	        box.open();
 	    }
 	    
 	    // set the size and show the dialog
@@ -209,7 +215,12 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    wHadoopFSRadioButton.addSelectionListener(new SelectionAdapter() {
 	        public void widgetSelected(SelectionEvent e) {
 	            if (wHadoopFSRadioButton.getSelection()) {
-	                hadoopSelected();
+	                try {
+	                    hadoopSelected();
+	                }
+	                catch (KettleException ke) {
+	                    log.logError(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.FileBrowser.KettleFileException"));
+	                }
 	            }
 	        }
 	    });
@@ -220,13 +231,26 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    wLocalFSRadioButton.addSelectionListener(new SelectionAdapter() {
 	        public void widgetSelected(SelectionEvent e) {
 	            if (wLocalFSRadioButton.getSelection()) {
-	                localSelected();
+	                try {
+	                    localSelected();
+	                }
+	                catch (KettleException ke) {
+	                    log.logError(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.FileBrowser.KettleFileException"));
+	                }
 	            }
 	        }
 	    });
 	    
 	    //  Select the hadoop radio button
-	    wHadoopFSRadioButton.setSelection(true);
+	    //  based on the file system of the initialFile
+	    if (rootFile != null) {
+	        if (rootFile.getName().getFriendlyURI().startsWith("file:")) {
+	            wLocalFSRadioButton.setSelection(true);
+	        }
+	        else {
+	            wHadoopFSRadioButton.setSelection(true);
+	        }
+	    }
 	    
 	}
 	
@@ -331,14 +355,27 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	 * @return
 	 */
 	public String buildHadoopFileSystemUrlString() {
-	    return "hdfs://"+wUrl.getText()+":"+wPort.getText();
+	    String urlString = "hdfs://"+wUrl.getText()+":"+wPort.getText();
+	    return urlString;
 	}
 	
-	private String hadoopSelected() {
+	private String hadoopSelected() 
+	    throws KettleException {
 	    String urlString = null;
-	    //  keep track of what local folder is
-        localFolder = openFileCombo.getText();
-        
+	    
+	    setLocalFileObjects(rootFile, initialFile);
+	    
+	    //  if our hadoop files are null
+	    if (hadoopRootFile==null || hadoopInitialFile == null) {
+	        
+	        //  we do this to avoid an NPR when the VfsBrowser is null 
+	        setDefaultLocalFileObjectsAsWorking();
+	    }
+	    else {
+	        setWorkingFileObjects(hadoopRootFile, hadoopInitialFile);
+	    }
+        setHadoopPanelEnabled(true);
+	            
         if (!Const.isEmpty(wUrl.getText()) && !Const.isEmpty(wPort.getText())) {
             urlString = buildHadoopFileSystemUrlString();
             openFileCombo.setText(urlString);
@@ -352,20 +389,62 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
         return urlString;
 	}
 	
-	private void localSelected() {
-	    openFileCombo.setText(localFolder);
-	    resolveVfsBrowser();
+	private void localSelected() 
+	    throws KettleException {
+	    setHadoopFileObjects(rootFile, initialFile);
+	    if (localRootFile==null || localRootFile == null) {
+	        setDefaultLocalFileObjectsAsWorking();
+	    }
+	    else {
+       	    setWorkingFileObjects(localRootFile, localInitialFile);
+	    }
+       	resolveVfsBrowser();
+	    setHadoopPanelEnabled(false);
 	}
 	
-	@Override
-	public void createVfsBrowser(Shell dialog) {
-	    String defaultFilter = null;
-	    if (fileFilters != null && fileFilters.length > 0) {
-	       defaultFilter = fileFilters[0];
+	private void setHadoopPanelEnabled(boolean enable) {
+	    
+	    if (enable) {
+	        wUrl.setEnabled(true);
+	        wPort.setEnabled(true);
+	        wUserID.setEnabled(true);
+	        wPassword.setEnabled(true);
+	        wConnectionButton.setEnabled(true);
 	    }
-	    vfsBrowser = new VfsBrowser(dialog, SWT.NONE, null, defaultFilter, fileDialogMode == VFS_DIALOG_SAVEAS ? true : false, false);
-	    vfsBrowser.addVfsBrowserListener(this);
-	    GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-	    vfsBrowser.setLayoutData(gridData);
+	    else {
+	        wUrl.setEnabled(false);
+            wPort.setEnabled(false);
+            wUserID.setEnabled(false);
+            wPassword.setEnabled(false);
+            wConnectionButton.setEnabled(false);         
+	    }
+	}
+	
+	private void setLocalFileObjects(FileObject rootFile, FileObject initialFile) {
+	    localRootFile = rootFile;
+	    localInitialFile = initialFile;
+	}
+	
+	private void setHadoopFileObjects(FileObject rootFile, FileObject initialFile) {
+	    hadoopRootFile = rootFile;
+	    hadoopInitialFile = initialFile;
+	}
+		
+	private void setWorkingFileObjects(FileObject rootFile, FileObject initialFile) {
+	    this.rootFile = rootFile;
+	    this.initialFile = initialFile;
+	}
+	
+	private void setDefaultLocalFileObjectsAsWorking() 
+	    throws KettleException {
+	    
+	    try {
+	        //initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+	        initialFile = KettleVFS.getFileObject("file:///C:/");
+	        rootFile = initialFile.getFileSystem().getRoot();
+	    }
+	    catch (FileSystemException fse) {
+	        throw new KettleException(fse);
+	    }
 	}
 }
