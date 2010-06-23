@@ -3,7 +3,7 @@
 <dialog id="job-entry-dialog"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     xmlns:pen="http://www.pentaho.org/2008/xul" 
-	title="${RepositoryExplorerDialog.Title}"
+	title="${JobEntryDialog.Title}"
 	resizable="true"
     height="600" width="800"
 	appicon="ui/images/spoon.ico"
@@ -12,7 +12,13 @@
 	buttonlabelaccept="${Dialog.Close}" 
 	ondialogaccept="">
 	
-		
+	<vbox>
+		<label value="${JobEntry.Name.Label}"/>
+		<hbox>
+		  <radio label="${JobEntryHadoopJobExecutor.ModeSimple.Label}"/>
+		  <radio label="${JobEntryHadoopJobExecutor.ModeAdvanced.Label}" selected="true"/>
+		</hbox>
+	</vbox>
 	
 	
 </dialog>
