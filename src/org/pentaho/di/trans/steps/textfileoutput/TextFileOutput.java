@@ -310,7 +310,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                     throw new KettleValueException("Unable to convert String to Binary with specified string encoding ["+v.getStringEncoding()+"]", e);
                 }
             }
-        	if( length > string.length() ) 
+        	if( length > string.length() && meta.isPadded()) 
         	{
         		// we need to pad this
         		
