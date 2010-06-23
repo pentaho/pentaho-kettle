@@ -2611,7 +2611,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		            transLogTable.findField(TransLogTable.ID.LOG_FIELD).setEnabled( "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "USE_LOGFIELD")) ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		            transLogTable.setLogSizeLimit( XMLHandler.getTagValue(infonode, "log", "size_limit_lines") ); //$NON-NLS-1$ //$NON-NLS-2$
 		            transLogTable.setLogInterval( XMLHandler.getTagValue(infonode, "log", "interval") ); //$NON-NLS-1$ //$NON-NLS-2$
-		            
+		            transLogTable.findField(TransLogTable.ID.CHANNEL_ID).setEnabled(false);
+		            transLogTable.findField(TransLogTable.ID.LINES_REJECTED).setEnabled(false);
 		            performanceLogTable.setConnectionName(transLogTable.getConnectionName());
 					performanceLogTable.setTableName( XMLHandler.getTagValue(infonode, "log", "step_performance_table")); //$NON-NLS-1$ //$NON-NLS-2$
 				} else {

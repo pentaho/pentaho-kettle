@@ -914,6 +914,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				jobLogTable.setTableName( XMLHandler.getTagValue(jobnode, "logtable") );
 				jobLogTable.setBatchIdUsed( "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid")) );
 				jobLogTable.setLogFieldUsed( "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield")) );
+				jobLogTable.findField(JobLogTable.ID.CHANNEL_ID).setEnabled(false);
+                jobLogTable.findField(JobLogTable.ID.LINES_REJECTED).setEnabled(false);
 			} else {
 				jobLogTable.loadXML(jobLogNode, databases);
 			}
