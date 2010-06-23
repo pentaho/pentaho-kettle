@@ -29,10 +29,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -64,13 +62,6 @@ import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
 import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
-/**
- * This dialog allows you to edit the Copy Files job entry settings.
- *
- * @author Samatar Hassan
- * @since  06-05-2007
- */
-
 public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
 	private static Class<?> BASE_PKG = JobEntryCopyFiles.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -87,10 +78,8 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 	private FormData     fdlName, fdName;
 
 	private Label        wlSourceFileFolder;
-//	private Button       wbSourceFileFolder,wbDestinationFileFolder,wbSourceBrowse,wbDestinationDirectory;
 	private Button       wbSourceBrowse,wbDestinationBrowse;
 	private TextVar      wSourceFileFolder;
-//	private FormData     fdlSourceFileFolder, fdbSourceFileFolder, fdSourceFileFolder,fdbDestinationFileFolder,fdbSourceBrowse,fdbDestinationDirectory;
 	private FormData     fdlSourceFileFolder, fdSourceFileFolder, fdbSourceBrowse,fdbDestinationDirectory;
 	
 	private Label        wlCopyEmptyFolders;
