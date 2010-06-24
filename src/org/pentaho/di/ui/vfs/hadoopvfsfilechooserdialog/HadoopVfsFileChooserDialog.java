@@ -20,6 +20,8 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.provider.GenericFileName;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
@@ -302,6 +304,12 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    fdUrl=new GridData();
 	    fdUrl.widthHint = 150;
 	    wUrl.setLayoutData(fdUrl);
+	    wUrl.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                handleConnectionButton();
+            }
+        });
+
 	        
 	    //  UserID label and field
 	    wlUserID=new Label(textFieldPanel, SWT.RIGHT); 
@@ -333,6 +341,12 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    fdPort=new GridData();
 	    fdPort.widthHint = 150;
         wPort.setLayoutData(fdPort);
+        wPort.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                handleConnectionButton();
+            }
+        });
+
 	    
 	    //  password label and field
 	    wlPassword=new Label(textFieldPanel, SWT.RIGHT);
@@ -439,20 +453,20 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	        wPort.setEnabled(true);
 	        wUserID.setEnabled(true);
 	        wPassword.setEnabled(true);
-	        wConnectionButton.setEnabled(true);
+	        this.handleConnectionButton();
 	    }
 	    else {
 	        wUrl.setEnabled(false);
             wPort.setEnabled(false);
             wUserID.setEnabled(false);
-            wPassword.setEnabled(false);
-            wConnectionButton.setEnabled(false);         
+            wPassword.setEnabled(false);    
 	    }
 	}
 
 	private void initializeConnectionPanel(Shell dialog) {
 	    
 	    if (initialFile instanceof HDFSFileObject) {
+	        
             setHadoopPanelEnabled(true);
             
             //  populate the server and port fields
@@ -465,8 +479,11 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
                 showMessageAndLog(dialog, "HadoopVfsFileChooserDialog.error", "HadoopVfsFileChooserDialog.FileSystem.error", fse.getMessage());
             }
         } else {
+            
             setHadoopPanelEnabled(false);
         }
+	    
+	    handleConnectionButton();
 	}
 	
 	private void setLocalInformation(FileObject localRootFile, String openFromFolder) {
@@ -501,5 +518,14 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
         box.setMessage(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.FileSystem.error"));
         log.logError(messageToLog);
         box.open();
+	}
+	
+	private void handleConnectionButton() {
+	    if (!Const.isEmpty(wUrl.getText()) && !Const.isEmpty(wPort.getText()) ) {
+	        wConnectionButton.setEnabled(true);
+	    }
+	    else {
+	        wConnectionButton.setEnabled(false);
+	    }
 	}
 }
