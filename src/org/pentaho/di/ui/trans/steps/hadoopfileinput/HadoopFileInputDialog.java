@@ -118,6 +118,7 @@ import org.pentaho.di.ui.trans.steps.textfileinput.DirectoryDialogButtonListener
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage1;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage2;
+import org.pentaho.di.ui.vfs.hadoopvfsfilechooserdialog.HadoopVfsFileChooserDialog;
 import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
 import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
@@ -628,21 +629,24 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
 						// Get current file
 						FileObject rootFile = null;
 						FileObject initialFile = null;
+						FileObject defaultInitialFile = null;
 						
 						if (wFilename.getText()!=null) {
 							String fileName = transMeta.environmentSubstitute(wFilename.getText());
+							
 							if(fileName != null && !fileName.equals("")) {
 								initialFile = KettleVFS.getFileObject(fileName);
-							} else {
-								initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+								defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
+		                        rootFile = initialFile.getFileSystem().getRoot();
 							}
-							
-							rootFile = initialFile.getFileSystem().getRoot();
+							else {
+							    defaultInitialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+							}
 						}
 						
 						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
 						
-						FileObject selectedFile = fileChooserDialog.open(shell, null, fileFilters, fileFilterNames,
+						FileObject selectedFile = ((HadoopVfsFileChooserDialog)fileChooserDialog).open(shell, defaultInitialFile, null, fileFilters, fileFilterNames,
 								VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
 					    if (selectedFile != null) {
 					      wFilename.setText(selectedFile.getURL().toString());
