@@ -13,6 +13,21 @@
 	ondialogaccept="">
 	
 	<vbox>
+		<hbox>
+			<label value="${JobEntry.Name.Label}" />
+			<textbox id="jobentry-name" flex="1" multiline="false"/>
+		</hbox>
+		<hbox>
+			<label value="${JobEntry.HadoopJob.Name.Label}" />
+			<textbox id="jobentry-hadoopjob-name" flex="1" multiline="false"/>
+		</hbox>
+		<hbox>
+			<label value="${JobEntry.HadoopJob.Jar.Label}" />
+			<textbox id="jobentry-hadoopjob-jar" flex="1" multiline="false"/>
+		</hbox>
+	</vbox>
+	
+	<vbox>
 		<label value="${JobEntry.Name.Label}"/>
 		<hbox>
 		  <radio label="${JobEntryHadoopJobExecutor.ModeSimple.Label}"/>
@@ -20,5 +35,8 @@
 		</hbox>
 	</vbox>
 	
+	<vbox>
+		
+	</vbox>
 	
 </dialog>
