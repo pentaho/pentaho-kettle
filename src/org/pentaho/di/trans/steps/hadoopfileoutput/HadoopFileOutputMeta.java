@@ -18,7 +18,7 @@ package org.pentaho.di.trans.steps.hadoopfileoutput;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 
-@Step(id = "HadoopFileOutputPlugin", image = "HDP.png", name = "Hadoop File Output", description="Create files in an HDFS location", categoryDescription="Hadoop")
+@Step(id = "HadoopFileOutputPlugin", image = "HDO.png", name = "Hadoop File Output", description="Create files in an HDFS location", categoryDescription="Hadoop")
 public class HadoopFileOutputMeta extends TextFileOutputMeta {
 
 }

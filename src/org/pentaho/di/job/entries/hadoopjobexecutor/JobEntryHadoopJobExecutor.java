@@ -27,7 +27,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
-@JobEntry (id="HadoopJobExecutorPlugin", name="Hadoop Job Executor", categoryDescription="Hadoop", description="Execute Map/Reduce jobs in Hadoop", image = "HDP.png")
+@JobEntry (id="HadoopJobExecutorPlugin", name="Hadoop Job Executor", categoryDescription="Hadoop", description="Execute Map/Reduce jobs in Hadoop", image = "HDE.png")
 public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable, JobEntryInterface{
 
 	public Result execute(Result arg0, int arg1) throws KettleException {
