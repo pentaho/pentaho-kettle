@@ -13,10 +13,12 @@
  */
 
 package org.pentaho.di.ui.vfs.hadoopvfsfilechooserdialog;
+
 import org.apache.commons.vfs.Capability;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs.provider.GenericFileName;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,6 +38,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.hdfs.vfs.HDFSFileObject;
 import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -43,7 +46,7 @@ public class HadoopVfsFileChooserDialog
 extends VfsFileChooserDialog implements IVfsFileChooser {
    
     //  for message resolution
-    private static Class PKG = HadoopVfsFileChooserDialog.class;
+    private static Class<?> PKG = HadoopVfsFileChooserDialog.class;
     
     //  for logging    
     private LogChannel log = new LogChannel(this);
@@ -102,7 +105,8 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    }
 
 	    dialog.setLayout(new GridLayout());
-        //  Create the Hadoop panel 
+        
+	    //  Create the Hadoop panel 
         createHadoopPanel(dialog);
 	    
 	    // create our file chooser tool bar, contains parent folder combo and various controls
@@ -119,23 +123,20 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    // create our ok/cancel buttons
 	    createButtonPanel(dialog);
 
-	    //  based on the initial file's protocol...
-	    if (initialFile.getName().getFriendlyURI().startsWith("hdfs:")) {
-	        setHadoopPanelEnabled(true);
-	    } else {
-	        setHadoopPanelEnabled(false);
-	    }
+        //  based on the initial file's class
+        if (initialFile instanceof HDFSFileObject) {
+            setHadoopPanelEnabled(true);
+        } else {
+            setHadoopPanelEnabled(false);
+        }
 
 	    try {
 	        vfsBrowser.selectTreeItemByFileObject(initialFile != null ? initialFile : rootFile, true);
 	        vfsBrowser.setSelectedFileObject(initialFile);
 	        openFileCombo.setText(initialFile != null ? initialFile.getName().getFriendlyURI() : rootFile.getName().getFriendlyURI());
 	        updateParentFileCombo(initialFile != null ? initialFile : rootFile);
-	    } catch (FileSystemException e) {
-	        MessageBox box = new MessageBox(applicationShell);
-	        box.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.error")); //$NON-NLS-1$
-	        box.setMessage(e.getMessage());
-	        box.open();
+	    } catch (FileSystemException fse) {
+	        showMessageAndLog(dialog, "HadoopVfsFileChooserDialog.error", "HadoopVfsFileChooserDialog.FileSystem.error", fse.getMessage());
 	    }
 	    
 	    // set the size and show the dialog
@@ -195,6 +196,7 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	private void createHadoopPanel(Shell dialog) {
 	    createFileSystemSelectorPanel(dialog);
 	    createConnectionPanel(dialog);
+	    initializeConnectionPanel(dialog);
 	}
 	
 	private void createFileSystemSelectorPanel(Shell dialog) {
@@ -241,17 +243,15 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	        }
 	    });
 	    
-	    //  Select the hadoop radio button
-	    //  based on the file system of the initialFile
+	    //  based on rootFile class, set the radio buttons 
 	    if (rootFile != null) {
-	        if (rootFile.getName().getFriendlyURI().startsWith("file:")) {
-	            wLocalFSRadioButton.setSelection(true);
-	        }
-	        else {
+	        if (rootFile instanceof HDFSFileObject) {
 	            wHadoopFSRadioButton.setSelection(true);
 	        }
+	        else {
+	            wLocalFSRadioButton.setSelection(true);
+	        }
 	    }
-	    
 	}
 	
 	private void createConnectionPanel(Shell dialog) {
@@ -419,6 +419,25 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
             wConnectionButton.setEnabled(false);         
 	    }
 	}
+
+	private void initializeConnectionPanel(Shell dialog) {
+	    
+	    if (initialFile instanceof HDFSFileObject) {
+            setHadoopPanelEnabled(true);
+            
+            //  populate the server and port fields
+            try {
+                GenericFileName genericFileName = (GenericFileName)initialFile.getFileSystem().getRoot().getName();
+                wUrl.setText(genericFileName.getHostName());
+                wPort.setText(String.valueOf(genericFileName.getPort()));
+            }
+            catch (FileSystemException fse) {
+                showMessageAndLog(dialog, "HadoopVfsFileChooserDialog.error", "HadoopVfsFileChooserDialog.FileSystem.error", fse.getMessage());
+            }
+        } else {
+            setHadoopPanelEnabled(false);
+        }
+	}
 	
 	private void setLocalFileObjects(FileObject rootFile, FileObject initialFile) {
 	    localRootFile = rootFile;
@@ -446,5 +465,13 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    catch (FileSystemException fse) {
 	        throw new KettleException(fse);
 	    }
+	}
+	
+	private void showMessageAndLog(Shell dialog, String title, String message, String messageToLog) {
+        MessageBox box = new MessageBox(dialog);
+        box.setText(BaseMessages.getString(PKG, title)); //$NON-NLS-1$
+        box.setMessage(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.FileSystem.error"));
+        log.logError(messageToLog);
+        box.open();
 	}
 }

@@ -1194,7 +1194,7 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
 						
 						FileObject selectedFile = fileChooserDialog.open(shell, null, fileFilters, fileFilterNames,
-								VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
+								VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
 					    if (selectedFile != null) {
 					    	String filename = selectedFile.getURL().toString();
 					    	
