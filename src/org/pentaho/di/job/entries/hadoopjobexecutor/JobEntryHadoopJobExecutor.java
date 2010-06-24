@@ -29,7 +29,47 @@ import org.w3c.dom.Node;
 
 @JobEntry (id="HadoopJobExecutorPlugin", name="Hadoop Job Executor", categoryDescription="Hadoop", description="Execute Map/Reduce jobs in Hadoop", image = "HDE.png")
 public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable, JobEntryInterface{
-
+	private String hadoopJobName;
+	private String jarUrl;
+	
+	private boolean isSimple;
+	
+	private String cmdLineArgs;
+	
+	private String outputKeyClass;
+	private String outputKeyValue;
+	private String mapperClass;
+	private String combinerClass;
+	private String reducerClass;
+	private String inputFormat;
+	private String outputFormat;
+	
+	private String workingDirectory;
+	private String fsDefaultName;
+	private String inputPath;
+	private String outputPath;
+	
+	private List<UserDefinedItem> userDefined;
+	
+	public class UserDefinedItem {
+		private String name;
+		private String value;
+		
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+	}
+	
+	
 	public Result execute(Result arg0, int arg1) throws KettleException {
 		// TODO Auto-generated method stub
 		return null;
