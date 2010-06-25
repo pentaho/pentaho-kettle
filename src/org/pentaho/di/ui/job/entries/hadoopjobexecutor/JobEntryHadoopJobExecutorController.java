@@ -47,6 +47,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 		String newVal = stepName;
 		
 		this.stepName = stepName;
+		firePropertyChange(JobEntryHadoopJobExecutorController.STEP_NAME, previousVal, newVal);
 	}
 
 	public String getHadoopJobName() {
@@ -54,7 +55,11 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 	}
 
 	public void setHadoopJobName(String hadoopJobName) {
+		String previousVal = this.hadoopJobName;
+		String newVal = hadoopJobName;
+		
 		this.hadoopJobName = hadoopJobName;
+		firePropertyChange(JobEntryHadoopJobExecutorController.HADOOP_JOB_NAME, previousVal, newVal);
 	}
 
 	public String getJarUrl() {
@@ -62,7 +67,11 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 	}
 
 	public void setJarUrl(String jarUrl) {
+		String previousVal = this.jarUrl;
+		String newVal = jarUrl;
+		
 		this.jarUrl = jarUrl;
+		firePropertyChange(JobEntryHadoopJobExecutorController.JAR_URL, previousVal, newVal);
 	}
 
 	public boolean isSimple() {
@@ -70,7 +79,11 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 	}
 
 	public void setSimple(boolean isSimple) {
+		boolean previousVal = this.isSimple;
+		boolean newVal = isSimple;
+		
 		this.isSimple = isSimple;
+		firePropertyChange(JobEntryHadoopJobExecutorController.IS_SIMPLE, previousVal, newVal);
 	}
 
 	public interface IConfiguration {

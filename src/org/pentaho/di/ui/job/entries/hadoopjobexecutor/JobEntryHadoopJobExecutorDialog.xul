@@ -13,30 +13,142 @@
 	ondialogaccept="">
 	
 	<vbox>
-		<hbox>
-			<label value="${JobEntry.Name.Label}" />
-			<textbox id="jobentry-name" flex="1" multiline="false"/>
-		</hbox>
-		<hbox>
-			<label value="${JobEntry.HadoopJob.Name.Label}" />
-			<textbox id="jobentry-hadoopjob-name" flex="1" multiline="false"/>
-		</hbox>
-		<hbox>
-			<label value="${JobEntry.HadoopJob.Jar.Label}" />
-			<textbox id="jobentry-hadoopjob-jar" flex="1" multiline="false"/>
-		</hbox>
-	</vbox>
-	
-	<vbox>
-		<label value="${JobEntry.Name.Label}"/>
-		<hbox>
-		  <radio label="${JobEntryHadoopJobExecutor.ModeSimple.Label}"/>
-		  <radio label="${JobEntryHadoopJobExecutor.ModeAdvanced.Label}" selected="true"/>
-		</hbox>
-	</vbox>
-	
-	<vbox>
+		<grid>
+			<columns>
+				<column/>
+				<column flex="1"/>
+			</columns>
+			<rows>
+				<row>
+					<label value="${JobEntry.Name.Label}"/>
+					<textbox id="jobentry-name" flex="1" multiline="false"/>
+				</row>
+				<row>
+					<label value="${JobEntryHadoopJobExecutor.Name.Label}" />
+					<textbox id="jobentry-hadoopjob-name" flex="1" multiline="false"/>
+				</row>
+				<row>
+					<label value="${JobEntryHadoopJobExecutor.JarUrl.Label}" />
+					<hbox>
+						<textbox id="jar-url" flex="1" multiline="false"/>
+						<button id="validate-jar-url" label="${JobEntryHadoopJobExecutor.JarUrl.Validate}"/>
+					</hbox>
+				</row>
+			</rows>
+		</grid>
 		
+		<groupbox>
+			<caption label="${JobEntryHadoopJobExecutor.Configuration.Label}"/>
+			<hbox>
+			  <radio label="${JobEntryHadoopJobExecutor.ModeSimple.Label}"/>
+			  <radio label="${JobEntryHadoopJobExecutor.ModeAdvanced.Label}" selected="true"/>
+			</hbox>
+			<vbox id="content-pane" />
+		</groupbox>
 	</vbox>
 	
+	<vbox id="simple-configuration" hidden="true">
+		<label value="${JobEntryHadoopJobExecutor.ModeSimple.AssumptionsText.Label}"/>
+		<hbox>
+			<label value="{$JobEntryHadoopJobExecutor.ModeSimple.CommandLineArguments.Label}"/>
+			<textbox flex="1" multiline="true"/>
+		</hbox>
+	</vbox>
+	
+	<vbox id="advanced-configuration" hidden="false">
+		<tabbox>
+			<tabs>
+				<tab label="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.Label}"/>
+				<tab label="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.Label}"/>
+				<tab label="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.UserDefined.Label}"/>
+  			</tabs>
+			<tabpanels>
+    			<tabpanel>
+    				<grid>
+    					<columns>
+    						<column />
+    						<column flex="1"/>
+    					</columns>
+    					<rows>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyClass.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyValue.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.MapperClass.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.CombinerClass.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.ReducerClass.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.InputFormat.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputFormat.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    					</rows>
+    				</grid>
+    			</tabpanel>
+    			<tabpanel>
+    				<grid>
+    					<columns>
+    						<column />
+    						<column flex="1"/>
+    					</columns>
+    					<rows>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.WorkingDirectory.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.HDFSHostname.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.HDFSPort.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.JobTrackerHostname.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.JobTrackerPort.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.InputPath.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.OutputPath.Label}" />
+    							<textbox flex="1" multiline="false"/>
+    						</row>
+    					</rows>
+    				</grid>
+    			</tabpanel>
+    			<tabpanel>
+    				<tree id="fields-table" flex="1" hidecolumnpicker="true" autocreatenewrows="true" newitembinding="handler.addNewRow()">
+						<treecols>
+							<treecol id="name-col" editable="true" flex="1" label="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.UserDefined.NameColumn.Label}" pen:binding="name"/>
+							<treecol id="type-col" editable="true" flex="1" label="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.UserDefined.ValueColumn.Label}" pen:binding="type"/>
+						</treecols>
+						<treechildren />
+					</tree>
+    			</tabpanel>
+  			</tabpanels>
+		</tabbox>
+	</vbox>
 </dialog>
