@@ -41,7 +41,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -73,6 +72,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+import org.pentaho.di.ui.vfs.hadoopvfsfilechooserdialog.HadoopVfsFileChooserDialog;
 import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
 import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
@@ -1179,22 +1179,23 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 						// Get current file
 						FileObject rootFile = null;
 						FileObject initialFile = null;
+						FileObject defaultInitialFile = null;
 						
 						if (wFilename.getText()!=null) {
 							String fileName = transMeta.environmentSubstitute(wFilename.getText());
 							if(fileName != null && !fileName.equals("")) {
 								initialFile = KettleVFS.getFileObject(fileName);
+								defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
+                                rootFile = initialFile.getFileSystem().getRoot();
 							} else {
 								initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
 							}
-							
-							rootFile = initialFile.getFileSystem().getRoot();
 						}
 						
 						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
 						
-						FileObject selectedFile = fileChooserDialog.open(shell, null, fileFilters, fileFilterNames,
-								VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
+						FileObject selectedFile = ((HadoopVfsFileChooserDialog)fileChooserDialog).open(shell, defaultInitialFile, 
+						        null, fileFilters, fileFilterNames, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
 					    if (selectedFile != null) {
 					    	String filename = selectedFile.getURL().toString();
 					    	

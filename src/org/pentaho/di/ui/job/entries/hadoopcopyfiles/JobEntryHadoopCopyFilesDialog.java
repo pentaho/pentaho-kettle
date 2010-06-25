@@ -58,6 +58,7 @@ import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.vfs.hadoopvfsfilechooserdialog.HadoopVfsFileChooserDialog;
 import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
 import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
@@ -474,41 +475,7 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					try {
-						IVfsFileBrowserFactory fileBrowserFactory = Spoon.getInstance().getVfsFileBrowserFactory();
-						
-						if(fileBrowserFactory == null) {
-							log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FactoryNotAvailable"));
-							return;
-						}
-						
-						// Get current file
-						FileObject rootFile = null;
-						FileObject initialFile = null;
-						
-						if (wSourceFileFolder.getText()!=null) {
-							String fileName = jobMeta.environmentSubstitute(wSourceFileFolder.getText());
-							if(fileName != null && !fileName.equals("")) {
-								initialFile = KettleVFS.getFileObject(fileName);
-							} else {
-								initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
-							}
-							
-							rootFile = initialFile.getFileSystem().getRoot();
-						}
-						
-						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
-						
-						FileObject selectedFile = fileChooserDialog.open(shell, null, new String[]{"*.*"}, FILETYPES,
-								VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
-					    if (selectedFile != null) {
-					    	wSourceFileFolder.setText(selectedFile.getURL().toString());
-					    }
-					} catch (KettleFileException ex) {
-						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.KettleFileException"));
-					} catch (FileSystemException ex) {
-						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FileSystemException"));
-					}
+					setSelectedFile();
 				}
 			}
 		);
@@ -571,41 +538,7 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					try {
-						IVfsFileBrowserFactory fileBrowserFactory = Spoon.getInstance().getVfsFileBrowserFactory();
-						
-						if(fileBrowserFactory == null) {
-							log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FactoryNotAvailable"));
-							return;
-						}
-						
-						// Get current file
-						FileObject rootFile = null;
-						FileObject initialFile = null;
-						
-						if (wDestinationFileFolder.getText()!=null) {
-							String fileName = jobMeta.environmentSubstitute(wDestinationFileFolder.getText());
-							if(fileName != null && !fileName.equals("")) {
-								initialFile = KettleVFS.getFileObject(fileName);
-							} else {
-								initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
-							}
-							
-							rootFile = initialFile.getFileSystem().getRoot();
-						}
-						
-						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
-						
-						FileObject selectedFile = fileChooserDialog.open(shell, null, new String[]{"*.*"}, FILETYPES,
-								VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
-					    if (selectedFile != null) {
-					    	wDestinationFileFolder.setText(selectedFile.getURL().toString());
-					    }
-					} catch (KettleFileException ex) {
-						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.KettleFileException"));
-					} catch (FileSystemException ex) {
-						log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FileSystemException"));
-					}
+					setSelectedFile();
 				}
 			}
 		);
@@ -1025,6 +958,57 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 		}
 		dispose();
 	}
+	
+    private FileObject setSelectedFile() {
+        
+        FileObject selectedFile = null;
+        
+        try {
+            IVfsFileBrowserFactory fileBrowserFactory = Spoon.getInstance().getVfsFileBrowserFactory();
+            
+            if(fileBrowserFactory == null) {
+                log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FactoryNotAvailable"));
+                return selectedFile;
+            }
+            
+            // Get current file
+            FileObject rootFile = null;
+            FileObject initialFile = null;
+            FileObject defaultInitialFile = null;
+            
+            if (wSourceFileFolder.getText()!=null) {
+                
+                String fileName = jobMeta.environmentSubstitute(wSourceFileFolder.getText());
+                
+                if(fileName != null && !fileName.equals("")) {
+                    initialFile = KettleVFS.getFileObject(fileName);
+                    defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
+                    rootFile = initialFile.getFileSystem().getRoot();
+                } else {
+                    defaultInitialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+                }
+            }
+            
+            IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
+            
+            selectedFile = ((HadoopVfsFileChooserDialog)fileChooserDialog).open(shell, defaultInitialFile, 
+                    null, new String[]{"*.*"}, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
+            
+            if (selectedFile != null) {
+                wSourceFileFolder.setText(selectedFile.getURL().toString());            
+            }
+            
+            return selectedFile;
+            
+        } catch (KettleFileException ex) {
+            log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.KettleFileException"));
+            return selectedFile;
+        } catch (FileSystemException ex) {
+            log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FileSystemException"));
+            return selectedFile;
+        }
+    }
+	
 
 	public String toString()
 	{
