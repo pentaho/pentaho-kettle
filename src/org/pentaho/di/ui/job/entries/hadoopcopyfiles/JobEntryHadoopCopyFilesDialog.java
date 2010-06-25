@@ -475,7 +475,7 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					setSelectedFile();
+					setSelectedFile(wSourceFileFolder);
 				}
 			}
 		);
@@ -538,7 +538,7 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					setSelectedFile();
+					setSelectedFile(wDestinationFileFolder);
 				}
 			}
 		);
@@ -959,7 +959,7 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
 		dispose();
 	}
 	
-    private FileObject setSelectedFile() {
+    private FileObject setSelectedFile(TextVar textVar) {
         
         FileObject selectedFile = null;
         
@@ -976,9 +976,9 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
             FileObject initialFile = null;
             FileObject defaultInitialFile = null;
             
-            if (wSourceFileFolder.getText()!=null) {
+            if (textVar.getText()!=null) {
                 
-                String fileName = jobMeta.environmentSubstitute(wSourceFileFolder.getText());
+                String fileName = jobMeta.environmentSubstitute(textVar.getText());
                 
                 if(fileName != null && !fileName.equals("")) {
                     initialFile = KettleVFS.getFileObject(fileName);
@@ -995,7 +995,7 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
                     null, new String[]{"*.*"}, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
             
             if (selectedFile != null) {
-                wSourceFileFolder.setText(selectedFile.getURL().toString());            
+                textVar.setText(selectedFile.getURL().toString());            
             }
             
             return selectedFile;
