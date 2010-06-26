@@ -106,8 +106,6 @@ public class ExecProcess extends BaseStep implements StepInterface
          	
         	// Add result field to input stream
     		outputRow[data.NrPrevFields]= resultString;
-    		int rowIndex=data.NrPrevFields;
-    		rowIndex++;
 
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);

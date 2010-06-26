@@ -39,8 +39,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-
-
 /*
  * Created on 03-11-2008
  * 
