@@ -108,7 +108,6 @@ public class ExecProcess extends BaseStep implements StepInterface
          	// execute and return result
          	execProcess(processString,processResult);
          	
-
          	if(meta.isFailWhenNotSuccess()) {
          		if(processResult.getExistStatus()!=0) {
          			String errorString=processResult.getErrorStream();
@@ -120,17 +119,14 @@ public class ExecProcess extends BaseStep implements StepInterface
          	}
          	
         	// Add result field to input stream
-    		outputRow[data.NrPrevFields]= processResult.getOutputStream();
     		int rowIndex=data.NrPrevFields;
-    		rowIndex++;
+    		outputRow[rowIndex++]= processResult.getOutputStream();
     		
         	// Add result field to input stream
-    		outputRow[data.NrPrevFields]= processResult.getErrorStream();
-    		rowIndex++;
+    		outputRow[rowIndex++]= processResult.getErrorStream();
     		
         	// Add result field to input stream
-    		outputRow[data.NrPrevFields]= processResult.getExistStatus();
-    		rowIndex++;
+    		outputRow[rowIndex++]= processResult.getExistStatus();
 
 			 //	add new values to the row.
 	        putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
