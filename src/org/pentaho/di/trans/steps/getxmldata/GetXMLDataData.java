@@ -75,7 +75,6 @@ public class GetXMLDataData extends BaseStepData implements StepDataInterface
 	 */
 	public FileInputList files;
 	
-	public boolean last_file;
 	public FileObject file;
 	public int     filenr;
 	

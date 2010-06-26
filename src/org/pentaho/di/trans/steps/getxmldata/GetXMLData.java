@@ -263,46 +263,44 @@ public class GetXMLData extends BaseStep implements StepInterface
 		   if(first)
 			{
 			    first=false;
-			    
-				if(meta.isInFields())
-				{
-					data.inputRowMeta = getInputRowMeta();
-		            data.outputRowMeta = data.inputRowMeta.clone();
-		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-		            
-		            // Get total previous fields
-		            data.totalpreviousfields=data.inputRowMeta.size();
 
-					// Create convert meta-data objects that will contain Date & Number formatters
-		            data.convertRowMeta = data.outputRowMeta.clone();
-		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-		  
-		            // For String to <type> conversions, we allocate a conversion meta data row as well...
-					//
-					data.convertRowMeta = data.outputRowMeta.clone();
-					for (int i=0;i<data.convertRowMeta.size();i++) {
-						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
-					}
-					
-					// Check is XML field is provided
-					if (Const.isEmpty(meta.getXMLField()))
-					{
-						logError(Messages.getString("GetXMLData.Log.NoField"));
-						throw new KettleException(Messages.getString("GetXMLData.Log.NoField"));
-					}
-					
-					// cache the position of the field			
+				data.inputRowMeta = getInputRowMeta();
+	            data.outputRowMeta = data.inputRowMeta.clone();
+	            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+	            
+	            // Get total previous fields
+	            data.totalpreviousfields=data.inputRowMeta.size();
+
+				// Create convert meta-data objects that will contain Date & Number formatters
+	            data.convertRowMeta = data.outputRowMeta.clone();
+	            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+	  
+	            // For String to <type> conversions, we allocate a conversion meta data row as well...
+				//
+				data.convertRowMeta = data.outputRowMeta.clone();
+				for (int i=0;i<data.convertRowMeta.size();i++) {
+					data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
+				}
+				
+				// Check is XML field is provided
+				if (Const.isEmpty(meta.getXMLField()))
+				{
+					logError(Messages.getString("GetXMLData.Log.NoField"));
+					throw new KettleException(Messages.getString("GetXMLData.Log.NoField"));
+				}
+				
+				// cache the position of the field			
+				if (data.indexOfXmlField<0)
+				{	
+					data.indexOfXmlField =getInputRowMeta().indexOfValue(meta.getXMLField());
 					if (data.indexOfXmlField<0)
-					{	
-						data.indexOfXmlField =getInputRowMeta().indexOfValue(meta.getXMLField());
-						if (data.indexOfXmlField<0)
-						{
-							// The field is unreachable !
-							logError(Messages.getString("GetXMLData.Log.ErrorFindingField", meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(Messages.getString("GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
-						}
+					{
+						// The field is unreachable !
+						logError(Messages.getString("GetXMLData.Log.ErrorFindingField", meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(Messages.getString("GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
+				
 			}
 		   
 		   
@@ -483,17 +481,13 @@ public class GetXMLData extends BaseStep implements StepInterface
                 return false;
             }
             
-		    // Is this the last file?
-			data.last_file = ( data.filenr==data.files.nrOfFiles()-1);
+		    // Get file
 			data.file = (FileObject) data.files.getFile(data.filenr);
-			
-			// Check if file is empty
-			long fileSize= data.file.getContent().getSize();
 			
 			// Move file pointer ahead!
 			data.filenr++;
             
-			if(meta.isIgnoreEmptyFile() && fileSize==0)
+			if(meta.isIgnoreEmptyFile() && data.file.getContent().getSize()==0)
 			{
 				// log only basic as a warning (was before logError)
 				log.logBasic(toString(),Messages.getString("GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
@@ -542,9 +536,10 @@ public class GetXMLData extends BaseStep implements StepInterface
 	{
 		if(first && !meta.isInFields())
 		{
+			first = false;
+			
 			data.files = meta.getFiles(this);
 			
-		
 			if(!meta.isdoNotFailIfNoFile() && data.files.nrOfFiles()==0)
 			{
 				throw new KettleException(Messages.getString("GetXMLData.Log.NoFiles"));
