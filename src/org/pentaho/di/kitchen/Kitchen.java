@@ -41,7 +41,6 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.resource.ResourceUtil;
@@ -331,17 +330,17 @@ public class Kitchen
             }
             job.initializeVariablesFrom(null);
             job.getJobMeta().setInternalKettleVariables(job);
-            job.copyParametersFrom(job.getJobMeta());
             
 			// Map the command line named parameters to the actual named parameters. Skip for
 			// the moment any extra command line parameter not known in the job.
-			String[] jobParams = job.listParameters();
+			String[] jobParams = job.getJobMeta().listParameters();
 			for ( String param : jobParams )  {
 				String value = optionParams.getParameterValue(param);
 				if ( value != null )  {
-					job.setParameterValue(param, value);
+					job.getJobMeta().setParameterValue(param, value);
 				}
 			}
+            job.copyParametersFrom(job.getJobMeta());
 			
 			// Put the parameters over the already defined variable space. Parameters get priority.
 			//
