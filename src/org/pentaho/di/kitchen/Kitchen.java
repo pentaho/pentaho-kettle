@@ -330,17 +330,17 @@ public class Kitchen
             }
             job.initializeVariablesFrom(null);
             job.getJobMeta().setInternalKettleVariables(job);
-            job.copyParametersFrom(job.getJobMeta());
             
 			// Map the command line named parameters to the actual named parameters. Skip for
 			// the moment any extra command line parameter not known in the job.
-			String[] jobParams = job.listParameters();
+			String[] jobParams = jobMeta.listParameters();
 			for ( String param : jobParams )  {
 				String value = optionParams.getParameterValue(param);
 				if ( value != null )  {
-					job.setParameterValue(param, value);
+					job.getJobMeta().setParameterValue(param, value);
 				}
 			}
+            job.copyParametersFrom(job.getJobMeta());
 			
 			// Put the parameters over the already defined variable space. Parameters get priority.
 			//
@@ -366,7 +366,7 @@ public class Kitchen
     			//
     			exitJVM(7); // same as the other list options
     		}
-                     
+ 
     		job.start();
     		job.waitUntilFinished();
 			result = job.getResult(); // Execute the selected job.
