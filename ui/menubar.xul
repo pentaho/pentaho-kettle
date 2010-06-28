@@ -140,7 +140,7 @@
         <menu id="tools-data" label="${Spoon.Menu.Tools.Data.Popup}">
           <menupopup id="tools-data-popup">
             <menuitem id="tools-dabase-explore" label="${Spoon.Menu.Tools.Database.Explore}" command="spoon.exploreDatabase()" />
-            <menuitem id="tools-data-clear-cache" label="${Spoon.Menu.Tools.Data.Clear.Cache}" command="clearDBCache('database-class-clear-cache')" />
+            <menuitem id="tools-data-clear-cache" label="${Spoon.Menu.Tools.Data.Clear.Cache}" command="spoon.clearDBCache('database-class-clear-cache')" />
           </menupopup>
         </menu>
         <menu id="repository" label="${Spoon.Menu.Repository}">
