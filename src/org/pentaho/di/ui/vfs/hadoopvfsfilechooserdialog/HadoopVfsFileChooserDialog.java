@@ -387,8 +387,13 @@ public class HadoopVfsFileChooserDialog extends VfsFileChooserDialog implements 
    * @return
    */
   public String buildHadoopFileSystemUrlString() {
-    String urlString = "hdfs://" + wUrl.getText() + ":" + wPort.getText();
-    return urlString;
+    if (wUserID.getText() == null || "".equals(wUserID.getText())) {
+      String urlString = "hdfs://" + wUrl.getText() + ":" + wPort.getText();
+      return urlString;
+    } else {
+      String urlString = "hdfs://" + wUserID.getText() + ":" + wPassword.getText() + "@" + wUrl.getText() + ":" + wPort.getText();
+      return urlString;
+    }
   }
 
   private String hadoopSelected() throws KettleException {
@@ -469,6 +474,7 @@ public class HadoopVfsFileChooserDialog extends VfsFileChooserDialog implements 
         GenericFileName genericFileName = (GenericFileName) initialFile.getFileSystem().getRoot().getName();
         wUrl.setText(genericFileName.getHostName());
         wPort.setText(String.valueOf(genericFileName.getPort()));
+        wUserID.setText(String.valueOf(genericFileName.getUserName()));
       } catch (FileSystemException fse) {
         showMessageAndLog(dialog, "HadoopVfsFileChooserDialog.error", "HadoopVfsFileChooserDialog.FileSystem.error", fse.getMessage());
       }
