@@ -14,6 +14,8 @@
 
 package org.pentaho.di.ui.vfs.hadoopvfsfilechooserdialog;
 
+import java.net.Socket;
+
 import org.apache.commons.vfs.Capability;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
@@ -274,7 +276,7 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    }
 	}
 	
-	private void createConnectionPanel(Shell dialog) {
+	private void createConnectionPanel(final Shell dialog) {
 	        
         //  The Connection group
         Group connectionGroup = new Group(dialog, SWT.SHADOW_ETCHED_IN);
@@ -370,8 +372,16 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	    wConnectionButton.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.ConnectionButton.Label"));
 	    wConnectionButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                openFileCombo.setText(buildHadoopFileSystemUrlString());
-                resolveVfsBrowser();
+              try {
+                Socket testHdfsSocket = new Socket(wUrl.getText(), Integer.parseInt(wPort.getText()));
+                testHdfsSocket.getOutputStream();
+                testHdfsSocket.close();
+              } catch (Throwable t) {
+                showMessageAndLog(dialog, "HadoopVfsFileChooserDialog.error", "HadoopVfsFileChooserDialog.Connection.error", t.getMessage());
+                return;
+              }
+              openFileCombo.setText(buildHadoopFileSystemUrlString());
+              resolveVfsBrowser();
             }
         });
 	    
@@ -513,9 +523,9 @@ extends VfsFileChooserDialog implements IVfsFileChooser {
 	}
 	
 	private void showMessageAndLog(Shell dialog, String title, String message, String messageToLog) {
-        MessageBox box = new MessageBox(dialog);
+    	  MessageBox box = new MessageBox(dialog);
         box.setText(BaseMessages.getString(PKG, title)); //$NON-NLS-1$
-        box.setMessage(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.FileSystem.error"));
+        box.setMessage(BaseMessages.getString(PKG, message));
         log.logError(messageToLog);
         box.open();
 	}
