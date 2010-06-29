@@ -21,4 +21,15 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 @Step(id = "HadoopFileOutputPlugin", image = "HDO.png", name = "Hadoop File Output", description="Create files in an HDFS location", categoryDescription="Hadoop")
 public class HadoopFileOutputMeta extends TextFileOutputMeta {
 
+    @Override
+    public void setDefault()
+    {
+        //  call the base classes method
+        super.setDefault();
+        
+        // now set the default for the 
+        // filename to an empty string
+        setFileName("");
+    }
+    
 }
