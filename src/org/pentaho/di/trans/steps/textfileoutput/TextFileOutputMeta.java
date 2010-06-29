@@ -1212,5 +1212,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			throw new KettleException(e); //$NON-NLS-1$
 		}
 	}
-
+	
+	public void setFilename(String fileName) {
+	    this.fileName = fileName;
+	}
 }
