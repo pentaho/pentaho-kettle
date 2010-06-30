@@ -265,12 +265,18 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void truncate() {
-		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "-- TRUNCATE TABLE " + this.model.getTable());
+	  if (this.model.getTable() == null) {
+	    return;
+	  }
+		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "-- TRUNCATE TABLE " + this.model.getTable().getName());
 		theSqlEditor.open();
 	}
 
 	public void viewSql() {
-		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "SELECT * FROM " + this.model.getTable());
+	  if (this.model.getTable() == null) {
+	    return;
+	  }
+		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "SELECT * FROM " + this.model.getTable().getName());
 		theSqlEditor.open();
 	}
 
@@ -280,7 +286,9 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void displayRowCount() {
-
+    if (this.model.getTable() == null) {
+      return;
+    }
 		try {
 			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.shell, this.model.getDatabaseMeta(), this.model.getTable().getName());
 			Long theCount = pd.open();
@@ -480,7 +488,10 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void getDDL() {
-		Database db = new Database(null, this.model.getDatabaseMeta());
+    if(model.getTable() == null) {
+      return;
+    }
+	  Database db = new Database(null, this.model.getDatabaseMeta());
 		try {
 			db.connect();
 			RowMetaInterface r = db.getTableFields(this.model.getTable().getName());
