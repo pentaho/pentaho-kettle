@@ -68,7 +68,7 @@ public class NumberRangeSetTest extends TestCase {
 			// expected exception
 		}
 
-		assertEquals("Didn't handle null value", FALLBACK_VALUE, numberRange.evaluate(null));
+		assertEquals("Didn't handle null value", FALLBACK_VALUE, numberRange.evaluate((String)null));
 	}
 
 }
