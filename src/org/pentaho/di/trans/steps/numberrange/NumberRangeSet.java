@@ -88,8 +88,7 @@ public class NumberRangeSet
 				try 
 				{
 					double doubleValue = Double.parseDouble(strValue);
-					String result = evaluateDouble(doubleValue);
-				    if (!"".equals(result))	return result;
+					return evaluate(doubleValue);
 				} 
 				catch (Exception e) 
 				{
@@ -98,5 +97,17 @@ public class NumberRangeSet
 			}
 			return fallBackValue;
 		}
+	 	
+	 	/**
+	 	 * Evaluates a value against all rules. Return empty value if input is not
+		 * numeric.
+		 */
+		 	public String evaluate(Double value) throws KettleException
+			{
+				String result = evaluateDouble(value);
+			    if (!"".equals(result))	return result;
+			    
+				return fallBackValue;
+			}
 	 
 	 }
