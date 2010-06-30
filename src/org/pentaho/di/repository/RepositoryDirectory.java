@@ -589,7 +589,7 @@ public class RepositoryDirectory
 	    RepositoryDirectory parent = this;
 	    for (int level=0;level<path.length;level++)
 	    {
-	        RepositoryDirectory rd = findChild(path[level]);
+	        RepositoryDirectory rd = parent.findChild(path[level]);
 	        if (rd==null)
 	        {
 	            // This directory doesn't exists, let's add it!
