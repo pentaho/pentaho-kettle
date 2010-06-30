@@ -354,8 +354,8 @@ public class TextFileCSVImportProgressDialog
             	field.setLength(conversionMeta.getLength());
             	
             	nrnull[i] = result.getNrNull();
-            	minstr[i] = result.getMin().toString();
-            	maxstr[i] = result.getMax().toString();
+            	minstr[i] = result.getMin() == null ? "" : result.getMin().toString();
+            	maxstr[i] = result.getMax() == null ? "" : result.getMax().toString();
             }
 
             
