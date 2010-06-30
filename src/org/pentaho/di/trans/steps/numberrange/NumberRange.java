@@ -72,10 +72,10 @@ public class NumberRange extends BaseStep implements StepInterface
 			}
 	 		try {
 		 		// get field value
-		 		String strValue = getInputRowMeta().getString(row,data.inputColumnNr);
+		 		Double value = getInputRowMeta().getNumber(row,data.inputColumnNr);
 	
 		 		// return range
-		 		String ranges = numberRange.evaluate(strValue);
+		 		String ranges = numberRange.evaluate(value);
 		 		// add value to output
 				row = RowDataUtil.addRowData(row, getInputRowMeta().size(),	new Object[] { ranges });
 				putRow(data.outputRowMeta, row);
