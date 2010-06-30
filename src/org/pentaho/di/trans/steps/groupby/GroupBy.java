@@ -448,18 +448,20 @@ public class GroupBy extends BaseStep implements StepInterface
 					}
 					break; 
 				case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION :
-					data.counts[i]++;
-					double n = data.counts[i];
-					double x = subjMeta.getNumber(subj);
-					double sum = (Double)value;
-					double mean = data.mean[i];
-					
-					double delta = x - mean;
-					mean = mean + (delta/n);
-					sum = sum + delta*(x-mean);
-					
-					data.mean[i] = mean;
-					data.agg[i] = sum;
+				  if (!subjMeta.isNull(subj)) {
+  					data.counts[i]++;
+  					double n = data.counts[i];
+  					double x = subjMeta.getNumber(subj);
+  					double sum = (Double)value;
+  					double mean = data.mean[i];
+  					
+  					double delta = x - mean;
+  					mean = mean + (delta/n);
+  					sum = sum + delta*(x-mean);
+  					
+  					data.mean[i] = mean;
+  					data.agg[i] = sum;
+				  }
 					break; 
 				case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT :
 				  if (!subjMeta.isNull(subj)) {
