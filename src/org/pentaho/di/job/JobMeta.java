@@ -914,7 +914,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				jobLogTable.setTableName( XMLHandler.getTagValue(jobnode, "logtable") );
 				jobLogTable.setBatchIdUsed( "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid")) );
 				jobLogTable.setLogFieldUsed( "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield")) );
-                jobLogTable.findField(JobLogTable.ID.CHANNEL_ID).setEnabled(false);
+				jobLogTable.findField(JobLogTable.ID.CHANNEL_ID).setEnabled(false);
                 jobLogTable.findField(JobLogTable.ID.LINES_REJECTED).setEnabled(false);
 			} else {
 				jobLogTable.loadXML(jobLogNode, databases);
@@ -1525,7 +1525,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			JobEntryCopy ce = getJobEntry(i);
 			ce.setSelected(true);
 		}
-
+		for (i = 0; i < nrNotes(); i++)
+    {
+        NotePadMeta ni = getNote(i);
+        ni.setSelected(true);
+    }
 		setChanged();
 		notifyObservers("refreshGraph");
 	}
@@ -1536,6 +1540,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			JobEntryCopy ce = getJobEntry(i);
 			ce.setSelected(false);
 		}
+    for (i = 0; i < nrNotes(); i++)
+    {
+        NotePadMeta ni = getNote(i);
+        ni.setSelected(false);
+    }
 	}
 
 	public int getMaxUndo() {
