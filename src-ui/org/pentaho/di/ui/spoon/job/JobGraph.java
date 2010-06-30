@@ -1390,6 +1390,13 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
           && ((p.y >= rect.y && p.y <= rect.y + rect.height) || (p.y >= rect.y + rect.height && p.y <= rect.y)))
         je.setSelected(true);
     }
+    for (i = 0; i < jobMeta.nrNotes(); i++) {
+      NotePadMeta ni = jobMeta.getNote(i);
+      Point a = ni.getLocation();
+      Point b = new Point(a.x + ni.width, a.y + ni.height);
+      if (rect.contains(a.x, a.y) && rect.contains(b.x, b.y))
+        ni.setSelected(true);
+    }
   }
 
   public boolean setFocus() {
