@@ -35,7 +35,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogWriter;
@@ -748,23 +747,29 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           }
 
           job.getJobMeta().setArguments(args);
-          job.start();
           
-          while (!job.isFinished() && !parentJob.isStopped()) {
-            try {
-              Thread.sleep(0, 1);
-            } catch (InterruptedException e) {
-            }
+          JobEntryJobRunner runner = new JobEntryJobRunner( job, result, nr, log);
+          Thread jobRunnerThread = new Thread(runner);
+          jobRunnerThread.setName( Const.NVL(job.getJobMeta().getName(), job.getJobMeta().getFilename()) );
+          jobRunnerThread.start();
+          
+          //job.start();
+          
+          while (!runner.isFinished() && !parentJob.isStopped())
+          {
+              try { Thread.sleep(0,1);}
+              catch(InterruptedException e) { }
           }
 
           // if the parent-job was stopped, stop the sub-job too...
-          if (parentJob.isStopped()) {
-            job.stopAll();
-            job.waitUntilFinished(); // Wait until finished!
+          if (parentJob.isStopped())
+          {
+              job.stopAll();
+              runner.waitUntilFinished(); // Wait until finished!
           }
+          
+          oneResult = runner.getResult();
 
-          CentralLogStore.getAppender().getBuffer(job.getLogChannelId(), false);
-          oneResult = job.getResult();
         } else {
           // Remote execution...
           //
