@@ -53,12 +53,12 @@ public class TableInput extends BaseStep implements StepInterface
 	
 	private RowMetaAndData readStartDate() throws KettleException
     {
-		if (log.isDetailed()) logDetailed("Reading from step [" + meta.getLookupStepname() + "]");
+      if (log.isDetailed()) logDetailed("Reading from step [" + data.infoStream.getStepname() + "]");
 
         RowMetaInterface parametersMeta = new RowMeta();
         Object[] parametersData = new Object[] {};
 
-        RowSet rowSet = findInputRowSet(meta.getLookupStepname());
+        RowSet rowSet = findInputRowSet(data.infoStream.getStepname());
         if (rowSet!=null) 
         {
 	        Object[] rowData = getRowFrom(rowSet); // rows are originating from "lookup_from"
@@ -72,12 +72,12 @@ public class TableInput extends BaseStep implements StepInterface
 	        
 	        if (parametersMeta.size()==0)
 	        {
-	            throw new KettleException("Expected to read parameters from step ["+meta.getLookupStepname()+"] but none were found.");
+                throw new KettleException("Expected to read parameters from step ["+data.infoStream.getStepname()+"] but none were found.");
 	        }
         }
         else
         {
-            throw new KettleException("Unable to find rowset to read from, perhaps step ["+meta.getLookupStepname()+"] doesn't exist. (or perhaps you are trying a preview?)");
+            throw new KettleException("Unable to find rowset to read from, perhaps step ["+data.infoStream.getStepname()+"] doesn't exist. (or perhaps you are trying a preview?)");
         }
 	
         RowMetaAndData parameters = new RowMetaAndData(parametersMeta, parametersData);
@@ -94,18 +94,18 @@ public class TableInput extends BaseStep implements StepInterface
 			first=false;
             
 			// Make sure we read data from source steps...
-            if (meta.getInfoSteps() != null)
+            if (data.infoStream.getStepMeta()!=null)
             {
                 if (meta.isExecuteEachInputRow())
                 {
-                	if (log.isDetailed()) logDetailed("Reading single row from stream [" + meta.getLookupStepname() + "]");
-                	data.rowSet = findInputRowSet(meta.getLookupStepname());
+                    if (log.isDetailed()) logDetailed("Reading single row from stream [" + data.infoStream.getStepname() + "]");
+                    data.rowSet = findInputRowSet(data.infoStream.getStepname());
                     parameters = getRowFrom(data.rowSet);
                     parametersMeta = data.rowSet.getRowMeta();
                 }
                 else
                 {
-                	if (log.isDetailed()) logDetailed("Reading query parameters from stream [" + meta.getLookupStepname() + "]");
+                    if (log.isDetailed()) logDetailed("Reading query parameters from stream [" + data.infoStream.getStepname() + "]");
                     RowMetaAndData rmad = readStartDate(); // Read values in lookup table (look)
                     parameters = rmad.getData();
                     parametersMeta = rmad.getRowMeta();
@@ -314,6 +314,8 @@ public class TableInput extends BaseStep implements StepInterface
 				passed=false;
 			}
 			if (!passed) return false;
+
+	        data.infoStream = meta.getStepIOMeta().getInfoStreams().get(0);
 
 			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
