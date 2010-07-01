@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -527,10 +528,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                 targetFilename=localSourceFilename;
               }
 
-              File file = getFile(targetFilename);
+              FileObject file = KettleVFS.getFileObject(targetFilename);
+              boolean isTargetDirectory = file.exists() && file.getType().equals(FileType.FOLDER);
 
-              if (getIt && !getItexclude && !file.isDirectory() && !fileSet.contains(targetFilename)) {
-
+              if (getIt && !getItexclude &&  !isTargetDirectory && !fileSet.contains(targetFilename)) {
                 // We can add the file to the Zip Archive
                 if (log.isDebug())
                   logDebug(BaseMessages.getString(PKG, "JobZipFiles.Add_FilesToZip1.Label") + fileList[i]
@@ -538,7 +539,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                       + BaseMessages.getString(PKG, "JobZipFiles.Add_FilesToZip3.Label"));
 
                 // Associate a file input stream for the current file
-                FileInputStream in = new FileInputStream(file);
+                InputStream in = KettleVFS.getInputStream(file);
 
                 // Add ZIP entry to output stream.
                 //
