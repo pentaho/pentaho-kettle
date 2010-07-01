@@ -1354,7 +1354,7 @@ public class DatabaseMeta
 	public String stripCR(StringBuffer sbsql)
 	{
 		// DB2 Can't handle \n in SQL Statements...
-		if (supportsNewLinesInSQL()) {
+		if (!supportsNewLinesInSQL()) {
 			// Remove CR's
 			for (int i=sbsql.length()-1;i>=0;i--)
 			{
