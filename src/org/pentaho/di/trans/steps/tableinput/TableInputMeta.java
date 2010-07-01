@@ -31,17 +31,24 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.repository.Repository;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.w3c.dom.Node;
 
 /*
@@ -50,16 +57,12 @@ import org.w3c.dom.Node;
  */
 public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 {
+    private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private DatabaseMeta databaseMeta;
 	private String sql;
 	private String rowLimit;
 
-	/** Which step is providing the date, just the name?*/
-	private String lookupFromStepname;
-	
-	/** The step to lookup from */
-	private StepMeta lookupFromStep;    
-	
     /** Should I execute once per row? */
     private boolean executeEachInputRow;
     
@@ -136,21 +139,6 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.sql = sql;
 	}
 	
-	/**
-	 * @return Returns the lookupFromStep.
-	 */
-	public StepMeta getLookupFromStep()
-	{
-		return lookupFromStep;
-	}
-	
-	/**
-	 * @param lookupFromStep The lookupFromStep to set.
-	 */
-	public void setLookupFromStep(StepMeta lookupFromStep)
-	{
-		this.lookupFromStep = lookupFromStep;
-	}
 	
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
@@ -172,8 +160,12 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta              = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
 			sql                       = XMLHandler.getTagValue(stepnode, "sql");
 			rowLimit                  = XMLHandler.getTagValue(stepnode, "limit");
-			lookupFromStepname        = XMLHandler.getTagValue(stepnode, "lookup");
-            executeEachInputRow       = "Y".equals(XMLHandler.getTagValue(stepnode, "execute_each_row"));
+
+	        String lookupFromStepname = XMLHandler.getTagValue(stepnode, "lookup"); //$NON-NLS-1$
+	        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
+	        infoStream.setSubject(lookupFromStepname);
+
+			executeEachInputRow       = "Y".equals(XMLHandler.getTagValue(stepnode, "execute_each_row"));
             variableReplacementActive = "Y".equals(XMLHandler.getTagValue(stepnode, "variables_active"));
             lazyConversionActive      = "Y".equals(XMLHandler.getTagValue(stepnode, "lazy_conversion_active"));
 		}
@@ -189,26 +181,6 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		sql        = "SELECT <values> FROM <table name> WHERE <conditions>";
 		rowLimit   = "0";
 	}
-
-	/**
-	 * @return the informational source steps, if any. Null is the default: none.
-	 */
-	public String[] getInfoSteps()
-	{
-	    if (getLookupStepname()==null) return null;
-	    return new String[] { getLookupStepname() };
-	}
-    
-    /**
-     * @param infoSteps The info-step(s) to set
-     */
-    public void setInfoSteps(StepMeta[] infoSteps)
-    {
-        if (infoSteps!=null && infoSteps.length>0)
-        {
-            lookupFromStep = infoSteps[0];
-        }
-    }
 
     public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
     {
@@ -251,7 +223,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 				RowMetaInterface paramRowMeta=null;
 				Object[] paramData=null;
 				
-				if (getLookupStepname()!=null) 
+		        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
+				if (!Const.isEmpty(infoStream.getStepname())) 
 				{
 					param=true;
 					if (info.length>=0 && info[0]!=null) {
@@ -288,7 +261,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));
 		retval.append("    "+XMLHandler.addTagValue("sql",        sql));
 		retval.append("    "+XMLHandler.addTagValue("limit",      rowLimit));
-		retval.append("    "+XMLHandler.addTagValue("lookup",     getLookupStepname()));
+        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
+        retval.append("    "+XMLHandler.addTagValue("lookup", infoStream.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("    "+XMLHandler.addTagValue("execute_each_row",   executeEachInputRow));
         retval.append("    "+XMLHandler.addTagValue("variables_active",   variableReplacementActive));
         retval.append("    "+XMLHandler.addTagValue("lazy_conversion_active",   lazyConversionActive));
@@ -307,7 +281,11 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			if (rowLimit==null) {
 				rowLimit = Long.toString( rep.getStepAttributeInteger(id_step, "limit") );
 			}
-			lookupFromStepname        =      rep.getStepAttributeString (id_step, "lookup"); 
+
+	        String lookupFromStepname =  rep.getStepAttributeString (id_step, "lookup"); //$NON-NLS-1$
+	        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
+	        infoStream.setSubject(lookupFromStepname);
+
             executeEachInputRow       =      rep.getStepAttributeBoolean(id_step, "execute_each_row");
             variableReplacementActive =      rep.getStepAttributeBoolean(id_step, "variables_active");
             lazyConversionActive      =      rep.getStepAttributeBoolean(id_step, "lazy_conversion_active");
@@ -325,7 +303,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "sql",              sql);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",            rowLimit);
-			rep.saveStepAttribute(id_transformation, id_step, "lookup",           getLookupStepname());
+            StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
+            rep.saveStepAttribute(id_transformation, id_step, "lookup",  infoStream.getStepname()); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "execute_each_row", executeEachInputRow);
             rep.saveStepAttribute(id_transformation, id_step, "variables_active", variableReplacementActive);
             rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion_active", lazyConversionActive);
@@ -385,22 +364,23 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 		
-		// See if we have an informative step...
-		if (getLookupStepname()!=null)
+        // See if we have an informative step...
+        StreamInterface infoStream = getStepIOMeta().getInfoStreams().get(0);
+        if (!Const.isEmpty(infoStream.getStepname())) 
 		{
 			boolean found=false;
 			for (int i=0;i<input.length;i++)
 			{
-				if (getLookupStepname().equalsIgnoreCase(input[i])) found=true;
+				if (infoStream.getStepname().equalsIgnoreCase(input[i])) found=true;
 			}
 			if (found)
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Previous step to read info from ["+getLookupStepname()+"] is found.", stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Previous step to read info from ["+infoStream.getStepname()+"] is found.", stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Previous step to read info from ["+getLookupStepname()+"] is not found.", stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Previous step to read info from ["+infoStream.getStepname()+"] is not found.", stepMeta);
 				remarks.add(cr);
 			}
 			
@@ -456,22 +436,15 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public String getLookupStepname()
-	{
-		if (lookupFromStep!=null && 
-			lookupFromStep.getName()!=null &&
-			lookupFromStep.getName().length()>0
-		   ) 
-			return lookupFromStep.getName();
-		return null;
-	}
 
 	/**
 	 * @param steps optionally search the info step in a list of steps
 	 */
 	public void searchInfoAndTargetSteps(List<StepMeta> steps)
 	{
-	    lookupFromStep = StepMeta.findStep(steps, lookupFromStepname);
+      for (StreamInterface stream : getStepIOMeta().getInfoStreams()) {
+        stream.setStepMeta( StepMeta.findStep(steps, (String)stream.getSubject()) );
+      }
 	}
 
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
@@ -554,4 +527,40 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setLazyConversionActive(boolean lazyConversionActive) {
 		this.lazyConversionActive = lazyConversionActive;
 	}
+	
+	/**
+     * Returns the Input/Output metadata for this step.
+     * The generator step only produces output, does not accept input!
+     */
+    public StepIOMetaInterface getStepIOMeta() {
+        if (ioMeta==null) {
+
+            ioMeta = new StepIOMeta(true, true, false, false, false, false);
+        
+            StreamInterface stream = new Stream(StreamType.INFO, null, BaseMessages.getString(PKG, "TableInputMeta.InfoStream.Description"), StreamIcon.INFO, null);
+            ioMeta.addStream(stream);
+        }
+        
+        return ioMeta;
+    }
+    
+    public void resetStepIoMeta() {
+        // Do nothing, don't reset as there is no need to do this.
+    };
+
+    /**
+     * For compatibility, wraps around the standard step IO metadata
+     * @param stepMeta The step where you read lookup data from
+     */
+    public void setLookupFromStep(StepMeta stepMeta) {
+      getStepIOMeta().getInfoStreams().get(0).setStepMeta(stepMeta);
+    }
+
+    /**
+     * For compatibility, wraps around the standard step IO metadata
+     * @return The step where you read lookup data from
+     */
+    public StepMeta getLookupFromStep() {
+      return getStepIOMeta().getInfoStreams().get(0).getStepMeta();
+    }
 }

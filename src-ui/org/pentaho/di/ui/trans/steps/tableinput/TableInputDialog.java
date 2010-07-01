@@ -57,6 +57,7 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
@@ -425,9 +426,10 @@ public void setPosition(){
 		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
 		wLimit.setText(Const.NVL(input.getRowLimit(), "")); //$NON-NLS-1$
 		
-        if (input.getLookupStepname() != null)
+	    StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
+	    if (infoStream.getStepMeta()!=null)
         {
-            wDatefrom.setText(input.getLookupStepname());
+            wDatefrom.setText(infoStream.getStepname());
             wEachRow.setSelection(input.isExecuteEachInputRow());
         }
         else
@@ -479,7 +481,8 @@ public void setPosition(){
         meta.setSQL(preview && !Const.isEmpty(wSQL.getSelectionText())?wSQL.getSelectionText():wSQL.getText());
         meta.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
         meta.setRowLimit( wLimit.getText() );
-        meta.setLookupFromStep( transMeta.findStep( wDatefrom.getText() ) );
+        StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
+        infoStream.setStepMeta( transMeta.findStep( wDatefrom.getText() ) );
         meta.setExecuteEachInputRow(wEachRow.getSelection());
         meta.setVariableReplacementActive(wVariables.getSelection());
         meta.setLazyConversionActive(wLazyConversion.getSelection());
