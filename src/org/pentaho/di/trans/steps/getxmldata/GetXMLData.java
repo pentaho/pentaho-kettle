@@ -268,46 +268,44 @@ public class GetXMLData extends BaseStep implements StepInterface
 			{
 			    first=false;
 			    
-				if(meta.isInFields())
-				{
-					data.inputRowMeta = getInputRowMeta();
-		            data.outputRowMeta = data.inputRowMeta.clone();
-		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-		            
-		            // Get total previous fields
-		            data.totalpreviousfields=data.inputRowMeta.size();
+				data.inputRowMeta = getInputRowMeta();
+	            data.outputRowMeta = data.inputRowMeta.clone();
+	            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+	            
+	            // Get total previous fields
+	            data.totalpreviousfields=data.inputRowMeta.size();
 
-					// Create convert meta-data objects that will contain Date & Number formatters
-		            data.convertRowMeta = data.outputRowMeta.clone();
-		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-		  
-		            // For String to <type> conversions, we allocate a conversion meta data row as well...
-					//
-					data.convertRowMeta = data.outputRowMeta.clone();
-					for (int i=0;i<data.convertRowMeta.size();i++) {
-						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
-					}
-					
-					// Check is XML field is provided
-					if (Const.isEmpty(meta.getXMLField()))
-					{
-						logError(BaseMessages.getString(PKG, "GetXMLData.Log.NoField"));
-						throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Log.NoField"));
-					}
-					
-					// cache the position of the field			
+				// Create convert meta-data objects that will contain Date & Number formatters
+	            data.convertRowMeta = data.outputRowMeta.clone();
+	            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+	  
+	            // For String to <type> conversions, we allocate a conversion meta data row as well...
+				//
+				data.convertRowMeta = data.outputRowMeta.clone();
+				for (int i=0;i<data.convertRowMeta.size();i++) {
+					data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
+				}
+				
+				// Check is XML field is provided
+				if (Const.isEmpty(meta.getXMLField()))
+				{
+					logError(BaseMessages.getString(PKG, "GetXMLData.Log.NoField"));
+					throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Log.NoField"));
+				}
+				
+				// cache the position of the field			
+				if (data.indexOfXmlField<0)
+				{	
+					data.indexOfXmlField =getInputRowMeta().indexOfValue(meta.getXMLField());
 					if (data.indexOfXmlField<0)
-					{	
-						data.indexOfXmlField =getInputRowMeta().indexOfValue(meta.getXMLField());
-						if (data.indexOfXmlField<0)
-						{
-							// The field is unreachable !
-							logError(BaseMessages.getString(PKG, "GetXMLData.Log.ErrorFindingField", meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
-						}
+					{
+						// The field is unreachable !
+						logError(BaseMessages.getString(PKG, "GetXMLData.Log.ErrorFindingField", meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			}
+
 		   
 		   
 		   if(meta.isInFields())
@@ -484,18 +482,13 @@ public class GetXMLData extends BaseStep implements StepInterface
             	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.FinishedProcessing"));
                 return false;
             }
-            
-		    // Is this the last file?
-			data.last_file = ( data.filenr==data.files.nrOfFiles()-1);
+
 			data.file = (FileObject) data.files.getFile(data.filenr);
-			
-			// Check if file is empty
-			long fileSize= data.file.getContent().getSize();
 			
 			// Move file pointer ahead!
 			data.filenr++;
             
-			if(meta.isIgnoreEmptyFile() && fileSize==0)
+			if(meta.isIgnoreEmptyFile() && data.file.getContent().getSize()==0)
 			{
 				// log only basic as a warning (was before logError)
 				logBasic(BaseMessages.getString(PKG, "GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
@@ -544,6 +537,8 @@ public class GetXMLData extends BaseStep implements StepInterface
 	{
 		if(first && !meta.isInFields())
 		{
+			first = false;
+			
 			data.files = meta.getFiles(this);
 			
 		
