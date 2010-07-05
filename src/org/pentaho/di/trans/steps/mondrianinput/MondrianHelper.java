@@ -200,6 +200,9 @@ public class MondrianHelper {
               	else if (valueData instanceof Boolean) {
               		valueMeta.setType(ValueMetaInterface.TYPE_BOOLEAN);
               	}
+              	else if (valueData instanceof Integer) {
+                    valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+              	}
               	else if (valueData instanceof Long) {
               		valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
               	}
