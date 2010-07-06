@@ -28,6 +28,7 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputFormat;
 import org.apache.hadoop.mapred.Reducer;
+import org.apache.hadoop.mapred.RunningJob;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.annotations.JobEntry;
@@ -68,6 +69,8 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
   private String inputPath;
   private String outputPath;
+
+  private boolean blocking;
 
   private List<UserDefinedItem> userDefined;
 
@@ -150,7 +153,18 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         conf.setJar(jarUrl);
 
         JobClient jobClient = new JobClient(conf);
-        jobClient.submitJob(conf);
+        RunningJob runningJob = jobClient.submitJob(conf);
+
+        if (blocking) {
+          try {
+            while (!runningJob.isComplete()) {
+              Thread.sleep(500);
+            }
+          } catch (InterruptedException ie) {
+            log.logError(ie.getMessage(), ie);
+          }
+        }
+
       }
       return result;
     } catch (ClassNotFoundException cnfe) {
