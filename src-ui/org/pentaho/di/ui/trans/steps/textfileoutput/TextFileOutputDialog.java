@@ -147,6 +147,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     private Label        wlEnclForced;
     private Button       wEnclForced;
     private FormData     fdlEnclForced, fdEnclForced;
+    
+    private Label        wlDisableEnclosureFix;
+    private Button       wDisableEnclosureFix;
+    private FormData     fdlDisableEnclosureFix, fdDisableEnclosureFix;
 
 	private Label        wlHeader;
 	private Button       wHeader;
@@ -785,20 +789,44 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
                 }
             }
         );
+        
+        wlDisableEnclosureFix=new Label(wContentComp, SWT.RIGHT);
+        wlDisableEnclosureFix.setText(BaseMessages.getString(PKG, "TextFileOutputDialog.DisableEnclosureFix.Label"));
+        props.setLook(wlDisableEnclosureFix);
+        fdlDisableEnclosureFix=new FormData();
+        fdlDisableEnclosureFix.left = new FormAttachment(0, 0);
+        fdlDisableEnclosureFix.top  = new FormAttachment(wEnclForced, margin);
+        fdlDisableEnclosureFix.right= new FormAttachment(middle, -margin);
+        wlDisableEnclosureFix.setLayoutData(fdlDisableEnclosureFix);
+        wDisableEnclosureFix=new Button(wContentComp, SWT.CHECK );
+        props.setLook(wDisableEnclosureFix);
+        fdDisableEnclosureFix=new FormData();
+        fdDisableEnclosureFix.left = new FormAttachment(middle, 0);
+        fdDisableEnclosureFix.top  = new FormAttachment(wEnclForced, margin);
+        fdDisableEnclosureFix.right= new FormAttachment(100, 0);
+        wDisableEnclosureFix.setLayoutData(fdDisableEnclosureFix);
+        wDisableEnclosureFix.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    input.setChanged();
+                }
+            }
+        );
 
 		wlHeader=new Label(wContentComp, SWT.RIGHT);
 		wlHeader.setText(BaseMessages.getString(PKG, "TextFileOutputDialog.Header.Label"));
  		props.setLook(wlHeader);
 		fdlHeader=new FormData();
 		fdlHeader.left = new FormAttachment(0, 0);
-		fdlHeader.top  = new FormAttachment(wEnclForced, margin);
+		fdlHeader.top  = new FormAttachment(wDisableEnclosureFix, margin);
 		fdlHeader.right= new FormAttachment(middle, -margin);
 		wlHeader.setLayoutData(fdlHeader);
 		wHeader=new Button(wContentComp, SWT.CHECK );
  		props.setLook(wHeader);
 		fdHeader=new FormData();
 		fdHeader.left = new FormAttachment(middle, 0);
-		fdHeader.top  = new FormAttachment(wEnclForced, margin);
+		fdHeader.top  = new FormAttachment(wDisableEnclosureFix, margin);
 		fdHeader.right= new FormAttachment(100, 0);
 		wHeader.setLayoutData(fdHeader);
 		wHeader.addSelectionListener(new SelectionAdapter() 
@@ -1350,6 +1378,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wSplitEvery.setText(""+input.getSplitEvery());
 
         wEnclForced.setSelection(input.isEnclosureForced());
+        wDisableEnclosureFix.setSelection(input.isEnclosureFixDisabled());
 		wHeader.setSelection(input.isHeaderEnabled());
 		wFooter.setSelection(input.isFooterEnabled());
 		wAddDate.setSelection(input.isDateInFilename());
@@ -1416,7 +1445,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		tfoi.setFileNameField(   wFileNameField.getText() );
 		tfoi.setFileNameInField( wFileNameInField.getSelection() );
 
-        tfoi.setEnclosureForced( wEnclForced.getSelection() ); 
+        tfoi.setEnclosureForced( wEnclForced.getSelection() );
+        tfoi.setEnclosureFixDisabled( wDisableEnclosureFix.getSelection() );
 		tfoi.setHeaderEnabled( wHeader.getSelection() ); 
 		tfoi.setFooterEnabled( wFooter.getSelection() );
 		tfoi.setFileAppended( wAppend.getSelection() );

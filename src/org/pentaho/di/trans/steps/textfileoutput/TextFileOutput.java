@@ -18,11 +18,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -381,16 +383,21 @@ public class TextFileOutput extends BaseStep implements StepInterface
     		if (str!=null && str.length>0)
     		{
     			List<Integer> enclosures = null;
+    			boolean writeEnclosures = false;
     			
-        		if (v.isString() && meta.isEnclosureForced() && !meta.isPadded())
-        		{
-        			data.writer.write(data.binaryEnclosure);
-        			
-        			// Also check for the existence of the enclosure character.
-        			// If needed we double (escape) the enclosure character.
-        			//
-        			enclosures = getEnclosurePositions(str);
-        		}
+    			if(v.isString()) {
+	        		if (meta.isEnclosureForced() && !meta.isPadded())
+	        		{
+	        			writeEnclosures = true;
+	        		} else if(!meta.isEnclosureFixDisabled() && containsSeparator(str, data.binarySeparator)) {
+	        			writeEnclosures = true;
+	        		}
+    			}
+    			
+    			if(writeEnclosures) {
+    				data.writer.write(data.binaryEnclosure);
+					enclosures = getEnclosurePositions(str);
+    			}
 
         		if (enclosures == null) 
         		{
@@ -413,7 +420,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
         			}
         		}
         		
-        		if (v.isString() && meta.isEnclosureForced() && !meta.isPadded())
+        		if (writeEnclosures)
         		{
         			data.writer.write(data.binaryEnclosure);
         		}
@@ -492,14 +499,17 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					{
 						data.writer.write(data.binarySeparator);
 					}
-                    if (meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
+					if ((meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
+							|| ((!meta.isEnclosureFixDisabled() && containsSeparator(fieldName.getBytes(), data.binarySeparator))))
                     {
                     	data.writer.write(data.binaryEnclosure);
                     }
                     data.writer.write(getBinaryString(fieldName));
-                    if (meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
+                    if ((meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
+							|| ((!meta.isEnclosureFixDisabled() && containsSeparator(fieldName.getBytes(), data.binarySeparator))))
                     {
-                    	data.writer.write(data.binaryEnclosure);                    }
+                    	data.writer.write(data.binaryEnclosure);
+                    }
 				}
 				data.writer.write(data.binaryNewline);
 			}
@@ -514,12 +524,14 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					}
 					ValueMetaInterface v = r.getValueMeta(i);
 					
-                    if (meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v.isString())
-                    {
+					if ((meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
+							|| ((!meta.isEnclosureFixDisabled() && containsSeparator(v.getName().getBytes(), data.binarySeparator))))
+					{
                         data.writer.write(data.binaryEnclosure);
                     }
                     data.writer.write(getBinaryString(v.getName()));
-                    if (meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v.isString())
+                    if ((meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
+							|| ((!meta.isEnclosureFixDisabled() && containsSeparator(v.getName().getBytes(), data.binarySeparator))))
                     {
                         data.writer.write(data.binaryEnclosure);
                     }
@@ -844,6 +856,37 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		}
 		
         super.dispose(smi, sdi);
+	}
+	
+	public boolean containsSeparator(byte[] source, byte[] separator) {
+		boolean result = false;
+		
+		// Is the string long enough to contain the separator
+		if(source.length > separator.length) {
+			int index = 0;
+			// Search for the first occurrence of the separator
+			do {
+				index = ArrayUtils.indexOf(source, separator[0], index);
+				if(index >= 0 && (source.length - index >= separator.length)) {
+					// Compare the bytes at the index to the contents of the separator
+					byte[] potentialMatch = ArrayUtils.subarray(source, index, index + separator.length);
+					
+					if(Arrays.equals(separator, potentialMatch)) {
+						result = true;
+					}
+					
+					// Faster (bails out early)
+//					for(int i = 0; i < data.binarySeparator.length; i++) {
+//						if(str[index + i] != data.binarySeparator[i]) { break; }
+//						else if(i == (data.binarySeparator.length - 1)) {
+//							// The whole separator matches
+//							writeEnclosures = true;
+//						}
+//					}
+				}
+			} while(!result && ++index > 0);
+		}
+		return result;
 	}
 	
 }

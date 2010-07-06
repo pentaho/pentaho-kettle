@@ -77,6 +77,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     
     /** Setting to allow the enclosure to be always surrounding a String value, even when there is no separator inside */
     private  boolean enclosureForced;
+    
+    /** Setting to allow for backwards compatibility where the enclosure did not show up at all if Force Enclosure was not checked */
+    private  boolean disableEnclosureFix; 
 	
 	/** Add a header at the top of the file? */
     private  boolean headerEnabled;
@@ -212,6 +215,20 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     public void setEnclosureForced(boolean enclosureForced)
     {
         this.enclosureForced = enclosureForced;
+    }
+    
+    /**
+     * @return Returns the enclosureFixDisabled.
+     */
+    public boolean isEnclosureFixDisabled() {
+    	return disableEnclosureFix;
+    }
+    
+    /**
+     * @param enclosureFixDisabled The enclosureFixDisabled to set.
+     */
+    public void setEnclosureFixDisabled(boolean disableEnclosureFix) {
+    	this.disableEnclosureFix = disableEnclosureFix;
     }
 
     /**
@@ -625,6 +642,14 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			if (enclosure==null) enclosure="";
 
             enclosureForced = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "enclosure_forced"));
+            
+            String sDisableEnclosureFix = XMLHandler.getTagValue(stepnode, "enclosure_fix_disabled");
+            // Default this value to true for backwards compatibility
+            if(sDisableEnclosureFix == null) {
+            	disableEnclosureFix = true;
+            } else {
+            	disableEnclosureFix = "Y".equalsIgnoreCase(sDisableEnclosureFix);
+            }
 
 			headerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
@@ -728,6 +753,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		specifyingFormat=false;
 		dateTimeFormat=null;
         enclosureForced  = false;
+        disableEnclosureFix = false;
 		headerEnabled    = true;
 		footerEnabled    = false;
 		fileFormat       = "DOS";
@@ -934,6 +960,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		retval.append("    ").append(XMLHandler.addTagValue("separator", separator));
 		retval.append("    ").append(XMLHandler.addTagValue("enclosure", enclosure));
         retval.append("    ").append(XMLHandler.addTagValue("enclosure_forced", enclosureForced));
+        retval.append("    ").append(XMLHandler.addTagValue("enclosure_fix_disabled", disableEnclosureFix));
 		retval.append("    ").append(XMLHandler.addTagValue("header",    headerEnabled));
 		retval.append("    ").append(XMLHandler.addTagValue("footer",    footerEnabled));
 		retval.append("    ").append(XMLHandler.addTagValue("format",    fileFormat));
@@ -994,15 +1021,16 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	{
 		try
 		{
-			separator       =      rep.getStepAttributeString (id_step, "separator");
-			enclosure       =      rep.getStepAttributeString (id_step, "enclosure");
-            enclosureForced =      rep.getStepAttributeBoolean(id_step, "enclosure_forced");
-			headerEnabled   =      rep.getStepAttributeBoolean(id_step, "header");
-			footerEnabled   =      rep.getStepAttributeBoolean(id_step, "footer");   
-			fileFormat      =      rep.getStepAttributeString (id_step, "format");  
-			fileCompression =      rep.getStepAttributeString (id_step, "compression");
-			fileNameInField =      rep.getStepAttributeBoolean (id_step, "fileNameInField");
-			fileNameField	=	   rep.getStepAttributeString (id_step, "fileNameField");
+			separator           =  rep.getStepAttributeString (id_step, "separator");
+			enclosure           =  rep.getStepAttributeString (id_step, "enclosure");
+            enclosureForced     =  rep.getStepAttributeBoolean(id_step, "enclosure_forced");
+            disableEnclosureFix =  rep.getStepAttributeBoolean(id_step, 0, "enclosure_fix_disabled", true);
+			headerEnabled       =  rep.getStepAttributeBoolean(id_step, "header");
+			footerEnabled       =  rep.getStepAttributeBoolean(id_step, "footer");   
+			fileFormat          =  rep.getStepAttributeString (id_step, "format");  
+			fileCompression     =  rep.getStepAttributeString (id_step, "compression");
+			fileNameInField     =  rep.getStepAttributeBoolean (id_step, "fileNameInField");
+			fileNameField	    =  rep.getStepAttributeString (id_step, "fileNameField");
 			if (fileCompression == null)
 			{
 				if (rep.getStepAttributeBoolean(id_step, "zipped"))
@@ -1078,6 +1106,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "separator",        separator);
 			rep.saveStepAttribute(id_transformation, id_step, "enclosure",        enclosure);
             rep.saveStepAttribute(id_transformation, id_step, "enclosure_forced", enclosureForced);
+            rep.saveStepAttribute(id_transformation, id_step, 0, "enclosure_fix_disabled", disableEnclosureFix);
 			rep.saveStepAttribute(id_transformation, id_step, "header",           headerEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "footer",           footerEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "format",           fileFormat);
