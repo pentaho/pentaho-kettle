@@ -27,6 +27,8 @@
 	<property name="libext.stage.dir" location="${stage.dir}/libext" />
 	<property name="plugins.stage.dir" location="${stage.dir}/plugins" />
 	
+	<property name="plugin.destination" location="kettle-dist" />
+	
 	<path id="cp-meta">
 	    <fileset dir="${libswt}" includes="*.jar" />
 	    <fileset dir="${libswt}/${swt.os}/" includes="*.jar" />
@@ -217,7 +219,10 @@
 				<include name="pdi-ce-*.zip"/>
 			</fileset>
 		</unzip>
-		<unzip dest="${bin.dir}/kettle-dist">
+		
+		<available file="${bin.dir}/kettle-dist/data-integration" type="dir" property="plugin.destination" value="kettle-dist/data-integration" />
+
+		<unzip dest="${bin.dir}/${plugin.destination}">
 			<fileset dir="${dist.dir}">
 				<include name="${package.basename}.zip"/>
 			</fileset>
