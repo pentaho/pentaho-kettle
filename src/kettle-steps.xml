@@ -1245,5 +1245,13 @@
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.FuzzyMatch</tooltip>
 		<iconfile>ui/images/FZM.png</iconfile>
+	</step>
+	
+	<step id="RuleExecutor">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RuleExecutor</description>
+		<classname>org.pentaho.di.trans.steps.rules.RulesMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RuleExecutor</tooltip>
+		<iconfile>ui/images/SCR_mod.png</iconfile>
 	</step>	
 </steps>
