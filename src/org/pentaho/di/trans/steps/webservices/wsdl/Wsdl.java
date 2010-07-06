@@ -19,6 +19,8 @@
 
 package org.pentaho.di.trans.steps.webservices.wsdl;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,9 +41,13 @@ import javax.wsdl.xml.WSDLLocator;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.httpclient.auth.AuthenticationException;
+import org.pentaho.di.core.HTTPProtocol;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.w3c.dom.Document;
 
 /**
  * Wsdl abstraction.
@@ -53,7 +59,8 @@ public final class Wsdl implements java.io.Serializable {
     private final Service _service;
     private final WsdlTypes _wsdlTypes;
     private HashMap<String, WsdlOperation> _operationCache;
-
+    private URI wsdlURI = null;
+    
     /**
      * Loads and parses the specified WSDL file.
      *
@@ -61,15 +68,28 @@ public final class Wsdl implements java.io.Serializable {
      * @param serviceQName Name of the service in the WSDL, if null default to first service in WSDL.
      * @param portName     The service port name, if null default to first port in service.
      */
-    public Wsdl(URI wsdlURI, QName serviceQName, String portName) {
-
+    public Wsdl(URI wsdlURI, QName serviceQName, String portName)
+            throws AuthenticationException {
+        this(wsdlURI, serviceQName, portName, null, null);
+    }
+    
+    public Wsdl(URI wsdlURI, QName serviceQName, String portName, String username, String password) 
+           throws AuthenticationException {
+        
+        this.wsdlURI = wsdlURI;
         try {
-            _wsdlDefinition = parse(wsdlURI);
+            _wsdlDefinition = parse(wsdlURI, username, password);
+        }
+        catch (AuthenticationException ae) {
+            //  throw this again since KettleException is catching it
+            throw ae;
         }
         catch (WSDLException e) {
             throw new RuntimeException("Could not load WSDL file: " + e.getMessage(), e);
         }
-
+        catch (KettleException e) {
+            throw new RuntimeException("Could not load WSDL file: " + e.getMessage(), e);
+        }
         if (serviceQName == null) {
             _service = (Service) _wsdlDefinition.getServices().values().iterator().next();
         }
@@ -117,24 +137,37 @@ public final class Wsdl implements java.io.Serializable {
          }
          return soapPort;
     }
+     
+     
+     /**
+      * Loads and parses the specified WSDL file.
+      *
+      * @param wsdlLocator  A javax.wsdl.WSDLLocator instance.
+      * @param serviceQName Name of the service in the WSDL.
+      * @param portName     The service port name.
+      */
+     public Wsdl(WSDLLocator wsdlLocator, QName serviceQName, String portName) 
+            throws AuthenticationException {
+         this(wsdlLocator, serviceQName, portName, null, null);
+     }
 
-    
-    /**
-     * Loads and parses the specified WSDL file.
-     *
-     * @param wsdlLocator  A javax.wsdl.WSDLLocator instance.
-     * @param serviceQName Name of the service in the WSDL.
-     * @param portName     The service port name.
-     */
-    public Wsdl(WSDLLocator wsdlLocator, QName serviceQName, String portName) {
+    public Wsdl(WSDLLocator wsdlLocator, QName serviceQName, String portName, String username, String password) 
+        throws AuthenticationException {
 
         // load and parse the WSDL
         try {
-            _wsdlDefinition = parse(wsdlLocator);
+            _wsdlDefinition = parse(wsdlLocator, username, password);
+        }
+        catch (AuthenticationException ae) {
+            //  throw it again or KettleException will catch it
+            throw ae;
         }
         catch (WSDLException e) {
             throw new RuntimeException("Could not load WSDL file: " + e.getMessage(), e);
         }
+        catch (KettleException  e) {
+            throw new RuntimeException("Could not load WSDL file: " + e.getMessage(), e);
+        }        
 
         _service = _wsdlDefinition.getService(serviceQName);
         if (_service == null) {
@@ -299,26 +332,68 @@ public final class Wsdl implements java.io.Serializable {
      * Load and parse the WSDL file using the wsdlLocator.
      *
      * @param wsdlLocator A WSDLLocator instance.
+     * @param username to use for authentication
+     * @param password to use for authentication
      * @return wsdl Definition.
      * @throws WSDLException on error.
      */
-    private Definition parse(WSDLLocator wsdlLocator) throws WSDLException {
+    private Definition parse(WSDLLocator wsdlLocator, String username, String password) 
+            throws WSDLException, KettleException, AuthenticationException {
 
         WSDLReader wsdlReader = getReader();
-        return wsdlReader.readWSDL(wsdlLocator);
+        try {
+
+            return wsdlReader.readWSDL(wsdlLocator);
+        }
+        catch (WSDLException we) {            
+            readWsdl(wsdlReader, wsdlURI.toString(), username, password);
+            return null;
+        }
     }
 
     /**
      * Load and parse the WSDL file at the specified URI.
      *
      * @param wsdlURI URI of the WSDL file.
+     * @param username to use for authentication
+     * @param password to use for authentication
      * @return wsdl Definition
      * @throws WSDLException on error.
      */
-    private Definition parse(URI wsdlURI) throws WSDLException {
-
+    private Definition parse(URI wsdlURI, String username, String password) 
+            throws WSDLException, KettleException, AuthenticationException {
         WSDLReader wsdlReader = getReader();
-        return wsdlReader.readWSDL(wsdlURI.toString());
+        try {           
+            return wsdlReader.readWSDL(wsdlURI.toString());
+        }
+        catch (WSDLException we) { 
+            return readWsdl(wsdlReader, wsdlURI.toString(), username, password);
+        }
+    }
+
+    private Definition readWsdl(WSDLReader wsdlReader, String uri, String username, String password) 
+        throws WSDLException, KettleException, AuthenticationException {
+                  
+        try {
+            HTTPProtocol http = new HTTPProtocol();
+            Document doc = XMLHandler.loadXMLString(http.get(wsdlURI.toString(), username, password), true, false);
+            if (doc != null) {
+               return(wsdlReader.readWSDL(doc.getBaseURI(), doc));
+            }
+            else {
+                throw new KettleException("Unable to get document.");
+            }
+        }
+        catch (MalformedURLException mue) {
+            throw new KettleException(mue);
+        }
+        catch (AuthenticationException ae) {
+            //  re-throw this.  If not IOException seems to catch it
+            throw ae;
+        }
+        catch (IOException ioe) {
+            throw new KettleException(ioe);
+        }
     }
     
     /**

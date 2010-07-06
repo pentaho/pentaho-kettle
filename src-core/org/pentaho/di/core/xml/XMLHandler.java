@@ -618,12 +618,27 @@ public class XMLHandler
 		}
 	}
 
+   /**
+    * Calls loadXMLString with deferNodeExpansion = TRUE 
+    * 
+    * @param string
+    * @return
+    * @throws KettleXMLException
+    */
+   public static final Document loadXMLString(String string)
+          throws KettleXMLException {
+       
+       return loadXMLString(string, Boolean.FALSE, Boolean.TRUE); 
+       
+   }
+	
 	/**
 	 * Load a String into an XML document
 	 * @param string The XML text to load into a document
+	 * @param Boolean true to defer node expansion, false to not defer.
 	 * @return the Document if all went well, null if an error occurred!
 	 */
-	public static final Document loadXMLString(String string) throws KettleXMLException
+	public static final Document loadXMLString(String string, Boolean namespaceAware, Boolean deferNodeExpansion) throws KettleXMLException
 	{
 		DocumentBuilderFactory dbf;
 		DocumentBuilder db;
@@ -633,6 +648,8 @@ public class XMLHandler
 		{			
 			// Check and open XML document
 			dbf  = DocumentBuilderFactory.newInstance();
+			dbf.setFeature("http://apache.org/xml/features/dom/defer-node-expansion", deferNodeExpansion);
+			dbf.setNamespaceAware(namespaceAware);   // parameterize this as well
 			db   = dbf.newDocumentBuilder();
 			StringReader stringReader = new java.io.StringReader(string);
 			InputSource inputSource = new InputSource(stringReader);
