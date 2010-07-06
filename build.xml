@@ -216,7 +216,7 @@
 			<fileset dir="${kettle.dist.dir}">
 				<exclude name="*-javadoc-*.zip"/>
 				<exclude name="*-src-*.zip"/>
-				<include name="pdi-ce-*.zip"/>
+				<include name="pdi-ce-${project.revision}.zip"/>
 			</fileset>
 		</unzip>
 		
