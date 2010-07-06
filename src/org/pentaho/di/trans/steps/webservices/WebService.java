@@ -362,7 +362,7 @@ public class WebService extends BaseStep implements StepInterface
     {
         Wsdl wsdl;
         try{
-         wsdl = new Wsdl(new java.net.URI(data.realUrl), null, null);
+         wsdl = new Wsdl(new java.net.URI(data.realUrl), null, null, meta.getHttpLogin(), meta.getHttpPassword());
         }
         catch(Exception e){
          throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0013.ExceptionLoadingWSDL"), e);
@@ -392,6 +392,9 @@ public class WebService extends BaseStep implements StepInterface
         	// Generate the XML to send over, determine the correct name for the request...
         	//
         	WsdlOperation operation = wsdl.getOperation(meta.getOperationName());
+        	if (operation == null) {
+        	    throw new KettleException(BaseMessages.getString(PKG, "WebServices.Exception.OperarationNotSupported", meta.getOperationName(), meta.getUrl()));
+        	}
         	String xml = getRequestXML(operation, wsdl.getWsdlTypes().isElementFormQualified(wsdl.getTargetNamespace()));
         	
            if (log.isDetailed()) {
