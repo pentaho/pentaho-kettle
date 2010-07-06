@@ -20,10 +20,10 @@ import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
 public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler {
-	public static final String STEP_NAME = "step_name"; //$NON-NLS-1$
-	public static final String HADOOP_JOB_NAME = "hadoop_job_name"; //$NON-NLS-1$
-	public static final String JAR_URL = "jar_url"; //$NON-NLS-1$
-	public static final String IS_SIMPLE = "is_simple"; //$NON-NLS-1$
+	public static final String STEP_NAME = "stepName"; //$NON-NLS-1$
+	public static final String HADOOP_JOB_NAME = "hadoopJobName"; //$NON-NLS-1$
+	public static final String JAR_URL = "jarUrl"; //$NON-NLS-1$
+	public static final String IS_SIMPLE = "isSimple"; //$NON-NLS-1$
 	
 	private String stepName;
 	private String hadoopJobName;
@@ -31,7 +31,33 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 	
 	private boolean isSimple;
 	
-	private IConfiguration conf;
+	private SimpleConfiguration sConf = new SimpleConfiguration();
+	private AdvancedConfiguration aConf = new AdvancedConfiguration();
+	
+	public void accept() {
+		System.out.println(stepName);
+	}
+	
+	public void cancel() {
+		getXulDomContainer().close();
+	}
+	
+	public void setMode(String type) {
+		System.out.println(type);
+	}
+	
+	public void validateJarUrl() {
+		//TODO:
+		throw new RuntimeException("This method has not been implemented");
+	}
+	
+	public SimpleConfiguration getSimpleConfiguration() {
+		return sConf;
+	}
+	
+	public AdvancedConfiguration getAdvancedConfiguration() {
+		return aConf;
+	}
 	
 	@Override
 	public String getName() {
@@ -85,14 +111,9 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 		this.isSimple = isSimple;
 		firePropertyChange(JobEntryHadoopJobExecutorController.IS_SIMPLE, previousVal, newVal);
 	}
-
-	public interface IConfiguration {
-		public String getCommandLineArgs();
-		public void setCommandLineARgs(String cmdLineArgs);
-	}
 	
-	public class SimpleConfiguration extends XulEventSourceAdapter implements IConfiguration {
-		public static final String CMD_LINE_ARGS = "command_line_args"; //$NON-NLS-1$
+	public class SimpleConfiguration extends XulEventSourceAdapter {
+		public static final String CMD_LINE_ARGS = "commandLineArgs"; //$NON-NLS-1$
 		
 		private String cmdLineArgs;
 
@@ -100,7 +121,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 			return cmdLineArgs;
 		}
 
-		public void setCommandLineARgs(String cmdLineArgs) {
+		public void setCommandLineArgs(String cmdLineArgs) {
 			String previousVal = this.cmdLineArgs;
 			String newVal = cmdLineArgs;
 			
@@ -110,19 +131,19 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 		}
 	}
 	
-	public class AdvancedConfiguration extends SimpleConfiguration{
-		public static final String OUTPUT_KEY_CLASS = "output_key_class"; //$NON-NLS-1$
-		public static final String OUTPUT_KEY_VALUE = "output_key_value"; //$NON-NLS-1$
-		public static final String MAPPER_CLASS = "mapper_class"; //$NON-NLS-1$
-		public static final String COMBINER_CLASS = "combiner_class"; //$NON-NLS-1$
-		public static final String REDUCER_CLASS = "reducer_class"; //$NON-NLS-1$
-		public static final String INPUT_FORMAT = "input_format"; //$NON-NLS-1$
-		public static final String OUTPUT_FORMAT = "output_format"; //$NON-NLS-1$
-		public static final String WORKING_DIRECTORY = "working_directory"; //$NON-NLS-1$
-		public static final String FS_DEFAULT_NAME = "fs_default_name"; //$NON-NLS-1$
-		public static final String INPUT_PATH = "input_path"; //$NON-NLS-1$
-		public static final String OUTPUT_PATH = "output_path"; //$NON-NLS-1$
-		public static final String USER_DEFINED = "user_defined"; //$NON-NLS-1$
+	public class AdvancedConfiguration extends XulEventSourceAdapter {
+		public static final String OUTPUT_KEY_CLASS = "outputKeyClass"; //$NON-NLS-1$
+		public static final String OUTPUT_KEY_VALUE = "outputKeyValue"; //$NON-NLS-1$
+		public static final String MAPPER_CLASS = "mapperClass"; //$NON-NLS-1$
+		public static final String COMBINER_CLASS = "combinerClass"; //$NON-NLS-1$
+		public static final String REDUCER_CLASS = "reducerClass"; //$NON-NLS-1$
+		public static final String INPUT_FORMAT = "inputFormat"; //$NON-NLS-1$
+		public static final String OUTPUT_FORMAT = "outputFormat"; //$NON-NLS-1$
+		public static final String WORKING_DIRECTORY = "workingDirectory"; //$NON-NLS-1$
+		public static final String FS_DEFAULT_NAME = "fsDefaultName"; //$NON-NLS-1$
+		public static final String INPUT_PATH = "inputPath"; //$NON-NLS-1$
+		public static final String OUTPUT_PATH = "outputPath"; //$NON-NLS-1$
+		public static final String USER_DEFINED = "userDefined"; //$NON-NLS-1$
 		
 		private String outputKeyClass;
 		private String outputKeyValue;

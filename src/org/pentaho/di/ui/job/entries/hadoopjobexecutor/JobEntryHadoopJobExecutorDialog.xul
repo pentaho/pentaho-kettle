@@ -7,10 +7,12 @@
 	resizable="true"
     height="600" width="800"
 	appicon="ui/images/spoon.ico"
-	buttons="accept"
+	buttons="accept,cancel"
 	buttonalign="end" 
-	buttonlabelaccept="${Dialog.Close}" 
-	ondialogaccept="">
+	buttonlabelaccept="${Dialog.Accept}"
+	buttonlabelcancel="${Dialog.Cancel}" 
+	ondialogaccept="jobEntryController.accept()"
+	ondialogcancel="jobEntryController.cancel()">
 	
 	<vbox>
 		<grid>
@@ -31,7 +33,7 @@
 					<label value="${JobEntryHadoopJobExecutor.JarUrl.Label}" />
 					<hbox>
 						<textbox id="jar-url" flex="1" multiline="false"/>
-						<button id="validate-jar-url" label="${JobEntryHadoopJobExecutor.JarUrl.Validate}"/>
+						<button id="validate-jar-url" label="${JobEntryHadoopJobExecutor.JarUrl.Validate}" command="jobEntryController.validateJarUrl()"/>
 					</hbox>
 				</row>
 			</rows>
@@ -40,8 +42,8 @@
 		<groupbox>
 			<caption label="${JobEntryHadoopJobExecutor.Configuration.Label}"/>
 			<hbox>
-			  <radio label="${JobEntryHadoopJobExecutor.ModeSimple.Label}"/>
-			  <radio label="${JobEntryHadoopJobExecutor.ModeAdvanced.Label}" selected="true"/>
+			  <radio label="${JobEntryHadoopJobExecutor.ModeSimple.Label}" command="jobEntryController.setMode('simple')" selected="true" />
+			  <radio label="${JobEntryHadoopJobExecutor.ModeAdvanced.Label}" command="jobEntryController.setMode('advanced')" />
 			</hbox>
 			<vbox id="content-pane" />
 		</groupbox>
@@ -50,12 +52,12 @@
 	<vbox id="simple-configuration" hidden="true">
 		<label value="${JobEntryHadoopJobExecutor.ModeSimple.AssumptionsText.Label}"/>
 		<hbox>
-			<label value="{$JobEntryHadoopJobExecutor.ModeSimple.CommandLineArguments.Label}"/>
-			<textbox flex="1" multiline="true"/>
+			<label value="${JobEntryHadoopJobExecutor.ModeSimple.CommandLineArguments.Label}"/>
+			<textbox id="command-line-arguments" flex="1" multiline="true"/>
 		</hbox>
 	</vbox>
 	
-	<vbox id="advanced-configuration" hidden="false">
+	<vbox id="advanced-configuration" hidden="true">
 		<tabbox>
 			<tabs>
 				<tab label="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.Label}"/>
@@ -72,31 +74,31 @@
     					<rows>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyClass.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="classes-output-key-class" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyValue.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="classes-output-key-value" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.MapperClass.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="classes-mapper-class" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.CombinerClass.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="classes-combiner-class" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.ReducerClass.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="classes-reducer-class" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.InputFormat.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="classes-input-format" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputFormat.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="classes-output-format" flex="1" multiline="false"/>
     						</row>
     					</rows>
     				</grid>
