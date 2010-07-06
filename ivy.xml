@@ -38,7 +38,7 @@
     <dependency org="pentaho" name="pentaho-hdfs-vfs" rev="${dependency.pentaho-hdfs-vfs.revision}" transitive="false" conf="default->default"
       changing="true" />
     
-    <dependency org="org.apache.hadoop" name="hadoop-core" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="default->default"
+    <dependency org="org.apache.hadoop" name="hadoop-core" rev="${dependency.pentaho-hadoop.revision}" transitive="true" conf="default->default"
       changing="false" />
       
     <dependency org="pentaho" name="pentaho-vfs-browser" rev="${dependency.vfs-browser.revision}" transitive="false" conf="default->default"
@@ -48,8 +48,11 @@
 		<exclude org="xml-apis" name="xml-apis" />
 	</dependency>
       
-    
     <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
+    <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false" conf="test->default" />
+    <dependency org="commons-logging"       name="commons-logging"    rev="1.1"   transitive="false" conf="test->default" />
+    <dependency org="org.apache.hadoop" name="hadoop-test" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default" changing="false" />
+    <dependency org="org.apache.hadoop" name="hadoop-examples" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default" changing="false" />
 
   </dependencies>
 </ivy-module>
