@@ -304,10 +304,11 @@ public class WebService extends BaseStep implements StepInterface
 
     private synchronized void requestSOAP(Object[] rowData, RowMetaInterface rowMeta) throws KettleException
     {
-        Wsdl wsdl;
-        try{
-         wsdl = new Wsdl(new java.net.URI(data.realUrl), null, null);
+        Wsdl wsdl;  
+        try {
+            wsdl = new Wsdl(new java.net.URI(data.realUrl), null, null, meta.getHttpLogin(), meta.getHttpPassword());
         }
+        
         catch(Exception e){
          throw new KettleStepException(Messages.getString("WebServices.ERROR0013.ExceptionLoadingWSDL"), e);
         }

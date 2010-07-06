@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -61,6 +62,7 @@ import org.pentaho.di.trans.steps.webservices.wsdl.XsdType;
 import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOpParameter.ParameterMode;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -202,7 +204,13 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 systemProperties.setProperty("http.proxyHost", transMeta.environmentSubstitute(wProxyHost.getText()));
                 systemProperties.setProperty("http.proxyPort", transMeta.environmentSubstitute(wProxyPort.getText()));
             }
-            wsdl = new Wsdl(new URI(anURI), null, null);
+            wsdl = new Wsdl(new URI(anURI), null, null, wHttpLogin.getText(), wHttpPassword.getText());
+        }
+        catch (AuthenticationException ae) {
+            wsdl = null;
+            ShowMessageDialog smd = new ShowMessageDialog(shell, SWT.OK, Messages.getString("WebServiceDialog.ErrorDialog.Title"), Messages.getString("Webservices.Error.Authentication", anURI));
+            smd.open();
+            return;
         }
         catch (Exception e)
         {
@@ -784,6 +792,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     	webServiceMeta.setCompatible(wCompatible.getSelection());
     	webServiceMeta.setRepeatingElementName(wRepeatingElement.getText());
     	webServiceMeta.setReturningReplyAsString(wReplyAsString.getSelection());
+        webServiceMeta.setOperationName(wOperation.getText());
 
         if (wsdlOperation != null)
         {
