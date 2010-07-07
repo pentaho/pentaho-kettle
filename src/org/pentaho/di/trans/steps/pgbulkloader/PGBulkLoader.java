@@ -216,10 +216,10 @@ public class PGBulkLoader extends BaseStep implements StepInterface
             
             // any error message?
             //
-            data.errorLogger = new StreamLogger(log, data.psqlProcess.getErrorStream(), "ERROR");
+            data.errorLogger = new StreamLogger(log, data.psqlProcess.getErrorStream(), "ERROR {0}");
         
             // any output?
-            data.outputLogger = new StreamLogger(log, data.psqlProcess.getInputStream(), "OUTPUT");
+            data.outputLogger = new StreamLogger(log, data.psqlProcess.getInputStream(), "OUTPUT {0}");
             
             // Where do we send the data to? --> To STDIN of the psql process
             //
