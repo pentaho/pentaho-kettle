@@ -202,7 +202,7 @@
     <menuitem id="database-class-connection-wizard" label="${Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard}"
       command="spoon.createDatabaseWizard()" />
     <menuitem id="database-class-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete}"
-      command="spoon.clearDBCache()" />
+      command="spoon.clearDBCache('database-class-clear-cache')" />
   </menupopup>
 
   <menupopup id="partition-schema-class">
