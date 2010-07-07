@@ -178,6 +178,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
 		 if (!Const.isEmpty(realOutputFieldname))
 	     {
 			 ValueMetaInterface v = new ValueMeta(realOutputFieldname, ValueMeta.TYPE_STRING);
+			 v.setLength(100, -1);
 			 v.setOrigin(name);
 			 inputRowMeta.addValueMeta(v);
 	     }
@@ -192,8 +193,8 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
         String realexitvaluefieldname=space.environmentSubstitute(exitvaluefieldname);
         if (!Const.isEmpty(realexitvaluefieldname))
         {
-        	ValueMetaInterface v = new ValueMeta(realexitvaluefieldname, ValueMeta.TYPE_STRING);
-            v.setLength(7, 0);
+        	ValueMetaInterface v = new ValueMeta(realexitvaluefieldname, ValueMeta.TYPE_INTEGER);
+            v.setLength(ValueMeta.DEFAULT_INTEGER_LENGTH, 0);
             v.setOrigin(name);
             inputRowMeta.addValueMeta(v);
         }
