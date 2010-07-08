@@ -1684,11 +1684,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	public void saveConditionStepAttribute(ObjectId id_transformation, ObjectId id_step, String code, Condition condition) throws KettleException {
 		ObjectId id = null;
 		if (condition!=null) {
-			id = condition.getObjectId();
-			if (id==null) {
-				id = saveCondition(condition);
-			}
-			
+			id = saveCondition(condition);	
 			Long id_condition = id==null ? Long.valueOf(-1L) : new LongObjectId(id).longValue();
 			saveStepAttribute(id_transformation, id_step, code, id_condition);
 			
