@@ -239,6 +239,13 @@ public class PreviewRowsDialog {
     BaseStepDialog.setSize(shell);
 
     shell.open();
+    
+    if (!waitingForRows) {
+      while (!shell.isDisposed())
+      {
+        if (!shell.getDisplay().readAndDispatch()) shell.getDisplay().sleep();
+      }
+    }
   }
 
   private boolean addFields() {
