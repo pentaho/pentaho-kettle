@@ -745,7 +745,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 * 
 	 * @throws KettleException
 	 */
-  public boolean beginProcessing() throws KettleException {
+  public synchronized boolean beginProcessing() throws KettleException {
     currentDate = new Date();
     logDate = new Date();
     startDate = Const.MIN_DATE;
@@ -769,7 +769,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
         // Enable transactions to make table locking possible
         //
-        ldb.setCommit(100);
+        ldb.setCommit(10);
 
         // See if we have to add a batch id...
         Long id_batch = new Long(1);
