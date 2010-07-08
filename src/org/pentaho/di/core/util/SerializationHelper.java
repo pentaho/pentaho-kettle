@@ -10,7 +10,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
  */
-package org.pentaho.di.trans.step;
+package org.pentaho.di.core.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class StepSerializationHelper {
+public class SerializationHelper {
 
   private static final String INDENT_STRING = "    ";
 
@@ -370,6 +370,48 @@ public static void write(Object object, int indentLevel, StringBuffer buffer) {
   }
 
   /**
+   * Handle saving of the input (object) to the kettle repository using the most simple method available, by calling write and then saving the job-xml as a
+   * job attribute.
+   * 
+   * @param object
+   * @param rep
+   * @param id_transformation
+   * @param id_step
+   * @throws KettleException
+   */
+  public static void saveJobRep(Object object, Repository rep, ObjectId id_job, ObjectId id_job_entry) throws KettleException {
+    StringBuffer sb = new StringBuffer(1024);
+    write(object, 0, sb);
+    rep.saveJobEntryAttribute(id_job, id_job_entry, "job-xml", sb.toString());
+  }
+
+  /**
+   * Handle reading of the input (object) from the kettle repository by getting the job-xml from the repository step attribute string and then re-hydrate the
+   * job entry (object) with our already existing read method.
+   * 
+   * @param object
+   * @param rep
+   * @param id_step
+   * @param databases
+   * @throws KettleException
+   */
+  public static void readJobRep(Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
+    try {
+      String jobXML = rep.getJobEntryAttributeString(id_step, "job-xml");
+      ByteArrayInputStream bais = new ByteArrayInputStream(jobXML.getBytes());
+      Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(bais);
+      read(object, doc.getDocumentElement());
+    } catch (ParserConfigurationException ex) {
+      throw new KettleException(ex.getMessage(), ex);
+    } catch (SAXException ex) {
+      throw new KettleException(ex.getMessage(), ex);
+    } catch (IOException ex) {
+      throw new KettleException(ex.getMessage(), ex);
+    }
+  }
+  
+  
+  /**
    * Handle saving of the input (object) to the kettle repository using the most simple method available, by calling write and then saving the step-xml as a
    * step attribute.
    * 
@@ -379,7 +421,7 @@ public static void write(Object object, int indentLevel, StringBuffer buffer) {
    * @param id_step
    * @throws KettleException
    */
-  public static void saveRep(Object object, Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+  public static void saveStepRep(Object object, Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
     StringBuffer sb = new StringBuffer(1024);
     write(object, 0, sb);
     rep.saveStepAttribute(id_transformation, id_step, "step-xml", sb.toString());
@@ -396,7 +438,7 @@ public static void write(Object object, int indentLevel, StringBuffer buffer) {
    * @param counters
    * @throws KettleException
    */
-  public static void readRep(Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+  public static void readStepRep(Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
     try {
       String stepXML = rep.getStepAttributeString(id_step, "step-xml");
       ByteArrayInputStream bais = new ByteArrayInputStream(stepXML.getBytes());
