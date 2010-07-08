@@ -854,7 +854,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 	transExecutionConfiguration.setRemoteServer(remoteSlaveServer);
                 	transExecutionConfiguration.setLogLevel(transLogLevel);
                 	transExecutionConfiguration.setRepository(rep);
-                	
+
+                    Map<String, String> params = transExecutionConfiguration.getParams();
+                    for (String param : transMeta.listParameters()) {
+                        String value = Const.NVL(transMeta.getParameterValue(param), Const.NVL(transMeta.getParameterDefault(param), transMeta.getVariable(param)));
+                        params.put(param, value);
+                    }
+
                 	// Send the XML over to the slave server
                 	// Also start the transformation over there...
                 	//
