@@ -1434,7 +1434,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       LocationListener listener = new LocationListener() {
         public void changing(LocationEvent event) {
 
-          System.out.println("Changing to: " + event.location);
+          // System.out.println("Changing to: " + event.location);
 
           // file:///home/matt/svn/kettle/trunk/docs/English/welcome/samples/transformations/
           //
