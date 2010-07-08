@@ -76,6 +76,8 @@ public class JobEntryHadoopJobExecutorDialog extends JobEntryDialog implements J
 	    
 	    container.addEventHandler(controller);
 	    
+	    controller.setJobEntry((JobEntryHadoopJobExecutor)jobEntry);
+	    
 	    bf = new DefaultBindingFactory();
 	    bf.setDocument(container.getDocumentRoot());
 	    bf.setBindingType(Type.BI_DIRECTIONAL);
