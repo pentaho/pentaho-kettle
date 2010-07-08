@@ -51,15 +51,16 @@ public class SerializationHelper {
    *          The node to 'attach' our XML to
    */
   public static void read(Object object, Node node) {
-    // get this classes declared fields, public, private, protected, package, everything, but not super
-    Field declaredFields[] = object.getClass().getDeclaredFields();
-    for (Field field : declaredFields) {
+    // get this classes fields, public, private, protected, package, everything
+    Field fields[] = object.getClass().getFields();
+    
+    for (Field field : fields) {
 
       // ignore fields which are final, static or transient
       if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
         continue;
       }
-
+      
       // if the field is not accessible (private), we'll open it up so we can operate on it
       if (!field.isAccessible()) {
         field.setAccessible(true);
@@ -259,16 +260,14 @@ public static void write(Object object, int indentLevel, StringBuffer buffer) {
       return;
     }
 
-    // get this classes declared fields, public, private, protected, package, everything, but not super
-    Field declaredFields[] = object.getClass().getDeclaredFields();
-    for (Field field : declaredFields) {
+    // get this classes fields, public, private, protected, package, everything
+    Field fields[] = object.getClass().getFields();
+    for (Field field : fields) {
 
       // ignore fields which are final, static or transient
       if (Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
         continue;
       }
-
-      System.out.println("handling field: " + field.getName());
 
       // if the field is not accessible (private), we'll open it up so we can operate on it
       if (!field.isAccessible()) {
