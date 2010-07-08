@@ -299,6 +299,7 @@ public class StringEvaluator {
 				"#.0000",
 				"#.00000",
 				"#.000000",
+                " #.0#",
 			};
 			
 			for (String format : numberFormats) {
@@ -332,6 +333,21 @@ public class StringEvaluator {
 			conversionMeta.setConversionMask(" #");
 			conversionMeta.setLength(15);
 			evaluationResults.add(new StringEvaluationResult(conversionMeta));
+
+	         // Add support for left zero padded integers
+            //
+            for (int i=1;i<=15;i++) {
+
+              String mask = " ";
+              for (int x=0;x<=i;x++) mask+="0";
+              mask+=";-";
+              for (int x=0;x<=i;x++) mask+="0";
+              
+              conversionMeta = new ValueMeta("integer-zero-padded-"+i, ValueMetaInterface.TYPE_INTEGER);
+              conversionMeta.setConversionMask(mask);
+              conversionMeta.setLength(i);
+              evaluationResults.add(new StringEvaluationResult(conversionMeta));
+            }
 
 			// Boolean
 			//
