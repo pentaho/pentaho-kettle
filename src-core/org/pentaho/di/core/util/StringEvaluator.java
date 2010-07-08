@@ -341,9 +341,9 @@ public class StringEvaluator {
 			for (int i=1;i<=15;i++) {
 
 			  String mask = " ";
-			  for (int x=0;x<=i;x++) mask+="0";
+			  for (int x=0;x<i;x++) mask+="0";
 			  mask+=";-";
-              for (int x=0;x<=i;x++) mask+="0";
+              for (int x=0;x<i;x++) mask+="0";
 			  
 	          conversionMeta = new ValueMeta("integer-zero-padded-"+i, ValueMetaInterface.TYPE_INTEGER);
 	          conversionMeta.setConversionMask(mask);
