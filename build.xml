@@ -360,6 +360,24 @@
                 </manifest>
 	  	</jar>
 
+	  </target>
+
+	  <target name="kettle-test" depends="kettle" description="generate the kettle library kettle-test.jar">
+        <echo>Generating the Kettle library kettle-test.jar ...</echo>
+		<jar jarfile="${lib}/kettle-test.jar" 
+		   	 basedir="${testClasses}" 
+		   	 includes="**/* ${version.file.path}"
+		     excludes="**/Thumbs.db **/kettle.jar">
+	             <manifest>
+	             	<attribute name="Implementation-Title" value="${impl.title.ui}" />
+	                <attribute name="Implementation-Version" value="${impl.version}" />
+	                <attribute name="Specification-Version" value="${revision}" />
+	                <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+	    			<attribute name="Implementation-ProductID" value="${impl.productID}" />
+	                <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+	                <attribute name="Compile-User" value="${user.name}" />
+	             </manifest>
+        </jar>
 	  </target>	
 
 	<!--
@@ -367,7 +385,7 @@
 	        Distribution jar package
 	       ==========================
 	  -->
-	  <target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-ui" description="copy jar file to distribution directory" >
+	  <target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-ui, kettle-test" description="copy jar file to distribution directory" >
 	  	<echo>Construct the distribution package...</echo>
 	  	
 	        <!-- root directory -->
@@ -382,6 +400,7 @@
 		    <copy todir="${distrib}/lib"  file="${lib}/kettle-db.jar"/>
   			<copy todir="${distrib}/lib"  file="${lib}/kettle-engine.jar"/>
   			<copy todir="${distrib}/lib"  file="${lib}/kettle-ui-swt.jar"/>
+	  		<copy todir="${distrib}/lib"  file="${lib}/kettle-test.jar"/>
 
   	        <!-- external libs (jdbc etc) -->
 	  		<mkdir dir="${distrib}/libext"/>
