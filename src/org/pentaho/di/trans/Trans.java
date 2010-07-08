@@ -1350,10 +1350,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            }
 	            
 			    transLogTableDatabaseConnection = new Database(this, logConnection);
-			    transLogTableDatabaseConnection.setCommit(0);
 			    transLogTableDatabaseConnection.shareVariablesWith(this);
 			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
 			    transLogTableDatabaseConnection.connect();
+			    transLogTableDatabaseConnection.setCommit(10);
 				
 				// See if we have to add a batch id...
 				// Do this first, before anything else to lock the complete table exclusively
@@ -1401,12 +1401,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					if (maxcon!=null)
 					{
 						Database maxdb = new Database(this, maxcon);
-						maxdb.setCommit(0);
 						maxdb.shareVariablesWith(this);
 						try
 						{
 							if(log.isDetailed())  log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
 							maxdb.connect();
+							maxdb.setCommit(10);
 
 							//
 							// Determine the endDate by looking at a field in a table...
@@ -1471,10 +1471,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 						if (depcon!=null)
 						{
 							Database depdb = new Database(this, depcon);
-							depdb.setCommit(0);
 							try
 							{
 								depdb.connect();
+								depdb.setCommit(10);
 
 								String sql = "SELECT MAX("+td.getFieldname()+") FROM "+td.getTablename(); //$NON-NLS-1$ //$NON-NLS-2$
 								RowMetaAndData r1 = depdb.getOneRow(sql);
@@ -1595,6 +1595,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            			public void run() {
 	            				try {
 	            					endProcessing();
+	            					transLogTableDatabaseConnection.commit();
 	            				} catch(Exception e) {
 	            					log.logError(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformIntervalLogging"), e);
 	            					// Also stop the show...
@@ -1714,8 +1715,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
-			db.setCommit(0);
 			db.connect();
+			db.setCommit(10);
 			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
 			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
@@ -1739,8 +1740,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			db = new Database(this, stepLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
-			db.setCommit(0);
 			db.connect();
+			db.setCommit(10);
 			
 			for (StepMetaDataCombi combi : steps) {
 				db.writeLogRecord(stepLogTable, LogStatus.START, combi, null);
@@ -1832,8 +1833,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				if (transLogTableDatabaseConnection==null) {
 					ldb = new Database(this, logcon);
 					ldb.shareVariablesWith(this);
-					ldb.setCommit(0);
 					ldb.connect();
+					ldb.setCommit(10);
 					transLogTableDatabaseConnection=ldb;
 				} else {
 					ldb = transLogTableDatabaseConnection;
@@ -1878,8 +1879,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			ldb = new Database(this, performanceLogTable.getDatabaseMeta());
 			ldb.shareVariablesWith(this);
-			ldb.setCommit(0);
 			ldb.connect();
+			ldb.setCommit(10);
 			
 			// Write to the step performance log table...
 			//
