@@ -74,6 +74,9 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
   private boolean blocking;
 
+  private int numMapTasks;
+  private int numReduceTasks;
+
   private List<UserDefinedItem> userDefined;
 
   public class UserDefinedItem {
@@ -104,7 +107,175 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   public void setHadoopJobName(String hadoopJobName) {
     this.hadoopJobName = hadoopJobName;
   }
-  
+
+  public String getJarUrl() {
+    return jarUrl;
+  }
+
+  public void setJarUrl(String jarUrl) {
+    this.jarUrl = jarUrl;
+  }
+
+  public boolean isSimple() {
+    return isSimple;
+  }
+
+  public void setSimple(boolean isSimple) {
+    this.isSimple = isSimple;
+  }
+
+  public String getCmdLineArgs() {
+    return cmdLineArgs;
+  }
+
+  public void setCmdLineArgs(String cmdLineArgs) {
+    this.cmdLineArgs = cmdLineArgs;
+  }
+
+  public String getOutputKeyClass() {
+    return outputKeyClass;
+  }
+
+  public void setOutputKeyClass(String outputKeyClass) {
+    this.outputKeyClass = outputKeyClass;
+  }
+
+  public String getOutputValueClass() {
+    return outputValueClass;
+  }
+
+  public void setOutputValueClass(String outputValueClass) {
+    this.outputValueClass = outputValueClass;
+  }
+
+  public String getMapperClass() {
+    return mapperClass;
+  }
+
+  public void setMapperClass(String mapperClass) {
+    this.mapperClass = mapperClass;
+  }
+
+  public String getCombinerClass() {
+    return combinerClass;
+  }
+
+  public void setCombinerClass(String combinerClass) {
+    this.combinerClass = combinerClass;
+  }
+
+  public String getReducerClass() {
+    return reducerClass;
+  }
+
+  public void setReducerClass(String reducerClass) {
+    this.reducerClass = reducerClass;
+  }
+
+  public String getInputFormatClass() {
+    return inputFormatClass;
+  }
+
+  public void setInputFormatClass(String inputFormatClass) {
+    this.inputFormatClass = inputFormatClass;
+  }
+
+  public String getOutputFormatClass() {
+    return outputFormatClass;
+  }
+
+  public void setOutputFormatClass(String outputFormatClass) {
+    this.outputFormatClass = outputFormatClass;
+  }
+
+  public String getWorkingDirectory() {
+    return workingDirectory;
+  }
+
+  public void setWorkingDirectory(String workingDirectory) {
+    this.workingDirectory = workingDirectory;
+  }
+
+  public String getHdfsHostname() {
+    return hdfsHostname;
+  }
+
+  public void setHdfsHostname(String hdfsHostname) {
+    this.hdfsHostname = hdfsHostname;
+  }
+
+  public String getHdfsPort() {
+    return hdfsPort;
+  }
+
+  public void setHdfsPort(String hdfsPort) {
+    this.hdfsPort = hdfsPort;
+  }
+
+  public String getJobTrackerHostname() {
+    return jobTrackerHostname;
+  }
+
+  public void setJobTrackerHostname(String jobTrackerHostname) {
+    this.jobTrackerHostname = jobTrackerHostname;
+  }
+
+  public String getJobTrackerPort() {
+    return jobTrackerPort;
+  }
+
+  public void setJobTrackerPort(String jobTrackerPort) {
+    this.jobTrackerPort = jobTrackerPort;
+  }
+
+  public String getInputPath() {
+    return inputPath;
+  }
+
+  public void setInputPath(String inputPath) {
+    this.inputPath = inputPath;
+  }
+
+  public String getOutputPath() {
+    return outputPath;
+  }
+
+  public void setOutputPath(String outputPath) {
+    this.outputPath = outputPath;
+  }
+
+  public boolean isBlocking() {
+    return blocking;
+  }
+
+  public void setBlocking(boolean blocking) {
+    this.blocking = blocking;
+  }
+
+  public List<UserDefinedItem> getUserDefined() {
+    return userDefined;
+  }
+
+  public void setUserDefined(List<UserDefinedItem> userDefined) {
+    this.userDefined = userDefined;
+  }
+
+  public int getNumMapTasks() {
+    return numMapTasks;
+  }
+
+  public void setNumMapTasks(int numMapTasks) {
+    this.numMapTasks = numMapTasks;
+  }
+
+  public int getNumReduceTasks() {
+    return numReduceTasks;
+  }
+
+  public void setNumReduceTasks(int numReduceTasks) {
+    this.numReduceTasks = numReduceTasks;
+  }
+
   public Result execute(Result result, int arg1) throws KettleException {
 
     try {
@@ -161,6 +332,9 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
         conf.setWorkingDirectory(new Path(hdfsBaseUrl + workingDirectory));
         conf.setJar(jarUrl);
+
+        conf.setNumMapTasks(numMapTasks);
+        conf.setNumReduceTasks(numReduceTasks);
 
         JobClient jobClient = new JobClient(conf);
         RunningJob runningJob = jobClient.submitJob(conf);

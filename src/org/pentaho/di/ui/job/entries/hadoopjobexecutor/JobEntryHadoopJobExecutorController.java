@@ -43,8 +43,31 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
   private JobEntryHadoopJobExecutor jobEntry;
 
   public void accept() {
+    // common/simple
     jobEntry.setName(stepName);
     jobEntry.setHadoopJobName(hadoopJobName);
+    jobEntry.setSimple(isSimple);
+    jobEntry.setJarUrl(jarUrl);
+    jobEntry.setCmdLineArgs(sConf.getCommandLineArgs());
+    // advanced config
+    jobEntry.setBlocking(aConf.isBlocking());
+    jobEntry.setMapperClass(aConf.getMapperClass());
+    jobEntry.setCombinerClass(aConf.getCombinerClass());
+    jobEntry.setReducerClass(aConf.getReducerClass());
+    jobEntry.setInputPath(aConf.getInputPath());
+    jobEntry.setInputFormatClass(aConf.getInputFormatClass());
+    jobEntry.setOutputPath(aConf.getOutputPath());
+    jobEntry.setOutputKeyClass(aConf.getOutputKeyClass());
+    jobEntry.setOutputValueClass(aConf.getOutputValueClass());
+    jobEntry.setOutputFormatClass(aConf.getOutputFormatClass());
+    jobEntry.setHdfsHostname(aConf.getHdfsHostname());
+    jobEntry.setHdfsPort(aConf.getHdfsPort());
+    jobEntry.setJobTrackerHostname(aConf.getJobTrackerHostname());
+    jobEntry.setJobTrackerPort(aConf.getJobTrackerPort());
+    jobEntry.setNumMapTasks(aConf.getNumMapTasks());
+    jobEntry.setNumReduceTasks(aConf.getNumReduceTasks());
+    jobEntry.setUserDefined(aConf.getUserDefined());
+    jobEntry.setWorkingDirectory(aConf.getWorkingDirectory());
     cancel();
   }
 
@@ -158,30 +181,44 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 
   public class AdvancedConfiguration extends XulEventSourceAdapter {
     public static final String OUTPUT_KEY_CLASS = "outputKeyClass"; //$NON-NLS-1$
-    public static final String OUTPUT_KEY_VALUE = "outputKeyValue"; //$NON-NLS-1$
+    public static final String OUTPUT_VALUE_CLASS = "outputValueClass"; //$NON-NLS-1$
     public static final String MAPPER_CLASS = "mapperClass"; //$NON-NLS-1$
     public static final String COMBINER_CLASS = "combinerClass"; //$NON-NLS-1$
     public static final String REDUCER_CLASS = "reducerClass"; //$NON-NLS-1$
-    public static final String INPUT_FORMAT = "inputFormat"; //$NON-NLS-1$
-    public static final String OUTPUT_FORMAT = "outputFormat"; //$NON-NLS-1$
+    public static final String INPUT_FORMAT_CLASS = "inputFormatClass"; //$NON-NLS-1$
+    public static final String OUTPUT_FORMAT_CLASS = "outputFormatClass"; //$NON-NLS-1$
     public static final String WORKING_DIRECTORY = "workingDirectory"; //$NON-NLS-1$
-    public static final String FS_DEFAULT_NAME = "fsDefaultName"; //$NON-NLS-1$
     public static final String INPUT_PATH = "inputPath"; //$NON-NLS-1$
     public static final String OUTPUT_PATH = "outputPath"; //$NON-NLS-1$
     public static final String USER_DEFINED = "userDefined"; //$NON-NLS-1$
+    public static final String BLOCKING = "blocking"; //$NON-NLS-1$
+    public static final String HDFS_HOSTNAME = "hdfsHostname"; //$NON-NLS-1$
+    public static final String HDFS_PORT = "hdfsPort"; //$NON-NLS-1$
+    public static final String JOB_TRACKER_HOSTNAME = "jobTrackerHostname"; //$NON-NLS-1$
+    public static final String JOB_TRACKER_PORT = "jobTrackerPort"; //$NON-NLS-1$
+    public static final String NUM_MAP_TASKS = "numMapTasks"; //$NON-NLS-1$
+    public static final String NUM_REDUCE_TASKS = "numReduceTasks"; //$NON-NLS-1$
 
     private String outputKeyClass;
-    private String outputKeyValue;
+    private String outputValueClass;
     private String mapperClass;
     private String combinerClass;
     private String reducerClass;
-    private String inputFormat;
-    private String outputFormat;
+    private String inputFormatClass;
+    private String outputFormatClass;
 
     private String workingDirectory;
-    private String fsDefaultName;
+    private String hdfsHostname;
+    private String hdfsPort;
+    private String jobTrackerHostname;
+    private String jobTrackerPort;
     private String inputPath;
     private String outputPath;
+
+    private int numMapTasks;
+    private int numReduceTasks;
+
+    private boolean blocking;
 
     private List<UserDefinedItem> userDefined;
 
@@ -197,16 +234,16 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       firePropertyChange(AdvancedConfiguration.OUTPUT_KEY_CLASS, previousVal, newVal);
     }
 
-    public String getOutputKeyValue() {
-      return outputKeyValue;
+    public String getOutputValueClass() {
+      return outputValueClass;
     }
 
-    public void setOutputKeyValue(String outputKeyValue) {
-      String previousVal = this.outputKeyValue;
-      String newVal = outputKeyValue;
+    public void setOutputValueClass(String outputValueClass) {
+      String previousVal = this.outputValueClass;
+      String newVal = outputValueClass;
 
-      this.outputKeyValue = outputKeyValue;
-      firePropertyChange(AdvancedConfiguration.OUTPUT_KEY_VALUE, previousVal, newVal);
+      this.outputValueClass = outputValueClass;
+      firePropertyChange(AdvancedConfiguration.OUTPUT_VALUE_CLASS, previousVal, newVal);
     }
 
     public String getMapperClass() {
@@ -245,28 +282,28 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       firePropertyChange(AdvancedConfiguration.REDUCER_CLASS, previousVal, newVal);
     }
 
-    public String getInputFormat() {
-      return inputFormat;
+    public String getInputFormatClass() {
+      return inputFormatClass;
     }
 
-    public void setInputFormat(String inputFormat) {
-      String previousVal = this.inputFormat;
-      String newVal = inputFormat;
+    public void setInputFormatClass(String inputFormatClass) {
+      String previousVal = this.inputFormatClass;
+      String newVal = inputFormatClass;
 
-      this.inputFormat = inputFormat;
-      firePropertyChange(AdvancedConfiguration.INPUT_FORMAT, previousVal, newVal);
+      this.inputFormatClass = inputFormatClass;
+      firePropertyChange(AdvancedConfiguration.INPUT_FORMAT_CLASS, previousVal, newVal);
     }
 
-    public String getOutputFormat() {
-      return outputFormat;
+    public String getOutputFormatClass() {
+      return outputFormatClass;
     }
 
-    public void setOutputFormat(String outputFormat) {
-      String previousVal = this.outputFormat;
-      String newVal = outputFormat;
+    public void setOutputFormatClass(String outputFormatClass) {
+      String previousVal = this.outputFormatClass;
+      String newVal = outputFormatClass;
 
-      this.outputFormat = outputFormat;
-      firePropertyChange(AdvancedConfiguration.OUTPUT_FORMAT, previousVal, newVal);
+      this.outputFormatClass = outputFormatClass;
+      firePropertyChange(AdvancedConfiguration.OUTPUT_FORMAT_CLASS, previousVal, newVal);
     }
 
     public String getWorkingDirectory() {
@@ -281,16 +318,52 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       firePropertyChange(AdvancedConfiguration.WORKING_DIRECTORY, previousVal, newVal);
     }
 
-    public String getFsDefaultName() {
-      return fsDefaultName;
+    public String getHdfsHostname() {
+      return hdfsHostname;
     }
 
-    public void setFsDefaultName(String fsDefaultName) {
-      String previousVal = this.fsDefaultName;
-      String newVal = fsDefaultName;
+    public void setHdfsHostname(String hdfsHostname) {
+      String previousVal = this.hdfsHostname;
+      String newVal = hdfsHostname;
 
-      this.fsDefaultName = fsDefaultName;
-      firePropertyChange(AdvancedConfiguration.FS_DEFAULT_NAME, previousVal, newVal);
+      this.hdfsHostname = hdfsHostname;
+      firePropertyChange(AdvancedConfiguration.HDFS_HOSTNAME, previousVal, newVal);
+    }
+
+    public String getHdfsPort() {
+      return hdfsPort;
+    }
+
+    public void setHdfsPort(String hdfsPort) {
+      String previousVal = this.hdfsPort;
+      String newVal = hdfsPort;
+
+      this.hdfsPort = hdfsPort;
+      firePropertyChange(AdvancedConfiguration.HDFS_PORT, previousVal, newVal);
+    }
+
+    public String getJobTrackerHostname() {
+      return jobTrackerHostname;
+    }
+
+    public void setJobTrackerHostname(String jobTrackerHostname) {
+      String previousVal = this.jobTrackerHostname;
+      String newVal = jobTrackerHostname;
+
+      this.jobTrackerHostname = jobTrackerHostname;
+      firePropertyChange(AdvancedConfiguration.JOB_TRACKER_HOSTNAME, previousVal, newVal);
+    }
+
+    public String getJobTrackerPort() {
+      return jobTrackerPort;
+    }
+
+    public void setJobTrackerPort(String jobTrackerPort) {
+      String previousVal = this.jobTrackerPort;
+      String newVal = jobTrackerPort;
+
+      this.jobTrackerPort = jobTrackerPort;
+      firePropertyChange(AdvancedConfiguration.JOB_TRACKER_PORT, previousVal, newVal);
     }
 
     public String getInputPath() {
@@ -327,6 +400,42 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 
       this.userDefined = userDefined;
       firePropertyChange(AdvancedConfiguration.USER_DEFINED, previousVal, newVal);
+    }
+
+    public boolean isBlocking() {
+      return blocking;
+    }
+
+    public void setBlocking(boolean blocking) {
+      boolean previousVal = this.blocking;
+      boolean newVal = blocking;
+
+      this.blocking = blocking;
+      firePropertyChange(AdvancedConfiguration.BLOCKING, previousVal, newVal);
+    }
+
+    public int getNumMapTasks() {
+      return numMapTasks;
+    }
+
+    public void setNumMapTasks(int numMapTasks) {
+      int previousVal = this.numMapTasks;
+      int newVal = numMapTasks;
+
+      this.numMapTasks = numMapTasks;
+      firePropertyChange(AdvancedConfiguration.NUM_MAP_TASKS, previousVal, newVal);
+    }
+
+    public int getNumReduceTasks() {
+      return numReduceTasks;
+    }
+
+    public void setNumReduceTasks(int numReduceTasks) {
+      int previousVal = this.numReduceTasks;
+      int newVal = numReduceTasks;
+
+      this.numReduceTasks = numReduceTasks;
+      firePropertyChange(AdvancedConfiguration.NUM_REDUCE_TASKS, previousVal, newVal);
     }
   }
 }

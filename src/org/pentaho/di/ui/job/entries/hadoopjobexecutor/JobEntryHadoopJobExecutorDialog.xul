@@ -112,31 +112,31 @@
     					<rows>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.WorkingDirectory.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="working-dir" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.HDFSHostname.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="hdfs-hostname" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.HDFSPort.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="hdfs-port" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.JobTrackerHostname.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="job-tracker-hostname" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.JobTrackerPort.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="job-tracker-port" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.InputPath.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="input-path" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.OutputPath.Label}" />
-    							<textbox flex="1" multiline="false"/>
+    							<textbox id="output-path" flex="1" multiline="false"/>
     						</row>
     					</rows>
     				</grid>
