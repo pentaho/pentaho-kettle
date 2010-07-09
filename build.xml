@@ -164,7 +164,7 @@
 		       ==========================
 		  -->
 
-		  <target name="compileTests" depends="kettle-core,kettle" description="compile the tests" >
+		  <target name="compileTests" depends="compile" description="compile the tests" >
 		  	<echo>Compiling Kettle tests...</echo>
 		    <javac fork="true"
 		    	   srcdir="${test}" 
@@ -362,12 +362,12 @@
 
 	  </target>
 
-	  <target name="kettle-test" depends="kettle" description="generate the kettle library kettle-test.jar">
+	  <target name="kettle-test" depends="compileTests" description="generate the kettle library kettle-test.jar">
         <echo>Generating the Kettle library kettle-test.jar ...</echo>
 		<jar jarfile="${lib}/kettle-test.jar" 
 		   	 basedir="${testClasses}" 
 		   	 includes="**/* ${version.file.path}"
-		     excludes="**/Thumbs.db **/kettle.jar">
+		     excludes="**/Thumbs.db **/*.jar **/*.swp">
 	             <manifest>
 	             	<attribute name="Implementation-Title" value="${impl.title.ui}" />
 	                <attribute name="Implementation-Version" value="${impl.version}" />
