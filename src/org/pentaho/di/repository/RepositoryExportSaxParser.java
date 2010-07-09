@@ -10,7 +10,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
  */
-package org.pentaho.di.ui.repository.dialog;
+package org.pentaho.di.repository;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -40,8 +40,11 @@ public class RepositoryExportSaxParser extends DefaultHandler2 {
   private String filename;
   private boolean cdata;
   
-  public RepositoryExportSaxParser(String filename) throws Exception {
+  RepositoryImportFeedbackInterface feedback;
+  
+  public RepositoryExportSaxParser(String filename, RepositoryImportFeedbackInterface feedback) throws Exception {
     this.filename = filename;
+    this.feedback = feedback;
     this.xml = new StringBuffer(50000);
     this.add=false;
     this.cdata=false;
@@ -80,13 +83,13 @@ public class RepositoryExportSaxParser extends DefaultHandler2 {
     }
     
     if (STRING_TRANSFORMATION.equals(qName)) {
-      if (!repositoryElementReadListener.transformationElementRead(xml.toString())) {
+      if (!repositoryElementReadListener.transformationElementRead(xml.toString(), feedback)) {
         saxParser.reset();
       }
     }
     
     if (STRING_JOB.equals(qName)) {
-      if (!repositoryElementReadListener.jobElementRead(xml.toString())) {
+      if (!repositoryElementReadListener.jobElementRead(xml.toString(), feedback)) {
         saxParser.reset();
       }
     }

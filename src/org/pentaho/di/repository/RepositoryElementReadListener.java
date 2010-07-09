@@ -10,12 +10,12 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
  */
-package org.pentaho.di.ui.repository.dialog;
+package org.pentaho.di.repository;
 
 import org.xml.sax.SAXParseException;
 
 public interface RepositoryElementReadListener {
-  public boolean transformationElementRead(String xml);
-  public boolean jobElementRead(String xml);
+  public boolean transformationElementRead(String xml, RepositoryImportFeedbackInterface feedback);
+  public boolean jobElementRead(String xml, RepositoryImportFeedbackInterface feedback);
   public void fatalXmlErrorEncountered(SAXParseException e);
 }
