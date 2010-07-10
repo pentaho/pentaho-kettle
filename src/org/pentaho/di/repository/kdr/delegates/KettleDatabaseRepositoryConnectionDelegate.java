@@ -1378,7 +1378,9 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 	    		id_directory = new LongObjectId(0L); // root!
 	    	}
 	    	
-	    	RepositoryDirectoryInterface repositoryDirectory = repository.loadRepositoryDirectoryTree().findDirectory(id_directory);
+	    	RepositoryDirectoryInterface repositoryDirectory = repository.directoryDelegate.loadPathToRoot(id_directory);
+	    	
+	    	// RepositoryDirectoryInterface repositoryDirectory = repository.loadRepositoryDirectoryTree().findDirectory(id_directory);
    	
 	        String sql = "SELECT "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME)+", "+
 	        	quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_USER)+", "+

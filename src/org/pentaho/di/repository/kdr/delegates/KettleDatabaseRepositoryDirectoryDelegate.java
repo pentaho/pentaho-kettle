@@ -12,6 +12,9 @@
  */
 package org.pentaho.di.repository.kdr.delegates;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
@@ -34,6 +37,46 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
   public RowMetaAndData getDirectory(ObjectId id_directory) throws KettleException {
     return repository.connectionDelegate.getOneRow(quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY),
         quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY), id_directory);
+  }
+  
+  public RepositoryDirectoryInterface loadPathToRoot(ObjectId id_directory) throws KettleException {
+    List<RepositoryDirectory> path = new ArrayList<RepositoryDirectory>();
+    
+    ObjectId directoryId = id_directory;
+    
+    RowMetaAndData directoryRow = getDirectory(directoryId);
+    Long parentId= directoryRow.getInteger(1);
+    
+    // Do not load root itself, it doesn't exist.
+    //
+    while (parentId!=null && parentId>=0) { 
+      RepositoryDirectory directory = new RepositoryDirectory();
+      directory.setName(directoryRow.getString(2, null)); // Name of the directory
+      directory.setObjectId(directoryId);
+      path.add(directory);
+      
+      System.out.println("+ dir '"+directory.getName()+"'");
+      
+      directoryId = new LongObjectId(parentId);
+      directoryRow = getDirectory(directoryId);
+      parentId = directoryRow.getInteger(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT);
+    }
+
+    RepositoryDirectory root = new RepositoryDirectory();
+    root.setObjectId(new LongObjectId(0));
+    path.add(root);
+
+    // Connect the directories to each other.
+    //
+    for (int i=0;i<path.size()-1;i++) {
+      RepositoryDirectory item = path.get(i);
+      RepositoryDirectory parent = path.get(i+1);
+      item.setParent(parent);
+      parent.addSubdirectory(item);
+    }
+    
+    RepositoryDirectory repositoryDirectory = path.get(0);
+    return repositoryDirectory;
   }
 
   public RepositoryDirectoryInterface loadRepositoryDirectoryTree(RepositoryDirectoryInterface root) throws KettleException {
