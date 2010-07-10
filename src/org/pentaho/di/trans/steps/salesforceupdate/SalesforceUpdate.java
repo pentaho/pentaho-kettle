@@ -14,6 +14,8 @@
  
 package org.pentaho.di.trans.steps.salesforceupdate;
 
+import java.util.ArrayList;
+
 import com.sforce.soap.partner.sobject.SObject;
 
 import org.apache.axis.message.MessageElement;
@@ -102,7 +104,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 			}
  
 			// Create the output row meta-data
-	        data.outputRowMeta = getInputRowMeta().clone();
+			data.inputRowMeta = getInputRowMeta().clone();
+	        data.outputRowMeta = data.inputRowMeta.clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
 			// Build the mapping of input position to field name
@@ -137,17 +140,31 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 			
 			// if there is room in the buffer
 			if ( data.iBufferPos < meta.getBatchSizeInt()) {
-				// build the XML node
-				MessageElement[] arNode = new MessageElement[data.nrfields];
-				int index=0;
+				// Reserve for empty fields
+				ArrayList<String> fieldsToNull = new ArrayList<String>();
+				ArrayList<MessageElement> updatefields = new ArrayList<MessageElement>();
+				
+				// Add fields to update
 				for ( int i = 0; i < data.nrfields; i++) {
-					arNode[index++] = newMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]]);
-				}				
+					if(data.inputRowMeta.isNull(rowData, data.fieldnrs[i])) {
+						// The value is null
+						// We need to keep track of this field
+						fieldsToNull.add(meta.getUpdateLookup()[i]);
+					} else {
+						updatefields.add(newMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]]));
+					}
+				}					
 				
 				//build the SObject
 				SObject	sobjPass = new SObject();
-				sobjPass.set_any(arNode);
 				sobjPass.setType(data.realModule);
+				if(updatefields.size()>0) {
+					sobjPass.set_any((MessageElement[])updatefields.toArray(new MessageElement[updatefields.size()]));
+				}
+				if(fieldsToNull.size()>0) {
+					// Set Null to fields
+					sobjPass.setFieldsToNull((String[])fieldsToNull.toArray(new String[fieldsToNull.size()]));
+				}
 				
 				//Load the buffer array
 				data.sfBuffer[data.iBufferPos] = sobjPass;
