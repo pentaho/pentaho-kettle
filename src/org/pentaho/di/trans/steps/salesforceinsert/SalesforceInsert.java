@@ -14,6 +14,8 @@
  
 package org.pentaho.di.trans.steps.salesforceinsert;
 
+import java.util.ArrayList;
+
 import com.sforce.soap.partner.sobject.SObject;
 
 import org.apache.axis.message.MessageElement;
@@ -102,7 +104,8 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 			}
  
 			// Create the output row meta-data
-	        data.outputRowMeta = getInputRowMeta().clone();
+			data.inputRowMeta = getInputRowMeta().clone();
+	        data.outputRowMeta = data.inputRowMeta.clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
 			// Build the mapping of input position to field name
@@ -124,7 +127,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 		} 
 		catch(Exception e)
 		{
-			throw new KettleStepException(BaseMessages.getString(PKG, "SalesforceInsert.log.Exception"), e);
+			throw new KettleStepException(BaseMessages.getString(PKG, "SalesforceInsert.log.Exception", e.getMessage()), e);
 		} 
 	    return true; 
 	}		
@@ -137,18 +140,18 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 			
 			// if there is room in the buffer
 			if ( data.iBufferPos < meta.getBatchSizeInt()) {
-				// build the XML node
-				MessageElement[] arNode = new MessageElement[data.nrfields];
-				int index=0;
+				ArrayList<MessageElement> insertfields = new ArrayList<MessageElement>();
 				for ( int i = 0; i < data.nrfields; i++) {
-					arNode[index++] = newMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]]);
+					if(!data.inputRowMeta.isNull(rowData, data.fieldnrs[i])) {
+						insertfields.add(newMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]]));
+					}
 				}				
 				
 				//build the SObject
 				SObject	sobjPass = new SObject();
-				sobjPass.set_any(arNode);
+				sobjPass.set_any((MessageElement[])insertfields.toArray(new MessageElement[insertfields.size()]));
 				sobjPass.setType(data.realModule);
-				
+
 				//Load the buffer array
 				data.sfBuffer[data.iBufferPos] = sobjPass;
 				data.outputBuffer[data.iBufferPos] = rowData;

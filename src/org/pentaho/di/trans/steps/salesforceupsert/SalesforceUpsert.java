@@ -14,6 +14,8 @@
  
 package org.pentaho.di.trans.steps.salesforceupsert;
 
+import java.util.ArrayList;
+
 import com.sforce.soap.partner.sobject.SObject;
 
 import org.apache.axis.message.MessageElement;
@@ -102,7 +104,8 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 			}
  
 			// Create the output row meta-data
-	        data.outputRowMeta = getInputRowMeta().clone();
+			data.inputRowMeta = getInputRowMeta().clone();
+	        data.outputRowMeta = data.inputRowMeta.clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
 			// Build the mapping of input position to field name
@@ -120,11 +123,10 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 		try 
 		{	
 			writeToSalesForce(outputRowData);
-
 		} 
 		catch(Exception e)
 		{
-			throw new KettleStepException(BaseMessages.getString(PKG, "SalesforceUpsert.log.Exception"), e);
+			throw new KettleStepException(BaseMessages.getString(PKG, "SalesforceUpsert.log.Exception", e.getMessage()), e);
 		} 
 	    return true; 
 	}		
@@ -134,21 +136,33 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 		try {			
 
 			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.CalledWrite", data.iBufferPos, meta.getBatchSizeInt()));
-			
 			// if there is room in the buffer
 			if ( data.iBufferPos < meta.getBatchSizeInt()) {
-				// build the XML node
-				MessageElement[] arNode = new MessageElement[data.nrfields];
-				int index=0;
+				// Reserve for empty fields
+				ArrayList<String> fieldsToNull = new ArrayList<String>();
+				ArrayList<MessageElement> upsertfields = new ArrayList<MessageElement>();
+				
+				// Add fields to update
 				for ( int i = 0; i < data.nrfields; i++) {
-					arNode[index++] = newMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]]);
+					if(data.inputRowMeta.isNull(rowData, data.fieldnrs[i])) {
+						// The value is null
+						// We need to keep track of this field
+						fieldsToNull.add(meta.getUpdateLookup()[i]);
+					} else {
+						upsertfields.add(newMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]]));
+					}
 				}				
 				
 				//build the SObject
 				SObject	sobjPass = new SObject();
-				sobjPass.set_any(arNode);
 				sobjPass.setType(data.realModule);
-				
+				if(upsertfields.size()>0) {
+					sobjPass.set_any((MessageElement[])upsertfields.toArray(new MessageElement[upsertfields.size()]));
+				}
+				if(fieldsToNull.size()>0) {
+					// Set Null to fields
+					sobjPass.setFieldsToNull((String[])fieldsToNull.toArray(new String[fieldsToNull.size()]));
+				}
 				//Load the buffer array
 				data.sfBuffer[data.iBufferPos] = sobjPass;
 				data.outputBuffer[data.iBufferPos] = rowData;
@@ -160,7 +174,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 				flushBuffers();
 			}
 		} catch (Exception e) {
-			throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsert.FailedInWrite", e.getMessage()));	
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsert.FailedInWrite", e.toString()));	
 		}
 	}
 	
@@ -184,7 +198,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 					Object[] newRow = RowDataUtil.resizeArray(data.outputBuffer[j], data.outputRowMeta.size());
 					
 					if(data.realSalesforceFieldName!=null) {
-						int newIndex = getInputRowMeta().size();
+						int newIndex = data.inputRowMeta.size();
 						newRow[newIndex++] = id;
 					}
 					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.NewRow", newRow[0]));
@@ -225,7 +239,6 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 							throw new KettleException( BaseMessages.getString(PKG, "SalesforceUpsert.Error.FlushBuffer", 
 												new Integer(j), err.getStatusCode(), err.getMessage()));
 							
-						// } // for error messages
 					}
 					
 					if (sendToErrorRow) {
@@ -290,7 +303,6 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 				
 				// Now connect ...
 				data.connection.connect();
-
 				 return true;
 			}
 			catch(KettleException ke)
