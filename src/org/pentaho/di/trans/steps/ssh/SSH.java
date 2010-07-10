@@ -194,6 +194,7 @@ public class SSH extends BaseStep implements StepInterface
     		String password = environmentSubstitute(meta.getpassword());
     		String keyFilename = environmentSubstitute(meta.getKeyFileName());
     		String passphrase = environmentSubstitute(meta.getPassphrase());
+    		int timeOut = Const.toInt(environmentSubstitute(meta.getTimeOut()), 0);
     		
         	// Check target server
     		if(Const.isEmpty(servername)) {
@@ -217,7 +218,7 @@ public class SSH extends BaseStep implements StepInterface
     		try {
     			// Open connection
     			data.conn = SSHMeta.OpenConnection(servername, nrPort, username, password, 
-    					meta.isusePrivateKey(), keyFilename, passphrase, this);
+    					meta.isusePrivateKey(), keyFilename, passphrase, timeOut, this);
 
     			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SSH.Log.ConnectionOpened"));
 

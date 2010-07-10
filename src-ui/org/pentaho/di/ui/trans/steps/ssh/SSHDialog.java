@@ -87,6 +87,8 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
 	private Group wOutput;
 	private FormData fdOutput;
 	
+    private FormData     fdTimeOut;
+    private LabelTextVar wTimeOut;
 	private SSHMeta input;
 	
     private Group wCommands;
@@ -247,6 +249,15 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
         fdPort.right	= new FormAttachment(100, 0);
         wPort.setLayoutData(fdPort);
         
+        // Server TimeOut line
+        wTimeOut = new LabelTextVar(transMeta, wSettingsGroup, BaseMessages.getString(PKG, "SSHDialog.TimeOut.Label"), BaseMessages.getString(PKG, "SSHDialog.TimeOut.Tooltip"));
+        props.setLook(wTimeOut);
+        wTimeOut.addModifyListener(lsMod);
+        fdTimeOut = new FormData();
+        fdTimeOut.left 	= new FormAttachment(0, 0);
+        fdTimeOut.top  	= new FormAttachment(wPort, margin);
+        fdTimeOut.right	= new FormAttachment(100, 0);
+        wTimeOut.setLayoutData(fdTimeOut);
 		
 		// Usernameline
         wUserName = new LabelTextVar(transMeta, wSettingsGroup, BaseMessages.getString(PKG, "SSHDialog.UserName.Label"), BaseMessages.getString(PKG, "SSHDialog.UserName.Tooltip"));
@@ -254,7 +265,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
         wUserName.addModifyListener(lsMod);
         fdUserName = new FormData();
         fdUserName.left 	= new FormAttachment(0, 0);
-        fdUserName.top  	= new FormAttachment(wPort, margin);
+        fdUserName.top  	= new FormAttachment(wTimeOut, margin);
         fdUserName.right	= new FormAttachment(100, 0);
         wUserName.setLayoutData(fdUserName);
         
@@ -633,7 +644,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
         if(input.getPassphrase()!=null) wPassphrase.setText(input.getPassphrase());
         if(input.getStdOutFieldName()!=null) wResultOutFieldName.setText(input.getStdOutFieldName());
         if(input.getStdErrFieldName()!=null) wResultErrFieldName.setText(input.getStdErrFieldName());
-        
+        wTimeOut.setText(Const.NVL(input.getTimeOut(), "0"));
 		wStepname.selectAll();
 	}
 
@@ -659,7 +670,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
         in.setPassphrase(wPassphrase.getText());
         in.setstdOutFieldName(wResultOutFieldName.getText());
         in.setStdErrFieldName(wResultErrFieldName.getText());
- 
+        in.setTimeOut(wTimeOut.getText());
 
 	}
 	private void ok()
@@ -725,10 +736,12 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
 		String password = transMeta.environmentSubstitute(wPassword.getText());
 		String keyFilename = transMeta.environmentSubstitute(wPrivateKey.getText());
 		String passphrase = transMeta.environmentSubstitute(wPassphrase.getText());
+   		int timeOut = Const.toInt(transMeta.environmentSubstitute(wTimeOut.getText()), 0);
+   		
     	Connection conn= null;
     	try{
 			conn = SSHMeta.OpenConnection(servername, nrPort, username, password, 
-					wUseKey.getSelection(), keyFilename, passphrase, transMeta);
+					wUseKey.getSelection(), keyFilename, passphrase, timeOut, transMeta);
     		testOK=true;
 	    	
     	}catch(Exception e) {

@@ -61,6 +61,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 
     private String stdOutFieldName;
     private String stdErrFieldName;
+    private String timeOut;
 
 
     public SSHMeta()
@@ -92,6 +93,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 		keyFileName=null;
 		stdOutFieldName="stdOut";
 		stdErrFieldName="stdErr";
+		timeOut="0";
     }
 
 	/**
@@ -241,7 +243,19 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return passPhrase;
 	}
-	
+	/* @param timeOut The timeOut to set.
+	 */
+	public void setTimeOut(String timeOut)
+	{
+		this.timeOut = timeOut;
+	}
+	/**
+	 * @return Returns the timeOut.
+	 */
+	public String getTimeOut()
+	{
+		return timeOut;
+	}
 	/**
 	 * @param value The stdOutFieldName to set.
 	 */
@@ -292,7 +306,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    " + XMLHandler.addTagValue("passPhrase",   passPhrase));
 		retval.append("    " + XMLHandler.addTagValue("stdOutFieldName",   stdOutFieldName));
 		retval.append("    " + XMLHandler.addTagValue("stdErrFieldName",   stdErrFieldName));
-		
+		retval.append("    " + XMLHandler.addTagValue("timeOut",   timeOut));
         return retval.toString();
     }
 
@@ -313,7 +327,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 			passPhrase = XMLHandler.getTagValue(stepnode, "passPhrase");
 			stdOutFieldName = XMLHandler.getTagValue(stepnode, "stdOutFieldName");
 			stdErrFieldName = XMLHandler.getTagValue(stepnode, "stdErrFieldName");
-			
+			timeOut = XMLHandler.getTagValue(stepnode, "timeOut");
 		}
 	    catch (Exception e)
 	    {
@@ -338,7 +352,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 			passPhrase=rep.getJobEntryAttributeString(id_step, "passPhrase");
 			stdOutFieldName=rep.getJobEntryAttributeString(id_step, "stdOutFieldName");
 			stdErrFieldName=rep.getJobEntryAttributeString(id_step, "stdErrFieldName");
-			
+			timeOut=rep.getJobEntryAttributeString(id_step, "timeOut");
         }
         catch (Exception e)
         {
@@ -362,7 +376,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveJobEntryAttribute(id_transformation, id_step, "passPhrase", passPhrase);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "stdOutFieldName", stdOutFieldName);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "stdErrFieldName", stdErrFieldName);
-			
+			rep.saveJobEntryAttribute(id_transformation, id_step, "timeOut", timeOut);
         }
         catch (Exception e)
         {
@@ -469,7 +483,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 
 	
 	public static Connection OpenConnection(String serveur, int port, 
-			String username, String password, boolean useKey, String keyFilename, String passPhrase,
+			String username, String password, boolean useKey, String keyFilename, String passPhrase, int timeOut,
 			VariableSpace space)
 	throws KettleException {
 		Connection conn = null;
@@ -489,7 +503,10 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 				// Create a new connection
 				conn = new Connection(serveur, port);
 				// and connect
-				conn.connect();
+				if(timeOut==0)
+					conn.connect();
+				else
+					conn.connect(null, 0,timeOut*1000);
 				// authenticate
 				if(useKey)  {
 					isAuthenticated = conn.authenticateWithPublicKey(username, keyFile,
