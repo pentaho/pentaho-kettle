@@ -1315,7 +1315,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             	String FieldName= fields[i].getName();	
             	String FieldType=fields[i].getType().getValue();
             	String FieldLengh =  fields[i].getLength() + "";
-            	
+ 
             	TableItem item = new TableItem(wFields.table,SWT.NONE);
 				item.setText(1, FieldLabel);
 				item.setText(2, FieldName);
@@ -1330,9 +1330,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 					item.setText(3, "Number");
                 } else if (FieldType.equals("int")) {
 					item.setText(3, "Integer");
-				}
-		        else {
-		        item.setText(3, "String");
+				} else {
+					item.setText(3, "String");
 		        }
 				
 				// Get length
