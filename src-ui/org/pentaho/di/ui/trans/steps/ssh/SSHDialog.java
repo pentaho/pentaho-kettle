@@ -796,7 +796,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
           }
           catch(KettleException e)
           {
-              new ErrorDialog(shell, "Erreur", "Error while previewing data", e);
+              new ErrorDialog(shell, "Error", "Error while previewing data", e);
          }
     }
 }
