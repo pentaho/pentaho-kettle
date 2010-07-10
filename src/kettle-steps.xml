@@ -1254,4 +1254,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RuleExecutor</tooltip>
 		<iconfile>ui/images/SCR_mod.png</iconfile>
 	</step>	
+    <step id="SSH">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SSH</description>
+		<classname>org.pentaho.di.trans.steps.ssh.SSHMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SSH</tooltip>
+		<iconfile>ui/images/ssh.png</iconfile>
+	</step>
 </steps>
