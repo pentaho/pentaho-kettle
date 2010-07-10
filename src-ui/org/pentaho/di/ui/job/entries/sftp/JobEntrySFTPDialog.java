@@ -17,8 +17,13 @@
 package org.pentaho.di.ui.job.entries.sftp;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -29,9 +34,11 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -39,6 +46,8 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sftp.JobEntrySFTP;
@@ -47,10 +56,12 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
 
 /**
  * This dialog allows you to edit the SFTP job entry settings.
@@ -62,7 +73,10 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
 	private static Class<?> PKG = JobEntrySFTP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
+    private static final String[] FILETYPES = new String[] {
+        BaseMessages.getString(PKG, "JobSFTP.Filetype.Pem"),
+        BaseMessages.getString(PKG, "JobSFTP.Filetype.All") };
+    
     private Label wlName;
 
     private Text wName;
@@ -175,8 +189,50 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 
     private FormData fdlgetPrevious, fdgetPrevious;
     
+    private LabelTextVar wkeyfilePass;
+
+    private FormData fdkeyfilePass;
+    
+    private Label wlusePublicKey;
+
+    private Button wusePublicKey;
+
+    private FormData fdlusePublicKey, fdusePublicKey;
+    
+    private Label wlKeyFilename;
+
+    private Button wbKeyFilename;
+
+    private TextVar wKeyFilename;
+
+    private FormData fdlKeyFilename, fdbKeyFilename, fdKeyFilename;
+    
+	private CTabFolder   wTabFolder;
+	private Composite    wGeneralComp,wFilesComp;	
+	private CTabItem     wGeneralTab,wFilesTab;
+	private FormData	 fdGeneralComp,fdFilesComp;
+	private FormData     fdTabFolder;
+    
 	private SFTPClient sftpclient = null;
 
+	private Label wlCompression;
+	private FormData fdlCompression;
+	private CCombo wCompression;
+	private FormData fdCompression;
+	
+	private Label wlProxyType;
+	private FormData fdlProxyType;
+	private CCombo wProxyType;
+	private FormData fdProxyType;
+	
+    private LabelTextVar wProxyHost;
+    private FormData	fdProxyHost;
+    private LabelTextVar wProxyPort;
+    private FormData     fdProxyPort;
+    private LabelTextVar wProxyUsername;
+    private FormData     fdProxyUsername;
+    private LabelTextVar wProxyPassword;
+    private FormData     fdProxyPasswd;
 
     public JobEntrySFTPDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -234,10 +290,28 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         wName.setLayoutData(fdName);
         
         
+        wTabFolder = new CTabFolder(shell, SWT.BORDER);
+ 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+ 		
+ 		//////////////////////////
+		// START OF GENERAL TAB   ///
+		//////////////////////////
+ 		
+		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
+		wGeneralTab.setText(BaseMessages.getString(PKG, "JobSFTP.Tab.General.Label"));
+		
+		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wGeneralComp);
+
+		FormLayout generalLayout = new FormLayout();
+		generalLayout.marginWidth  = 3;
+		generalLayout.marginHeight = 3;
+		wGeneralComp.setLayout(generalLayout);
+        
 	     // ////////////////////////
 	     // START OF SERVER SETTINGS GROUP///
 	     // /
-	    wServerSettings = new Group(shell, SWT.SHADOW_NONE);
+	    wServerSettings = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wServerSettings);
 	    wServerSettings.setText(BaseMessages.getString(PKG, "JobSFTP.ServerSettings.Group.Label"));
 	    FormLayout ServerSettingsgroupLayout = new FormLayout();
@@ -319,13 +393,180 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         fdPassword.right = new FormAttachment(100, 0);
         wPassword.setLayoutData(fdPassword);
         
+		
+        // usePublicKey
+        wlusePublicKey = new Label(wServerSettings, SWT.RIGHT);
+        wlusePublicKey.setText(BaseMessages.getString(PKG, "JobSFTP.useKeyFile.Label"));
+        props.setLook(wlusePublicKey);
+        fdlusePublicKey = new FormData();
+        fdlusePublicKey.left = new FormAttachment(0, 0);
+        fdlusePublicKey.top = new FormAttachment(wPassword, margin);
+        fdlusePublicKey.right = new FormAttachment(middle, -margin);
+        wlusePublicKey.setLayoutData(fdlusePublicKey);
+        wusePublicKey = new Button(wServerSettings, SWT.CHECK);
+        wusePublicKey.setToolTipText(BaseMessages.getString(PKG, "JobSFTP.useKeyFile.Tooltip"));
+        props.setLook(wusePublicKey);
+        fdusePublicKey = new FormData();
+        fdusePublicKey.left = new FormAttachment(middle, 0);
+        fdusePublicKey.top = new FormAttachment(wPassword, margin);
+        fdusePublicKey.right = new FormAttachment(100, 0);
+        wusePublicKey.setLayoutData(fdusePublicKey);
+        wusePublicKey.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				activeUseKey();
+				jobEntry.setChanged();
+			}
+		});
+        
+        // Key File
+        wlKeyFilename = new Label(wServerSettings, SWT.RIGHT);
+        wlKeyFilename.setText(BaseMessages.getString(PKG, "JobSFTP.KeyFilename.Label"));
+        props.setLook(wlKeyFilename);
+        fdlKeyFilename = new FormData();
+        fdlKeyFilename.left = new FormAttachment(0, 0);
+        fdlKeyFilename.top = new FormAttachment(wusePublicKey, margin);
+        fdlKeyFilename.right = new FormAttachment(middle, -margin);
+        wlKeyFilename.setLayoutData(fdlKeyFilename);
+
+        wbKeyFilename = new Button(wServerSettings, SWT.PUSH | SWT.CENTER);
+        props.setLook(wbKeyFilename);
+        wbKeyFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+        fdbKeyFilename = new FormData();
+        fdbKeyFilename.right = new FormAttachment(100, 0);
+        fdbKeyFilename.top = new FormAttachment(wusePublicKey, 0);
+        // fdbKeyFilename.height = 22;
+        wbKeyFilename.setLayoutData(fdbKeyFilename);
+
+        wKeyFilename = new TextVar(jobMeta,wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wKeyFilename.setToolTipText(BaseMessages.getString(PKG, "JobSFTP.KeyFilename.Tooltip"));
+        props.setLook(wKeyFilename);
+        wKeyFilename.addModifyListener(lsMod);
+        fdKeyFilename = new FormData();
+        fdKeyFilename.left = new FormAttachment(middle, 0);
+        fdKeyFilename.top = new FormAttachment(wusePublicKey, margin);
+        fdKeyFilename.right = new FormAttachment(wbKeyFilename, -margin);
+        wKeyFilename.setLayoutData(fdKeyFilename);
+
+        // Whenever something changes, set the tooltip to the expanded version:
+        wbKeyFilename.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+                dialog.setFilterExtensions(new String[] { "*.pem", "*" });
+                if (wKeyFilename.getText() != null)
+                {
+                    dialog.setFileName(jobMeta.environmentSubstitute(wKeyFilename.getText()));
+                }
+                dialog.setFilterNames(FILETYPES);
+                if (dialog.open() != null)
+                {
+                    wKeyFilename.setText(dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName());
+                }
+            }
+        });
+
+        // keyfilePass line
+        wkeyfilePass = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobSFTP.keyfilePass.Label"), 
+        		BaseMessages.getString(PKG, "JobSFTP.keyfilePass.Tooltip"));
+        props.setLook(wkeyfilePass);
+        wkeyfilePass.setEchoChar('*');
+        wkeyfilePass.addModifyListener(lsMod);
+        fdkeyfilePass = new FormData();
+        fdkeyfilePass.left = new FormAttachment(0, -2*margin);
+        fdkeyfilePass.top = new FormAttachment(wKeyFilename, margin);
+        fdkeyfilePass.right = new FormAttachment(100, 0);
+        wkeyfilePass.setLayoutData(fdkeyfilePass);
+
+        wlProxyType=new Label(wServerSettings, SWT.RIGHT);
+		wlProxyType.setText(BaseMessages.getString(PKG, "JobSFTP.ProxyType.Label"));
+		props.setLook(wlProxyType);
+		fdlProxyType=new FormData();
+		fdlProxyType.left = new FormAttachment(0, 0);
+		fdlProxyType.right= new FormAttachment(middle, -margin);
+		fdlProxyType.top  = new FormAttachment(wkeyfilePass, 2*margin);
+		wlProxyType.setLayoutData(fdlProxyType);
+	
+		wProxyType = new CCombo(wServerSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wProxyType.add(SFTPClient.PROXY_TYPE_HTTP);
+		wProxyType.add(SFTPClient.PROXY_TYPE_SOCKS5);
+		wProxyType.select(0); // +1: starts at -1  
+		props.setLook(wProxyType);
+		fdProxyType= new FormData();
+		fdProxyType.left = new FormAttachment(middle, 0);
+		fdProxyType.top = new FormAttachment(wkeyfilePass, 2*margin);
+		fdProxyType.right = new FormAttachment(100, 0);
+		wProxyType.setLayoutData(fdProxyType);
+		wProxyType.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				setDefaulProxyPort();				
+			}
+		});
+        
+        
+        // Proxy host line
+        wProxyHost = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobSFTP.ProxyHost.Label"), BaseMessages.getString(PKG, "JobSFTP.ProxyHost.Tooltip"));
+        props.setLook(wProxyHost);
+        wProxyHost.addModifyListener(lsMod);
+        fdProxyHost = new FormData();
+        fdProxyHost.left 	= new FormAttachment(0, -2*margin);
+        fdProxyHost.top		= new FormAttachment(wProxyType, margin);
+        fdProxyHost.right	= new FormAttachment(100, 0);
+        wProxyHost.setLayoutData(fdProxyHost);
+
+        // Proxy port line
+        wProxyPort = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobSFTP.ProxyPort.Label"), BaseMessages.getString(PKG, "JobSFTP.ProxyPort.Tooltip"));
+        props.setLook(wProxyPort);
+        wProxyPort.addModifyListener(lsMod);
+        fdProxyPort = new FormData();
+        fdProxyPort.left 	= new FormAttachment(0, -2*margin);
+        fdProxyPort.top  	= new FormAttachment(wProxyHost, margin);
+        fdProxyPort.right	= new FormAttachment(100, 0);
+        wProxyPort.setLayoutData(fdProxyPort);
+
+        // Proxy username line
+        wProxyUsername = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobSFTP.ProxyUsername.Label"), BaseMessages.getString(PKG, "JobSFTP.ProxyUsername.Tooltip"));
+        props.setLook(wProxyUsername);
+        wProxyUsername.addModifyListener(lsMod);
+        fdProxyUsername = new FormData();
+        fdProxyUsername.left = new FormAttachment(0, -2*margin);
+        fdProxyUsername.top  = new FormAttachment(wProxyPort, margin);
+        fdProxyUsername.right= new FormAttachment(100, 0);
+        wProxyUsername.setLayoutData(fdProxyUsername);
+        
+        // Proxy password line
+        wProxyPassword = new LabelTextVar(jobMeta,wServerSettings, BaseMessages.getString(PKG, "JobSFTP.ProxyPassword.Label"), BaseMessages.getString(PKG, "JobSFTP.ProxyPassword.Tooltip"));
+        props.setLook(wProxyPassword);
+        wProxyPassword.setEchoChar('*');
+        wProxyPassword.addModifyListener(lsMod);
+        fdProxyPasswd=new FormData();
+        fdProxyPasswd.left = new FormAttachment(0, -2*margin);
+        fdProxyPasswd.top  = new FormAttachment(wProxyUsername, margin);
+        fdProxyPasswd.right= new FormAttachment(100, 0);
+        wProxyPassword.setLayoutData(fdProxyPasswd);
+        
+        // OK, if the password contains a variable, we don't want to have the password hidden...
+        wProxyPassword.getTextWidget().addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
+            {
+                checkProxyPasswordVisible();
+            }
+        });
+        
+
+        
 		// Test connection button
 		wTest=new Button(wServerSettings,SWT.PUSH);
 		wTest.setText(BaseMessages.getString(PKG, "JobSFTP.TestConnection.Label"));
 	 	props.setLook(wTest);
 		fdTest=new FormData();
 		wTest.setToolTipText(BaseMessages.getString(PKG, "JobSFTP.TestConnection.Tooltip"));
-		fdTest.top  = new FormAttachment(wPassword, margin);
+		fdTest.top  = new FormAttachment(wProxyPassword, margin);
 		fdTest.right= new FormAttachment(100, 0);
 		wTest.setLayoutData(fdTest);
 
@@ -338,10 +579,67 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 	     // / END OF SERVER SETTINGS GROUP
 	     // ///////////////////////////////////////////////////////////
       
+	     
+		wlCompression=new Label(wGeneralComp, SWT.RIGHT);
+		wlCompression.setText(BaseMessages.getString(PKG, "JobSFTP.Compression.Label"));
+		props.setLook(wlCompression);
+		fdlCompression=new FormData();
+		fdlCompression.left = new FormAttachment(0, -margin);
+		fdlCompression.right= new FormAttachment(middle, 0);
+		fdlCompression.top  = new FormAttachment(wServerSettings, margin);
+		wlCompression.setLayoutData(fdlCompression);
+	
+		wCompression = new CCombo(wGeneralComp, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wCompression.add("none");
+		wCompression.add("zlib");
+		wCompression.select(0); // +1: starts at -1
+
+		props.setLook(wCompression);
+		fdCompression= new FormData();
+		fdCompression.left = new FormAttachment(middle, margin);
+		fdCompression.top = new FormAttachment(wServerSettings, margin);
+		fdCompression.right = new FormAttachment(100, 0);
+		wCompression.setLayoutData(fdCompression);
+
+	     
+	     
+		fdGeneralComp=new FormData();
+		fdGeneralComp.left  = new FormAttachment(0, 0);
+		fdGeneralComp.top   = new FormAttachment(0, 0);
+		fdGeneralComp.right = new FormAttachment(100, 0);
+		fdGeneralComp.bottom= new FormAttachment(100, 0);
+		wGeneralComp.setLayoutData(fdGeneralComp);
+		
+		wGeneralComp.layout();
+		wGeneralTab.setControl(wGeneralComp);
+ 		props.setLook(wGeneralComp);
+ 		
+ 		
+ 		
+		/////////////////////////////////////////////////////////////
+		/// END OF GENERAL TAB
+		/////////////////////////////////////////////////////////////
+		
+	 		
+ 		//////////////////////////
+		// START OF Files TAB   ///
+		//////////////////////////
+		
+ 		wFilesTab=new CTabItem(wTabFolder, SWT.NONE);
+		wFilesTab.setText(BaseMessages.getString(PKG, "JobSFTP.Tab.Files.Label"));
+		
+		wFilesComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wFilesComp);
+
+		FormLayout FilesLayout = new FormLayout();
+		FilesLayout.marginWidth  = 3;
+		FilesLayout.marginHeight = 3;
+		wFilesComp.setLayout(FilesLayout);
+		
 	     // ////////////////////////
 	     // START OF Source files GROUP///
 	     // /
-	     wSourceFiles = new Group(shell, SWT.SHADOW_NONE);
+	     wSourceFiles = new Group(wFilesComp, SWT.SHADOW_NONE);
 	     props.setLook(wSourceFiles);
 	     wSourceFiles.setText(BaseMessages.getString(PKG, "JobSFTP.SourceFiles.Group.Label"));
 	     FormLayout SourceFilesgroupLayout = new FormLayout();
@@ -452,7 +750,7 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 	     // ////////////////////////
 	     // START OF Target files GROUP///
 	     // /
-	     wTargetFiles = new Group(shell, SWT.SHADOW_NONE);
+	     wTargetFiles = new Group(wFilesComp, SWT.SHADOW_NONE);
 	     props.setLook(wTargetFiles);
 	     wTargetFiles.setText(BaseMessages.getString(PKG, "JobSFTP.TargetFiles.Group.Label"));
 	     FormLayout TargetFilesgroupLayout = new FormLayout();
@@ -561,12 +859,36 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 	     // ///////////////////////////////////////////////////////////
 
 
+		fdFilesComp=new FormData();
+		fdFilesComp.left  = new FormAttachment(0, 0);
+		fdFilesComp.top   = new FormAttachment(0, 0);
+		fdFilesComp.right = new FormAttachment(100, 0);
+		fdFilesComp.bottom= new FormAttachment(100, 0);
+		wFilesComp.setLayoutData(fdFilesComp);
+		
+		wFilesComp.layout();
+		wFilesTab.setControl(wFilesComp);
+ 		props.setLook(wFilesComp);
+ 	
+ 		
+		/////////////////////////////////////////////////////////////
+		/// END OF Files TAB
+		/////////////////////////////////////////////////////////////
+		
+
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(wName, margin);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(100, -50);
+		wTabFolder.setLayoutData(fdTabFolder);
+		
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTargetFiles);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 
         // Add listeners
         lsCancel = new Listener()
@@ -618,9 +940,10 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 
         getData();
         activeCopyFromPrevious();
+        activeUseKey();
 
         BaseStepDialog.setSize(shell);
-
+	    wTabFolder.setSelection(0);	
         shell.open();
         props.setDialogSize(shell, "JobSFTPDialogSize");
         while (!shell.isDisposed())
@@ -674,8 +997,19 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
 				// Create sftp client to host ...
 				sftpclient = new SFTPClient(InetAddress.getByName(jobMeta.environmentSubstitute(wServerName.getText())), 
 						Const.toInt(jobMeta.environmentSubstitute(wServerPort.getText()), 22), 
-						jobMeta.environmentSubstitute(wUserName.getText()));
-			
+						jobMeta.environmentSubstitute(wUserName.getText()),
+						jobMeta.environmentSubstitute(wKeyFilename.getText()),
+						jobMeta.environmentSubstitute(wkeyfilePass.getText()));
+				// Set proxy?
+				String realProxyHost= jobMeta.environmentSubstitute(wProxyHost.getText());
+				if(!Const.isEmpty(realProxyHost)) {
+					// Set proxy
+					sftpclient.setProxy(realProxyHost, 
+							jobMeta.environmentSubstitute(wProxyPort.getText()), 
+							jobMeta.environmentSubstitute(wProxyUsername.getText()), 
+							jobMeta.environmentSubstitute(wProxyPassword.getText()),
+							wProxyType.getText());
+				}
 				// login to ftp host ...
 				sftpclient.login(jobMeta.environmentSubstitute(wPassword.getText()));
 				
@@ -740,7 +1074,16 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     	wAddFilenameToResult.setSelection(jobEntry.isAddToResult());
     	wCreateTargetFolder.setSelection(jobEntry.iscreateTargetFolder());
         wgetPrevious.setSelection(jobEntry.isCopyPrevious());
-    	
+        wusePublicKey.setSelection(jobEntry.isUseKeyFile());
+        wKeyFilename.setText(Const.NVL(jobEntry.getKeyFilename(), ""));
+        wkeyfilePass.setText(Const.NVL(jobEntry.getKeyPassPhrase(), ""));
+        wCompression.setText(Const.NVL(jobEntry.getCompression(), "none"));
+        
+        wProxyType.setText(Const.NVL(jobEntry.getProxyType(), ""));
+        wProxyHost.setText(Const.NVL(jobEntry.getProxyHost(), ""));
+        wProxyPort.setText(Const.NVL(jobEntry.getProxyPort(), ""));
+        wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
+        wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
     }
 
     private void cancel()
@@ -772,10 +1115,25 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     	jobEntry.setAddToResult(wAddFilenameToResult.getSelection());
     	jobEntry.setcreateTargetFolder(wCreateTargetFolder.getSelection());
 	    jobEntry.setCopyPrevious(wgetPrevious.getSelection());
-    	
+	    jobEntry.setUseKeyFile(wusePublicKey.getSelection());
+	    jobEntry.setKeyFilename(wKeyFilename.getText());
+	    jobEntry.setKeyPassPhrase(wkeyfilePass.getText());
+	    jobEntry.setCompression(wCompression.getText());
+	    
+	    jobEntry.setProxyType(wProxyType.getText());
+	    jobEntry.setProxyHost(wProxyHost.getText());
+	    jobEntry.setProxyPort(wProxyPort.getText());
+	    jobEntry.setProxyUsername(wProxyUsername.getText());
+	    jobEntry.setProxyPassword(wProxyPassword.getText());
         dispose();
     }
-
+    private void activeUseKey()
+    {
+    	wlKeyFilename.setEnabled(wusePublicKey.getSelection());
+    	wKeyFilename.setEnabled(wusePublicKey.getSelection());
+    	wbKeyFilename.setEnabled(wusePublicKey.getSelection());
+    	wkeyfilePass.setEnabled(wusePublicKey.getSelection());
+    }
     public String toString()
     {
         return this.getClass().getName();
@@ -790,5 +1148,31 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     {
         return false;
     }
+    public void checkProxyPasswordVisible()
+    {
+        String password = wProxyPassword.getText();
+        List<String> list = new ArrayList<String>();
+        StringUtil.getUsedVariables(password, list, true);
+        if (list.size() == 0)
+        {
+            wProxyPassword.setEchoChar('*');
+        }
+        else
+        {
+            wProxyPassword.setEchoChar('\0'); // Show it all...
+        }
+    }
+    private void setDefaulProxyPort()
+    {
+		if(wProxyType.getText().equals(SFTPClient.PROXY_TYPE_HTTP)){
+			if(Const.isEmpty(wProxyPort.getText()) || (!Const.isEmpty(wProxyPort.getText()) && wProxyPort.getText().equals(SFTPClient.SOCKS5_DEFAULT_PORT))) {
+    			wProxyPort.setText(SFTPClient.HTTP_DEFAULT_PORT);
+    	     } 
+		} else {
+			if(Const.isEmpty(wProxyPort.getText()) || (!Const.isEmpty(wProxyPort.getText()) && wProxyPort.getText().equals(SFTPClient.HTTP_DEFAULT_PORT))) {
+    			wProxyPort.setText(SFTPClient.SOCKS5_DEFAULT_PORT);
+    	     } 
+    	}
+     }
+  }
 
-}

@@ -218,11 +218,16 @@ public class KettleVFS
     
     public static boolean fileExists(String vfsFilename, VariableSpace space) throws KettleFileException
     {
+    	FileObject fileObject=null;
     	try {
-	        FileObject fileObject = getFileObject(vfsFilename, space);
+	        fileObject = getFileObject(vfsFilename, space);
 	        return fileObject.exists();
     	} catch(IOException e) {
     		throw new KettleFileException(e);
+    	}finally {
+    		if(fileObject!=null) {
+    			try { fileObject.close();}catch(Exception e){};
+    		}
     	}
     }
     

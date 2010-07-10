@@ -12,10 +12,12 @@
 */
 package org.pentaho.di.job.entries.sftp;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -23,20 +25,37 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Proxy;
+import com.jcraft.jsch.ProxyHTTP;
+import com.jcraft.jsch.ProxySOCKS5;
+
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.SftpATTRS;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 
 public class SFTPClient {
 	
-	InetAddress serverIP;
-	int serverPort;
-	String userName;
-	String password;	
+	private static final String COMPRESSION_S2C="compression.s2c";
+	private static final String COMPRESSION_C2S="compression.c2s";
+	
+	public static final  String PROXY_TYPE_SOCKS5="SOCKS5";
+	public static final  String PROXY_TYPE_HTTP="HTTP"; 
+	public static final  String HTTP_DEFAULT_PORT="80"; 
+	public static final  String SOCKS5_DEFAULT_PORT="1080";
+	public static final int SSH_DEFAULT_PORT=22;
+	  
+	private InetAddress serverIP;
+	private int serverPort;
+	private String userName;
+	private String password;
+	private String prvkey = null; // Private key       
+	private String passphrase = null; // Empty passphrase for now
+	private String compression=null;
 	
 	private Session s;
 	private ChannelSftp c;
@@ -44,14 +63,39 @@ public class SFTPClient {
 	/**
 	 * Init Helper Class with connection settings
 	 * @param serverIP IP address of remote server
+	 * @param serverPort port of remote server
+	 * @param userName username of remote server
 	 * @throws KettleJobException 
 	 */
 	public SFTPClient(InetAddress serverIP, int serverPort, String userName) throws KettleJobException{
+		this(serverIP, serverPort, userName, null , null);
+	}
+	
+	/**
+	 * Init Helper Class with connection settings
+	 * @param serverIP IP address of remote server
+	 * @param serverPort port of remote server
+	 * @param userName username of remote server
+	 * @param privateKeyFilename filename of private key
+	 * @throws KettleJobException 
+	 */
+	public SFTPClient(InetAddress serverIP, int serverPort, String userName, String privateKeyFilename) throws KettleJobException{
+		this(serverIP, serverPort, userName, privateKeyFilename , null);
+	}
+	
+	/**
+	 * Init Helper Class with connection settings
+	 * @param serverIP IP address of remote server
+	 * @param serverPort port of remote server
+	 * @param userName username of remote server
+	 * @param privateKeyFilename filename of private key
+	 * @param passPhrase passphrase
+	 * @throws KettleJobException 
+	 */
+	public SFTPClient(InetAddress serverIP, int serverPort, String userName,
+			String privateKeyFilename, String passPhrase) throws KettleJobException{
 		
-		if(		serverIP == null ||
-				serverPort < 0 ||
-				userName == null ||
-				userName.equals("")){
+		if(	serverIP == null || serverPort < 0 || userName == null || userName.equals("")){
 			throw new KettleJobException("For a SFTP connection server name and username must be set and server port must be greater than zero.");
 		}
 
@@ -61,28 +105,32 @@ public class SFTPClient {
 		
 		JSch jsch = new JSch();
 		try {
+			if(!Const.isEmpty(privateKeyFilename)) {
+				// We need to use private key authentication
+				this.prvkey = privateKeyFilename;
+				byte[] passphrasebytes = new byte[0];
+				if(!Const.isEmpty(passPhrase)) {
+					// Set passphrase
+					this.passphrase=passPhrase;
+					passphrasebytes = GetPrivateKeyPassPhrase().getBytes();
+				}
+				jsch.addIdentity(            
+			    		  getUserName(),       
+			    		  FileUtils.readFileToByteArray(new File(GetPrivateKeyFileName())),   // byte[] privateKey         
+			    		  null,            // byte[] publicKey            
+			    		  passphrasebytes  // byte[] passPhrase        
+			    	);
+			}
 			s = jsch.getSession(userName, serverIP.getHostAddress(), serverPort);
-		} catch (JSchException e) {
+		} 
+		catch (IOException e) {
+			throw new KettleJobException(e);
+		}
+		catch (JSchException e) {
 			throw new KettleJobException(e);
 		}
 	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public int getServerPort() {
-		return serverPort;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public InetAddress getServerIP() {
-		return serverIP;
-	}
-
+	
 	public void login(String password) throws KettleJobException{
 		this.password = password;
 		
@@ -90,6 +138,13 @@ public class SFTPClient {
 		try {
 			java.util.Properties config=new java.util.Properties();
 		    config.put("StrictHostKeyChecking", "no");
+		    //set compression property
+		    // zlib, none
+		    String compress=getCompression();
+            if (compress != null)  {
+                config.put(COMPRESSION_S2C, compress);
+                config.put(COMPRESSION_C2S, compress);
+            }
 		    s.setConfig(config);
 			s.connect();
 			Channel channel=s.openChannel("sftp");
@@ -234,13 +289,67 @@ public class SFTPClient {
 	 		retval=attrs.isDir();
 		} catch (Exception e) {
 			// Folder can not be found!
-			}
+		}
 		return retval;
 	}
 	
+
+	public void setProxy(String host, String port, String user, String pass, String proxyType) 
+	throws KettleJobException {
+		
+		if(Const.isEmpty(host) || Const.toInt(port, 0)==0) {
+			throw new KettleJobException("Proxy server name must be set and server port must be greater than zero.");
+		}
+		Proxy proxy=null;
+		String proxyhost=host+":"+port;
+		
+		if(proxyType.equals(PROXY_TYPE_HTTP)){
+			proxy=new ProxyHTTP(proxyhost);
+ 	        if(!Const.isEmpty(user)){
+ 	        	((ProxyHTTP)proxy).setUserPasswd(user, pass);
+ 	        }
+	     } else if(proxyType.equals(PROXY_TYPE_SOCKS5)){
+	       proxy=new ProxySOCKS5(proxyhost);
+	       if(!Const.isEmpty(user)){
+	    	   ((ProxySOCKS5)proxy).setUserPasswd(user, pass);
+	       }
+	     }
+		s.setProxy(proxy);
+	}
  	
 	public void disconnect() {
 		c.disconnect();
 		s.disconnect();
+	}
+	public String GetPrivateKeyFileName()
+	{
+		return this.prvkey;
+	}
+	public String GetPrivateKeyPassPhrase()
+	{
+		return this.passphrase;
+	}
+	public String getPassword() {
+		return password;
+	}
+
+	public int getServerPort() {
+		return serverPort;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public InetAddress getServerIP() {
+		return serverIP;
+	}
+	public void setCompression(String compression) {
+		this.compression=compression;
+	}
+	public String getCompression() {
+		if(this.compression ==null) return null;
+		if(this.compression.equals("none")) return null;
+		return this.compression;
 	}
 }

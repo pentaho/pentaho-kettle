@@ -72,7 +72,17 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	private boolean remove;
 	private boolean copyprevious;
 	private boolean addFilenameResut;
-
+	private boolean usekeyfilename;
+	private String keyfilename;
+	private String keyfilepass;
+	private String compression;
+	private boolean createRemoteFolder;
+	// proxy
+	private String proxyType;
+	private String proxyHost;
+	private String proxyPort;
+	private String proxyUsername;
+	private String proxyPassword;
 
 	public JobEntrySFTPPUT(String n)
 	{
@@ -81,6 +91,16 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
         serverPort="22";
         copyprevious=false;
         addFilenameResut=false;
+        usekeyfilename=false;
+        keyfilename=null;
+        keyfilepass=null;
+        compression="none";
+    	proxyType=null;
+    	proxyHost=null;
+    	proxyPort=null;
+    	proxyUsername=null;
+    	proxyPassword=null;
+    	createRemoteFolder=false;
 		setID(-1L);
 	}
 
@@ -111,9 +131,18 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("remove",       remove));
 		retval.append("      ").append(XMLHandler.addTagValue("copyprevious", copyprevious));
 		retval.append("      ").append(XMLHandler.addTagValue("addFilenameResut", addFilenameResut));
+		retval.append("      ").append(XMLHandler.addTagValue("usekeyfilename",       usekeyfilename));
+		retval.append("      ").append(XMLHandler.addTagValue("keyfilename",       keyfilename));
+		retval.append("      ").append(XMLHandler.addTagValue("keyfilepass",     Encr.encryptPasswordIfNotUsingVariables(keyfilepass)));
+		retval.append("      ").append(XMLHandler.addTagValue("compression",       compression));
+		retval.append("      ").append(XMLHandler.addTagValue("proxyType",       proxyType));
+		retval.append("      ").append(XMLHandler.addTagValue("proxyHost",       proxyHost));
+		retval.append("      ").append(XMLHandler.addTagValue("proxyPort",       proxyPort));
+		retval.append("      ").append(XMLHandler.addTagValue("proxyUsername",       proxyUsername));
+		retval.append("      ").append(XMLHandler.addTagValue("proxyPassword",     Encr.encryptPasswordIfNotUsingVariables(proxyPassword)));
+		retval.append("      ").append(XMLHandler.addTagValue("createRemoteFolder", createRemoteFolder));
 		
 		
-
 		return retval.toString();
 	}
 
@@ -133,8 +162,17 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			copyprevious    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "copyprevious") );
 			addFilenameResut    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "addFilenameResut") );
 			
-			
-
+			usekeyfilename          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "usekeyfilename") );
+			keyfilename        = XMLHandler.getTagValue(entrynode, "keyfilename");
+			keyfilepass        = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(entrynode, "keyfilepass") );
+			compression        = XMLHandler.getTagValue(entrynode, "compression");
+			proxyType        = XMLHandler.getTagValue(entrynode, "proxyType");
+			proxyHost        = XMLHandler.getTagValue(entrynode, "proxyHost");
+			proxyPort        = XMLHandler.getTagValue(entrynode, "proxyPort");
+			proxyUsername    = XMLHandler.getTagValue(entrynode, "proxyUsername");
+			proxyPassword    = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(entrynode, "proxyPassword") );
+		
+			createRemoteFolder    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "createRemoteFolder") );
 		}
 		catch(KettleXMLException xe)
 		{
@@ -161,7 +199,17 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			copyprevious          = rep.getJobEntryAttributeBoolean(id_jobentry, "copyprevious");
 			addFilenameResut          = rep.getJobEntryAttributeBoolean(id_jobentry, "addFilenameResut");
 			
-			
+			usekeyfilename          = rep.getJobEntryAttributeBoolean(id_jobentry, "usekeyfilename");
+			keyfilename   = rep.getJobEntryAttributeString(id_jobentry, "keyfilename");
+		    keyfilepass        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "keyfilepass"));
+			compression   = rep.getJobEntryAttributeString(id_jobentry, "compression");
+			proxyType   = rep.getJobEntryAttributeString(id_jobentry, "proxyType");
+			proxyHost   = rep.getJobEntryAttributeString(id_jobentry, "proxyHost");
+			proxyPort   = rep.getJobEntryAttributeString(id_jobentry, "proxyPort");
+			proxyUsername   = rep.getJobEntryAttributeString(id_jobentry, "proxyUsername");
+			proxyPassword        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "proxyPassword"));
+
+			createRemoteFolder          = rep.getJobEntryAttributeBoolean(id_jobentry, "createRemoteFolder");
 		}
 		catch(KettleException dbe)
 		{
@@ -183,6 +231,18 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "remove",          remove);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "copyprevious",   copyprevious);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "addFilenameResut",   addFilenameResut);
+			
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "usekeyfilename",          usekeyfilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "keyfilename",        keyfilename);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "keyfilepass",        Encr.encryptPasswordIfNotUsingVariables(keyfilepass));
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "compression",        compression);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "proxyType",        proxyType);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "proxyHost",        proxyHost);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "proxyPort",        proxyPort);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "proxyUsername",    proxyUsername);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "proxyPassword",      Encr.encryptPasswordIfNotUsingVariables(proxyPassword));
+		
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "createRemoteFolder",   createRemoteFolder);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -314,12 +374,47 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	{
 		return addFilenameResut;
 	}
+	public boolean isUseKeyFile() {
+		return usekeyfilename;
+	}
+
+	public void setUseKeyFile(boolean value) {
+		this.usekeyfilename = value;
+	}
+	public String getKeyFilename() {
+		return keyfilename;
+	}
+
+	public void setKeyFilename(String value) {
+		this.keyfilename = value;
+	}
+	public String getKeyPassPhrase() {
+		return keyfilepass;
+	}
+
+	public void setKeyPassPhrase(String value) {
+		this.keyfilepass = value;
+	}
 	public void setAddFilenameResut(boolean addFilenameResut)
 	{
 		this.addFilenameResut=addFilenameResut;
 	}
 	
-	
+	/**
+	 * @return Returns the compression.
+	 */
+	public String getCompression()
+	{
+		return compression;
+	}
+
+	/**
+	 * @param compression The compression to set.
+	 */
+	public void setCompression(String compression)
+	{
+		this.compression = compression;
+	}
 	public String getServerPort() {
 		return serverPort;
 	}
@@ -327,8 +422,51 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	public void setServerPort(String serverPort) {
 		this.serverPort = serverPort;
 	}
+	public String getProxyType() {
+		return proxyType;
+	}
 
+	public void setProxyType(String value) {
+		this.proxyType = value;
+	}
+	public String getProxyHost() {
+		return proxyHost;
+	}
 
+	public void setProxyHost(String value) {
+		this.proxyHost = value;
+	}
+	public String getProxyPort() {
+		return proxyPort;
+	}
+
+	public void setProxyPort(String value) {
+		this.proxyPort = value;
+	}
+	public String getProxyUsername() {
+		return proxyUsername;
+	}
+
+	public void setProxyUsername(String value) {
+		this.proxyUsername = value;
+	}
+	public String getProxyPassword() {
+		return proxyPassword;
+	}
+
+	public void setProxyPassword(String value) {
+		this.proxyPassword = value;
+	}
+
+	public boolean isCreateRemoteFolder()
+	{
+		return this.createRemoteFolder;
+	}
+	public void setCreateRemoteFolder(boolean value)
+	{
+		this.createRemoteFolder = value;
+	}
+	
 	public Result execute(Result previousResult, int nr) throws KettleException
 	{
     Result result = previousResult;
@@ -385,12 +523,50 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
         String realSftpDirString   = environmentSubstitute(sftpDirectory);
         String realWildcard        = environmentSubstitute(wildcard);
         String realLocalDirectory  = environmentSubstitute(localDirectory);
-
+        String realKeyFilename	= null;
+        String realPassPhrase	= null;
+        
 		try
 		{
+			// Let's perform some checks before starting
+			if(isUseKeyFile())
+			{
+				// We must have here a private keyfilename
+				realKeyFilename = environmentSubstitute(getKeyFilename());
+				if(Const.isEmpty(realKeyFilename))
+				{
+					// Error..Missing keyfile
+					logError(BaseMessages.getString(PKG, "JobSFTP.Error.KeyFileMissing"));
+					result.setNrErrors(1);
+					return result;
+				}
+				if(!KettleVFS.fileExists(realKeyFilename))
+				{
+					// Error.. can not reach keyfile
+					logError(BaseMessages.getString(PKG, "JobSFTP.Error.KeyFileNotFound"));
+					result.setNrErrors(1);
+					return result;
+				}
+				realPassPhrase =environmentSubstitute(getKeyPassPhrase());
+			}
+			
 			// Create sftp client to host ...
-			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
+			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), 
+					realUsername, realKeyFilename, realPassPhrase);
 			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTPPUT.Log.OpenedConnection",realServerName,""+realServerPort,realUsername));
+			
+			// Set compression
+			sftpclient.setCompression(getCompression());
+			
+			// Set proxy?
+			String realProxyHost= environmentSubstitute(getProxyHost());
+			if(!Const.isEmpty(realProxyHost)) {
+				// Set proxy
+				sftpclient.setProxy(realProxyHost, 
+						environmentSubstitute(getProxyPort()), 
+						environmentSubstitute(getProxyUsername()), environmentSubstitute(getProxyPassword()),
+						getProxyType());
+			}
 			
 			// login to ftp host ...
 			sftpclient.login(realPassword);
@@ -400,6 +576,19 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			// move to spool dir ...
 			if (!Const.isEmpty(realSftpDirString))
 			{
+				boolean existfolder = sftpclient.folderExists(realSftpDirString);
+				if(!existfolder)
+				{
+					if(!isCreateRemoteFolder())
+					{
+						throw new KettleException(BaseMessages.getString(PKG, "JobSFTPPUT.Error.CanNotFindRemoteFolder", realSftpDirString));
+					}
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTPPUT.Error.CanNotFindRemoteFolder",realSftpDirString));
+					
+					// Let's create folder
+					sftpclient.createFolder(realSftpDirString);
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTPPUT.Log.RemoteFolderCreated",realSftpDirString));
+				}
 				sftpclient.chdir(realSftpDirString);
 				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTPPUT.Log.ChangedDirectory",realSftpDirString));
 			} // end if
