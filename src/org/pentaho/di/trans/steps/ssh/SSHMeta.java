@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.trilead.ssh2.Connection;
+import com.trilead.ssh2.HTTPProxyData;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -62,7 +64,11 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
     private String stdOutFieldName;
     private String stdErrFieldName;
     private String timeOut;
-
+    //Proxy
+    private String proxyHost;
+    private String proxyPort;
+    private String proxyUsername;
+    private String proxyPassword;
 
     public SSHMeta()
     {
@@ -94,6 +100,10 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 		stdOutFieldName="stdOut";
 		stdErrFieldName="stdErr";
 		timeOut="0";
+		proxyHost=null;
+		proxyPort=null;
+		proxyUsername=null;
+		proxyPassword=null;
     }
 
 	/**
@@ -287,7 +297,67 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return stdErrFieldName;
 	}
-
+	/**
+	 * @param value The proxyHost to set.
+	 */
+	public void setProxyHost(String value)
+	{
+		this.proxyHost = value;
+	}
+	
+	/**
+	 * @return Returns the proxyHost.
+	 */
+	public String getProxyHost()
+	{
+		return proxyHost;
+	}
+	/**
+	 * @param value The proxyPort to set.
+	 */
+	public void setProxyPort(String value)
+	{
+		this.proxyPort = value;
+	}
+	
+	/**
+	 * @return Returns the proxyPort.
+	 */
+	public String getProxyPort()
+	{
+		return proxyPort;
+	}
+	/**
+	 * @param value The proxyUsername to set.
+	 */
+	public void setProxyUsername(String value)
+	{
+		this.proxyUsername = value;
+	}
+	
+	/**
+	 * @return Returns the proxyUsername.
+	 */
+	public String getProxyUsername()
+	{
+		return proxyUsername;
+	}
+	
+	/**
+	 * @param value The proxyPassword to set.
+	 */
+	public void setProxyPassword(String value)
+	{
+		this.proxyPassword = value;
+	}
+	
+	/**
+	 * @return Returns the proxyPassword.
+	 */
+	public String getProxyPassword()
+	{
+		return proxyPassword;
+	}
 	
     public String getXML()
     {
@@ -300,13 +370,17 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    " + XMLHandler.addTagValue("port",   port));
 		retval.append("    " + XMLHandler.addTagValue("servername",   serverName));
 		retval.append("    " + XMLHandler.addTagValue("userName",   userName));
-		retval.append("    " + XMLHandler.addTagValue("password",   password));
+		retval.append("    ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(password)));
 		retval.append("    " + XMLHandler.addTagValue("usePrivateKey",   usePrivateKey));
 		retval.append("    " + XMLHandler.addTagValue("keyFileName",   keyFileName));
 		retval.append("    " + XMLHandler.addTagValue("passPhrase",   passPhrase));
 		retval.append("    " + XMLHandler.addTagValue("stdOutFieldName",   stdOutFieldName));
 		retval.append("    " + XMLHandler.addTagValue("stdErrFieldName",   stdErrFieldName));
 		retval.append("    " + XMLHandler.addTagValue("timeOut",   timeOut));
+		retval.append("    " + XMLHandler.addTagValue("proxyHost",   proxyHost));
+		retval.append("    " + XMLHandler.addTagValue("proxyPort",   proxyPort));
+		retval.append("    " + XMLHandler.addTagValue("proxyUsername",   proxyUsername));
+		retval.append("    ").append(XMLHandler.addTagValue("proxyPassword", Encr.encryptPasswordIfNotUsingVariables(proxyPassword)));
         return retval.toString();
     }
 
@@ -321,13 +395,19 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 	      	port          = XMLHandler.getTagValue(stepnode, "port");
 			serverName   = XMLHandler.getTagValue(stepnode, "servername");
 			userName          = XMLHandler.getTagValue(stepnode, "userName");
-			password          = XMLHandler.getTagValue(stepnode, "password");
+			password=	Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "password"));
+
 			usePrivateKey = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "usePrivateKey"));
 			keyFileName = XMLHandler.getTagValue(stepnode, "keyFileName");
 			passPhrase = XMLHandler.getTagValue(stepnode, "passPhrase");
 			stdOutFieldName = XMLHandler.getTagValue(stepnode, "stdOutFieldName");
 			stdErrFieldName = XMLHandler.getTagValue(stepnode, "stdErrFieldName");
 			timeOut = XMLHandler.getTagValue(stepnode, "timeOut");
+			proxyHost = XMLHandler.getTagValue(stepnode, "proxyHost");
+			proxyPort = XMLHandler.getTagValue(stepnode, "proxyPort");
+			proxyUsername = XMLHandler.getTagValue(stepnode, "proxyUsername");
+			proxyPassword=	Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "proxyPassword"));
+
 		}
 	    catch (Exception e)
 	    {
@@ -345,14 +425,19 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 			serverName    = rep.getJobEntryAttributeString(id_step, "servername");
         	port          = rep.getJobEntryAttributeString(id_step, "port");
 			userName      = rep.getJobEntryAttributeString(id_step, "userName");
-			password      = rep.getJobEntryAttributeString(id_step, "password");
-
+			password              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );	
+			
 			usePrivateKey=rep.getJobEntryAttributeBoolean(id_step, "usePrivateKey");
 			keyFileName=rep.getJobEntryAttributeString(id_step, "keyFileName");
 			passPhrase=rep.getJobEntryAttributeString(id_step, "passPhrase");
 			stdOutFieldName=rep.getJobEntryAttributeString(id_step, "stdOutFieldName");
 			stdErrFieldName=rep.getJobEntryAttributeString(id_step, "stdErrFieldName");
 			timeOut=rep.getJobEntryAttributeString(id_step, "timeOut");
+			proxyHost=rep.getJobEntryAttributeString(id_step, "proxyHost");
+			proxyPort=rep.getJobEntryAttributeString(id_step, "proxyPort");
+			proxyUsername=rep.getJobEntryAttributeString(id_step, "proxyUsername");
+			proxyPassword              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "proxyPassword") );	
+			
         }
         catch (Exception e)
         {
@@ -370,13 +455,19 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveJobEntryAttribute(id_transformation, id_step, "port",      port);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "servername",      serverName);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "userName",      userName);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "password",      password);
+			rep.saveStepAttribute(id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables(password));
+
 			rep.saveJobEntryAttribute(id_transformation, id_step, "usePrivateKey", usePrivateKey);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "keyFileName", keyFileName);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "passPhrase", passPhrase);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "stdOutFieldName", stdOutFieldName);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "stdErrFieldName", stdErrFieldName);
 			rep.saveJobEntryAttribute(id_transformation, id_step, "timeOut", timeOut);
+			rep.saveJobEntryAttribute(id_transformation, id_step, "proxyHost", proxyHost);
+			rep.saveJobEntryAttribute(id_transformation, id_step, "proxyPort", proxyPort);
+			rep.saveJobEntryAttribute(id_transformation, id_step, "proxyUsername", proxyUsername);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyPassword", Encr.encryptPasswordIfNotUsingVariables(proxyPassword));
+
         }
         catch (Exception e)
         {
@@ -484,7 +575,8 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public static Connection OpenConnection(String serveur, int port, 
 			String username, String password, boolean useKey, String keyFilename, String passPhrase, int timeOut,
-			VariableSpace space)
+			VariableSpace space,
+			String proxyhost, int proxyport, String proxyusername, String proxypassword)
 	throws KettleException {
 		Connection conn = null;
 		boolean isAuthenticated= false;
@@ -502,6 +594,18 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 				}
 				// Create a new connection
 				conn = new Connection(serveur, port);
+				
+				/* We want to connect through a HTTP proxy */
+				if(!Const.isEmpty(proxyhost)) {
+					/* Now connect */
+					// if the proxy requires basic authentication:
+					if(!Const.isEmpty(proxyusername)) {
+						conn.setProxyData(new HTTPProxyData(proxyhost, proxyport, proxyusername, proxypassword));
+					} else {
+						conn.setProxyData(new HTTPProxyData(proxyhost, proxyport));
+					}
+				}
+				
 				// and connect
 				if(timeOut==0)
 					conn.connect();

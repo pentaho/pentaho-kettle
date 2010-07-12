@@ -195,7 +195,11 @@ public class SSH extends BaseStep implements StepInterface
     		String keyFilename = environmentSubstitute(meta.getKeyFileName());
     		String passphrase = environmentSubstitute(meta.getPassphrase());
     		int timeOut = Const.toInt(environmentSubstitute(meta.getTimeOut()), 0);
-    		
+       		String proxyhost = environmentSubstitute(meta.getProxyHost());
+       		int proxyport = Const.toInt(environmentSubstitute(meta.getProxyPort()), 0);
+       		String proxyusername = environmentSubstitute(meta.getProxyUsername());
+       		String proxypassword = environmentSubstitute(meta.getProxyPassword());
+       		
         	// Check target server
     		if(Const.isEmpty(servername)) {
     			log.logError(toString(), BaseMessages.getString(PKG, "SSH.MissingServerName"));
@@ -218,7 +222,8 @@ public class SSH extends BaseStep implements StepInterface
     		try {
     			// Open connection
     			data.conn = SSHMeta.OpenConnection(servername, nrPort, username, password, 
-    					meta.isusePrivateKey(), keyFilename, passphrase, timeOut, this);
+    					meta.isusePrivateKey(), keyFilename, passphrase, timeOut, this,
+    					proxyhost, proxyport, proxyusername, proxypassword);
 
     			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SSH.Log.ConnectionOpened"));
 

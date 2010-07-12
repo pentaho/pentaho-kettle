@@ -41,7 +41,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Group;
-
 import com.trilead.ssh2.Connection;
 
 import org.pentaho.di.core.Const;
@@ -132,6 +131,19 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
 	private FormData fdTest;
 	
 	private Listener lsTest;
+	
+	   
+    private LabelTextVar wProxyHost;
+    private FormData fdProxyHost;
+    
+    private LabelTextVar wProxyPort;
+    private FormData fdProxyPort;
+    
+    private LabelTextVar wProxyUsername;
+    private FormData fdProxyUsername;
+    
+    private LabelTextVar wProxyPassword;
+    private FormData fdProxyPassword;
 	
     private LabelTextVar wServerName;
     private FormData fdServerName;
@@ -279,7 +291,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
         fdPassword.top  	= new FormAttachment(wUserName, margin);
         fdPassword.right	= new FormAttachment(100, 0);
         wPassword.setLayoutData(fdPassword);
-	    
+        wPassword.setEchoChar('*');
 
         // Use key?
         wlUseKey = new Label(wSettingsGroup, SWT.RIGHT);
@@ -356,7 +368,47 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
         fdPassphrase.top  	= new FormAttachment(wbFilename, margin);
         fdPassphrase.right	= new FormAttachment(100, 0);
         wPassphrase.setLayoutData(fdPassphrase);
-	    
+        
+     // ProxyHostline
+        wProxyHost = new LabelTextVar(transMeta, wSettingsGroup, BaseMessages.getString(PKG, "SSHDialog.ProxyHost.Label"), BaseMessages.getString(PKG, "SSHDialog.ProxyHost.Tooltip"));
+        props.setLook(wProxyHost);
+        wProxyHost.addModifyListener(lsMod);
+        fdProxyHost = new FormData();
+        fdProxyHost.left 	= new FormAttachment(0, 0);
+        fdProxyHost.top  	= new FormAttachment(wPassphrase, 2*margin);
+        fdProxyHost.right	= new FormAttachment(100, 0);
+        wProxyHost.setLayoutData(fdProxyHost);
+        
+		// ProxyPortline
+        wProxyPort = new LabelTextVar(transMeta, wSettingsGroup, BaseMessages.getString(PKG, "SSHDialog.ProxyPort.Label"), BaseMessages.getString(PKG, "SSHDialog.ProxyPort.Tooltip"));
+        props.setLook(wProxyPort);
+        wProxyPort.addModifyListener(lsMod);
+        fdProxyPort = new FormData();
+        fdProxyPort.left 	= new FormAttachment(0, 0);
+        fdProxyPort.top  	= new FormAttachment(wProxyHost, margin);
+        fdProxyPort.right	= new FormAttachment(100, 0);
+        wProxyPort.setLayoutData(fdProxyPort);
+        
+		// ProxyUsernameline
+        wProxyUsername = new LabelTextVar(transMeta, wSettingsGroup, BaseMessages.getString(PKG, "SSHDialog.ProxyUsername.Label"), BaseMessages.getString(PKG, "SSHDialog.ProxyUsername.Tooltip"));
+        props.setLook(wProxyUsername);
+        wProxyUsername.addModifyListener(lsMod);
+        fdProxyUsername = new FormData();
+        fdProxyUsername.left 	= new FormAttachment(0, 0);
+        fdProxyUsername.top  	= new FormAttachment(wProxyPort, margin);
+        fdProxyUsername.right	= new FormAttachment(100, 0);
+        wProxyUsername.setLayoutData(fdProxyUsername);
+        
+		// ProxyUsernameline
+        wProxyPassword= new LabelTextVar(transMeta, wSettingsGroup, BaseMessages.getString(PKG, "SSHDialog.ProxyPassword.Label"), BaseMessages.getString(PKG, "SSHDialog.ProxyPassword.Tooltip"));
+        props.setLook(wProxyUsername);
+        wProxyPassword.addModifyListener(lsMod);
+        fdProxyPassword= new FormData();
+        fdProxyPassword.left 	= new FormAttachment(0, 0);
+        fdProxyPassword.top  	= new FormAttachment(wProxyUsername, margin);
+        fdProxyPassword.right	= new FormAttachment(100, 0);
+        wProxyPassword.setLayoutData(fdProxyPassword);
+        wProxyPassword.setEchoChar('*');
         
 		
 		// Test connection button
@@ -365,7 +417,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
  		props.setLook(wTest);
 		fdTest=new FormData();
 		wTest.setToolTipText(BaseMessages.getString(PKG, "SSHDialog.TestConnection.Tooltip"));
-		fdTest.top  = new FormAttachment(wPassphrase, 2*margin);
+		fdTest.top  = new FormAttachment(wProxyPassword, 2*margin);
 		fdTest.right= new FormAttachment(100, 0);
 		wTest.setLayoutData(fdTest);
         
@@ -645,6 +697,11 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
         if(input.getStdOutFieldName()!=null) wResultOutFieldName.setText(input.getStdOutFieldName());
         if(input.getStdErrFieldName()!=null) wResultErrFieldName.setText(input.getStdErrFieldName());
         wTimeOut.setText(Const.NVL(input.getTimeOut(), "0"));
+        if(input.getProxyHost()!=null) wProxyHost.setText(input.getProxyHost());
+        if(input.getProxyPort()!=null) wProxyPort.setText(input.getProxyPort());
+        if(input.getProxyUsername()!=null) wProxyUsername.setText(input.getProxyUsername());
+        if(input.getProxyPassword()!=null) wProxyPassword.setText(input.getProxyPassword());
+        
 		wStepname.selectAll();
 	}
 
@@ -671,7 +728,10 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
         in.setstdOutFieldName(wResultOutFieldName.getText());
         in.setStdErrFieldName(wResultErrFieldName.getText());
         in.setTimeOut(wTimeOut.getText());
-
+        in.setProxyHost(wProxyHost.getText());
+        in.setProxyPort(wProxyPort.getText());
+        in.setProxyUsername(wProxyUsername.getText());
+        in.setProxyPassword(wProxyPassword.getText());
 	}
 	private void ok()
 	{
@@ -737,11 +797,17 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
 		String keyFilename = transMeta.environmentSubstitute(wPrivateKey.getText());
 		String passphrase = transMeta.environmentSubstitute(wPassphrase.getText());
    		int timeOut = Const.toInt(transMeta.environmentSubstitute(wTimeOut.getText()), 0);
+   		String proxyhost = transMeta.environmentSubstitute(wProxyHost.getText());
+   		int proxyport = Const.toInt(transMeta.environmentSubstitute(wProxyPort.getText()), 0);
+   		String proxyusername = transMeta.environmentSubstitute(wProxyUsername.getText());
+   		String proxypassword = transMeta.environmentSubstitute(wProxyPassword.getText());
+   		
    		
     	Connection conn= null;
     	try{
 			conn = SSHMeta.OpenConnection(servername, nrPort, username, password, 
-					wUseKey.getSelection(), keyFilename, passphrase, timeOut, transMeta);
+					wUseKey.getSelection(), keyFilename, passphrase, timeOut, transMeta,
+					proxyhost, proxyport, proxyusername, proxypassword);
     		testOK=true;
 	    	
     	}catch(Exception e) {
