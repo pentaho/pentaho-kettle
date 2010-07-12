@@ -140,7 +140,7 @@
         <menu id="tools-data" label="${Spoon.Menu.Tools.Data.Popup}">
           <menupopup id="tools-data-popup">
             <menuitem id="tools-dabase-explore" label="${Spoon.Menu.Tools.Database.Explore}" command="spoon.exploreDatabase()" />
-            <menuitem id="tools-data-clear-cache" label="${Spoon.Menu.Tools.Data.Clear.Cache}" command="clearDBCache('database-class-clear-cache')" />
+            <menuitem id="tools-data-clear-cache" label="${Spoon.Menu.Tools.Data.Clear.Cache}" command="spoon.clearDBCache('database-class-clear-cache')" />
           </menupopup>
         </menu>
         <menu id="repository" label="${Spoon.Menu.Repository}">
@@ -202,7 +202,7 @@
     <menuitem id="database-class-connection-wizard" label="${Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard}"
       command="spoon.createDatabaseWizard()" />
     <menuitem id="database-class-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete}"
-      command="spoon.clearDBCache()" />
+      command="spoon.clearDBCache('database-class-clear-cache')" />
   </menupopup>
 
   <menupopup id="partition-schema-class">
@@ -241,7 +241,7 @@
     <menuitem id="database-inst-delete" label="${Spoon.Menu.Popup.CONNECTIONS.Delete}" command="spoon.delConnection()" />
     <menuseparator />
     <menuitem id="database-inst-sql-edit" label="${Spoon.Menu.Popup.CONNECTIONS.SQLEditor}" command="spoon.sqlConnection()" />
-    <menuitem id="database-inst-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCache}" />
+    <menuitem id="database-inst-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCache}" command="spoon.clearDBCache('database-inst-clear-cache')"/>
     <menuitem id="database-inst-share" label="${Spoon.Menu.Popup.CONNECTIONS.Share}" command="spoon.shareObject('database-inst-share')" />
     <menuitem id="database-inst-explore" label="${Spoon.Menu.Popup.CONNECTIONS.Explore}" command="spoon.exploreDB()" />
   </menupopup>
