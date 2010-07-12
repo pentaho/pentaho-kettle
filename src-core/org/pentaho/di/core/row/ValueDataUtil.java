@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.Adler32;
@@ -719,8 +718,8 @@ public class ValueDataUtil
         throw new KettleValueException("The 'DateDiff' function only works with dates");
     }
     /**
-     * Returns the number of days that have elapsed between dataA and dataB. Timezones are
-     * not considered in the computation.
+     * Returns the number of days that have elapsed between dataA and dataB.
+     * 
      * @param metaA
      * @param dataA The "end date"
      * @param metaB
@@ -728,6 +727,7 @@ public class ValueDataUtil
      * @return Number of days
      * @throws KettleValueException
      */
+
     public static Object DateDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
         if (metaA.isDate() && metaB.isDate())
@@ -736,15 +736,16 @@ public class ValueDataUtil
           {
             Date startDate = metaB.getDate(dataB);
             Date endDate = metaA.getDate(dataA);
-            // Explicitly zero-out hour/minute/second - not figured in subtraction to determine number of days
-            Calendar stDateCal = new GregorianCalendar(startDate.getYear()+1900, startDate.getMonth(), startDate.getDate(), 0, 0, 0);
-            // Explicitly zero-out hour/minute/second - not figured in subtraction to determine number of days
-            Calendar endDateCal = new GregorianCalendar(endDate.getYear()+1900, endDate.getMonth(), endDate.getDate(), 0, 0, 0);
-            // the format creates a number like 2010076 (2010 is the year, 076 is the 76th day of the year).
-            int startJulian = (stDateCal.get(Calendar.YEAR) * 1000) + stDateCal.get(Calendar.DAY_OF_YEAR);
-            int endJulian = (endDateCal.get(Calendar.YEAR) * 1000) + endDateCal.get(Calendar.DAY_OF_YEAR);
-            // I have no idea why this returns a Long, but I'll keep it the same
-            return new Long(endJulian - startJulian);
+
+			Calendar stDateCal = Calendar.getInstance();
+			Calendar endDateCal = Calendar.getInstance();
+			stDateCal.setTime(startDate);
+			endDateCal.setTime(endDate);
+
+			long endL = endDateCal.getTimeInMillis() + endDateCal.getTimeZone().getOffset( endDateCal.getTimeInMillis() );
+			long startL = stDateCal.getTimeInMillis() + stDateCal.getTimeZone().getOffset( stDateCal.getTimeInMillis() );
+
+			return new Long(((endL - startL) / 86400000));
           } else {
             return null;
           }
