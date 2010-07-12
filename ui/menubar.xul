@@ -241,7 +241,7 @@
     <menuitem id="database-inst-delete" label="${Spoon.Menu.Popup.CONNECTIONS.Delete}" command="spoon.delConnection()" />
     <menuseparator />
     <menuitem id="database-inst-sql-edit" label="${Spoon.Menu.Popup.CONNECTIONS.SQLEditor}" command="spoon.sqlConnection()" />
-    <menuitem id="database-inst-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCache}" />
+    <menuitem id="database-inst-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCache}" command="spoon.clearDBCache('database-inst-clear-cache')"/>
     <menuitem id="database-inst-share" label="${Spoon.Menu.Popup.CONNECTIONS.Share}" command="spoon.shareObject('database-inst-share')" />
     <menuitem id="database-inst-explore" label="${Spoon.Menu.Popup.CONNECTIONS.Explore}" command="spoon.exploreDB()" />
   </menupopup>
