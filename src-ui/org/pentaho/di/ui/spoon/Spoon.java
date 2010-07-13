@@ -3384,6 +3384,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (rep != null)
       rep.disconnect();
     rep = null;
+    setRepository(rep);
     setShellText();
     SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
   }
@@ -5572,7 +5573,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     shell.setText(text);
 
-    enableMenus();
     markTabsChanged();
   }
 
@@ -7307,6 +7307,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_CHANGED);
     }
     delegates.update(this);
+    enableMenus();    
   }
 
   public void addMenuListener(String id, Object listener, String methodName) {
