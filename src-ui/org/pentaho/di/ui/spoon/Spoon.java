@@ -5601,76 +5601,80 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (currentTab != null && currentTab.canHandleSave()) {
       disableSave = !currentTab.hasContentChanged();
     }
-
-    org.pentaho.ui.xul.dom.Document doc = mainSpoonContainer.getDocumentRoot();
-    XulMenu menu = (XulMenu) doc.getElementById("action");
-    menu.setVisible(etlPerspective);
-
     EngineMetaInterface meta = getActiveMeta();
     if (meta != null) {
       disableSave = !meta.canSave();
     }
 
-    // Only enable certain menu-items if we need to.
-    disableMenuItem(doc, "file-new-database", disableTransMenu && disableJobMenu || !isRepositoryRunning);
-    disableMenuItem(doc, "file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
-    disableMenuItem(doc, "toolbar-file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
-    disableMenuItem(doc, "file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
-    disableMenuItem(doc, "toolbar-file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
-    disableMenuItem(doc, "file-save-as-vfs", disableTransMenu && disableJobMenu && disableMetaMenu);
-    disableMenuItem(doc, "file-close", disableTransMenu && disableJobMenu && disableMetaMenu); //    ((XulMenuitem) doc.getElementById("file-print")).setDisabled(disableTransMenu && disableJobMenu);
-    disableMenuItem(doc, "file-print", disableTransMenu && disableJobMenu);
-    disableMenuItem(doc, "file-export-to-xml", disableTransMenu && disableJobMenu);
-    disableMenuItem(doc, "file-export-all-to-xml", disableTransMenu && disableJobMenu);
 
-    // Disable the undo and redo menus if there is no active transformation
-    // or active job
-    // DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
-    //
-    disableMenuItem(doc, UNDO_MENUITEM, disableTransMenu && disableJobMenu);
-    disableMenuItem(doc, REDO_MENUITEM, disableTransMenu && disableJobMenu);
+    org.pentaho.ui.xul.dom.Document doc = null;
+    if(mainSpoonContainer != null) {
+      doc = mainSpoonContainer.getDocumentRoot();
+      if(doc != null) {
+        XulMenu menu = (XulMenu) doc.getElementById("action");
+        menu.setVisible(etlPerspective);
+        // Only enable certain menu-items if we need to.
+        disableMenuItem(doc, "file-new-database", disableTransMenu && disableJobMenu || !isRepositoryRunning);
+        disableMenuItem(doc, "file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
+        disableMenuItem(doc, "toolbar-file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
+        disableMenuItem(doc, "file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
+        disableMenuItem(doc, "toolbar-file-save-as", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
+        disableMenuItem(doc, "file-save-as-vfs", disableTransMenu && disableJobMenu && disableMetaMenu);
+        disableMenuItem(doc, "file-close", disableTransMenu && disableJobMenu && disableMetaMenu); //    ((XulMenuitem) doc.getElementById("file-print")).setDisabled(disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, "file-print", disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, "file-export-to-xml", disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, "file-export-all-to-xml", disableTransMenu && disableJobMenu);
 
-    disableMenuItem(doc, "edit-clear-selection", disableTransMenu);
-    disableMenuItem(doc, "edit-select-all", disableTransMenu);
+        // Disable the undo and redo menus if there is no active transformation
+        // or active job
+        // DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
+        //
+        disableMenuItem(doc, UNDO_MENUITEM, disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, REDO_MENUITEM, disableTransMenu && disableJobMenu);
 
-    // View Menu
-    ((XulMenuitem) doc.getElementById("view-results")).setSelected(isExecutionResultsPaneVisible());
-    disableMenuItem(doc, "view-results", transGraph == null && disableJobMenu);
-    disableMenuItem(doc, "view-zoom-in", disableTransMenu && disableJobMenu);
-    disableMenuItem(doc, "view-zoom-out", disableTransMenu && disableJobMenu);
-    disableMenuItem(doc, "view-zoom-100pct", disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, "edit-clear-selection", disableTransMenu);
+        disableMenuItem(doc, "edit-select-all", disableTransMenu);
 
-    // Transformations
-    disableMenuItem(doc, "process-run", disableTransMenu && disablePreviewButton && disableJobMenu);
-    disableMenuItem(doc, "trans-replay", disableTransMenu && disablePreviewButton);
-    disableMenuItem(doc, "trans-preview", disableTransMenu && disablePreviewButton);
-    disableMenuItem(doc, "trans-debug", disableTransMenu && disablePreviewButton);
-    disableMenuItem(doc, "trans-verify", disableTransMenu);
-    disableMenuItem(doc, "trans-impact", disableTransMenu);
-    disableMenuItem(doc, "trans-get-sql", disableTransMenu);
-    disableMenuItem(doc, "trans-last-impact", disableTransMenu);
+        // View Menu
+        ((XulMenuitem) doc.getElementById("view-results")).setSelected(isExecutionResultsPaneVisible());
+        disableMenuItem(doc, "view-results", transGraph == null && disableJobMenu);
+        disableMenuItem(doc, "view-zoom-in", disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, "view-zoom-out", disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, "view-zoom-100pct", disableTransMenu && disableJobMenu);
 
-    // Tools
-    disableMenuItem(doc, "repository-connect", isRepositoryRunning);
-    disableMenuItem(doc, "repository-disconnect", !isRepositoryRunning);
-    disableMenuItem(doc, "repository-explore", !isRepositoryRunning);
-    disableMenuItem(doc, "toolbar-expore-repository", !isRepositoryRunning);
-    disableMenuItem(doc, "repository-export-all", !isRepositoryRunning);
-    disableMenuItem(doc, "repository-import-directory", !isRepositoryRunning);
-    disableMenuItem(doc, "trans-last-preview", !isRepositoryRunning || disableTransMenu);
+        // Transformations
+        disableMenuItem(doc, "process-run", disableTransMenu && disablePreviewButton && disableJobMenu);
+        disableMenuItem(doc, "trans-replay", disableTransMenu && disablePreviewButton);
+        disableMenuItem(doc, "trans-preview", disableTransMenu && disablePreviewButton);
+        disableMenuItem(doc, "trans-debug", disableTransMenu && disablePreviewButton);
+        disableMenuItem(doc, "trans-verify", disableTransMenu);
+        disableMenuItem(doc, "trans-impact", disableTransMenu);
+        disableMenuItem(doc, "trans-get-sql", disableTransMenu);
+        disableMenuItem(doc, "trans-last-impact", disableTransMenu);
 
-    // Wizard
-    disableMenuItem(doc, "wizard-connection", disableTransMenu && disableJobMenu);
-    disableMenuItem(doc, "wizard-copy-table", disableTransMenu && disableJobMenu);
-    disableMenuItem(doc, "wizard-copy-tables", isRepositoryRunning && disableTransMenu && disableJobMenu);
+        // Tools
+        disableMenuItem(doc, "repository-connect", isRepositoryRunning);
+        disableMenuItem(doc, "repository-disconnect", !isRepositoryRunning);
+        disableMenuItem(doc, "repository-explore", !isRepositoryRunning);
+        disableMenuItem(doc, "toolbar-expore-repository", !isRepositoryRunning);
+        disableMenuItem(doc, "repository-export-all", !isRepositoryRunning);
+        disableMenuItem(doc, "repository-import-directory", !isRepositoryRunning);
+        disableMenuItem(doc, "trans-last-preview", !isRepositoryRunning || disableTransMenu);
 
-    SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
+        // Wizard
+        disableMenuItem(doc, "wizard-connection", disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, "wizard-copy-table", disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, "wizard-copy-tables", isRepositoryRunning && disableTransMenu && disableJobMenu);
 
-    // What steps & plugins to show?
-    refreshCoreObjects();
+        SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
 
-    for (ISpoonMenuController menuController : menuControllers) {
-      menuController.updateMenu(doc);
+        // What steps & plugins to show?
+        refreshCoreObjects();
+
+        for (ISpoonMenuController menuController : menuControllers) {
+          menuController.updateMenu(doc);
+        }
+      }
     }
   }
 
