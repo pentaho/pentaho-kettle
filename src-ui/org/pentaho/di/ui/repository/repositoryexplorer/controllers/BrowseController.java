@@ -406,6 +406,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     repoObject.delete();
     if (repoObject instanceof UIRepositoryDirectory) {
       directoryBinding.fireSourceChanged();
+      repoDir.refresh();
     }
     selectedItemsBinding.fireSourceChanged();
   }
@@ -501,6 +502,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     repoDir.delete();
     directoryBinding.fireSourceChanged();
     selectedItemsBinding.fireSourceChanged();
+    repoDir.refresh();
   }
   public void renameFolder() throws Exception {
     try {
