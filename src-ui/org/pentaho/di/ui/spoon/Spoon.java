@@ -5597,8 +5597,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     boolean disableMetaMenu = getActiveMeta() == null;
     boolean isRepositoryRunning = rep != null;
     boolean disablePreviewButton = true;
-    String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
-    boolean etlPerspective = activePerspectiveId.equals(MainSpoonPerspective.ID);
+    String activePerspectiveId = null; 
+    SpoonPerspectiveManager manager = SpoonPerspectiveManager.getInstance();
+    if(manager != null && manager.getActivePerspective() != null) {
+      activePerspectiveId = manager.getActivePerspective().getId();
+    }
+    boolean etlPerspective = false;
+    if(activePerspectiveId != null && activePerspectiveId.length() > 0) {
+      etlPerspective = activePerspectiveId.equals(MainSpoonPerspective.ID);
+    }
 
     TransGraph transGraph = getActiveTransGraph();
     if (transGraph != null) {
@@ -5782,27 +5789,38 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public TransGraph getActiveTransGraph() {
-    if (tabfolder.getSelected() == null)
+    if(tabfolder != null) {
+      if (tabfolder.getSelected() == null)
+        return null;      
+    } else {
       return null;
-
-    TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
-    if (mapEntry != null) {
-      if (mapEntry.getObject() instanceof TransGraph) {
-        return (TransGraph) mapEntry.getObject();
+    }
+    if(delegates != null && delegates.tabs != null) {
+      TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
+      if (mapEntry != null) {
+        if (mapEntry.getObject() instanceof TransGraph) {
+          return (TransGraph) mapEntry.getObject();
+        }
       }
     }
     return null;
   }
 
   public JobGraph getActiveJobGraph() {
-    TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
-    if (mapEntry.getObject() instanceof JobGraph)
-      return (JobGraph) mapEntry.getObject();
+    if(delegates != null && delegates.tabs != null && tabfolder != null) {
+      TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
+      if (mapEntry.getObject() instanceof JobGraph)
+        return (JobGraph) mapEntry.getObject();
+    }
     return null;
   }
 
   public EngineMetaInterface getActiveMeta() {
-    return SpoonPerspectiveManager.getInstance().getActivePerspective().getActiveMeta();
+    SpoonPerspectiveManager manager = SpoonPerspectiveManager.getInstance();
+    if(manager != null &&  manager.getActivePerspective() != null) {
+      return manager.getActivePerspective().getActiveMeta();
+    }
+    return null;
   }
 
   public TabItemInterface getActiveTabitem() {
@@ -5812,13 +5830,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     TabItem tabItem = tabfolder.getSelected();
     if (tabItem == null)
       return null;
-
-    TabMapEntry mapEntry = delegates.tabs.getTab(tabItem);
-    if (mapEntry!=null) {
-      return mapEntry.getObject();
-    } else {
-      return null;
+    if(delegates != null && delegates.tabs != null) {
+      TabMapEntry mapEntry = delegates.tabs.getTab(tabItem);
+      if (mapEntry!=null) {
+        return mapEntry.getObject();
+      } else {
+        return null;
+      }
     }
+    return null;
   }
 
   /**
@@ -5851,21 +5871,38 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public TransMeta findTransformation(String tabItemText) {
-    return delegates.trans.getTransformation(tabItemText);
+    if(delegates != null && delegates.trans != null) {
+      return delegates.trans.getTransformation(tabItemText);
+    } else {
+      return null;
+    }
   }
 
   public JobMeta findJob(String tabItemText) {
-    return delegates.jobs.getJob(tabItemText);
+    if(delegates != null && delegates.jobs != null) {
+      return delegates.jobs.getJob(tabItemText);  
+    } else {
+      return null;
+    }
+    
   }
 
   public TransMeta[] getLoadedTransformations() {
-    List<TransMeta> list = delegates.trans.getTransformationList();
-    return list.toArray(new TransMeta[list.size()]);
+    if(delegates != null && delegates.trans != null) {
+      List<TransMeta> list = delegates.trans.getTransformationList();
+      return list.toArray(new TransMeta[list.size()]);
+    } else {
+      return null;
+    }
   }
 
   public JobMeta[] getLoadedJobs() {
-    List<JobMeta> list = delegates.jobs.getJobList();
-    return list.toArray(new JobMeta[list.size()]);
+    if(delegates != null && delegates.jobs != null) {
+      List<JobMeta> list = delegates.jobs.getJobList();
+      return list.toArray(new JobMeta[list.size()]);
+    } else {
+      return null;
+    }
   }
 
   public void saveSettings() {
