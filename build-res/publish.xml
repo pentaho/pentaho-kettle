@@ -29,7 +29,7 @@
 
 	
   <property name="kettle.module.list"
-            value="kettle-core, kettle-db, kettle-engine, kettle-ui-swt"
+            value="kettle-core, kettle-db, kettle-engine, kettle-ui-swt, kettle-test"
             description="The list of kettle modules" />
 
   <!-- Import the common_build.xml file which contains all the default tasks -->  
