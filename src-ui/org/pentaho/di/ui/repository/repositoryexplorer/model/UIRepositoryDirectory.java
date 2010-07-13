@@ -40,12 +40,16 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   
   public UIRepositoryDirectory() {
     super();
+    kidDirectoryCache = null;
+    kidElementCache = null;
   }
 
   public UIRepositoryDirectory(RepositoryDirectoryInterface rd, UIRepositoryDirectory uiParent, Repository rep) {
     super(rd, rep);
     this.uiParent = uiParent;
     this.rd = rd;
+    kidDirectoryCache = null;
+    kidElementCache = null;    
   }
   
   public UIRepositoryDirectories getChildren(){
@@ -183,7 +187,10 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     }  catch(UIObjectCreationException uoe) {
       newDir = new UIRepositoryDirectory(dir, this, rep);
     }
-    getChildren().add(newDir);
+    UIRepositoryDirectories directories = getChildren();
+    if(!contains(directories, newDir)) {
+      directories.add(newDir);
+    }
     kidElementCache.clear(); // rebuild the element cache for correct positioning.
     return newDir;
   }
@@ -295,5 +302,14 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     return getChildren().iterator();
   }
   
+  private boolean contains(UIRepositoryDirectories directories, UIRepositoryDirectory searchDir) {
+    for(int i=0; i < directories.size(); i++) {
+      UIRepositoryObject dir = directories.get(i);
+      if(dir instanceof UIRepositoryDirectory) {
+        return dir.getName() != null && dir.getName().equals(searchDir.getName());
+      }
+    }
+    return false;
+  }
   // end PDI-3326 hack
 }
