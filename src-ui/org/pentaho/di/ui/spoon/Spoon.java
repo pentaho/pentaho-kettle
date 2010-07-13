@@ -261,6 +261,7 @@ import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.XulSettingsManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.WaitBoxRunnable;
@@ -5789,18 +5790,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public TransGraph getActiveTransGraph() {
-    if(tabfolder != null) {
-      if (tabfolder.getSelected() == null)
-        return null;      
-    } else {
+    if (tabfolder.getSelected() == null)
       return null;
-    }
-    if(delegates != null && delegates.tabs != null) {
-      TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
-      if (mapEntry != null) {
-        if (mapEntry.getObject() instanceof TransGraph) {
-          return (TransGraph) mapEntry.getObject();
-        }
+
+    TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
+    if (mapEntry != null) {
+      if (mapEntry.getObject() instanceof TransGraph) {
+        return (TransGraph) mapEntry.getObject();
       }
     }
     return null;
@@ -5830,15 +5826,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     TabItem tabItem = tabfolder.getSelected();
     if (tabItem == null)
       return null;
-    if(delegates != null && delegates.tabs != null) {
-      TabMapEntry mapEntry = delegates.tabs.getTab(tabItem);
-      if (mapEntry!=null) {
-        return mapEntry.getObject();
-      } else {
-        return null;
-      }
+
+    TabMapEntry mapEntry = delegates.tabs.getTab(tabItem);
+    if (mapEntry!=null) {
+      return mapEntry.getObject();
+    } else {
+      return null;
     }
-    return null;
   }
 
   /**
