@@ -261,7 +261,6 @@ import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulSettingsManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.WaitBoxRunnable;
@@ -1439,7 +1438,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       LocationListener listener = new LocationListener() {
         public void changing(LocationEvent event) {
 
-          System.out.println("Changing to: " + event.location);
+//          System.out.println("Changing to: " + event.location);
 
           // file:///home/matt/svn/kettle/trunk/docs/English/welcome/samples/transformations/
           //
@@ -1904,10 +1903,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     coreObjectsTree.addMouseMoveListener(new MouseMoveListener() {
 
       public void mouseMove(MouseEvent move) {
-				// don't show tooltips in the tree if the option is not set
-				if(!getProperties().showToolTips())
-					return;
-				
+        // don't show tooltips in the tree if the option is not set
+        if(!getProperties().showToolTips())
+          return;
+        
         toolTip.hide();
         TreeItem item = searchMouseOverTreeItem(coreObjectsTree.getItems(), move.x, move.y);
         if (item != null) {
@@ -3680,23 +3679,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     IVfsFileBrowserFactory vfbFactory = getVfsFileBrowserFactory();
     
     if(vfbFactory != null) {
-    	IVfsFileChooser vfsFileChooser = vfbFactory.getFileChooser(rootFile, initialFile);
-    	
-    	FileObject selectedFile = vfsFileChooser.open(shell, null, Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const
-    	        .getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
-	    if (selectedFile != null) {
-	      setLastFileOpened(selectedFile.getName().getFriendlyURI());
-	      openFile(selectedFile.getName().getFriendlyURI(), false);
-	    }
+      IVfsFileChooser vfsFileChooser = vfbFactory.getFileChooser(rootFile, initialFile);
+      
+      FileObject selectedFile = vfsFileChooser.open(shell, null, Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const
+              .getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
+      if (selectedFile != null) {
+        setLastFileOpened(selectedFile.getName().getFriendlyURI());
+        openFile(selectedFile.getName().getFriendlyURI(), false);
+      }
     }
   }
   
   public void setVfsFileBrowserFactory(IVfsFileBrowserFactory vfsFileBrowserFactory) {
-	  this.vfsFileBrowserFactory = vfsFileBrowserFactory;
+    this.vfsFileBrowserFactory = vfsFileBrowserFactory;
   }
   
   public IVfsFileBrowserFactory getVfsFileBrowserFactory() {
-	  return vfsFileBrowserFactory;
+    return vfsFileBrowserFactory;
   }
 
   public void addFileListener(FileListener listener) {
@@ -5790,13 +5789,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public TransGraph getActiveTransGraph() {
-    if (tabfolder.getSelected() == null)
+    if(tabfolder != null) {
+      if (tabfolder.getSelected() == null)
+        return null;      
+    } else {
       return null;
-
-    TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
-    if (mapEntry != null) {
-      if (mapEntry.getObject() instanceof TransGraph) {
-        return (TransGraph) mapEntry.getObject();
+    }
+    if(delegates != null && delegates.tabs != null) {
+      TabMapEntry mapEntry = delegates.tabs.getTab(tabfolder.getSelected());
+      if (mapEntry != null) {
+        if (mapEntry.getObject() instanceof TransGraph) {
+          return (TransGraph) mapEntry.getObject();
+        }
       }
     }
     return null;
@@ -5826,13 +5830,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     TabItem tabItem = tabfolder.getSelected();
     if (tabItem == null)
       return null;
-
-    TabMapEntry mapEntry = delegates.tabs.getTab(tabItem);
-    if (mapEntry!=null) {
-      return mapEntry.getObject();
-    } else {
-      return null;
+    if(delegates != null && delegates.tabs != null) {
+      TabMapEntry mapEntry = delegates.tabs.getTab(tabItem);
+      if (mapEntry!=null) {
+        return mapEntry.getObject();
+      } else {
+        return null;
+      }
     }
+    return null;
   }
 
   /**
