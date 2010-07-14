@@ -501,4 +501,9 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
   public boolean requiresCastToVariousForIsNull() {
     return true;
   }
+  
+  @Override
+  public boolean supportsGetBlob() {
+	  return false;
+  }
 }
