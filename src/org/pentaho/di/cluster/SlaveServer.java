@@ -593,20 +593,9 @@ public class SlaveServer  extends ChangedFlag
             // The status code
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
-            // the response
-            InputStream inputStream = new BufferedInputStream(method.getResponseBodyAsStream());
+            String body = method.getResponseBodyAsString();
             
-            StringBuffer bodyBuffer = new StringBuffer();
-            int c;
-            while ( (c=inputStream.read())!=-1) 
-            {
-                bodyBuffer.append((char)c);
-            }
-            inputStream.close();
-            
-            String body = bodyBuffer.toString();
-
-            log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(bodyBuffer.length()))); //$NON-NLS-1$
+            log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(body.getBytes().length))); //$NON-NLS-1$
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
