@@ -586,20 +586,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             // The status code
             log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
-            // the response
-            InputStream inputStream = new BufferedInputStream(method.getResponseBodyAsStream());
-            
-            StringBuffer bodyBuffer = new StringBuffer();
-            int c;
-            while ( (c=inputStream.read())!=-1) 
-            {
-                bodyBuffer.append((char)c);
-            }
-            inputStream.close();
-            
-            String body = bodyBuffer.toString();
+            String body = method.getResponseBodyAsString();
 
-            log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_FinishedReading", Integer.toString(bodyBuffer.length()))); //$NON-NLS-1$
+            log.logDetailed(toString(), Messages.getString("SlaveServer.DETAILED_FinishedReading", Integer.toString(body.getBytes().length))); //$NON-NLS-1$
             log.logDebug(toString(), Messages.getString("SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
