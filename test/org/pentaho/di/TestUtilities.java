@@ -15,8 +15,10 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
+import org.pentaho.di.trans.steps.sort.SortRowsMeta;
 public class TestUtilities {
 
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
@@ -233,4 +235,37 @@ public class TestUtilities {
         
         return absolutePath;
     }
+     
+     /**
+      * Create and return a SortRows step.
+      * 
+      * @param name
+      * @param sortFields[]  Fields to sort by
+      * @param ascending[]  Boolean indicating whether the corresponding field is to be sorted in ascending or descending order.
+      * @param caseSensitive[]  Boolean indicating whether the corresponding field is to have case as a factor in the sort.
+      * @param directory The directory in the file system where the sort is to take place if it can't fit into memory?
+      * @param sortSize ??? 
+      * @param pluginRegistry  The environment's Kettle plugin registry.
+      * @return
+      */
+     public static synchronized StepMeta createSortRowsStep(String name, 
+                                                            String[] sortFields,
+                                                            boolean[] ascending,
+                                                            boolean[] caseSensitive,
+                                                            String directory,
+                                                            int sortSize,
+                                                            PluginRegistry pluginRegistry) {
+         
+         SortRowsMeta sortRowsMeta = new SortRowsMeta();
+         sortRowsMeta.setSortSize(Integer.toString(sortSize/10));
+         sortRowsMeta.setFieldName(sortFields);
+         sortRowsMeta.setAscending(ascending);
+         sortRowsMeta.setCaseSensitive(caseSensitive);
+         sortRowsMeta.setDirectory(directory);
+         
+         String sortRowsStepPid = pluginRegistry.getPluginId(StepPluginType.class, sortRowsMeta);
+         StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, name, (StepMetaInterface)sortRowsMeta);
+         
+         return sortRowsStep;
+     }
 }
