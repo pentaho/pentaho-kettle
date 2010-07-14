@@ -5,7 +5,7 @@
     xmlns:pen="http://www.pentaho.org/2008/xul" 
 	title="${JobEntryDialog.Title}"
 	resizable="true"
-    height="600" width="800"
+    height="450" width="700"
 	appicon="ui/images/spoon.ico"
 	buttons="accept,cancel"
 	buttonalign="end" 
@@ -33,7 +33,7 @@
 					<label value="${JobEntryHadoopJobExecutor.JarUrl.Label}" />
 					<hbox>
 						<textbox id="jar-url" flex="1" multiline="false"/>
-						<button id="validate-jar-url" label="${JobEntryHadoopJobExecutor.JarUrl.Validate}" command="jobEntryController.validateJarUrl()"/>
+						<button id="validateJarUrl" label="${JobEntryHadoopJobExecutor.JarUrl.Validate}" onclick="jobEntryController.validateJarUrl()"/>
 					</hbox>
 				</row>
 			</rows>
@@ -42,18 +42,18 @@
 		<groupbox>
 			<caption label="${JobEntryHadoopJobExecutor.Configuration.Label}"/>
 			<hbox>
-			  <radio label="${JobEntryHadoopJobExecutor.ModeSimple.Label}" command="jobEntryController.setMode('simple')" selected="true" />
-			  <radio label="${JobEntryHadoopJobExecutor.ModeAdvanced.Label}" command="jobEntryController.setMode('advanced')" />
+			  <radio id="simpleRadioButton" label="${JobEntryHadoopJobExecutor.ModeSimple.Label}" command="jobEntryController.setSimple(true)" selected="true" />
+			  <radio id="advancedRadioButton" label="${JobEntryHadoopJobExecutor.ModeAdvanced.Label}" command="jobEntryController.setSimple(false)" />
 			</hbox>
 			<vbox id="content-pane" />
 		</groupbox>
 	</vbox>
 	
 	<vbox id="simple-configuration" hidden="true">
-		<label value="${JobEntryHadoopJobExecutor.ModeSimple.AssumptionsText.Label}"/>
+	<!--	<label value="${JobEntryHadoopJobExecutor.ModeSimple.AssumptionsText.Label}"/> -->
 		<hbox>
 			<label value="${JobEntryHadoopJobExecutor.ModeSimple.CommandLineArguments.Label}"/>
-			<textbox id="command-line-arguments" flex="1" multiline="true"/>
+			<textbox id="command-line-arguments" flex="1" multiline="false"/>
 		</hbox>
 	</vbox>
 	
@@ -73,12 +73,24 @@
     					</columns>
     					<rows>
     						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Blocking.Label}" />
+    							<checkbox id="blocking" flex="1" command="jobEntryController.invertBlocking()"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.NumMapTasks.Label}" />
+    							<textbox id="num-map-tasks" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.NumReduceTasks.Label}" />
+    							<textbox id="num-reduce-tasks" flex="1" multiline="false"/>
+    						</row>    						    						
+    						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyClass.Label}" />
     							<textbox id="classes-output-key-class" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyValue.Label}" />
-    							<textbox id="classes-output-key-value" flex="1" multiline="false"/>
+    							<textbox id="classes-output-value-class" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.MapperClass.Label}" />
@@ -142,10 +154,10 @@
     				</grid>
     			</tabpanel>
     			<tabpanel>
-    				<tree id="fields-table" flex="1" hidecolumnpicker="true" autocreatenewrows="true" newitembinding="handler.addNewRow()">
+    				<tree id="fields-table" flex="1" hidecolumnpicker="true" autocreatenewrows="true" newitembinding="jobEntryController.newUserDefinedItem()">
 						<treecols>
 							<treecol id="name-col" editable="true" flex="1" label="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.UserDefined.NameColumn.Label}" pen:binding="name"/>
-							<treecol id="type-col" editable="true" flex="1" label="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.UserDefined.ValueColumn.Label}" pen:binding="type"/>
+							<treecol id="value-col" editable="true" flex="1" label="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.UserDefined.ValueColumn.Label}" pen:binding="value"/>
 						</treecols>
 						<treechildren />
 					</tree>

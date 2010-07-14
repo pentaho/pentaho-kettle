@@ -48,6 +48,7 @@
 		<exclude org="xml-apis" name="xml-apis" />
 	</dependency>
       
+    <dependency org="log4j" name="log4j" rev="1.2.14" />
     <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
     <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false" conf="test->default" />
     <dependency org="commons-logging"       name="commons-logging"    rev="1.1"   transitive="false" conf="test->default" />

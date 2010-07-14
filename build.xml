@@ -19,7 +19,7 @@
 	<import file="build-res/subfloor-pkg.xml"/>
 
 	<property name="libswt" location="libswt" />
-	<property name="swt.os" location="win32" />
+	<property name="swt.os" value="win32" />
 	<property name="pdiwithhadoopplugin"
 					value="pdi-ce-hadoop" 
 					description="Name of the pdi distribution with Hadoop plugin"/>

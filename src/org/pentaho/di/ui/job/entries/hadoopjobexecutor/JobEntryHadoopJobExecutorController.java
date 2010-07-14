@@ -13,27 +13,38 @@
 
 package org.pentaho.di.ui.job.entries.hadoopjobexecutor;
 
-import java.util.List;
+import java.io.File;
+import java.net.URL;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.hadoopjobexecutor.JobEntryHadoopJobExecutor;
-import org.pentaho.di.job.entries.hadoopjobexecutor.JobEntryHadoopJobExecutor.UserDefinedItem;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler {
-  public static final String STEP_NAME = "stepName"; //$NON-NLS-1$
+
+  private static final Class<?> PKG = JobEntryHadoopJobExecutor.class;
+
+  public static final String JOB_ENTRY_NAME = "jobEntryName"; //$NON-NLS-1$
   public static final String HADOOP_JOB_NAME = "hadoopJobName"; //$NON-NLS-1$
   public static final String JAR_URL = "jarUrl"; //$NON-NLS-1$
   public static final String IS_SIMPLE = "isSimple"; //$NON-NLS-1$
+  public static final String USER_DEFINED = "userDefined"; //$NON-NLS-1$
 
-  private String stepName;
+  private String jobEntryName;
   private String hadoopJobName;
-  private String jarUrl;
+  private String jarUrl = "";
 
   private boolean isSimple;
 
@@ -42,9 +53,11 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 
   private JobEntryHadoopJobExecutor jobEntry;
 
+  private AbstractModelList<UserDefinedItem> userDefined = new AbstractModelList<UserDefinedItem>();
+
   public void accept() {
     // common/simple
-    jobEntry.setName(stepName);
+    jobEntry.setName(jobEntryName);
     jobEntry.setHadoopJobName(hadoopJobName);
     jobEntry.setSimple(isSimple);
     jobEntry.setJarUrl(jarUrl);
@@ -66,9 +79,46 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     jobEntry.setJobTrackerPort(aConf.getJobTrackerPort());
     jobEntry.setNumMapTasks(aConf.getNumMapTasks());
     jobEntry.setNumReduceTasks(aConf.getNumReduceTasks());
-    jobEntry.setUserDefined(aConf.getUserDefined());
+    jobEntry.setUserDefined(userDefined);
     jobEntry.setWorkingDirectory(aConf.getWorkingDirectory());
+
+    jobEntry.setChanged();
+
     cancel();
+  }
+
+  public void init() {
+    if (jobEntry != null) {
+      // common/simple
+      setName(jobEntry.getName());
+      setJobEntryName(jobEntry.getName());
+      setHadoopJobName(jobEntry.getHadoopJobName());
+      setSimple(jobEntry.isSimple());
+      setJarUrl(jobEntry.getJarUrl());
+      sConf.setCommandLineArgs(jobEntry.getCmdLineArgs());
+      // advanced config
+      userDefined.clear();
+      if (jobEntry.getUserDefined() != null) {
+        userDefined.addAll(jobEntry.getUserDefined());
+      }
+      aConf.setBlocking(jobEntry.isBlocking());
+      aConf.setMapperClass(jobEntry.getMapperClass());
+      aConf.setCombinerClass(jobEntry.getCombinerClass());
+      aConf.setReducerClass(jobEntry.getReducerClass());
+      aConf.setInputPath(jobEntry.getInputPath());
+      aConf.setInputFormatClass(jobEntry.getInputFormatClass());
+      aConf.setOutputPath(jobEntry.getOutputPath());
+      aConf.setOutputKeyClass(jobEntry.getOutputKeyClass());
+      aConf.setOutputValueClass(jobEntry.getOutputValueClass());
+      aConf.setOutputFormatClass(jobEntry.getOutputFormatClass());
+      aConf.setHdfsHostname(jobEntry.getHdfsHostname());
+      aConf.setHdfsPort(jobEntry.getHdfsPort());
+      aConf.setJobTrackerHostname(jobEntry.getJobTrackerHostname());
+      aConf.setJobTrackerPort(jobEntry.getJobTrackerPort());
+      aConf.setNumMapTasks(jobEntry.getNumMapTasks());
+      aConf.setNumReduceTasks(jobEntry.getNumReduceTasks());
+      aConf.setWorkingDirectory(jobEntry.getWorkingDirectory());
+    }
   }
 
   public void cancel() {
@@ -82,13 +132,33 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     }
   }
 
-  public void setMode(String type) {
-    System.out.println(type);
+  public void validateJarUrl() {
+    try {
+      URL resolvedJarUrl = null;
+      if (jarUrl.indexOf("://") == -1) {
+        // default to file://
+        File jarFile = new File(jarUrl);
+        resolvedJarUrl = jarFile.toURI().toURL();
+        if (!jarFile.exists()) {
+          MessageBox messagebox = new MessageBox(Spoon.getInstance().getShell(), SWT.ICON_ERROR | SWT.OK);
+          messagebox.setText(BaseMessages.getString(PKG, "Dialog.Error"));
+          messagebox.setMessage(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.Error.JarDoesNotExist", resolvedJarUrl.toExternalForm()));
+          messagebox.open();
+
+          return;
+        }
+      } else {
+        resolvedJarUrl = new URL(jarUrl);
+      }
+      System.out.println("jar is valid");
+    } catch (Throwable t) {
+      // fail out, tell user
+      new ErrorDialog(Spoon.getInstance().getShell(), BaseMessages.getString(PKG, "Dialog.Error"), BaseMessages.getString(PKG, "Dialog.Error"), t); //$NON-NLS-1$
+    }
   }
 
-  public void validateJarUrl() {
-    // TODO:
-    throw new RuntimeException("This method has not been implemented");
+  public void newUserDefinedItem() {
+    userDefined.add(new UserDefinedItem());
   }
 
   public SimpleConfiguration getSimpleConfiguration() {
@@ -99,21 +169,25 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     return aConf;
   }
 
+  public AbstractModelList<UserDefinedItem> getUserDefined() {
+    return userDefined;
+  }
+
   @Override
   public String getName() {
     return "jobEntryController"; //$NON-NLS-1$
   }
 
-  public String getStepName() {
-    return stepName;
+  public String getJobEntryName() {
+    return jobEntryName;
   }
 
-  public void setStepName(String stepName) {
-    String previousVal = this.stepName;
-    String newVal = stepName;
+  public void setJobEntryName(String jobEntryName) {
+    String previousVal = this.jobEntryName;
+    String newVal = jobEntryName;
 
-    this.stepName = stepName;
-    firePropertyChange(JobEntryHadoopJobExecutorController.STEP_NAME, previousVal, newVal);
+    this.jobEntryName = jobEntryName;
+    firePropertyChange(JobEntryHadoopJobExecutorController.JOB_ENTRY_NAME, previousVal, newVal);
   }
 
   public String getHadoopJobName() {
@@ -145,11 +219,18 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
   }
 
   public void setSimple(boolean isSimple) {
+    ((XulVbox) getXulDomContainer().getDocumentRoot().getElementById("advanced-configuration")).setVisible(!isSimple); //$NON-NLS-1$
+    ((XulVbox) getXulDomContainer().getDocumentRoot().getElementById("simple-configuration")).setVisible(isSimple); //$NON-NLS-1$
+
     boolean previousVal = this.isSimple;
     boolean newVal = isSimple;
 
     this.isSimple = isSimple;
     firePropertyChange(JobEntryHadoopJobExecutorController.IS_SIMPLE, previousVal, newVal);
+  }
+
+  public void invertBlocking() {
+    aConf.setBlocking(!aConf.isBlocking());
   }
 
   public JobEntryHadoopJobExecutor getJobEntry() {
@@ -190,7 +271,6 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     public static final String WORKING_DIRECTORY = "workingDirectory"; //$NON-NLS-1$
     public static final String INPUT_PATH = "inputPath"; //$NON-NLS-1$
     public static final String OUTPUT_PATH = "outputPath"; //$NON-NLS-1$
-    public static final String USER_DEFINED = "userDefined"; //$NON-NLS-1$
     public static final String BLOCKING = "blocking"; //$NON-NLS-1$
     public static final String HDFS_HOSTNAME = "hdfsHostname"; //$NON-NLS-1$
     public static final String HDFS_PORT = "hdfsPort"; //$NON-NLS-1$
@@ -215,12 +295,10 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     private String inputPath;
     private String outputPath;
 
-    private int numMapTasks;
-    private int numReduceTasks;
+    private int numMapTasks = 1;
+    private int numReduceTasks = 1;
 
     private boolean blocking;
-
-    private List<UserDefinedItem> userDefined;
 
     public String getOutputKeyClass() {
       return outputKeyClass;
@@ -388,18 +466,6 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 
       this.outputPath = outputPath;
       firePropertyChange(AdvancedConfiguration.OUTPUT_PATH, previousVal, newVal);
-    }
-
-    public List<UserDefinedItem> getUserDefined() {
-      return userDefined;
-    }
-
-    public void setUserDefined(List<UserDefinedItem> userDefined) {
-      List<UserDefinedItem> previousVal = this.userDefined;
-      List<UserDefinedItem> newVal = userDefined;
-
-      this.userDefined = userDefined;
-      firePropertyChange(AdvancedConfiguration.USER_DEFINED, previousVal, newVal);
     }
 
     public boolean isBlocking() {

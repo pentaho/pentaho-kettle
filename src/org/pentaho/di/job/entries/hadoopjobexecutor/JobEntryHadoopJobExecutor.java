@@ -13,10 +13,12 @@
 
 package org.pentaho.di.job.entries.hadoopjobexecutor;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.fs.Path;
@@ -30,26 +32,33 @@ import org.apache.hadoop.mapred.OutputFormat;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.RunningJob;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.SerializationHelper;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.job.entries.hadoopjobexecutor.UserDefinedItem;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.w3c.dom.Node;
 
 @JobEntry(id = "HadoopJobExecutorPlugin", name = "Hadoop Job Executor", categoryDescription = "Hadoop", description = "Execute Map/Reduce jobs in Hadoop", image = "HDE.png")
 public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable, JobEntryInterface {
 
+  private static Class<?> PKG = JobEntryHadoopJobExecutor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+
   private String hadoopJobName;
 
-  private String jarUrl;
+  private String jarUrl = "";
 
-  private boolean isSimple;
+  private boolean isSimple = false;
 
   private String cmdLineArgs;
 
@@ -74,31 +83,10 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
   private boolean blocking;
 
-  private int numMapTasks;
-  private int numReduceTasks;
+  private int numMapTasks = 1;
+  private int numReduceTasks = 1;
 
-  private List<UserDefinedItem> userDefined;
-
-  public class UserDefinedItem {
-    private String name;
-    private String value;
-
-    public String getName() {
-      return name;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
-
-    public String getValue() {
-      return value;
-    }
-
-    public void setValue(String value) {
-      this.value = value;
-    }
-  }
+  private List<UserDefinedItem> userDefined = new ArrayList<UserDefinedItem>();
 
   public String getHadoopJobName() {
     return hadoopJobName;
@@ -277,10 +265,23 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   }
 
   public Result execute(Result result, int arg1) throws KettleException {
-
     try {
+      URL resolvedJarUrl = null;
+      if (jarUrl.indexOf("://") == -1) {
+        // default to file://
+        File jarFile = new File(jarUrl);
+        resolvedJarUrl = jarFile.toURI().toURL();
+      } else {
+        resolvedJarUrl = new URL(jarUrl);
+      }
+
+      if (log.isDetailed())
+        logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.ResolvedJar", resolvedJarUrl.toExternalForm()));
+
       if (isSimple) {
-        List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(jarUrl);
+        if (log.isDetailed())
+          logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.SimpleMode"));
+        List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(resolvedJarUrl.toExternalForm());
         for (Class<?> clazz : classesWithMains) {
           try {
             Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
@@ -295,9 +296,11 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         }
 
       } else {
+        if (log.isDetailed())
+          logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.AdvancedMode"));
 
-        URL[] urls = new URL[] { new URL(jarUrl) };
-        URLClassLoader loader = new URLClassLoader(urls);
+        URL[] urls = new URL[] { resolvedJarUrl };
+        URLClassLoader loader = new URLClassLoader(urls, Spoon.getInstance().getClass().getClassLoader());
 
         JobConf conf = new JobConf();
         conf.setJobName(hadoopJobName);
@@ -317,13 +320,13 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         Class<? extends OutputFormat> outputFormat = (Class<? extends OutputFormat>) loader.loadClass(outputFormatClass);
         conf.setOutputFormat(outputFormat);
 
-        // TODO: this could be a list of input paths apparently
-        FileInputFormat.setInputPaths(conf, new Path(inputPath));
-        FileOutputFormat.setOutputPath(conf, new Path(outputPath));
-
         String hdfsBaseUrl = "hdfs://" + hdfsHostname + ":" + hdfsPort;
         conf.set("fs.default.name", hdfsBaseUrl);
         conf.set("mapred.job.tracker", jobTrackerHostname + ":" + jobTrackerPort);
+
+        // TODO: this could be a list of input paths apparently
+        FileInputFormat.setInputPaths(conf, new Path(hdfsBaseUrl + inputPath));
+        FileOutputFormat.setOutputPath(conf, new Path(hdfsBaseUrl + outputPath));
 
         // process user defined values
         for (UserDefinedItem item : userDefined) {
@@ -342,29 +345,113 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         if (blocking) {
           try {
             while (!runningJob.isComplete()) {
-              Thread.sleep(500);
+              printJobStatus(runningJob);
+              Thread.sleep(1000);
             }
+            printJobStatus(runningJob);
           } catch (InterruptedException ie) {
             log.logError(ie.getMessage(), ie);
           }
         }
 
       }
-      return result;
-    } catch (ClassNotFoundException cnfe) {
-      throw new KettleException(cnfe);
-    } catch (IOException ioe) {
-      throw new KettleException(ioe);
+    } catch (Throwable t) {
+      result.setNrErrors(1);
+      result.setResult(false);
+      logError(t.getMessage(), t);
+    }
+    return result;
+  }
+
+  public void printJobStatus(RunningJob runningJob) throws IOException {
+    if (log.isBasic()) {
+      float setupPercent = runningJob.setupProgress() * 100f;
+      float mapPercent = runningJob.mapProgress() * 100f;
+      float reducePercent = runningJob.reduceProgress() * 100f;
+      logBasic(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.RunningPercent", setupPercent, mapPercent, reducePercent));
     }
   }
 
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
-    SerializationHelper.read(this, entrynode);
+    super.loadXML(entrynode, databases, slaveServers);
+    hadoopJobName = XMLHandler.getTagValue(entrynode, "hadoop_job_name");
+    isSimple = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "simple"));
+    jarUrl = XMLHandler.getTagValue(entrynode, "jar_url");
+    cmdLineArgs = XMLHandler.getTagValue(entrynode, "command_line_args");
+    blocking = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "blocking"));
+
+    mapperClass = XMLHandler.getTagValue(entrynode, "mapper_class");
+    combinerClass = XMLHandler.getTagValue(entrynode, "combiner_class");
+    reducerClass = XMLHandler.getTagValue(entrynode, "reducer_class");
+    inputPath = XMLHandler.getTagValue(entrynode, "input_path");
+    inputFormatClass = XMLHandler.getTagValue(entrynode, "input_format_class");
+    outputPath = XMLHandler.getTagValue(entrynode, "output_path");
+    outputKeyClass = XMLHandler.getTagValue(entrynode, "output_key_class");
+    outputValueClass = XMLHandler.getTagValue(entrynode, "output_value_class");
+    outputFormatClass = XMLHandler.getTagValue(entrynode, "output_format_class");
+
+    hdfsHostname = XMLHandler.getTagValue(entrynode, "hdfs_hostname");
+    hdfsPort = XMLHandler.getTagValue(entrynode, "hdfs_port");
+    jobTrackerHostname = XMLHandler.getTagValue(entrynode, "job_tracker_hostname");
+    jobTrackerPort = XMLHandler.getTagValue(entrynode, "job_tracker_port");
+    numMapTasks = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_map_tasks"));
+    numReduceTasks = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_reduce_tasks"));
+    workingDirectory = XMLHandler.getTagValue(entrynode, "working_dir");
+
+    // How many user defined elements?
+    userDefined = new ArrayList<UserDefinedItem>();
+    Node userDefinedList = XMLHandler.getSubNode(entrynode, "user_defined_list");
+    int nrUserDefined = XMLHandler.countNodes(userDefinedList, "user_defined");
+    for (int i = 0; i < nrUserDefined; i++) {
+      Node userDefinedNode = XMLHandler.getSubNodeByNr(userDefinedList, "user_defined", i);
+      String name = XMLHandler.getTagValue(userDefinedNode, "name");
+      String value = XMLHandler.getTagValue(userDefinedNode, "value");
+      UserDefinedItem item = new UserDefinedItem();
+      item.setName(name);
+      item.setValue(value);
+      userDefined.add(item);
+    }
   }
 
   public String getXML() {
     StringBuffer retval = new StringBuffer(1024);
-    SerializationHelper.write(this, 1, retval);
+    retval.append(super.getXML());
+    retval.append("      ").append(XMLHandler.addTagValue("hadoop_job_name", hadoopJobName));
+
+    retval.append("      ").append(XMLHandler.addTagValue("simple", isSimple));
+    retval.append("      ").append(XMLHandler.addTagValue("jar_url", jarUrl));
+    retval.append("      ").append(XMLHandler.addTagValue("command_line_args", cmdLineArgs));
+    retval.append("      ").append(XMLHandler.addTagValue("blocking", blocking));
+    retval.append("      ").append(XMLHandler.addTagValue("hadoop_job_name", hadoopJobName));
+
+    retval.append("      ").append(XMLHandler.addTagValue("mapper_class", mapperClass));
+    retval.append("      ").append(XMLHandler.addTagValue("combiner_class", combinerClass));
+    retval.append("      ").append(XMLHandler.addTagValue("reducer_class", reducerClass));
+    retval.append("      ").append(XMLHandler.addTagValue("input_path", inputPath));
+    retval.append("      ").append(XMLHandler.addTagValue("input_format_class", inputFormatClass));
+    retval.append("      ").append(XMLHandler.addTagValue("output_path", outputPath));
+    retval.append("      ").append(XMLHandler.addTagValue("output_key_class", outputKeyClass));
+    retval.append("      ").append(XMLHandler.addTagValue("output_value_class", outputValueClass));
+    retval.append("      ").append(XMLHandler.addTagValue("output_format_class", outputFormatClass));
+
+    retval.append("      ").append(XMLHandler.addTagValue("hdfs_hostname", hdfsHostname));
+    retval.append("      ").append(XMLHandler.addTagValue("hdfs_port", hdfsPort));
+    retval.append("      ").append(XMLHandler.addTagValue("job_tracker_hostname", jobTrackerHostname));
+    retval.append("      ").append(XMLHandler.addTagValue("job_tracker_port", jobTrackerPort));
+    retval.append("      ").append(XMLHandler.addTagValue("num_map_tasks", numMapTasks));
+    retval.append("      ").append(XMLHandler.addTagValue("num_reduce_tasks", numReduceTasks));
+    retval.append("      ").append(XMLHandler.addTagValue("working_dir", workingDirectory));
+
+    retval.append("      <user_defined_list>").append(Const.CR);
+    if (userDefined != null) {
+      for (UserDefinedItem item : userDefined) {
+        retval.append("        <user_defined>").append(Const.CR);
+        retval.append("          ").append(XMLHandler.addTagValue("name", item.getName()));
+        retval.append("          ").append(XMLHandler.addTagValue("value", item.getValue()));
+        retval.append("        </user_defined>").append(Const.CR);
+      }
+    }
+    retval.append("      </user_defined_list>").append(Const.CR);
     return retval.toString();
   }
 
