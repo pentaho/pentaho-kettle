@@ -29,6 +29,8 @@
 	
 	<property name="plugin.destination" location="kettle-dist" />
 	
+	<property name="samples" location="samples" />
+	
 	<path id="cp-meta">
 	    <fileset dir="${libswt}" includes="*.jar" />
 	    <fileset dir="${libswt}/${swt.os}/" includes="*.jar" />
@@ -228,6 +230,7 @@
 			</fileset>
 		</unzip>
 		<zip destfile="${dist.dir}/${pdiwithhadoopplugin}.zip">
+			<zipfileset dir="samples" />
 			<zipfileset dir="${bin.dir}/kettle-dist" />
 		</zip>
 	</target>
