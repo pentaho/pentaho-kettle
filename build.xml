@@ -26,10 +26,11 @@
 	
 	<property name="libext.stage.dir" location="${stage.dir}/libext" />
 	<property name="plugins.stage.dir" location="${stage.dir}/plugins" />
-	
+	<property name="samples.stage.dir" location="${stage.dir}/samples" />
+
+	<property name="samples.src.dir" location="samples" />
 	<property name="plugin.destination" location="kettle-dist" />
 	
-	<property name="samples" location="samples" />
 	
 	<path id="cp-meta">
 	    <fileset dir="${libswt}" includes="*.jar" />
@@ -194,6 +195,8 @@
 			<include name="jtidy*.jar"/>
 		</fileset>
   	</delete>
+  	
+  	
   </target>
 	
 	  <target name="assemble.copy-libs">
@@ -204,6 +207,9 @@
           	<include name="pentaho-hdfs-vfs-*.jar"/>
           </fileset>
 	    </copy>
+  	    <copy todir="${samples.stage.dir}">
+  	        <fileset dir="${samples.src.dir}" />
+  	    </copy>
 	    <copy todir="${plugins.stage.dir}/${ivy.artifact.id}/lib">
 	      <fileset dir="${lib.dir}" />
 	    </copy>
@@ -230,7 +236,6 @@
 			</fileset>
 		</unzip>
 		<zip destfile="${dist.dir}/${pdiwithhadoopplugin}.zip">
-			<zipfileset dir="samples" />
 			<zipfileset dir="${bin.dir}/kettle-dist" />
 		</zip>
 	</target>
