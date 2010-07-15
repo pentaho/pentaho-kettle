@@ -145,12 +145,11 @@ public class TestUtilities {
      */
     public static synchronized StepMeta createInjectorStep(String name, PluginRegistry pluginRegistry) {
         // create an injector step...
-        String injectorStepname = "injector step";
         InjectorMeta injectorMeta = new InjectorMeta();
 
         // Set the information of the injector
         String injectorPid = pluginRegistry.getPluginId(StepPluginType.class, injectorMeta);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, injectorMeta);
+        StepMeta injectorStep = new StepMeta(injectorPid, name, (StepMetaInterface)injectorMeta);
 
         return injectorStep;
     }
