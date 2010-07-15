@@ -105,6 +105,11 @@
     <classname>org.pentaho.di.core.database.MSAccessDatabaseMeta</classname>
   </database-type>                                                          
 
+  <database-type id="MSSQLNATIVE">
+    <description>MS SQL Server (Native)</description>
+    <classname>org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta</classname>
+  </database-type>                                                             
+
   <database-type id="MSSQL">
     <description>MS SQL Server</description>
     <classname>org.pentaho.di.core.database.MSSQLServerDatabaseMeta</classname>
