@@ -442,7 +442,7 @@ public class CloneRowDialog extends BaseStepDialog implements StepDialogInterfac
 		if (Const.isEmpty(wStepname.getText())) return;
 
 		stepname = wStepname.getText(); // return value
-		input.setNrClones(Const.toInt(wnrClone.getText(), 0)+"" );
+		input.setNrClones(wnrClone.getText());
 		input.setAddCloneFlag(waddCloneFlag.getSelection());
 		input.setCloneFlagField(wcloneFlagField.getText());
 		input.setNrCloneInField(wisNrCloneInField.getSelection());
