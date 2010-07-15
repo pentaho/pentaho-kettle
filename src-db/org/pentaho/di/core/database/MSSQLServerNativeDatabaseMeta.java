@@ -1,5 +1,6 @@
 package org.pentaho.di.core.database;
 
+
 public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta{
   public static final String ATTRIBUTE_USE_INTEGRATED_SECURITY = "MSSQLUseIntegratedSecurity"; //$NON-NLS-1$
   @Override
@@ -22,12 +23,18 @@ public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta{
     }
     else
     {
-      Boolean useIntegratedSecurity = false;
+      String useIntegratedSecurity = null;
       Object value = getAttributes().get(ATTRIBUTE_USE_INTEGRATED_SECURITY);
-      if(value != null && value instanceof Boolean) {
-        useIntegratedSecurity = (Boolean) value;
+      if(value != null && value instanceof String) {
+        useIntegratedSecurity = (String) value;
+        // Check if the String can be parsed into a boolean
+        try {
+            Boolean.parseBoolean(useIntegratedSecurity);
+        } catch (IllegalArgumentException e) {
+          useIntegratedSecurity = "false";//$NON-NLS-1$
+        }
       }
-      return "jdbc:sqlserver://"+hostname+":"+port+";databaseName="+databaseName+";integratedSecurity=" + useIntegratedSecurity.toString();//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+      return "jdbc:sqlserver://"+hostname+":"+port+";databaseName="+databaseName+";integratedSecurity=" + useIntegratedSecurity;//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     }
   }
 
