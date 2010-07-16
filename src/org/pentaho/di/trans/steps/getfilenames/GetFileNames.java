@@ -134,7 +134,20 @@ public class GetFileNames extends BaseStep implements StepInterface
 						}
 					}
 				}
-
+				// If ExcludeWildcard field is specified, Check if field exists
+				if (!Const.isEmpty(meta.getDynamicExcludeWildcardField()))
+				{
+					if (data.indexOfExcludeWildcardField<0)
+					{
+						data.indexOfExcludeWildcardField =data.inputRowMeta.indexOfValue(meta.getDynamicExcludeWildcardField());
+						if (data.indexOfExcludeWildcardField<0)
+						{
+							// The field is unreachable !
+							logError(BaseMessages.getString(PKG, "GetFileNames.Log.ErrorFindingField")+ "[" + meta.getDynamicExcludeWildcardField()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleException(BaseMessages.getString(PKG, "GetFileNames.Exception.CouldnotFindField",meta.getDynamicExcludeWildcardField())); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+					}
+				}
 	        }
 		}// end if first
     	
@@ -150,16 +163,18 @@ public class GetFileNames extends BaseStep implements StepInterface
     				// Get value of dynamic filename field ...
     	    		String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
     	    		String wildcard="";
-    	    		if(data.indexOfWildcardField>=0)
-    	    			wildcard=getInputRowMeta().getString(data.readrow,data.indexOfWildcardField);
+    	    		if(data.indexOfWildcardField>=0) wildcard=getInputRowMeta().getString(data.readrow,data.indexOfWildcardField);
+    	    		String excludewildcard="";
+    	    		if(data.indexOfExcludeWildcardField>=0) excludewildcard=getInputRowMeta().getString(data.readrow, data.indexOfExcludeWildcardField);
     	    		
     	    		String[] filesname={filename};
     		      	String[] filesmask={wildcard};
+    		       	String[] excludefilesmask={excludewildcard};
     		      	String[] filesrequired={"N"};
     		      	boolean[] includesubfolders={meta.isDynamicIncludeSubFolders()};
     		      	// Get files list
-    		      	data.files = meta.getDynamicFileList(getTransMeta(), filesname, filesmask, filesrequired,includesubfolders);
-    		      	data.filessize=data.files.nrOfFiles();
+    		    	data.files = meta.getDynamicFileList(this, filesname, filesmask, excludefilesmask, filesrequired, includesubfolders);
+      		      	data.filessize=data.files.nrOfFiles();
     		      	data.filenr=0;
     		     }
         		

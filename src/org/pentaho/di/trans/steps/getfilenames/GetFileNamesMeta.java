@@ -72,6 +72,9 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 
 	/** Wildcard or filemask (regular expression) */
 	private String             fileMask[];
+	
+	/** Wildcard or filemask to exclude (regular expression) */
+	private String             excludeFileMask[];
     
 	/** Array of boolean values as string, indicating if a file is required. */
 	private String             fileRequired[];
@@ -94,6 +97,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	private String dynamicFilenameField;
 	
 	private String dynamicWildcardField;
+	private String dynamicExcludeWildcardField;
 	
 	/** file name from previous fields **/
 	private boolean filefield;
@@ -162,7 +166,17 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
     {
         return dynamicWildcardField;
     }  
-    
+    public String getDynamicExcludeWildcardField()
+    {
+        return this.dynamicExcludeWildcardField;
+    }
+    /**
+     * @param excludeWildcard The dynamic excludeWildcard field to set.
+     */
+    public void setDynamicExcludeWildcardField(String dynamicExcludeWildcardField)
+    {
+        this.dynamicExcludeWildcardField = dynamicExcludeWildcardField;
+    }
     /**
      * @return Returns the includeRowNumber.
      */
@@ -240,7 +254,20 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.fileMask = fileMask;
 	}
-    
+	/**
+	 * @param excludeFileMask The excludeFileMask to set.
+	 */
+	public void setExcludeFileMask(String[] excludeFileMask)
+	{
+		this.excludeFileMask = excludeFileMask;
+	}
+	/**
+	 * @return Returns the excludeFileMask.
+	 */
+	public String[] getExludeFileMask()
+	{
+		return excludeFileMask;
+	}
 	/**
 	 * @param fileRequired The fileRequired to set.
 	 */
@@ -331,6 +358,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
         {
             retval.fileName[i] = fileName[i];
             retval.fileMask[i] = fileMask[i];
+            retval.excludeFileMask[i] = excludeFileMask[i];
             retval.fileRequired[i] = fileRequired[i];
             retval.includeSubFolders[i] = includeSubFolders[i];
         }
@@ -342,6 +370,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		fileName = new String[nrfiles];
 		fileMask = new String[nrfiles];
+		excludeFileMask = new String[nrfiles];
 		fileRequired = new String[nrfiles];
 		includeSubFolders = new String[nrfiles];
 	}
@@ -357,6 +386,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		dynamicFilenameField ="";
 		dynamicWildcardField="";
 		dynamicIncludeSubFolders=false;
+		dynamicExcludeWildcardField="";
 		
 		allocate(nrfiles);
 
@@ -364,6 +394,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			fileName[i] = "filename" + (i + 1);
 			fileMask[i] = "";
+			excludeFileMask[i] = "";
 			fileRequired[i] = NO;
 		    includeSubFolders[i] = NO;
 		}
@@ -470,6 +501,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	    retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("    ").append(XMLHandler.addTagValue("filename_Field",  dynamicFilenameField));
         retval.append("    ").append(XMLHandler.addTagValue("wildcard_Field",  dynamicWildcardField));  
+        retval.append("    ").append(XMLHandler.addTagValue("exclude_wildcard_Field",  dynamicExcludeWildcardField));
         retval.append("    ").append(XMLHandler.addTagValue("dynamic_include_subfolders",     dynamicIncludeSubFolders));
         retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
         
@@ -479,6 +511,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			retval.append("      ").append(XMLHandler.addTagValue("name", fileName[i]));
 			retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("exclude_filemask", excludeFileMask[i]));
 			retval.append("      ").append(XMLHandler.addTagValue("file_required", fileRequired[i]));
 			retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubFolders[i]));
 		}
@@ -501,6 +534,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			dynamicFilenameField    = XMLHandler.getTagValue(stepnode, "filename_Field");
 			dynamicWildcardField    = XMLHandler.getTagValue(stepnode, "wildcard_Field");
+			dynamicExcludeWildcardField    = XMLHandler.getTagValue(stepnode, "exclude_wildcard_Field");
 			dynamicIncludeSubFolders    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dynamic_include_subfolders"));
 			
 			// Is there a limit on the number of rows we process?
@@ -515,10 +549,12 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				Node filenamenode     = XMLHandler.getSubNodeByNr(filenode, "name", i);
 				Node filemasknode     = XMLHandler.getSubNodeByNr(filenode, "filemask", i);
+				Node excludefilemasknode     = XMLHandler.getSubNodeByNr(filenode, "exclude_filemask", i);
 				Node fileRequirednode = XMLHandler.getSubNodeByNr(filenode, "file_required", i);
 				Node includeSubFoldersnode = XMLHandler.getSubNodeByNr(filenode, "include_subfolders", i);
 				fileName[i]           = XMLHandler.getNodeValue(filenamenode);
 				fileMask[i]           = XMLHandler.getNodeValue(filemasknode);
+				excludeFileMask[i]    = XMLHandler.getNodeValue(excludefilemasknode);
 				fileRequired[i]       = XMLHandler.getNodeValue(fileRequirednode);
 				includeSubFolders[i] = XMLHandler.getNodeValue(includeSubFoldersnode);
 			}
@@ -538,6 +574,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			
 			dynamicFilenameField  = rep.getStepAttributeString(id_step, "filename_Field");
 			dynamicWildcardField  = rep.getStepAttributeString(id_step, "wildcard_Field");
+			dynamicExcludeWildcardField  = rep.getStepAttributeString(id_step, "exclude_wildcard_Field");
 			dynamicIncludeSubFolders  = rep.getStepAttributeBoolean(id_step, "dynamic_include_subfolders");
 			
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
@@ -552,6 +589,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				fileName[i] = rep.getStepAttributeString(id_step, i, "file_name");
 				fileMask[i] = rep.getStepAttributeString(id_step, i, "file_mask");
+				excludeFileMask[i] = rep.getStepAttributeString(id_step, i, "exclude_file_mask");
 				fileRequired[i] = rep.getStepAttributeString(id_step, i, "file_required");
 				if(!YES.equalsIgnoreCase(fileRequired[i])) fileRequired[i] = NO;
                 includeSubFolders[i] = rep.getStepAttributeString(id_step, i, "include_subfolders");
@@ -575,6 +613,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "filefield",          filefield);
 			rep.saveStepAttribute(id_transformation, id_step, "filename_Field",    dynamicFilenameField);
 			rep.saveStepAttribute(id_transformation, id_step, "wildcard_Field",    dynamicWildcardField);
+			rep.saveStepAttribute(id_transformation, id_step, "exclude_wildcard_Field",    dynamicExcludeWildcardField);
 			rep.saveStepAttribute(id_transformation, id_step, "dynamic_include_subfolders",    dynamicIncludeSubFolders);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
@@ -584,6 +623,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_name", fileName[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_mask", fileMask[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "exlude_file_mask", excludeFileMask[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_required", fileRequired[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "include_subfolders", includeSubFolders[i]);
 			}
@@ -618,16 +658,16 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String[] getFilePaths(VariableSpace space)
 	{
-		return FileInputList.createFilePathList(space, fileName, fileMask, fileRequired, includeSubFolderBoolean(), buildFileTypeFiltersArray());
+		return FileInputList.createFilePathList(space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(), buildFileTypeFiltersArray());
 	}
     
 	public FileInputList getFileList(VariableSpace space)
 	{
-		return FileInputList.createFileList(space, fileName, fileMask, fileRequired, includeSubFolderBoolean(), buildFileTypeFiltersArray());
+		return FileInputList.createFileList(space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean(), buildFileTypeFiltersArray());
 	}
-	public FileInputList getDynamicFileList(VariableSpace space, String[] filename, String[] filemask, String[] filerequired, boolean[] includesubfolders)
+	public FileInputList getDynamicFileList(VariableSpace space, String[] filename, String[] filemask, String[] excludefilemask, String[] filerequired, boolean[] includesubfolders)
 	{
-		return FileInputList.createFileList(space, filename, filemask, filerequired, includesubfolders, buildFileTypeFiltersArray());
+		return FileInputList.createFileList(space, filename, filemask, excludefilemask, filerequired, includesubfolders, buildFileTypeFiltersArray());
 	}
 
 

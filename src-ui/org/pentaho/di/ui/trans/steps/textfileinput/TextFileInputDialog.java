@@ -145,6 +145,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     private Group        gAccepting;
     private FormData     fdAccepting;
+    
+	
+	private Label wlExcludeFilemask;
+	private TextVar wExcludeFilemask;
+	private FormData fdlExcludeFilemask, fdExcludeFilemask;
 
     private Label        wlAccFilenames;
     private Button       wAccFilenames;
@@ -502,9 +507,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText(), TextFileInputMeta.RequiredFilesCode[0], TextFileInputMeta.RequiredFilesCode[0]} );
+				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(), TextFileInputMeta.RequiredFilesCode[0], TextFileInputMeta.RequiredFilesCode[0]} );
 				wFilename.setText("");
 				wFilemask.setText("");
+				wExcludeFilemask.setText("");
 				wFilenameList.removeEmptyRows();
 				wFilenameList.setRowNums();
                 wFilenameList.optWidth(true);
@@ -536,6 +542,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					String string[] = wFilenameList.getItem(idx);
 					wFilename.setText(string[0]);
 					wFilemask.setText(string[1]);
+					wExcludeFilemask.setText(string[2]);
 					wFilenameList.remove(idx);
 				}
 				wFilenameList.removeEmptyRows();
@@ -751,6 +758,26 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdFilemask.top  = new FormAttachment(wFilename, margin);
         fdFilemask.right= new FormAttachment(wbaFilename, -margin);
         wFilemask.setLayoutData(fdFilemask);
+        
+
+		wlExcludeFilemask = new Label(wFileComp, SWT.RIGHT);
+		wlExcludeFilemask.setText(BaseMessages.getString(PKG, "TextFileInputDialog.ExcludeFilemask.Label"));
+		props.setLook(wlExcludeFilemask);
+		fdlExcludeFilemask = new FormData();
+		fdlExcludeFilemask.left = new FormAttachment(0, 0);
+		fdlExcludeFilemask.top = new FormAttachment(wFilemask, margin);
+		fdlExcludeFilemask.right = new FormAttachment(middle, -margin);
+		wlExcludeFilemask.setLayoutData(fdlExcludeFilemask);
+		wExcludeFilemask = new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wExcludeFilemask);
+		wExcludeFilemask.addModifyListener(lsMod);
+		fdExcludeFilemask = new FormData();
+		fdExcludeFilemask.left = new FormAttachment(middle, 0);
+		fdExcludeFilemask.top = new FormAttachment(wFilemask, margin);
+		fdExcludeFilemask.right = new FormAttachment(wFilename, 0, SWT.RIGHT);
+		wExcludeFilemask.setLayoutData(fdExcludeFilemask);
+
+
 
         // Filename list line
         wlFilenameList=new Label(wFileComp, SWT.RIGHT);
@@ -758,7 +785,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         props.setLook(wlFilenameList);
         fdlFilenameList=new FormData();
         fdlFilenameList.left = new FormAttachment(0, 0);
-        fdlFilenameList.top  = new FormAttachment(wFilemask, margin);
+        fdlFilenameList.top  = new FormAttachment(wExcludeFilemask, margin);
         fdlFilenameList.right= new FormAttachment(middle, -margin);
         wlFilenameList.setLayoutData(fdlFilenameList);
 
@@ -769,7 +796,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbdFilename.setToolTipText(BaseMessages.getString(PKG, "TextFileInputDialog.FilenameDelete.Tooltip"));
         fdbdFilename=new FormData();
         fdbdFilename.right = new FormAttachment(100, 0);
-        fdbdFilename.top  = new FormAttachment (wFilemask, 40);
+        fdbdFilename.top  = new FormAttachment (wExcludeFilemask, 40);
         wbdFilename.setLayoutData(fdbdFilename);
 
         wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -907,14 +934,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             {
                 new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.FileDirColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
                 new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.WildcardColumn.Column"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+                new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.Files.ExcludeWildcard.Column"),ColumnInfo.COLUMN_TYPE_TEXT, false),
+                
                 new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.RequiredColumn.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO ),
           		new ColumnInfo(BaseMessages.getString(PKG, "TextFileInputDialog.IncludeSubDirs.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO )
             };
 
         colinfo[ 0].setUsingVariables(true);
         colinfo[ 1].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.RegExpColumn.Column"));
-        colinfo[ 2].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.RequiredColumn.Tooltip"));
-		colinfo[ 3].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.IncludeSubDirs.Tooltip"));
+		colinfo[2].setUsingVariables(true);
+		colinfo[2].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.Files.ExcludeWildcard.Tooltip"));
+        colinfo[3].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.RequiredColumn.Tooltip"));
+		colinfo[4].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.IncludeSubDirs.Tooltip"));
 
         wFilenameList = new TableView(transMeta, wFileComp, 
                               SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -927,7 +958,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdFilenameList=new FormData();
         fdFilenameList.left   = new FormAttachment(middle, 0);
         fdFilenameList.right  = new FormAttachment(wbdFilename, -margin);
-        fdFilenameList.top    = new FormAttachment(wFilemask, margin);
+        fdFilenameList.top    = new FormAttachment(wExcludeFilemask, margin);
         fdFilenameList.bottom = new FormAttachment(gAccepting, -margin);
         wFilenameList.setLayoutData(fdFilenameList);
 
@@ -2110,7 +2141,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] , in.getExludeFileMask()[i],
 						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
 			}
 			wFilenameList.removeEmptyRows();
@@ -2321,8 +2352,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		meta.setFileName( wFilenameList.getItems(0) );
 		meta.setFileMask( wFilenameList.getItems(1) );
-		meta.setFileRequired( wFilenameList.getItems(2) );
-		meta.setIncludeSubFolders( wFilenameList.getItems(3) );
+		meta.setExcludeFileMask( wFilenameList.getItems(2) );
+		meta.setFileRequired( wFilenameList.getItems(3) );
+		meta.setIncludeSubFolders( wFilenameList.getItems(4) );
 
 		for (int i=0;i<nrfields;i++)
 		{

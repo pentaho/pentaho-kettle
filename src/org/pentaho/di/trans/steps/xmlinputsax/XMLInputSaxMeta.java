@@ -580,14 +580,14 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		String[] fileRequired = new String[fileName.length];
 		for (int i=0;i<fileRequired.length;i++) fileRequired[i]="N"; // $NON-NLS-1$
-		return FileInputList.createFilePathList(space, fileName, fileMask, fileRequired);
+		return FileInputList.createFilePathList(space, fileName, fileMask, new String[] { null }, fileRequired);
 	}
 
 	public FileInputList getTextFileList(VariableSpace space)
 	{
 		String[] fileRequired = new String[fileName.length];
 		for (int i=0;i<fileRequired.length;i++) fileRequired[i]="N"; // $NON-NLS-1$
-		return FileInputList.createFileList(space, fileName, fileMask, fileRequired);
+		return FileInputList.createFileList(space, fileName, fileMask, new String[] { null }, fileRequired);
 	}
 
 	

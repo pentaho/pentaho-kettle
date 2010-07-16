@@ -78,6 +78,10 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 	private Composite    wFileComp, wContentComp;
 	private FormData     fdFileComp, fdContentComp;
+	
+	private Label wlExcludeFilemask;
+	private TextVar wExcludeFilemask;
+	private FormData fdlExcludeFilemask, fdExcludeFilemask;
 
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
@@ -350,13 +354,31 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		fdFilemask.right= new FormAttachment(100, 0);
 		wFilemask.setLayoutData(fdFilemask);
 
+
+		wlExcludeFilemask = new Label(wFileComp, SWT.RIGHT);
+		wlExcludeFilemask.setText(BaseMessages.getString(PKG, "GetFilesRowsDialog.ExcludeFilemask.Label"));
+		props.setLook(wlExcludeFilemask);
+		fdlExcludeFilemask = new FormData();
+		fdlExcludeFilemask.left = new FormAttachment(0, 0);
+		fdlExcludeFilemask.top = new FormAttachment(wFilemask, margin);
+		fdlExcludeFilemask.right = new FormAttachment(middle, -margin);
+		wlExcludeFilemask.setLayoutData(fdlExcludeFilemask);
+		wExcludeFilemask = new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wExcludeFilemask);
+		wExcludeFilemask.addModifyListener(lsMod);
+		fdExcludeFilemask = new FormData();
+		fdExcludeFilemask.left = new FormAttachment(middle, 0);
+		fdExcludeFilemask.top = new FormAttachment(wFilemask, margin);
+		fdExcludeFilemask.right = new FormAttachment(wFilename, 0, SWT.RIGHT);
+		wExcludeFilemask.setLayoutData(fdExcludeFilemask);
+		
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
 		wlFilenameList.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameList.Label"));
  		props.setLook(wlFilenameList);
 		fdlFilenameList=new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
-		fdlFilenameList.top  = new FormAttachment(wFilemask, margin);
+		fdlFilenameList.top  = new FormAttachment(wExcludeFilemask, margin);
 		fdlFilenameList.right= new FormAttachment(middle, -margin);
 		wlFilenameList.setLayoutData(fdlFilenameList);
 
@@ -367,7 +389,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.FilenameRemove.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
-		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
+		fdbdFilename.top  = new FormAttachment (wExcludeFilemask, 40);
 		wbdFilename.setLayoutData(fdbdFilename);
 
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -388,7 +410,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
-		ColumnInfo[] colinfo=new ColumnInfo[4];
+		ColumnInfo[] colinfo=new ColumnInfo[5];
 		colinfo[ 0]=new ColumnInfo(
           BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Files.Filename.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
@@ -397,15 +419,19 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
           BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Files.Wildcard.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
-		colinfo[ 2]=new ColumnInfo(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Required.Column"),        
+		   colinfo[ 2]=new ColumnInfo(BaseMessages.getString(PKG, "GetFilesRowsDialog.Files.ExcludeWildcard.Column"),ColumnInfo.COLUMN_TYPE_TEXT, false);
+			
+		colinfo[ 3]=new ColumnInfo(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Required.Column"),        
 				ColumnInfo.COLUMN_TYPE_CCOMBO,  GetFilesRowsCountMeta.RequiredFilesDesc );
-		colinfo[ 3]=new ColumnInfo(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.IncludeSubDirs.Column"),        
+		colinfo[ 4]=new ColumnInfo(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.IncludeSubDirs.Column"),        
 				ColumnInfo.COLUMN_TYPE_CCOMBO,  GetFilesRowsCountMeta.RequiredFilesDesc );
 		
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
 		colinfo[1].setToolTip(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.Files.Wildcard.Tooltip"));
-				
+		colinfo[2].setUsingVariables(true);
+		colinfo[2].setToolTip(BaseMessages.getString(PKG, "GetFilesRowsDialog.Files.ExcludeWildcard.Tooltip"));
+		
 		wFilenameList = new TableView(transMeta,wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
 						      colinfo, 
@@ -420,7 +446,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		fdFilenameList=new FormData();
 		fdFilenameList.left   = new FormAttachment(middle, 0);
 		fdFilenameList.right  = new FormAttachment(wbdFilename, -margin);
-		fdFilenameList.top    = new FormAttachment(wFilemask, margin);
+		fdFilenameList.top    = new FormAttachment(wExcludeFilemask, margin);
 		fdFilenameList.bottom = new FormAttachment(wbShowFiles, -margin);
 		wFilenameList.setLayoutData(fdFilenameList);
 		
@@ -726,9 +752,10 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText() } );
+				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(), GetFilesRowsCountMeta.RequiredFilesCode[0], GetFilesRowsCountMeta.RequiredFilesCode[0]} );
 				wFilename.setText("");
 				wFilemask.setText("");
+				wExcludeFilemask.setText("");
 				wFilenameList.removeEmptyRows();
 				wFilenameList.setRowNums();
                 wFilenameList.optWidth(true);
@@ -760,6 +787,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 					String string[] = wFilenameList.getItem(idx);
 					wFilename.setText(string[0]);
 					wFilemask.setText(string[1]);
+					wExcludeFilemask.setText(string[2]);
 					wFilenameList.remove(idx);
 				}
 				wFilenameList.removeEmptyRows();
@@ -832,7 +860,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					if (wFilemask.getText()!=null && wFilemask.getText().length()>0) // A mask: a directory!
+					if (!Const.isEmpty(wFilemask.getText())|| !Const.isEmpty(wExcludeFilemask.getText())) // A mask: a directory!
 					{
 						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 						if (wFilename.getText()!=null)
@@ -912,6 +940,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		wFilename.setEnabled(!wFileField.getSelection());		
 		wlFilemask.setEnabled(!wFileField.getSelection());		
 		wFilemask.setEnabled(!wFileField.getSelection());		
+		wlExcludeFilemask.setEnabled(!wFileField.getSelection());		
+		wExcludeFilemask.setEnabled(!wFileField.getSelection());
 		wlFilenameList.setEnabled(!wFileField.getSelection());		
 		wbdFilename.setEnabled(!wFileField.getSelection());
 		wbeFilename.setEnabled(!wFileField.getSelection());
@@ -955,7 +985,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 			wFilenameList.removeAll();
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,in.getExludeFileMask()[i],
 						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
 			}
 			wFilenameList.removeEmptyRows();
@@ -1070,8 +1100,9 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
-		in.setFileRequired(wFilenameList.getItems(2));
-		in.setIncludeSubFolders(wFilenameList.getItems(3));
+		in.setExcludeFileMask(wFilenameList.getItems(2) );
+		in.setFileRequired(wFilenameList.getItems(3));
+		in.setIncludeSubFolders(wFilenameList.getItems(4));
 		
 		if (wRowSeparator.getText().length()>1)
 		{

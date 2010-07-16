@@ -718,7 +718,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
        String required[] = new String[fileName.length];
        boolean subdirs[] = new boolean[fileName.length]; // boolean arrays are defaulted to false.
        for (int i=0;i<required.length; required[i]="N", i++); //$NON-NLS-1$
-       String[] textFiles = FileInputList.createFilePathList(transMeta, fileName, fileMask, required, subdirs);
+       String[] textFiles = FileInputList.createFilePathList(transMeta, fileName, fileMask, new String[] { null }, required, subdirs);
        
        if ( textFiles!=null ) {
          for (int i=0; i<textFiles.length; i++) {

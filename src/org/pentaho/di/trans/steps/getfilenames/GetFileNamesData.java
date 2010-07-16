@@ -95,6 +95,7 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
     public int indexOfFilenameField;
     
     public int indexOfWildcardField;
+    public int indexOfExcludeWildcardField;
     
     public RowMetaInterface inputRowMeta;
     
@@ -132,6 +133,7 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
 		indexOfWildcardField=-1;
 		readrow=null;
 		nrStepFields=0;
+		indexOfExcludeWildcardField=-1;
 	}
 
 	public void setDateFormatLenient(boolean lenient)

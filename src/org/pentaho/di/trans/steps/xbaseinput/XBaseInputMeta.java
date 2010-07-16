@@ -508,12 +508,12 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
     
     public String[] getFilePaths(VariableSpace space)
     {
-        return FileInputList.createFilePathList(space, new String[] { dbfFileName}, new String[] { null }, new String[] { "N" });
+        return FileInputList.createFilePathList(space, new String[] { dbfFileName}, new String[] { null }, new String[] { null }, new String[] { "N" });
     }
     
     public FileInputList getTextFileList(VariableSpace space)
     {
-        return FileInputList.createFileList(space, new String[] { dbfFileName }, new String[] { null }, new String[] { "N" });
+        return FileInputList.createFileList(space, new String[] { dbfFileName }, new String[] { null }, new String[] { null }, new String[] { "N" });
     }
 
     public String[] getUsedLibraries()

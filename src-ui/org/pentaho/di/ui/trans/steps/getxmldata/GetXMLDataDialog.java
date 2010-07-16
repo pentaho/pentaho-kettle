@@ -184,6 +184,10 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	private Button   wbbLoopPathList;
 	private FormData fdbLoopPathList;
 	
+	private Label wlExcludeFilemask;
+	private TextVar wExcludeFilemask;
+	private FormData fdlExcludeFilemask, fdExcludeFilemask;
+	
 	// ignore empty files flag
 	private Label        wlIgnoreEmptyFile;
 	private Button       wIgnoreEmptyFile;
@@ -481,6 +485,25 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilemask.top  = new FormAttachment(wFilename, margin);
 		fdFilemask.right= new FormAttachment(100, 0);
 		wFilemask.setLayoutData(fdFilemask);
+		
+		
+		wlExcludeFilemask = new Label(wFileComp, SWT.RIGHT);
+		wlExcludeFilemask.setText(BaseMessages.getString(PKG, "GetXMLDataDialog.ExcludeFilemask.Label"));
+		props.setLook(wlExcludeFilemask);
+		fdlExcludeFilemask = new FormData();
+		fdlExcludeFilemask.left = new FormAttachment(0, 0);
+		fdlExcludeFilemask.top = new FormAttachment(wFilemask, margin);
+		fdlExcludeFilemask.right = new FormAttachment(middle, -margin);
+		wlExcludeFilemask.setLayoutData(fdlExcludeFilemask);
+		wExcludeFilemask = new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wExcludeFilemask);
+		wExcludeFilemask.addModifyListener(lsMod);
+		fdExcludeFilemask = new FormData();
+		fdExcludeFilemask.left = new FormAttachment(middle, 0);
+		fdExcludeFilemask.top = new FormAttachment(wFilemask, margin);
+		fdExcludeFilemask.right = new FormAttachment(wFilename, 0, SWT.RIGHT);
+		wExcludeFilemask.setLayoutData(fdExcludeFilemask);
+
 
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
@@ -488,7 +511,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
  		props.setLook(wlFilenameList);
 		fdlFilenameList=new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
-		fdlFilenameList.top  = new FormAttachment(wFilemask, margin);
+		fdlFilenameList.top  = new FormAttachment(wExcludeFilemask, margin);
 		fdlFilenameList.right= new FormAttachment(middle, -margin);
 		wlFilenameList.setLayoutData(fdlFilenameList);
 
@@ -499,7 +522,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "GetXMLDataDialog.FilenameRemove.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
-		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
+		fdbdFilename.top  = new FormAttachment (wExcludeFilemask, 40);
 		wbdFilename.setLayoutData(fdbdFilename);
 
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -520,17 +543,20 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
-		ColumnInfo[] colinfo=new ColumnInfo[4];
+		ColumnInfo[] colinfo=new ColumnInfo[5];
 		colinfo[ 0]=new ColumnInfo( BaseMessages.getString(PKG, "GetXMLDataDialog.Files.Filename.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false);
 		colinfo[ 1]=new ColumnInfo( BaseMessages.getString(PKG, "GetXMLDataDialog.Files.Wildcard.Column"),ColumnInfo.COLUMN_TYPE_TEXT, false );
-
+		colinfo[ 2]=new ColumnInfo(BaseMessages.getString(PKG, "GetXMLDataDialog.Files.ExcludeWildcard.Column"),ColumnInfo.COLUMN_TYPE_TEXT, false);
+		
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
 		colinfo[1].setToolTip(BaseMessages.getString(PKG, "GetXMLDataDialog.Files.Wildcard.Tooltip"));
-		colinfo[2]=new ColumnInfo(BaseMessages.getString(PKG, "GetXMLDataDialog.Required.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,  GetXMLDataMeta.RequiredFilesDesc);
-		colinfo[2].setToolTip(BaseMessages.getString(PKG, "GetXMLDataDialog.Required.Tooltip"));
-		colinfo[3]=new ColumnInfo(BaseMessages.getString(PKG, "GetXMLDataDialog.IncludeSubDirs.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO,  GetXMLDataMeta.RequiredFilesDesc );
-		colinfo[3].setToolTip(BaseMessages.getString(PKG, "GetXMLDataDialog.IncludeSubDirs.Tooltip"));		
+		colinfo[2].setUsingVariables(true);
+		colinfo[2].setToolTip(BaseMessages.getString(PKG, "GetXMLDataDialog.Files.ExcludeWildcard.Tooltip"));
+		colinfo[3]=new ColumnInfo(BaseMessages.getString(PKG, "GetXMLDataDialog.Required.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,  GetXMLDataMeta.RequiredFilesDesc);
+		colinfo[3].setToolTip(BaseMessages.getString(PKG, "GetXMLDataDialog.Required.Tooltip"));
+		colinfo[4]=new ColumnInfo(BaseMessages.getString(PKG, "GetXMLDataDialog.IncludeSubDirs.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO,  GetXMLDataMeta.RequiredFilesDesc );
+		colinfo[4].setToolTip(BaseMessages.getString(PKG, "GetXMLDataDialog.IncludeSubDirs.Tooltip"));		
 		
 		wFilenameList = new TableView(transMeta,wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -543,7 +569,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilenameList=new FormData();
 		fdFilenameList.left   = new FormAttachment(middle, 0);
 		fdFilenameList.right  = new FormAttachment(wbdFilename, -margin);
-		fdFilenameList.top    = new FormAttachment(wFilemask, margin);
+		fdFilenameList.top    = new FormAttachment(wExcludeFilemask, margin);
 		fdFilenameList.bottom = new FormAttachment(wbShowFiles, -margin);
 		wFilenameList.setLayoutData(fdFilenameList);
 
@@ -1103,9 +1129,10 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText() } );
+				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),GetXMLDataMeta.RequiredFilesCode[0], GetXMLDataMeta.RequiredFilesCode[0]} );
 				wFilename.setText("");
 				wFilemask.setText("");
+				wExcludeFilemask.setText("");
 				wFilenameList.removeEmptyRows();
 				wFilenameList.setRowNums();
                 wFilenameList.optWidth(true);
@@ -1137,6 +1164,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 					String string[] = wFilenameList.getItem(idx);
 					wFilename.setText(string[0]);
 					wFilemask.setText(string[1]);
+					wExcludeFilemask.setText(string[2]);
 					wFilenameList.remove(idx);
 				}
 				wFilenameList.removeEmptyRows();
@@ -1213,7 +1241,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					if (wFilemask.getText()!=null && wFilemask.getText().length()>0) // A mask: a directory!
+					if (!Const.isEmpty(wFilemask.getText()) || !Const.isEmpty(wExcludeFilemask.getText())) // A mask: a directory!
 					{
 						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 						if (wFilename.getText()!=null)
@@ -1306,7 +1334,9 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wlFilename.setEnabled(!wXMLStreamField.getSelection());
 		wbbFilename.setEnabled(!wXMLStreamField.getSelection());
 		wbaFilename.setEnabled(!wXMLStreamField.getSelection());		
-		wFilename.setEnabled(!wXMLStreamField.getSelection());		
+		wFilename.setEnabled(!wXMLStreamField.getSelection());	
+		wlExcludeFilemask.setEnabled(!wXMLStreamField.getSelection());		
+		wExcludeFilemask.setEnabled(!wXMLStreamField.getSelection());	
 		wlFilemask.setEnabled(!wXMLStreamField.getSelection());		
 		wFilemask.setEnabled(!wXMLStreamField.getSelection());		
 		wlFilenameList.setEnabled(!wXMLStreamField.getSelection());		
@@ -1666,9 +1696,10 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] , 
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] , in.getExludeFileMask()[i],
 						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
 			}
+			
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
@@ -1796,8 +1827,9 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		in.allocate(nrFiles, nrFields);
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
-		in.setFileRequired(wFilenameList.getItems(2));
-		in.setIncludeSubFolders(wFilenameList.getItems(3));
+		in.setExcludeFileMask(wFilenameList.getItems(2) );
+		in.setFileRequired(wFilenameList.getItems(3));
+		in.setIncludeSubFolders(wFilenameList.getItems(4));
 
 		for (int i=0;i<nrFields;i++)
 		{

@@ -80,6 +80,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+
 public class PropertyInputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -113,6 +114,11 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlFilemask;
 	private TextVar         wFilemask;
 	private FormData     fdlFilemask, fdFilemask;
+	
+	
+	private Label wlExcludeFilemask;
+	private TextVar wExcludeFilemask;
+	private FormData fdlExcludeFilemask, fdExcludeFilemask;
 
 	private Button       wbShowFiles;
 	private FormData     fdbShowFiles;
@@ -409,6 +415,24 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		fdFilemask.top  = new FormAttachment(wFilename, 2*margin);
 		fdFilemask.right= new FormAttachment(100, 0);
 		wFilemask.setLayoutData(fdFilemask);
+		
+		
+		wlExcludeFilemask = new Label(wFileComp, SWT.RIGHT);
+		wlExcludeFilemask.setText(BaseMessages.getString(PKG, "PropertyInputDialog.ExcludeFilemask.Label"));
+		props.setLook(wlExcludeFilemask);
+		fdlExcludeFilemask = new FormData();
+		fdlExcludeFilemask.left = new FormAttachment(0, 0);
+		fdlExcludeFilemask.top = new FormAttachment(wFilemask, margin);
+		fdlExcludeFilemask.right = new FormAttachment(middle, -margin);
+		wlExcludeFilemask.setLayoutData(fdlExcludeFilemask);
+		wExcludeFilemask = new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wExcludeFilemask);
+		wExcludeFilemask.addModifyListener(lsMod);
+		fdExcludeFilemask = new FormData();
+		fdExcludeFilemask.left = new FormAttachment(middle, 0);
+		fdExcludeFilemask.top = new FormAttachment(wFilemask, margin);
+		fdExcludeFilemask.right = new FormAttachment(wFilename, 0, SWT.RIGHT);
+		wExcludeFilemask.setLayoutData(fdExcludeFilemask);
 
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
@@ -416,7 +440,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wlFilenameList);
 		fdlFilenameList=new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
-		fdlFilenameList.top  = new FormAttachment(wFilemask, margin);
+		fdlFilenameList.top  = new FormAttachment(wExcludeFilemask, margin);
 		fdlFilenameList.right= new FormAttachment(middle, -margin);
 		wlFilenameList.setLayoutData(fdlFilenameList);
 
@@ -427,7 +451,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wbdFilename.setToolTipText( BaseMessages.getString(PKG, "PropertyInputDialog.FilenameRemove.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
-		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
+		fdbdFilename.top  = new FormAttachment (wExcludeFilemask, 40);
 		wbdFilename.setLayoutData(fdbdFilename);
 
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -457,17 +481,21 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
            BaseMessages.getString(PKG, "PropertyInputDialog.Files.Wildcard.Column"),
           ColumnInfo.COLUMN_TYPE_TEXT,
           false);
-      	colinfo[ 2]=new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.Required.Column"),        
+		 colinfo[2]=new ColumnInfo(BaseMessages.getString(PKG, "PropertyInputDialog.Files.ExcludeWildcard.Column"),
+				 ColumnInfo.COLUMN_TYPE_TEXT, false);
+      	colinfo[3]=new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.Required.Column"),        
       			ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
-      	colinfo[ 3]=new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.IncludeSubDirs.Column"),        
+      	colinfo[3]=new ColumnInfo( BaseMessages.getString(PKG, "PropertyInputDialog.IncludeSubDirs.Column"),        
       			ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
 		
 		
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
 		colinfo[1].setToolTip( BaseMessages.getString(PKG, "PropertyInputDialog.Files.Wildcard.Tooltip"));
-		colinfo[ 2].setToolTip( BaseMessages.getString(PKG, "PropertyInputDialog.Required.Tooltip"));
-		colinfo[ 3].setToolTip( BaseMessages.getString(PKG, "PropertyInputDialog.IncludeSubDirs.Tooltip"));
+		colinfo[2].setUsingVariables(true);
+		colinfo[2].setToolTip(BaseMessages.getString(PKG, "PropertyInputDialog.Files.ExcludeWildcard.Tooltip"));
+		colinfo[3].setToolTip( BaseMessages.getString(PKG, "PropertyInputDialog.Required.Tooltip"));
+		colinfo[4].setToolTip( BaseMessages.getString(PKG, "PropertyInputDialog.IncludeSubDirs.Tooltip"));
 		
 		wFilenameList = new TableView(transMeta, wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -481,7 +509,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		fdFilenameList=new FormData();
 		fdFilenameList.left   = new FormAttachment(middle, 0);
 		fdFilenameList.right  = new FormAttachment(wbdFilename, -margin);
-		fdFilenameList.top    = new FormAttachment(wFilemask, margin);
+		fdFilenameList.top    = new FormAttachment(wExcludeFilemask, margin);
 		fdFilenameList.bottom = new FormAttachment(wbShowFiles, -margin);
 		wFilenameList.setLayoutData(fdFilenameList);
 		
@@ -990,9 +1018,10 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText(), PropertyInputMeta.RequiredFilesCode[0], PropertyInputMeta.RequiredFilesCode[0]} );
+				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),PropertyInputMeta.RequiredFilesCode[0], PropertyInputMeta.RequiredFilesCode[0]} );
 				wFilename.setText("");
 				wFilemask.setText("");
+				wExcludeFilemask.setText("");
 				wFilenameList.removeEmptyRows();
 				wFilenameList.setRowNums();
                 wFilenameList.optWidth(true);
@@ -1024,6 +1053,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 					String string[] = wFilenameList.getItem(idx);
 					wFilename.setText(string[0]);
 					wFilemask.setText(string[1]);
+					wExcludeFilemask.setText(string[2]);
 					wFilenameList.remove(idx);
 				}
 				wFilenameList.removeEmptyRows();
@@ -1115,7 +1145,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					if (wFilemask.getText()!=null && wFilemask.getText().length()>0) // A mask: a directory!
+					if (!Const.isEmpty(wFilemask.getText()) || !Const.isEmpty(wExcludeFilemask.getText())) // A mask: a directory!
 					{
 						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 						if (wFilename.getText()!=null)
@@ -1305,7 +1335,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		wbaFilename.setEnabled(!wFileField.getSelection());		
 		wFilename.setEnabled(!wFileField.getSelection());		
 		wlFilemask.setEnabled(!wFileField.getSelection());		
-		wFilemask.setEnabled(!wFileField.getSelection());		
+		wFilemask.setEnabled(!wFileField.getSelection());	
+		wlExcludeFilemask.setEnabled(!wFileField.getSelection());		
+		wExcludeFilemask.setEnabled(!wFileField.getSelection());	
 		wlFilenameList.setEnabled(!wFileField.getSelection());		
 		wbdFilename.setEnabled(!wFileField.getSelection());
 		wbeFilename.setEnabled(!wFileField.getSelection());
@@ -1354,7 +1386,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] ,in.getExludeFileMask()[i],
 						in.getRequiredFilesDesc(in.getFileRequired()[i]), in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
 			}
 			wFilenameList.removeEmptyRows();
@@ -1467,8 +1499,9 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
 		in.setSection(wSection.getText());
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
-		in.setFileRequired(wFilenameList.getItems(2));
-		in.setIncludeSubFolders(wFilenameList.getItems(3));
+		in.setExcludeFileMask(wFilenameList.getItems(2) );
+		in.setFileRequired(wFilenameList.getItems(3));
+		in.setIncludeSubFolders(wFilenameList.getItems(4));
 		in.setFileType(PropertyInputMeta.getFileTypeCode(PropertyInputMeta.getFileTypeByDesc(wFileType.getText())));
 		for (int i=0;i<nrFields;i++)
 		{

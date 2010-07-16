@@ -127,6 +127,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Text         wFilemask;
 	private FormData     fdlFilemask, fdFilemask;
 
+	private Label wlExcludeFilemask;
+	private TextVar wExcludeFilemask;
+	private FormData fdlExcludeFilemask, fdExcludeFilemask;
+	
     private Group        gAccepting;
     private FormData     fdAccepting;
 
@@ -388,6 +392,24 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilemask.top  = new FormAttachment(wFilename, margin);
 		fdFilemask.right= new FormAttachment(wbaFilename, -margin);
 		wFilemask.setLayoutData(fdFilemask);
+		
+		wlExcludeFilemask = new Label(wFileComp, SWT.RIGHT);
+		wlExcludeFilemask.setText(BaseMessages.getString(PKG, "ExcelInputDialog.ExcludeFilemask.Label"));
+		props.setLook(wlExcludeFilemask);
+		fdlExcludeFilemask = new FormData();
+		fdlExcludeFilemask.left = new FormAttachment(0, 0);
+		fdlExcludeFilemask.top = new FormAttachment(wFilemask, margin);
+		fdlExcludeFilemask.right = new FormAttachment(middle, -margin);
+		wlExcludeFilemask.setLayoutData(fdlExcludeFilemask);
+		wExcludeFilemask = new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wExcludeFilemask);
+		wExcludeFilemask.addModifyListener(lsMod);
+		fdExcludeFilemask = new FormData();
+		fdExcludeFilemask.left = new FormAttachment(middle, 0);
+		fdExcludeFilemask.top = new FormAttachment(wFilemask, margin);
+		fdExcludeFilemask.right = new FormAttachment(wFilename, 0, SWT.RIGHT);
+		wExcludeFilemask.setLayoutData(fdExcludeFilemask);
+		
 
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
@@ -395,7 +417,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
  		props.setLook(wlFilenameList);
 		fdlFilenameList=new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
-		fdlFilenameList.top  = new FormAttachment(wFilemask, margin);
+		fdlFilenameList.top  = new FormAttachment(wExcludeFilemask, margin);
 		fdlFilenameList.right= new FormAttachment(middle, -margin);
 		wlFilenameList.setLayoutData(fdlFilenameList);
 
@@ -406,7 +428,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "ExcelInputDialog.FilenameDelete.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
-		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
+		fdbdFilename.top  = new FormAttachment (wExcludeFilemask, 40);
 		wbdFilename.setLayoutData(fdbdFilename);
 
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -527,15 +549,17 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         // fdAccepting.bottom = new FormAttachment(wAccStep, margin);
         gAccepting.setLayoutData(fdAccepting);
 
-		ColumnInfo[] colinfo=new ColumnInfo[4];
-		colinfo[ 0]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.FileDir.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false);
-        colinfo[ 0].setUsingVariables(true);
-		colinfo[ 1]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Wildcard.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,    false );
-		colinfo[ 1].setToolTip(BaseMessages.getString(PKG, "ExcelInputDialog.Wildcard.Tooltip"));
-		colinfo[ 2]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Required.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
-		colinfo[ 2].setToolTip(BaseMessages.getString(PKG, "ExcelInputDialog.Required.Tooltip"));
-		colinfo[3]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.IncludeSubDirs.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
-		colinfo[ 3].setToolTip(BaseMessages.getString(PKG, "ExcelInputDialog.IncludeSubDirs.Tooltip"));
+		ColumnInfo[] colinfo=new ColumnInfo[5];
+		colinfo[0]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.FileDir.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false);
+        colinfo[0].setUsingVariables(true);
+		colinfo[1]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Wildcard.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,    false );
+		colinfo[1].setToolTip(BaseMessages.getString(PKG, "ExcelInputDialog.Wildcard.Tooltip"));
+		colinfo[2]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Files.ExcludeWildcard.Column"),ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinfo[2].setUsingVariables(true);
+		colinfo[3]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.Required.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+		colinfo[3].setToolTip(BaseMessages.getString(PKG, "ExcelInputDialog.Required.Tooltip"));
+		colinfo[4]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.IncludeSubDirs.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+		colinfo[4].setToolTip(BaseMessages.getString(PKG, "ExcelInputDialog.IncludeSubDirs.Tooltip"));
 		  
 		wFilenameList = new TableView(transMeta, wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -548,7 +572,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilenameList=new FormData();
 		fdFilenameList.left   = new FormAttachment(middle, 0);
 		fdFilenameList.right  = new FormAttachment(wbdFilename, -margin);
-		fdFilenameList.top    = new FormAttachment(wFilemask, margin);
+		fdFilenameList.top    = new FormAttachment(wExcludeFilemask, margin);
 		fdFilenameList.bottom = new FormAttachment(gAccepting, -margin);
 		wFilenameList.setLayoutData(fdFilenameList);
 
@@ -1002,9 +1026,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText() } );
+				wFilenameList.add(new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),ExcelInputMeta.RequiredFilesCode[0], ExcelInputMeta.RequiredFilesCode[0]} );
 				wFilename.setText("");
 				wFilemask.setText("");
+				wExcludeFilemask.setText("");
 				wFilenameList.removeEmptyRows();
 				wFilenameList.setRowNums();
                 wFilenameList.optWidth(true);
@@ -1038,6 +1063,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 					String string[] = wFilenameList.getItem(idx);
 					wFilename.setText(string[0]);
 					wFilemask.setText(string[1]);
+					wExcludeFilemask.setText(string[2]);
 					wFilenameList.remove(idx);
 				}
 				wFilenameList.removeEmptyRows();
@@ -1072,7 +1098,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					if (wFilemask.getText()!=null && wFilemask.getText().length()>0) // A mask: a directory!
+					if (!Const.isEmpty(wFilemask.getText())|| !Const.isEmpty(wExcludeFilemask.getText()) ) // A mask: a directory!
 					{
 						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 						if (wFilename.getText()!=null)
@@ -1165,6 +1191,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wlFilenameList.setEnabled(!accept);
         wFilenameList.setEnabled(!accept);
         wlFilemask.setEnabled(!accept);
+        wlExcludeFilemask.setEnabled(!accept);
+        wExcludeFilemask.setEnabled(!accept);
         wFilemask.setEnabled(!accept);
         wbShowFiles.setEnabled(!accept);
         
@@ -1209,7 +1237,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 			for (int i=0;i<meta.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { meta.getFileName()[i], meta.getFileMask()[i] ,
+				wFilenameList.add(new String[] { meta.getFileName()[i], meta.getFileMask()[i] , meta.getExludeFileMask()[i],
 						meta.getRequiredFilesDesc(meta.getFileRequired()[i]), meta.getRequiredFilesDesc(meta.getIncludeSubFolders()[i])} );
 			}
 			wFilenameList.removeEmptyRows();
@@ -1233,7 +1261,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         if (meta.getEncoding()!=null) wEncoding.setText(meta.getEncoding());
         wAddResult.setSelection(meta.isAddResultFile());
 		
-		logDebug("getting fields info...");
+		if(isDebug()) logDebug("getting fields info...");
 		for (int i=0;i<meta.getField().length;i++)
 		{
 			TableItem item = wFields.table.getItem(i);
@@ -1332,10 +1360,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		meta.setIgnoreEmptyRows( wNoempty.getSelection() );
 		meta.setStopOnEmpty( wStoponempty.getSelection() );
 
-    meta.setAcceptingFilenames( wAccFilenames.getSelection() );
-    meta.setAcceptingField( wAccField.getText() );
-    meta.setAcceptingStepName(wAccStep.getText());
-    meta.searchInfoAndTargetSteps(transMeta.findPreviousSteps(transMeta.findStep(stepname)));
+		meta.setAcceptingFilenames( wAccFilenames.getSelection() );
+    	meta.setAcceptingField( wAccField.getText() );
+    	meta.setAcceptingStepName(wAccStep.getText());
+    	meta.searchInfoAndTargetSteps(transMeta.findPreviousSteps(transMeta.findStep(stepname)));
 
 		int nrfiles    = wFilenameList.nrNonEmpty();
 		int nrsheets   = wSheetnameList.nrNonEmpty();
@@ -1343,17 +1371,11 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		meta.allocate(nrfiles, nrsheets, nrfields);
 
-		/*for (int i=0;i<nrfiles;i++)
-		{
-			TableItem item = wFilenameList.getNonEmpty(i);
-			meta.getFileName()[i] = item.getText(1);
-			meta.getFileMask()[i] = item.getText(2);
-			meta.getFileRequired()[i] = item.getText(3);
-		}*/
 		meta.setFileName( wFilenameList.getItems(0) );
 		meta.setFileMask( wFilenameList.getItems(1) );
-		meta.setFileRequired(wFilenameList.getItems(2));
-		meta.setIncludeSubFolders(wFilenameList.getItems(3));
+		meta.setExcludeFileMask(wFilenameList.getItems(2) );
+		meta.setFileRequired(wFilenameList.getItems(3));
+		meta.setIncludeSubFolders(wFilenameList.getItems(4));
 		
 
 		for (int i=0;i<nrsheets;i++)
