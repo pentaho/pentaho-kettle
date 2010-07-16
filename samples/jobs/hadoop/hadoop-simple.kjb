@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <job>
-  <name>hadoop</name>
+  <name>hadoop-simple</name>
     <description/>
     <extended_description/>
     <job_version/>
+    <job_status>0</job_status>
   <directory>&#47;</directory>
   <created_user>-</created_user>
   <created_date>2010&#47;07&#47;12 13:45:27.737</created_date>
@@ -34,15 +35,15 @@
    <shared_objects_file/>
   <entries>
     <entry>
-      <name>WordCount</name>
+      <name>WordCount - Simple</name>
       <description/>
       <type>HadoopJobExecutorPlugin</type>
-      <hadoop_job_name>hadoopjob - wordcount</hadoop_job_name>
-      <simple>N</simple>
+      <hadoop_job_name>PDI Hadoop - WordCount - Simple</hadoop_job_name>
+      <simple>Y</simple>
       <jar_url>.&#47;samples&#47;jobs&#47;hadoop&#47;pentaho-mapreduce-sample.jar</jar_url>
-      <command_line_args/>
+      <command_line_args>&#47;junit&#47;wordcount&#47;input &#47;junit&#47;wordcount&#47;pdioutput</command_line_args>
       <blocking>Y</blocking>
-      <hadoop_job_name>hadoopjob - wordcount</hadoop_job_name>
+      <hadoop_job_name>PDI Hadoop - WordCount - Simple</hadoop_job_name>
       <mapper_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Map</mapper_class>
       <combiner_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Reduce</combiner_class>
       <reducer_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Reduce</reducer_class>
@@ -61,28 +62,12 @@
       <working_dir>&#47;tmp&#47;wordcount</working_dir>
       <user_defined_list>
         <user_defined>
-          <name/>
-          <value/>
+          <name>pentaho.hadoop.property.name1</name>
+          <value>pentaho.hadoop.property.value1</value>
         </user_defined>
         <user_defined>
-          <name/>
-          <value/>
-        </user_defined>
-        <user_defined>
-          <name/>
-          <value/>
-        </user_defined>
-        <user_defined>
-          <name/>
-          <value/>
-        </user_defined>
-        <user_defined>
-          <name/>
-          <value/>
-        </user_defined>
-        <user_defined>
-          <name/>
-          <value/>
+          <name>pentaho.hadoop.property.name2</name>
+          <value>pentaho.hadoop.property.value2</value>
         </user_defined>
       </user_defined_list>
       <parallel>N</parallel>
@@ -120,7 +105,7 @@
       <limit_folders>10</limit_folders>
       <fields>
         <field>
-          <name>hdfs:&#47;&#47;hadoop-vm1.pentaho.com:9000&#47;junit&#47;wordcount&#47;output</name>
+          <name>hdfs:&#47;&#47;hadoop-vm1.pentaho.com:9000&#47;junit&#47;wordcount&#47;pdioutput</name>
         </field>
       </fields>
       <parallel>N</parallel>
@@ -152,7 +137,7 @@
     </hop>
     <hop>
       <from>Clean Output</from>
-      <to>WordCount</to>
+      <to>WordCount - Simple</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -160,7 +145,7 @@
       <unconditional>Y</unconditional>
     </hop>
     <hop>
-      <from>WordCount</from>
+      <from>WordCount - Simple</from>
       <to>Success</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
@@ -192,36 +177,11 @@
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Hadoop WordCount Map Reduce Job
--Edit the HDFS hostname
--Edit the Job Tracker hostname
-</note>
-      <xloc>484</xloc>
-      <yloc>90</yloc>
-      <width>199</width>
-      <heigth>47</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>255</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
-    <notepad>
-      <note>Monitor the logs for progress
-(if blocking option is selected)</note>
-      <xloc>753</xloc>
-      <yloc>218</yloc>
-      <width>156</width>
-      <heigth>35</heigth>
+      <note>Hadoop WordCount Map Reduce Job</note>
+      <xloc>497</xloc>
+      <yloc>115</yloc>
+      <width>193</width>
+      <heigth>22</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>

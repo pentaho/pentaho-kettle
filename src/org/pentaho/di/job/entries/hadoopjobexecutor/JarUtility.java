@@ -14,9 +14,9 @@ import java.util.jar.JarInputStream;
 
 public class JarUtility {
 
-  public static List<Class<?>> getClassesInJarWithMain(String jarUrl) throws MalformedURLException {
+  public static List<Class<?>> getClassesInJarWithMain(String jarUrl, ClassLoader parentClassloader) throws MalformedURLException {
     ArrayList<Class<?>> mainClasses = new ArrayList<Class<?>>();
-    List<Class<?>> allClasses = JarUtility.getClassesInJar(jarUrl);
+    List<Class<?>> allClasses = JarUtility.getClassesInJar(jarUrl, parentClassloader);
     for (Class<?> clazz : allClasses) {
       try {
         Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
@@ -29,11 +29,11 @@ public class JarUtility {
     return mainClasses;
   }
 
-  public static List<Class<?>> getClassesInJar(String jarUrl) throws MalformedURLException {
+  public static List<Class<?>> getClassesInJar(String jarUrl, ClassLoader parentClassloader) throws MalformedURLException {
 
     URL url = new URL(jarUrl);
     URL[] urls = new URL[] { url };
-    URLClassLoader loader = new URLClassLoader(urls);
+    URLClassLoader loader = new URLClassLoader(urls, parentClassloader);
 
     ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
 
@@ -57,14 +57,4 @@ public class JarUtility {
     return classes;
   }
 
-  /**
-   * @throws MalformedURLException
-   * 
-   */
-  public static void main(String[] args) throws MalformedURLException {
-    List<Class<?>> list = JarUtility.getClassesInJar("file:///C:/development-pentaho/pentaho-hdfs-vfs/test-lib/commons-io-1.4.jar");
-    for (Class<?> clazz : list) {
-      System.out.println("Found: " + clazz.getName());
-    }
-  }
 }

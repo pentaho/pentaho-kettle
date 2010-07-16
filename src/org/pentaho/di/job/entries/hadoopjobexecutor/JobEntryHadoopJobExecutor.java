@@ -281,18 +281,21 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       if (isSimple) {
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.SimpleMode"));
-        List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(resolvedJarUrl.toExternalForm());
-        for (Class<?> clazz : classesWithMains) {
-          try {
-            Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
-            Object[] args = new String[] {};
-            if (cmdLineArgs != null) {
-              args = cmdLineArgs.split(" ");
+        List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(resolvedJarUrl.toExternalForm(), getClass().getClassLoader());
+        for (final Class<?> clazz : classesWithMains) {
+          Runnable r = new Runnable() {
+            public void run() {
+              try {
+                Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
+                Object[] args = (cmdLineArgs != null) ? new Object[] { cmdLineArgs.split(" ") } : new Object[0];
+                mainMethod.invoke(null, args);
+              } catch (Throwable ignored) {
+                // skip, try the next one
+              }
             }
-            mainMethod.invoke(clazz, args);
-          } catch (Throwable ignored) {
-            // skip, try the next one
-          }
+          };
+          Thread t = new Thread(r);
+          t.start();
         }
 
       } else {
@@ -300,7 +303,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.AdvancedMode"));
 
         URL[] urls = new URL[] { resolvedJarUrl };
-        URLClassLoader loader = new URLClassLoader(urls, Spoon.getInstance().getClass().getClassLoader());
+        URLClassLoader loader = new URLClassLoader(urls, getClass().getClassLoader());
 
         JobConf conf = new JobConf();
         conf.setJobName(hadoopJobName);
