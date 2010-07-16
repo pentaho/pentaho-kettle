@@ -34,13 +34,13 @@
    <shared_objects_file/>
   <entries>
     <entry>
-      <name>This is the step name</name>
+      <name>WordCount</name>
       <description/>
       <type>HadoopJobExecutorPlugin</type>
       <hadoop_job_name>hadoopjob - wordcount</hadoop_job_name>
       <simple>N</simple>
       <jar_url>.&#47;samples&#47;jobs&#47;hadoop&#47;pentaho-mapreduce-sample.jar</jar_url>
-      <command_line_args>asdfasdfasfkjjjjxxx</command_line_args>
+      <command_line_args/>
       <blocking>Y</blocking>
       <hadoop_job_name>hadoopjob - wordcount</hadoop_job_name>
       <mapper_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Map</mapper_class>
@@ -56,24 +56,40 @@
       <hdfs_port>9000</hdfs_port>
       <job_tracker_hostname>hadoop-vm1.pentaho.com</job_tracker_hostname>
       <job_tracker_port>9001</job_tracker_port>
-      <num_map_tasks>1</num_map_tasks>
-      <num_reduce_tasks>1</num_reduce_tasks>
+      <num_map_tasks>2</num_map_tasks>
+      <num_reduce_tasks>2</num_reduce_tasks>
       <working_dir>&#47;tmp&#47;wordcount</working_dir>
       <user_defined_list>
         <user_defined>
-          <name>asdfasdf</name>
-          <value>asdfasdfasdfasdfasdf value</value>
+          <name/>
+          <value/>
         </user_defined>
         <user_defined>
-          <name>sdsdfsfsfdsfsdf</name>
-          <value>asdsdfsf</value>
+          <name/>
+          <value/>
+        </user_defined>
+        <user_defined>
+          <name/>
+          <value/>
+        </user_defined>
+        <user_defined>
+          <name/>
+          <value/>
+        </user_defined>
+        <user_defined>
+          <name/>
+          <value/>
+        </user_defined>
+        <user_defined>
+          <name/>
+          <value/>
         </user_defined>
       </user_defined_list>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>368</xloc>
-      <yloc>136</yloc>
+      <xloc>506</xloc>
+      <yloc>164</yloc>
       </entry>
     <entry>
       <name>START</name>
@@ -92,11 +108,11 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>42</xloc>
-      <yloc>43</yloc>
+      <xloc>84</xloc>
+      <yloc>40</yloc>
       </entry>
     <entry>
-      <name>Delete folders</name>
+      <name>Clean Output</name>
       <description/>
       <type>DELETE_FOLDERS</type>
       <arg_from_previous>N</arg_from_previous>
@@ -110,14 +126,24 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>175</xloc>
-      <yloc>122</yloc>
+      <xloc>280</xloc>
+      <yloc>94</yloc>
+      </entry>
+    <entry>
+      <name>Success</name>
+      <description/>
+      <type>SUCCESS</type>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>706</xloc>
+      <yloc>225</yloc>
       </entry>
   </entries>
   <hops>
     <hop>
       <from>START</from>
-      <to>Delete folders</to>
+      <to>Clean Output</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -125,8 +151,17 @@
       <unconditional>Y</unconditional>
     </hop>
     <hop>
-      <from>Delete folders</from>
-      <to>This is the step name</to>
+      <from>Clean Output</from>
+      <to>WordCount</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>WordCount</from>
+      <to>Success</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -135,5 +170,72 @@
     </hop>
   </hops>
   <notepads>
+    <notepad>
+      <note>Cleans up the output directory</note>
+      <xloc>246</xloc>
+      <yloc>46</yloc>
+      <width>156</width>
+      <heigth>22</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Hadoop WordCount Map Reduce Job
+-Edit the HDFS hostname
+-Edit the Job Tracker hostname
+</note>
+      <xloc>484</xloc>
+      <yloc>90</yloc>
+      <width>199</width>
+      <heigth>47</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Monitor the logs for progress
+(if blocking option is selected)</note>
+      <xloc>753</xloc>
+      <yloc>218</yloc>
+      <width>156</width>
+      <heigth>35</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
   </notepads>
 </job>

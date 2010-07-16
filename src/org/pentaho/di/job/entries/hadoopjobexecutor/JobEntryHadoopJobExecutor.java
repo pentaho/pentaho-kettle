@@ -330,7 +330,9 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
         // process user defined values
         for (UserDefinedItem item : userDefined) {
-          conf.set(item.getName(), item.getValue());
+          if (item.getName() != null && !"".equals(item.getName()) && item.getValue() != null && !"".equals(item.getValue())) {
+            conf.set(item.getName(), item.getValue());
+          }
         }
 
         conf.setWorkingDirectory(new Path(hdfsBaseUrl + workingDirectory));
@@ -356,6 +358,8 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
       }
     } catch (Throwable t) {
+      t.printStackTrace();
+      result.setStopped(true);
       result.setNrErrors(1);
       result.setResult(false);
       logError(t.getMessage(), t);
@@ -445,10 +449,12 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     retval.append("      <user_defined_list>").append(Const.CR);
     if (userDefined != null) {
       for (UserDefinedItem item : userDefined) {
-        retval.append("        <user_defined>").append(Const.CR);
-        retval.append("          ").append(XMLHandler.addTagValue("name", item.getName()));
-        retval.append("          ").append(XMLHandler.addTagValue("value", item.getValue()));
-        retval.append("        </user_defined>").append(Const.CR);
+        if (item.getName() != null && !"".equals(item.getName()) && item.getValue() != null && !"".equals(item.getValue())) {
+          retval.append("        <user_defined>").append(Const.CR);
+          retval.append("          ").append(XMLHandler.addTagValue("name", item.getName()));
+          retval.append("          ").append(XMLHandler.addTagValue("value", item.getValue()));
+          retval.append("        </user_defined>").append(Const.CR);
+        }
       }
     }
     retval.append("      </user_defined_list>").append(Const.CR);
