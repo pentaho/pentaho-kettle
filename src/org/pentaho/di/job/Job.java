@@ -275,7 +275,14 @@ public class Job extends Thread implements VariableSpace, NamedParams
 			//
 			try 
 			{
-				endProcessing(Database.LOG_STATUS_END, result);  // $NON-NLS-1$
+				if (isStopped()) 
+				{
+					endProcessing(Database.LOG_STATUS_STOP, result);  
+				} 
+				else 
+				{
+					endProcessing(Database.LOG_STATUS_END, result);  // $NON-NLS-1$
+				}
 			} 
 			catch (KettleJobException e) 
 			{
