@@ -930,27 +930,27 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
 		return result;
 	}
 
-	private Connection getConnection(String servername,int serverpassword,
+	private Connection getConnection(String servername,int serverport,
 			String proxyhost,int proxyport,String proxyusername,String proxypassword)
 	{
 		/* Create a connection instance */
 
-		Connection connnect = new Connection(servername,serverpassword);
+		Connection connect = new Connection(servername,serverport);
 	
 		/* We want to connect through a HTTP proxy */
 		if(usehttpproxy)
 		{
-			connnect.setProxyData(new HTTPProxyData(proxyhost, proxyport));
+			connect.setProxyData(new HTTPProxyData(proxyhost, proxyport));
 		
 			/* Now connect */
 			// if the proxy requires basic authentication:
 			if(useBasicAuthentication)
 			{
-				connnect.setProxyData(new HTTPProxyData(proxyhost, proxyport, proxyusername, proxypassword));
+				connect.setProxyData(new HTTPProxyData(proxyhost, proxyport, proxyusername, proxypassword));
 			}
 		}
 		
-		return connnect;
+		return connect;
 	}
 	private boolean putFile(FileObject localFile, String remotefilename, SFTPv3Client sftpClient)
 	{
