@@ -44,9 +44,9 @@
       <command_line_args>-inputpath=&#47;home&#47;mdamour&#47;input -outputpath=&#47;tmp&#47;output</command_line_args>
       <blocking>Y</blocking>
       <hadoop_job_name>hadoopjob - wordcount</hadoop_job_name>
-      <mapper_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Map</mapper_class>
-      <combiner_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Reduce</combiner_class>
-      <reducer_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Reduce</reducer_class>
+      <mapper_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Map</mapper_class>
+      <combiner_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Reduce</combiner_class>
+      <reducer_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Reduce</reducer_class>
       <input_path>&#47;junit&#47;wordcount&#47;input</input_path>
       <input_format_class>org.apache.hadoop.mapred.TextInputFormat</input_format_class>
       <output_path>&#47;junit&#47;wordcount&#47;pdioutput</output_path>
@@ -58,8 +58,8 @@
       <job_tracker_hostname>hadoop-vm1.pentaho.com</job_tracker_hostname>
       <job_tracker_port>9001</job_tracker_port>
       <num_map_tasks>2</num_map_tasks>
-      <num_reduce_tasks>2</num_reduce_tasks>
-      <working_dir>&#47;tmp&#47;wordcount</working_dir>
+      <num_reduce_tasks>1</num_reduce_tasks>
+      <working_dir>&#47;tmp&#47;pdiwordcount</working_dir>
       <user_defined_list>
         <user_defined>
           <name>pentaho.hadoop.property.name1</name>
