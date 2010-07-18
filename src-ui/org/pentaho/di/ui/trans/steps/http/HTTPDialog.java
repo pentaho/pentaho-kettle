@@ -84,6 +84,10 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
 	
+   private Label        wlHeaders;
+   private TableView    wHeaders;
+   private FormData     fdlHeaders, fdHeaders;
+	
 	private Label        wlUrlInField;
     private Button       wUrlInField;
     private FormData     fdlUrlInField, fdUrlInField;
@@ -94,8 +98,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 
 	private ComboVar     wEncoding;
 
-	private Button wGet;
-	private Listener lsGet;
+	private Button wGet, wGetHeaders;
+	private Listener lsGet, lsGetHeaders;
 
     private Label wlHttpLogin;
     private TextVar wHttpLogin;
@@ -124,6 +128,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	private HTTPMeta input;
 	
 	private ColumnInfo[] colinf;
+	private ColumnInfo[] colinfHeaders;
 	
     private Map<String, Integer> inputFields;
 
@@ -552,24 +557,23 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		wAdditionalComp = new Composite(wTabFolder, SWT.NONE);
 		wAdditionalComp.setLayout(addLayout);
  		props.setLook(wAdditionalComp);
-		
+
+      wlFields=new Label(wAdditionalComp, SWT.NONE);
+      wlFields.setText(BaseMessages.getString(PKG, "HTTPDialog.Parameters.Label")); //$NON-NLS-1$
+      props.setLook(wlFields);
+      fdlFields=new FormData();
+      fdlFields.left = new FormAttachment(0, 0);
+      fdlFields.top  = new FormAttachment(lastControl, margin);
+      wlFields.setLayoutData(fdlFields);
+      lastControl = wlFields;
         
 		wGet=new Button(wAdditionalComp, SWT.PUSH);
 		wGet.setText(BaseMessages.getString(PKG, "HTTPDialog.GetFields.Button")); //$NON-NLS-1$
 		FormData fdGet = new FormData();
-		fdGet.left=new FormAttachment(50, 0);
-		fdGet.bottom =new FormAttachment(100, 0);
+		fdGet.top = new FormAttachment(wlFields, margin);
+		fdGet.right = new FormAttachment(100, 0);
 		wGet.setLayoutData(fdGet);
-		
-		wlFields=new Label(wAdditionalComp, SWT.NONE);
-		wlFields.setText(BaseMessages.getString(PKG, "HTTPDialog.Parameters.Label")); //$NON-NLS-1$
- 		props.setLook(wlFields);
-		fdlFields=new FormData();
-		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(lastControl, margin);
-		wlFields.setLayoutData(fdlFields);
-		lastControl = wlFields;
-		
+			
 		final int FieldsRows=input.getArgumentField().length;
 		
 		 colinf=new ColumnInfo[] { 
@@ -587,10 +591,49 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 
 		fdFields=new FormData();
 		fdFields.left  = new FormAttachment(0, 0);
-		fdFields.top   = new FormAttachment(lastControl, margin);
-		fdFields.right = new FormAttachment(100, 0);
-		fdFields.bottom= new FormAttachment(wGet, -margin);
+		fdFields.top   = new FormAttachment(wlFields, margin);
+		fdFields.right = new FormAttachment(wGet, -margin);
+		fdFields.bottom= new FormAttachment(wlFields, 200);
 		wFields.setLayoutData(fdFields);
+		
+
+
+		wlHeaders = new Label(wAdditionalComp,SWT.NONE);
+		wlHeaders.setText(BaseMessages.getString(PKG, "HTTPDialog.Headers.Label"));
+		props.setLook(wlHeaders);
+		fdlHeaders = new FormData();
+		fdlHeaders.left = new FormAttachment(0,0);
+		fdlHeaders.top = new FormAttachment(wFields, margin);
+		wlHeaders.setLayoutData(fdlHeaders);
+		
+		final int HeadersRows = input.getHeaderParameter().length;
+		
+		colinfHeaders = new ColumnInfo[] {
+		      new ColumnInfo(BaseMessages.getString(PKG, "HTTPDialog.ColumnInfo.Field"),ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+		      new ColumnInfo(BaseMessages.getString(PKG, "HTTPDialog.ColumnInfo.Header"),ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+		};
+		colinfHeaders[1].setUsingVariables(true);
+		wHeaders = new TableView(transMeta, wAdditionalComp, 
+            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+            colinfHeaders, 
+            HeadersRows,  
+            lsMod,
+            props
+            );
+
+		wGetHeaders=new Button(wAdditionalComp, SWT.PUSH);
+		wGetHeaders.setText(BaseMessages.getString(PKG, "HTTPDialog.GetHeaders.Button")); //$NON-NLS-1$
+      FormData fdGetHeaders = new FormData();
+      fdGetHeaders.top = new FormAttachment(wlHeaders, margin);
+      fdGetHeaders.right = new FormAttachment(100, 0);
+      wGetHeaders.setLayoutData(fdGetHeaders);
+		
+      fdHeaders=new FormData();
+      fdHeaders.left  = new FormAttachment(0, 0);
+      fdHeaders.top   = new FormAttachment(wlHeaders, margin);
+      fdHeaders.right = new FormAttachment(wGetHeaders, -margin);
+      fdHeaders.bottom= new FormAttachment(100, -margin);
+      wHeaders.setLayoutData(fdHeaders);
 
 		  // 
         // Search the fields in the background
@@ -654,10 +697,12 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };
 		lsGet      = new Listener() { public void handleEvent(Event e) { get();        } };
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();    } };
+		lsGetHeaders = new Listener()  {public void handleEvent(Event e){getHeadersFields();}  };
 		
 		wOK.addListener    (SWT.Selection, lsOK    );
 		wGet.addListener   (SWT.Selection, lsGet   );
 		wCancel.addListener(SWT.Selection, lsCancel);
+		wGetHeaders.addListener(SWT.Selection, lsGetHeaders);
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
@@ -734,6 +779,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 
         Const.sortStrings(fieldNames);
         colinf[0].setComboValues(fieldNames);
+        colinfHeaders[0].setComboValues(fieldNames);
     }
 	private void activeUrlInfield()
 	{
@@ -758,6 +804,16 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 			}
 		}
 		
+		if (input.getHeaderField()!=null)
+		{
+		   for (int i = 0; i < input.getHeaderField().length; i++)
+		   {
+		      TableItem item = wHeaders.table.getItem(i);
+		      if (input.getHeaderField()[i]      !=null) item.setText(1, input.getHeaderField()[i]);
+		      if (input.getHeaderParameter()[i]  !=null) item.setText(2, input.getHeaderParameter()[i]);
+		   }
+		}
+		
 		wUrl.setText(Const.NVL(input.getUrl(), ""));
         wUrlInField.setSelection(input.isUrlInField());
         wUrlField.setText(Const.NVL(input.getUrlField(), ""));
@@ -772,6 +828,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		
 		wFields.setRowNums();
 		wFields.optWidth(true);
+		wHeaders.setRowNums();
+		wHeaders.optWidth(true);
 		wStepname.selectAll();
 	}
 	
@@ -787,8 +845,9 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		if (Const.isEmpty(wStepname.getText())) return;
 
 		int nrargs = wFields.nrNonEmpty();
-
-		input.allocate(nrargs);
+		int nrheaders = wHeaders.nrNonEmpty();
+		
+		input.allocate(nrargs, nrheaders);
 
 		if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.FoundArguments",String.valueOf(nrargs))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrargs;i++)
@@ -796,6 +855,14 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 			TableItem item = wFields.getNonEmpty(i);
 			input.getArgumentField()[i]       = item.getText(1);
 			input.getArgumentParameter()[i]    = item.getText(2);
+		}
+
+		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.FoundHeaders",String.valueOf(nrheaders))); //$NON-NLS-1$ //$NON-NLS-2$
+		for (int i=0; i < nrheaders; i++)
+		{
+		   TableItem item = wHeaders.getNonEmpty(i);
+		   input.getHeaderField()[i]       = item.getText(1);
+		   input.getHeaderParameter()[i]    = item.getText(2);
 		}
 
 		input.setUrl( wUrl.getText() );
@@ -829,6 +896,23 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "HTTPDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "HTTPDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
+	
+	private void getHeadersFields()
+   {
+      try
+      {
+         RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+         if (r!=null && !r.isEmpty())
+         {
+                BaseStepDialog.getFieldsFromPrevious(r, wHeaders, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null);
+         }
+      }
+      catch(KettleException ke)
+      {
+         new ErrorDialog(shell, BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+      }
+
+   }
 
 	public String toString()
 	{

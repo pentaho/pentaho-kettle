@@ -79,6 +79,9 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     
     private String	resultCodeFieldName;
     
+    private String headerParameter[];
+    private String headerField[];
+    
 
     public HTTPMeta()
     {
@@ -101,6 +104,21 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         this.argumentField = argument;
     }
 
+    /** * @return Returns the headerFields. */
+    
+    public String[] getHeaderField() {
+    
+       return headerField;
+    }
+
+    /** * @param headerField The headerField to set. */
+    
+    public void setHeaderField(String[] headerField) {
+    
+       this.headerField = headerField;
+    }
+
+
     /**
      * @return Returns the argumentDirection.
      */
@@ -117,6 +135,21 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         this.argumentParameter = argumentDirection;
     }
 
+    /**
+     * @return Returns the headerParameter.
+     */
+    public String[] getHeaderParameter()
+    {
+        return headerParameter;
+    }
+    /**
+     * @param headerParameter The headerParameter to set.
+     */
+    public void setHeaderParameter(String[] headerParameter)
+    {
+        this.headerParameter = headerParameter;
+    }
+    
     /**
      * @return Returns the procedure.
      */
@@ -179,23 +212,32 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         readData(stepnode, databases);
     }
 
-    public void allocate(int nrargs)
+    public void allocate(int nrargs, int nrqueryparams)
     {
         argumentField = new String[nrargs];
         argumentParameter = new String[nrargs];
+        headerField = new String[nrqueryparams];
+        headerParameter = new String[nrqueryparams];
     }
-
+    
     public Object clone()
     {
         HTTPMeta retval = (HTTPMeta) super.clone();
         int nrargs = argumentField.length;
-
-        retval.allocate(nrargs);
+        int nrheaderparams = headerField.length;
+        
+        retval.allocate(nrargs, nrheaderparams);
 
         for (int i = 0; i < nrargs; i++)
         {
             retval.argumentField[i] = argumentField[i];
             retval.argumentParameter[i] = argumentParameter[i];
+        }
+        
+        for (int i = 0; i < nrheaderparams; i++)
+        {
+            retval.headerField[i] = headerField[i];
+            retval.headerParameter[i] = headerParameter[i];
         }
 
         return retval;
@@ -205,15 +247,22 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     {
         int i;
         int nrargs;
-
+        int nrquery;
         nrargs = 0;
-
-        allocate(nrargs);
+        nrquery = 0;
+        
+        allocate(nrargs, nrquery);
 
         for (i = 0; i < nrargs; i++)
         {
             argumentField[i] = "arg" + i; //$NON-NLS-1$
             argumentParameter[i] = "arg"; //$NON-NLS-1$
+        }
+
+        for (i = 0; i < nrquery; i++)
+        {
+            headerField[i] = "header" + i; //$NON-NLS-1$
+            headerParameter[i] = "header"; //$NON-NLS-1$
         }
 
         fieldName = "result"; //$NON-NLS-1$
@@ -259,6 +308,13 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("        ").append(XMLHandler.addTagValue("parameter", argumentParameter[i])); //$NON-NLS-1$ //$NON-NLS-2$
             retval.append("      </arg>").append(Const.CR); //$NON-NLS-1$
         }
+        for (int i = 0; i < headerField.length; i++)
+        {
+            retval.append("      <header>" + Const.CR); //$NON-NLS-1$
+            retval.append("        " + XMLHandler.addTagValue("name", headerField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        " + XMLHandler.addTagValue("parameter", headerParameter[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("      </header>" + Const.CR); //$NON-NLS-1$
+        }
 
         retval.append("    </lookup>").append(Const.CR); //$NON-NLS-1$
 
@@ -289,7 +345,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
             nrargs = XMLHandler.countNodes(lookup, "arg"); //$NON-NLS-1$
 
-            allocate(nrargs);
+            int nrheaders = XMLHandler.countNodes(lookup, "header"); //$NON-NLS-1$
+            allocate(nrargs, nrheaders);
 
             for (int i = 0; i < nrargs; i++)
             {
@@ -297,6 +354,13 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 
                 argumentField[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
                 argumentParameter[i] = XMLHandler.getTagValue(anode, "parameter"); //$NON-NLS-1$
+            }
+
+            for (int i = 0; i < nrheaders; i++)
+            {
+                Node anode = XMLHandler.getSubNodeByNr(lookup, "header", i); //$NON-NLS-1$
+                headerField[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
+                headerParameter[i] = XMLHandler.getTagValue(anode, "parameter"); //$NON-NLS-1$
             }
 
             fieldName = XMLHandler.getTagValue(stepnode, "result", "name"); 
@@ -322,12 +386,19 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             proxyPort = rep.getStepAttributeString(id_step, "proxyPort");
             
             int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$
-            allocate(nrargs);
+            int nrheaders = rep.countNrStepAttributes(id_step, "header_name"); //$NON-NLS-1$
+            allocate(nrargs, nrheaders);
 
             for (int i = 0; i < nrargs; i++)
             {
                 argumentField[i] = rep.getStepAttributeString(id_step, i, "arg_name"); //$NON-NLS-1$
                 argumentParameter[i] = rep.getStepAttributeString(id_step, i, "arg_parameter"); //$NON-NLS-1$
+            }
+
+            for (int i = 0; i < nrheaders; i++)
+            {
+                headerField[i] = rep.getStepAttributeString(id_step, i, "header_name"); //$NON-NLS-1$
+                headerParameter[i] = rep.getStepAttributeString(id_step, i, "header_parameter"); //$NON-NLS-1$
             }
 
             fieldName = rep.getStepAttributeString(id_step, "result_name"); //$NON-NLS-1$
@@ -358,6 +429,12 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
                 rep.saveStepAttribute(id_transformation, id_step, i, "arg_parameter", argumentParameter[i]); //$NON-NLS-1$
             }
 
+            for (int i = 0; i < headerField.length; i++)
+            {
+                rep.saveStepAttribute(id_transformation, id_step, i, "header_name", headerField[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "header_parameter", headerParameter[i]); //$NON-NLS-1$
+            }
+            
             rep.saveStepAttribute(id_transformation, id_step, "result_name", fieldName); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "result_code", resultCodeFieldName);
         }

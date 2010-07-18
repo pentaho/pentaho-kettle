@@ -18,6 +18,7 @@ import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -102,6 +103,17 @@ public class HTTP extends BaseStep implements StepInterface
                 hostConfiguration.setProxy(data.realProxyHost, data.realProxyPort);
             }
             
+            // Add Custom HTTP headers
+            if(data.useHeaderParameters)
+            {
+               for (int i=0; i <data.header_parameters_nrs.length; i++)
+               {
+                  method.addRequestHeader(data.headerParameters[i].getName(),
+                        data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i]));
+                  if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.HeaderValue",data.headerParameters[i].getName(),data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i])));
+               }
+            }
+            
             InputStreamReader inputStreamReader=null;
             Object[] newRow = null;
             // Execute request
@@ -126,7 +138,7 @@ public class HTTP extends BaseStep implements StepInterface
 		                if (Const.isEmpty(encoding)) {
 			                String contentType = method.getResponseHeader("Content-Type").getValue();
 			                if (contentType!=null && contentType.contains("charset")) {
-			                	encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim();
+			                	encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").replace("\"", "").trim();
 			                }
 		                }
 		                
@@ -241,6 +253,7 @@ public class HTTP extends BaseStep implements StepInterface
 		if ( first )
 		{
 			data.outputRowMeta = getInputRowMeta().clone();
+			data.inputRowMeta = getInputRowMeta();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
 			if(meta.isUrlInField())
@@ -267,7 +280,30 @@ public class HTTP extends BaseStep implements StepInterface
 			{
 				data.realUrl=environmentSubstitute(meta.getUrl());
 			}
-		}
+			
+			// check for headers
+			int nrHeaders = meta.getHeaderField().length;
+			if (nrHeaders > 0) data.useHeaderParameters=true;
+
+			data.header_parameters_nrs = new int[nrHeaders];
+			data.headerParameters = new NameValuePair[nrHeaders];
+ 
+			// get the headers
+			for (int i=0; i < nrHeaders; i++)
+			{
+			   int fieldIndex = data.inputRowMeta.indexOfValue(meta.getHeaderField()[i]);
+			   if (fieldIndex < 0)
+			   {
+			      logError(BaseMessages.getString(PKG, "HTTP.Exception.ErrorFindingField") + meta.getHeaderField()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+			      throw new KettleStepException(BaseMessages.getString(PKG, "HTTP.Exception.ErrorFindingField",meta.getHeaderField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			   }
+
+			   data.header_parameters_nrs[i] = fieldIndex;
+			   data.headerParameters[i] = new NameValuePair(environmentSubstitute(meta.getHeaderParameter()[i]),
+			         data.outputRowMeta.getString(r,data.header_parameters_nrs[i]));
+			}
+			
+		} // end if first
 		    
 		try
 		{
