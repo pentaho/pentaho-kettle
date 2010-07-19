@@ -1191,13 +1191,14 @@ public class Trans implements VariableSpace, NamedParams
 			endDate     = currentDate;
 			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
 			log.logBasic(toString(), Messages.getString("Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
-
+			boolean lockedTable = false;
+			
             Database ldb = null;
+            DatabaseMeta logcon = transMeta.getLogConnection();
+			
             try
             {
-            	boolean lockedTable = false;
-				DatabaseMeta logcon = transMeta.getLogConnection();
-    			if (logcon!=null)
+            	if (logcon!=null)
     			{
     				if ( transMeta.getLogTable() == null )
     				{
@@ -1423,8 +1424,14 @@ public class Trans implements VariableSpace, NamedParams
                                null
                              );
                 }
-
-                if (lockedTable) {
+           }
+			catch(KettleException e)
+			{
+				throw new KettleTransException(Messages.getString("Trans.Exception.ErrorWritingLogRecordToTable",transMeta.getLogTable()), e); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			finally
+			{
+				if (lockedTable) {
                 	// Remove the -1 record again...
                 	//
 					String sql = "DELETE FROM "+logcon.quoteField(transMeta.getLogTable())+" WHERE "+logcon.quoteField("ID_BATCH")+"= -1";
@@ -1432,14 +1439,6 @@ public class Trans implements VariableSpace, NamedParams
 					
                 	ldb.unlockTables( new String[] { transMeta.getLogTable(), } );
                 }
-
-            }
-			catch(KettleException e)
-			{
-				throw new KettleTransException(Messages.getString("Trans.Exception.ErrorWritingLogRecordToTable",transMeta.getLogTable()), e); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			finally
-			{
 				if (ldb!=null) ldb.disconnect();
 			}
 

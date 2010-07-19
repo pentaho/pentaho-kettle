@@ -713,13 +713,13 @@ public class Job extends Thread implements VariableSpace, NamedParams
 		
 		resetErrors();
 		DatabaseMeta logcon = jobMeta.getLogConnection();
+		boolean lockedTable=false;
 		if (logcon!=null && !Const.isEmpty(jobMeta.getLogTable()))
 		{
 			Database ldb = new Database(logcon);
 			ldb.shareVariablesWith(this);
 			try
 			{
-				boolean lockedTable=false;
 				ldb.connect();
 				
 				// Enable transactions to make table locking possible
@@ -776,16 +776,6 @@ public class Job extends Thread implements VariableSpace, NamedParams
 				                   startDate, endDate, logDate, depDate, currentDate,
 								   null
 								   );
-                if (lockedTable) {
-
-                	// Remove the -1 record again...
-                	//
-					String sql = "DELETE FROM "+logcon.quoteField(jobMeta.getLogTable())+" WHERE "+logcon.quoteField("ID_JOB")+"= -1";
-					ldb.execStatement(sql);
-
-                	ldb.unlockTables( new String[] { jobMeta.getLogTable(), } );
-                }
-				ldb.disconnect();
 			}
 			catch(KettleDatabaseException dbe)
 			{
@@ -794,6 +784,19 @@ public class Job extends Thread implements VariableSpace, NamedParams
 			}
 			finally
 			{
+				if (lockedTable) {
+
+                	// Remove the -1 record again...
+                	//
+					String sql = "DELETE FROM "+logcon.quoteField(jobMeta.getLogTable())+" WHERE "+logcon.quoteField("ID_JOB")+"= -1";
+					try {
+						ldb.execStatement(sql);
+						ldb.unlockTables( new String[] { jobMeta.getLogTable(), } );
+					} catch (KettleDatabaseException dbe) {
+						addErrors(1);   
+						throw new KettleJobException(Messages.getString("Job.Log.UnableToProcessLoggingStart",""+jobMeta.getLogTable()), dbe);
+					}
+                }
 				ldb.disconnect();
 			}
 		}
