@@ -507,16 +507,42 @@ public class RepositoryDirectory
 	{
 		try
 		{
+			delFromRep(rep, true);
+		}
+		catch(Exception e)
+		{
+			throw new KettleException("Unexpected error deleting repository directory", e);
+		}
+	}
+	
+	public void delFromRep(Repository rep, boolean deleteNonEmptyFolder) throws KettleException
+	{
+		try
+		{
 			String trans[]   = rep.getTransformationNames(getID());
 			String jobs[]    = rep.getJobNames(getID());
-			long[] subDirectories = rep.getSubDirectoryIDs(getID());
-			if (trans.length==0 && jobs.length==0 && subDirectories.length==0)
+			int subDirectories = getNrSubdirectories();
+			if ((trans.length !=0 || jobs.length !=0 || subDirectories !=0) && !deleteNonEmptyFolder)
 			{
-				rep.deleteDirectory(getID());
+				throw new KettleException("This directory is not empty!");
 			}
 			else
 			{
-                throw new KettleException("This directory is not empty!");
+				// delete all jobs in the current directory
+                for (int i = 0; i < jobs.length; i++) {
+                	rep.delAllFromJob(rep.getJobID(jobs[i], getID()));
+                }
+                // delete all transformations in the current directory
+                for (int i = 0; i < trans.length; i++) {
+                	rep.delAllFromTrans(rep.getTransformationID(trans[i], getID()));
+                }
+                // now delete every sub directory by calling this method for each sub dir
+                for (int i = 0; i < subDirectories; i++) {
+                	RepositoryDirectory nextDir = getSubdirectory(i);
+                	nextDir.delFromRep(rep, deleteNonEmptyFolder);
+                }
+                // finally delete the directory itself
+                rep.deleteDirectory(getID());
 			}
 		}
 		catch(Exception e)
