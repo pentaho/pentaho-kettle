@@ -221,7 +221,7 @@ public class HadoopVfsFileChooserDialog extends VfsFileChooserDialog implements 
   private void createFileSystemSelectorPanel(Shell dialog) {
 
     // The file system selection label
-    wlFileSystemChoice = wlUrl = new Label(dialog, SWT.RIGHT);
+    wlFileSystemChoice = new Label(dialog, SWT.RIGHT);
     wlFileSystemChoice.setText(BaseMessages.getString(PKG, "HadoopVfsFileChooserDialog.FileSystemChoice.Label")); //$NON-NLS-1$
 
     // Our layout
@@ -385,6 +385,7 @@ public class HadoopVfsFileChooserDialog extends VfsFileChooserDialog implements 
    * Build a URL given Url and Port provided by the user.
    * 
    * @return
+   * @TODO:  relocate to a Hadoop helper class or similar
    */
   public String buildHadoopFileSystemUrlString() {
     if (wUserID.getText() == null || "".equals(wUserID.getText())) {
@@ -465,7 +466,7 @@ public class HadoopVfsFileChooserDialog extends VfsFileChooserDialog implements 
 
   private void initializeConnectionPanel(Shell dialog) {
 
-    if (initialFile instanceof HDFSFileObject) {
+    if (initialFile != null && initialFile instanceof HDFSFileObject) {
 
       setHadoopPanelEnabled(true);
 
@@ -503,8 +504,10 @@ public class HadoopVfsFileChooserDialog extends VfsFileChooserDialog implements 
   private void setDefaultFileObjectAsWorking() throws KettleException {
 
     try {
-      rootFile = defaultInitialFile.getFileSystem().getRoot();
-      initialFile = defaultInitialFile;
+      if(defaultInitialFile != null) {
+          rootFile = defaultInitialFile.getFileSystem().getRoot();
+          initialFile = defaultInitialFile;
+      }
     } catch (FileSystemException fse) {
       throw new KettleException(fse);
     }
