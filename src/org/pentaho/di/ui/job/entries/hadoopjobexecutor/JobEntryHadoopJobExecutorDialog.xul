@@ -89,7 +89,7 @@
     							<textbox id="classes-output-key-class" flex="1" multiline="false"/>
     						</row>
     						<row>
-    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyValue.Label}" />
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputValueClass.Label}" />
     							<textbox id="classes-output-value-class" flex="1" multiline="false"/>
     						</row>
     						<row>
