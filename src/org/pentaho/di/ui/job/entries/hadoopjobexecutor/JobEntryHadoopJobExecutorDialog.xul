@@ -32,8 +32,8 @@
 				<row>
 					<label value="${JobEntryHadoopJobExecutor.JarUrl.Label}" />
 					<hbox>
-						<textbox id="jar-url" flex="1" multiline="false"/>
-						<button id="validateJarUrl" label="${JobEntryHadoopJobExecutor.JarUrl.Validate}" onclick="jobEntryController.validateJarUrl()"/>
+						<textbox id="jar-url" flex="1" width="400" multiline="false"/>
+						<button id="browseJarUrl" label="${JobEntryHadoopJobExecutor.JarUrl.Browse}" onclick="jobEntryController.browseJar()"/>
 					</hbox>
 				</row>
 			</rows>
@@ -73,18 +73,6 @@
     					</columns>
     					<rows>
     						<row>
-    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Blocking.Label}" />
-    							<checkbox id="blocking" flex="1" command="jobEntryController.invertBlocking()"/>
-    						</row>
-    						<row>
-    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.NumMapTasks.Label}" />
-    							<textbox id="num-map-tasks" flex="1" multiline="false"/>
-    						</row>
-    						<row>
-    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.NumReduceTasks.Label}" />
-    							<textbox id="num-reduce-tasks" flex="1" multiline="false"/>
-    						</row>    						    						
-    						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyClass.Label}" />
     							<textbox id="classes-output-key-class" flex="1" multiline="false"/>
     						</row>
@@ -104,6 +92,14 @@
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.ReducerClass.Label}" />
     							<textbox id="classes-reducer-class" flex="1" multiline="false"/>
     						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.InputPath.Label}" />
+    							<textbox id="input-path" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.OutputPath.Label}" />
+    							<textbox id="output-path" flex="1" multiline="false"/>
+    						</row>    						
     						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.InputFormat.Label}" />
     							<textbox id="classes-input-format" flex="1" multiline="false"/>
@@ -143,12 +139,16 @@
     							<textbox id="job-tracker-port" flex="1" multiline="false"/>
     						</row>
     						<row>
-    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.InputPath.Label}" />
-    							<textbox id="input-path" flex="1" multiline="false"/>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.NumMapTasks.Label}" />
+    							<textbox id="num-map-tasks" flex="1" multiline="false"/>
     						</row>
     						<row>
-    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.OutputPath.Label}" />
-    							<textbox id="output-path" flex="1" multiline="false"/>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.NumReduceTasks.Label}" />
+    							<textbox id="num-reduce-tasks" flex="1" multiline="false"/>
+    						</row>    						    						
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Blocking.Label}" />
+    							<checkbox id="blocking" flex="1" command="jobEntryController.invertBlocking()"/>
     						</row>
     					</rows>
     				</grid>

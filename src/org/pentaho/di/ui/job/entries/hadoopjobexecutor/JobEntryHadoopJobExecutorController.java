@@ -18,8 +18,11 @@ import java.net.URL;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.hadoopjobexecutor.JobEntryHadoopJobExecutor;
 import org.pentaho.di.ui.core.PropsUI;
@@ -132,28 +135,49 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     }
   }
 
-  public void validateJarUrl() {
+  public void browseJar() {
+    FileDialog dialog = new FileDialog(Spoon.getInstance().getShell(), SWT.OPEN);
+    dialog.setFilterExtensions(new String[] { "*.jar;*.zip" });
+    dialog.setFilterNames(new String[] {"Java Archives (jar)"});
+    String prevName = jobEntry.environmentSubstitute(jarUrl);
+    String parentFolder = null;
     try {
-      URL resolvedJarUrl = null;
-      if (jarUrl.indexOf("://") == -1) {
-        // default to file://
-        File jarFile = new File(jarUrl);
-        resolvedJarUrl = jarFile.toURI().toURL();
-        if (!jarFile.exists()) {
-          MessageBox messagebox = new MessageBox(Spoon.getInstance().getShell(), SWT.ICON_ERROR | SWT.OK);
-          messagebox.setText(BaseMessages.getString(PKG, "Dialog.Error"));
-          messagebox.setMessage(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.Error.JarDoesNotExist", resolvedJarUrl.toExternalForm()));
-          messagebox.open();
+      parentFolder = KettleVFS.getFilename(KettleVFS.getFileObject(jobEntry.environmentSubstitute(jobEntry.getFilename())).getParent());
+    } catch (Exception e) {
+      // not that important
+    }
+    if (!Const.isEmpty(prevName)) {
+      try {
+        if (KettleVFS.fileExists(prevName)) {
+          dialog.setFilterPath(KettleVFS.getFilename(KettleVFS.getFileObject(prevName).getParent()));
+        } else {
 
-          return;
+          if (!prevName.endsWith(".jar") && !prevName.endsWith(".zip")) {
+            prevName = "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + Const.trim(jarUrl) + ".jar";
+          }
+          if (KettleVFS.fileExists(prevName)) {
+            setJarUrl(prevName);
+            return;
+          }
         }
-      } else {
-        resolvedJarUrl = new URL(jarUrl);
+      } catch (Exception e) {
+        dialog.setFilterPath(parentFolder);
       }
-      System.out.println("jar is valid");
-    } catch (Throwable t) {
-      // fail out, tell user
-      new ErrorDialog(Spoon.getInstance().getShell(), BaseMessages.getString(PKG, "Dialog.Error"), BaseMessages.getString(PKG, "Dialog.Error"), t); //$NON-NLS-1$
+    } else if (!Const.isEmpty(parentFolder)) {
+      dialog.setFilterPath(parentFolder);
+    }
+
+    String fname = dialog.open();
+    if (fname != null) {
+      File file = new File(fname);
+      String name = file.getName();
+      String parentFolderSelection = file.getParentFile().toString();
+
+      if (!Const.isEmpty(parentFolder) && parentFolder.equals(parentFolderSelection)) {
+        setJarUrl("${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + name);
+      } else {
+        setJarUrl(fname);
+      }
     }
   }
 
