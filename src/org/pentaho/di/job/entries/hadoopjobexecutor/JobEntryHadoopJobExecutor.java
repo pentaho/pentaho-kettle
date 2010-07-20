@@ -58,7 +58,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
   private String jarUrl = "";
 
-  private boolean isSimple = false;
+  private boolean isSimple = true;
 
   private String cmdLineArgs;
 

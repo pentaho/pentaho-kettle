@@ -14,19 +14,15 @@
 package org.pentaho.di.ui.job.entries.hadoopjobexecutor;
 
 import java.io.File;
-import java.net.URL;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.hadoopjobexecutor.JobEntryHadoopJobExecutor;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
@@ -49,7 +45,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
   private String hadoopJobName;
   private String jarUrl = "";
 
-  private boolean isSimple;
+  private boolean isSimple = true;
 
   private SimpleConfiguration sConf = new SimpleConfiguration();
   private AdvancedConfiguration aConf = new AdvancedConfiguration();
