@@ -55,8 +55,6 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
       directory.setObjectId(directoryId);
       path.add(directory);
       
-      System.out.println("+ dir '"+directory.getName()+"'");
-      
       directoryId = new LongObjectId(parentId);
       directoryRow = getDirectory(directoryId);
       parentId = directoryRow.getInteger(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT);
