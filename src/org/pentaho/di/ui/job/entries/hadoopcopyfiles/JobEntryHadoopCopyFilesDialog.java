@@ -58,7 +58,6 @@ import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.vfs.hadoopvfsfilechooserdialog.HadoopVfsFileChooserDialog;
 import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
 import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
@@ -991,7 +990,7 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
             
             IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
             
-            selectedFile = ((HadoopVfsFileChooserDialog)fileChooserDialog).open(shell, defaultInitialFile, 
+            selectedFile = fileChooserDialog.open(shell, defaultInitialFile, 
                     null, new String[]{"*.*"}, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
             
             if (selectedFile != null) {

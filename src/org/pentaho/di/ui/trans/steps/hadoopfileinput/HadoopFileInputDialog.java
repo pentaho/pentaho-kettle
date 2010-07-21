@@ -118,7 +118,6 @@ import org.pentaho.di.ui.trans.steps.textfileinput.DirectoryDialogButtonListener
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage1;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage2;
-import org.pentaho.di.ui.vfs.hadoopvfsfilechooserdialog.HadoopVfsFileChooserDialog;
 import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
 import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
@@ -646,7 +645,7 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
 						defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
 						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
 						
-						FileObject selectedFile = ((HadoopVfsFileChooserDialog)fileChooserDialog).open(shell, defaultInitialFile, null, fileFilters, fileFilterNames,
+						FileObject selectedFile = fileChooserDialog.open(shell, defaultInitialFile, null, fileFilters, fileFilterNames,
 								VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
 					    if (selectedFile != null) {
 					      wFilename.setText(selectedFile.getURL().toString());
