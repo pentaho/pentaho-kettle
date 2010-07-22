@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
@@ -66,7 +67,7 @@ public class XulDatabaseExplorerDialog {
 
 			SwtXulLoader theLoader = new SwtXulLoader();
       theLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
-			theLoader.setSettingsManager(new DefaultSettingsManager(new File("xulSettings.properties")));
+			theLoader.setSettingsManager(new DefaultSettingsManager(new File(Const.getKettleDirectory() + Const.FILE_SEPARATOR + "xulSettings.properties")));
 			theLoader.setOuterContext(this.shell);
 
 			this.container = theLoader.loadXul(XUL, new XulDatabaseExplorerResourceBundle());
