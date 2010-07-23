@@ -46,7 +46,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.job.entries.hadoopjobexecutor.UserDefinedItem;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.w3c.dom.Node;
 
 @JobEntry(id = "HadoopJobExecutorPlugin", name = "Hadoop Job Executor", categoryDescription = "Hadoop", description = "Execute Map/Reduce jobs in Hadoop", image = "HDE.png")
@@ -82,6 +81,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   private String outputPath;
 
   private boolean blocking;
+  private int loggingInterval = 60; // 60 seconds default
 
   private int numMapTasks = 1;
   private int numReduceTasks = 1;
@@ -240,6 +240,14 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     this.blocking = blocking;
   }
 
+  public int getLoggingInterval() {
+    return loggingInterval;
+  }
+
+  public void setLoggingInterval(int loggingInterval) {
+    this.loggingInterval = loggingInterval;
+  }
+
   public List<UserDefinedItem> getUserDefined() {
     return userDefined;
   }
@@ -350,8 +358,12 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         if (blocking) {
           try {
             while (!runningJob.isComplete()) {
-              printJobStatus(runningJob);
-              Thread.sleep(1000);
+              if (loggingInterval >= 1) {
+                printJobStatus(runningJob);
+                Thread.sleep(loggingInterval * 1000);
+              } else {
+                Thread.sleep(60000);
+              }
             }
             printJobStatus(runningJob);
           } catch (InterruptedException ie) {
@@ -386,6 +398,10 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     jarUrl = XMLHandler.getTagValue(entrynode, "jar_url");
     cmdLineArgs = XMLHandler.getTagValue(entrynode, "command_line_args");
     blocking = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "blocking"));
+    try {
+      loggingInterval = Integer.parseInt(XMLHandler.getTagValue(entrynode, "logging_interval"));
+    } catch (NumberFormatException nfe) {
+    }
 
     mapperClass = XMLHandler.getTagValue(entrynode, "mapper_class");
     combinerClass = XMLHandler.getTagValue(entrynode, "combiner_class");
@@ -429,6 +445,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     retval.append("      ").append(XMLHandler.addTagValue("jar_url", jarUrl));
     retval.append("      ").append(XMLHandler.addTagValue("command_line_args", cmdLineArgs));
     retval.append("      ").append(XMLHandler.addTagValue("blocking", blocking));
+    retval.append("      ").append(XMLHandler.addTagValue("logging_interval", loggingInterval));
     retval.append("      ").append(XMLHandler.addTagValue("hadoop_job_name", hadoopJobName));
 
     retval.append("      ").append(XMLHandler.addTagValue("mapper_class", mapperClass));

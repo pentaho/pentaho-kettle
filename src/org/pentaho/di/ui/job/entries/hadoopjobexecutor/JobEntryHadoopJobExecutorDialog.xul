@@ -150,6 +150,10 @@
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Blocking.Label}" />
     							<checkbox id="blocking" flex="1" command="jobEntryController.invertBlocking()"/>
     						</row>
+    						<row>
+    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Logging.Interval.Label}" />
+    							<textbox id="logging-interval" width="80" flex="1" multiline="false"/>
+    						</row>
     					</rows>
     				</grid>
     			</tabpanel>

@@ -63,6 +63,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     jobEntry.setCmdLineArgs(sConf.getCommandLineArgs());
     // advanced config
     jobEntry.setBlocking(aConf.isBlocking());
+    jobEntry.setLoggingInterval(aConf.getLoggingInterval());
     jobEntry.setMapperClass(aConf.getMapperClass());
     jobEntry.setCombinerClass(aConf.getCombinerClass());
     jobEntry.setReducerClass(aConf.getReducerClass());
@@ -101,6 +102,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
         userDefined.addAll(jobEntry.getUserDefined());
       }
       aConf.setBlocking(jobEntry.isBlocking());
+      aConf.setLoggingInterval(jobEntry.getLoggingInterval());
       aConf.setMapperClass(jobEntry.getMapperClass());
       aConf.setCombinerClass(jobEntry.getCombinerClass());
       aConf.setReducerClass(jobEntry.getReducerClass());
@@ -134,7 +136,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
   public void browseJar() {
     FileDialog dialog = new FileDialog(Spoon.getInstance().getShell(), SWT.OPEN);
     dialog.setFilterExtensions(new String[] { "*.jar;*.zip" });
-    dialog.setFilterNames(new String[] {"Java Archives (jar)"});
+    dialog.setFilterNames(new String[] { "Java Archives (jar)" });
     String prevName = jobEntry.environmentSubstitute(jarUrl);
     String parentFolder = null;
     try {
@@ -292,6 +294,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     public static final String INPUT_PATH = "inputPath"; //$NON-NLS-1$
     public static final String OUTPUT_PATH = "outputPath"; //$NON-NLS-1$
     public static final String BLOCKING = "blocking"; //$NON-NLS-1$
+    public static final String LOGGING_INTERVAL = "loggingInterval"; //$NON-NLS-1$
     public static final String HDFS_HOSTNAME = "hdfsHostname"; //$NON-NLS-1$
     public static final String HDFS_PORT = "hdfsPort"; //$NON-NLS-1$
     public static final String JOB_TRACKER_HOSTNAME = "jobTrackerHostname"; //$NON-NLS-1$
@@ -319,6 +322,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     private int numReduceTasks = 1;
 
     private boolean blocking;
+    private int loggingInterval = 60; // 60 seconds
 
     public String getOutputKeyClass() {
       return outputKeyClass;
@@ -500,6 +504,18 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       firePropertyChange(AdvancedConfiguration.BLOCKING, previousVal, newVal);
     }
 
+    public int getLoggingInterval() {
+      return loggingInterval;
+    }
+
+    public void setLoggingInterval(int loggingInterval) {
+      int previousVal = this.loggingInterval;
+      int newVal = loggingInterval;
+
+      this.loggingInterval = loggingInterval;
+      firePropertyChange(AdvancedConfiguration.LOGGING_INTERVAL, previousVal, newVal);
+    }
+
     public int getNumMapTasks() {
       return numMapTasks;
     }
@@ -523,5 +539,6 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       this.numReduceTasks = numReduceTasks;
       firePropertyChange(AdvancedConfiguration.NUM_REDUCE_TASKS, previousVal, newVal);
     }
+
   }
 }

@@ -35,6 +35,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.components.XulRadio;
+import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -108,11 +109,11 @@ public class JobEntryHadoopJobExecutorDialog extends JobEntryDialog implements J
       }
 
     };
-
     bf.createBinding("num-map-tasks", "value", controller.getAdvancedConfiguration(), AdvancedConfiguration.NUM_MAP_TASKS, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("num-reduce-tasks", "value", controller.getAdvancedConfiguration(), AdvancedConfiguration.NUM_REDUCE_TASKS, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ 
 
     bf.createBinding("blocking", "selected", controller.getAdvancedConfiguration(), AdvancedConfiguration.BLOCKING); //$NON-NLS-1$ //$NON-NLS-2$ 
+    bf.createBinding("logging-interval", "value", controller.getAdvancedConfiguration(), AdvancedConfiguration.LOGGING_INTERVAL, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("input-path", "value", controller.getAdvancedConfiguration(), AdvancedConfiguration.INPUT_PATH); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("output-path", "value", controller.getAdvancedConfiguration(), AdvancedConfiguration.OUTPUT_PATH); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -127,6 +128,15 @@ public class JobEntryHadoopJobExecutorDialog extends JobEntryDialog implements J
 
     ((XulVbox) container.getDocumentRoot().getElementById("advanced-configuration")).setVisible(!this.jobEntry.isSimple()); //$NON-NLS-1$
 
+    XulTextbox loggingInterval = (XulTextbox) container.getDocumentRoot().getElementById("logging-interval");
+    loggingInterval.setValue("" + controller.getAdvancedConfiguration().getLoggingInterval());
+
+    XulTextbox mapTasks = (XulTextbox) container.getDocumentRoot().getElementById("num-map-tasks");
+    mapTasks.setValue("" + controller.getAdvancedConfiguration().getNumMapTasks());
+
+    XulTextbox reduceTasks = (XulTextbox) container.getDocumentRoot().getElementById("num-reduce-tasks");
+    reduceTasks.setValue("" + controller.getAdvancedConfiguration().getNumReduceTasks());
+    
     XulTree variablesTree = (XulTree) container.getDocumentRoot().getElementById("fields-table"); //$NON-NLS-1$
     bf.setBindingType(Type.ONE_WAY);
     bf.createBinding(controller.getUserDefined(), "children", variablesTree, "elements"); //$NON-NLS-1$//$NON-NLS-2$
