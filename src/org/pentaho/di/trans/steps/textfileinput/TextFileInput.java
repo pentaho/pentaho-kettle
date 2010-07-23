@@ -606,13 +606,23 @@ public class TextFileInput extends BaseStep implements StepInterface
     /**
      * @deprecated Use {@link #convertLineToRow(TextFileLine,InputFileMetaInterface,Object[],int,RowMetaInterface,RowMetaInterface,String,long, FileErrorHandler)} instead
      */
-    public static final Object[] convertLineToRow(LogChannelInterface log, TextFileLine textFileLine, InputFileMetaInterface info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, FileErrorHandler errorHandler) throws KettleException
+    public static final Object[] convertLineToRow(LogChannelInterface log, TextFileLine textFileLine, InputFileMetaInterface info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, FileErrorHandler errorHandler,
+    		boolean addShortFilename, boolean addExtension, boolean addPath, boolean addSize, boolean addIsHidden, boolean addLastModificationDate, boolean addUri, boolean addRootUri,
+    		String shortFilename, String path, boolean hidden, Date modificationDateTime, String uri, String rooturi, String extension, long size) throws KettleException
     {
         return convertLineToRow(log, textFileLine, info, null, 0, outputRowMeta, convertRowMeta, fname,
-                rowNr, delimiter, errorHandler);
+                rowNr, delimiter, errorHandler,
+                addShortFilename, addExtension, addPath, addSize, addIsHidden, addLastModificationDate, addUri, addRootUri,
+                shortFilename, path, hidden, modificationDateTime, uri, rooturi, extension, size);
     }
 
-    public static final Object[] convertLineToRow(LogChannelInterface log, TextFileLine textFileLine, InputFileMetaInterface info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, FileErrorHandler errorHandler) throws KettleException
+    public static final Object[] convertLineToRow(LogChannelInterface log, TextFileLine textFileLine, 
+    		InputFileMetaInterface info, Object[] passThruFields, int nrPassThruFields, 
+    		RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, 
+    		long rowNr, String delimiter, FileErrorHandler errorHandler,
+			boolean addShortFilename, boolean addExtension, boolean addPath, boolean addSize, boolean addIsHidden, boolean addLastModificationDate, boolean addUri, boolean addRootUri,
+			String shortFilename, String path, boolean hidden, Date modificationDateTime, String uri, String rooturi, String extension, long size) 
+    throws KettleException
     {
       if (textFileLine == null || textFileLine.line == null /*|| textFileLine.line.length() == 0*/) return null;
 
@@ -758,6 +768,58 @@ public class TextFileInput extends BaseStep implements StepInterface
                 r[index] = new Long(rowNr);
                 index++;
             }
+            
+            // Possibly add short filename...
+    		if (addShortFilename)
+    		{
+                r[index] = shortFilename;
+                index++;
+    		}
+    		// Add Extension
+    		if (addExtension)
+    		{
+                r[index] = extension;
+                index++;
+    		}
+    		// add path
+    		if (addPath)
+    		{    			
+                r[index] = path;
+                index++;
+    		}
+    		// Add Size
+    		if (addSize)
+    		{
+                r[index] = new Long(size);
+                index++;
+    		}
+    		// add Hidden
+    		if (addIsHidden)
+    		{
+                r[index] = hidden;
+                index++;
+    		}
+    		// Add modification date
+    		if (addLastModificationDate)
+    		{
+                r[index] = modificationDateTime;
+                index++;
+    		}
+    		// Add Uri
+    		if (addUri)
+    		{
+                r[index] = uri;
+                index++;
+    		}
+    		// Add RootUri
+    		if (addRootUri)
+    		{
+                r[index] = rooturi;
+                index++;
+    		}
+
+            
+            
         }
         catch (Exception e)
         {
@@ -970,7 +1032,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 					data.pageLinesRead++;
 					data.lineInFile ++;
 					long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;
-					r = convertLineToRow(log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.separator, data.dataErrorLineHandler);
+					r = convertLineToRow(log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.separator, data.dataErrorLineHandler,
+							data.addShortFilename, data.addExtension, data.addPath, data.addSize, data.addIsHidden, data.addLastModificationDate, data.addUri, data.addRootUri,
+					data.shortFilename,data.path, data.hidden, 
+					data.lastModificationDateTime, data.uriName, data.rootUriName, data.extension, data.size);
 					if (r != null) putrow = true;
 					
 					// Possible fix for bug PDI-1121 - paged layout header and line count off by 1 
@@ -1054,7 +1119,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 					{
 						data.lineInFile ++;
 						long useNumber = meta.isRowNumberByFile() ? data.lineInFile : getLinesWritten() + 1;
-						r = convertLineToRow(log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.separator, data.dataErrorLineHandler);
+						r = convertLineToRow(log, textLine, meta, data.currentPassThruFieldsRow, data.nrPassThruFields, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.separator, data.dataErrorLineHandler,
+								data.addShortFilename, data.addExtension, data.addPath, data.addSize, data.addIsHidden, data.addLastModificationDate, data.addUri, data.addRootUri, 
+								data.shortFilename, data.path, data.hidden, 
+								data.lastModificationDateTime, data.uriName, data.rootUriName, data.extension, data.size);
 						if (r != null)
 						{
 							if (log.isRowLevel()) logRowlevel("Found data row: "+data.outputRowMeta.getString(r));
@@ -1240,6 +1308,40 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.isLastFile = (data.filenr == data.files.nrOfFiles() - 1);
 			data.file = data.files.getFile(data.filenr);
 			data.filename = KettleVFS.getFilename( data.file );
+
+			// Add additional fields?
+			if (data.addShortFilename)
+			{
+				data.shortFilename  =  data.file.getName().getBaseName();
+			}
+			if (data.addPath)
+			{
+				data.path = KettleVFS.getFilename(data.file.getParent());
+			}
+			if (data.addIsHidden)
+			{
+				data.hidden =  data.file.isHidden();
+			}
+			if (data.addExtension)
+			{
+				data.extension =  data.file.getName().getExtension();
+			}
+			if (data.addLastModificationDate)
+			{
+				data.lastModificationDateTime =  new Date(data.file.getContent().getLastModifiedTime());
+			}
+			if (data.addUri)
+			{
+				data.uriName = data.file.getName().getURI();
+			}
+			if (data.addRootUri)
+			{
+				data.rootUriName = data.file.getName().getRootURI();
+			}
+			if (data.addSize)
+			{
+				data.size = new Long( data.file.getContent().getSize());
+			}
 			data.lineInFile = 0;
             if (meta.isPassingThruFields())
                 data.currentPassThruFieldsRow = data.passThruFields.get(data.file);
@@ -1432,6 +1534,39 @@ public class TextFileInput extends BaseStep implements StepInterface
             // Handle the possibility of a variable substitution 
             data.separator= environmentSubstitute(meta.getSeparator());
                     
+            // Add additional fields
+            if(!Const.isEmpty(meta.getShortFileNameField()))
+            {
+            	data.addShortFilename=true;
+            }
+            if(!Const.isEmpty(meta.getPathField()))
+            {
+            	data.addPath=true;
+            }
+            if(!Const.isEmpty(meta.getExtensionField()))
+            {
+            	data.addExtension=true;
+            }
+            if(!Const.isEmpty(meta.getSizeField()))
+            {
+            	data.addSize=true;
+            }
+            if(!Const.isEmpty(meta.isHiddenField()))
+            {
+            	data.addIsHidden=true;
+            }
+            if(!Const.isEmpty(meta.getLastModificationDateField()))
+            {
+            	data.addLastModificationDate=true;
+            }
+            if(!Const.isEmpty(meta.getUriField()))
+            {
+            	data.addUri=true;
+            }
+            if(!Const.isEmpty(meta.getRootUriField()))
+            {
+            	data.addRootUri=true;
+            }
 			return true;
 		}
 		return false;

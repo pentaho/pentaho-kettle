@@ -14,6 +14,7 @@
 
 package org.pentaho.di.trans.steps.ldifinput;
 
+import java.util.Date;
 import java.util.Enumeration;
 
 import netscape.ldap.LDAPAttribute;
@@ -162,11 +163,11 @@ public class LDIFInput extends BaseStep implements StepInterface
 						}
 					}
 				}    // End of loop over fields...
-				int rowIndex = meta.getInputFields().length;
+				int rowIndex = data.totalpreviousfields+meta.getInputFields().length;
 				
 				// See if we need to add the filename to the row...
 				if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
-					outputRowData[data.totalpreviousfields+rowIndex++] = KettleVFS.getFilename(data.file);
+					outputRowData[rowIndex++] = data.filename;
 				}
 				 // See if we need to add the row number to the row...  
 		        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
@@ -185,7 +186,46 @@ public class LDIFInput extends BaseStep implements StepInterface
 		        {
 		            outputRowData[data.totalpreviousfields+rowIndex++] = data.recordLDIF.getDN();
 		        }
-
+		        // Possibly add short filename...
+				if (meta.getShortFileNameField()!=null && meta.getShortFileNameField().length()>0)
+				{
+					outputRowData[rowIndex++] = data.shortFilename;
+				}
+				// Add Extension
+				if (meta.getExtensionField()!=null && meta.getExtensionField().length()>0)
+				{
+					outputRowData[rowIndex++] = data.extension;
+				}
+				// add path
+				if (meta.getPathField()!=null && meta.getPathField().length()>0)
+				{
+					outputRowData[rowIndex++] = data.path;
+				}
+				// Add Size
+				if (meta.getSizeField()!=null && meta.getSizeField().length()>0)
+				{
+					outputRowData[rowIndex++] = new Long(data.size);
+				}
+				// add Hidden
+				if (meta.isHiddenField()!=null && meta.isHiddenField().length()>0)
+				{
+					outputRowData[rowIndex++] = new Boolean(data.hidden);
+				}
+				// Add modification date
+				if (meta.getLastModificationDateField()!=null && meta.getLastModificationDateField().length()>0)
+				{
+					outputRowData[rowIndex++] = data.lastModificationDateTime;
+				}
+				// Add Uri
+				if (meta.getUriField()!=null && meta.getUriField().length()>0)
+				{
+					outputRowData[rowIndex++] = data.uriName;
+				}
+				// Add RootUri
+				if (meta.getRootUriField()!=null && meta.getRootUriField().length()>0)
+				{
+					outputRowData[rowIndex++] = data.rootUriName;
+				}
 				RowMetaInterface irow = getInputRowMeta();
 				
 				data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
@@ -324,8 +364,45 @@ public class LDIFInput extends BaseStep implements StepInterface
 
 				data.file= KettleVFS.getFileObject(filename, getTransMeta());
 			}
-						
+			data.filename=KettleVFS.getFilename(data.file);			
+			// Add additional fields?
+			if (meta.getShortFileNameField()!=null && meta.getShortFileNameField().length()>0)
+			{
+				data.shortFilename  =  data.file.getName().getBaseName();
+			}
+			try {
 
+				if (meta.getPathField()!=null && meta.getPathField().length()>0)
+				{
+					data.path = KettleVFS.getFilename(data.file.getParent());
+				}
+				if (meta.isHiddenField()!=null && meta.isHiddenField().length()>0)
+				{
+					data.hidden =  data.file.isHidden();
+				}
+				if (meta.getExtensionField()!=null && meta.getExtensionField().length()>0)
+				{
+					data.extension =  data.file.getName().getExtension();
+				}
+				if (meta.getLastModificationDateField()!=null && meta.getLastModificationDateField().length()>0)
+				{
+					data.lastModificationDateTime =  new Date(data.file.getContent().getLastModifiedTime());
+				}
+				if (meta.getUriField()!=null && meta.getUriField().length()>0)
+				{
+					data.uriName = data.file.getName().getURI();
+				}
+				if (meta.getRootUriField()!=null && meta.getRootUriField().length()>0)
+				{
+					data.rootUriName = data.file.getName().getRootURI();
+				}
+				if (meta.getSizeField()!=null && meta.getSizeField().length()>0)
+				{
+					data.size = new Long( data.file.getContent().getSize());
+				}
+			}catch(Exception e){ 
+				throw new KettleException(e);
+			}
 			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.OpeningFile", data.file.toString()));
     
 			if(meta.AddToResultFilename())

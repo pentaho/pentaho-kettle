@@ -254,6 +254,45 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     
 	private ModifyListener lsMod;
 	
+	private CTabItem     wAdditionalFieldsTab;
+    private Composite   wAdditionalFieldsComp;
+    private FormData	fdAdditionalFieldsComp;
+    
+    private Label	    wlShortFileFieldName;
+    private FormData	fdlShortFileFieldName;
+    private Text		wShortFileFieldName;
+    private FormData    fdShortFileFieldName;
+    private Label	    wlPathFieldName;
+    private FormData	fdlPathFieldName;
+    private Text		wPathFieldName;
+    private FormData    fdPathFieldName;
+
+    private Label	    wlIsHiddenName;
+    private FormData	fdlIsHiddenName;
+    private Text		wIsHiddenName;
+    private FormData    fdIsHiddenName;
+    private Label	    wlLastModificationTimeName;
+    private FormData	fdlLastModificationTimeName;
+    private Text		wLastModificationTimeName;
+    private FormData    fdLastModificationTimeName;
+    private Label	    wlUriName;
+    private FormData	fdlUriName;
+    private Text		wUriName;
+    private FormData    fdUriName;
+    private Label	    wlRootUriName;
+    private FormData	fdlRootUriName;
+    private Text		wRootUriName;
+    private FormData    fdRootUriName;
+    private Label	    wlExtensionFieldName;
+    private FormData	fdlExtensionFieldName;
+    private Text		wExtensionFieldName;
+    private FormData    fdExtensionFieldName;
+    private Label	    wlSizeFieldName;
+    private FormData	fdlSizeFieldName;
+    private Text		wSizeFieldName;
+    private FormData    fdSizeFieldName;
+
+	
 	public ExcelInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -734,80 +773,13 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdStoponempty.right= new FormAttachment(100, 0);
 		wStoponempty.setLayoutData(fdStoponempty);
 
-		wlInclFilenameField=new Label(wContentComp, SWT.RIGHT);
-		wlInclFilenameField.setText(BaseMessages.getString(PKG, "ExcelInputDialog.InclFilenameField.Label"));
- 		props.setLook(wlInclFilenameField);
-		fdlInclFilenameField=new FormData();
-		fdlInclFilenameField.left  = new FormAttachment(0, 0);
-		fdlInclFilenameField.top   = new FormAttachment(wStoponempty, margin);
-		fdlInclFilenameField.right = new FormAttachment(middle, -margin);
-		wlInclFilenameField.setLayoutData(fdlInclFilenameField);
-		wInclFilenameField=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wInclFilenameField);
-		wInclFilenameField.addModifyListener(lsMod);
-		fdInclFilenameField=new FormData();
-		fdInclFilenameField.left = new FormAttachment(middle, 0);
-		fdInclFilenameField.top  = new FormAttachment(wStoponempty, margin);
-		fdInclFilenameField.right= new FormAttachment(100, 0);
-		wInclFilenameField.setLayoutData(fdInclFilenameField);
-
-		wlInclSheetnameField=new Label(wContentComp, SWT.RIGHT);
-		wlInclSheetnameField.setText(BaseMessages.getString(PKG, "ExcelInputDialog.InclSheetnameField.Label"));
- 		props.setLook(wlInclSheetnameField);
-		fdlInclSheetnameField=new FormData();
-		fdlInclSheetnameField.left  = new FormAttachment(0, 0);
-		fdlInclSheetnameField.top   = new FormAttachment(wInclFilenameField, margin);
-		fdlInclSheetnameField.right = new FormAttachment(middle, -margin);
-		wlInclSheetnameField.setLayoutData(fdlInclSheetnameField);
-		wInclSheetnameField=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wInclSheetnameField);
-		wInclSheetnameField.addModifyListener(lsMod);
-		fdInclSheetnameField=new FormData();
-		fdInclSheetnameField.left = new FormAttachment(middle, 0);
-		fdInclSheetnameField.top  = new FormAttachment(wInclFilenameField, margin);
-		fdInclSheetnameField.right= new FormAttachment(100, 0);
-		wInclSheetnameField.setLayoutData(fdInclSheetnameField);
-
-		wlInclSheetRownumField=new Label(wContentComp, SWT.RIGHT);
-		wlInclSheetRownumField.setText(BaseMessages.getString(PKG, "ExcelInputDialog.InclSheetRownumField.Label"));
- 		props.setLook(wlInclSheetRownumField);
-		fdlInclSheetRownumField=new FormData();
-		fdlInclSheetRownumField.left  = new FormAttachment(0, 0);
-		fdlInclSheetRownumField.top   = new FormAttachment(wInclSheetnameField, margin);
-		fdlInclSheetRownumField.right = new FormAttachment(middle, -margin);
-		wlInclSheetRownumField.setLayoutData(fdlInclSheetRownumField);
-		wInclSheetRownumField=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wInclSheetRownumField);
-		wInclSheetRownumField.addModifyListener(lsMod);
-		fdInclSheetRownumField=new FormData();
-		fdInclSheetRownumField.left = new FormAttachment(middle, 0);
-		fdInclSheetRownumField.top  = new FormAttachment(wInclSheetnameField, margin);
-		fdInclSheetRownumField.right= new FormAttachment(100, 0);
-		wInclSheetRownumField.setLayoutData(fdInclSheetRownumField);
-		
-		wlInclRownumField=new Label(wContentComp, SWT.RIGHT);
-		wlInclRownumField.setText(BaseMessages.getString(PKG, "ExcelInputDialog.InclRownumField.Label"));
- 		props.setLook(wlInclRownumField);
-		fdlInclRownumField=new FormData();
-		fdlInclRownumField.left  = new FormAttachment(0, 0);
-		fdlInclRownumField.top   = new FormAttachment(wInclSheetRownumField, margin);
-		fdlInclRownumField.right = new FormAttachment(middle, -margin);
-		wlInclRownumField.setLayoutData(fdlInclRownumField);
-		wInclRownumField=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wInclRownumField);
-		wInclRownumField.addModifyListener(lsMod);
-		fdInclRownumField=new FormData();
-		fdInclRownumField.left = new FormAttachment(middle, 0);
-		fdInclRownumField.top  = new FormAttachment(wInclSheetRownumField, margin);
-		fdInclRownumField.right= new FormAttachment(100, 0);
-		wInclRownumField.setLayoutData(fdInclRownumField);	
 		
 		wlLimit=new Label(wContentComp, SWT.RIGHT);
 		wlLimit.setText(BaseMessages.getString(PKG, "ExcelInputDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.top  = new FormAttachment(wInclRownumField, margin);
+		fdlLimit.top  = new FormAttachment(wStoponempty, margin);
 		fdlLimit.right= new FormAttachment(middle, -margin);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -815,7 +787,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();
 		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wInclRownumField, margin);
+		fdLimit.top  = new FormAttachment(wStoponempty, margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 		
@@ -985,7 +957,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wFieldsComp.layout();
 		wFieldsTab.setControl(wFieldsComp);
  		props.setLook(wFieldsComp);
-		
+ 		
+        addAdditionalFieldsTab();
+ 		
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
 		fdTabFolder.top   = new FormAttachment(wlStatusMessage, margin);
@@ -1321,6 +1295,16 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
         if (meta.getLineNumberFilesDestinationDirectory()!=null) wLineNrDestDir.setText(meta.getLineNumberFilesDestinationDirectory());
         if (meta.getLineNumberFilesExtension()!=null) wLineNrExt.setText(meta.getLineNumberFilesExtension());
+        if(meta.getPathField()!=null) wPathFieldName.setText(meta.getPathField());
+        if(meta.getShortFileNameField()!=null) wShortFileFieldName.setText(meta.getShortFileNameField());
+        
+        if(meta.getPathField()!=null) wPathFieldName.setText(meta.getPathField());
+        if(meta.isHiddenField()!=null) wIsHiddenName.setText(meta.isHiddenField());
+        if(meta.getLastModificationDateField()!=null) wLastModificationTimeName.setText(meta.getLastModificationDateField());
+        if(meta.getUriField()!=null) wUriName.setText(meta.getUriField());
+        if(meta.getRootUriField()!=null) wRootUriName.setText(meta.getRootUriField());
+        if(meta.getExtensionField()!=null) wExtensionFieldName.setText(meta.getExtensionField());
+        if(meta.getSizeField()!=null) wSizeFieldName.setText(meta.getSizeField());
 
 		setFlags();
 		
@@ -1418,7 +1402,14 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         meta.setErrorFilesExtension( wErrorExt.getText() );
         meta.setLineNumberFilesDestinationDirectory( wLineNrDestDir.getText() );
         meta.setLineNumberFilesExtension( wLineNrExt.getText() );
-		
+        meta.setShortFileNameField(wShortFileFieldName.getText());
+        meta.setPathField(wPathFieldName.getText());
+        meta.setIsHiddenField(wIsHiddenName.getText());
+        meta.setLastModificationDateField(wLastModificationTimeName.getText());
+        meta.setUriField(wUriName.getText());
+        meta.setRootUriField(wRootUriName.getText());
+        meta.setExtensionField(wExtensionFieldName.getText());
+        meta.setSizeField(wSizeFieldName.getText());
 	}
 
     private void addErrorTab()
@@ -2082,4 +2073,264 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	{
 		return this.getClass().getName();
 	}
+	 private void addAdditionalFieldsTab()
+	    {
+	    	// ////////////////////////
+			// START OF ADDITIONAL FIELDS TAB ///
+			// ////////////////////////
+	    	wAdditionalFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
+	    	wAdditionalFieldsTab.setText(BaseMessages.getString(PKG, "ExcelInputDialog.AdditionalFieldsTab.TabTitle"));
+
+	    	wAdditionalFieldsComp = new Composite(wTabFolder, SWT.NONE);
+			props.setLook(wAdditionalFieldsComp);
+
+			FormLayout fieldsLayout = new FormLayout();
+			fieldsLayout.marginWidth = 3;
+			fieldsLayout.marginHeight = 3;
+			wAdditionalFieldsComp.setLayout(fieldsLayout);
+
+			wlInclFilenameField=new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlInclFilenameField.setText(BaseMessages.getString(PKG, "ExcelInputDialog.InclFilenameField.Label"));
+	 		props.setLook(wlInclFilenameField);
+			fdlInclFilenameField=new FormData();
+			fdlInclFilenameField.left  = new FormAttachment(0, 0);
+			fdlInclFilenameField.top   = new FormAttachment(wStepname, margin);
+			fdlInclFilenameField.right = new FormAttachment(middle, -margin);
+			wlInclFilenameField.setLayoutData(fdlInclFilenameField);
+			wInclFilenameField=new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+	 		props.setLook(wInclFilenameField);
+			wInclFilenameField.addModifyListener(lsMod);
+			fdInclFilenameField=new FormData();
+			fdInclFilenameField.left = new FormAttachment(middle, 0);
+			fdInclFilenameField.top  = new FormAttachment(wStepname, margin);
+			fdInclFilenameField.right= new FormAttachment(100, 0);
+			wInclFilenameField.setLayoutData(fdInclFilenameField);
+
+			wlInclSheetnameField=new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlInclSheetnameField.setText(BaseMessages.getString(PKG, "ExcelInputDialog.InclSheetnameField.Label"));
+	 		props.setLook(wlInclSheetnameField);
+			fdlInclSheetnameField=new FormData();
+			fdlInclSheetnameField.left  = new FormAttachment(0, 0);
+			fdlInclSheetnameField.top   = new FormAttachment(wInclFilenameField, margin);
+			fdlInclSheetnameField.right = new FormAttachment(middle, -margin);
+			wlInclSheetnameField.setLayoutData(fdlInclSheetnameField);
+			wInclSheetnameField=new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+	 		props.setLook(wInclSheetnameField);
+			wInclSheetnameField.addModifyListener(lsMod);
+			fdInclSheetnameField=new FormData();
+			fdInclSheetnameField.left = new FormAttachment(middle, 0);
+			fdInclSheetnameField.top  = new FormAttachment(wInclFilenameField, margin);
+			fdInclSheetnameField.right= new FormAttachment(100, 0);
+			wInclSheetnameField.setLayoutData(fdInclSheetnameField);
+
+			wlInclSheetRownumField=new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlInclSheetRownumField.setText(BaseMessages.getString(PKG, "ExcelInputDialog.InclSheetRownumField.Label"));
+	 		props.setLook(wlInclSheetRownumField);
+			fdlInclSheetRownumField=new FormData();
+			fdlInclSheetRownumField.left  = new FormAttachment(0, 0);
+			fdlInclSheetRownumField.top   = new FormAttachment(wInclSheetnameField, margin);
+			fdlInclSheetRownumField.right = new FormAttachment(middle, -margin);
+			wlInclSheetRownumField.setLayoutData(fdlInclSheetRownumField);
+			wInclSheetRownumField=new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+	 		props.setLook(wInclSheetRownumField);
+			wInclSheetRownumField.addModifyListener(lsMod);
+			fdInclSheetRownumField=new FormData();
+			fdInclSheetRownumField.left = new FormAttachment(middle, 0);
+			fdInclSheetRownumField.top  = new FormAttachment(wInclSheetnameField, margin);
+			fdInclSheetRownumField.right= new FormAttachment(100, 0);
+			wInclSheetRownumField.setLayoutData(fdInclSheetRownumField);
+			
+			wlInclRownumField=new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlInclRownumField.setText(BaseMessages.getString(PKG, "ExcelInputDialog.InclRownumField.Label"));
+	 		props.setLook(wlInclRownumField);
+			fdlInclRownumField=new FormData();
+			fdlInclRownumField.left  = new FormAttachment(0, 0);
+			fdlInclRownumField.top   = new FormAttachment(wInclSheetRownumField, margin);
+			fdlInclRownumField.right = new FormAttachment(middle, -margin);
+			wlInclRownumField.setLayoutData(fdlInclRownumField);
+			wInclRownumField=new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+	 		props.setLook(wInclRownumField);
+			wInclRownumField.addModifyListener(lsMod);
+			fdInclRownumField=new FormData();
+			fdInclRownumField.left = new FormAttachment(middle, 0);
+			fdInclRownumField.top  = new FormAttachment(wInclSheetRownumField, margin);
+			fdInclRownumField.right= new FormAttachment(100, 0);
+			wInclRownumField.setLayoutData(fdInclRownumField);	
+			
+			
+			// ShortFileFieldName line
+			wlShortFileFieldName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlShortFileFieldName.setText(BaseMessages.getString(PKG, "ExcelInputDialog.ShortFileFieldName.Label"));
+			props.setLook(wlShortFileFieldName);
+			fdlShortFileFieldName = new FormData();
+			fdlShortFileFieldName.left = new FormAttachment(0, 0);
+			fdlShortFileFieldName.top = new FormAttachment(wInclRownumField, margin);
+			fdlShortFileFieldName.right = new FormAttachment(middle, -margin);
+			wlShortFileFieldName.setLayoutData(fdlShortFileFieldName);
+
+			wShortFileFieldName = new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wShortFileFieldName);
+			wShortFileFieldName.addModifyListener(lsMod);
+			fdShortFileFieldName = new FormData();
+			fdShortFileFieldName.left = new FormAttachment(middle, 0);
+			fdShortFileFieldName.right = new FormAttachment(100, -margin);
+			fdShortFileFieldName.top = new FormAttachment(wInclRownumField, margin);
+			wShortFileFieldName.setLayoutData(fdShortFileFieldName);
+			
+			
+			// ExtensionFieldName line
+			wlExtensionFieldName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlExtensionFieldName.setText(BaseMessages.getString(PKG, "ExcelInputDialog.ExtensionFieldName.Label"));
+			props.setLook(wlExtensionFieldName);
+			fdlExtensionFieldName = new FormData();
+			fdlExtensionFieldName.left = new FormAttachment(0, 0);
+			fdlExtensionFieldName.top = new FormAttachment(wShortFileFieldName, margin);
+			fdlExtensionFieldName.right = new FormAttachment(middle, -margin);
+			wlExtensionFieldName.setLayoutData(fdlExtensionFieldName);
+
+			wExtensionFieldName = new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wExtensionFieldName);
+			wExtensionFieldName.addModifyListener(lsMod);
+			fdExtensionFieldName = new FormData();
+			fdExtensionFieldName.left = new FormAttachment(middle, 0);
+			fdExtensionFieldName.right = new FormAttachment(100, -margin);
+			fdExtensionFieldName.top = new FormAttachment(wShortFileFieldName, margin);
+			wExtensionFieldName.setLayoutData(fdExtensionFieldName);
+			
+			
+			// PathFieldName line
+			wlPathFieldName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlPathFieldName.setText(BaseMessages.getString(PKG, "ExcelInputDialog.PathFieldName.Label"));
+			props.setLook(wlPathFieldName);
+			fdlPathFieldName = new FormData();
+			fdlPathFieldName.left = new FormAttachment(0, 0);
+			fdlPathFieldName.top = new FormAttachment(wExtensionFieldName, margin);
+			fdlPathFieldName.right = new FormAttachment(middle, -margin);
+			wlPathFieldName.setLayoutData(fdlPathFieldName);
+
+			wPathFieldName = new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wPathFieldName);
+			wPathFieldName.addModifyListener(lsMod);
+			fdPathFieldName = new FormData();
+			fdPathFieldName.left = new FormAttachment(middle, 0);
+			fdPathFieldName.right = new FormAttachment(100, -margin);
+			fdPathFieldName.top = new FormAttachment(wExtensionFieldName, margin);
+			wPathFieldName.setLayoutData(fdPathFieldName);
+			
+
+
+	  		// SizeFieldName line
+			wlSizeFieldName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlSizeFieldName.setText(BaseMessages.getString(PKG, "ExcelInputDialog.SizeFieldName.Label"));
+			props.setLook(wlSizeFieldName);
+			fdlSizeFieldName = new FormData();
+			fdlSizeFieldName.left = new FormAttachment(0, 0);
+			fdlSizeFieldName.top = new FormAttachment(wPathFieldName, margin);
+			fdlSizeFieldName.right = new FormAttachment(middle, -margin);
+			wlSizeFieldName.setLayoutData(fdlSizeFieldName);
+
+			wSizeFieldName = new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wSizeFieldName);
+			wSizeFieldName.addModifyListener(lsMod);
+			fdSizeFieldName = new FormData();
+			fdSizeFieldName.left = new FormAttachment(middle, 0);
+			fdSizeFieldName.right = new FormAttachment(100, -margin);
+			fdSizeFieldName.top = new FormAttachment(wPathFieldName, margin);
+			wSizeFieldName.setLayoutData(fdSizeFieldName);
+			
+			
+			// IsHiddenName line
+			wlIsHiddenName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlIsHiddenName.setText(BaseMessages.getString(PKG, "ExcelInputDialog.IsHiddenName.Label"));
+			props.setLook(wlIsHiddenName);
+			fdlIsHiddenName = new FormData();
+			fdlIsHiddenName.left = new FormAttachment(0, 0);
+			fdlIsHiddenName.top = new FormAttachment(wSizeFieldName, margin);
+			fdlIsHiddenName.right = new FormAttachment(middle, -margin);
+			wlIsHiddenName.setLayoutData(fdlIsHiddenName);
+
+			wIsHiddenName = new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wIsHiddenName);
+			wIsHiddenName.addModifyListener(lsMod);
+			fdIsHiddenName = new FormData();
+			fdIsHiddenName.left = new FormAttachment(middle, 0);
+			fdIsHiddenName.right = new FormAttachment(100, -margin);
+			fdIsHiddenName.top = new FormAttachment(wSizeFieldName, margin);
+			wIsHiddenName.setLayoutData(fdIsHiddenName);
+			
+			// LastModificationTimeName line
+			wlLastModificationTimeName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlLastModificationTimeName.setText(BaseMessages.getString(PKG, "ExcelInputDialog.LastModificationTimeName.Label"));
+			props.setLook(wlLastModificationTimeName);
+			fdlLastModificationTimeName = new FormData();
+			fdlLastModificationTimeName.left = new FormAttachment(0, 0);
+			fdlLastModificationTimeName.top = new FormAttachment(wIsHiddenName, margin);
+			fdlLastModificationTimeName.right = new FormAttachment(middle, -margin);
+			wlLastModificationTimeName.setLayoutData(fdlLastModificationTimeName);
+
+			wLastModificationTimeName = new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wLastModificationTimeName);
+			wLastModificationTimeName.addModifyListener(lsMod);
+			fdLastModificationTimeName = new FormData();
+			fdLastModificationTimeName.left = new FormAttachment(middle, 0);
+			fdLastModificationTimeName.right = new FormAttachment(100, -margin);
+			fdLastModificationTimeName.top = new FormAttachment(wIsHiddenName, margin);
+			wLastModificationTimeName.setLayoutData(fdLastModificationTimeName);
+			
+			// UriName line
+			wlUriName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlUriName.setText(BaseMessages.getString(PKG, "ExcelInputDialog.UriName.Label"));
+			props.setLook(wlUriName);
+			fdlUriName = new FormData();
+			fdlUriName.left = new FormAttachment(0, 0);
+			fdlUriName.top = new FormAttachment(wLastModificationTimeName, margin);
+			fdlUriName.right = new FormAttachment(middle, -margin);
+			wlUriName.setLayoutData(fdlUriName);
+
+			wUriName = new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wUriName);
+			wUriName.addModifyListener(lsMod);
+			fdUriName = new FormData();
+			fdUriName.left = new FormAttachment(middle, 0);
+			fdUriName.right = new FormAttachment(100, -margin);
+			fdUriName.top = new FormAttachment(wLastModificationTimeName, margin);
+			wUriName.setLayoutData(fdUriName);
+			
+			// RootUriName line
+			wlRootUriName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlRootUriName.setText(BaseMessages.getString(PKG, "ExcelInputDialog.RootUriName.Label"));
+			props.setLook(wlRootUriName);
+			fdlRootUriName = new FormData();
+			fdlRootUriName.left = new FormAttachment(0, 0);
+			fdlRootUriName.top = new FormAttachment(wUriName, margin);
+			fdlRootUriName.right = new FormAttachment(middle, -margin);
+			wlRootUriName.setLayoutData(fdlRootUriName);
+
+			wRootUriName = new Text(wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wRootUriName);
+			wRootUriName.addModifyListener(lsMod);
+			fdRootUriName = new FormData();
+			fdRootUriName.left = new FormAttachment(middle, 0);
+			fdRootUriName.right = new FormAttachment(100, -margin);
+			fdRootUriName.top = new FormAttachment(wUriName, margin);
+			wRootUriName.setLayoutData(fdRootUriName);
+		
+
+			fdAdditionalFieldsComp = new FormData();
+			fdAdditionalFieldsComp.left = new FormAttachment(0, 0);
+			fdAdditionalFieldsComp.top = new FormAttachment(wStepname, margin);
+			fdAdditionalFieldsComp.right = new FormAttachment(100, 0);
+			fdAdditionalFieldsComp.bottom = new FormAttachment(100, 0);
+			wAdditionalFieldsComp.setLayoutData(fdAdditionalFieldsComp);
+
+			wAdditionalFieldsComp.layout();
+			wAdditionalFieldsTab.setControl(wAdditionalFieldsComp);
+
+			// ///////////////////////////////////////////////////////////
+			// / END OF ADDITIONAL FIELDS TAB
+			// ///////////////////////////////////////////////////////////
+
+			
+	    	
+	    }
 }

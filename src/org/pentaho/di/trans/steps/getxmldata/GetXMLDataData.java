@@ -21,6 +21,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,6 +89,16 @@ public class GetXMLDataData extends BaseStepData implements StepDataInterface
     public int indexOfXmlField;
     
     RowMetaInterface      outputMeta;
+    
+	public String filename;
+	public String shortFilename;
+	public String path;	
+	public String extension;	
+	public boolean hidden;	
+	public Date lastModificationDateTime;	
+	public String uriName;	
+	public String rootUriName;	
+	public long size;
 
 	/**
 	 * 

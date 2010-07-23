@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.ZipInputStream;
 
 import netscape.ldap.LDAPAttribute;
@@ -78,6 +79,17 @@ public class LDIFInputData extends BaseStepData implements StepDataInterface
     public int totalpreviousfields;
     public Object[] readrow;    
     public int indexOfFilenameField;
+    
+    public String filename;
+	public String shortFilename;
+	public String path;	
+	public String extension;	
+	public boolean hidden;	
+	public Date lastModificationDateTime;	
+	public String uriName;	
+	public String rootUriName;	
+	public long size;
+
 	/**
 	 * 
 	 */

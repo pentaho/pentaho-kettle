@@ -18,6 +18,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
@@ -37,6 +38,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
 
 
 /**
@@ -169,7 +171,36 @@ public class LoadFileInput extends BaseStep implements StepInterface
 			}else
 			{
 				if (isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LoadFileInput.Log.OpeningFile", data.file.toString()));
-				
+				data.filename=KettleVFS.getFilename(data.file);
+				// Add additional fields?
+				if (meta.getShortFileNameField()!=null && meta.getShortFileNameField().length()>0)
+				{
+					data.shortFilename  =  data.file.getName().getBaseName();
+				}
+				if (meta.getPathField()!=null && meta.getPathField().length()>0)
+				{
+					data.path = KettleVFS.getFilename(data.file.getParent());
+				}
+				if (meta.isHiddenField()!=null && meta.isHiddenField().length()>0)
+				{
+					data.hidden =  data.file.isHidden();
+				}
+				if (meta.getExtensionField()!=null && meta.getExtensionField().length()>0)
+				{
+					data.extension =  data.file.getName().getExtension();
+				}
+				if (meta.getLastModificationDateField()!=null && meta.getLastModificationDateField().length()>0)
+				{
+					data.lastModificationDateTime =  new Date(data.file.getContent().getLastModifiedTime());
+				}
+				if (meta.getUriField()!=null && meta.getUriField().length()>0)
+				{
+					data.uriName = data.file.getName().getURI();
+				}
+				if (meta.getRootUriField()!=null && meta.getRootUriField().length()>0)
+				{
+					data.rootUriName = data.file.getName().getRootURI();
+				}
 				// get File content
 				getFileContent();
 				
@@ -374,7 +405,7 @@ public class LoadFileInput extends BaseStep implements StepInterface
 			// See if we need to add the filename to the row...  
 	        if (meta.includeFilename() && meta.getFilenameField()!=null && meta.getFilenameField().length()>0)
 	        {
-	        	outputRowData[rowIndex++] = KettleVFS.getFilename(data.file);
+	        	outputRowData[rowIndex++] = data.filename;
 	        }
 	
 	        // See if we need to add the row number to the row...  
@@ -382,7 +413,42 @@ public class LoadFileInput extends BaseStep implements StepInterface
 	        {
 	        	outputRowData[rowIndex++] =new Long(data.rownr);
 	        }
-			
+	        // Possibly add short filename...
+			if (meta.getShortFileNameField()!=null && meta.getShortFileNameField().length()>0)
+			{
+				outputRowData[rowIndex++] = data.shortFilename;
+			}
+			// Add Extension
+			if (meta.getExtensionField()!=null && meta.getExtensionField().length()>0)
+			{
+				outputRowData[rowIndex++] = data.extension;
+			}
+			// add path
+			if (meta.getPathField()!=null && meta.getPathField().length()>0)
+			{
+				outputRowData[rowIndex++] = data.path;
+			}
+
+			// add Hidden
+			if (meta.isHiddenField()!=null && meta.isHiddenField().length()>0)
+			{
+				outputRowData[rowIndex++] = new Boolean(data.hidden);
+			}
+			// Add modification date
+			if (meta.getLastModificationDateField()!=null && meta.getLastModificationDateField().length()>0)
+			{
+				outputRowData[rowIndex++] = data.lastModificationDateTime;
+			}
+			// Add Uri
+			if (meta.getUriField()!=null && meta.getUriField().length()>0)
+			{
+				outputRowData[rowIndex++] = data.uriName;
+			}
+			// Add RootUri
+			if (meta.getRootUriField()!=null && meta.getRootUriField().length()>0)
+			{
+				outputRowData[rowIndex++] = data.rootUriName;
+			}
 			RowMetaInterface irow = getInputRowMeta();
 			
 			data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make

@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.textfileinput;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -102,6 +103,25 @@ public class TextFileInputData extends BaseStepData implements
 	 * The separator (delimiter)
 	 */
 	public String separator;
+	
+	
+	public boolean addShortFilename;
+	public boolean addExtension;
+	public boolean addPath;
+	public boolean addSize;
+	public boolean addIsHidden;
+	public boolean addLastModificationDate;
+	public boolean addUri;
+	public boolean addRootUri;
+	
+	public String shortFilename;
+	public String path;	
+	public String extension;	
+	public boolean hidden;	
+	public Date lastModificationDateTime;	
+	public String uriName;	
+	public String rootUriName;	
+	public long size;
     
 	/**
 	 * 
@@ -121,7 +141,7 @@ public class TextFileInputData extends BaseStepData implements
 		zi = null;
 		
 		filterProcessor = null;
+        lineStringBuilder = new StringBuilder(256);
         
-         lineStringBuilder = new StringBuilder(256);
 	}
 }

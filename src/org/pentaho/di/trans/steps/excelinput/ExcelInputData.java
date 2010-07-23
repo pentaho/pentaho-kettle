@@ -11,6 +11,8 @@
  
 package org.pentaho.di.trans.steps.excelinput;
 
+import java.util.Date;
+
 import jxl.Sheet;
 import jxl.Workbook;
 
@@ -108,6 +110,15 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 
 	public int      defaultStartColumn;
 	public int      defaultStartRow;
+	
+	public String shortFilename;
+	public String path;	
+	public String extension;	
+	public boolean hidden;	
+	public Date lastModificationDateTime;	
+	public String uriName;	
+	public String rootUriName;	
+	public long size;	
 	
 	/**
 	 * 

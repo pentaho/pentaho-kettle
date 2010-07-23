@@ -112,6 +112,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
+
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -384,6 +385,45 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private boolean gotEncodings = false;
 
     protected boolean firstClickOnDateLocale;
+    
+    private CTabItem     wAdditionalFieldsTab;
+    private Composite   wAdditionalFieldsComp;
+    private FormData	fdAdditionalFieldsComp;
+    
+    private Label	    wlShortFileFieldName;
+    private FormData	fdlShortFileFieldName;
+    private TextVar		wShortFileFieldName;
+    private FormData    fdShortFileFieldName;
+    private Label	    wlPathFieldName;
+    private FormData	fdlPathFieldName;
+    private TextVar		wPathFieldName;
+    private FormData    fdPathFieldName;
+
+    private Label	    wlIsHiddenName;
+    private FormData	fdlIsHiddenName;
+    private TextVar		wIsHiddenName;
+    private FormData    fdIsHiddenName;
+    private Label	    wlLastModificationTimeName;
+    private FormData	fdlLastModificationTimeName;
+    private TextVar		wLastModificationTimeName;
+    private FormData    fdLastModificationTimeName;
+    private Label	    wlUriName;
+    private FormData	fdlUriName;
+    private TextVar		wUriName;
+    private FormData    fdUriName;
+    private Label	    wlRootUriName;
+    private FormData	fdlRootUriName;
+    private TextVar		wRootUriName;
+    private FormData    fdRootUriName;
+    private Label	    wlExtensionFieldName;
+    private FormData	fdlExtensionFieldName;
+    private TextVar		wExtensionFieldName;
+    private FormData    fdExtensionFieldName;
+    private Label	    wlSizeFieldName;
+    private FormData	fdlSizeFieldName;
+    private TextVar		wSizeFieldName;
+    private FormData    fdSizeFieldName;
+
 
 	public TextFileInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -448,6 +488,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         addErrorTab();
 		addFiltersTabs();
         addFieldsTabs();
+        addAdditionalFieldsTab();
+
 
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
@@ -2217,6 +2259,19 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wFilter.setRowNums();
         wFilter.optWidth(true);
 
+        
+        if(in.getShortFileNameField()!=null) wShortFileFieldName.setText(in.getShortFileNameField());
+        if(in.getPathField()!=null) wPathFieldName.setText(in.getPathField());
+        if(in.isHiddenField()!=null) wIsHiddenName.setText(in.isHiddenField());
+        if(in.getLastModificationDateField()!=null) wLastModificationTimeName.setText(in.getLastModificationDateField());
+        if(in.getUriField()!=null) wUriName.setText(in.getUriField());
+        if(in.getRootUriField()!=null) wRootUriName.setText(in.getRootUriField());
+        if(in.getExtensionField()!=null) wExtensionFieldName.setText(in.getExtensionField());
+        if(in.getSizeField()!=null) wSizeFieldName.setText(in.getSizeField());
+
+        
+        
+        
         setFlags();
         
 		wStepname.selectAll();
@@ -2413,6 +2468,15 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         {
         	meta.setDateFormatLocale(Locale.getDefault());
         }
+
+        meta.setShortFileNameField(wShortFileFieldName.getText());
+        meta.setPathField(wPathFieldName.getText());
+        meta.setIsHiddenField(wIsHiddenName.getText());
+        meta.setLastModificationDateField(wLastModificationTimeName.getText());
+        meta.setUriField(wUriName.getText());
+        meta.setRootUriField(wRootUriName.getText());
+        meta.setExtensionField(wExtensionFieldName.getText());
+        meta.setSizeField(wSizeFieldName.getText());
 	}
 	
 	private void get()
@@ -3031,7 +3095,198 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		return fields;
 	}
+	  private void addAdditionalFieldsTab()
+	    {
+	    	// ////////////////////////
+			// START OF ADDITIONAL FIELDS TAB ///
+			// ////////////////////////
+	    	wAdditionalFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
+	    	wAdditionalFieldsTab.setText(BaseMessages.getString(PKG, "TextFileInputDialog.AdditionalFieldsTab.TabTitle"));
 
+	    	wAdditionalFieldsComp = new Composite(wTabFolder, SWT.NONE);
+			props.setLook(wAdditionalFieldsComp);
+
+			FormLayout fieldsLayout = new FormLayout();
+			fieldsLayout.marginWidth = 3;
+			fieldsLayout.marginHeight = 3;
+			wAdditionalFieldsComp.setLayout(fieldsLayout);
+
+
+			// ShortFileFieldName line
+			wlShortFileFieldName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlShortFileFieldName.setText(BaseMessages.getString(PKG, "TextFileInputDialog.ShortFileFieldName.Label"));
+			props.setLook(wlShortFileFieldName);
+			fdlShortFileFieldName = new FormData();
+			fdlShortFileFieldName.left = new FormAttachment(0, 0);
+			fdlShortFileFieldName.top = new FormAttachment(margin, margin);
+			fdlShortFileFieldName.right = new FormAttachment(middle, -margin);
+			wlShortFileFieldName.setLayoutData(fdlShortFileFieldName);
+
+			wShortFileFieldName = new TextVar(transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wShortFileFieldName);
+			wShortFileFieldName.addModifyListener(lsMod);
+			fdShortFileFieldName = new FormData();
+			fdShortFileFieldName.left = new FormAttachment(middle, 0);
+			fdShortFileFieldName.right = new FormAttachment(100, -margin);
+			fdShortFileFieldName.top = new FormAttachment(margin, margin);
+			wShortFileFieldName.setLayoutData(fdShortFileFieldName);
+			
+			
+			// ExtensionFieldName line
+			wlExtensionFieldName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlExtensionFieldName.setText(BaseMessages.getString(PKG, "TextFileInputDialog.ExtensionFieldName.Label"));
+			props.setLook(wlExtensionFieldName);
+			fdlExtensionFieldName = new FormData();
+			fdlExtensionFieldName.left = new FormAttachment(0, 0);
+			fdlExtensionFieldName.top = new FormAttachment(wShortFileFieldName, margin);
+			fdlExtensionFieldName.right = new FormAttachment(middle, -margin);
+			wlExtensionFieldName.setLayoutData(fdlExtensionFieldName);
+
+			wExtensionFieldName = new TextVar(transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wExtensionFieldName);
+			wExtensionFieldName.addModifyListener(lsMod);
+			fdExtensionFieldName = new FormData();
+			fdExtensionFieldName.left = new FormAttachment(middle, 0);
+			fdExtensionFieldName.right = new FormAttachment(100, -margin);
+			fdExtensionFieldName.top = new FormAttachment(wShortFileFieldName, margin);
+			wExtensionFieldName.setLayoutData(fdExtensionFieldName);
+			
+			
+			// PathFieldName line
+			wlPathFieldName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlPathFieldName.setText(BaseMessages.getString(PKG, "TextFileInputDialog.PathFieldName.Label"));
+			props.setLook(wlPathFieldName);
+			fdlPathFieldName = new FormData();
+			fdlPathFieldName.left = new FormAttachment(0, 0);
+			fdlPathFieldName.top = new FormAttachment(wExtensionFieldName, margin);
+			fdlPathFieldName.right = new FormAttachment(middle, -margin);
+			wlPathFieldName.setLayoutData(fdlPathFieldName);
+
+			wPathFieldName = new TextVar(transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wPathFieldName);
+			wPathFieldName.addModifyListener(lsMod);
+			fdPathFieldName = new FormData();
+			fdPathFieldName.left = new FormAttachment(middle, 0);
+			fdPathFieldName.right = new FormAttachment(100, -margin);
+			fdPathFieldName.top = new FormAttachment(wExtensionFieldName, margin);
+			wPathFieldName.setLayoutData(fdPathFieldName);
+			
+
+
+	  		// SizeFieldName line
+			wlSizeFieldName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlSizeFieldName.setText(BaseMessages.getString(PKG, "TextFileInputDialog.SizeFieldName.Label"));
+			props.setLook(wlSizeFieldName);
+			fdlSizeFieldName = new FormData();
+			fdlSizeFieldName.left = new FormAttachment(0, 0);
+			fdlSizeFieldName.top = new FormAttachment(wPathFieldName, margin);
+			fdlSizeFieldName.right = new FormAttachment(middle, -margin);
+			wlSizeFieldName.setLayoutData(fdlSizeFieldName);
+
+			wSizeFieldName = new TextVar(transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wSizeFieldName);
+			wSizeFieldName.addModifyListener(lsMod);
+			fdSizeFieldName = new FormData();
+			fdSizeFieldName.left = new FormAttachment(middle, 0);
+			fdSizeFieldName.right = new FormAttachment(100, -margin);
+			fdSizeFieldName.top = new FormAttachment(wPathFieldName, margin);
+			wSizeFieldName.setLayoutData(fdSizeFieldName);
+			
+			
+			// IsHiddenName line
+			wlIsHiddenName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlIsHiddenName.setText(BaseMessages.getString(PKG, "TextFileInputDialog.IsHiddenName.Label"));
+			props.setLook(wlIsHiddenName);
+			fdlIsHiddenName = new FormData();
+			fdlIsHiddenName.left = new FormAttachment(0, 0);
+			fdlIsHiddenName.top = new FormAttachment(wSizeFieldName, margin);
+			fdlIsHiddenName.right = new FormAttachment(middle, -margin);
+			wlIsHiddenName.setLayoutData(fdlIsHiddenName);
+
+			wIsHiddenName = new TextVar(transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wIsHiddenName);
+			wIsHiddenName.addModifyListener(lsMod);
+			fdIsHiddenName = new FormData();
+			fdIsHiddenName.left = new FormAttachment(middle, 0);
+			fdIsHiddenName.right = new FormAttachment(100, -margin);
+			fdIsHiddenName.top = new FormAttachment(wSizeFieldName, margin);
+			wIsHiddenName.setLayoutData(fdIsHiddenName);
+			
+			// LastModificationTimeName line
+			wlLastModificationTimeName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlLastModificationTimeName.setText(BaseMessages.getString(PKG, "TextFileInputDialog.LastModificationTimeName.Label"));
+			props.setLook(wlLastModificationTimeName);
+			fdlLastModificationTimeName = new FormData();
+			fdlLastModificationTimeName.left = new FormAttachment(0, 0);
+			fdlLastModificationTimeName.top = new FormAttachment(wIsHiddenName, margin);
+			fdlLastModificationTimeName.right = new FormAttachment(middle, -margin);
+			wlLastModificationTimeName.setLayoutData(fdlLastModificationTimeName);
+
+			wLastModificationTimeName = new TextVar(transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wLastModificationTimeName);
+			wLastModificationTimeName.addModifyListener(lsMod);
+			fdLastModificationTimeName = new FormData();
+			fdLastModificationTimeName.left = new FormAttachment(middle, 0);
+			fdLastModificationTimeName.right = new FormAttachment(100, -margin);
+			fdLastModificationTimeName.top = new FormAttachment(wIsHiddenName, margin);
+			wLastModificationTimeName.setLayoutData(fdLastModificationTimeName);
+			
+			// UriName line
+			wlUriName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlUriName.setText(BaseMessages.getString(PKG, "TextFileInputDialog.UriName.Label"));
+			props.setLook(wlUriName);
+			fdlUriName = new FormData();
+			fdlUriName.left = new FormAttachment(0, 0);
+			fdlUriName.top = new FormAttachment(wLastModificationTimeName, margin);
+			fdlUriName.right = new FormAttachment(middle, -margin);
+			wlUriName.setLayoutData(fdlUriName);
+
+			wUriName = new TextVar(transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wUriName);
+			wUriName.addModifyListener(lsMod);
+			fdUriName = new FormData();
+			fdUriName.left = new FormAttachment(middle, 0);
+			fdUriName.right = new FormAttachment(100, -margin);
+			fdUriName.top = new FormAttachment(wLastModificationTimeName, margin);
+			wUriName.setLayoutData(fdUriName);
+			
+			// RootUriName line
+			wlRootUriName = new Label(wAdditionalFieldsComp, SWT.RIGHT);
+			wlRootUriName.setText(BaseMessages.getString(PKG, "TextFileInputDialog.RootUriName.Label"));
+			props.setLook(wlRootUriName);
+			fdlRootUriName = new FormData();
+			fdlRootUriName.left = new FormAttachment(0, 0);
+			fdlRootUriName.top = new FormAttachment(wUriName, margin);
+			fdlRootUriName.right = new FormAttachment(middle, -margin);
+			wlRootUriName.setLayoutData(fdlRootUriName);
+
+			wRootUriName = new TextVar(transMeta, wAdditionalFieldsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+			props.setLook(wRootUriName);
+			wRootUriName.addModifyListener(lsMod);
+			fdRootUriName = new FormData();
+			fdRootUriName.left = new FormAttachment(middle, 0);
+			fdRootUriName.right = new FormAttachment(100, -margin);
+			fdRootUriName.top = new FormAttachment(wUriName, margin);
+			wRootUriName.setLayoutData(fdRootUriName);
+		
+
+			fdAdditionalFieldsComp = new FormData();
+			fdAdditionalFieldsComp.left = new FormAttachment(0, 0);
+			fdAdditionalFieldsComp.top = new FormAttachment(0, 0);
+			fdAdditionalFieldsComp.right = new FormAttachment(100, 0);
+			fdAdditionalFieldsComp.bottom = new FormAttachment(100, 0);
+			wAdditionalFieldsComp.setLayoutData(fdAdditionalFieldsComp);
+
+			wAdditionalFieldsComp.layout();
+			wAdditionalFieldsTab.setControl(wAdditionalFieldsComp);
+
+			// ///////////////////////////////////////////////////////////
+			// / END OF ADDITIONAL FIELDS TAB
+			// ///////////////////////////////////////////////////////////
+
+			
+	    	
+	    }
 	public String toString()
 	{
 		return this.getClass().getName();

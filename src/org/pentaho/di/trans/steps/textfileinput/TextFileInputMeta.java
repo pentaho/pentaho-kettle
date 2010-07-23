@@ -231,6 +231,132 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	
     /** The add filenames to result filenames flag */
     private boolean isaddresult;
+    
+    /** Additional fields  **/
+    private String shortFileFieldName;
+    private String pathFieldName;
+    private String hiddenFieldName;
+    private String lastModificationTimeFieldName;
+    private String uriNameFieldName;
+    private String rootUriNameFieldName;
+    private String extensionFieldName;
+    private String sizeFieldName;
+
+    
+
+	/**
+	 * @return Returns the shortFileFieldName.
+	 */
+    public String getShortFileNameField()
+    {
+    	return shortFileFieldName;
+    }
+    /**
+	 * @param field The shortFileFieldName to set.
+	 */
+    public void setShortFileNameField(String field)
+    {
+    	shortFileFieldName=field;
+    }
+	
+	/**
+	 * @return Returns the pathFieldName.
+	 */
+    public String getPathField()
+    {
+    	return pathFieldName;
+    }
+    /**
+	 * @param field The pathFieldName to set.
+	 */
+    public void setPathField(String field)
+    {
+    	this.pathFieldName=field;
+    }
+	/**
+	 * @return Returns the hiddenFieldName.
+	 */
+    public String isHiddenField()
+    {
+    	return hiddenFieldName;
+    }
+    /**
+	 * @param field The hiddenFieldName to set.
+	 */
+    public void setIsHiddenField(String field)
+    {
+    	hiddenFieldName=field;
+    }
+	/**
+	 * @return Returns the lastModificationTimeFieldName.
+	 */
+    public String getLastModificationDateField()
+    {
+    	return lastModificationTimeFieldName;
+    }
+    /**
+	 * @param field The lastModificationTimeFieldName to set.
+	 */
+    public void setLastModificationDateField(String field)
+    {
+    	lastModificationTimeFieldName=field;
+    }
+    /**
+	 * @return Returns the uriNameFieldName.
+	 */
+    public String getUriField()
+    {
+    	return uriNameFieldName;
+    }
+    /**
+	 * @param field The uriNameFieldName to set.
+	 */
+    public void setUriField(String field)
+    {
+    	uriNameFieldName=field;
+    }
+    /**
+	 * @return Returns the uriNameFieldName.
+	 */
+    public String getRootUriField()
+    {
+    	return rootUriNameFieldName;
+    }
+    /**
+	 * @param field The rootUriNameFieldName to set.
+	 */
+    public void setRootUriField(String field)
+    {
+    	rootUriNameFieldName=field;
+    }
+    /**
+	 * @return Returns the extensionFieldName.
+	 */
+    public String getExtensionField()
+    {
+    	return extensionFieldName;
+    }
+    /**
+	 * @param field The extensionFieldName to set.
+	 */
+    public void setExtensionField(String field)
+    {
+    	extensionFieldName=field;
+    }
+    /**
+	 * @return Returns the sizeFieldName.
+	 */
+    public String getSizeField()
+    {
+    	return sizeFieldName;
+    }
+    /**
+	 * @param field The sizeFieldName to set.
+	 */
+    public void setSizeField(String field)
+    {
+    	sizeFieldName=field;
+    }
 
 	
 	/**
@@ -660,6 +786,15 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
+	    shortFileFieldName=null;
+	    pathFieldName=null;
+	    hiddenFieldName=null;
+	    lastModificationTimeFieldName=null;
+	    uriNameFieldName=null;
+	    rootUriNameFieldName=null;
+	    extensionFieldName=null;
+	    sizeFieldName=null;
+	    
 		isaddresult=true;
 		separator = ";";
 		enclosure = "\"";
@@ -797,6 +932,66 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			v.setOrigin(name);
 			row.addValueMeta(v);
 		}
+		
+		// Add additional fields
+
+		if(getShortFileNameField()!=null && getShortFileNameField().length()>0)
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(getShortFileNameField()), ValueMetaInterface.TYPE_STRING);
+			v.setLength(100, -1);
+			v.setOrigin(name);
+			row.addValueMeta(v);
+		}
+		if(getExtensionField()!=null && getExtensionField().length()>0)
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(getExtensionField()), ValueMetaInterface.TYPE_STRING);
+			v.setLength(100, -1);
+			v.setOrigin(name);
+			row.addValueMeta(v);
+		}
+		if(getPathField()!=null && getPathField().length()>0)
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(getPathField()), ValueMetaInterface.TYPE_STRING);
+			v.setLength(100, -1);
+			v.setOrigin(name);
+			row.addValueMeta(v);
+		}
+		if(getSizeField()!=null && getSizeField().length()>0)
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(getSizeField()), ValueMetaInterface.TYPE_INTEGER);
+			v.setOrigin(name);
+			v.setLength(9);
+			row.addValueMeta(v);
+		}
+		if(isHiddenField()!=null && isHiddenField().length()>0)
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(isHiddenField()), ValueMetaInterface.TYPE_BOOLEAN);
+			v.setOrigin(name);
+			row.addValueMeta(v);
+		}
+
+		if(getLastModificationDateField()!=null && getLastModificationDateField().length()>0)
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(getLastModificationDateField()), ValueMetaInterface.TYPE_DATE);
+			v.setOrigin(name);
+			row.addValueMeta(v);
+		}
+		if(getUriField()!=null && getUriField().length()>0)
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(getUriField()), ValueMetaInterface.TYPE_STRING);
+			v.setLength(100, -1);
+			v.setOrigin(name);
+			row.addValueMeta(v);
+		}
+
+		if(getRootUriField()!=null && getRootUriField().length()>0)
+		{
+			ValueMetaInterface v = new ValueMeta(getRootUriField(), ValueMetaInterface.TYPE_STRING);
+			v.setLength(100, -1);
+			v.setOrigin(name);
+			row.addValueMeta(v);
+		}
+	
 	}
 
 	public String getXML()
@@ -907,6 +1102,15 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("date_format_lenient", dateFormatLenient));
 		retval.append("    ").append(XMLHandler.addTagValue("date_format_locale", dateFormatLocale.toString()));
 
+		retval.append("    ").append(XMLHandler.addTagValue("shortFileFieldName", shortFileFieldName));
+		retval.append("    ").append(XMLHandler.addTagValue("pathFieldName", pathFieldName));
+		retval.append("    ").append(XMLHandler.addTagValue("hiddenFieldName", hiddenFieldName));
+		retval.append("    ").append(XMLHandler.addTagValue("lastModificationTimeFieldName", lastModificationTimeFieldName));
+		retval.append("    ").append(XMLHandler.addTagValue("uriNameFieldName", uriNameFieldName));
+		retval.append("    ").append(XMLHandler.addTagValue("rootUriNameFieldName", rootUriNameFieldName));
+		retval.append("    ").append(XMLHandler.addTagValue("extensionFieldName", extensionFieldName));
+		retval.append("    ").append(XMLHandler.addTagValue("sizeFieldName", sizeFieldName));
+		
 		return retval.toString();
 	}
 
@@ -1064,6 +1268,15 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				dateFormatLocale = Locale.getDefault();
 			}
+			
+			shortFileFieldName = XMLHandler.getTagValue(stepnode, "shortFileFieldName");
+			pathFieldName = XMLHandler.getTagValue(stepnode, "pathFieldName");
+			hiddenFieldName = XMLHandler.getTagValue(stepnode, "hiddenFieldName");
+			lastModificationTimeFieldName = XMLHandler.getTagValue(stepnode, "lastModificationTimeFieldName");
+			uriNameFieldName = XMLHandler.getTagValue(stepnode, "uriNameFieldName");
+			rootUriNameFieldName = XMLHandler.getTagValue(stepnode, "rootUriNameFieldName");
+			extensionFieldName = XMLHandler.getTagValue(stepnode, "extensionFieldName");
+			sizeFieldName = XMLHandler.getTagValue(stepnode, "sizeFieldName");
 		}
 		catch (Exception e)
 		{
@@ -1217,6 +1430,13 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				dateFormatLocale = Locale.getDefault();
 			}
+			shortFileFieldName = rep.getStepAttributeString(id_step, "shortFileFieldName");
+			pathFieldName = rep.getStepAttributeString(id_step, "pathFieldName");
+			hiddenFieldName = rep.getStepAttributeString(id_step, "hiddenFieldName");
+			lastModificationTimeFieldName = rep.getStepAttributeString(id_step, "lastModificationTimeFieldName");
+			rootUriNameFieldName = rep.getStepAttributeString(id_step, "rootUriNameFieldName");
+			extensionFieldName = rep.getStepAttributeString(id_step, "extensionFieldName");
+			sizeFieldName = rep.getStepAttributeString(id_step, "sizeFieldName");
 		}
 		catch (Exception e)
 		{
@@ -1314,6 +1534,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			rep.saveStepAttribute(id_transformation, id_step, "date_format_lenient", dateFormatLenient);
 			rep.saveStepAttribute(id_transformation, id_step, "date_format_locale", dateFormatLocale.toString());
+			
+			rep.saveStepAttribute(id_transformation, id_step, "shortFileFieldName", shortFileFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "pathFieldName", pathFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "hiddenFieldName", hiddenFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "uriNameFieldName", uriNameFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "extensionFieldName", extensionFieldName);
 		}
 		catch (Exception e)
 		{

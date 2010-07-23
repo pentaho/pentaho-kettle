@@ -289,6 +289,54 @@ public class ExcelInput extends BaseStep implements StepInterface
             r[rowIndex] = new Long(getLinesWritten() + 1);
             rowIndex++;
 		}
+		// Possibly add short filename...
+		if (meta.getShortFileNameField()!=null && meta.getShortFileNameField().length()>0)
+		{
+            r[rowIndex] = data.shortFilename;
+            rowIndex++;
+		}
+		// Add Extension
+		if (meta.getExtensionField()!=null && meta.getExtensionField().length()>0)
+		{
+            r[rowIndex] = data.extension;
+            rowIndex++;
+		}
+		// add path
+		if (meta.getPathField()!=null && meta.getPathField().length()>0)
+		{
+            r[rowIndex] = data.path;
+            rowIndex++;
+		}
+		// Add Size
+		if (meta.getSizeField()!=null && meta.getSizeField().length()>0)
+		{
+            r[rowIndex] = new Long(data.size);
+            rowIndex++;
+		}
+		// add Hidden
+		if (meta.isHiddenField()!=null && meta.isHiddenField().length()>0)
+		{
+            r[rowIndex] = new Boolean(data.hidden);
+            rowIndex++;
+		}
+		// Add modification date
+		if (meta.getLastModificationDateField()!=null && meta.getLastModificationDateField().length()>0)
+		{
+            r[rowIndex] = data.lastModificationDateTime;
+            rowIndex++;
+		}
+		// Add Uri
+		if (meta.getUriField()!=null && meta.getUriField().length()>0)
+		{
+            r[rowIndex] = data.uriName;
+            rowIndex++;
+		}
+		// Add RootUri
+		if (meta.getRootUriField()!=null && meta.getRootUriField().length()>0)
+		{
+            r[rowIndex] = data.rootUriName;
+            rowIndex++;
+		}
 
 		return r;
 	}
@@ -494,6 +542,40 @@ public class ExcelInput extends BaseStep implements StepInterface
 				// Open a new openFile..
 				data.file = data.files.getFile(data.filenr);
 				data.filename = KettleVFS.getFilename( data.file );
+				// Add additional fields?
+				if (meta.getShortFileNameField()!=null && meta.getShortFileNameField().length()>0)
+				{
+					data.shortFilename  =  data.file.getName().getBaseName();
+				}
+				if (meta.getPathField()!=null && meta.getPathField().length()>0)
+				{
+					data.path = KettleVFS.getFilename(data.file.getParent());
+				}
+				if (meta.isHiddenField()!=null && meta.isHiddenField().length()>0)
+				{
+					data.hidden =  data.file.isHidden();
+				}
+				if (meta.getExtensionField()!=null && meta.getExtensionField().length()>0)
+				{
+					data.extension =  data.file.getName().getExtension();
+				}
+				if (meta.getLastModificationDateField()!=null && meta.getLastModificationDateField().length()>0)
+				{
+					data.lastModificationDateTime =  new Date(data.file.getContent().getLastModifiedTime());
+				}
+				if (meta.getUriField()!=null && meta.getUriField().length()>0)
+				{
+					data.uriName = data.file.getName().getURI();
+				}
+				if (meta.getRootUriField()!=null && meta.getRootUriField().length()>0)
+				{
+					data.rootUriName = data.file.getName().getRootURI();
+				}
+				if (meta.getSizeField()!=null && meta.getSizeField().length()>0)
+				{
+					data.size = new Long( data.file.getContent().getSize());
+				}
+				
 				if(meta.isAddResultFile())
 				{
 					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());

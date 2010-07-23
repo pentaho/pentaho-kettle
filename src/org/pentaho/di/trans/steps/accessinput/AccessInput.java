@@ -188,26 +188,65 @@ public class AccessInput extends BaseStep implements StepInterface
 					}	
 				}    // End of loop over fields...
 		    
-				int rowIndex = meta.getInputFields().length;
+				int rowIndex = data.totalpreviousfields+meta.getInputFields().length;
 				
 				// See if we need to add the filename to the row...
 				if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) 
 				{
-					r[data.totalpreviousfields+rowIndex++] = AccessInputMeta.getFilename(data.file);
+					r[rowIndex++] = AccessInputMeta.getFilename(data.file);
 				}
 				
 				// See if we need to add the table name to the row...
 				if ( meta.includeTablename() && !Const.isEmpty(data.t.getName()) ) 
 				{
-					r[data.totalpreviousfields+rowIndex++] = data.t.getName();
+					r[rowIndex++] = data.t.getName();
 				}
 				
 		        // See if we need to add the row number to the row...  
 		        if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
 		        {
-		            r[data.totalpreviousfields+rowIndex++] = new Long(data.rownr);
+		            r[rowIndex++] = new Long(data.rownr);
 		        }
-		        
+		        // Possibly add short filename...
+				if (meta.getShortFileNameField()!=null && meta.getShortFileNameField().length()>0)
+				{
+					r[rowIndex++] = data.shortFilename;
+				}
+				// Add Extension
+				if (meta.getExtensionField()!=null && meta.getExtensionField().length()>0)
+				{
+					r[rowIndex++] = data.extension;
+				}
+				// add path
+				if (meta.getPathField()!=null && meta.getPathField().length()>0)
+				{
+					r[rowIndex++] = data.path;
+				}
+				// Add Size
+				if (meta.getSizeField()!=null && meta.getSizeField().length()>0)
+				{
+					r[rowIndex++] = new Long(data.size);
+				}
+				// add Hidden
+				if (meta.isHiddenField()!=null && meta.isHiddenField().length()>0)
+				{
+					r[rowIndex++] = new Boolean(data.hidden);
+				}
+				// Add modification date
+				if (meta.getLastModificationDateField()!=null && meta.getLastModificationDateField().length()>0)
+				{
+					r[rowIndex++] = data.lastModificationDateTime;
+				}
+				// Add Uri
+				if (meta.getUriField()!=null && meta.getUriField().length()>0)
+				{
+					r[rowIndex++] = data.uriName;
+				}
+				// Add RootUri
+				if (meta.getRootUriField()!=null && meta.getRootUriField().length()>0)
+				{
+					r[rowIndex++] = data.rootUriName;
+				}
 				
 				RowMetaInterface irow = getInputRowMeta();
 				
@@ -299,6 +338,39 @@ public class AccessInput extends BaseStep implements StepInterface
 
 				data.file= KettleVFS.getFileObject(filename, getTransMeta());
 				// Check if file exists!
+			}
+			// Add additional fields?
+			if (meta.getShortFileNameField()!=null && meta.getShortFileNameField().length()>0)
+			{
+				data.shortFilename  =  data.file.getName().getBaseName();
+			}
+			if (meta.getPathField()!=null && meta.getPathField().length()>0)
+			{
+				data.path = KettleVFS.getFilename(data.file.getParent());
+			}
+			if (meta.isHiddenField()!=null && meta.isHiddenField().length()>0)
+			{
+				data.hidden =  data.file.isHidden();
+			}
+			if (meta.getExtensionField()!=null && meta.getExtensionField().length()>0)
+			{
+				data.extension =  data.file.getName().getExtension();
+			}
+			if (meta.getLastModificationDateField()!=null && meta.getLastModificationDateField().length()>0)
+			{
+				data.lastModificationDateTime =  new Date(data.file.getContent().getLastModifiedTime());
+			}
+			if (meta.getUriField()!=null && meta.getUriField().length()>0)
+			{
+				data.uriName = data.file.getName().getURI();
+			}
+			if (meta.getRootUriField()!=null && meta.getRootUriField().length()>0)
+			{
+				data.rootUriName = data.file.getName().getRootURI();
+			}
+			if (meta.getSizeField()!=null && meta.getSizeField().length()>0)
+			{
+				data.size = new Long( data.file.getContent().getSize());
 			}
 			
 			if(meta.resetRowNumber()) data.rownr=0;

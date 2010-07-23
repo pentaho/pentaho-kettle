@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.accessinput;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
@@ -54,6 +55,17 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
     public int totalpreviousfields;
     public int indexOfFilenameField;
     public Object[] readrow;
+    
+    public String filename;
+	public String shortFilename;
+	public String path;	
+	public String extension;	
+	public boolean hidden;	
+	public Date lastModificationDateTime;	
+	public String uriName;	
+	public String rootUriName;	
+	public long size;
+	
 
 	/**
 	 * 

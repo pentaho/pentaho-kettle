@@ -12,6 +12,8 @@
 
 package org.pentaho.di.trans.steps.loadfileinput;
 
+import java.util.Date;
+
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -49,6 +51,14 @@ public class LoadFileInputData extends BaseStepData implements StepDataInterface
     public long fileSize;
     
     public RowMetaInterface inputRowMeta;
+	public String filename;
+	public String shortFilename;
+	public String path;	
+	public String extension;	
+	public boolean hidden;	
+	public Date lastModificationDateTime;	
+	public String uriName;	
+	public String rootUriName;	
 
 
 	/**
