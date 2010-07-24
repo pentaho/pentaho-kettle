@@ -54,6 +54,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 {	
 	private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	private static final String YES = "Y";
+	
 	public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
 	public static final String[] RequiredFilesCode = new String[] {"N", "Y"};
 	
@@ -880,10 +882,20 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 
 	  public FileInputList getFiles(VariableSpace space)
 	  {
-	    return FileInputList.createFileList(space, fileName, fileMask, fileRequired);
+	    return FileInputList.createFileList(space, fileName, fileMask, fileRequired, includeSubFolderBoolean());
 	  }
 		
-	
+	  private boolean[] includeSubFolderBoolean()
+	     {
+	    	int len=fileName.length;
+			boolean includeSubFolderBoolean[]= new boolean[len];
+			for(int i=0; i<len; i++)
+			{
+				includeSubFolderBoolean[i]=YES.equalsIgnoreCase(includeSubFolders[i]);
+			}
+			return includeSubFolderBoolean;
+	     }
+
 	
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
