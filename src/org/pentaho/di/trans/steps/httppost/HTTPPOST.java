@@ -101,10 +101,10 @@ public class HTTPPOST extends BaseStep implements StepInterface
             if(!data.contentTypeHeaderOverwrite) {  // can be overwritten now
 	            if(Const.isEmpty(data.realEncoding)) {
 	            	post.setRequestHeader(CONTENT_TYPE, CONTENT_TYPE_TEXT_XML);
-	            	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.HeaderValue",CONTENT_TYPE,CONTENT_TYPE_TEXT_XML));
+	            	if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.HeaderValue",CONTENT_TYPE,CONTENT_TYPE_TEXT_XML));
 	            } else {
 	            	post.setRequestHeader(CONTENT_TYPE, CONTENT_TYPE_TEXT_XML+"; "+data.realEncoding);
-	            	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.HeaderValue",CONTENT_TYPE,CONTENT_TYPE_TEXT_XML+"; "+data.realEncoding));
+	            	if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.HeaderValue",CONTENT_TYPE,CONTENT_TYPE_TEXT_XML+"; "+data.realEncoding));
 	            }
             }
 
@@ -115,7 +115,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 		        {
 	        		post.addRequestHeader(data.headerParameters[i].getName(),
 	        				data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i]));
-	        		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.HeaderValue",data.headerParameters[i].getName(),data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i])));
+	        		if(isDebug()) log.logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.HeaderValue",data.headerParameters[i].getName(),data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i])));
 		        }
 	        }
             
@@ -125,7 +125,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 		        for (int i=0;i<data.body_parameters_nrs.length;i++)
 		        {
 	        		data.bodyParameters[i].setValue(data.inputRowMeta.getString(rowData,data.body_parameters_nrs[i]));
-	        		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.BodyValue",data.bodyParameters[i].getName(),data.inputRowMeta.getString(rowData,data.body_parameters_nrs[i])));
+	        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.BodyValue",data.bodyParameters[i].getName(),data.inputRowMeta.getString(rowData,data.body_parameters_nrs[i])));
 		        }
 		        post.setRequestBody(data.bodyParameters);
 	        }
@@ -138,7 +138,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             	 for (int i=0;i<data.query_parameters_nrs.length;i++)
  		         {
  		        	data.queryParameters[i].setValue(data.inputRowMeta.getString(rowData,data.query_parameters_nrs[i]));
- 		        	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.QueryValue",data.queryParameters[i].getName(),data.inputRowMeta.getString(rowData,data.query_parameters_nrs[i])));
+ 		        	if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.QueryValue",data.queryParameters[i].getName(),data.inputRowMeta.getString(rowData,data.query_parameters_nrs[i])));
  		         }
             	 post.setQueryString(data.queryParameters); 
             }
@@ -157,7 +157,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             	if(meta.isPostAFile())
             	{
      		       File input = new File(tmp);
-               fis = new FileInputStream(input);
+     		       fis = new FileInputStream(input);
      		       post.setRequestEntity(new InputStreamRequestEntity(fis, input.length()));
             	}
             	else
@@ -176,7 +176,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
                 int statusCode = HTTPPOSTclient.executeMethod(hostConfiguration, post);
                 
                 // Display status code
-                if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseCode",""+statusCode));
+                if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseCode",String.valueOf(statusCode)));
                 String body=null;
                 if( statusCode != -1 )
                 {
@@ -185,21 +185,27 @@ public class HTTPPOST extends BaseStep implements StepInterface
                         
                         // guess encoding
                         //
-                        String encoding = meta.getEncoding();
+                        String encoding = data.realEncoding;
                         
                         // Try to determine the encoding from the Content-Type value
                         //
                         if (Const.isEmpty(encoding)) {
                           String contentType = post.getResponseHeader("Content-Type").getValue();
                           if (contentType!=null && contentType.contains("charset")) {
-                            encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim();
+                            encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").replace("\"", "").trim();
                           }
+                        }  
+
+                        // Get the response, but only specify encoding if we've got one
+                        // otherwise the default charset ISO-8859-1 is used by HttpClient
+                        if (Const.isEmpty(encoding)) {
+                           if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.Encoding","ISO-8859-1"));
+                           inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream()); 
+                        } else {
+                           if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.Encoding",encoding));
+                           inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream(),encoding); 
                         }
-                        
-                        if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTPPOST.Log.Encoding",encoding));
-    
-    	                // the response
-                        inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream(),encoding); 
+
                         StringBuffer bodyBuffer = new StringBuffer(); 
                          
                         int c;
@@ -211,7 +217,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
     	                // Display response
     	                body = bodyBuffer.toString();
     	                
-    	                if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseBody",body));
+    	                if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseBody",body));
                     }
                     else {  //  the status is a 401
                         throw new KettleStepException(BaseMessages.getString(PKG, "HTTPPOST.Exception.Authentication", data.realUrl));
