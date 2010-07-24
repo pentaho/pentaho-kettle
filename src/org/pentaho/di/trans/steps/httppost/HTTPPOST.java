@@ -148,6 +148,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             // 
             InputStream inputStream=null;
             Object[] newRow = null;
+            InputStreamReader inputStreamReader=null;
             try
             {
             	// Execute the POST method
@@ -158,25 +159,30 @@ public class HTTPPOST extends BaseStep implements StepInterface
                 String body=null;
                 if( statusCode != -1 )
                 {
-                    // guess encoding
-                    //
-                    String encoding = meta.getEncoding();
+                	 // Use request encoding if specified in component to avoid strange response encodings
+                    // See PDI-3815
+                    String encoding = data.realEncoding;
                     
                     // Try to determine the encoding from the Content-Type value
                     //
                     if (Const.isEmpty(encoding)) {
                       String contentType = post.getResponseHeader("Content-Type").getValue();
                       if (contentType!=null && contentType.contains("charset")) {
-                        encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").trim();
+                        encoding = contentType.replaceFirst("^.*;\\s*charset\\s*=\\s*","").replace("\"", "").trim();
                       }
                     }
                     
-                    if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.Encoding",encoding));
-
-	                // the response
-                    InputStreamReader inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream(),encoding); 
+                    // Get the response, but only specify encoding if we've got one
+                    // otherwise the default charset ISO-8859-1 is used by HttpClient
+                    if (Const.isEmpty(encoding)) {
+                       if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.Encoding","ISO-8859-1"));
+                       inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream()); 
+                    } else {
+                       if(log.isDebug()) log.logDebug(toString(), Messages.getString("HTTPPOST.Log.Encoding",encoding));
+                       inputStreamReader = new InputStreamReader(post.getResponseBodyAsStream(),encoding); 
+                    }
                     StringBuffer bodyBuffer = new StringBuffer(); 
-                     
+                    
                     int c;
                     while ( (c=inputStreamReader.read())!=-1) {
                     	bodyBuffer.append((char)c);
