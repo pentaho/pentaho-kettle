@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -44,6 +45,8 @@ public class DatabaseMetaInformation
 	private String[] procedures;
 
 	private DatabaseMeta databaseMeta;
+	public static final String FILTER_CATALOG_LIST = "FILTER_CATALOG_LIST"; //$NON-NLS-1$
+	public static final String FILTER_SCHEMA_LIST = "FILTER_SCHEMA_LIST"; //$NON-NLS-1$
 	
 	/**
 	 * Create a new DatabaseMetaData object for the given database connection
@@ -196,24 +199,35 @@ public class DatabaseMetaInformation
 
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingInfo"));
+			Map connectionExtraOptions = databaseMeta.getExtraOptions();
 			if (databaseMeta.supportsCatalogs() && dbmd.supportsCatalogsInTableDefinitions())
 			{
 				ArrayList<Catalog> catalogList = new ArrayList<Catalog>();
-				ResultSet catalogResultSet = dbmd.getCatalogs();
-				
-				// Grab all the catalog names and put them in an array list
-				// Then we can close the resultset as soon as possible.
-				// This is the safest route to take for a lot of databases
-				//
-				while (catalogResultSet!=null && catalogResultSet.next())
-				{
-					String catalogName = catalogResultSet.getString(1);
-					catalogList.add(new Catalog(catalogName));
-				}
-				
-				// Close the catalogs resultset immediately
-				//
-				catalogResultSet.close();
+				String catalogFilterKey = databaseMeta.getDatabaseTypeDesc() + "." + FILTER_CATALOG_LIST; //$NON-NLS-1$
+		        if ( (connectionExtraOptions != null) && connectionExtraOptions.containsKey(catalogFilterKey) ) {
+		          String catsFilterCommaList =  (String)connectionExtraOptions.get(catalogFilterKey);
+		          String[] catsFilterArray = catsFilterCommaList.split(","); //$NON-NLS-1$
+		          for (int i=0; i<catsFilterArray.length; i++) {
+		            catalogList.add(new Catalog(catsFilterArray[i].trim()));
+		          }
+		        }
+		        if (catalogList.size() == 0 ) {
+					ResultSet catalogResultSet = dbmd.getCatalogs();
+					
+				  	// Grab all the catalog names and put them in an array list
+				  	// Then we can close the resultset as soon as possible.
+					// This is the safest route to take for a lot of databases
+					//
+					while (catalogResultSet!=null && catalogResultSet.next())
+					{
+					    String catalogName = catalogResultSet.getString(1);
+					    catalogList.add(new Catalog(catalogName));
+					}
+			
+					// Close the catalogs resultset immediately
+					//
+					catalogResultSet.close();
+		        }
 				
 				// Now loop over the catalogs...
 				//
@@ -264,31 +278,40 @@ public class DatabaseMetaInformation
 				ArrayList<Schema> schemaList = new ArrayList<Schema>();
 				try 
 				{
-					// Support schemas for MS SQL server due to PDI-1531
-					//
-					String sql = databaseMeta.getSQLListOfSchemas();
-					if (!Const.isEmpty(sql)) {
-						Statement schemaStatement = db.getConnection().createStatement();
-						ResultSet schemaResultSet = schemaStatement.executeQuery(sql);
-						while (schemaResultSet!=null && schemaResultSet.next())
-						{
-							String schemaName = schemaResultSet.getString("name");
-							schemaList.add(new Schema(schemaName));
-						}
-						schemaResultSet.close();
-						schemaStatement.close();
-					} else {
-						ResultSet schemaResultSet = dbmd.getSchemas();
-						while (schemaResultSet!=null && schemaResultSet.next())
-						{
-							String schemaName = schemaResultSet.getString(1);
-							schemaList.add(new Schema(schemaName));
-						}
-						// Close the schema ResultSet immediately
+					String schemaFilterKey = databaseMeta.getDatabaseTypeDesc() + "." +FILTER_SCHEMA_LIST; //$NON-NLS-1$
+			        if ( (connectionExtraOptions != null) && connectionExtraOptions.containsKey(schemaFilterKey) ) {
+			          String schemasFilterCommaList =  (String)connectionExtraOptions.get(schemaFilterKey);
+			          String[] schemasFilterArray = schemasFilterCommaList.split(","); //$NON-NLS-1$
+			          for (int i=0; i<schemasFilterArray.length; i++) {
+			            schemaList.add(new Schema(schemasFilterArray[i].trim()));
+			          }
+			        }
+			        if (schemaList.size() == 0) {
+						// Support schemas for MS SQL server due to PDI-1531
 						//
-						schemaResultSet.close();
+						String sql = databaseMeta.getSQLListOfSchemas();
+						if (!Const.isEmpty(sql)) {
+							Statement schemaStatement = db.getConnection().createStatement();
+							ResultSet schemaResultSet = schemaStatement.executeQuery(sql);
+							while (schemaResultSet!=null && schemaResultSet.next())
+							{
+								String schemaName = schemaResultSet.getString("name");
+								schemaList.add(new Schema(schemaName));
+							}
+							schemaResultSet.close();
+							schemaStatement.close();
+						} else {
+							ResultSet schemaResultSet = dbmd.getSchemas();
+							while (schemaResultSet!=null && schemaResultSet.next())
+							{
+								String schemaName = schemaResultSet.getString(1);
+								schemaList.add(new Schema(schemaName));
+							}
+							// Close the schema ResultSet immediately
+							//
+							schemaResultSet.close();
+						}
 					}
-						
 					for (Schema schema : schemaList) 
 					{
 						ArrayList<String> schemaTables = new ArrayList<String>();
