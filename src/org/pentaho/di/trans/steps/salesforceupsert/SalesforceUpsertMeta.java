@@ -83,12 +83,44 @@ public class SalesforceUpsertMeta extends BaseStepMeta implements StepMetaInterf
 	
 	private String salesforceIDFieldName;
 	
+	/** The time out */
+	private  String  timeout;
+	
+	private boolean useCompression;
 	
 	public SalesforceUpsertMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
-		
+	/**
+	 * @return Returns the useCompression.
+	 */
+	public boolean isUsingCompression()
+	{
+		return useCompression;
+	}
+    
+	/**
+	 * @param useCompression The useCompression to set.
+	 */
+	public void setUseCompression(boolean useCompression)
+	{
+		this.useCompression = useCompression;
+	}
+	/**
+	 * @param TimeOut The TimeOut to set.
+	 */
+	public void setTimeOut(String TimeOut)
+	{
+		this.timeout = TimeOut;
+	}
+	/**
+	 * @return Returns the TimeOut.
+	 */
+	public String getTimeOut()
+	{
+		return timeout;
+	}	
 	 /**
      * @return Returns the updateLookup.
      */
@@ -272,7 +304,8 @@ public class SalesforceUpsertMeta extends BaseStepMeta implements StepMetaInterf
 		}
 		
 		retval.append("      </fields>"+Const.CR);
-
+		retval.append("    "+XMLHandler.addTagValue("timeout", timeout));
+		retval.append("    "+XMLHandler.addTagValue("useCompression",   useCompression));
 		return retval.toString();
 	}
 
@@ -306,7 +339,8 @@ public class SalesforceUpsertMeta extends BaseStepMeta implements StepMetaInterf
 				updateStream[i]    = XMLHandler.getTagValue(fnode, "field"); //$NON-NLS-1$
 				if (updateStream[i]==null) updateStream[i]=updateLookup[i]; // default: the same name!
 			}
-
+			useCompression   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "useCompression"));
+			timeout = XMLHandler.getTagValue(stepnode, "timeout");
 		}
 		catch(Exception e)
 		{
@@ -337,7 +371,8 @@ public class SalesforceUpsertMeta extends BaseStepMeta implements StepMetaInterf
 			updateLookup[i]="name"+(i+1); //$NON-NLS-1$
 			updateStream[i]="field"+(i+1); //$NON-NLS-1$
 		}
-
+		useCompression=false;
+		timeout= "60000";
 	}
 	
 	/* This function adds meta data to the rows being pushed out */
@@ -376,6 +411,8 @@ public class SalesforceUpsertMeta extends BaseStepMeta implements StepMetaInterf
 				updateLookup[i]  = rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
 				updateStream[i]  = rep.getStepAttributeString(id_step, i, "field_attribut"); //$NON-NLS-1$
 			}
+			useCompression   = rep.getStepAttributeBoolean(id_step, "useCompression"); 
+			timeout          =  rep.getStepAttributeString(id_step, "timeout");
 		}
 		catch(Exception e)
 		{
@@ -402,6 +439,8 @@ public class SalesforceUpsertMeta extends BaseStepMeta implements StepMetaInterf
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribut",  updateStream[i]); //$NON-NLS-1$
 
 			}
+			rep.saveStepAttribute(id_transformation, id_step, "useCompression",  useCompression);
+			rep.saveStepAttribute(id_transformation, id_step, "timeout",           timeout);
 		}
 		catch(Exception e)
 		{

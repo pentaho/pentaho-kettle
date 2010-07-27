@@ -138,6 +138,16 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 	
 	private TextVar wSalesforceIDFieldName;
 	private FormData fdSalesforceIDFieldName;
+	
+    private Label wlUseCompression;
+    private FormData fdlUseCompression;
+    private Button wUseCompression;
+    private FormData fdUseCompression; 
+    
+    private Label wlTimeOut;
+    private FormData fdlTimeOut; 
+    private TextVar wTimeOut;
+    private FormData fdTimeOut; 
     
 	/**
 	 * List of ColumnInfo that should have the field names of the selected database table
@@ -317,13 +327,51 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 		settingGroupLayout.marginHeight = 10;
 		wSettingsGroup.setLayout(settingGroupLayout);
 		
+		// Timeout
+		wlTimeOut = new Label(wSettingsGroup, SWT.RIGHT);
+		wlTimeOut.setText(BaseMessages.getString(PKG, "SalesforceInsertDialog.TimeOut.Label"));
+		props.setLook(wlTimeOut);
+		fdlTimeOut = new FormData();
+		fdlTimeOut.left = new FormAttachment(0, 0);
+		fdlTimeOut.top = new FormAttachment(wSettingsGroup, margin);
+		fdlTimeOut.right = new FormAttachment(middle, -margin);
+		wlTimeOut.setLayoutData(fdlTimeOut);
+		wTimeOut = new TextVar(transMeta,wSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wTimeOut);
+		wTimeOut.addModifyListener(lsMod);
+		fdTimeOut = new FormData();
+		fdTimeOut.left = new FormAttachment(middle, 0);
+		fdTimeOut.top = new FormAttachment(wSettingsGroup, margin);
+		fdTimeOut.right = new FormAttachment(100, 0);
+		wTimeOut.setLayoutData(fdTimeOut);
+		
+		
+		// Use compression?
+		wlUseCompression=new Label(wSettingsGroup, SWT.RIGHT);
+		wlUseCompression.setText(BaseMessages.getString(PKG, "SalesforceInsertDialog.UseCompression.Label"));
+ 		props.setLook(wlUseCompression);
+		fdlUseCompression=new FormData();
+		fdlUseCompression.left = new FormAttachment(0, 0);
+		fdlUseCompression.top  = new FormAttachment(wTimeOut, margin);
+		fdlUseCompression.right= new FormAttachment(middle, -margin);
+		wlUseCompression.setLayoutData(fdlUseCompression);
+		wUseCompression=new Button(wSettingsGroup, SWT.CHECK );
+ 		props.setLook(wUseCompression);
+		wUseCompression.setToolTipText(BaseMessages.getString(PKG, "SalesforceInsertDialog.UseCompression.Tooltip"));
+		fdUseCompression=new FormData();
+		fdUseCompression.left = new FormAttachment(middle, 0);
+		fdUseCompression.top  = new FormAttachment(wTimeOut, margin);
+		wUseCompression.setLayoutData(fdUseCompression);
+
+		
+		
 		// BatchSize value
 		wlBatchSize = new Label(wSettingsGroup, SWT.RIGHT);
 		wlBatchSize.setText(BaseMessages.getString(PKG, "SalesforceInsertDialog.Limit.Label"));
 		props.setLook(wlBatchSize);
 		fdlBatchSize = new FormData();
 		fdlBatchSize.left = new FormAttachment(0, 0);
-		fdlBatchSize.top = new FormAttachment(wSettingsGroup, margin);
+		fdlBatchSize.top = new FormAttachment(wUseCompression, margin);
 		fdlBatchSize.right = new FormAttachment(middle, -margin);
 		wlBatchSize.setLayoutData(fdlBatchSize);
 		wBatchSize = new TextVar(transMeta,wSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -331,7 +379,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 		wBatchSize.addModifyListener(lsMod);
 		fdBatchSize = new FormData();
 		fdBatchSize.left = new FormAttachment(middle, 0);
-		fdBatchSize.top = new FormAttachment(wSettingsGroup, margin);
+		fdBatchSize.top = new FormAttachment(wUseCompression, margin);
 		fdBatchSize.right = new FormAttachment(100, 0);
 		wBatchSize.setLayoutData(fdBatchSize);
 		
@@ -709,6 +757,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 		wReturn.setRowNums();
 		wReturn.optWidth(true);
 
+		wTimeOut.setText(Const.NVL(in.getTimeOut(), SalesforceConnectionUtils.DEFAULT_TIMEOUT));
+		wUseCompression.setSelection(in.isUsingCompression());
 		wStepname.selectAll();
 	}
 
@@ -751,7 +801,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 			in.getUpdateLookup()[i] = item.getText(1);
 			in.getUpdateStream()[i] = item.getText(2);
 		}
-
+		in.setUseCompression(wUseCompression.getSelection());
+		in.setTimeOut(Const.NVL(wTimeOut.getText(),"0"));
 	}
 
 	// check if module, username is given
@@ -795,6 +846,8 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 			  String selectedModule=transMeta.environmentSubstitute(meta.getModule());
 			  // Define a new Salesforce connection
 			  connection=new SalesforceConnection(log, url, transMeta.environmentSubstitute(meta.getUserName()),transMeta.environmentSubstitute(meta.getPassword())); 
+			  int realTimeOut=Const.toInt(transMeta.environmentSubstitute(meta.getTimeOut()),0);
+			  connection.setTimeOut(realTimeOut);
 			  // connect to Salesforce
 			  connection.connect();
 			  // return fieldsname for the module

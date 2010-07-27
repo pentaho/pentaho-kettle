@@ -287,7 +287,10 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 				// create a Salesforce connection
 				data.connection= new SalesforceConnection(log, data.realURL, realUser,
 					environmentSubstitute(meta.getPassword()));
-				
+				// set timeout
+				data.connection.setTimeOut(Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
+				// Do we use compression?
+				if(meta.isUsingCompression()) data.connection.setUsingCompression(true);
 				// Now connect ...
 				data.connection.connect();
 

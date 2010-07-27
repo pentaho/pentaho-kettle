@@ -74,14 +74,47 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
 	/** Batch size */
 	private String batchSize;
 	
+	/** The time out */
+	private  String  timeout;
+	
+	private boolean useCompression;
+	
 	
 	public SalesforceDeleteMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
 		
-
-
+	/**
+	 * @return Returns the useCompression.
+	 */
+	public boolean isUsingCompression()
+	{
+		return useCompression;
+	}
+    
+	/**
+	 * @param useCompression The useCompression to set.
+	 */
+	public void setUseCompression(boolean useCompression)
+	{
+		this.useCompression = useCompression;
+	}
+    
+	/**
+	 * @return Returns the TimeOut.
+	 */
+	public String getTimeOut()
+	{
+		return timeout;
+	}
+	/**
+	 * @param TimeOut The TimeOut to set.
+	 */
+	public void setTimeOut(String TimeOut)
+	{
+		this.timeout = TimeOut;
+	}
 	/**
 	 * @return Returns the UserName.
 	 */
@@ -203,7 +236,8 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
 		retval.append("    "+XMLHandler.addTagValue("module",   module));
 		retval.append("    "+XMLHandler.addTagValue("DeleteField",   DeleteField));
 		retval.append("    "+XMLHandler.addTagValue("batchSize",   batchSize));
-
+		retval.append("    "+XMLHandler.addTagValue("timeout", timeout));
+		retval.append("    "+XMLHandler.addTagValue("useCompression",   useCompression));
 		return retval.toString();
 	}
 
@@ -222,7 +256,8 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
 			DeleteField= XMLHandler.getTagValue(stepnode, "DeleteField");
 			
 			batchSize = XMLHandler.getTagValue(stepnode, "batchSize");
-		
+			useCompression   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "useCompression"));
+			timeout = XMLHandler.getTagValue(stepnode, "timeout");
 		}
 		catch(Exception e)
 		{
@@ -238,7 +273,8 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
 		module = "Account";
 		DeleteField = null;
 		batchSize="10";
-
+		useCompression=false;
+		timeout= "60000";
 
 	}
 	
@@ -261,7 +297,8 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
 			username		 =  rep.getStepAttributeString(id_step, "username");
 			password		 =  rep.getStepAttributeString(id_step, "password");
 			batchSize = rep.getStepAttributeString(id_step, "batchSize");
-
+			useCompression   = rep.getStepAttributeBoolean(id_step, "useCompression"); 
+			timeout          =  rep.getStepAttributeString(id_step, "timeout");
 		}
 		catch(Exception e)
 		{
@@ -280,7 +317,8 @@ public class SalesforceDeleteMeta extends BaseStepMeta implements StepMetaInterf
 			rep.saveStepAttribute(id_transformation, id_step, "DeleteField",   DeleteField);
 			rep.saveStepAttribute(id_transformation, id_step, "username",   username);
 			rep.saveStepAttribute(id_transformation, id_step, "password",   password);
-
+			rep.saveStepAttribute(id_transformation, id_step, "useCompression",  useCompression);
+			rep.saveStepAttribute(id_transformation, id_step, "timeout",           timeout);
 		}
 		catch(Exception e)
 		{

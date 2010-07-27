@@ -1403,7 +1403,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wInclRownumField.setText(Const.NVL(in.getRowNumberField(),""));
 		wInclRownum.setSelection(in.includeRowNumber());
 		
-		wTimeOut.setText("" + in.getTimeOut());
+		wTimeOut.setText(Const.NVL(in.getTimeOut(), SalesforceConnectionUtils.DEFAULT_TIMEOUT));
 		wUseCompression.setSelection(in.isUsingCompression());
 		wLimit.setText("" + in.getRowLimit());
 

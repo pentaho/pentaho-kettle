@@ -25,6 +25,8 @@ public class SalesforceConnectionUtils {
 	
 	public static final String TARGET_DEFAULT_URL= "https://www.salesforce.com/services/Soap/u/16.0";
 	
+	public static final String DEFAULT_TIMEOUT = "60000";
+	
 	/**
 	 * The records filter description
 	 */
