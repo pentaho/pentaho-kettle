@@ -435,9 +435,10 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
           }
         }
       }
-			
+
+      
 			// Adds the database tables.
-			String[] theTableNames = theDatabase.getTablenames("", false); //$NON-NLS-1$
+			String[] theTableNames = dmi.getTables();
 			DatabaseExplorerNode theTableNode = null;
 			for (int i = 0; i < theTableNames.length; i++) {
 				theTableNode = new DatabaseExplorerNode();
