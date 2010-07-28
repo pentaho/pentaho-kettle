@@ -198,7 +198,7 @@ public class BlackBoxTests {
         		actualFile = actualFile.replaceFirst(".expected_"+i+".", ".actual_"+i+"."); // multiple files case
         		actualFile = actualFile.replaceFirst(".expected.", ".actual."); // single file case
         		File actual = new File( actualFile );
-        		if( !result.getResult() ) {
+        		if( result.getResult() ) {
         			fileCompare( expected, actual, log );
         		}
         	}

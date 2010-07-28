@@ -1,11 +1,11 @@
-test1,test2
-"abc,def",second field
-"abc,def",second field
-"abc,def",second field
-"abc,def",second field
-"abc,def",second field
-"abc,def",second field
-"abc,def",second field
-"abc,def",second field
-"abc,def",second field
-"abc,def",second field
+test1,test2,test3,test4,test5,test6
+"abc,def","""second field""","another "" field","""fourth, field""",fifth field,"""sixth"" field"
+"abc,def","""second field""","another "" field","""fourth, field""",fifth field,"""sixth"" field"
+"abc,def","""second field""","another "" field","""fourth, field""",fifth field,"""sixth"" field"
+"abc,def","""second field""","another "" field","""fourth, field""",fifth field,"""sixth"" field"
+"abc,def","""second field""","another "" field","""fourth, field""",fifth field,"""sixth"" field"
+"abc,def","""second field""","another "" field","""fourth, field""",fifth field,"""sixth"" field"
+"abc,def","""second field""","another "" field","""fourth, field""",fifth field,"""sixth"" field"
+"abc,def","""second field""","another "" field","""fourth, field""",fifth field,"""sixth"" field"
+"abc,def","""second field""","another "" field","""fourth, field""",fifth field,"""sixth"" field"
+"abc,def","""second field""","another "" field","""fourth, field""",fifth field,"""sixth"" field"
