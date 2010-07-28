@@ -389,7 +389,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	        		if (meta.isEnclosureForced() && !meta.isPadded())
 	        		{
 	        			writeEnclosures = true;
-	        		} else if(!meta.isEnclosureFixDisabled() && containsSeparator(str, data.binarySeparator)) {
+	        		} else if(!meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(str, data.binarySeparator, data.binaryEnclosure)) {
 	        			writeEnclosures = true;
 	        		}
     			}
@@ -500,13 +500,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 						data.writer.write(data.binarySeparator);
 					}
 					if ((meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
-							|| ((!meta.isEnclosureFixDisabled() && containsSeparator(fieldName.getBytes(), data.binarySeparator))))
+							|| ((!meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(fieldName.getBytes(), data.binarySeparator, data.binaryEnclosure))))
                     {
                     	data.writer.write(data.binaryEnclosure);
                     }
                     data.writer.write(getBinaryString(fieldName));
                     if ((meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
-							|| ((!meta.isEnclosureFixDisabled() && containsSeparator(fieldName.getBytes(), data.binarySeparator))))
+							|| ((!meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(fieldName.getBytes(), data.binarySeparator, data.binaryEnclosure))))
                     {
                     	data.writer.write(data.binaryEnclosure);
                     }
@@ -525,13 +525,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					ValueMetaInterface v = r.getValueMeta(i);
 					
 					if ((meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
-							|| ((!meta.isEnclosureFixDisabled() && containsSeparator(v.getName().getBytes(), data.binarySeparator))))
+							|| ((!meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(v.getName().getBytes(), data.binarySeparator, data.binaryEnclosure))))
 					{
                         data.writer.write(data.binaryEnclosure);
                     }
                     data.writer.write(getBinaryString(v.getName()));
                     if ((meta.isEnclosureForced() && data.binaryEnclosure.length>0 && v!=null && v.isString())
-							|| ((!meta.isEnclosureFixDisabled() && containsSeparator(v.getName().getBytes(), data.binarySeparator))))
+							|| ((!meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure(v.getName().getBytes(), data.binarySeparator, data.binaryEnclosure))))
                     {
                         data.writer.write(data.binaryEnclosure);
                     }
@@ -858,35 +858,94 @@ public class TextFileOutput extends BaseStep implements StepInterface
         super.dispose(smi, sdi);
 	}
 	
-	public boolean containsSeparator(byte[] source, byte[] separator) {
-		boolean result = false;
-		
-		// Is the string long enough to contain the separator
-		if(source.length > separator.length) {
-			int index = 0;
-			// Search for the first occurrence of the separator
-			do {
-				index = ArrayUtils.indexOf(source, separator[0], index);
-				if(index >= 0 && (source.length - index >= separator.length)) {
-					// Compare the bytes at the index to the contents of the separator
-					byte[] potentialMatch = ArrayUtils.subarray(source, index, index + separator.length);
-					
-					if(Arrays.equals(separator, potentialMatch)) {
-						result = true;
-					}
-					
-					// Faster (bails out early)
-//					for(int i = 0; i < data.binarySeparator.length; i++) {
-//						if(str[index + i] != data.binarySeparator[i]) { break; }
-//						else if(i == (data.binarySeparator.length - 1)) {
-//							// The whole separator matches
-//							writeEnclosures = true;
-//						}
-//					}
-				}
-			} while(!result && ++index > 0);
-		}
-		return result;
+	public boolean containsSeparatorOrEnclosure(byte[] source, byte[] separator, byte[] enclosure) {
+	  boolean result = false;
+
+	  // Skip entire test if neither separator nor enclosure exist
+	  if(separator != null && enclosure != null) {
+	  
+      // Search for the first occurrence of the separator or enclosure
+      for(int index = 0; !result && index < source.length; index++) {
+        if(enclosure != null && source[index] == enclosure[0]) {
+          
+          // Potential match found, make sure there are enough bytes to support a full match
+          if(index + enclosure.length <= source.length) {
+            // First byte of enclosure found
+            result = true; // Assume match
+            for(int i = 1; i < enclosure.length; i++) {
+              if(source[index + i] != enclosure[i]) {
+                // Enclosure match is proven false
+                result = false;
+                break;
+              }
+            }
+          }
+          
+        } else if(separator != null && source[index] == separator[0]) {
+          
+          // Potential match found, make sure there are enough bytes to support a full match
+          if(index + separator.length <= source.length) {
+            // First byte of separator found
+            result = true; // Assume match
+            for(int i = 1; i < separator.length; i++) {
+              if(source[index + i] != separator[i]) {
+                // Separator match is proven false
+                result = false;
+                break;
+              }
+            }
+          }
+          
+        }
+      }
+      
+	  }
+	  
+	  return result;
 	}
+	
+//	public boolean containsSeparator(byte[] source, byte[] separator) {
+//		boolean result = false;
+//		
+//		// Is the string long enough to contain the separator
+//		if(source.length > separator.length) {
+//			int index = 0;
+//			// Search for the first occurrence of the separator
+//			do {
+//				index = ArrayUtils.indexOf(source, separator[0], index);
+//				if(index >= 0 && (source.length - index >= separator.length)) {
+//					// Compare the bytes at the index to the contents of the separator
+//					byte[] potentialMatch = ArrayUtils.subarray(source, index, index + separator.length);
+//					
+//					if(Arrays.equals(separator, potentialMatch)) {
+//						result = true;
+//					}
+//				}
+//			} while(!result && ++index > 0);
+//		}
+//		return result;
+//	}
+//	
+//	public boolean containsEnclosure(byte[] source, byte[] enclosure) {
+//    boolean result = false;
+//    
+//    // Is the string long enough to contain the enclosure
+//    if(source.length > enclosure.length) {
+//      int index = 0;
+//      // Search for the first occurrence of the enclosure
+//      do {
+//        index = ArrayUtils.indexOf(source, enclosure[0], index);
+//        if(index >= 0 && (source.length - index >= enclosure.length)) {
+//          // Compare the bytes at the index to the contents of the enclosure
+//          byte[] potentialMatch = ArrayUtils.subarray(source, index, index + enclosure.length);
+//          
+//          if(Arrays.equals(enclosure, potentialMatch)) {
+//            result = true;
+//          }
+//        }
+//      } while(!result && ++index > 0);
+//    }
+//    return result;
+//  }
 	
 }
