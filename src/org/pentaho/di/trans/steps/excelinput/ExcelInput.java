@@ -410,6 +410,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 		Object[] r = getRowFromWorkbooks();
 		if (r != null)
 		{
+		    incrementLinesInput();
+
 			// OK, see if we need to repeat values.
 			if (data.previousRow != null)
 			{
