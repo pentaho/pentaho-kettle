@@ -421,43 +421,49 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 					theSchemaNode.setImage(SCHEMA_IMAGE);
 					theSchemaNode.setIsSchema(true);
 					theSchemasNode.add(theSchemaNode);
-					
+
 					// Adds the database tables for the given schema.
 					String[] theTableNames = schemas[i].getItems();
-					for (int i2 = 0; i2 < theTableNames.length; i2++) {
-						DatabaseExplorerNode theTableNode = new DatabaseExplorerNode();
-						theTableNode.setIsTable(true);
-						theTableNode.setSchema(schemas[i].getSchemaName());
-						theTableNode.setName(theTableNames[i2]);
-						theTableNode.setImage(TABLE_IMAGE);
-						theSchemaNode.add(theTableNode);
-						theTableNode.setParent(theSchemaNode);
-					}
+          if(theTableNames != null){
+            for (int i2 = 0; i2 < theTableNames.length; i2++) {
+              DatabaseExplorerNode theTableNode = new DatabaseExplorerNode();
+              theTableNode.setIsTable(true);
+              theTableNode.setSchema(schemas[i].getSchemaName());
+              theTableNode.setName(theTableNames[i2]);
+              theTableNode.setImage(TABLE_IMAGE);
+              theSchemaNode.add(theTableNode);
+              theTableNode.setParent(theSchemaNode);
+            }
+          }
 				}
 			}
-			
+
 			
 			// Adds the database tables.
-			String[] theTableNames = dmi.getTables();
-			DatabaseExplorerNode theTableNode = null;
-			for (int i = 0; i < theTableNames.length; i++) {
-				theTableNode = new DatabaseExplorerNode();
-				theTableNode.setIsTable(true);
-				theTableNode.setName(theTableNames[i]);
-				theTableNode.setImage(TABLE_IMAGE);
-				theTablesNode.add(theTableNode);
-			}
-			
+			String[] theTableNames = theDatabase.getTablenames(false);
+ 			DatabaseExplorerNode theTableNode = null;
+      if(theTableNames != null){
+        for (int i = 0; i < theTableNames.length; i++) {
+          theTableNode = new DatabaseExplorerNode();
+          theTableNode.setIsTable(true);
+          theTableNode.setName(theTableNames[i]);
+          theTableNode.setImage(TABLE_IMAGE);
+          theTablesNode.add(theTableNode);
+        }
+      }
+
 			// Adds the database views.
-			String[] theViewNames = theDatabase.getViews();
+			String[] theViewNames = dmi.getViews();
 			DatabaseExplorerNode theViewNode = null;
-			for (int i = 0; i < theViewNames.length; i++) {
-				theViewNode = new DatabaseExplorerNode();
-				theViewNode.setIsTable(true);
-				theViewNode.setName(theViewNames[i]);
-				theViewNode.setImage(TABLE_IMAGE);
-				theViewsNode.add(theViewNode);
-			}
+      if(theViewNames != null){
+        for (int i = 0; i < theViewNames.length; i++) {
+          theViewNode = new DatabaseExplorerNode();
+          theViewNode.setIsTable(true);
+          theViewNode.setName(theViewNames[i]);
+          theViewNode.setImage(TABLE_IMAGE);
+          theViewsNode.add(theViewNode);
+        }
+      }
 		} catch (Exception e) {
 			logger.info(e);
 			e.printStackTrace();
