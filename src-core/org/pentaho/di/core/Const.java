@@ -61,7 +61,7 @@ public class Const
     /**
      *  Version number
      */
-    public static final String VERSION = "4.0.1";
+    public static final String VERSION = "4.0.2";
     
     /**
      *  Release Type 
@@ -653,7 +653,7 @@ public class Const
     /**
      * The release type of this compilation
      */
-    public static final ReleaseType RELEASE = ReleaseType.STABLE;
+    public static final ReleaseType RELEASE = ReleaseType.PREVIEW;
     
     /** 
      *  rounds double f to any number of places after decimal point
