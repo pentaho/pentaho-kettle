@@ -127,8 +127,8 @@
 	<classpathentry kind="lib" path="libext/webservices/wstx-asl-3.2.9.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/libbase-1.1.6.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/libformula-1.1.7.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.1.1.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.1.1.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-4.0.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
