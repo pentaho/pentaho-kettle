@@ -521,7 +521,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 	
 					if (page3.getRepositoryDirectory() != null)
 					{
-						spoon.saveToRepository(jobMeta);
+						spoon.saveToRepository(jobMeta, false);
 					} else
 					{
 						spoon.saveToFile(jobMeta);
@@ -704,7 +704,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						boolean ok;
 						if (spoon.getRepository() != null)
 						{
-							ok = spoon.saveToRepository(transMeta);
+							ok = spoon.saveToRepository(transMeta, false);
 						} else
 						{
 							ok = spoon.saveToFile(transMeta);
