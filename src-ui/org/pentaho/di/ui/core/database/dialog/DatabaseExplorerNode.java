@@ -19,14 +19,14 @@
 package org.pentaho.di.ui.core.database.dialog;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
 public class DatabaseExplorerNode extends AbstractModelNode<DatabaseExplorerNode> {
 
-	private String name;
+  private static final long serialVersionUID = -7409853507740739091L;
+  
+  private String name;
 	private String schema;
 	private String image;
 	private boolean isTable;

@@ -39,7 +39,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransProfileFactory;
-import org.pentaho.di.ui.core.database.dialog.XulDatabaseExplorerModel.XulDatabaseExplorerNode;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -53,7 +52,6 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.components.XulButton;
-import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -145,7 +143,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		  
 		});
 		
-		
+    /*
 		BindingConvertor<DatabaseExplorerNode, String> theTableNameConvertor = new BindingConvertor<DatabaseExplorerNode, String>() {
 
 			public String sourceToTarget(DatabaseExplorerNode aValue) {
@@ -160,7 +158,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 				return null;
 			}
 		};
-		
+    */
 
     
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
