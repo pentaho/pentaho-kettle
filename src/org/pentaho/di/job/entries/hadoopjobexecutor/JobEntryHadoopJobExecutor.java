@@ -319,17 +319,27 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         conf.setOutputKeyClass(loader.loadClass(outputKeyClass));
         conf.setOutputValueClass(loader.loadClass(outputValueClass));
 
-        Class<? extends Mapper> mapper = (Class<? extends Mapper>) loader.loadClass(mapperClass);
-        conf.setMapperClass(mapper);
-        Class<? extends Reducer> combiner = (Class<? extends Reducer>) loader.loadClass(combinerClass);
-        conf.setCombinerClass(combiner);
-        Class<? extends Reducer> reducer = (Class<? extends Reducer>) loader.loadClass(reducerClass);
-        conf.setReducerClass(reducer);
+        if(mapperClass != null) {
+          Class<? extends Mapper> mapper = (Class<? extends Mapper>) loader.loadClass(mapperClass);
+          conf.setMapperClass(mapper);
+        }
+        if(combinerClass != null) {
+          Class<? extends Reducer> combiner = (Class<? extends Reducer>) loader.loadClass(combinerClass);
+          conf.setCombinerClass(combiner);
+        }
+        if(reducerClass != null) {
+          Class<? extends Reducer> reducer = (Class<? extends Reducer>) loader.loadClass(reducerClass);
+          conf.setReducerClass(reducer);
+        }
 
-        Class<? extends InputFormat> inputFormat = (Class<? extends InputFormat>) loader.loadClass(inputFormatClass);
-        conf.setInputFormat(inputFormat);
-        Class<? extends OutputFormat> outputFormat = (Class<? extends OutputFormat>) loader.loadClass(outputFormatClass);
-        conf.setOutputFormat(outputFormat);
+        if(inputFormatClass != null) {
+          Class<? extends InputFormat> inputFormat = (Class<? extends InputFormat>) loader.loadClass(inputFormatClass);
+          conf.setInputFormat(inputFormat);
+        }
+        if(outputFormatClass != null) {
+          Class<? extends OutputFormat> outputFormat = (Class<? extends OutputFormat>) loader.loadClass(outputFormatClass);
+          conf.setOutputFormat(outputFormat);
+        }
 
         String hdfsBaseUrl = "hdfs://" + hdfsHostname + ":" + hdfsPort;
         conf.set("fs.default.name", hdfsBaseUrl);
@@ -487,6 +497,16 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
   public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
     SerializationHelper.saveJobRep(this, rep, id_job, getObjectId());
+  }
+  
+  public boolean evaluates()
+  {
+    return true;
+  }
+
+  public boolean isUnconditional()
+  {
+    return true;
   }
 
 }
