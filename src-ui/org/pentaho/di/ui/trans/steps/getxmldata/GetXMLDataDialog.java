@@ -1423,6 +1423,34 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wbbLoopPathList.setEnabled(!wXMLStreamField.getSelection());
 		wPrunePath.setEnabled(!wXMLStreamField.getSelection());
 		wlPrunePath.setEnabled(!wXMLStreamField.getSelection());
+		wlShortFileFieldName.setEnabled(!wXMLStreamField.getSelection());
+		wShortFileFieldName.setEnabled(!wXMLStreamField.getSelection());
+		wlPathFieldName.setEnabled(!wXMLStreamField.getSelection());
+		wPathFieldName.setEnabled(!wXMLStreamField.getSelection());
+		wlIsHiddenName.setEnabled(!wXMLStreamField.getSelection());
+		wIsHiddenName.setEnabled(!wXMLStreamField.getSelection());
+		wlLastModificationTimeName.setEnabled(!wXMLStreamField.getSelection());
+		wLastModificationTimeName.setEnabled(!wXMLStreamField.getSelection());
+		wlUriName.setEnabled(!wXMLStreamField.getSelection());
+		wUriName.setEnabled(!wXMLStreamField.getSelection());
+		wlRootUriName.setEnabled(!wXMLStreamField.getSelection());
+		wRootUriName.setEnabled(!wXMLStreamField.getSelection());
+		wlExtensionFieldName.setEnabled(!wXMLStreamField.getSelection());
+		wExtensionFieldName.setEnabled(!wXMLStreamField.getSelection());
+		wlSizeFieldName.setEnabled(!wXMLStreamField.getSelection());
+		wSizeFieldName.setEnabled(!wXMLStreamField.getSelection());
+		if(wXMLStreamField.getSelection()) {
+			wShortFileFieldName.setText("");
+			wPathFieldName.setText("");
+			wIsHiddenName.setText("");
+			wLastModificationTimeName.setText("");
+			wUriName.setText("");
+			wRootUriName.setText("");
+			wExtensionFieldName.setText("");
+			wSizeFieldName.setText("");
+
+		}
+		
 	}
 	@SuppressWarnings("unchecked")
 	private void getLoopPathList()
