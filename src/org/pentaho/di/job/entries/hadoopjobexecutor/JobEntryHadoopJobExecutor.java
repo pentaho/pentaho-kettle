@@ -31,13 +31,18 @@ import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputFormat;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.RunningJob;
+import org.apache.hadoop.mapred.TaskCompletionEvent;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.SerializationHelper;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -273,6 +278,19 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   }
 
   public Result execute(Result result, int arg1) throws KettleException {
+    Log4jFileAppender appender = null;
+    String logFileName = "pdi-" + this.getName(); //$NON-NLS-1$
+    try
+    {
+      appender = LogWriter.createFileAppender(logFileName, true, false);
+      LogWriter.getInstance().addAppender(appender);
+      log.setLogLevel(parentJob.getLogLevel());
+    } catch (Exception e)
+    {
+      logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.FailedToOpenLogFile", logFileName, e.toString())); //$NON-NLS-1$
+      logError(Const.getStackTracker(e));
+    }
+    
     try {
       URL resolvedJarUrl = null;
       if (jarUrl.indexOf("://") == -1) {
@@ -364,20 +382,51 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
         JobClient jobClient = new JobClient(conf);
         RunningJob runningJob = jobClient.submitJob(conf);
-
+        
         if (blocking) {
           try {
+            int taskCompletionEventIndex = 0;
             while (!runningJob.isComplete()) {
               if (loggingInterval >= 1) {
                 printJobStatus(runningJob);
+                
+                TaskCompletionEvent[] tcEvents = runningJob.getTaskCompletionEvents(taskCompletionEventIndex);
+                for(int i = 0; i < tcEvents.length; i++) {
+                  String[] diags = runningJob.getTaskDiagnostics(tcEvents[i].getTaskAttemptId());
+                  StringBuilder diagsOutput = new StringBuilder();
+                  
+                  if(diags != null && diags.length > 0) {
+                    diagsOutput.append(Const.CR);
+                    for(String s : diags) {
+                      diagsOutput.append(s);
+                      diagsOutput.append(Const.CR);
+                    }
+                  }
+                  
+                  switch(tcEvents[i].getTaskStatus()) {
+                    case KILLED: {
+                      logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.KILLED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+                    }break;
+                    case FAILED: {
+                      logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.FAILED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+                      result.setResult(false);
+                    }break;
+                    case SUCCEEDED: {
+                      logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.SUCCEEDED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+                    }break;
+                  }
+                }
+                taskCompletionEventIndex += tcEvents.length;
+                
                 Thread.sleep(loggingInterval * 1000);
               } else {
                 Thread.sleep(60000);
               }
             }
+            
             printJobStatus(runningJob);
           } catch (InterruptedException ie) {
-            log.logError(ie.getMessage(), ie);
+            logError(ie.getMessage(), ie);
           }
         }
 
@@ -389,6 +438,16 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       result.setResult(false);
       logError(t.getMessage(), t);
     }
+    
+    if (appender != null)
+    {
+      LogWriter.getInstance().removeAppender(appender);
+      appender.close();
+      
+      ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, appender.getFile(), parentJob.getJobname(), getName());
+      result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+    }
+    
     return result;
   }
 
