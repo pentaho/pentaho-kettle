@@ -298,15 +298,7 @@ public class RepositoryImportProgressDialog extends Dialog
 					ti.setCreatedDate( new Date() );   
     				ti.setCreatedUser( rep.getUserInfo().getLogin() );
     			}
-    			else
-    			{
-    				ti.setCreatedDate( ti.getCreatedDate() );                 
-    				ti.setCreatedUser( ti.getCreatedUser());
-    			}
-
-    			// Keep info on who & when this transformation was changed...
-    			ti.setModifiedDate( new Date() );                 
-    			ti.setModifiedUser( rep.getUserInfo().getLogin() );
+    			
     			ti.saveRep(rep);
     			addLog(Messages.getString("RepositoryImportDialog.TransSaved.Log", Integer.toString(transformationNumber), ti.getName()));
     		}
