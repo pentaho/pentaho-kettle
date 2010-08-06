@@ -131,7 +131,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 		
         String loadCommand = "";
         loadCommand += "LOAD DATA INFILE '"+environmentSubstitute(meta.getFifoFileName())+"' ";
-        loadCommand += "INTO TABLE "+data.schemaTable+" ";
+        loadCommand += "INTO TABLE `"+data.schemaTable+"` ";
         if (meta.isReplacingData()) {
         	loadCommand += "REPLACE ";
         } else if (meta.isIgnoringErrors()) {
@@ -148,7 +148,15 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
         	loadCommand += "OPTIONALLY ENCLOSED BY '"+meta.getEnclosure()+"' ";
         }
         loadCommand += "ESCAPED BY '"+meta.getEscapeChar()+("\\".equals(meta.getEscapeChar())?meta.getEscapeChar():"")+"' ";
-        loadCommand += ";"+Const.CR;
+        
+        // Build list of column names to set
+        loadCommand += "(";
+        for (int cnt = 0; cnt < meta.getFieldTable().length; cnt++){
+        	loadCommand += "`" + meta.getFieldTable()[cnt] + "`";
+        	if (cnt < meta.getFieldTable().length - 1)
+        		loadCommand += ",";
+        }
+        loadCommand += ");"+Const.CR;
         
         logBasic("Starting the MySQL bulk Load in a separate thread : "+loadCommand);
         data.sqlRunner = new SqlRunner(data, loadCommand);
