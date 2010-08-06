@@ -210,6 +210,9 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	{
 		LogWriterObject logWriterObject = new LogWriterObject(getRealLogSubject(), this, parentJob.getLogLevel());
 		LogChannelInterface logChannel = logWriterObject.getLogChannel();
+		String message = getRealLogMessage();
+		
+		if(Const.isEmpty(message)) return true;
 		
 		try
 		{
@@ -220,7 +223,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 			case DETAILED: logChannel.logDetailed(getRealLogMessage()+ Const.CR); break;
 			case DEBUG: logChannel.logDebug(getRealLogMessage()+ Const.CR); break;
 			case ROWLEVEL: logChannel.logRowlevel(getRealLogMessage()+ Const.CR); break;
- 		}
+			}
 
 			return true;
 		}
@@ -265,12 +268,12 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     
 	public String getRealLogMessage()
 	{
-		return environmentSubstitute(Const.NVL(getLogMessage(), ""));
+		return Const.NVL(environmentSubstitute(getLogMessage()), "");
 		
 	}
 	public String getRealLogSubject()
 	{
-		return 	environmentSubstitute(Const.NVL(getLogSubject(), ""));
+		return 	Const.NVL(environmentSubstitute(getLogSubject()), "");
 	}
 	
 	public String getLogMessage()
