@@ -216,13 +216,14 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		
 		try
 		{
-			switch(logWriterObject.getLogLevel()) {
-			case ERROR: logChannel.logError(getRealLogMessage()+ Const.CR); break;
-			case MINIMAL: logChannel.logMinimal(getRealLogMessage()+ Const.CR); break;
-			case BASIC: logChannel.logBasic(getRealLogMessage()+ Const.CR); break;
-			case DETAILED: logChannel.logDetailed(getRealLogMessage()+ Const.CR); break;
-			case DEBUG: logChannel.logDebug(getRealLogMessage()+ Const.CR); break;
-			case ROWLEVEL: logChannel.logRowlevel(getRealLogMessage()+ Const.CR); break;
+			switch(logWriterObject.getLogLevel()) 
+			{
+				case ERROR: logChannel.logError(message + Const.CR); break;
+				case MINIMAL: logChannel.logMinimal(message+ Const.CR); break;
+				case BASIC: logChannel.logBasic(getRealLogMessage()+ Const.CR); break;
+				case DETAILED: logChannel.logDetailed(message+ Const.CR); break;
+				case DEBUG: logChannel.logDebug(message+ Const.CR); break;
+				case ROWLEVEL: logChannel.logRowlevel(message+ Const.CR); break;
 			}
 
 			return true;
