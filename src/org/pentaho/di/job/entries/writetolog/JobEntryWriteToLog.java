@@ -145,6 +145,9 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	 */
 	public boolean evaluate(Result result)
 	{
+		String message = getRealLogMessage();
+		if(Const.isEmpty(message)) return true;
+		
 		LogWriter log = LogWriter.getInstance();
 		
 			
@@ -158,48 +161,40 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 			{
 				// Output message to log
 				// Log level = ERREUR	
-				log.logError(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				log.logError(Const.CR + getRealLogSubject()+ Const.CR, message+ Const.CR);
 			}
 			else if (loglevel==LogWriter.LOG_LEVEL_MINIMAL)
 			{
 				// Output message to log
 				// Log level = MINIMAL	
-				log.logMinimal(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				log.logMinimal(Const.CR + getRealLogSubject()+ Const.CR, message+ Const.CR);
 			}
 			else if (loglevel==LogWriter.LOG_LEVEL_BASIC)
 			{
 				// Output message to log
 				// Log level = BASIC	
-				log.logBasic(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				log.logBasic(Const.CR + getRealLogSubject()+ Const.CR, message+ Const.CR);
 			}
 			else if (loglevel==LogWriter.LOG_LEVEL_DETAILED)
 			{
 				// Output message to log
 				// Log level = DETAILED	
-				log.logDetailed(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				log.logDetailed(Const.CR + getRealLogSubject()+ Const.CR, message+ Const.CR);
 			}
 			else if (loglevel==LogWriter.LOG_LEVEL_DEBUG)
 			{
 				// Output message to log
 				// Log level = DEBUG	
-				log.logDebug(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				log.logDebug(Const.CR + getRealLogSubject()+ Const.CR, message+ Const.CR);
 				
 			}
 			else if (loglevel==LogWriter.LOG_LEVEL_ROWLEVEL)
 			{
 				// Output message to log
 				// Log level = ROWLEVEL	
-				log.logRowlevel(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
+				log.logRowlevel(Const.CR + getRealLogSubject()+ Const.CR, message+ Const.CR);
 			}
-
-
-
-			return true;
-			
-			
-
-			
-					
+			return true;		
 		}
 		catch(Exception e)
 		{
