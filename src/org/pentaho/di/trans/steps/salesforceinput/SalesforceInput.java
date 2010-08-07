@@ -420,7 +420,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 	sql = sql + " FROM " + environmentSubstitute(meta.getModule());
 	
 	if (!Const.isEmpty(environmentSubstitute(meta.getCondition()))){
-		sql = sql + " WHERE " + environmentSubstitute(meta.getCondition().replace("\n\r", "").replace("\n", ""));
+		sql = sql + " WHERE " + environmentSubstitute(meta.getCondition().replace("\n\r", " ").replace("\n", " "));
 	}
 	
 	return sql;
