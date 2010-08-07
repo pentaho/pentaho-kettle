@@ -83,7 +83,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	
 	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private String DEFAULT_DATE_FORMAT="yyyy-MM-dd";
+	private String DEFAULT_DATE_TIME_FORMAT="yyyy-MM-dd'T'HH:mm:ss'.000Z'";
+	private String DEFAULT_DATE_FORMAT= "yyyy-MM-dd";
 	
 	private CTabFolder wTabFolder;
 	
@@ -1289,21 +1290,28 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	            TableItem item = new TableItem(wFields.table,SWT.NONE);
 				item.setText(1, fieldname);
 				item.setText(2, fieldname);
-			
 	            // Try to guess field type
 				// I know it's not clean (see up)
-	            if(StringUtil.IsDate(firstValue,"yyyy-MM-dd")){
-	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
-	            	item.setText(4, "yyyy-MM-dd");		    			
-	            } else if(StringUtil.IsInteger(firstValue)) {
-	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_INTEGER));
-	            	item.setText(5, ""+ValueMeta.DEFAULT_INTEGER_LENGTH);
-	            } else if(StringUtil.IsNumber(firstValue)){
-	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_NUMBER)); 
-	            } else if(firstValue.equals("true")||firstValue.equals("false")){
-	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_BOOLEAN));     
-	            }else
-	            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING));    
+				if(Const.NVL(firstValue, "null").equals("null")) {
+					item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
+				}else {
+		           if(StringUtil.IsDate(firstValue,DEFAULT_DATE_TIME_FORMAT)){
+			            item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
+			            item.setText(4, DEFAULT_DATE_TIME_FORMAT);
+		            } else if(StringUtil.IsDate(firstValue,DEFAULT_DATE_FORMAT)){
+		            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
+		            	item.setText(4, DEFAULT_DATE_FORMAT);
+		            } else if(StringUtil.IsInteger(firstValue)) {
+		            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_INTEGER));
+		            	item.setText(5, String.valueOf(ValueMeta.DEFAULT_INTEGER_LENGTH));
+		            } else if(StringUtil.IsNumber(firstValue)){
+		            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_NUMBER)); 
+		            } else if(firstValue.equals("true")||firstValue.equals("false")){
+		            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_BOOLEAN));     
+		            }else {
+		            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
+		            }
+				} 
 			}
 		}else{
 			connection.connect();
@@ -1314,7 +1322,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             	String FieldLabel= fields[i].getLabel();	
             	String FieldName= fields[i].getName();	
             	String FieldType=fields[i].getType().getValue();
-            	String FieldLengh =  fields[i].getLength() + "";
+            	String FieldLengh =  String.valueOf(fields[i].getLength());
+            	String FieldPrecision =  String.valueOf(fields[i].getPrecision());
             	
             	TableItem item = new TableItem(wFields.table,SWT.NONE);
 				item.setText(1, FieldLabel);
@@ -1323,22 +1332,26 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 				// Try to get the Type
 				if (FieldType.equals("boolean")) {
 					item.setText(3, "Boolean");
-				} else if (FieldType.equals("datetime") || FieldType.equals("date")) {
+				} else if (FieldType.equals("date")) {
 					item.setText(3, "Date");
 					item.setText(4, DEFAULT_DATE_FORMAT);
+				} else if (FieldType.equals("datetime")) {
+					item.setText(3, "Date");
+					item.setText(4, DEFAULT_DATE_TIME_FORMAT);
 				} else if (FieldType.equals("double")) {
 					item.setText(3, "Number");
                 } else if (FieldType.equals("int")) {
 					item.setText(3, "Integer");
-				}
-		        else {
-		        item.setText(3, "String");
+				} else {
+					item.setText(3, "String");
 		        }
-				
 				// Get length
-				if (!FieldType.equals("boolean") && !FieldType.equals("datetime") && !FieldType.equals("date"))
-				{
+				if (!FieldType.equals("boolean") && !FieldType.equals("datetime") && !FieldType.equals("date")) {
 					item.setText(5, FieldLengh);
+				}	
+				// Get precision
+				if (!FieldType.equals("boolean") && !FieldType.equals("datetime") && !FieldType.equals("date")){
+					item.setText(6, FieldPrecision);
 				}					
 	       }
         }

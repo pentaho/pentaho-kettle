@@ -336,7 +336,10 @@ public class SalesforceConnection {
 	 // Get SOQL meta data (not a Good way but i don't see any other way !)
 	 // TODO : Go back to this one
 	 // I am sure there is an easy way to return meta for a SOQL result
-	 public MessageElement[] getElements() {
+	 public MessageElement[] getElements() throws Exception {
+		 // Query first
+		 this.qr = this.binding.query(this.sql);
+		 // and then return records
 		 SObject con=qr.getRecords()[0];
 		 if(con==null) return null;
 			 return con.get_any();
