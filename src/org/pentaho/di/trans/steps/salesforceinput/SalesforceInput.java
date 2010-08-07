@@ -300,7 +300,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 				 return false;
 			 }
 			 
-			String soQL=environmentSubstitute(meta.getQuery());
+			String soSQL=environmentSubstitute(meta.getQuery());
 			// check target URL
 			String realUrl=environmentSubstitute(meta.getTargetURL());
 			if(Const.isEmpty(realUrl)) {
@@ -318,7 +318,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 				
 				if(meta.isSpecifyQuery()) {
 					// Check if user specified a query 
-					 if (Const.isEmpty(soQL)) {
+					 if (Const.isEmpty(soSQL)) {
 						 log.logError(BaseMessages.getString(PKG, "SalesforceInputDialog.QueryMissing.DialogMessage"));
 						 return false;
 					 }
@@ -368,7 +368,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			    // Build query if needed
 			    if(meta.isSpecifyQuery()) {
 			    	// Free hand SOQL Query
-			    	data.connection.setSQL(soQL.replace("\n\r", "").replace("\n", ""));
+			    	data.connection.setSQL(soSQL.replace("\n\r", " ").replace("\n", " "));
 			    } else {
 			    	// retrieve data from a module
 			    	// Set condition if needed
