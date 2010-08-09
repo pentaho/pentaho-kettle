@@ -353,14 +353,7 @@ public class RepositoryImporter implements ProgressMonitorListener, RepositoryIm
         if (transMeta.getCreatedUser() == null || transMeta.getCreatedUser().equals("-")) {
           transMeta.setCreatedDate(new Date());
           transMeta.setCreatedUser(rep.getUserInfo().getLogin());
-        } else {
-          transMeta.setCreatedDate(transMeta.getCreatedDate());
-          transMeta.setCreatedUser(transMeta.getCreatedUser());
         }
-
-        // Keep info on who & when this transformation was changed...
-        transMeta.setModifiedDate(new Date());
-        transMeta.setModifiedUser(rep.getUserInfo().getLogin());
         rep.save(transMeta, versionComment, this);
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.TransSaved.Log", Integer.toString(transformationNumber), transMeta.getName()));
       } catch (Exception e) {
