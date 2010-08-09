@@ -551,11 +551,97 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   }
 
   public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
-    SerializationHelper.readJobRep(this, rep, id_jobentry, databases);
+    if(rep != null) {
+      super.loadRep(rep, id_jobentry, databases, slaveServers);
+      
+      setHadoopJobName(rep.getJobEntryAttributeString(id_jobentry, "hadoop_job_name"));
+      setSimple(rep.getJobEntryAttributeBoolean(id_jobentry, "simple"));
+
+      setJarUrl(rep.getJobEntryAttributeString(id_jobentry, "jar_url"));
+      setCmdLineArgs(rep.getJobEntryAttributeString(id_jobentry, "command_line_args"));
+      setBlocking(rep.getJobEntryAttributeBoolean(id_jobentry, "blocking"));
+      setLoggingInterval(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "logging_interval")).intValue());
+
+      setMapperClass(rep.getJobEntryAttributeString(id_jobentry, "mapper_class"));
+      setCombinerClass(rep.getJobEntryAttributeString(id_jobentry, "combiner_class"));
+      setReducerClass(rep.getJobEntryAttributeString(id_jobentry, "reducer_class"));
+      setInputPath(rep.getJobEntryAttributeString(id_jobentry, "input_path"));
+      setInputFormatClass(rep.getJobEntryAttributeString(id_jobentry, "input_format_class"));
+      setOutputPath(rep.getJobEntryAttributeString(id_jobentry, "output_path"));
+      setOutputKeyClass(rep.getJobEntryAttributeString(id_jobentry, "output_key_class"));
+      setOutputValueClass(rep.getJobEntryAttributeString(id_jobentry, "output_value_class"));
+      setOutputFormatClass(rep.getJobEntryAttributeString(id_jobentry, "output_format_class"));
+
+      setHdfsHostname(rep.getJobEntryAttributeString(id_jobentry, "hdfs_hostname"));
+      setHdfsPort(rep.getJobEntryAttributeString(id_jobentry, "hdfs_port"));
+      setJobTrackerHostname(rep.getJobEntryAttributeString(id_jobentry, "job_tracker_hostname"));
+      setJobTrackerPort(rep.getJobEntryAttributeString(id_jobentry, "job_tracker_port"));
+      setNumMapTasks(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_map_tasks")).intValue());
+      setNumReduceTasks(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_reduce_tasks")).intValue());
+      setWorkingDirectory(rep.getJobEntryAttributeString(id_jobentry, "working_dir"));
+
+      
+      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "user_defined_name");//$NON-NLS-1$
+      if(argnr > 0) {
+        userDefined = new ArrayList<UserDefinedItem>();
+        
+        UserDefinedItem item = null;
+        for(int i = 0; i < argnr; i++) {
+          item = new UserDefinedItem();
+          item.setName(rep.getJobEntryAttributeString(id_jobentry, i,"user_defined_name")); //$NON-NLS-1$
+          item.setValue(rep.getJobEntryAttributeString(id_jobentry, i,"user_defined_value")); //$NON-NLS-1$
+          userDefined.add(item);
+        }
+      }
+    } else {
+      throw new KettleException("Unable to save to a repository. The repository is null."); //$NON-NLS-1$
+    }
   }
 
   public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
-    SerializationHelper.saveJobRep(this, rep, id_job, getObjectId());
+    if(rep != null) {
+      super.saveRep(rep, id_job);
+      
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"hadoop_job_name", hadoopJobName); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"simple", isSimple); //$NON-NLS-1$
+
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"jar_url", jarUrl); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"command_line_args", cmdLineArgs); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"blocking", blocking); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"logging_interval", loggingInterval); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"hadoop_job_name", hadoopJobName); //$NON-NLS-1$
+
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"mapper_class", mapperClass); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"combiner_class", combinerClass); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"reducer_class", reducerClass); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"input_path", inputPath); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"input_format_class", inputFormatClass); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"output_path", outputPath); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"output_key_class", outputKeyClass); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"output_value_class", outputValueClass); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"output_format_class", outputFormatClass); //$NON-NLS-1$
+
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"hdfs_hostname", hdfsHostname); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"hdfs_port", hdfsPort); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"job_tracker_hostname", jobTrackerHostname); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"job_tracker_port", jobTrackerPort); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"num_map_tasks", numMapTasks); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"num_reduce_tasks", numReduceTasks); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"working_dir", workingDirectory); //$NON-NLS-1$
+
+      if (userDefined != null) {
+        for (int i = 0; i < userDefined.size(); i++) {
+          UserDefinedItem item = userDefined.get(i);
+          if (item.getName() != null && !"".equals(item.getName()) && item.getValue() != null && !"".equals(item.getValue())) { //$NON-NLS-1$ //$NON-NLS-2$
+            rep.saveJobEntryAttribute(id_job, getObjectId(), i,"user_defined_name", item.getName()); //$NON-NLS-1$
+            rep.saveJobEntryAttribute(id_job, getObjectId(), i,"user_defined_value", item.getValue()); //$NON-NLS-1$
+          }
+        }
+      }
+      
+    } else {
+      throw new KettleException("Unable to save to a repository. The repository is null."); //$NON-NLS-1$
+    }
   }
   
   public boolean evaluates()
