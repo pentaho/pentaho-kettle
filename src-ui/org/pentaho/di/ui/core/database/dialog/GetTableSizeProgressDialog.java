@@ -66,8 +66,8 @@ public class GetTableSizeProgressDialog
 				try 
 				{
 					db.connect();
-					
-					String sql = "SELECT count(*) FROM "+tableName;
+		
+					String sql= dbMeta.getDatabaseInterface().getSelectCountStatement(tableName);
 					RowMetaAndData row =  db.getOneRow(sql);
                     size = row.getRowMeta().getInteger(row.getData(), 0);
 					

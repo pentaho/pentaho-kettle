@@ -144,8 +144,12 @@ public abstract class BaseDatabaseMeta implements Cloneable
      */
     public static final String ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE = "SUPPORTS_BOOLEAN_DATA_TYPE";
     
-
-    
+    /**
+     * The SQL, minus the table name, to select the number 
+     * of rows from a table
+     */
+    public static final String SELECT_COUNT_STATEMENT = "select count(*) FROM";
+        
     public static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[]
         {
            new DatabaseConnectionPoolParameter("defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool."), 
@@ -1473,4 +1477,13 @@ public abstract class BaseDatabaseMeta implements Cloneable
     return "'"+string+"'";
   }
 
+  
+  /**
+   * Build the SQL to count the number of rows in the passed table.
+   * @param tableName
+   * @return
+   */
+  public String getSelectCountStatement(String tableName) {
+      return SELECT_COUNT_STATEMENT+" "+tableName;
+  }
 }

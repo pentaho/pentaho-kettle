@@ -841,4 +841,11 @@ public interface DatabaseInterface extends Cloneable
 	 * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
 	 */
   public String quoteSQLString(String string);
+  
+  /**
+   * Returns the SQL Statement that counts the number of rows in the table.
+   * @param tableName
+   * @return
+   */
+  public String getSelectCountStatement(String tableName);
 }

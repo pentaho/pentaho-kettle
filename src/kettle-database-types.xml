@@ -55,6 +55,11 @@
     <classname>org.pentaho.di.core.database.GuptaDatabaseMeta</classname>
   </database-type>                                                       
 
+  <database-type id="HADOOP HIVE">
+    <description>Hadoop Hive</description>
+    <classname>org.pentaho.di.core.database.HiveDatabaseMeta</classname>
+  </database-type>    
+
   <database-type id="H2">
     <description>H2</description>
     <classname>org.pentaho.di.core.database.H2DatabaseMeta</classname>
