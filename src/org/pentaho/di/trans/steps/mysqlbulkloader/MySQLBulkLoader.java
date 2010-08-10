@@ -11,8 +11,10 @@
 
 package org.pentaho.di.trans.steps.mysqlbulkloader;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -164,7 +166,39 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
         
         // Ready to start writing rows to the FIFO file now...
         //
-    	data.fifoStream = new BufferedOutputStream( new FileOutputStream( data.fifoFilename ), 1000 );
+        logBasic("Opening fifo " + data.fifoFilename + " for writing.");
+        OpenFifo openFifo = new OpenFifo(data.fifoFilename, 1000);
+        openFifo.start();
+        
+        // Wait for either the sql statement to throw an error or the
+        // fifo writer to throw an error
+        while (true){
+        	openFifo.join(200);
+        	if (openFifo.getState() == Thread.State.TERMINATED)
+        		break;
+        	
+        	try{
+        		data.sqlRunner.checkExcn();
+        	}
+        	catch (Exception e){
+        		// We need to open a stream to the fifo to unblock the fifo writer
+        		// that was waiting for the sqlRunner that now isn't running
+        		new BufferedInputStream( new FileInputStream( data.fifoFilename )).close();
+        		openFifo.join();
+        		logError("Make sure user has been granted the FILE privilege.");
+        		logError("");
+                throw e;
+        	}
+        	
+        	try{
+            	openFifo.checkExcn();
+        	}
+        	catch (Exception e){
+        		throw e;
+        	}
+        }
+        
+    	data.fifoStream = openFifo.getFifoStream();
 	}
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -354,6 +388,15 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
     	}
     	catch(Exception e)
     	{
+    		// If something went wrong with the import,  
+    		// rather return that error, in stead of "Pipe Broken"
+    		try{
+    			data.sqlRunner.checkExcn();
+    		}
+    		catch (Exception loadEx){
+    			throw new KettleException("Error serializing rows of data to the fifo file", loadEx);
+    		}
+    		
     		throw new KettleException("Error serializing rows of data to the fifo file", e);
     	}
 		
@@ -443,6 +486,45 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	    }
 	    
 	    super.dispose(smi, sdi);
+	}
+	
+	// Class to try and open a writer to a fifo in a different thread.
+	// Opening the fifo is a blocking call, so we need to check for errors
+	// after a small waiting period
+	static class OpenFifo extends Thread
+	{
+		private BufferedOutputStream fifoStream = null;
+		private Exception ex;
+		private String fifoName;
+		private int size;
+	       
+		OpenFifo(String fifoName, int size)
+        {
+			this.fifoName = fifoName;
+			this.size = size;
+        }
+		
+		public void run()
+	    {
+			try{
+				fifoStream = new BufferedOutputStream( new FileOutputStream( this.fifoName ), this.size );
+			} catch (Exception ex) {
+                this.ex = ex;
+            }
+        }
+		
+		void checkExcn() throws Exception
+        {
+            // This is called from the main thread context to rethrow any saved
+            // excn.
+            if (ex != null) {
+                throw ex;
+            }
+        }
+		
+		BufferedOutputStream getFifoStream(){
+			return fifoStream;
+		}
 	}
 	
     static class SqlRunner extends Thread
