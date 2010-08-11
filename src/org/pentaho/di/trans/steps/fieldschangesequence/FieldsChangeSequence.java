@@ -17,6 +17,8 @@ package org.pentaho.di.trans.steps.fieldschangesequence;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -72,7 +74,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
 				data.fieldnr=meta.getFieldName().length;
 				data.fieldnrs=new int[data.fieldnr];
 				data.previousValues=new Object[data.fieldnr];
-				
+				data.fieldnrsMeta = new ValueMeta[data.fieldnr];
 				for (int i=0;i<data.fieldnr;i++)
 				{
 					data.fieldnrs[i]=data.previousMeta.indexOfValue(meta.getFieldName()[i] );
@@ -81,15 +83,18 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
 						logError(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.CanNotFindField",meta.getFieldName()[i]));
 						throw new KettleException(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.CanNotFindField",meta.getFieldName()[i]));
 					}
+					data.fieldnrsMeta[i]=data.previousMeta.getValueMeta(data.fieldnrs[i]);
 	 			}
 			}else
 			{
 				data.fieldnr=data.previousMeta.size();
 				data.fieldnrs=new int[data.fieldnr];
 				data.previousValues=new Object[data.fieldnr];
-				for(int i=0;i<data.previousMeta.size();i++)
+				data.fieldnrsMeta = new ValueMeta[data.fieldnr];
+				for(int i=0;i<data.fieldnr;i++)
 				{
 					data.fieldnrs[i]=i;
+					data.fieldnrsMeta[i]=data.previousMeta.getValueMeta(i);
 				}
 			}
 			
@@ -108,7 +113,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
 			{
 				if(!first)
 				{
-					if(!data.previousValues[i].equals(r[data.fieldnrs[i]])) change=true;
+					if(data.fieldnrsMeta[i].compare(data.previousValues[i], r[data.fieldnrs[i]])!=0) change=true;
 				}
 				data.previousValues[i]=r[data.fieldnrs[i]];
 			}
@@ -118,11 +123,10 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
 			
 		    if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.ReadRow")+getLinesRead()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
 
+		    //reserve room and add value!
+			Object[] outputRowData=RowDataUtil.addValueData(r,data.nextIndexField, data.seq);
 			
-			// build a value!	
-			r[data.nextIndexField]=data.seq;
-			
-			putRow(data.outputRowMeta, r);     // copy row to possible alternate rowset(s).
+			putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 			data.seq+=data.incrementBy;		
 			
 	        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FieldsChangeSequence.Log.WriteRow")+getLinesWritten()+" : "+getInputRowMeta().getString(r)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -143,6 +147,7 @@ public class FieldsChangeSequence extends BaseStep implements StepInterface
         	else
         	{
 	            logError(BaseMessages.getString(PKG, "FieldsChangeSequence.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+	            logError(Const.getStackTracker(e));
 	            setErrors(1);
 	            stopAll();
 	            setOutputDone();  // signal end to receiver(s)
