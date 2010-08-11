@@ -1261,4 +1261,25 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SSH</tooltip>
 		<iconfile>ui/images/ssh.png</iconfile>
 	</step>
+	<step id="RandomCCNumberGenerator">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RandomCCNumberGenerator</description>
+		<classname>org.pentaho.di.trans.steps.randomccnumber.RandomCCNumberGeneratorMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RandomCCNumberGenerator</tooltip>
+		<iconfile>ui/images/CCG.png</iconfile>
+	</step>
+	<step id="JsonInput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.JsonInput</description>
+		<classname>org.pentaho.di.trans.steps.jsoninput.JsonInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JsonInput</tooltip>
+		<iconfile>ui/images/JSI.png</iconfile>
+	</step>
+	<step id="JsonOutput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.JsonOutput</description>
+		<classname>org.pentaho.di.trans.steps.jsonoutput.JsonOutputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JsonOutput</tooltip>
+		<iconfile>ui/images/JSO.png</iconfile>
+	</step>
 </steps>

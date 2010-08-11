@@ -136,5 +136,9 @@
 	<classpathentry kind="lib" path="libext/mondrian/eigenbase-resgen-1.3.0.13768.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/eigenbase-xom-1.3.0.13768.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/json_simple-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="lib" path="libext/slf4j-jcl-1.5.8.jar"/>
+	<classpathentry kind="lib" path="libext/jsonpath.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
