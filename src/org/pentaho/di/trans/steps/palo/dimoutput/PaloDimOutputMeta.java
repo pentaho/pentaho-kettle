@@ -69,6 +69,7 @@ public class PaloDimOutputMeta extends BaseStepMeta
     private String dimension = "";
     private String elementType = "";
     private boolean createNewDimension;
+    private boolean clearConsolidations;
     private boolean clearDimension;
     private List < PaloDimensionLevel > levels = new ArrayList < PaloDimensionLevel >();
     
@@ -110,6 +111,8 @@ public class PaloDimOutputMeta extends BaseStepMeta
             elementType = XMLHandler.getTagValue(stepnode, "elementtype");
             createNewDimension = XMLHandler.getTagValue(stepnode, "createdimension").equals("Y") ? true : false;
             clearDimension = XMLHandler.getTagValue(stepnode, "cleardimension").equals("Y") ? true : false;
+            clearConsolidations = (XMLHandler.getTagValue(stepnode, "clearconsolidations") == null ? false :
+            			XMLHandler.getTagValue(stepnode, "clearconsolidations").equals("Y") ? true : false);
             Node levels = XMLHandler.getSubNode(stepnode,"levels");
             int nrLevels = XMLHandler.countNodes(levels,"level");
 
@@ -166,9 +169,12 @@ public class PaloDimOutputMeta extends BaseStepMeta
 
         retval.append("    ")
         .append(XMLHandler.addTagValue("createdimension", createNewDimension));
-
-        retval.append("    ")
+        
+         retval.append("    ")
         .append(XMLHandler.addTagValue("cleardimension", clearDimension));
+        
+         retval.append("    ")
+         .append(XMLHandler.addTagValue("clearconsolidations", clearConsolidations));
         
         retval.append("    <levels>").append(Const.CR);
         for (PaloDimensionLevel level : levels) {
@@ -190,6 +196,7 @@ public class PaloDimOutputMeta extends BaseStepMeta
             this.elementType = rep.getStepAttributeString(idStep, "elementtype");
             this.createNewDimension = rep.getStepAttributeBoolean(idStep, "createdimension");
             this.clearDimension = rep.getStepAttributeBoolean(idStep, "cleardimension");
+            this.clearConsolidations = rep.getStepAttributeBoolean(idStep, "clearconsolidations");
             
             int nrLevels = rep.countNrStepAttributes(idStep, "levelname");
             
@@ -212,6 +219,7 @@ public class PaloDimOutputMeta extends BaseStepMeta
             rep.saveStepAttribute(idTransformation, idStep, "elementtype", this.elementType);
             rep.saveStepAttribute(idTransformation, idStep, "createdimension", this.createNewDimension);
             rep.saveStepAttribute(idTransformation, idStep, "cleardimension", this.clearDimension);
+            rep.saveStepAttribute(idTransformation, idStep, "clearconsolidations", this.clearConsolidations);
 
             for (int i=0;i<levels.size();i++) {
                 rep.saveStepAttribute(idTransformation, idStep, i, "levelname", this.levels.get(i).getLevelName());
@@ -350,5 +358,11 @@ public class PaloDimOutputMeta extends BaseStepMeta
     }
     public boolean getClearDimension() {
         return this.clearDimension;
+    }
+    public void setClearConsolidations(boolean clear){
+    	this.clearConsolidations = clear;
+    }
+    public boolean getClearConsolidations(){
+    	return this.clearConsolidations;
     }
 }

@@ -91,7 +91,7 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
         this.logBasic("Consolidations got.");
         this.logBasic(newDimension == null ? "Null Consolidations" : " Consolidations Ok");
         this.logBasic("Add Dimension " + meta.getDimension());
-        data.helper.addDimension(meta.getDimension(), newDimension, meta.getCreateNewDimension(), meta.getClearDimension(), meta.getElementType());
+        data.helper.addDimension(meta.getDimension(), newDimension, meta.getCreateNewDimension(), meta.getClearDimension(), meta.getClearConsolidations(), meta.getElementType());
         this.logBasic("Dimension Added.");
         setOutputDone();
         return false;
