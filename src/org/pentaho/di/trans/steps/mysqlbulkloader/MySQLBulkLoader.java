@@ -310,7 +310,10 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	    		ValueMetaInterface valueMeta = rowMeta.getValueMeta(index);
 	    		Object valueData = r[index];
 	    		
-	    		if (valueData!=null) {
+	    		if (valueData == null)
+	    			data.fifoStream.write("NULL".getBytes());
+	    		else
+	    		{
 		    		switch(valueMeta.getType()) {
 		    		case ValueMetaInterface.TYPE_STRING :
 		    			data.fifoStream.write(data.quote);
