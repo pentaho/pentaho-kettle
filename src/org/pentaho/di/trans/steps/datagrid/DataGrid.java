@@ -49,7 +49,7 @@ public class DataGrid extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		if (getLinesWritten()>=meta.getDataLines().size()) // no more rows to be written
+		if (data.linesWritten>=meta.getDataLines().size()) // no more rows to be written
         {
             setOutputDone();
             return false;
@@ -73,7 +73,7 @@ public class DataGrid extends BaseStep implements StepInterface
         }
         
         Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
-        List<String> outputLine = meta.getDataLines().get((int)getLinesWritten());
+        List<String> outputLine = meta.getDataLines().get(data.linesWritten);
         
     	for (int i=0;i<data.outputRowMeta.size();i++) {
     		ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(i);
@@ -84,6 +84,7 @@ public class DataGrid extends BaseStep implements StepInterface
     	}
     	
     	putRow(data.outputRowMeta, outputRowData);
+    	data.linesWritten++;
         
         if (log.isRowLevel())
         {
