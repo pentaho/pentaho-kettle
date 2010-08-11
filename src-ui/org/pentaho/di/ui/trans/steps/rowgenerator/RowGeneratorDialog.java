@@ -186,7 +186,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 		
-        setButtonPositions(new Button[] { wOK, wCancel , wPreview }, margin, null);
+        setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
         
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -236,7 +236,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 	 */ 
 	public void getData()
 	{
-		logDebug("getting fields info...");
+		if(isDebug()) logDebug("getting fields info...");
 		
 		wLimit.setText(input.getRowLimit());
 
@@ -246,7 +246,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 			{
 				TableItem item = wFields.table.getItem(i);
 				item.setText(1, input.getFieldName()[i]);
-				logDebug("field #"+i+" --> fieldType[i]="+input.getFieldType()[i]);
+				if(isDebug()) logDebug("field #"+i+" --> fieldType[i]="+input.getFieldType()[i]);
 				String type   = input.getFieldType()[i];
 				String format = input.getFieldFormat()[i];
 				String length = input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]);
