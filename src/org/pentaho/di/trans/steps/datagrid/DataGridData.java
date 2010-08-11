@@ -24,6 +24,8 @@ public class DataGridData extends BaseStepData implements StepDataInterface
     RowMetaInterface      outputRowMeta;
     
 	public RowMetaInterface	convertMeta;
+
+    public int linesWritten;
 	
 	/**
 	 * 
