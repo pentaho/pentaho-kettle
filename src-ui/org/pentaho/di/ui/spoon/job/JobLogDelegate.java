@@ -104,6 +104,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
     addToolBar();
     
     Control toolbarControl = (Control) toolbar.getManagedObject();
+    spoon.props.setLook(toolbarControl);
     
     toolbarControl.setLayoutData(new FormData());
     FormData fd = new FormData();
