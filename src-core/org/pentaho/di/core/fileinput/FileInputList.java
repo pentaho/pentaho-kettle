@@ -470,11 +470,11 @@ public class FileInputList
 
     public static FileInputList createFileList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired, boolean[] includeSubdirs)
     {
-        return createFileList(space, fileName, fileMask, null, fileRequired, includeSubdirs, null);
+        return createFileList(space, fileName, fileMask, new String[fileName.length], fileRequired, includeSubdirs, null);
     }
     public static String[] createFilePathList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired)
     {
         boolean[] includeSubdirs = includeSubdirsFalse(fileName.length);
-        return createFilePathList(space, fileName, fileMask, new String[] { null }, fileRequired, includeSubdirs, null);
+        return createFilePathList(space, fileName, fileMask, new String[fileName.length], fileRequired, includeSubdirs, null);
     }
 }
