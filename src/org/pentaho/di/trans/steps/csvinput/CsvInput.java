@@ -397,6 +397,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
 			int outputIndex=0;
 			boolean newLineFound = false;
+			boolean endOfBuffer = false;
 			int newLines = 0;
 			List<Exception> conversionExceptions = null;
 			List<ValueMetaInterface> exceptionFields = null;
@@ -524,6 +525,7 @@ public class CsvInput extends BaseStep implements StepInterface
 						{
 							newLineFound=true; // consider it a newline to break out of the upper while loop
 							newLines+=2; // to remove the enclosures in case of missing newline on last line.
+							endOfBuffer=true;
 							break;
 						}
 					}
@@ -553,6 +555,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				if (newLineFound) {
 					length-=newLines;
 					if (length<=0) length=0;
+					if (endOfBuffer) data.startBuffer++; // offset for the enclosure in last field before EOF
 				}
 				if (enclosureFound) {
 					data.startBuffer++;
