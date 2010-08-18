@@ -843,11 +843,18 @@ public class Repository
 	{
 	    String sql = "SELECT "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+", "+quote(FIELD_STEP_ATTRIBUTE_CODE)+", "+quote(FIELD_STEP_ATTRIBUTE_NR)+", "+quote(FIELD_STEP_ATTRIBUTE_VALUE_NUM)+", "+quote(FIELD_STEP_ATTRIBUTE_VALUE_STR)+" "+
 	                 "FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE) +" "+
-	                 "WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = "+id_transformation+" "+
+	                 "WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = ? "+
 	                 "ORDER BY "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+", "+quote(FIELD_STEP_ATTRIBUTE_CODE)+", "+quote(FIELD_STEP_ATTRIBUTE_NR)
 	                 ;
+	    PreparedStatement ps = sqlMap.get(sql);
+	    if (ps==null) {
+	      ps = database.prepareSQL(sql);
+	      sqlMap.put(sql, ps);
+	    }
+	    RowMetaAndData param = getParameterMetaData(id_transformation);
+	    ResultSet resultSet = database.openQuery(ps, param.getRowMeta(), param.getData());
 	    
-	    stepAttributesBuffer = database.getRows(sql, -1);
+	    stepAttributesBuffer = database.getRows(resultSet, -1, null);
 	    stepAttributesRowMeta = database.getReturnRowMeta();
         
 	    // must use java-based sort to ensure compatibility with binary search
@@ -1079,7 +1086,7 @@ public class Repository
 
 	public synchronized long[] getSubDirectoryIDs(long id_directory) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory+" ORDER BY "+quote(FIELD_DIRECTORY_DIRECTORY_NAME));
+		return getIDs("SELECT "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = ? ORDER BY "+quote(FIELD_DIRECTORY_DIRECTORY_NAME), id_directory);
 	}
 
 	private synchronized long getIDWithValue(String tablename, String idfield, String lookupfield, String value) throws KettleException
@@ -1761,8 +1768,6 @@ public class Repository
     {
     	long id = getNextJobAttributeID();
     	
-    	System.out.println("Insert job attribute : id_job="+id_job+", code="+code+", value_str="+value_str);
-
         RowMetaAndData table = new RowMetaAndData();
 
         table.addValue(new ValueMeta(FIELD_JOB_ATTRIBUTE_ID_JOB_ATTRIBUTE, ValueMetaInterface.TYPE_INTEGER), new Long(id));
@@ -2194,8 +2199,7 @@ public class Repository
 
 	public synchronized void deleteDirectory(long id_directory) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" = " + id_directory;
-		database.execStatement(sql);
+		performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" = ?", id_directory);
 	}
 
 	public synchronized void renameDirectory(long id_directory, String name) throws KettleException
@@ -2538,7 +2542,7 @@ public class Repository
 
 	public synchronized String[] getTransformationNames(long id_directory) throws KettleException
 	{
-		return getStrings("SELECT "+quote(FIELD_TRANSFORMATION_NAME)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(FIELD_TRANSFORMATION_NAME));
+		return getStrings("SELECT "+quote(FIELD_TRANSFORMATION_NAME)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = ? ORDER BY "+quote(FIELD_TRANSFORMATION_NAME), id_directory);
 	}
     
     public List<RepositoryObject> getJobObjects(long id_directory) throws KettleException
@@ -2591,12 +2595,12 @@ public class Repository
 
 	public synchronized String[] getJobNames(long id_directory) throws KettleException
 	{
-        return getStrings("SELECT "+quote(FIELD_JOB_NAME)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(FIELD_JOB_NAME));
+        return getStrings("SELECT "+quote(FIELD_JOB_NAME)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_DIRECTORY)+" = ? ORDER BY "+quote(FIELD_JOB_NAME), id_directory);
 	}
 
 	public synchronized String[] getDirectoryNames(long id_directory) throws KettleException
 	{
-        return getStrings("SELECT "+quote(FIELD_DIRECTORY_DIRECTORY_NAME)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory + " ORDER BY "+quote(FIELD_DIRECTORY_DIRECTORY_NAME));
+        return getStrings("SELECT "+quote(FIELD_DIRECTORY_DIRECTORY_NAME)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = ? ORDER BY "+quote(FIELD_DIRECTORY_DIRECTORY_NAME), id_directory );
 	}
 
 	public synchronized String[] getJobNames() throws KettleException
@@ -2606,12 +2610,12 @@ public class Repository
 
 	public long[] getSubConditionIDs(long id_condition) throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_CONDITION_ID_CONDITION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition);
+        return getIDs("SELECT "+quote(FIELD_CONDITION_ID_CONDITION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION_PARENT)+" = ?", id_condition);
 	}
 
 	public long[] getTransNoteIDs(long id_transformation) throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_TRANS_NOTE_ID_NOTE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation);
+        return getIDs("SELECT "+quote(FIELD_TRANS_NOTE_ID_NOTE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public long[] getConditionIDs(long id_transformation) throws KettleException
@@ -2786,7 +2790,7 @@ public class Repository
 
 	public long[] getStepIDs(long id_transformation) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_STEP_ID_STEP)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation);
+		return getIDs("SELECT "+quote(FIELD_STEP_ID_STEP)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized String[] getTransformationsUsingDatabase(long id_database) throws KettleException
@@ -2847,17 +2851,17 @@ public class Repository
 
     public long[] getTransHopIDs(long id_transformation) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_TRANS_HOP_ID_TRANS_HOP)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation);
+		return getIDs("SELECT "+quote(FIELD_TRANS_HOP_ID_TRANS_HOP)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public long[] getJobHopIDs(long id_job) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_JOB_HOP_ID_JOB_HOP)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job);
+		return getIDs("SELECT "+quote(FIELD_JOB_HOP_ID_JOB_HOP)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = ?", id_job);
 	}
 
 	public long[] getTransDependencyIDs(long id_transformation) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_DEPENDENCY_ID_DEPENDENCY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation);
+		return getIDs("SELECT "+quote(FIELD_DEPENDENCY_ID_DEPENDENCY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public long[] getUserIDs() throws KettleException
@@ -2873,17 +2877,17 @@ public class Repository
 
 	public long[] getPermissionIDs(long id_profile) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile);
+		return getIDs("SELECT "+quote(FIELD_PROFILE_PERMISSION_ID_PERMISSION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = ?", id_profile);
 	}
 
 	public long[] getJobEntryIDs(long id_job) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_JOBENTRY_ID_JOBENTRY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job);
+		return getIDs("SELECT "+quote(FIELD_JOBENTRY_ID_JOBENTRY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = ?", id_job);
 	}
 
 	public long[] getJobEntryCopyIDs(long id_job) throws KettleException
 	{
-		return getIDs("SELECT "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job);
+		return getIDs("SELECT "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = ?", id_job);
 	}
 
 	public long[] getJobEntryCopyIDs(long id_job, long id_jobentry) throws KettleException
@@ -2932,16 +2936,34 @@ public class Repository
     public Collection<RowMetaAndData> getDatabaseAttributes(long id_database) throws KettleDatabaseException, KettleValueException
     {
     	List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
-    	List<Object[]> rows = database.getRows("SELECT * FROM " + databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE) + " WHERE "+quote(FIELD_DATABASE_ID_DATABASE) +" = "+id_database, 0);
-    	for (Object[] row : rows) 
-    	{
-    		RowMetaAndData rowWithMeta = new RowMetaAndData(database.getReturnRowMeta(), row);
-    		long id = rowWithMeta.getInteger(quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), 0);
-    		if (id >0) {
-    			attrs.add(rowWithMeta);
-    		}
+    	
+    	String sql = "SELECT * FROM " + databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE) + 
+    	            " WHERE "+quote(FIELD_DATABASE_ID_DATABASE) +" = ?";
+    	PreparedStatement ps = sqlMap.get(sql);
+    	if (ps==null) {
+    	  ps = database.prepareSQL(sql);
+    	  sqlMap.put(sql, ps);
     	}
-    	return attrs;
+    	
+    	try { 
+        	RowMetaAndData param = getParameterMetaData(id_database);
+        	ResultSet resultSet = database.openQuery(ps, param.getRowMeta(), param.getData());
+        	
+        	List<Object[]> rows = database.getRows(resultSet, 0, null);
+        	for (Object[] row : rows) 
+        	{
+        		RowMetaAndData rowWithMeta = new RowMetaAndData(database.getReturnRowMeta(), row);
+        		long id = rowWithMeta.getInteger(quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), 0);
+        		if (id >0) {
+        			attrs.add(rowWithMeta);
+        		}
+        	}
+        	return attrs;
+    	} catch(KettleException e) {
+    	    // For API compatibility we do not throw a new Exception.
+    	    //
+    	    throw new KettleDatabaseException(e);
+    	}
     }
     
 	public RowMetaAndData getCondition(long id_condition) throws KettleException
@@ -3615,10 +3637,25 @@ public class Repository
 	// DELETE DATA IN REPOSITORY
 	//////////////////////////////////////////////////////////////////////////////////////////
 
+	private void performDelete(String sql, long...ids) throws KettleException {
+	  try {
+        PreparedStatement ps = sqlMap.get(sql);
+        if (ps==null) {
+          ps = database.prepareSQL(sql);
+          sqlMap.put(sql, ps);
+        }
+        
+        RowMetaAndData param = getParameterMetaData(ids);
+        database.setValues(param, ps);
+        ps.execute();
+	  } catch(SQLException e) {
+	    throw new KettleException("Unable to perform delete with SQL: "+sql+", ids="+ids.toString(), e);
+	  }
+	}
+	
 	public synchronized void delSteps(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
-		database.execStatement(sql);
+	  performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized void delCondition(long id_condition) throws KettleException
@@ -3638,8 +3675,7 @@ public class Repository
 		}
 		else
 		{
-			String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION)+" = " + id_condition;
-			database.execStatement(sql);
+		    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION)+" = ?", id_condition);
 		}
 	}
 
@@ -3650,8 +3686,7 @@ public class Repository
 		{
 			delCondition(ids[i]);
 		}
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
-		database.execStatement(sql);
+		performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	/**
@@ -3661,94 +3696,80 @@ public class Repository
 	 */
 	public synchronized void delStepDatabases(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized void delJobEntries(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = ?", id_job);
 	}
 
 	public synchronized void delJobEntryCopies(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = ?", id_job);
 	}
 
 	public synchronized void delDependencies(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized void delStepAttributes(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
     public synchronized void delTransAttributes(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
-        database.execStatement(sql);
+        performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = ?", id_transformation);
     }
 
     public synchronized void delJobAttributes(long id_job) throws KettleException
     {
-        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_ATTRIBUTE)+" WHERE "+quote(FIELD_JOB_ATTRIBUTE_ID_JOB)+" = " + id_job;
-        database.execStatement(sql);
+        performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_ATTRIBUTE)+" WHERE "+quote(FIELD_JOB_ATTRIBUTE_ID_JOB)+" = ?", id_job);
     }   
     
     public synchronized void delPartitionSchemas(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = " + id_transformation;
-        database.execStatement(sql);
+        performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = ?", id_transformation);
     }
 
     public synchronized void delPartitions(long id_partition_schema) throws KettleException
     {
         // First see if the partition is used by a step, transformation etc.
         // 
-        database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
+        performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = ?", id_partition_schema);
     }
     
     public synchronized void delClusterSlaves(long id_cluster) throws KettleException
     {
-        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = " + id_cluster;
-        database.execStatement(sql);
+        performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = ?", id_cluster);
     }
     
     public synchronized void delTransformationClusters(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" = " + id_transformation;
-        database.execStatement(sql);
+        performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" = ?", id_transformation);
     }
 
     public synchronized void delTransformationSlaves(long id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" = " + id_transformation;
-        database.execStatement(sql);
+        performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" = ?", id_transformation);
     }
 
 
 	public synchronized void delJobEntryAttributes(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOB)+" = " + id_job;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(FIELD_JOBENTRY_ATTRIBUTE_ID_JOB)+" = ?", id_job);
 	}
 
 	public synchronized void delTransHops(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized void delJobHops(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = ?", id_job);
 	}
 
 	public synchronized void delTransNotes(long id_transformation) throws KettleException
@@ -3757,12 +3778,10 @@ public class Repository
 
 		for (int i = 0; i < ids.length; i++)
 		{
-			String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE)+" WHERE "+quote(FIELD_NOTE_ID_NOTE)+" = " + ids[i];
-			database.execStatement(sql);
+		    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE)+" WHERE "+quote(FIELD_NOTE_ID_NOTE)+" = ?", ids[i]);
 		}
 
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation;
-		database.execStatement(sql);
+		performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized void delJobNotes(long id_job) throws KettleException
@@ -3771,24 +3790,20 @@ public class Repository
 
 		for (int i = 0; i < ids.length; i++)
 		{
-			String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE)+" WHERE "+quote(FIELD_NOTE_ID_NOTE)+" = " + ids[i];
-			database.execStatement(sql);
+		    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_NOTE)+" WHERE "+quote(FIELD_NOTE_ID_NOTE)+" = ?", ids[i]);
 		}
 
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_NOTE_ID_JOB)+" = " + id_job;
-		database.execStatement(sql);
+		performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_NOTE_ID_JOB)+" = ?", id_job);
 	}
 
 	public synchronized void delTrans(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = " + id_transformation;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized void delJob(long id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_JOB)+" = " + id_job;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_JOB)+" = ?", id_job);
 	}
 
 	public synchronized void delDatabase(long id_database) throws KettleException
@@ -3804,8 +3819,7 @@ public class Repository
 		
 		if (transList.length==0)
 		{
-			String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE)+" WHERE "+quote(FIELD_DATABASE_ID_DATABASE)+" = " + id_database;
-			database.execStatement(sql);
+		    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE)+" WHERE "+quote(FIELD_DATABASE_ID_DATABASE)+" = ?", id_database);
 		}
 		else
 		{
@@ -3822,38 +3836,32 @@ public class Repository
     
     public synchronized void delDatabaseAttributes(long id_database) throws KettleException
     {
-        String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = " + id_database;
-        database.execStatement(sql);
+        performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = ?", id_database);
     }
 
 	public synchronized void delTransStepCondition(long id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized void delValue(long id_value) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VALUE)+" WHERE "+quote(FIELD_VALUE_ID_VALUE)+" = " + id_value;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_VALUE)+" WHERE "+quote(FIELD_VALUE_ID_VALUE)+" = ?", id_value);
 	}
 
 	public synchronized void delUser(long id_user) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER)+" WHERE "+quote(FIELD_USER_ID_USER)+" = " + id_user;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER)+" WHERE "+quote(FIELD_USER_ID_USER)+" = ?", id_user);
 	}
 
 	public synchronized void delProfile(long id_profile) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE)+" WHERE "+quote(FIELD_PROFILE_ID_PROFILE)+" = " + id_profile;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE)+" WHERE "+quote(FIELD_PROFILE_ID_PROFILE)+" = ?", id_profile);
 	}
 
 	public synchronized void delProfilePermissions(long id_profile) throws KettleException
 	{
-		String sql = "DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile;
-		database.execStatement(sql);
+	    performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = ?", id_profile);
 	}
     
     public synchronized void delSlave(long id_slave) throws KettleException
@@ -3868,8 +3876,8 @@ public class Repository
 
         if (transList.length==0 && clustList.length==0)
         {
-            database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_SLAVE)+" WHERE "+quote(FIELD_SLAVE_ID_SLAVE)+" = " + id_slave);
-            database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = " + id_slave);
+            performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_SLAVE)+" WHERE "+quote(FIELD_SLAVE_ID_SLAVE)+" = ?", id_slave);
+            performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = ?", id_slave);
         }
         else
         {
@@ -3908,8 +3916,8 @@ public class Repository
 
         if (transList.length==0)
         {
-            database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
-            database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
+            performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = ?", id_partition_schema);
+            performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = ?", id_partition_schema);
         }
         else
         {
@@ -3937,7 +3945,7 @@ public class Repository
 
         if (transList.length==0)
         {
-            database.execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER)+" WHERE "+quote(FIELD_CLUSTER_ID_CLUSTER)+" = " + id_cluster);
+            performDelete("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER)+" WHERE "+quote(FIELD_CLUSTER_ID_CLUSTER)+" = ?", id_cluster);
         }
         else
         {
