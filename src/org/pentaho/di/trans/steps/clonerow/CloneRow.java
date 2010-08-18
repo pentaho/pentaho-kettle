@@ -139,7 +139,7 @@ public class CloneRow extends BaseStep implements StepInterface
 		for (int i = 0; i < data.nrclones && !isStopped(); i++)
 		{
 			// Output now all clones row
-			outputRowData=r;
+			outputRowData=r.clone();
 			if (data.addInfosToRow)
 			{
 				// We need here to add more infos about clone rows
