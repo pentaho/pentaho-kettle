@@ -18,12 +18,15 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
@@ -467,6 +470,8 @@ public class Repository
 	private List<Object[]>           stepAttributesBuffer;
 	private RowMetaInterface         stepAttributesRowMeta;
 	
+	protected Map<String, PreparedStatement> sqlMap;
+
 	private PreparedStatement	pstmt_entry_attributes;
 
 	private int					majorVersion;
@@ -512,7 +517,9 @@ public class Repository
 		
 		database = new Database(repinfo.getConnection());
 		databaseMeta = database.getDatabaseMeta();
-            
+        
+		sqlMap = new HashMap<String, PreparedStatement>();
+		
 		psStepAttributesLookup = null;
 		psStepAttributesInsert = null;
         psTransAttributesLookup = null;
@@ -753,6 +760,15 @@ public class Repository
 			closeStepAttributeLookupPreparedStatement();
             closeTransAttributeLookupPreparedStatement();
             closeLookupJobEntryAttribute();
+            
+            for (String sql : sqlMap.keySet()) {
+              PreparedStatement ps = sqlMap.get(sql);
+              try {
+                ps.close();
+              } catch (SQLException e) {
+                log.logError(toString(), "Error closing prepared statement: " + sql, e);
+              }
+            }
             
             if (!database.isAutoCommit()) commit();
 			repinfo.setLock(false);			
@@ -1050,7 +1066,7 @@ public class Repository
 
 	public synchronized long getRootDirectoryID() throws KettleException
 	{
-		RowMetaAndData result = database.getOneRow("SELECT "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = 0");
+	    RowMetaAndData result = database.getOneRow("SELECT "+quote(FIELD_DIRECTORY_ID_DIRECTORY)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = 0");
 		if (result != null && result.isNumeric(0))
 			return result.getInteger(0, -1);
 		return -1;
@@ -1058,16 +1074,7 @@ public class Repository
 
 	public synchronized int getNrSubDirectories(long id_directory) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = ? ", id_directory);
 	}
 
 	public synchronized long[] getSubDirectoryIDs(long id_directory) throws KettleException
@@ -1077,13 +1084,31 @@ public class Repository
 
 	private synchronized long getIDWithValue(String tablename, String idfield, String lookupfield, String value) throws KettleException
 	{
+	    String sql = "SELECT " + idfield + " FROM " + tablename+ " WHERE " + lookupfield + " = ?";
+	    PreparedStatement ps = sqlMap.get(sql);
+	    if (ps==null) {
+	      ps = database.prepareSQL(sql);
+	      sqlMap.put(sql, ps);
+	    }
+	    
 		RowMetaAndData par = new RowMetaAndData();
 		par.addValue(new ValueMeta("value", ValueMetaInterface.TYPE_STRING), value);
-		RowMetaAndData result = database.getOneRow("SELECT " + idfield + " FROM " + tablename+ " WHERE " + lookupfield + " = ?", par.getRowMeta(), par.getData());
-
-		if (result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric(0))
-			return result.getInteger(0, 0);
-		return -1;
+		
+		ResultSet resultSet = database.openQuery(ps, par.getRowMeta(), par.getData());
+		try {
+    		Object[] row = database.getRow(resultSet);
+    		if (row==null) {
+    		  return -1;
+    		}
+    		
+    		RowMetaAndData result = new RowMetaAndData(database.getReturnRowMeta(), row);
+    
+    		if (result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric(0))
+    			return result.getInteger(0, 0);
+    		return -1;
+		} finally {
+		  database.closeQuery(resultSet);
+		}
 	}
 
 	private synchronized long getIDWithValue(String tablename, String idfield, String lookupfield, String value, String lookupkey, long key) throws KettleException
@@ -2360,325 +2385,155 @@ public class Repository
 
 	public synchronized int getNrJobs() throws KettleException
 	{
-		int retval = 0;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB));
+	}
+	
+	public synchronized int getCount(String sql, long...parameter) throws KettleException {
+      // Get the prepared statement
+      //
+      PreparedStatement ps = sqlMap.get(sql);
+      if (ps == null) {
+        ps = database.prepareSQL(sql);
+        sqlMap.put(sql, ps);
+      }
 
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB);
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
+      // Assemble the parameters (if any)
+      //
+      RowMetaInterface parameterMeta = new RowMeta();
+      Object[] parameterData = new Object[parameter.length];
+      for (int i = 0; i < parameter.length; i++) {
+        parameterMeta.addValueMeta(new ValueMeta("id" + (i + 1), ValueMetaInterface.TYPE_INTEGER));
+        parameterData[i] = Long.valueOf(parameter[i]);
+      }        
 
-		return retval;
+      // Get one row back
+      //
+      ResultSet resultSet = database.openQuery(ps, parameterMeta, parameterData);
+      try {
+        Object[] row = database.getRow(resultSet);
+        if (row==null) {
+          return 0;
+        }
+        
+        // assemble the result
+        //
+        RowMetaInterface rowMeta = database.getReturnRowMeta();
+        int count = rowMeta.getInteger(row, 0).intValue();
+        return count;
+      } finally {
+        database.closeQuery(resultSet);
+      }      
 	}
 
 	public synchronized int getNrTransformations(long id_directory) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+		return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANSFORMATION)+" WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = ?", id_directory);
 	}
 
 	public synchronized int getNrJobs(long id_directory) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_DIRECTORY)+" = " + id_directory;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB)+" WHERE "+quote(FIELD_JOB_ID_DIRECTORY)+" = ?", id_directory);
 	}
 
     public synchronized int getNrDirectories(long id_directory) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+        return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DIRECTORY)+" WHERE "+quote(FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = ?", id_directory);
 	}
 
 	public synchronized int getNrConditions(long id_transforamtion) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transforamtion;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = ?", id_transforamtion);
 	}
 
 	public synchronized int getNrDatabases(long id_transforamtion) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transforamtion;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = ?", id_transforamtion);
 	}
 
 	public synchronized int getNrSubConditions(long id_condition) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CONDITION)+" WHERE "+quote(FIELD_CONDITION_ID_CONDITION_PARENT)+" = ?", id_condition);
 	}
 
 	public synchronized int getNrTransNotes(long id_transformation) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_NOTE)+" WHERE "+quote(FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized int getNrJobNotes(long id_job) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_ID_JOB)+" = " + id_job;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_ID_JOB)+" = ?", id_job);
 	}
 
 	public synchronized int getNrDatabases() throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE);
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE));
 	}
 
     public synchronized int getNrDatabaseAttributes(long id_database) throws KettleException
     {
-        int retval = 0;
-
-        String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database;
-        RowMetaAndData r = database.getOneRow(sql);
-        if (r != null)
-        {
-            retval = (int) r.getInteger(0, 0L);
-        }
-
-        return retval;
+        return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = ?", id_database);
     }
 
 	public synchronized int getNrSteps(long id_transformation) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP)+" WHERE "+quote(FIELD_STEP_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized int getNrStepDatabases(long id_database) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = " + id_database;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = ?", id_database);
 	}
 
 	public synchronized int getNrStepAttributes(long id_step) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+" = " + id_step;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(FIELD_STEP_ATTRIBUTE_ID_STEP)+" = ?", id_step);
 	}
 
 	public synchronized int getNrTransHops(long id_transformation) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_HOP)+" WHERE "+quote(FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized int getNrJobHops(long id_job) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_HOP)+" WHERE "+quote(FIELD_JOB_HOP_ID_JOB)+" = ?", id_job);
 	}
 
 	public synchronized int getNrTransDependencies(long id_transformation) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DEPENDENCY)+" WHERE "+quote(FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public synchronized int getNrJobEntries(long id_job) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY)+" WHERE "+quote(FIELD_JOBENTRY_ID_JOB)+" = ?", id_job);
 	}
 
 	public synchronized int getNrJobEntryCopies(long id_job, long id_jobentry) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job + " AND "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = "
-						+ id_jobentry;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+
+	      " WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = ? AND "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = ?", id_job, id_jobentry);
 	}
 
 	public synchronized int getNrJobEntryCopies(long id_job) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = ?", id_job);
 	}
 
 	public synchronized int getNrUsers() throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER);
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_USER));
 	}
 
 	public synchronized int getNrPermissions(long id_profile) throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = " + id_profile;
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE_PERMISSION)+" WHERE "+quote(FIELD_PROFILE_PERMISSION_ID_PROFILE)+" = ?", id_profile);
 	}
 
 	public synchronized int getNrProfiles() throws KettleException
 	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE);
-		RowMetaAndData r = database.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
+	    return getCount("SELECT COUNT(*) FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PROFILE));
 	}
 
 	public synchronized String[] getTransformationNames(long id_directory) throws KettleException
@@ -2706,32 +2561,28 @@ public class Repository
     {
         String sql = "SELECT "+quote(FIELD_TRANSFORMATION_NAME)+", "+quote(FIELD_TRANSFORMATION_MODIFIED_USER)+", "+quote(FIELD_TRANSFORMATION_MODIFIED_DATE)+", "+quote(FIELD_TRANSFORMATION_DESCRIPTION)+" " +
                 "FROM "+tableName+" " +
-                "WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " "
+                "WHERE "+quote(FIELD_TRANSFORMATION_ID_DIRECTORY)+" = ? " 
                 ;
-
+        PreparedStatement ps = sqlMap.get(sql);
+        if (ps==null) {
+          ps = database.prepareSQL(sql);
+          sqlMap.put(sql, ps);
+        }
+        
         List<RepositoryObject> repositoryObjects = new ArrayList<RepositoryObject>();
         
-        ResultSet rs = database.openQuery(sql);
-        if (rs != null)
-        {
-        	try
-        	{
-                Object[] r = database.getRow(rs);
-                while (r != null)
-                {
-                    RowMetaInterface rowMeta = database.getReturnRowMeta();
-                    
-                    repositoryObjects.add(new RepositoryObject( rowMeta.getString(r, 0), rowMeta.getString(r, 1), rowMeta.getDate(r, 2), objectType, rowMeta.getString(r, 3)));
-                    r = database.getRow(rs);
-                }
-        	}
-        	finally 
-        	{
-        		if ( rs != null )
-        		{
-        			database.closeQuery(rs);
-        		}
-        	}                
+        RowMetaAndData param = getParameterMetaData(id_directory);
+        ResultSet resultSet = database.openQuery(ps, param.getRowMeta(), param.getData());
+        try {
+          Object[] r = database.getRow(resultSet);
+          while (r != null) {
+            RowMetaInterface rowMeta = database.getReturnRowMeta();
+    
+            repositoryObjects.add(new RepositoryObject(rowMeta.getString(r, 0), rowMeta.getString(r, 1), rowMeta.getDate(r, 2), objectType, rowMeta.getString(r, 3)));
+            r = database.getRow(resultSet);
+          }
+        } finally {
+          database.closeQuery(resultSet);
         }
 
         return repositoryObjects;
@@ -2765,17 +2616,17 @@ public class Repository
 
 	public long[] getConditionIDs(long id_transformation) throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_TRANS_STEP_CONDITION_ID_CONDITION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation);
+        return getIDs("SELECT "+quote(FIELD_TRANS_STEP_CONDITION_ID_CONDITION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public long[] getDatabaseIDs(long id_transformation) throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation);
+        return getIDs("SELECT "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = ?", id_transformation);
 	}
 
 	public long[] getJobNoteIDs(long id_job) throws KettleException
 	{
-        return getIDs("SELECT "+quote(FIELD_JOB_NOTE_ID_NOTE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_NOTE_ID_JOB)+" = " + id_job);
+        return getIDs("SELECT "+quote(FIELD_JOB_NOTE_ID_NOTE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOB_NOTE)+" WHERE "+quote(FIELD_JOB_NOTE_ID_JOB)+" = ?", id_job);
 	}
 
 	public long[] getDatabaseIDs() throws KettleException
@@ -2785,7 +2636,7 @@ public class Repository
     
     public long[] getDatabaseAttributeIDs(long id_database) throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = "+id_database);
+        return getIDs("SELECT "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = ?", id_database);
     }
     
     public long[] getPartitionSchemaIDs() throws KettleException
@@ -2795,17 +2646,17 @@ public class Repository
     
     public long[] getPartitionIDs(long id_partition_schema) throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_PARTITION_ID_PARTITION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
+        return getIDs("SELECT "+quote(FIELD_PARTITION_ID_PARTITION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_PARTITION)+" WHERE "+quote(FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = ?", id_partition_schema);
     }
 
     public long[] getTransformationPartitionSchemaIDs(long id_transformation) throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = "+id_transformation);
+        return getIDs("SELECT "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANS_PARTITION_SCHEMA)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = ?", id_transformation);
     }
     
     public long[] getTransformationClusterSchemaIDs(long id_transformation) throws KettleException
     {
-        return getIDs("SELECT ID_TRANS_CLUSTER FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER)+" WHERE ID_TRANSFORMATION = " + id_transformation);
+        return getIDs("SELECT ID_TRANS_CLUSTER FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER)+" WHERE ID_TRANSFORMATION = ?", id_transformation);
     }
     
     public long[] getClusterIDs() throws KettleException
@@ -2820,69 +2671,93 @@ public class Repository
 
     public long[] getSlaveIDs(long id_cluster_schema) throws KettleException
     {
-        return getIDs("SELECT "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = " + id_cluster_schema);
+        return getIDs("SELECT "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = ?", id_cluster_schema);
     }
     
-    private long[] getIDs(String sql) throws KettleException
-    {
-        List<Long> ids = new ArrayList<Long>();
-        
-        ResultSet rs = database.openQuery(sql);
-        try 
-        {
-            Object[] r = database.getRow(rs);
-            while (r != null)
-            {
-                RowMetaInterface rowMeta = database.getReturnRowMeta();
-                Long id = rowMeta.getInteger(r, 0);
-                if (id==null) id=new Long(0);
-                
-                ids.add(id);
-                r = database.getRow(rs);
-            }
-        }
-        finally
-        {
-        	if ( rs != null )
-        	{
-        		database.closeQuery(rs);        		
-        	}
-        }
-        return convertLongList(ids);
+    private RowMetaAndData getParameterMetaData(long...ids) throws KettleException {
+      RowMetaInterface parameterMeta = new RowMeta();
+      Object[] parameterData = new Object[ids.length];
+      for (int i = 0; i < ids.length; i++) {
+        parameterMeta.addValueMeta(new ValueMeta("id" + (i + 1), ValueMetaInterface.TYPE_INTEGER));
+        parameterData[i] = Long.valueOf(ids[i]);
+      }        
+      return new RowMetaAndData(parameterMeta, parameterData);
     }
     
-    private String[] getStrings(String sql) throws KettleException
+    private long[] getIDs(String sql, long...objectId) throws KettleException
     {
-        List<String> ids = new ArrayList<String>();
-        
-        ResultSet rs = database.openQuery(sql);
-        try 
-        {
-            Object[] r = database.getRow(rs);
-            while (r != null)
-            {
-                RowMetaInterface rowMeta = database.getReturnRowMeta();
-                ids.add( rowMeta.getString(r, 0) );
-                r = database.getRow(rs);
-            }
-        }
-        finally 
-        {
-        	if ( rs != null )
-        	{
-        		database.closeQuery(rs);        		
-        	}
-        }            
+      // Get the prepared statement
+      //
+      PreparedStatement ps = sqlMap.get(sql);
+      if (ps == null) {
+        ps = database.prepareSQL(sql);
+        sqlMap.put(sql, ps);
+      }
 
-        return (String[]) ids.toArray(new String[ids.size()]);
+      // Assemble the parameters (if any)
+      //
+      RowMetaAndData param = getParameterMetaData(objectId);        
 
-    }
-    
-    private long[] convertLongList(List<Long> list)
-    {
-        long[] ids = new long[list.size()];
-        for (int i=0;i<ids.length;i++) ids[i] = list.get(i);
+      // Get the result set back...
+      //
+      ResultSet resultSet = database.openQuery(ps, param.getRowMeta(), param.getData());
+      try {
+        List<Object[]> rows = database.getRows(resultSet, 0, null);
+        if (rows==null || rows.size()==0) {
+          return new long[0];
+        }
+        
+        // assemble the result
+        //
+        RowMetaInterface rowMeta = database.getReturnRowMeta();
+        long[] ids = new long[rows.size()];
+        for (int i=0;i<ids.length;i++) {
+          Object[] row = rows.get(i);
+          ids[i] = rowMeta.getInteger(row, 0);
+        }
+        
         return ids;
+      } finally {
+        database.closeQuery(resultSet);
+      }
+    }
+    
+    private String[] getStrings(String sql, long...ids) throws KettleException
+    {
+      // Get the prepared statement
+      //
+      PreparedStatement ps = sqlMap.get(sql);
+      if (ps == null) {
+        ps = database.prepareSQL(sql);
+        sqlMap.put(sql, ps);
+      }
+      
+      // Assemble the parameters (empty in this case)
+      //
+      RowMetaAndData param = getParameterMetaData(ids);
+      
+      // Get the result set back...
+      //
+      ResultSet resultSet = database.openQuery(ps, param.getRowMeta(), param.getData());
+      try {
+        List<Object[]> rows = database.getRows(resultSet, 0, null);
+        if (rows==null || rows.size()==0) {
+          return new String[0];
+        }
+        
+        // assemble the result
+        //
+        RowMetaInterface rowMeta = database.getReturnRowMeta();
+        String[] strings = new String[rows.size()];
+        for (int i=0;i<strings.length;i++) {
+          Object[] row = rows.get(i);
+          strings[i] = rowMeta.getString(row, 0);
+        }
+        
+        return strings;
+      } finally {
+        database.closeQuery(resultSet);
+      }
     }
 
 	public synchronized String[] getDatabaseNames() throws KettleException
@@ -2916,60 +2791,43 @@ public class Repository
 
 	public synchronized String[] getTransformationsUsingDatabase(long id_database) throws KettleException
 	{
-		String sql = "SELECT DISTINCT "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+" WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = " + id_database;
-        return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
+		long[] transIds = getIDs("SELECT DISTINCT "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+
+		             " FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_STEP_DATABASE)+
+		             " WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = ?", id_database);
+		
+        return getTransformationsWithIDList( transIds );
 	}
     
     public synchronized String[] getClustersUsingSlave(long id_slave) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" = " + id_slave;
-
-        List<Object[]> list = database.getRows(sql, 100);
-        RowMetaInterface rowMeta = database.getReturnRowMeta();
-        List<String> clusterList = new ArrayList<String>();
-
-        for (int i=0;i<list.size();i++)
-        {
-            long id_cluster_schema = rowMeta.getInteger(list.get(i), quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER), -1L); 
-            if (id_cluster_schema > 0)
-            {
-                RowMetaAndData transRow =  getClusterSchema(id_cluster_schema);
-                if (transRow!=null)
-                {
-                    String clusterName = transRow.getString(quote(FIELD_CLUSTER_NAME), "<name not found>");
-                    if (clusterName!=null) clusterList.add(clusterName);
-                }
-            }
-        }
-
-        return (String[]) clusterList.toArray(new String[clusterList.size()]);
+        return getStrings("SELECT DISTINCT "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" = ?", id_slave);
     }
 
     public synchronized String[] getTransformationsUsingSlave(long id_slave) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = " + id_slave;
-        return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
+        long[] transIds = getIDs("SELECT DISTINCT "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_SLAVE)+" WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = ?", id_slave);
+        return getTransformationsWithIDList( transIds );
     }
     
     public synchronized String[] getTransformationsUsingPartitionSchema(long id_partition_schema) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+
-                     " FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = " + id_partition_schema;
-        return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
+        long[] transIds = getIDs("SELECT DISTINCT "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+
+                       " FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = ?", id_partition_schema);
+        return getTransformationsWithIDList( transIds );
     }
     
     public synchronized String[] getTransformationsUsingCluster(long id_cluster) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(FIELD_TRANS_CLUSTER_ID_CLUSTER)+" = " + id_cluster;
-        return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
+        long[] transIds = getIDs("SELECT DISTINCT "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(FIELD_TRANS_CLUSTER_ID_CLUSTER)+" = ?", id_cluster);
+        return getTransformationsWithIDList( transIds );
     }
 
-	private String[] getTransformationsWithIDList(List<Object[]> list, RowMetaInterface rowMeta) throws KettleException
+	private String[] getTransformationsWithIDList(long[] ids) throws KettleException
     {
-        String[] transList = new String[list.size()];
-        for (int i=0;i<list.size();i++)
+        String[] transList = new String[ids.length];
+        for (int i=0;i<ids.length;i++)
         {
-            long id_transformation = rowMeta.getInteger( list.get(i), quote(FIELD_TRANSFORMATION_ID_TRANSFORMATION), -1L); 
+            long id_transformation = ids[i]; 
             if (id_transformation > 0)
             {
                 RowMetaAndData transRow =  getTransformation(id_transformation);
@@ -3031,7 +2889,8 @@ public class Repository
 	public long[] getJobEntryCopyIDs(long id_job, long id_jobentry) throws KettleException
 	{
 		return getIDs("SELECT "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY)+
-				" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job + " AND "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = " + id_jobentry);
+				" FROM "+databaseMeta.getQuotedSchemaTableCombination(null, TABLE_R_JOBENTRY_COPY)+
+				" WHERE "+quote(FIELD_JOBENTRY_COPY_ID_JOB)+" = ? AND "+quote(FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = ?", id_job, id_jobentry);
 	}
 
 	public synchronized String[] getProfiles() throws KettleException
@@ -3197,9 +3056,25 @@ public class Repository
 
 	private RowMetaAndData getOneRow(String tablename, String keyfield, long id) throws KettleException
 	{
-		String sql = "SELECT * FROM " + tablename + " WHERE " + keyfield + " = " + id;
-
-		return database.getOneRow(sql);
+	    String sql = "SELECT * FROM " + tablename + " WHERE " + keyfield + " = ?";
+	    PreparedStatement ps = sqlMap.get(sql);
+	    if (ps==null) {
+	      ps = database.prepareSQL(sql);
+	      sqlMap.put(sql, ps);
+	    }
+	    
+	    RowMetaInterface parameterMeta = new RowMeta();
+	    parameterMeta.addValueMeta(new ValueMeta("id", ValueMetaInterface.TYPE_INTEGER));
+	    Object[] parameterData = new Object[] { Long.valueOf(id), };
+	    
+	    ResultSet resultSet = database.openQuery(ps, parameterMeta, parameterData);
+	    try {
+    	    Object[] row = database.getRow(resultSet);
+    	    RowMetaInterface rowMeta = database.getReturnRowMeta();
+    	    return new RowMetaAndData(rowMeta, row);
+	    } finally {
+          database.closeQuery(resultSet);
+        }
 	}
 
 	// STEP ATTRIBUTES: SAVE
