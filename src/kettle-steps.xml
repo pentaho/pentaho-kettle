@@ -1282,4 +1282,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JsonOutput</tooltip>
 		<iconfile>ui/images/JSO.png</iconfile>
 	</step>
+	<step id="LDAPOutput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.LDAPOutput</description>
+		<classname>org.pentaho.di.trans.steps.ldapoutput.LDAPOutputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LDAPOuput</tooltip>
+		<iconfile>ui/images/LDO.png</iconfile>
+	</step>
 </steps>
