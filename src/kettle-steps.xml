@@ -1261,6 +1261,7 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SSH</tooltip>
 		<iconfile>ui/images/ssh.png</iconfile>
 	</step>
+
 	<step id="RandomCCNumberGenerator">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RandomCCNumberGenerator</description>
 		<classname>org.pentaho.di.trans.steps.randomccnumber.RandomCCNumberGeneratorMeta</classname>
@@ -1288,5 +1289,12 @@
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.LDAPOuput</tooltip>
 		<iconfile>ui/images/LDO.png</iconfile>
+	</step>
+    <step id="MetaInject">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MetaInject</description>
+		<classname>org.pentaho.di.trans.steps.metainject.MetaInjectMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MetaInject</tooltip>
+		<iconfile>ui/images/GenericTransform.png</iconfile>
 	</step>
 </steps>

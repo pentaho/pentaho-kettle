@@ -223,6 +223,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     private Timer stepPerformanceSnapShotTimer;
     
     private List<TransListener> transListeners;
+
+    private List<TransStoppedListener> transStoppedListeners;
     
     private int nrOfFinishedSteps;
     
@@ -248,6 +250,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	    stopped = new AtomicBoolean(false);
 
 		transListeners = new ArrayList<TransListener>();
+        transStoppedListeners = new ArrayList<TransStoppedListener>();
 
 		// This is needed for e.g. database 'unique' connections.
         threadName = Thread.currentThread().getName();
@@ -1274,6 +1277,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		//if it is stopped it is not paused
 		paused.set(false);
 		stopped.set(true);
+		
+		// Fire the stopped listener...
+		//
+		for (TransStoppedListener listener : transStoppedListeners) {
+		  listener.transStopped(this);
+		}
 	}
 
 	public int nrSteps()
@@ -3234,6 +3243,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		transListeners.add(transListener);
 	}
 	
+	public void setTransStoppedListeners(List<TransStoppedListener> transStoppedListeners) {
+      this.transStoppedListeners = transStoppedListeners;
+    }
+
+	public List<TransStoppedListener> getTransStoppedListeners() {
+      return transStoppedListeners;
+    }
+	
+	public void addTransStoppedListener(TransStoppedListener transStoppedListener) {
+	    transStoppedListeners.add(transStoppedListener);
+	}
+
 	public boolean isPaused() {
 		return paused.get();
 	}

@@ -284,4 +284,10 @@ public interface StepMetaInterface
 	 * @param steps the steps to reference
 	 */
 	public void searchInfoAndTargetSteps(List<StepMeta> steps);
+	
+	/**
+	 * @return Optional interface that allows an external program to inject step metadata in a standardized fasion.
+	 * This method will return null if the interface is not available for this step.
+	 */
+	public StepMetaInjectionInterface getStepMetaInjectionInterface();
 }

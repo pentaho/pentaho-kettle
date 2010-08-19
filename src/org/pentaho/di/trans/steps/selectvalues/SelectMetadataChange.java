@@ -79,33 +79,33 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	public String getXML() {
 		StringBuffer retval = new StringBuffer();
 		retval.append("      ").append(XMLHandler.openTag(XML_TAG)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue("name",            name)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        ").append(XMLHandler.addTagValue("rename",          rename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        ").append(XMLHandler.addTagValue("type",            ValueMeta.getTypeDesc(type)) ); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        ").append(XMLHandler.addTagValue("length",          length)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        ").append(XMLHandler.addTagValue("precision",       precision)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        ").append(XMLHandler.addTagValue("conversion_mask", conversionMask)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        ").append(XMLHandler.addTagValue("encoding",        encoding)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        ").append(XMLHandler.addTagValue("decimal_symbol",  decimalSymbol)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        ").append(XMLHandler.addTagValue("grouping_symbol", groupingSymbol)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        ").append(XMLHandler.addTagValue("currency_symbol", currencySymbol)); //$NON-NLS-1$ //$NON-NLS-2$		
-		retval.append("        ").append(XMLHandler.addTagValue("storage_type",    ValueMeta.getStorageTypeCode(storageType))); //$NON-NLS-1$ //$NON-NLS-2$		
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_NAME,            name)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_RENAME,          rename)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_TYPE,            ValueMeta.getTypeDesc(type)) ); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_LENGTH,          length)); //$NON-NLS-1$ 
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_PRECISION,       precision)); //$NON-NLS-1$ 
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_CONVERSION_MASK, conversionMask)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_ENCODING,        encoding)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_DECIMAL,         decimalSymbol)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_GROUPING,        groupingSymbol)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_CURRENCY,        currencySymbol)); //$NON-NLS-1$		
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_STORAGE_TYPE,    ValueMeta.getStorageTypeCode(storageType))); //$NON-NLS-1$		
 		retval.append("      ").append(XMLHandler.closeTag(XML_TAG)); //$NON-NLS-1$
 		return retval.toString();
 	}
 	
 	public SelectMetadataChange(Node metaNode) {
-		name           = XMLHandler.getTagValue(metaNode, "name"); //$NON-NLS-1$
-		rename         = XMLHandler.getTagValue(metaNode, "rename"); //$NON-NLS-1$
-		type           = ValueMeta.getType(XMLHandler.getTagValue(metaNode, "type")); //$NON-NLS-1$
-		length         = Const.toInt(XMLHandler.getTagValue(metaNode, "length"), -2); //$NON-NLS-1$
-		precision      = Const.toInt(XMLHandler.getTagValue(metaNode, "precision"), -2); //$NON-NLS-1$
-		storageType    = ValueMeta.getStorageType( XMLHandler.getTagValue(metaNode, "storage_type") ); //$NON-NLS-1$
-		conversionMask = XMLHandler.getTagValue(metaNode, "conversion_mask"); //$NON-NLS-1$
-		encoding       = XMLHandler.getTagValue(metaNode, "encoding"); //$NON-NLS-1$
-		decimalSymbol  = XMLHandler.getTagValue(metaNode, "decimal_symbol"); //$NON-NLS-1$
-		groupingSymbol = XMLHandler.getTagValue(metaNode, "grouping_symbol"); //$NON-NLS-1$
-		currencySymbol = XMLHandler.getTagValue(metaNode, "currency_symbol"); //$NON-NLS-1$
+		name           = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_NAME); //$NON-NLS-1$
+		rename         = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_RENAME); //$NON-NLS-1$
+		type           = ValueMeta.getType(XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_TYPE)); //$NON-NLS-1$
+		length         = Const.toInt(XMLHandler.getTagValue(metaNode,SelectValuesAttr.META_LENGTH), -2); //$NON-NLS-1$
+		precision      = Const.toInt(XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_PRECISION), -2); //$NON-NLS-1$
+		storageType    = ValueMeta.getStorageType( XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_STORAGE_TYPE) ); //$NON-NLS-1$
+		conversionMask = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_CONVERSION_MASK); //$NON-NLS-1$
+		encoding       = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_ENCODING); //$NON-NLS-1$
+		decimalSymbol  = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_DECIMAL); //$NON-NLS-1$
+		groupingSymbol = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_GROUPING); //$NON-NLS-1$
+		currencySymbol = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_CURRENCY); //$NON-NLS-1$
 	}
 	
 	public SelectMetadataChange clone() {

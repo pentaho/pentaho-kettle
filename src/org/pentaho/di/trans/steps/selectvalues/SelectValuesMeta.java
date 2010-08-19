@@ -33,14 +33,16 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.lineage.FieldnameLineage;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
@@ -50,7 +52,7 @@ import org.w3c.dom.Node;
  * 
  * Created on 02-jun-2003
  */
-public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
+public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface, StepMetaInjectionInterface
 {
 	private static Class<?> PKG = SelectValuesMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -173,19 +175,28 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		readData(stepnode);
 	}
 
-	public void allocate(int nrfields, int nrremove, int nrmeta)
+	public void allocate(int nrFields, int nrRemove, int nrMeta)
 	{
-		selectName      = new String[nrfields];
-		selectRename    = new String[nrfields];
-		selectLength    = new int   [nrfields];
-		selectPrecision = new int   [nrfields];
-		
-		deleteName      = new String[nrremove];
-		
-		meta            = new SelectMetadataChange[nrmeta];
-		
-		// for (int i=0;i<meta.length;i++) meta[i].setStorageType(-1); // not used by default!
+		allocateSelect(nrFields);
+		allocateRemove(nrRemove);
+		allocateMeta(nrMeta);
 	}
+	
+	private void allocateSelect(int nrFields) {
+      selectName      = new String[nrFields];
+      selectRename    = new String[nrFields];
+      selectLength    = new int   [nrFields];
+      selectPrecision = new int   [nrFields];
+	}
+	
+	private void allocateRemove(int nrRemove) {
+      deleteName      = new String[nrRemove];
+	}
+
+	private void allocateMeta(int nrMeta) {
+      meta            = new SelectMetadataChange[nrMeta];
+    }
+	
 
 	public Object clone()
 	{
@@ -438,13 +449,13 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<selectName.length;i++)
 		{
 			retval.append("      <field>"); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("name",      selectName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("rename",    selectRename[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("length",    selectLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        ").append(XMLHandler.addTagValue("precision", selectPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.FIELD_NAME,      selectName[i])); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.FIELD_RENAME,    selectRename[i])); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.FIELD_LENGTH,    selectLength[i])); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.FIELD_PRECISION, selectPrecision[i])); //$NON-NLS-1$
 			retval.append("      </field>"); //$NON-NLS-1$
 		}
-		retval.append("        ").append(XMLHandler.addTagValue("select_unspecified", selectingAndSortingUnspecifiedFields)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.SELECT_UNSPECIFIED, selectingAndSortingUnspecifiedFields)); //$NON-NLS-1$
 		for (int i=0;i<deleteName.length;i++)
 		{
 			retval.append("      <remove>"); //$NON-NLS-1$
@@ -464,7 +475,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+			int nrfields = rep.countNrStepAttributes(id_step, SelectValuesAttr.FIELD_NAME.getRepCode()); //$NON-NLS-1$
 			int nrremove = rep.countNrStepAttributes(id_step, "remove_name"); //$NON-NLS-1$
 			int nrmeta   = rep.countNrStepAttributes(id_step, "meta_name"); //$NON-NLS-1$
 			
@@ -811,4 +822,111 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		
 		return lineages;
 	}
+	
+	public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+	  return this;
+	}
+	
+    /**
+     * Describe the metadata attributes that can be injected into this step metadata object.
+     */
+    public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries() {
+      return getStepInjectionMetadataEntries(SelectValuesAttr.values(), PKG);
+    }
+
+    public void injectStepMetadataEntries(List<StepInjectionMetaEntry> metadata) {
+      for (StepInjectionMetaEntry entry : metadata) {
+        SelectValuesAttr attr = SelectValuesAttr.findByKey(entry.getKey());
+        
+        // Set top level attributes...
+        //
+        if (entry.getValueType()!=ValueMetaInterface.TYPE_NONE) {
+          switch(attr) {
+          case SELECT_UNSPECIFIED: selectingAndSortingUnspecifiedFields = (Boolean) entry.getValue(); break;
+          default: throw new RuntimeException("Unhandled metadata injection of attribute: "+attr.toString()+" - "+attr.getDescription());
+          }
+        } else {
+          // The data sets...
+          //
+          switch(attr) {
+          case FIELDS: 
+            List<StepInjectionMetaEntry> selectFields = entry.getDetails();
+            allocateSelect(selectFields.size());
+            for (int row=0;row<selectFields.size();row++) {
+              StepInjectionMetaEntry selectField = selectFields.get(row);
+
+              List<StepInjectionMetaEntry> fieldAttributes = selectField.getDetails();
+              for (int i=0;i<fieldAttributes.size();i++) {
+                StepInjectionMetaEntry fieldAttribute = fieldAttributes.get(i);
+                SelectValuesAttr fieldAttr = SelectValuesAttr.findByKey(fieldAttribute.getKey());
+
+                String attributeValue = (String)fieldAttribute.getValue();
+                switch(fieldAttr) {
+                case FIELD_NAME : getSelectName()[row] = attributeValue; break;
+                case FIELD_RENAME : getSelectRename()[row] = attributeValue; break;
+                case FIELD_LENGTH : getSelectLength()[row] = attributeValue==null ? -1 : Integer.parseInt(attributeValue); break;
+                case FIELD_PRECISION : getSelectPrecision()[row] = attributeValue==null ? -1 : Integer.parseInt(attributeValue); break;
+                default: throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
+                }
+              }
+            }
+            break;
+            
+          case REMOVES: 
+            List<StepInjectionMetaEntry> removeFields = entry.getDetails();
+            allocateRemove(removeFields.size());
+            for (int row=0;row<removeFields.size();row++) {
+              StepInjectionMetaEntry removeField = removeFields.get(row);
+
+              List<StepInjectionMetaEntry> fieldAttributes = removeField.getDetails();
+              for (int i=0;i<fieldAttributes.size();i++) {
+                StepInjectionMetaEntry fieldAttribute = fieldAttributes.get(i);
+                SelectValuesAttr fieldAttr = SelectValuesAttr.findByKey(fieldAttribute.getKey());
+
+                String attributeValue = (String)fieldAttribute.getValue();
+                switch(fieldAttr) {
+                case REMOVE_NAME : getDeleteName()[row] = attributeValue; break;
+                default: throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
+                }
+              }
+            }
+            break;
+
+          case METAS: 
+            List<StepInjectionMetaEntry> metaFields = entry.getDetails();
+            allocateMeta(metaFields.size());
+            for (int row=0;row<metaFields.size();row++) {
+              StepInjectionMetaEntry metaField = metaFields.get(row);
+              SelectMetadataChange metaChange = new SelectMetadataChange();
+              List<StepInjectionMetaEntry> fieldAttributes = metaField.getDetails();
+              for (int i=0;i<fieldAttributes.size();i++) {
+                StepInjectionMetaEntry fieldAttribute = fieldAttributes.get(i);
+                SelectValuesAttr fieldAttr = SelectValuesAttr.findByKey(fieldAttribute.getKey());
+
+                String attributeValue = (String)fieldAttribute.getValue();
+                switch(fieldAttr) {
+                case META_NAME : metaChange.setName(attributeValue); break;
+                case META_RENAME : metaChange.setRename(attributeValue); break;
+                case META_TYPE : metaChange.setType(ValueMeta.getType(attributeValue)); break;
+                case META_CONVERSION_MASK : metaChange.setConversionMask(attributeValue); break;
+                case META_LENGTH : metaChange.setLength(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); break;
+                case META_PRECISION : metaChange.setPrecision(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); break;
+                case META_CURRENCY : metaChange.setCurrencySymbol(attributeValue); break;
+                case META_DECIMAL :metaChange.setDecimalSymbol(attributeValue); break;
+                case META_GROUPING :metaChange.setGroupingSymbol(attributeValue); break;
+                case META_STORAGE_TYPE : metaChange.setStorageType(ValueMeta.getStorageType(attributeValue)); break;
+                case META_ENCODING : metaChange.setEncoding(attributeValue); break;
+                default: throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
+                }
+                
+              }
+              meta[row] = metaChange;
+            }
+            break;
+          }
+        }
+      }
+    }
+    
+    
 }

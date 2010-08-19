@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -30,6 +31,7 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -423,4 +425,48 @@ public class BaseStepMeta implements Cloneable
 	 */
 	public void searchInfoAndTargetSteps(List<StepMeta> steps) {		
 	}
+	
+    /**
+     * @return Optional interface that allows an external program to inject step metadata in a standardized fasion.
+     * This method will return null if the interface is not available for this step.
+     */
+    public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+      return null;
+    }
+
+    protected StepInjectionMetaEntry findParentEntry(List<StepInjectionMetaEntry> entries, String key) {
+      for (StepInjectionMetaEntry look : entries) {
+        if (look.getKey().equals(key)) return look;
+        StepInjectionMetaEntry check = findParentEntry(look.getDetails(), key);
+        if (check!=null) return check;
+      }
+      return null;
+    }
+    
+    protected StepInjectionMetaEntry createEntry(KettleAttributeInterface attr, Class<?> PKG) {
+      return new StepInjectionMetaEntry(attr.getKey(), attr.getType(), BaseMessages.getString(PKG, attr.getDescription()));
+    }
+
+    /**
+     * Describe the metadata attributes that can be injected into this step metadata object.
+     */
+    public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries(KettleAttributeInterface[] attributes, Class<?> PKG) {
+      List<StepInjectionMetaEntry> entries = new ArrayList<StepInjectionMetaEntry>();
+      
+      for (KettleAttributeInterface attr : attributes) {
+        if (attr.getParent()==null) {
+          entries.add(createEntry(attr, PKG));
+        } else {
+          StepInjectionMetaEntry entry = createEntry(attr, PKG);
+          StepInjectionMetaEntry parentEntry = findParentEntry(entries, attr.getParent().getKey());
+          if (parentEntry==null) {
+            throw new RuntimeException("An error was detected in the step attributes' definition: the parent was not found for attribute "+attr);
+          }
+          parentEntry.getDetails().add(entry);
+        }
+      }
+      
+      return entries;
+    }
+
 }
