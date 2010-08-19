@@ -39,6 +39,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.ValueMeta;
@@ -80,6 +81,16 @@ public class XMLHandler
     public static final String getXMLHeader(String encoding)
     {
         return "<?xml version=\"1.0\" encoding=\""+encoding+"\"?>"+Const.CR;
+    }
+
+    /**
+     * Get the value of a tag in a node
+     * @param n The node to look in
+     * @param tag The tag to look for
+     * @return The value of the tag or null if nothing was found.
+     */
+    public static final String getTagValue(Node n, KettleAttributeInterface code) {
+      return getTagValue(n, code.getXmlCode());
     }
 
 	/**
@@ -784,6 +795,16 @@ public class XMLHandler
     }
 
     /**
+     * Build an XML string (including a carriage return) for a certain tag String value
+     * @param tag The XML tag
+     * @param val The String value of the tag
+     * @return The XML String for the tag.
+     */
+    public static final String addTagValue(KettleAttributeInterface tag, String val) {
+      return addTagValue(tag.getXmlCode(), val);
+    }
+
+    /**
 	 * Build an XML string (including a carriage return) for a certain tag String value
 	 * @param tag The XML tag
 	 * @param val The String value of the tag
@@ -795,6 +816,17 @@ public class XMLHandler
 	}
 	
 	
+
+	/**
+     * Build an XML string (including a carriage return) for a certain tag boolean value
+     * @param tag The XML tag
+     * @param bool The boolean value of the tag
+     * @return The XML String for the tag.
+     */
+    public static final String addTagValue(KettleAttributeInterface tag, boolean bool)
+    {
+        return addTagValue(tag.getXmlCode(), bool);
+    }
 
 	/**
 	 * Build an XML string (including a carriage return) for a certain tag boolean value
@@ -843,6 +875,17 @@ public class XMLHandler
 //		return addTagValue(tag, ""+l, cr);
 		return addTagValue(tag, String.valueOf(l), cr);
 	}
+
+	/**
+     * Build an XML string (with carriage return) for a certain tag integer value
+     * @param tag The XML tag
+     * @param i The integer value of the tag
+     * @return The XML String for the tag.
+     */
+    public static final String addTagValue(KettleAttributeInterface tag, int i)
+    {
+        return addTagValue(tag.getXmlCode(), i);
+    }
 
 	/**
 	 * Build an XML string (with carriage return) for a certain tag integer value
