@@ -15,9 +15,13 @@
 package org.pentaho.di.trans.steps.ldapinput;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
+import javax.naming.NameClassPair;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.Attribute;
@@ -70,6 +74,7 @@ public class LDAPConnection {
     
     private String referral;
     private String derefAliases;
+
 	
 	/**
 	 * Construct a new LDAP Connection
@@ -90,6 +95,11 @@ public class LDAPConnection {
 	public void connect() throws KettleException{
 		connect(null, null);
 	}
+	
+	private Hashtable<String, String> getEnv() {
+		return this.env;
+	}
+	
    /**
     *  Connect to LDAP server
     *  @param username : username
@@ -98,24 +108,24 @@ public class LDAPConnection {
     */
 	public void connect(String username, String password) throws KettleException{
 
-		this.env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-		this.env.put("java.naming.ldap.derefAliases", getDerefAliases());
-		this.env.put(Context.REFERRAL, getReferral());
-	    
+		getEnv().put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		getEnv().put("java.naming.ldap.derefAliases", getDerefAliases());
+		getEnv().put(Context.REFERRAL, getReferral());
+
 		if(getHostName().indexOf("ldap://")>=0)
-        	this.env.put(Context.PROVIDER_URL,getHostName() + ":" + getPort());
+			getEnv().put(Context.PROVIDER_URL,getHostName() + ":" + getPort());
         else
-        	this.env.put(Context.PROVIDER_URL, "ldap://"+getHostName() + ":" + getPort());
-        this.env.put(Context.SECURITY_AUTHENTICATION, "simple");
+        	getEnv().put(Context.PROVIDER_URL, "ldap://"+getHostName() + ":" + getPort());
+		getEnv().put(Context.SECURITY_AUTHENTICATION, "simple");
         
         if (!Const.isEmpty(username)) {
     		this.username=username;
-        	env.put(Context.SECURITY_PRINCIPAL, username);
-        	env.put(Context.SECURITY_CREDENTIALS, password); 
+    		getEnv().put(Context.SECURITY_PRINCIPAL, username);
+    		getEnv().put(Context.SECURITY_CREDENTIALS, password); 
         }
 
 	    try {
-	    	this.ctx=new InitialLdapContext(this.env, null);
+	    	this.ctx=new InitialLdapContext(getEnv(), null);
 	        if (getInitialContext()==null) {
 			   throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Error.UnableToConnectToServer"));
 			}
@@ -127,6 +137,7 @@ public class LDAPConnection {
 	    }
 	}
 	
+
 	private void setFilter(String filter) {
 		this.filter=filter;
 	}
@@ -366,6 +377,76 @@ public class LDAPConnection {
 	    return attrs;
 	}
 	
+   /**
+    *  Rename an entry
+    *  @param oldDn Distinguished name of the entry to rename
+    *  @param newDn target Distinguished name (new)
+    *  @param deleteRDN To specify whether you want to keep the old name attribute when you use rename entry
+    *  		true : do not keep the old value (defaut)
+    *  		false : keep the old value as an attribute
+    *  @throws KettleException
+    */
+	public void rename(String oldDn, String newDn, boolean deleteRDN)  throws KettleException {
+		try {
+			if(!deleteRDN) {
+				// Keep the old dn as attribute
+				getInitialContext().removeFromEnvironment("java.naming.ldap.deleteRDN");
+			}
+			Map<String, Attributes> childs = new java.util.HashMap<String, Attributes>();
+			List<String> paths = new ArrayList<String>();
+	
+			list(oldDn, childs, paths);
+			
+			// Destroy sub contexts
+			for (String childName : paths) {
+				getInitialContext().destroySubcontext(childName);
+			}
+			
+			// Rename entry
+			try {
+				getInitialContext().rename(oldDn, newDn);
+			} catch (Exception e) {
+				// something goes wrong
+				// re attached removed sub contexts
+				for (int i = paths.size(); i > 0; i--) {
+					getInitialContext().createSubcontext(paths.get(i - 1),childs.get(paths.get(i - 1)));
+				}
+				throw e;
+			}
+		
+			// attach sub context
+			List<String> newpaths = new ArrayList<String>();
+			for (String childName : paths) {
+				newpaths.add(childName.replaceAll(oldDn, newDn));
+			}
+
+			for (int i = newpaths.size(); i > 0; i--) {
+				getInitialContext().createSubcontext(newpaths.get(i - 1),childs.get(paths.get(i - 1)));
+			}
+	
+		}catch(Exception e) {
+			throw new KettleException(BaseMessages.getString(PKG, "LDAPConnection.Error.Renaming",oldDn, newDn), e);
+		}finally {
+			try {
+				if(!deleteRDN) {
+					// Delete the old dn as attribute
+					// switch back to default value
+					getInitialContext().addToEnvironment("java.naming.ldap.deleteRDN", "true");
+				}
+			}catch(Exception e){}
+		}
+		
+	}
+	@SuppressWarnings("rawtypes")
+	private void list(String rootName, Map<String, Attributes> childs, List<String> paths) throws Exception {
+		NamingEnumeration ne = getInitialContext().list(rootName);
+		while (ne.hasMore()) {
+			NameClassPair nameCP = (NameClassPair) ne.next();
+			childs.put(nameCP.getName() + "," + rootName,getInitialContext().getAttributes(nameCP.getName()+ "," + rootName));
+			list(nameCP.getName() + "," + rootName, childs, paths);
+			paths.add(nameCP.getName() + "," + rootName);
+		}
+	}
    /**
     *  Close the LDAP connection
     * @throws KettleException

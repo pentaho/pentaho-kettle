@@ -83,6 +83,10 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private int operationType;
 	
+	private String oldDnFieldName;
+	private String newDnFieldName;
+	private boolean deleteRDN;
+	
 	/**
 	 * The operations description
 	 */
@@ -91,13 +95,14 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 			BaseMessages.getString(PKG, "LDAPOutputMeta.operationType.Upsert"),
 			BaseMessages.getString(PKG, "LDAPOutputMeta.operationType.Update"),
 			BaseMessages.getString(PKG, "LDAPOutputMeta.operationType.Add"),
-			BaseMessages.getString(PKG, "LDAPOutputMeta.operationType.Delete")
+			BaseMessages.getString(PKG, "LDAPOutputMeta.operationType.Delete"),
+			BaseMessages.getString(PKG, "LDAPOutputMeta.operationType.Rename")
 			};
 	
 	/**
 	 * The operations type codes
 	 */
-	public final static String operationTypeCode[] = { "insert", "upsert", "update", "add", "delete" };
+	public final static String operationTypeCode[] = { "insert", "upsert", "update", "add", "delete", "rename" };
 
 	public final static int OPERATION_TYPE_INSERT = 0;
 
@@ -108,6 +113,8 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 	public final static int OPERATION_TYPE_ADD = 3;
 	
 	public final static int OPERATION_TYPE_DELETE = 4;
+	
+	public final static int OPERATION_TYPE_RENAME = 5;
 	
 	private int referralType;
 	
@@ -429,9 +436,56 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		return retval;
 	}
+	/**
+     * @param value The deleteRDN filed.
+     */
+    public void setDeleteRDN(boolean value)
+    {
+        this.deleteRDN = value;
+    }
     
+    
+    /**
+     * @return Returns the deleteRDN.
+     */
+    public boolean isDeleteRDN()
+    {
+        return deleteRDN;
+    }
+	/**
+     * @param value The newDnFieldName filed.
+     */
+    public void setNewDnFieldName(String value)
+    {
+        this.newDnFieldName = value;
+    }
+    
+    
+    /**
+     * @return Returns the newDnFieldName.
+     */
+    public String getNewDnFieldName()
+    {
+        return newDnFieldName;
+    }
+	/**
+     * @param value The oldDnFieldName filed.
+     */
+    public void setOldDnFieldName(String value)
+    {
+        this.oldDnFieldName = value;
+    }
+    
+    
+    /**
+     * @return Returns the oldDnFieldName.
+     */
+    public String getOldDnFieldName()
+    {
+        return oldDnFieldName;
+    }
 
-	   /**
+	/**
      * @param searchBase The searchBase filed.
      */
     public void setSearchBaseDN(String searchBase)
@@ -505,6 +559,10 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("referralType",getReferralTypeCode(referralType)));
         retval.append("    ").append(XMLHandler.addTagValue("derefAliasesType",getDerefAliasesCode(derefAliasesType)));
         
+        retval.append("    ").append(XMLHandler.addTagValue("oldDnFieldName", oldDnFieldName));
+        retval.append("    ").append(XMLHandler.addTagValue("newDnFieldName", newDnFieldName));
+        retval.append("    ").append(XMLHandler.addTagValue("deleteRDN", deleteRDN));
+        
 		retval.append("    <fields>"+Const.CR);
 		
 		for (int i=0;i<updateLookup.length;i++)
@@ -539,6 +597,11 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 			searchBase = XMLHandler.getTagValue(stepnode, "searchBase");
 			referralType = getReferralTypeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"referralType"), ""));
 			derefAliasesType = getDerefAliasesTypeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"derefAliasesType"), ""));
+			
+			
+			oldDnFieldName = XMLHandler.getTagValue(stepnode, "oldDnFieldName");
+			newDnFieldName = XMLHandler.getTagValue(stepnode, "newDnFieldName");
+			deleteRDN    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "deleteRDN"));
 			
 			Node fields     = XMLHandler.getSubNode(stepnode,  "fields");
 			int nrFields    = XMLHandler.countNodes(fields,    "field");
@@ -584,6 +647,9 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 		failIfNotExist=true;
 		multiValuedSeparator=";";
 		searchBase=null;
+		oldDnFieldName=null;
+		newDnFieldName=null;
+		deleteRDN=true;
 		
 		int nrFields =0;
 		allocate(nrFields);	
@@ -616,6 +682,10 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 			searchBase    = rep.getStepAttributeString (id_step, "searchBase");
 		   	referralType = getReferralTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "referralType"), ""));
 		   	derefAliasesType = getDerefAliasesTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "referralType"), ""));
+		   	
+		   	newDnFieldName    = rep.getStepAttributeString (id_step, "newDnFieldName");
+		 	oldDnFieldName    = rep.getStepAttributeString (id_step, "oldDnFieldName");
+			deleteRDN    = rep.getStepAttributeBoolean(id_step, "deleteRDN");
 		   	
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
 			allocate(nrFields);
@@ -652,6 +722,10 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "searchBase", searchBase);
 			rep.saveStepAttribute(id_transformation, id_step, "referralType", getReferralTypeCode(referralType));
 			rep.saveStepAttribute(id_transformation, id_step, "derefAliasesType", getDerefAliasesCode(derefAliasesType));
+			
+			rep.saveStepAttribute(id_transformation, id_step, "oldDnFieldName", oldDnFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "newDnFieldName", newDnFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "deleteRDN",   deleteRDN);
 			
 			for (int i=0;i<updateLookup.length;i++)
 			{

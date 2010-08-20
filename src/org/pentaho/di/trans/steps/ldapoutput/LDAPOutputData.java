@@ -39,6 +39,9 @@ public class LDAPOutputData extends BaseStepData implements StepDataInterface
     public int[] fieldStreamToUpdate;
     public String[] fieldsAttributeToUpdate;
     
+    public int indexOfOldDNField;
+    public int indexOfNewDNField;
+    
 	public LDAPOutputData()
 	{
 		super();
@@ -49,6 +52,8 @@ public class LDAPOutputData extends BaseStepData implements StepDataInterface
 		this.fieldsAttributeToUpdate=null;
 		this.attributesToUpdate=null;
 		this.nrfieldsToUpdate=0;
+		this.indexOfOldDNField=-1;
+		this.indexOfNewDNField=-1;
 	}
 	
    

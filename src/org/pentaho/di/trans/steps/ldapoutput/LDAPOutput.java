@@ -65,7 +65,7 @@ public class LDAPOutput extends BaseStep implements StepInterface
 		if (first) {
             first = false;
         	
-            if(meta.getOperationType()!=LDAPOutputMeta.OPERATION_TYPE_DELETE) {
+            if(meta.getOperationType()!=LDAPOutputMeta.OPERATION_TYPE_DELETE && meta.getOperationType()!=LDAPOutputMeta.OPERATION_TYPE_RENAME) {
             	
 	    		// get total fields in the grid
 				data.nrfields = meta.getUpdateLookup().length;
@@ -119,37 +119,67 @@ public class LDAPOutput extends BaseStep implements StepInterface
 				}
             }
 			
-            String dnField=environmentSubstitute(meta.getDnField());
-        	// Check Dn field
-			if(Const.isEmpty(dnField)) {
-				throw new KettleException(BaseMessages.getString(PKG, "LDAPOutput.Error.DNFieldMissing"));
-			}
-			
-        	// return the index of the field in the input stream
-        	data.indexOfDNField = getInputRowMeta().indexOfValue(dnField);
-        
-			if(data.indexOfDNField<0) {
-				// the field is unreachable!
-				throw new KettleException(BaseMessages.getString(PKG, "LDAPOutput.Error.CanNotFindField", dnField));
-			}
+            if(meta.getOperationType()==LDAPOutputMeta.OPERATION_TYPE_RENAME) {
+            	 String oldDnField=environmentSubstitute(meta.getOldDnFieldName());
+            	 if(Const.isEmpty(oldDnField)) {
+ 					throw new KettleException(BaseMessages.getString(PKG, "LDAPOutput.Error.OldDNFieldMissing"));
+ 				 }
+            	 
+            	 String newDnField=environmentSubstitute(meta.getNewDnFieldName());
+            	 if(Const.isEmpty(newDnField)) {
+ 					throw new KettleException(BaseMessages.getString(PKG, "LDAPOutput.Error.NewDNFieldMissing"));
+ 				 }
+            	 
+            	// return the index of the field in the input stream
+ 	        	data.indexOfOldDNField = getInputRowMeta().indexOfValue(oldDnField);
+ 	        
+ 				if(data.indexOfOldDNField<0) {
+ 					// the field is unreachable!
+ 					throw new KettleException(BaseMessages.getString(PKG, "LDAPOutput.Error.CanNotFindField", oldDnField));
+ 				}
+ 				// return the index of the field in the input stream
+ 	        	data.indexOfNewDNField = getInputRowMeta().indexOfValue(newDnField);
+ 	        
+ 				if(data.indexOfNewDNField<0) {
+ 					// the field is unreachable!
+ 					throw new KettleException(BaseMessages.getString(PKG, "LDAPOutput.Error.CanNotFindField", newDnField));
+ 				}
+            	 
+            }else {
+	            String dnField=environmentSubstitute(meta.getDnField());
+	        	// Check Dn field
+				if(Const.isEmpty(dnField)) {
+					throw new KettleException(BaseMessages.getString(PKG, "LDAPOutput.Error.DNFieldMissing"));
+				}
+				
+	        	// return the index of the field in the input stream
+	        	data.indexOfDNField = getInputRowMeta().indexOfValue(dnField);
+	        
+				if(data.indexOfDNField<0) {
+					// the field is unreachable!
+					throw new KettleException(BaseMessages.getString(PKG, "LDAPOutput.Error.CanNotFindField", dnField));
+				}
+            }
 				
         }
         
 		incrementLinesInput();
+		String dn=null;
+		
 		try {	
-			// Get DN
-			String dn = getInputRowMeta().getString(outputRowData, data.indexOfDNField);
-			
-			if(isDebug()) logDebug(BaseMessages.getString(PKG, "LDAPOutput.ProcessDn", dn));
-			
-			if(meta.getOperationType()!=LDAPOutputMeta.OPERATION_TYPE_DELETE) {
-				// Build new value attributes
-				for(int i=0; i<data.nrfields; i++) {
-					data.attributes[i]=getInputRowMeta().getString(outputRowData, data.fieldStream[i]);
+			if(meta.getOperationType()!= LDAPOutputMeta.OPERATION_TYPE_RENAME) {
+				// Get DN
+				dn = getInputRowMeta().getString(outputRowData, data.indexOfDNField);
+				
+				if(isDebug()) logDebug(BaseMessages.getString(PKG, "LDAPOutput.ProcessDn", dn));
+				
+				if(meta.getOperationType()!=LDAPOutputMeta.OPERATION_TYPE_DELETE) {
+					// Build new value attributes
+					for(int i=0; i<data.nrfields; i++) {
+						data.attributes[i]=getInputRowMeta().getString(outputRowData, data.fieldStream[i]);
+					}
 				}
-			
 			}
-			
 			switch (meta.getOperationType()) {
 				case LDAPOutputMeta.OPERATION_TYPE_UPSERT:
 					// handle fields to update
@@ -202,6 +232,13 @@ public class LDAPOutput extends BaseStep implements StepInterface
 						 incrementLinesSkipped();
 						break;
 					}
+					break;
+				case LDAPOutputMeta.OPERATION_TYPE_RENAME:
+					String oldDn= getInputRowMeta().getString(outputRowData, data.indexOfOldDNField);
+					String newDn= getInputRowMeta().getString(outputRowData, data.indexOfNewDNField);
+					
+					data.connection.rename(oldDn, newDn, meta.isDeleteRDN());
+					incrementLinesOutput();
 					break;
 				default:
 					// Insert

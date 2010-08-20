@@ -106,6 +106,9 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private Group wSettings;
 	private FormData fdSettings;
+	private Group wRenameGroup;
+	private FormData fdRenameGroup;
+	
 	private Group wFields;
 	private FormData fdFields;
 	
@@ -129,15 +132,27 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 	private Button wTest;
 	private FormData fdTest;
 	
-    private ComboVar wDeleteField;
-    private FormData fdDeleteField;
-    private Label wlDeleteField;
-    private FormData fdlDeleteField;
+    private ComboVar wDnField;
+    private FormData fdDnField;
+    private Label wlDnField;
+    private FormData fdlDnField;
+    
+    private ComboVar wOldDnField;
+    private FormData fdOldDnField;
+    private Label wlOldDnField;
+    private FormData fdlOldDnField;
+    
+    private ComboVar wNewDnField;
+    private FormData fdNewDnField;
+    private Label wlNewDnField;
+    private FormData fdlNewDnField;
     
 	private Label        wlFailIfNotExist;
 	private Button       wFailIfNotExist;
 	private FormData     fdlFailIfNotExist, fdFailIfNotExist;
-
+	private Label        wlDeleteRDN;
+	private Button       wDeleteRDN;
+	private FormData     fdlDeleteRDN, fdDeleteRDN;
 	
     private Map<String, Integer> inputFields;
     
@@ -515,7 +530,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		fdMultiValuedSeparator.right= new FormAttachment(100, 0);
 		wMultiValuedSeparator.setLayoutData(fdMultiValuedSeparator);
 		
-		// Add File to the result files name
+		// Fail id not exist
 		wlFailIfNotExist=new Label(wSettings, SWT.RIGHT);
 		wlFailIfNotExist.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.FailIfNotExist.Label"));
 		props.setLook(wlFailIfNotExist);
@@ -545,24 +560,24 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		
 		// Dn fieldname
-		wlDeleteField=new Label(wSettings, SWT.RIGHT);
-        wlDeleteField.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.DnField.Label"));
-        props.setLook(wlDeleteField);
-        fdlDeleteField=new FormData();
-        fdlDeleteField.left = new FormAttachment(0, 0);
-        fdlDeleteField.top  = new FormAttachment(wFailIfNotExist, margin);
-        fdlDeleteField.right= new FormAttachment(middle, -margin);
-        wlDeleteField.setLayoutData(fdlDeleteField);
-        wDeleteField=new ComboVar(transMeta, wSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-        wDeleteField.setEditable(true);
-        props.setLook(wDeleteField);
-        wDeleteField.addModifyListener(lsMod);
-        fdDeleteField=new FormData();
-        fdDeleteField.left = new FormAttachment(middle, 0);
-        fdDeleteField.top  = new FormAttachment(wFailIfNotExist, margin);
-        fdDeleteField.right= new FormAttachment(100, -margin);
-        wDeleteField.setLayoutData(fdDeleteField);
-        wDeleteField.addFocusListener(new FocusListener()
+		wlDnField=new Label(wSettings, SWT.RIGHT);
+        wlDnField.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.DnField.Label"));
+        props.setLook(wlDnField);
+        fdlDnField=new FormData();
+        fdlDnField.left = new FormAttachment(0, 0);
+        fdlDnField.top  = new FormAttachment(wFailIfNotExist, margin);
+        fdlDnField.right= new FormAttachment(middle, -margin);
+        wlDnField.setLayoutData(fdlDnField);
+        wDnField=new ComboVar(transMeta, wSettings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+        wDnField.setEditable(true);
+        props.setLook(wDnField);
+        wDnField.addModifyListener(lsMod);
+        fdDnField=new FormData();
+        fdDnField.left = new FormAttachment(middle, 0);
+        fdDnField.top  = new FormAttachment(wFailIfNotExist, margin);
+        fdDnField.right= new FormAttachment(100, -margin);
+        wDnField.setLayoutData(fdDnField);
+        wDnField.addFocusListener(new FocusListener()
             {
                 public void focusLost(org.eclipse.swt.events.FocusEvent e)
                 {
@@ -585,6 +600,120 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		// ///////////////////////////////////////////////////////////
 		// / END OF Search  GROUP
 		// ///////////////////////////////////////////////////////////
+		
+		// /////////////////////////////////
+		// START OF Rename GROUP
+		// /////////////////////////////////
+
+		wRenameGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		props.setLook(wRenameGroup);
+		wRenameGroup.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.Group.RenameGroup.Label"));
+		
+		FormLayout RenameGroupLayout = new FormLayout();
+		RenameGroupLayout.marginWidth = 10;
+		RenameGroupLayout.marginHeight = 10;
+		wRenameGroup.setLayout(RenameGroupLayout);
+
+		// OldDn fieldname
+		wlOldDnField=new Label(wRenameGroup, SWT.RIGHT);
+        wlOldDnField.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.OldDnField.Label"));
+        props.setLook(wlOldDnField);
+        fdlOldDnField=new FormData();
+        fdlOldDnField.left = new FormAttachment(0, 0);
+        fdlOldDnField.top  = new FormAttachment(wSettings, margin);
+        fdlOldDnField.right= new FormAttachment(middle, -margin);
+        wlOldDnField.setLayoutData(fdlOldDnField);
+        wOldDnField=new ComboVar(transMeta, wRenameGroup, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+        wOldDnField.setEditable(true);
+        props.setLook(wOldDnField);
+        wOldDnField.addModifyListener(lsMod);
+        fdOldDnField=new FormData();
+        fdOldDnField.left = new FormAttachment(middle, 0);
+        fdOldDnField.top  = new FormAttachment(wSettings, margin);
+        fdOldDnField.right= new FormAttachment(100, -margin);
+        wOldDnField.setLayoutData(fdOldDnField);
+        wOldDnField.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                	getPreviousFields();
+                }
+            }
+        );
+        
+        // NewDn fieldname
+		wlNewDnField=new Label(wRenameGroup, SWT.RIGHT);
+        wlNewDnField.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.NewDnField.Label"));
+        props.setLook(wlNewDnField);
+        fdlNewDnField=new FormData();
+        fdlNewDnField.left = new FormAttachment(0, 0);
+        fdlNewDnField.top  = new FormAttachment(wOldDnField, margin);
+        fdlNewDnField.right= new FormAttachment(middle, -margin);
+        wlNewDnField.setLayoutData(fdlNewDnField);
+        wNewDnField=new ComboVar(transMeta, wRenameGroup, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+        wNewDnField.setEditable(true);
+        props.setLook(wNewDnField);
+        wNewDnField.addModifyListener(lsMod);
+        fdNewDnField=new FormData();
+        fdNewDnField.left = new FormAttachment(middle, 0);
+        fdNewDnField.top  = new FormAttachment(wOldDnField, margin);
+        fdNewDnField.right= new FormAttachment(100, -margin);
+        wNewDnField.setLayoutData(fdNewDnField);
+        wNewDnField.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                	getPreviousFields();
+                }
+            }
+        );
+
+
+
+		wlDeleteRDN=new Label(wRenameGroup, SWT.RIGHT);
+		wlDeleteRDN.setText(BaseMessages.getString(PKG, "LDAPOutputDialog.DeleteRDN.Label"));
+		props.setLook(wlDeleteRDN);
+		fdlDeleteRDN=new FormData();
+		fdlDeleteRDN.left  = new FormAttachment(0, 0);
+		fdlDeleteRDN.top   = new FormAttachment(wNewDnField, margin);
+		fdlDeleteRDN.right = new FormAttachment(middle, -margin);
+		wlDeleteRDN.setLayoutData(fdlDeleteRDN);
+		wDeleteRDN=new Button(wRenameGroup, SWT.CHECK);
+		wDeleteRDN.setToolTipText(BaseMessages.getString(PKG, "LDAPOutputDialog.DeleteRDN.Tooltip"));
+ 		props.setLook(wDeleteRDN);
+		fdDeleteRDN=new FormData();
+		fdDeleteRDN.left  = new FormAttachment(middle, 0);
+		fdDeleteRDN.top   = new FormAttachment(wNewDnField, margin);
+		fdDeleteRDN.right = new FormAttachment(100, 0);
+		wDeleteRDN.setLayoutData(fdDeleteRDN);
+		SelectionAdapter lsSeld = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+		wDeleteRDN.addSelectionListener(lsSeld);
+
+        
+		fdRenameGroup = new FormData();
+		fdRenameGroup.left = new FormAttachment(0, margin);
+		fdRenameGroup.top = new FormAttachment(wSettings, margin);
+		fdRenameGroup.right = new FormAttachment(100, -margin);
+		wRenameGroup.setLayoutData(fdRenameGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Rename GROUP
+		// ///////////////////////////////////////////////////////////
+		
 		
 	
 		fdGeneralComp=new FormData();
@@ -887,7 +1016,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		if (in.getUserName() != null)  wUserName.setText(in.getUserName());
 	    if (in.getPassword() != null)  wPassword.setText(in.getPassword());
 		if (in.getPort() != null)  wPort.setText(in.getPort());
-	    if (in.getDnField() != null)  wDeleteField.setText(in.getDnField());
+	    if (in.getDnField() != null)  wDnField.setText(in.getDnField());
 	    wFailIfNotExist.setSelection(in.isFailIfNotExist());
 		wOperation.setText(LDAPOutputMeta.getOperationTypeDesc(input.getOperationType()));
 		if(in.getMultiValuedSeparator()!=null)	wMultiValuedSeparator.setText(in.getMultiValuedSeparator());
@@ -896,6 +1025,10 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		wReferral.setText(LDAPOutputMeta.getReferralTypeDesc(input.getReferralType()));
 		wDerefAliases.setText(LDAPOutputMeta.getDerefAliasesTypeDesc(input.getDerefAliasesType()));
 		
+		if(in.getOldDnFieldName()!=null)	wOldDnField.setText(in.getOldDnFieldName());
+		if(in.getNewDnFieldName()!=null)	wNewDnField.setText(in.getNewDnFieldName());
+		wDeleteRDN.setSelection(in.isDeleteRDN());
+		 
 		if (input.getUpdateLookup() != null)
 		{
 			for (int i = 0; i < input.getUpdateLookup().length; i++)
@@ -952,13 +1085,16 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		in.setUserName( wUserName.getText() );
 		in.setPassword(wPassword.getText());
 		in.setPort( wPort.getText() );
-		in.setDnField(wDeleteField.getText());
+		in.setDnField(wDnField.getText());
 		in.setFailIfNotExist(wFailIfNotExist.getSelection());
 		in.setOperationType(LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()));
 		in.setMultiValuedSeparator(wMultiValuedSeparator.getText());
 		in.setSearchBaseDN(wBaseDN.getText());
 		in.setReferralType(LDAPOutputMeta.getReferralTypeByDesc(wReferral.getText()));
 		in.setDerefAliasesType(LDAPOutputMeta.getDerefAliasesTypeByDesc(wDerefAliases.getText()));
+		
+		in.setOldDnFieldName(wOldDnField.getText());
+		in.setNewDnFieldName(wNewDnField.getText());
 		
 		int nrfields = wReturn.nrNonEmpty();
 
@@ -1035,10 +1171,18 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 				RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 				if (r != null)
 				{
-	                String value = wDeleteField.getText();
-	                wDeleteField.removeAll();
-	                wDeleteField.setItems(r.getFieldNames());
-	                if(value!=null) wDeleteField.setText(value);
+	                String dn = wDnField.getText();
+	                String olddn = wOldDnField.getText();
+	                String newdn = wNewDnField.getText();
+	                wDnField.removeAll();
+	                wOldDnField.removeAll();
+	                wNewDnField.removeAll();
+	                wDnField.setItems(r.getFieldNames());
+	                wOldDnField.setItems(r.getFieldNames());
+	                wNewDnField.setItems(r.getFieldNames());
+	                if(dn!=null) wDnField.setText(dn);
+	                if(olddn!=null) wOldDnField.setText(olddn);
+	                if(newdn!=null) wNewDnField.setText(newdn);
 				}
 			}
 			catch (KettleException ke)
@@ -1111,6 +1255,13 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		wlFailIfNotExist.setEnabled(activateFailIfNotExist);
 		wFailIfNotExist.setEnabled(activateFailIfNotExist);
 		
+		boolean activateRename=(LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_RENAME);
+		wlOldDnField.setEnabled(activateRename);
+		wOldDnField.setEnabled(activateRename);
+		wlNewDnField.setEnabled(activateRename);
+		wNewDnField.setEnabled(activateRename);
+		wlDeleteRDN.setEnabled(activateRename);
+		wDeleteRDN.setEnabled(activateRename);
 	}
 	public String toString()
 	{
