@@ -17,14 +17,12 @@ package org.pentaho.di.trans.steps.ldapinput;
 
 import java.util.HashSet;
 
+import javax.naming.directory.Attributes;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-import javax.naming.NamingEnumeration;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-import javax.naming.ldap.InitialLdapContext;
 
 
 /**
@@ -38,42 +36,37 @@ public class LDAPInputData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface convertRowMeta;
 	public Object[] previousRow;
 	public int    nr_repeats;
-
     public long   rownr;
-    
-    public InitialLdapContext ctx;
-    public NamingEnumeration<SearchResult> results;
     public String multi_valuedFieldSeparator;
-
-    public int nrfields;
-    
-    public String searchbase;
-    public String filter;
-    public SearchControls controls;
-    public byte[] cookie;
-    public boolean pagingSet;
-    public int pageSize;
-    
-    public HashSet<String> attributesBinary;
+    public int nrfields; 
+    public HashSet<String> attributesBinary; 
+    public LDAPConnection connection;
+    public String staticFilter;
+    public String staticSearchBase;
+    public String[] attrReturned;
+    public Object[] readRow;
+    public int indexOfSearchBaseField;
+    public int indexOfFilterField;
+    public Attributes attributes;
+    public int nrIncomingFields;
+    public boolean dynamic;
     
 	public LDAPInputData()
 	{
 		super();
 		previousRow = null;
 		thisline=null;
-
 		nr_repeats=0;
 		previousRow=null;
-		ctx=null;
 		multi_valuedFieldSeparator=null;
-		results=null;
 		nrfields=0;
-		searchbase=null;
-		filter=null;
-		controls=null;
-		cookie=null;
-		pagingSet=false;
-		pageSize=-1;
+		staticFilter=null;
+		staticSearchBase=null;
+		indexOfSearchBaseField=-1;
+		indexOfFilterField=-1;
+		attributes=null;
+		nrIncomingFields=0;
+		dynamic=false;
 	}
 	
    

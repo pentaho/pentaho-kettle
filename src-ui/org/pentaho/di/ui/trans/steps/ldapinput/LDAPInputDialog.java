@@ -19,22 +19,11 @@
 
 package org.pentaho.di.ui.trans.steps.ldapinput;
 
-import java.text.SimpleDateFormat;
-import java.util.Hashtable;
-
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -58,13 +47,17 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.ldapinput.LDAPConnection;
 import org.pentaho.di.trans.steps.ldapinput.LDAPInputField;
 import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
@@ -78,6 +71,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.core.encryption.Encr;
+
 
 public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -166,12 +160,35 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     private Text wFilterString;
     private FormData fdlFilterString, fdFilterString;
     
+	
+	private Label		wldynamicBase;
+	private FormData	fdlynamicBase;
+	private Button		wdynamicBase;
+	private FormData	fdynamicBase;
+	
+	private Label  wlsearchBaseField;
+	private FormData  fdlsearchBaseField;
+	private CCombo  wsearchBaseField;
+	private FormData  fdsearchBaseField;
+	
+	private Label wldynamicFilter;
+	private FormData fdldynamicFilter;
+	private Button wdynamicFilter;
+	private FormData fdynamicFilter;
+	
+	private Label  wlfilterField;
+	private FormData  fdlfilterField;
+	private CCombo  wfilterField;
+	private FormData fdfilterField;
+    
     private Listener lsTest;
 	
 	public static final int dateLengths[] = new int[]
 	{
 		23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
 	};
+	
+	private boolean gotPreviousFields=false;
 
 	public LDAPInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -396,25 +413,147 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		searchgroupLayout.marginHeight = 10;
 		wSearchGroup.setLayout(searchgroupLayout);
 		
+
+		//Is base defined in a Field		
+		wldynamicBase= new Label(wSearchGroup, SWT.RIGHT);
+		wldynamicBase.setText(BaseMessages.getString(PKG, "LDAPInputDialog.dynamicBase.Label"));
+		props.setLook(wldynamicBase);
+		fdlynamicBase= new FormData();
+		fdlynamicBase.left = new FormAttachment(0, -margin);
+		fdlynamicBase.top = new FormAttachment(0, margin);
+		fdlynamicBase.right = new FormAttachment(middle, -2*margin);
+		wldynamicBase.setLayoutData(fdlynamicBase);
+		
+		
+		wdynamicBase= new Button(wSearchGroup, SWT.CHECK);
+		props.setLook(wdynamicBase);
+		wdynamicBase.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.dynamicBase.Tooltip"));
+		fdynamicBase= new FormData();
+		fdynamicBase.left = new FormAttachment(middle, -margin);
+		fdynamicBase.top = new FormAttachment(0, margin);
+		wdynamicBase.setLayoutData(fdynamicBase);		
+		SelectionAdapter ldynamicBase= new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+            	ActiveDynamicBase();
+            	input.setChanged();
+            }
+        };
+        wdynamicBase.addSelectionListener(ldynamicBase);
+        
+       // dynamic search base field
+		wlsearchBaseField=new Label(wSearchGroup, SWT.RIGHT);
+        wlsearchBaseField.setText(BaseMessages.getString(PKG, "LDAPInputDialog.wsearchBaseField.Label"));
+        props.setLook(wlsearchBaseField);
+        fdlsearchBaseField=new FormData();
+        fdlsearchBaseField.left = new FormAttachment(0, -margin);
+        fdlsearchBaseField.top  = new FormAttachment(wdynamicBase, margin);
+        fdlsearchBaseField.right= new FormAttachment(middle, -2*margin);
+        wlsearchBaseField.setLayoutData(fdlsearchBaseField);
+        
+        wsearchBaseField=new CCombo(wSearchGroup, SWT.BORDER | SWT.READ_ONLY);
+        wsearchBaseField.setEditable(true);
+        props.setLook(wsearchBaseField);
+        wsearchBaseField.addModifyListener(lsMod);
+        fdsearchBaseField=new FormData();
+        fdsearchBaseField.left = new FormAttachment(middle, -margin);
+        fdsearchBaseField.top  = new FormAttachment(wdynamicBase, margin);
+        fdsearchBaseField.right= new FormAttachment(100, -2*margin);
+        wsearchBaseField.setLayoutData(fdsearchBaseField);
+        wsearchBaseField.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    setSearchBaseField();
+                }
+            }
+        );           	
+		
 		// SearchBase line
 		wlSearchBase=new Label(wSearchGroup, SWT.RIGHT);
 		wlSearchBase.setText(BaseMessages.getString(PKG, "LDAPInputDialog.SearchBase.Label"));
  		props.setLook(wlSearchBase);
 		fdlSearchBase=new FormData();
-		fdlSearchBase.left = new FormAttachment(0, 0);
-		fdlSearchBase.top  = new FormAttachment(wConnectionGroup, margin);
-		fdlSearchBase.right= new FormAttachment(middle, -margin);
+		fdlSearchBase.left = new FormAttachment(0, -margin);
+		fdlSearchBase.top  = new FormAttachment(wsearchBaseField, margin);
+		fdlSearchBase.right= new FormAttachment(middle, -2*margin);
 		wlSearchBase.setLayoutData(fdlSearchBase);
 		wSearchBase=new TextVar(transMeta, wSearchGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wSearchBase);
 		wSearchBase.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.SearchBase.Tooltip"));
 		wSearchBase.addModifyListener(lsMod);
 		fdSearchBase=new FormData();
-		fdSearchBase.left = new FormAttachment(middle, 0);
-		fdSearchBase.top  = new FormAttachment(wConnectionGroup, margin);
-		fdSearchBase.right= new FormAttachment(100, 0);
+		fdSearchBase.left = new FormAttachment(middle, -margin);
+		fdSearchBase.top  = new FormAttachment(wsearchBaseField, margin);
+		fdSearchBase.right= new FormAttachment(100, -2*margin);
 		wSearchBase.setLayoutData(fdSearchBase);
 		
+		
+		//Is filter defined in a Field		
+		wldynamicFilter= new Label(wSearchGroup, SWT.RIGHT);
+		wldynamicFilter.setText(BaseMessages.getString(PKG, "LDAPInputDialog.dynamicFilter.Label"));
+		props.setLook(wldynamicFilter);
+		fdldynamicFilter= new FormData();
+		fdldynamicFilter.left = new FormAttachment(0, -margin);
+		fdldynamicFilter.top = new FormAttachment(wSearchBase, margin);
+		fdldynamicFilter.right = new FormAttachment(middle, -2*margin);
+		wldynamicFilter.setLayoutData(fdldynamicFilter);
+		
+		wdynamicFilter= new Button(wSearchGroup, SWT.CHECK);
+		props.setLook(wdynamicFilter);
+		wdynamicFilter.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.dynamicFilter.Tooltip"));
+		fdynamicFilter= new FormData();
+		fdynamicFilter.left = new FormAttachment(middle, -margin);
+		fdynamicFilter.top = new FormAttachment(wSearchBase, margin);
+		wdynamicFilter.setLayoutData(fdynamicFilter);		
+		SelectionAdapter ldynamicFilter= new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+            	ActivedynamicFilter();
+            	input.setChanged();
+            }
+        };
+        wdynamicFilter.addSelectionListener(ldynamicFilter);
+        
+        // dynamic search base field
+		wlfilterField=new Label(wSearchGroup, SWT.RIGHT);
+        wlfilterField.setText(BaseMessages.getString(PKG, "LDAPInputDialog.filterField.Label"));
+        props.setLook(wlfilterField);
+        fdlfilterField=new FormData();
+        fdlfilterField.left = new FormAttachment(0, -margin);
+        fdlfilterField.top  = new FormAttachment(wdynamicFilter, margin);
+        fdlfilterField.right= new FormAttachment(middle, -2*margin);
+        wlfilterField.setLayoutData(fdlfilterField);
+        
+        wfilterField=new CCombo(wSearchGroup, SWT.BORDER | SWT.READ_ONLY);
+        wfilterField.setEditable(true);
+        props.setLook(wfilterField);
+        wfilterField.addModifyListener(lsMod);
+        fdfilterField=new FormData();
+        fdfilterField.left = new FormAttachment(middle, -margin);
+        fdfilterField.top  = new FormAttachment(wdynamicFilter, margin);
+        fdfilterField.right= new FormAttachment(100, -2*margin);
+        wfilterField.setLayoutData(fdfilterField);
+        wfilterField.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                	setSearchBaseField();
+                }
+            }
+        );  
+        
+        
 		
 		// Filter String
         wlFilterString = new Label(wSearchGroup, SWT.RIGHT);
@@ -422,8 +561,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         props.setLook(wlFilterString);
         fdlFilterString = new FormData();
         fdlFilterString.left = new FormAttachment(0, 0);
-        fdlFilterString.top = new FormAttachment(wSearchBase, 2*margin);
-        fdlFilterString.right = new FormAttachment(middle, -margin);
+        fdlFilterString.top = new FormAttachment(wfilterField, margin);
+        fdlFilterString.right = new FormAttachment(middle, -2*margin);
         wlFilterString.setLayoutData(fdlFilterString);
 
         wFilterString = new Text(wSearchGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
@@ -431,8 +570,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         props.setLook(wFilterString);
         wFilterString.addModifyListener(lsMod);
         fdFilterString = new FormData();
-        fdFilterString.left = new FormAttachment(middle, 0);
-        fdFilterString.top = new FormAttachment(wSearchBase, 2*margin);
+        fdFilterString.left = new FormAttachment(middle, -margin);
+        fdFilterString.top = new FormAttachment(wfilterField, margin);
         fdFilterString.right = new FormAttachment(100, 0);
         fdFilterString.bottom = new FormAttachment(100, -margin);
         wFilterString.setLayoutData(fdFilterString);
@@ -800,11 +939,6 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 		);
 		
-
-		
-		
-		
-	
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -816,6 +950,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		getData(input);
 		useAuthentication();
 		setPaging();
+		ActiveDynamicBase();
+		ActivedynamicFilter();
 		input.setChanged(changed);
 	
 		wFields.optWidth(true);
@@ -829,58 +965,46 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	}
 	private void test()
 	{
-		try
-        {
+		LDAPConnection connection =null;
+		try {
 		
 			LDAPInputMeta meta = new LDAPInputMeta();
 			getInfo(meta);
 			
-			DirContext ctx = connectServerLdap(transMeta.environmentSubstitute(meta.getHost()),
-					transMeta.environmentSubstitute(meta.getUserName()), 
-					Encr.decryptPasswordOptionallyEncrypted(transMeta.environmentSubstitute(meta.getPassword())),
-					transMeta.environmentSubstitute(meta.getPort()));
+			// Defined a LDAP connection
+			connection= new LDAPConnection(log, transMeta.environmentSubstitute(meta.getHost()), 
+					Const.toInt(transMeta.environmentSubstitute(meta.getPort()), LDAPConnection.DEFAULT_PORT));
 			
-		    if(Const.isEmpty(wSearchBase.getText()))
-		    {
-			     // get Search Base
-			     Attributes attrs = ctx.getAttributes("", new String[] { "namingContexts" });
-				 Attribute attr = attrs.get("namingContexts");
-				 
-				 // Update Search Base
-				 wSearchBase.setText(attr.get().toString());
-		    } 
-			
-			if(ctx!=null)
-			{
-				
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-				mb.setMessage(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.OK") +Const.CR); //$NON-NLS-1$
-				mb.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Ok")); //$NON-NLS-1$
-				mb.open();
-				
+			// connect...
+			if(wusingAuthentication.getSelection()) {
+				connection.connect(transMeta.environmentSubstitute(meta.getUserName()), 
+						Encr.decryptPasswordOptionallyEncrypted(transMeta.environmentSubstitute(meta.getPassword())));
+			}else {
+				connection.connect();
 			}
-			else
-			{	
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.NOK.DirecttoryContextNull"));
-				mb.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Error")); //$NON-NLS-1$
-				mb.open(); 
+			// We are successfully connected
 				
-			}
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+			mb.setMessage(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.OK") +Const.CR); //$NON-NLS-1$
+			mb.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Ok")); //$NON-NLS-1$
+			mb.open();
 			
-				
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e){
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.NOK",e.getMessage()));
 			mb.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Error")); //$NON-NLS-1$
 			mb.open(); 
-		} 
+		} finally {
+			if(connection!=null) {
+				// Disconnect ...
+				try {connection.close();}catch(Exception e){};
+			}
+		}
 	}
 
 	private void get()
 	{
+		LDAPConnection connection = null;
         try
         {
 		
@@ -890,73 +1014,38 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
             // Clear Fields Grid
             wFields.removeAll();
 
-    		String port=transMeta.environmentSubstitute(meta.getPort());
-    		String hostname=transMeta.environmentSubstitute(meta.getHost());
-    		String username=transMeta.environmentSubstitute(meta.getUserName());
-    		String password=Encr.decryptPasswordOptionallyEncrypted(transMeta.environmentSubstitute(meta.getPassword()));
-            //Set the filter string.  The more exact of the search string
-    		String filter= LDAPInputMeta.correctFilter(transMeta.environmentSubstitute(meta.getFilterString()));
-    		//Set the Search base.This is the place where the search will
-    		String searchbase=transMeta.environmentSubstitute(meta.getSearchBase());
-    	
-    		NamingEnumeration<SearchResult> results=null;
+            // Defined a LDAP connection
+    		connection = new LDAPConnection(log, transMeta.environmentSubstitute(meta.getHost()), 
+    				Const.toInt(transMeta.environmentSubstitute(meta.getPort()), LDAPConnection.DEFAULT_PORT));
     		
-    		DirContext ctx = connectServerLdap(hostname,username, password,port);
-		     
-		    if(log.isBasic()) log.logBasic("Connection", "Connected to server [{0}]",hostname);	      
-		     
-		     SearchControls controls = new SearchControls();
-	         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-	         // Set search
-	         results = ctx.search(searchbase,filter, controls);
-	        
-	        // Get all attributes
-	        SearchResult searchAttr = results.next();
-	        
-	        Attributes listattributes = searchAttr.getAttributes(); 
-	       
-	        NamingEnumeration<? extends Attribute> ne = listattributes.getAll();
-		   
-	        Attribute attr = null;
-	        
-	        while (ne.hasMore()) 
-	        {
-	        	attr = ne.next();
-	    	    
-	    		String fieldName = attr.getID();
-				
+    		// connect ...
+    		if(meta.UseAuthentication()) {
+        		String username=transMeta.environmentSubstitute(meta.getUserName());
+        		String password=Encr.decryptPasswordOptionallyEncrypted(transMeta.environmentSubstitute(meta.getPassword()));
+    			connection.connect(username, password);
+    		}else {
+    			connection.connect();
+    		}
+
+    		// return fields
+    		RowMeta listattributes=connection.getFields(transMeta.environmentSubstitute(meta.getSearchBase()), 
+    				transMeta.environmentSubstitute(meta.getFilterString()));
+    		
+    		for(int i=0; i<listattributes.size(); i++) {
+    			
+    			ValueMetaInterface v = listattributes.getValueMeta(i);
 				// Get Column Name
 	            TableItem item = new TableItem(wFields.table, SWT.NONE);
-	            item.setText(1, fieldName);
-	            item.setText(2, fieldName);
-	            if(LDAPInputField.binaryAttributes.contains(fieldName)) {
+	            item.setText(1, v.getName());
+	            item.setText(2, v.getName());
+	            if(LDAPInputField.binaryAttributes.contains(v.getName())) {
 	            	item.setText(3, BaseMessages.getString(PKG, "LDAPInputField.FetchAttributeAs.Binary"));
 	            }else {
 	            	item.setText(3, BaseMessages.getString(PKG, "LDAPInputField.FetchAttributeAs.String"));
 	            }
-	            String attributeValue=attr.getID();
-	            // Try to get the Type
-	            if(IsDate(attributeValue))
-        		{
-        			item.setText(4, "Date");
-        		}
-	            else if(IsInteger(attributeValue))
-        		{
-        			item.setText(4, "Integer");
-        		}
-	            else if(IsNumber(attributeValue))
-        		{
-        			item.setText(4, "Number");
-        		}	
-	            else
-	            {
-	            	item.setText(4, "String");	    		            
-	            }  
-	    	    
-	        }
-	        
-	        
-         
+	            item.setText(4,  v.getTypeDesc()); 
+    		}
+    		
             wFields.removeEmptyRows();
             wFields.setRowNums();
             wFields.optWidth(true);            
@@ -969,58 +1058,18 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		{
     		 new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPInputDialog.ErrorGettingColums.DialogTitle"), BaseMessages.getString(PKG, "LDAPInputDialog.ErrorGettingColums.DialogMessage"), e);
 
-		}  
+		}finally {
+			if(connection!=null) {
+				try {connection.close();}catch(Exception e){};
+			}
+		}
 	}
-	 public InitialDirContext connectServerLdap(String hostname,String username, String password,String port) throws NamingException {
 
-	        Hashtable<String, String> env = new Hashtable<String, String>();
 
-	        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-	        env.put(Context.PROVIDER_URL, "ldap://"+hostname + ":" +  Const.toInt(port,389));
-	        env.put(Context.SECURITY_AUTHENTICATION, "simple" );
-	        if(wusingAuthentication.getSelection())
-	        {
-		        env.put(Context.SECURITY_PRINCIPAL, username);
-		        env.put(Context.SECURITY_CREDENTIALS, password); 
-	        }
-	       
-
-	        return new InitialDirContext(env);
-	    }
-	private boolean IsInteger(String str)
-	{
-		  try 
-		  {
-		    Integer.parseInt(str);
-		  }
-		  catch(NumberFormatException e)   {return false; }
-		  return true;
-	}
 	private void setPaging()
 	{
 		wlPageSize.setEnabled(wsetPaging.getSelection());
 		wPageSize.setEnabled(wsetPaging.getSelection());
-	}
-	private boolean IsNumber(String str)
-	{
-		  try 
-		  {
-		     Float.parseFloat(str);
-		  }
-		  catch(Exception e)   {return false; }
-		  return true;
-	}
-	
-	private boolean IsDate(String str)
-	{
-		  // TODO: What about other dates? Maybe something for a CRQ
-		  try 
-		  {
-		        SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
-		        fdate.parse(str);
-		  }
-		  catch(Exception e)   {return false; }
-		  return true;
 	}
 
 	public void setIncludeRownum()
@@ -1028,8 +1077,6 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wlInclRownumField.setEnabled(wInclRownum.getSelection());
 		wInclRownumField.setEnabled(wInclRownum.getSelection());
 	}
-	
-
 
 
 	/**
@@ -1058,7 +1105,11 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		if (in.getFilterString() != null)  wFilterString.setText(in.getFilterString());
 		if (in.getSearchBase()!= null)  wSearchBase.setText(in.getSearchBase());
+		wdynamicBase.setSelection(in.isDynamicSearch());
+		if (in.getDynamicSearchFieldName() != null)  wsearchBaseField.setText(in.getDynamicSearchFieldName());
 		
+		wdynamicFilter.setSelection(in.isDynamicFilter());
+		if (in.getDynamicFilterFieldName() != null)  wfilterField.setText(in.getDynamicFilterFieldName());
 		
 		if(isDebug()) logDebug(BaseMessages.getString(PKG, "LDAPInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
@@ -1133,7 +1184,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		stepname = wStepname.getText(); // return value
 
 		// copy info to TextFileInputMeta class (input)
-		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
+		in.setRowLimit( Const.toInt(wLimit.getText(), 0) );
 		in.setTimeLimit( Const.toInt(wTimeLimit.getText(), 0) );
 		in.setMultiValuedSeparator(wMultiValuedSeparator.getText());
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
@@ -1147,6 +1198,10 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		in.setPort( wPort.getText() );
 		in.setFilterString( wFilterString.getText() );
 		in.setSearchBase( wSearchBase.getText() );
+		in.setDynamicSearch(wdynamicBase.getSelection());
+		in.setDynamicSearchFieldName(wsearchBaseField.getText());
+		in.setDynamicFilter(wdynamicFilter.getSelection());
+		in.setDynamicFilterFieldName(wfilterField.getText());
 		
 		int nrFields    = wFields.nrNonEmpty();
          
@@ -1231,7 +1286,55 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
             new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPInputDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "LDAPInputDialog.ErrorPreviewingData.DialogMessage"), e);
        }
 	}
-	
+	 private void ActiveDynamicBase()
+	 {
+		wSearchBase.setEnabled(!wdynamicBase.getSelection());
+		wlSearchBase.setEnabled(!wdynamicBase.getSelection());
+		wlsearchBaseField.setEnabled(wdynamicBase.getSelection());
+		wsearchBaseField.setEnabled(wdynamicBase.getSelection());
+		activatePreview();
+		activateGetFields();
+	 }
+	 private void ActivedynamicFilter()
+	 {
+		 wlFilterString.setEnabled(!wdynamicFilter.getSelection());
+		 wFilterString.setEnabled(!wdynamicFilter.getSelection());
+		 wlfilterField.setEnabled(wdynamicFilter.getSelection());
+		 wfilterField.setEnabled(wdynamicFilter.getSelection());
+		 activatePreview();
+	 }
+	 private void activatePreview() 
+	 {
+		 wPreview.setEnabled(!wdynamicBase.getSelection() && !wdynamicFilter.getSelection());
+	 }
+	 private void activateGetFields() 
+	 {
+		 wGet.setEnabled(!wdynamicBase.getSelection());
+	 }
+	 private void setSearchBaseField()
+	 {
+		 if(!gotPreviousFields)
+		 {
+			 try{
+		          String basefield=  wsearchBaseField.getText();
+		          String filterfield=  wfilterField.getText();
+		          wsearchBaseField.removeAll();
+					
+				  RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+					if (r!=null) {
+			             wsearchBaseField.setItems(r.getFieldNames());
+			             wfilterField.setItems(r.getFieldNames());
+					}
+				 if(basefield!=null) wsearchBaseField.setText(basefield);
+				 if(filterfield!=null) wfilterField.setText(basefield);
+
+			 }catch(KettleException ke){
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPInputDialog.FailedToGetFields.DialogTitle"), 
+							BaseMessages.getString(PKG, "LDAPInputDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			 }
+			 gotPreviousFields=true;
+		 }
+	 }
 	public String toString()
 	{
 		return this.getClass().getName();

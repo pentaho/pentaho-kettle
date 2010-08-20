@@ -70,7 +70,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	
 	/** The maximum number or lines to read */
-	private  long  rowLimit;
+	private  int  rowLimit;
 
 	/** The Host name*/
 	private  String  Host;
@@ -103,11 +103,78 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	
     public final static String type_trim_code[] = { "none", "left", "right", "both" };
     
+	private boolean dynamicSearch;
+	private String dynamicSeachFieldName;
+	
+	private boolean dynamicFilter;
+	private String dynamicFilterFieldName;
+    
 	public LDAPInputMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
+	/**
+     * @return Returns the input dynamicSearch.
+     */
+	public boolean isDynamicSearch()
+	{
+		return dynamicSearch;
+	}
 	
+	/**
+     * @return Returns the input dynamicSearch.
+     */
+	public void setDynamicSearch(boolean dynamicSearch)
+	{
+		this.dynamicSearch=dynamicSearch;
+	}
+	
+	/**
+     * @return Returns the input dynamicSeachFieldName.
+     */
+	public String getDynamicSearchFieldName()
+	{
+		return dynamicSeachFieldName;
+	}
+	
+	/**
+     * @return Returns the input dynamicSeachFieldName.
+     */
+	public void setDynamicSearchFieldName(String dynamicSeachFieldName)
+	{
+		this.dynamicSeachFieldName=dynamicSeachFieldName;
+	}
+	/**
+     * @return Returns the input dynamicFilter.
+     */
+	public boolean isDynamicFilter()
+	{
+		return dynamicFilter;
+	}
+	
+	/**
+     * @param dynamicFilter the dynamicFilter to set.
+     */
+	public void setDynamicFilter(boolean dynamicFilter)
+	{
+		this.dynamicFilter=dynamicFilter;
+	}
+	
+	/**
+     * @return Returns the input dynamicFilterFieldName.
+     */
+	public String getDynamicFilterFieldName()
+	{
+		return dynamicFilterFieldName;
+	}
+	
+	/**
+     * param dynamicFilterFieldName the dynamicFilterFieldName to set.
+     */
+	public void setDynamicFilterFieldName(String dynamicFilterFieldName)
+	{
+		this.dynamicFilterFieldName=dynamicFilterFieldName;
+	}
 	/**
      * @return Returns the input useAuthentication.
      */
@@ -284,7 +351,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @return Returns the rowLimit.
      */
-    public long getRowLimit()
+    public int getRowLimit()
     {
         return rowLimit;
     }
@@ -344,7 +411,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param rowLimit The rowLimit to set.
      */
-    public void setRowLimit(long rowLimit)
+    public void setRowLimit(int rowLimit)
     {
         this.rowLimit = rowLimit;
     }
@@ -440,7 +507,10 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
         retval.append("    ").append(XMLHandler.addTagValue("timelimit", timeLimit));
         retval.append("    ").append(XMLHandler.addTagValue("multivaluedseparator", multiValuedSeparator));
-        
+        retval.append("    ").append(XMLHandler.addTagValue("dynamicsearch",          dynamicSearch));
+        retval.append("    ").append(XMLHandler.addTagValue("dynamicseachfieldname",    dynamicSeachFieldName));
+        retval.append("    ").append(XMLHandler.addTagValue("dynamicfilter",          dynamicFilter));
+        retval.append("    ").append(XMLHandler.addTagValue("dynamicfilterfieldname",    dynamicFilterFieldName));
         
         
 
@@ -496,10 +566,13 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			
 			// Is there a limit on the number of rows we process?
-			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
+			rowLimit = Const.toInt(XMLHandler.getTagValue(stepnode, "limit"), 0);
 			timeLimit = Const.toInt(XMLHandler.getTagValue(stepnode, "timelimit"), 0);
 			multiValuedSeparator = XMLHandler.getTagValue(stepnode, "multivaluedseparator");
-			
+			dynamicSearch  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dynamicsearch"));
+			dynamicSeachFieldName    = XMLHandler.getTagValue(stepnode, "dynamicseachfieldname");
+			dynamicFilter  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dynamicfilter"));
+			dynamicFilterFieldName    = XMLHandler.getTagValue(stepnode, "dynamicfilterfieldname");
 			
 			
 		}
@@ -529,7 +602,10 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		filterString="objectclass=*";
 		searchBase="";
 		multiValuedSeparator=";";
-
+		dynamicSearch=false;
+		dynamicSeachFieldName=null;
+		dynamicFilter=false;
+		dynamicFilterFieldName=null;
 		int nrFields =0;
 
 		allocate(nrFields);	
@@ -598,10 +674,13 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			filterString    = rep.getStepAttributeString (id_step, "filterstring");
 			searchBase    = rep.getStepAttributeString (id_step, "searchbase");
 			
-			rowLimit          = rep.getStepAttributeInteger(id_step, "limit");
+			rowLimit          = (int)rep.getStepAttributeInteger(id_step, "limit");
 			timeLimit          = (int)rep.getStepAttributeInteger(id_step, "timelimit");
 			multiValuedSeparator    = rep.getStepAttributeString (id_step, "multivaluedseparator");
-			
+			dynamicSearch  = rep.getStepAttributeBoolean(id_step, "dynamicsearch");
+			dynamicSeachFieldName    = rep.getStepAttributeString (id_step, "dynamicseachfieldname");
+			dynamicFilter  = rep.getStepAttributeBoolean(id_step, "dynamicfilter");
+			dynamicFilterFieldName    = rep.getStepAttributeString (id_step, "dynamicfilterfieldname");
 	
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
             
@@ -654,6 +733,10 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 			rep.saveStepAttribute(id_transformation, id_step, "timelimit",           timeLimit);
 			rep.saveStepAttribute(id_transformation, id_step, "multivaluedseparator", multiValuedSeparator);
+			rep.saveStepAttribute(id_transformation, id_step, "dynamicsearch",          dynamicSearch);
+			rep.saveStepAttribute(id_transformation, id_step, "dynamicseachfieldname",    dynamicSeachFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "dynamicfilter",          dynamicFilter);
+			rep.saveStepAttribute(id_transformation, id_step, "dynamicfilterfieldname",    dynamicFilterFieldName);
 			
 			for (int i=0;i<inputFields.length;i++)
 			{
@@ -708,20 +791,36 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		else
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.HostnameOk"), stepMeta);
 		remarks.add(cr);
+	
 		
-		// Check search base
-		if(Const.isEmpty(searchBase))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.SearchBaseMissing"), stepMeta);
-		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.SearchBaseOk"), stepMeta);
-		remarks.add(cr);
-		
-		// Check filter String
-		if(Const.isEmpty(filterString))
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.FilterStringMissing"), stepMeta);
-		else
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.FilterStringOk"), stepMeta);
-		remarks.add(cr);
+		if(isDynamicSearch()) {
+			if(Const.isEmpty(dynamicSeachFieldName))
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.DynamicSearchBaseFieldNameMissing"), stepMeta);
+			else
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.DynamicSearchBaseFieldNameOk"), stepMeta);
+			remarks.add(cr);
+		}else {
+			// Check search base
+			if(Const.isEmpty(searchBase))
+				cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.SearchBaseMissing"), stepMeta);
+			else
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.SearchBaseOk"), stepMeta);
+			remarks.add(cr);
+		}
+		if(isDynamicFilter()) {
+			if(Const.isEmpty(dynamicFilterFieldName))
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.DynamicFilterFieldNameMissing"), stepMeta);
+			else
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.DynamicFilterFieldNameOk"), stepMeta);
+			remarks.add(cr);
+		}else {
+			// Check filter String
+			if(Const.isEmpty(filterString))
+				cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.FilterStringMissing"), stepMeta);
+			else
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG, "LDAPInputMeta.CheckResult.FilterStringOk"), stepMeta);
+			remarks.add(cr);
+		}
 		
 	}
 	
@@ -738,13 +837,9 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return true;
     } 
-    /**
-     * Remove CR and LF from filter string
-     * @param filter
-     * @return corrected filter
-     */
-	public static String correctFilter(String filter)
-	{
-		return Const.isEmpty(filter)?"":filter.replaceAll("(\\r|\\n)", "");
-	}
+
+    public String toString()
+    {
+    	return "LDAPConnection " + getName();
+    }
 }
