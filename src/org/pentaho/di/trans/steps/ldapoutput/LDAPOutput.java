@@ -65,51 +65,59 @@ public class LDAPOutput extends BaseStep implements StepInterface
 		if (first) {
             first = false;
         	
-    		// get total fields in the grid
-			data.nrfields = meta.getUpdateLookup().length;
-				
-			// Check if field list is filled 
-			if (data.nrfields==0) {
-				throw new KettleException(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.FieldsMissing.DialogMessage"));
-			}
-            
-			// Take care of variable
-			data.fieldsAttribute = new String[data.nrfields];
-			// Build the mapping of input position to field name
-			data.fieldStream = new int[data.nrfields];
-			
-			// Fields to update
-			List<Integer> fieldsToUpdateInStreaml= new ArrayList<Integer>();
-			List<String> fieldsToUpdateAttributel= new ArrayList<String>();
-			
-			for (int i = 0; i < data.nrfields; i++) {
-				
-				data.fieldStream[i] = getInputRowMeta().indexOfValue(environmentSubstitute(meta.getUpdateStream()[i]));
-				if (data.fieldStream[i] < 0) {
-					throw new KettleException("Field [" + meta.getUpdateStream()[i]+ "] couldn't be found in the input stream!");
+            if(meta.getOperationType()!=LDAPOutputMeta.OPERATION_TYPE_DELETE) {
+            	
+	    		// get total fields in the grid
+				data.nrfields = meta.getUpdateLookup().length;
+					
+				// Check if field list is filled 
+				if (data.nrfields==0) {
+					throw new KettleException(BaseMessages.getString(PKG, "LDAPOutputUpdateDialog.FieldsMissing.DialogMessage"));
 				}
-				data.fieldsAttribute[i]=environmentSubstitute(meta.getUpdateLookup()[i]);
+	            
+				// Take care of variable
+				data.fieldsAttribute = new String[data.nrfields];
+				// Build the mapping of input position to field name
+				data.fieldStream = new int[data.nrfields];
 				
-				if(meta.getOperationType()==LDAPOutputMeta.OPERATION_TYPE_UPSERT) {
-					if (meta.getUpdate()[i].booleanValue() ) {
-						// We need also to keep care of the fields to update
-						fieldsToUpdateInStreaml.add(data.fieldStream[i]);
-						fieldsToUpdateAttributel.add(data.fieldsAttribute[i]);
+				// Fields to update
+				List<Integer> fieldsToUpdateInStreaml= new ArrayList<Integer>();
+				List<String> fieldsToUpdateAttributel= new ArrayList<String>();
+				
+				for (int i = 0; i < data.nrfields; i++) {
+					
+					data.fieldStream[i] = getInputRowMeta().indexOfValue(environmentSubstitute(meta.getUpdateStream()[i]));
+					if (data.fieldStream[i] < 0) {
+						throw new KettleException("Field [" + meta.getUpdateStream()[i]+ "] couldn't be found in the input stream!");
+					}
+					data.fieldsAttribute[i]=environmentSubstitute(meta.getUpdateLookup()[i]);
+					
+					if(meta.getOperationType()==LDAPOutputMeta.OPERATION_TYPE_UPSERT) {
+						if (meta.getUpdate()[i].booleanValue() ) {
+							// We need also to keep care of the fields to update
+							fieldsToUpdateInStreaml.add(data.fieldStream[i]);
+							fieldsToUpdateAttributel.add(data.fieldsAttribute[i]);
+						}
 					}
 				}
-			}
-			
-			data.nrfieldsToUpdate=fieldsToUpdateInStreaml.size();
-			if(data.nrfieldsToUpdate>0) {
-				data.fieldStreamToUpdate = new int[data.nrfieldsToUpdate];
-				data.fieldsAttributeToUpdate = new String[data.nrfieldsToUpdate];
-				for(int i=0; i<fieldsToUpdateInStreaml.size(); i++) {
-					data.fieldStreamToUpdate[i] = (Integer)fieldsToUpdateInStreaml.get(i);
-					data.fieldsAttributeToUpdate[i] = (String)fieldsToUpdateAttributel.get(i);
+				
+				data.nrfieldsToUpdate=fieldsToUpdateInStreaml.size();
+				if(data.nrfieldsToUpdate>0) {
+					data.fieldStreamToUpdate = new int[data.nrfieldsToUpdate];
+					data.fieldsAttributeToUpdate = new String[data.nrfieldsToUpdate];
+					for(int i=0; i<fieldsToUpdateInStreaml.size(); i++) {
+						data.fieldStreamToUpdate[i] = (Integer)fieldsToUpdateInStreaml.get(i);
+						data.fieldsAttributeToUpdate[i] = (String)fieldsToUpdateAttributel.get(i);
+					}
 				}
-			}
-			fieldsToUpdateInStreaml=null;
-			fieldsToUpdateAttributel=null;
+				fieldsToUpdateInStreaml=null;
+				fieldsToUpdateAttributel=null;
+				
+				data.attributes = new String[data.nrfields];
+				if(meta.getOperationType()==LDAPOutputMeta.OPERATION_TYPE_UPSERT && data.nrfieldsToUpdate>0) {
+					data.attributesToUpdate = new String[data.nrfieldsToUpdate];
+				}
+            }
 			
             String dnField=environmentSubstitute(meta.getDnField());
         	// Check Dn field
@@ -124,14 +132,7 @@ public class LDAPOutput extends BaseStep implements StepInterface
 				// the field is unreachable!
 				throw new KettleException(BaseMessages.getString(PKG, "LDAPOutput.Error.CanNotFindField", dnField));
 			}
-			
-			
-			if(meta.getOperationType()!=LDAPOutputMeta.OPERATION_TYPE_DELETE) {
-				data.attributes = new String[data.nrfields];
-				if(meta.getOperationType()==LDAPOutputMeta.OPERATION_TYPE_UPSERT && data.nrfieldsToUpdate>0) {
-					data.attributesToUpdate = new String[data.nrfieldsToUpdate];
-				}
-			}	
+				
         }
         
 		incrementLinesInput();
@@ -146,17 +147,15 @@ public class LDAPOutput extends BaseStep implements StepInterface
 				for(int i=0; i<data.nrfields; i++) {
 					data.attributes[i]=getInputRowMeta().getString(outputRowData, data.fieldStream[i]);
 				}
-			}
 			
-			if(meta.getOperationType()!=LDAPOutputMeta.OPERATION_TYPE_UPSERT) {
-				// handle fields to update
-				for(int i=0; i<data.nrfieldsToUpdate; i++) {
-					data.attributesToUpdate[i]=getInputRowMeta().getString(outputRowData, data.fieldStreamToUpdate[i]);
-				}
 			}
 			
 			switch (meta.getOperationType()) {
 				case LDAPOutputMeta.OPERATION_TYPE_UPSERT:
+					// handle fields to update
+					for(int i=0; i<data.nrfieldsToUpdate; i++) {
+						data.attributesToUpdate[i]=getInputRowMeta().getString(outputRowData, data.fieldStreamToUpdate[i]);
+					}
 					int status = data.connection.upsert(dn, data.fieldsAttribute, data.attributes, 
 							data.fieldsAttributeToUpdate, data.attributesToUpdate, data.separator);
 					switch (status) {
