@@ -178,6 +178,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     
     private boolean  getModulesListError = false;     /* True if error getting modules list */
     
+    private ColumnInfo[] colinf;
+    
 	public SalesforceInputDialog(Shell parent, Object in, TransMeta transMeta,
 			String sname) {
 		super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -987,12 +989,12 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
 		final int FieldsRows = input.getInputFields().length;
 
-		ColumnInfo[] colinf = new ColumnInfo[] {
+		colinf = new ColumnInfo[] {
 				new ColumnInfo(BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsTable.Name.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
 				new ColumnInfo(
 						BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsTable.Field.Column"),
-						ColumnInfo.COLUMN_TYPE_TEXT, false),
+						ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
 				new ColumnInfo(
 						BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsTable.IsIdLookup.Column"),
 						ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
@@ -1277,6 +1279,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
 		connection=new SalesforceConnection(log, realURL,realUsername,realPassword);
 		connection.setTimeOut(realTimeOut);
+		String[] fieldsName= null;
 		if(meta.isSpecifyQuery())   {
 			// Free hand SOQL
 			String realQuery=transMeta.environmentSubstitute(meta.getQuery());
@@ -1285,10 +1288,11 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		    // We are connected, so let's query
 			MessageElement[] fields =  connection.getElements();
 			int nrFields=fields.length;
-			
+			fieldsName = new String[nrFields];
 			for(int i=0; i<nrFields;i++) {
 				// get fieldname
 				String fieldname=fields[i].getName();
+				fieldsName[i]=fieldname;
 				// return first value
 				String firstValue=fields[i].getValue();
 				
@@ -1324,11 +1328,12 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			connection.connect();
 
             Field[] fields = connection.getModuleFields(realModule);
-            
+            fieldsName= new String[fields.length];
             for (int i = 0; i < fields.length; i++)  {
             	Field field = fields[i];
             	String FieldLabel= field.getLabel();	
             	String FieldName= field.getName();	
+            	fieldsName[i]=FieldName;
             	String FieldType=field.getType().getValue();
             	String FieldLengh =  String.valueOf(field.getLength());
             	String FieldPrecision =  String.valueOf(field.getPrecision());
@@ -1367,6 +1372,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 				}
 	       }
         }
+        if(fieldsName!=null) colinf[1].setComboValues(fieldsName);
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
 		wFields.optWidth(true);

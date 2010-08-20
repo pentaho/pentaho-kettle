@@ -187,7 +187,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 		23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
 	};
-	
+    private ColumnInfo[] colinf;
 	private boolean gotPreviousFields=false;
 
 	public LDAPInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -818,10 +818,10 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		final int FieldsRows=input.getInputFields().length;
 		
-		ColumnInfo[] colinf=new ColumnInfo[]
+		colinf=new ColumnInfo[]
             {
 		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Name.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
-         new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Attribute.Column"),ColumnInfo.COLUMN_TYPE_TEXT,false),
+         new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Attribute.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
     	 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.FetchAttributeAs.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,LDAPInputField.FetchAttributeAsDesc,true ),
 		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
 		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Format.Column"),
@@ -1028,16 +1028,17 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     		}
 
     		// return fields
-    		RowMeta listattributes=connection.getFields(transMeta.environmentSubstitute(meta.getSearchBase()), 
-    				transMeta.environmentSubstitute(meta.getFilterString()));
-    		
+    		RowMeta listattributes=connection.getFields(transMeta.environmentSubstitute(meta.getSearchBase()));
+    		String[] fieldsName= new String[listattributes.size()];
     		for(int i=0; i<listattributes.size(); i++) {
     			
     			ValueMetaInterface v = listattributes.getValueMeta(i);
+    			fieldsName[i]=v.getName();
 				// Get Column Name
 	            TableItem item = new TableItem(wFields.table, SWT.NONE);
 	            item.setText(1, v.getName());
 	            item.setText(2, v.getName());
+	            
 	            if(LDAPInputField.binaryAttributes.contains(v.getName())) {
 	            	item.setText(3, BaseMessages.getString(PKG, "LDAPInputField.FetchAttributeAs.Binary"));
 	            }else {
@@ -1045,10 +1046,11 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	            }
 	            item.setText(4,  v.getTypeDesc()); 
     		}
-    		
+            colinf[1].setComboValues(fieldsName);
             wFields.removeEmptyRows();
             wFields.setRowNums();
-            wFields.optWidth(true);            
+            wFields.optWidth(true); 
+     
         }
         catch(KettleException e)
         {

@@ -610,10 +610,10 @@ public class LDAPConnection {
 		return guid.toString ();
 	}
 
-	public RowMeta getFields(String searchBase, String filter) throws KettleException {
+	public RowMeta getFields(String searchBase) throws KettleException {
 				
 		try {
-			search(searchBase, filter, 0, null);
+			search(searchBase, null, 0, null);
 			Attributes attributes = getAttributes();
 	
 	        NamingEnumeration<? extends Attribute> ne = attributes.getAll();
