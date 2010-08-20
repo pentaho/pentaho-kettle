@@ -993,6 +993,11 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 				new ColumnInfo(
 						BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsTable.Field.Column"),
 						ColumnInfo.COLUMN_TYPE_TEXT, false),
+				new ColumnInfo(
+						BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsTable.IsIdLookup.Column"),
+						ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+								BaseMessages.getString(PKG, "System.Combo.Yes"),
+								BaseMessages.getString(PKG, "System.Combo.No") }, true),
 				new ColumnInfo(BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsTable.Type.Column"),
 						ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true),
 				new ColumnInfo(
@@ -1290,27 +1295,27 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	            TableItem item = new TableItem(wFields.table,SWT.NONE);
 				item.setText(1, fieldname);
 				item.setText(2, fieldname);
-			
+				item.setText(3,	BaseMessages.getString(PKG, "System.Combo.No"));
 	            // Try to guess field type
 				// I know it's not clean (see up)
 				if(Const.NVL(firstValue, "null").equals("null")) {
-					item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
+					item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
 				}else {
 		           if(StringUtil.IsDate(firstValue,DEFAULT_DATE_TIME_FORMAT)){
-			            item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
-			            item.setText(4, DEFAULT_DATE_TIME_FORMAT);
+			            item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
+			            item.setText(5, DEFAULT_DATE_TIME_FORMAT);
 		            } else if(StringUtil.IsDate(firstValue,DEFAULT_DATE_FORMAT)){
-		            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
-		            	item.setText(4, DEFAULT_DATE_FORMAT);
+		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_DATE));
+		            	item.setText(5, DEFAULT_DATE_FORMAT);
 		            } else if(StringUtil.IsInteger(firstValue)) {
-		            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_INTEGER));
+		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_INTEGER));
 		            	item.setText(5, String.valueOf(ValueMeta.DEFAULT_INTEGER_LENGTH));
 		            } else if(StringUtil.IsNumber(firstValue)){
-		            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_NUMBER)); 
+		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_NUMBER)); 
 		            } else if(firstValue.equals("true")||firstValue.equals("false")){
-		            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_BOOLEAN));     
+		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_BOOLEAN));     
 		            }else {
-		            	item.setText(3, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
+		            	item.setText(4, ValueMeta.getTypeDesc(ValueMeta.TYPE_STRING)); 
 		            }
 				} 
 
@@ -1321,40 +1326,44 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             Field[] fields = connection.getModuleFields(realModule);
             
             for (int i = 0; i < fields.length; i++)  {
-            	String FieldLabel= fields[i].getLabel();	
-            	String FieldName= fields[i].getName();	
-            	String FieldType=fields[i].getType().getValue();
-            	String FieldLengh =  String.valueOf(fields[i].getLength());
-            	String FieldPrecision =  String.valueOf(fields[i].getPrecision());
- 
+            	Field field = fields[i];
+            	String FieldLabel= field.getLabel();	
+            	String FieldName= field.getName();	
+            	String FieldType=field.getType().getValue();
+            	String FieldLengh =  String.valueOf(field.getLength());
+            	String FieldPrecision =  String.valueOf(field.getPrecision());
+
             	TableItem item = new TableItem(wFields.table,SWT.NONE);
 				item.setText(1, FieldLabel);
 				item.setText(2, FieldName);
-			
+				item.setText(3, field.isIdLookup() ? 
+						BaseMessages.getString(PKG, "System.Combo.Yes") : 
+							BaseMessages.getString(PKG, "System.Combo.No"));
+				
 				// Try to get the Type
 				if (FieldType.equals("boolean")) {
-					item.setText(3, "Boolean");
+					item.setText(4, "Boolean");
 				} else if (FieldType.equals("date")) {
-					item.setText(3, "Date");
-					item.setText(4, DEFAULT_DATE_FORMAT);
+					item.setText(4, "Date");
+					item.setText(5, DEFAULT_DATE_FORMAT);
 				} else if (FieldType.equals("datetime")) {
-					item.setText(3, "Date");
-					item.setText(4, DEFAULT_DATE_TIME_FORMAT);
+					item.setText(4, "Date");
+					item.setText(5, DEFAULT_DATE_TIME_FORMAT);
 				} else if (FieldType.equals("double")) {
-					item.setText(3, "Number");
+					item.setText(4, "Number");
                 } else if (FieldType.equals("int")) {
-					item.setText(3, "Integer");
+					item.setText(4, "Integer");
 				} else {
-					item.setText(3, "String");
+					item.setText(4, "String");
 		        }
 				
 				// Get length
 				if (!FieldType.equals("boolean") && !FieldType.equals("datetime") && !FieldType.equals("date")) {
-					item.setText(5, FieldLengh);
+					item.setText(6, FieldLengh);
 				}	
 				// Get precision
 				if (!FieldType.equals("boolean") && !FieldType.equals("datetime") && !FieldType.equals("date")){
-					item.setText(6, FieldPrecision);
+					item.setText(7, FieldPrecision);
 				}
 	       }
         }
@@ -1436,7 +1445,10 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			if (field != null) {
 				TableItem item = wFields.table.getItem(i);
 				String name = field.getName();
-				String xpath = field.getField();
+				String path = field.getField();
+				String isidlookup = field.isIdLookup() ? 
+						BaseMessages.getString(PKG, "System.Combo.Yes") : 
+						BaseMessages.getString(PKG, "System.Combo.No");
 				String type = field.getTypeDesc();
 				String format = field.getFormat();
 				String length = "" + field.getLength();
@@ -1451,26 +1463,28 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
 				if (name != null)
 					item.setText(1, name);
-				if (xpath != null)
-					item.setText(2, xpath);
+				if (path != null)
+					item.setText(2, path);
+				if (path != null)
+					item.setText(3, isidlookup);
 				if (type != null)
-					item.setText(3, type);
+					item.setText(4, type);
 				if (format != null)
-					item.setText(4, format);
+					item.setText(5, format);
 				if (length != null && !"-1".equals(length))
-					item.setText(5, length);
+					item.setText(6, length);
 				if (prec != null && !"-1".equals(prec))
-					item.setText(6, prec);
+					item.setText(7, prec);
 				if (curr != null)
-					item.setText(7, curr);
+					item.setText(8, curr);
 				if (decim != null)
-					item.setText(8, decim);
+					item.setText(9, decim);
 				if (group != null)
-					item.setText(9, group);
+					item.setText(10, group);
 				if (trim != null)
-					item.setText(10, trim);
+					item.setText(11, trim);
 				if (rep != null)
-					item.setText(11, rep);
+					item.setText(12, rep);
 			}
 		}
 
@@ -1540,15 +1554,16 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 
 			field.setName(item.getText(1));
 			field.setField(item.getText(2));
-			field.setType(ValueMeta.getType(item.getText(3)));
-			field.setFormat(item.getText(4));
-			field.setLength(Const.toInt(item.getText(5), -1));
-			field.setPrecision(Const.toInt(item.getText(6), -1));
-			field.setCurrencySymbol(item.getText(7));
-			field.setDecimalSymbol(item.getText(8));
-			field.setGroupSymbol(item.getText(9));
-			field.setTrimType(SalesforceInputField.getTrimTypeByDesc(item.getText(10)));
-			field.setRepeated(BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(11)));
+			field.setIdLookup(BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(3)));
+			field.setType(ValueMeta.getType(item.getText(4)));
+			field.setFormat(item.getText(5));
+			field.setLength(Const.toInt(item.getText(6), -1));
+			field.setPrecision(Const.toInt(item.getText(7), -1));
+			field.setCurrencySymbol(item.getText(8));
+			field.setDecimalSymbol(item.getText(9));
+			field.setGroupSymbol(item.getText(10));
+			field.setTrimType(SalesforceInputField.getTrimTypeByDesc(item.getText(11)));
+			field.setRepeated(BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(12)));
 
 			in.getInputFields()[i] = field;
 		}
@@ -1608,7 +1623,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	  {
 		  if (!gotModule){
 			  SalesforceConnection connection=null;
-			  String selectedField=transMeta.environmentSubstitute(wModule.getText());
+			  String selectedField=wModule.getText();
 			  wModule.removeAll();
 
 			  try{

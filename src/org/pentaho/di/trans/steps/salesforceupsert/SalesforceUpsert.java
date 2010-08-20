@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import com.sforce.soap.partner.sobject.SObject;
 
 import org.apache.axis.message.MessageElement;
-import org.w3c.dom.Element;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -49,20 +48,6 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 	private SalesforceUpsertMeta meta;
 	private SalesforceUpsertData data;
 		
-	private MessageElement newMessageElement(String name, Object value) throws Exception {
-
-			MessageElement me = new MessageElement("", name); 
-			me.setObjectValue(value);
-			Element e = me.getAsDOM();
-			e.removeAttribute("xsi:type");
-			e.removeAttribute("xmlns:ns1");
-			e.removeAttribute("xmlns:xsd");
-			e.removeAttribute("xmlns:xsi");
-
-			me = new MessageElement(e);
-			return me;
-	}
-
 	public SalesforceUpsert(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
@@ -149,7 +134,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 						// We need to keep track of this field
 						fieldsToNull.add(meta.getUpdateLookup()[i]);
 					} else {
-						upsertfields.add(newMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]]));
+						upsertfields.add(SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]], meta.getUseExternalId()[i]));
 					}
 				}				
 				

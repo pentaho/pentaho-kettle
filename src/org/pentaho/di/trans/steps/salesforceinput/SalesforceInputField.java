@@ -56,6 +56,7 @@ public class SalesforceInputField implements Cloneable
 	private String 	  decimalSymbol;
 	private String 	  groupSymbol;
 	private boolean   repeat;
+	private boolean  idlookup;
 
     private String    samples[];
 
@@ -73,6 +74,7 @@ public class SalesforceInputField implements Cloneable
 		this.currencySymbol= "";
 		this.precision      = -1;
 		this.repeat         = false;
+		this.idlookup	=false;
 	}
     
     public SalesforceInputField()
@@ -96,6 +98,7 @@ public class SalesforceInputField implements Cloneable
         retval+="        "+XMLHandler.addTagValue("precision",    getPrecision());
         retval+="        "+XMLHandler.addTagValue("trim_type",    getTrimTypeCode());
         retval+="        "+XMLHandler.addTagValue("repeat",       isRepeated());
+        retval+="        "+XMLHandler.addTagValue("idlookup",     isIdLookup());
         retval+="        </field>"+Const.CR;
         return retval;
     }
@@ -112,7 +115,8 @@ public class SalesforceInputField implements Cloneable
         setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
         setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
         setTrimType( getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
-        setRepeated( !"N".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "repeat")) ); 
+        setRepeated( !"N".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "repeat")) );
+        setIdLookup("Y".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "idlookup")) ); 
     }
 
     public final static int getTrimTypeByCode(String tt)
@@ -297,6 +301,16 @@ public class SalesforceInputField implements Cloneable
 	public void setRepeated(boolean repeat)
 	{
 		this.repeat = repeat;
+	}
+	
+	public boolean isIdLookup()
+	{
+		return idlookup;
+	}
+	
+	public void setIdLookup(boolean idlookup)
+	{
+		this.idlookup = idlookup;
 	}
 	
 	public void flipRepeated()

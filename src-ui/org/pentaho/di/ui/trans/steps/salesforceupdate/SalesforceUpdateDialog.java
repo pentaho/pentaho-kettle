@@ -145,11 +145,13 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 	
     
 	/**
-	 * List of ColumnInfo that should have the field names of the selected database table
+	 * List of ColumnInfo that should have the field names of the selected salesforce module
 	 */
 	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
 	
     private boolean  gotModule = false;
+    
+	private boolean gotFields=false;
     
     private boolean  getModulesListError = false;     /* True if error getting modules list */
     
@@ -446,12 +448,14 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 		fdlReturn.top = new FormAttachment(wSettingsGroup, margin);
 		wlReturn.setLayoutData(fdlReturn);
 
-		int UpInsCols = 2;
+		int UpInsCols = 3;
 		int UpInsRows = (input.getUpdateLookup() != null ? input.getUpdateLookup().length : 1);
 
 		ciReturn = new ColumnInfo[UpInsCols];
 		ciReturn[0] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		ciReturn[1] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+		ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.UseExternalId"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y","N"}); //$NON-NLS-1$
+		ciReturn[2].setToolTip(BaseMessages.getString(PKG, "SalesforceUpdateDialog.ColumnInfo.UseExternalId.Tooltip"));
 		tableFieldColumns.add(ciReturn[0]);
 		wReturn = new TableView(transMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
@@ -608,7 +612,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
                 {
                     public boolean tableItemInserted(TableItem tableItem, ValueMetaInterface v)
                     {
-                        tableItem.setText(3, "Y");
+                        tableItem.setText(3, "N");
                         return true;
                     }
                 };
@@ -705,6 +709,11 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 					item.setText(1, input.getUpdateLookup()[i]);
 				if (input.getUpdateStream()[i] != null)
 					item.setText(2, input.getUpdateStream()[i]);
+				if (input.getUseExternalId()[i]==null||input.getUseExternalId()[i].booleanValue()) {
+					item.setText(3,"Y");
+				} else {
+					item.setText(3,"N");
+				}
 			}
 		}
 
@@ -752,6 +761,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 			TableItem item = wReturn.getNonEmpty(i);
 			in.getUpdateLookup()[i] = item.getText(1);
 			in.getUpdateStream()[i] = item.getText(2);
+			in.getUseExternalId()[i] = Boolean.valueOf("Y".equals(item.getText(3)));
 		}
 		in.setUseCompression(wUseCompression.getSelection());
 		in.setTimeOut(Const.NVL(wTimeOut.getText(),"0"));
@@ -804,7 +814,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 			  // connect to Salesforce
 			  connection.connect();
 			  // return fieldsname for the module
-			  return connection.getModuleFieldsName(selectedModule);
+			  return connection.getFields(selectedModule);
 		   } catch(Exception e) {
 			  throw new KettleException("Erreur getting fields from module [" + url + "]!", e);
 		   } finally{
@@ -849,8 +859,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 		String[] inputNames = new String[sourceFields.size()];
 		for (int i = 0; i < sourceFields.size(); i++) {
 			ValueMetaInterface value = sourceFields.getValueMeta(i);
-			inputNames[i] = value.getName()+
-			     EnterMappingDialog.STRING_ORIGIN_SEPARATOR+value.getOrigin()+")";
+			inputNames[i] = value.getName()+ EnterMappingDialog.STRING_ORIGIN_SEPARATOR+value.getOrigin()+")";
 		}
 		
 		// Create the existing mapping list...
@@ -947,7 +956,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 				  getInfo(meta);
 				  String url = transMeta.environmentSubstitute(meta.getTargetURL());
 				  
-				  String selectedField=transMeta.environmentSubstitute(meta.getTargetURL());
+				  String selectedField= meta.getModule();
 				  wModule.removeAll();
 
 				  // Define a new Salesforce connection
@@ -976,6 +985,8 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 	  }
 	
 	public void setModuleFieldCombo() {
+		if(gotFields) return;
+		gotFields=true;	
 		Display display = shell.getDisplay();
 		if (!(display==null || display.isDisposed())) {
 			display.asyncExec(new Runnable () {

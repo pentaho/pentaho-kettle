@@ -18,12 +18,15 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.transport.http.HTTPConstants;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.w3c.dom.Element;
 
 import com.sforce.soap.partner.DeleteResult;
 import com.sforce.soap.partner.DeletedRecord;
@@ -40,6 +43,8 @@ import com.sforce.soap.partner.SessionHeader;
 import com.sforce.soap.partner.SforceServiceLocator;
 import com.sforce.soap.partner.SoapBindingStub;
 import com.sforce.soap.partner.UpsertResult;
+import com.sforce.soap.partner.fault.ExceptionCode;
+import com.sforce.soap.partner.fault.LoginFault;
 import com.sforce.soap.partner.sobject.SObject;
 
 public class SalesforceConnection {
@@ -211,7 +216,7 @@ public class SalesforceConnection {
 	        }
 	        
 	        // Login
-	        this.loginResult = this.binding.login(getUsername(), getPassword());
+	        this.loginResult = getBinding().login(getUsername(), getPassword());
 	        
 	        if (log.isDebug()) {
 	        	log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SessionId") + " : " + this.loginResult.getSessionId());
@@ -244,6 +249,22 @@ public class SalesforceConnection {
 	 		
 	       if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));
 		
+		}catch (LoginFault ex) {
+			// The LoginFault derives from AxisFault
+            ExceptionCode exCode = ex.getExceptionCode();
+            if (exCode == ExceptionCode.FUNCTIONALITY_NOT_ENABLED ||
+                exCode == ExceptionCode.INVALID_CLIENT ||
+                exCode == ExceptionCode.INVALID_LOGIN ||
+                exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_DOMAIN ||
+                exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_TIME ||
+                exCode == ExceptionCode.ORG_LOCKED ||
+                exCode == ExceptionCode.PASSWORD_LOCKOUT ||
+                exCode == ExceptionCode.SERVER_UNAVAILABLE ||
+                exCode == ExceptionCode.TRIAL_EXPIRED ||
+                exCode == ExceptionCode.UNSUPPORTED_CLIENT) {
+            	throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.InvalidUsernameOrPassword"));
+            }
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.Connection"), ex);
 		}catch(Exception e){
 			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.Connection"), e);
 		}
@@ -256,7 +277,7 @@ public class SalesforceConnection {
 	    try{
 	    	if(!specifyQuery){
 				// check if we can query this Object
-			    DescribeSObjectResult describeSObjectResult = this.binding.describeSObject(this.module);
+			    DescribeSObjectResult describeSObjectResult = getBinding().describeSObject(getModule());
 			    if (describeSObjectResult == null) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorGettingObject"));  
 			    if(!describeSObjectResult.isQueryable()) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInputDialog.ObjectNotQueryable",module));
 		    }
@@ -266,10 +287,10 @@ public class SalesforceConnection {
 			switch (this.recordsFilter) {
 				case SalesforceConnectionUtils.RECORDS_FILTER_UPDATED:
 					// Updated records ...
-		 			GetUpdatedResult updatedRecords = this.binding.getUpdated(this.module, this.startDate, this.endDate);
+		 			GetUpdatedResult updatedRecords = getBinding().getUpdated(getModule(), this.startDate, this.endDate);
 						
 		 			if (updatedRecords.getIds() != null	&& updatedRecords.getIds().length > 0) {
-		 				this.sObjects = this.binding.retrieve(this.fieldsList,this.module, updatedRecords.getIds());
+		 				this.sObjects = getBinding().retrieve(this.fieldsList,this.module, updatedRecords.getIds());
 		 				this.queryResultSize=this.sObjects.length;
 		 			}
 				break;
@@ -284,16 +305,16 @@ public class SalesforceConnection {
 							idlist.add(deletedRecord.getId());
 						}
 			 		
-						this.qr = this.binding.queryAll(this.sql);
-						this.sObjects = this.qr.getRecords();
+						this.qr = getBinding().queryAll(getSQL());
+						this.sObjects = getQueryResult().getRecords();
 						this.queryResultSize=this.sObjects.length;
 					}
 				break;
 				default:
 					// return query result
-		 			this.qr = this.binding.query(this.sql);
-		 			this.sObjects=this.qr.getRecords();
-	 				this.queryResultSize= this.qr.getSize();
+		 			this.qr = getBinding().query(getSQL());
+		 			this.sObjects=getQueryResult().getRecords();
+	 				this.queryResultSize= getQueryResult().getSize();
 				break;
 			}
 			if(this.sObjects!=null) this.recordsCount=this.sObjects.length;
@@ -338,7 +359,7 @@ public class SalesforceConnection {
 	 // I am sure there is an easy way to return meta for a SOQL result
 	 public MessageElement[] getElements() throws Exception {
 		 // Query first
-		 this.qr = this.binding.query(this.sql);
+		 this.qr = getBinding().query(getSQL());
 		 // and then return records
 		 SObject con=qr.getRecords()[0];
 		 if(con==null) return null;
@@ -348,10 +369,10 @@ public class SalesforceConnection {
 		 try {
 			// check the done attribute on the QueryResult and call QueryMore 
 			// with the QueryLocator if there are more records to be retrieved
-			if(!this.qr.isDone()) {
-				this.qr=this.binding.queryMore(this.qr.getQueryLocator());
-				this.sObjects=this.qr.getRecords();
-				this.queryResultSize= this.qr.getSize();
+			if(!getQueryResult().isDone()) {
+				this.qr=getBinding().queryMore(getQueryResult().getQueryLocator());
+				this.sObjects=getQueryResult().getRecords();
+				this.queryResultSize= getQueryResult().getSize();
 				return true;
 			}else{
 				// Query is done .. we finished !
@@ -380,7 +401,7 @@ public class SalesforceConnection {
 	  DescribeSObjectResult describeSObjectResult=null;
 	  try  {
 		  // Get object
-	      describeSObjectResult = this.binding.describeSObject(module);
+	      describeSObjectResult = getBinding().describeSObject(module);
 	      if(describeSObjectResult==null) return null;
      
 		   if(!describeSObjectResult.isQueryable()){
@@ -395,15 +416,25 @@ public class SalesforceConnection {
 		   if(describeSObjectResult!=null) describeSObjectResult=null;
 	   }
   }  
-  public String[] getModuleFieldsName(String module) throws KettleException
+
+  public String[] getFields(String module) throws KettleException
   {
 	  Field[] fields= getModuleFields(module);
 	  if(fields!=null) {
-		    String[] fieldsName = new String[fields.length];
-	        for (int i = 0; i < fields.length; i++)  {
-	        	fieldsName[i]=fields[i].getName();
+		    int nrFields=fields.length;
+		    String[] fieldsMapp= new String[nrFields];
+		    
+	        for (int i = 0; i < nrFields; i++)  {
+	        	Field field= fields[i];
+	    
+	         	if(field.getRelationshipName()!=null) {
+	         		fieldsMapp[i]= field.getRelationshipName();
+            	}else {
+            		fieldsMapp[i]=field.getName();
+            	}
+	         	 
              } 
-	        return fieldsName;
+	        return fieldsMapp;
 	  }
 	  return null;
   }
@@ -439,6 +470,57 @@ public class SalesforceConnection {
 		  throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorDelete"), e);
 	  }
   }
+  public static MessageElement createMessageElement(String name, Object value, boolean useExternalKey) throws Exception {
+
+		MessageElement me =  new MessageElement(new QName(name),value); 
+		if(true) {
+			// We use an external key
+			// the structure should be like this :
+			// object:externalId/lookupField
+			// where
+			// object is the type of the object
+			// externalId is the name of the field in the object to resolve the value
+			// lookupField is the name of the field in the current object to update (is the “__r” version)
+
+			int indexOfType = name.indexOf(":");
+			if(indexOfType>0) {
+				String type = name.substring(0, indexOfType);
+				String extIdName=null;
+				String lookupField=null;
+				
+				String rest = name.substring(indexOfType+1, name.length());
+				int indexOfExtId = rest.indexOf("/");
+				if(indexOfExtId>0) {
+					extIdName = rest.substring(0, indexOfExtId);
+					lookupField = rest.substring(indexOfExtId+1, rest.length());
+				}else {
+					extIdName=rest;
+					lookupField=extIdName;
+				}
+				
+				me= createForeignKeyElement(type, lookupField ,extIdName, value);
+			}
+		}
+
+		Element e = me.getAsDOM();
+		e.removeAttribute("xsi:type");
+		e.removeAttribute("xmlns:ns1");
+		e.removeAttribute("xmlns:xsd");
+		e.removeAttribute("xmlns:xsi");
+
+		me = new MessageElement(e);
+		return me;
+  }
+	private static MessageElement createForeignKeyElement(String type, String lookupField ,String extIdName, 
+			Object extIdValue) throws Exception {
+
+        // Foreign key relationship to the object
+        MessageElement me = new MessageElement(new QName(lookupField));
+        me.addChild(new MessageElement(new QName("type"), type));
+        me.addChild(new MessageElement(new QName(extIdName),  extIdValue));
+        
+        return me;
+    }
   public String toString()
   {
 	  return "SalesforceConnection";

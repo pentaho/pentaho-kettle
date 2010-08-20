@@ -674,7 +674,7 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
 				  getInfo(meta);
 				  String url = transMeta.environmentSubstitute(meta.getTargetURL());
 				  
-				  String selectedField=transMeta.environmentSubstitute(meta.getTargetURL());
+				  String selectedField=wModule.getText();;
 				  wModule.removeAll();
 
 				  // Define a new Salesforce connection

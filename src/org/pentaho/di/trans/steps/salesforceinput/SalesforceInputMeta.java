@@ -787,7 +787,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 				field.setPrecision( (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
 				field.setTrimType( SalesforceInputField.getTrimTypeByCode( rep.getStepAttributeString (id_step, i, "field_trim_type") ));
 				field.setRepeated( rep.getStepAttributeBoolean(id_step, i, "field_repeat") );
-
+				field.setIdLookup(rep.getStepAttributeBoolean(id_step, i, "field_idlookup") );
 				inputFields[i] = field;
 			}
 		}
@@ -854,7 +854,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision",     field.getPrecision());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type",     field.getTrimTypeCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",        field.isRepeated());
-
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_idlookup",        field.isIdLookup());
 			}
 		}
 		catch(Exception e)

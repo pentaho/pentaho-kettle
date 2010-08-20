@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import com.sforce.soap.partner.sobject.SObject;
 
 import org.apache.axis.message.MessageElement;
-import org.w3c.dom.Element;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -49,20 +48,6 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 	private SalesforceUpdateMeta meta;
 	private SalesforceUpdateData data;
 		
-	private MessageElement newMessageElement(String name, Object value) throws Exception {
-
-			MessageElement me = new MessageElement("", name); 
-			me.setObjectValue(value);
-			Element e = me.getAsDOM();
-			e.removeAttribute("xsi:type");
-			e.removeAttribute("xmlns:ns1");
-			e.removeAttribute("xmlns:xsd");
-			e.removeAttribute("xmlns:xsi");
-
-			me = new MessageElement(e);
-			return me;
-	}
-
 	public SalesforceUpdate(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
@@ -151,7 +136,7 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 						// We need to keep track of this field
 						fieldsToNull.add(meta.getUpdateLookup()[i]);
 					} else {
-						updatefields.add(newMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]]));
+						updatefields.add(SalesforceConnection.createMessageElement(meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]], meta.getUseExternalId()[i]));
 					}
 				}					
 				
@@ -198,7 +183,6 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 					
 					if (log.isDetailed()) logDetailed("The new row has an id value of : " + newRow[0]);
 					
-					//putRow(data.outputRowMeta, data.outputRowMeta.cloneRow(newRow));  // copy row to output rowset(s);
 					putRow(data.outputRowMeta, newRow);  // copy row to output rowset(s);
 					incrementLinesUpdated();
 					
@@ -254,7 +238,7 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 			data.iBufferPos = 0;
 			
 		} catch (Exception e) {
-			throw new KettleException("\nFailed to upsert object, error message was: \n"+ e.getMessage());
+			throw new KettleException("\nFailed to update object, error message was: \n"+ e.getMessage());
 		} finally{
 			if(data.saveResult!=null) data.saveResult=null;
 		}

@@ -48,6 +48,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
+
 import org.pentaho.di.i18n.BaseMessages;
 
 public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterface
@@ -68,6 +69,9 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 
     /** Field value to update */
 	private String updateLookup[];
+	
+    /** boolean indicating if field uses External id */
+	private Boolean useExternalId[];
 	
     /** Stream name to update value with */
 	private String updateStream[];
@@ -128,6 +132,22 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
     public void setUpdateLookup(String[] updateLookup)
     {
         this.updateLookup = updateLookup;
+    }
+    
+	 /**
+     * @return Returns the useExternalId.
+     */
+    public Boolean[] getUseExternalId()
+    {
+        return useExternalId;
+    }
+    
+    /**
+     * @param useExternalId The useExternalId to set.
+     */
+    public void setUseExternalId(Boolean[] useExternalId)
+    {
+        this.useExternalId = useExternalId;
     }
     
     /**
@@ -249,6 +269,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 		{
 			retval.updateLookup[i] = updateLookup[i];
 			retval.updateStream[i] = updateStream[i];
+			retval.useExternalId[i]=useExternalId[i];
 		}
 		
 		return retval;
@@ -270,6 +291,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 			retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
 			retval.append("        ").append(XMLHandler.addTagValue("name", updateLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        ").append(XMLHandler.addTagValue("field", updateStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("useExternalId", useExternalId[i].booleanValue()));
 			retval.append("      </field>").append(Const.CR); //$NON-NLS-1$
 		}
 		
@@ -306,6 +328,18 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 				updateLookup[i]    = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
 				updateStream[i]    = XMLHandler.getTagValue(fnode, "field"); //$NON-NLS-1$
 				if (updateStream[i]==null) updateStream[i]=updateLookup[i]; // default: the same name!
+				String updateValue = XMLHandler.getTagValue(fnode, "useExternalId"); //$NON-NLS-1$
+				if(updateValue==null) {
+					//default FALSE
+					useExternalId[i] = Boolean.FALSE;
+				} else 
+                {
+                    if (updateValue.equalsIgnoreCase("Y"))
+                    	useExternalId[i] = Boolean.TRUE;
+                    else
+                    	useExternalId[i] = Boolean.FALSE; 
+				}
+				
 			}
 			useCompression   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "useCompression"));
 			timeout = XMLHandler.getTagValue(stepnode, "timeout");
@@ -319,7 +353,8 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 	public void allocate(int nrvalues)
 	{
 		updateLookup = new String[nrvalues];
-		updateStream = new String[nrvalues];        
+		updateStream = new String[nrvalues];   
+		useExternalId = new Boolean[nrvalues]; 
 	}
 	
 	public void setDefault()
@@ -336,6 +371,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 		{
 			updateLookup[i]="name"+(i+1); //$NON-NLS-1$
 			updateStream[i]="field"+(i+1); //$NON-NLS-1$
+			useExternalId[i]=Boolean.FALSE; //$NON-NLS-1$
 		}
 		useCompression=false;
 		timeout= "60000";
@@ -366,6 +402,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 			{
 				updateLookup[i]  = rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
 				updateStream[i]  = rep.getStepAttributeString(id_step, i, "field_attribut"); //$NON-NLS-1$
+				useExternalId[i]        = Boolean.valueOf(rep.getStepAttributeBoolean(id_step, i, "field_useExternalId",false)); 
 			}
 			useCompression   = rep.getStepAttributeBoolean(id_step, "useCompression"); 
 			timeout          =  rep.getStepAttributeString(id_step, "timeout");
@@ -391,7 +428,8 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",    updateLookup[i]); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribut",  updateStream[i]); //$NON-NLS-1$
-
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_useExternalId",  useExternalId[i].booleanValue());
+			
 			}
 			rep.saveStepAttribute(id_transformation, id_step, "useCompression",  useCompression);
 			rep.saveStepAttribute(id_transformation, id_step, "timeout",           timeout);
