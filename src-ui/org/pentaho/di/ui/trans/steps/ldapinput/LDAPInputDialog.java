@@ -823,6 +823,9 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Name.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
          new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Attribute.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
     	 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.FetchAttributeAs.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,LDAPInputField.FetchAttributeAsDesc,true ),
+		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.IsSortedKey.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+							BaseMessages.getString(PKG, "System.Combo.Yes"),
+							BaseMessages.getString(PKG, "System.Combo.No") }, true),
 		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Type.Column"),ColumnInfo.COLUMN_TYPE_CCOMBO,ValueMeta.getTypes(),true ),
 		 new ColumnInfo(BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Format.Column"),
          ColumnInfo.COLUMN_TYPE_FORMAT, 3),
@@ -830,7 +833,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
          BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
-			 new ColumnInfo(
+         new ColumnInfo(
          BaseMessages.getString(PKG, "LDAPInputDialog.FieldsTable.Precision.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
@@ -1122,8 +1125,11 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
             {
     			TableItem item  = wFields.table.getItem(i);
     			String name     = field.getName();
-    			String xpath	= field.getAttribute();
-    			String returntype     = field.getFetchAttributeAsDesc();
+    			String path	= field.getAttribute();
+				String issortedkey = field.isSortedKey() ? 
+						BaseMessages.getString(PKG, "System.Combo.Yes") : 
+						BaseMessages.getString(PKG, "System.Combo.No");
+    			String returntype   = field.getFetchAttributeAsDesc();
     			String type     = field.getTypeDesc();
     			String format   = field.getFormat();
     			String length   = ""+field.getLength();
@@ -1135,17 +1141,18 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     			String rep      = field.isRepeated()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No");
     			
                 if (name    !=null) item.setText( 1, name);
-                if (xpath   !=null) item.setText( 2, xpath);
+                if (path   !=null) item.setText( 2,path);
     			if (returntype    !=null) item.setText( 3, returntype);
-    			if (type    !=null) item.setText( 4, type);
-    			if (format  !=null) item.setText( 5, format);
-    			if (length  !=null && !"-1".equals(length)) item.setText( 6, length);
-    			if (prec    !=null && !"-1".equals(prec)) item.setText( 7, prec);
-    			if (curr    !=null) item.setText( 8, curr);
-    			if (decim   !=null) item.setText( 9, decim);
-    			if (group   !=null) item.setText( 10, group);
-    			if (trim    !=null) item.setText(11, trim);
-    			if (rep     !=null) item.setText(12, rep);                
+    			if (issortedkey != null) item.setText(4, issortedkey);
+    			if (type    !=null) item.setText( 5, type);
+    			if (format  !=null) item.setText( 6, format);
+    			if (length  !=null && !"-1".equals(length)) item.setText( 5, length);
+    			if (prec    !=null && !"-1".equals(prec)) item.setText( 8, prec);
+    			if (curr    !=null) item.setText( 9, curr);
+    			if (decim   !=null) item.setText( 10, decim);
+    			if (group   !=null) item.setText( 11, group);
+    			if (trim    !=null) item.setText(12, trim);
+    			if (rep     !=null) item.setText(13, rep);                
             }
 		}
         
@@ -1219,15 +1226,16 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			field.setName( item.getText(1) );
 			field.setAttribute(item.getText(2));
 			field.setFetchAttributeAs(LDAPInputField.getFetchAttributeAsByDesc(item.getText(3)));
-			field.setType(ValueMeta.getType(item.getText(4)));
-			field.setFormat( item.getText(5) );
-			field.setLength( Const.toInt(item.getText(6), -1) );
-			field.setPrecision( Const.toInt(item.getText(7), -1) );
-			field.setCurrencySymbol( item.getText(8) );
-			field.setDecimalSymbol( item.getText(9) );
-			field.setGroupSymbol( item.getText(10) );
-			field.setTrimType( LDAPInputField.getTrimTypeByDesc(item.getText(11)) );
-			field.setRepeated( BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(12)) );		
+			field.setSortedKey(BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(4)));
+			field.setType(ValueMeta.getType(item.getText(5)));
+			field.setFormat( item.getText(6) );
+			field.setLength( Const.toInt(item.getText(7), -1) );
+			field.setPrecision( Const.toInt(item.getText(8), -1) );
+			field.setCurrencySymbol( item.getText(9) );
+			field.setDecimalSymbol( item.getText(10) );
+			field.setGroupSymbol( item.getText(11) );
+			field.setTrimType( LDAPInputField.getTrimTypeByDesc(item.getText(12)) );
+			field.setRepeated( BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(13)) );		
             
 			in.getInputFields()[i] = field;
 		}	

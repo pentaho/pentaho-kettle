@@ -489,6 +489,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("        ").append(XMLHandler.addTagValue("name",      inputFields[i].getName()) );
 			retval.append("        ").append(XMLHandler.addTagValue("attribute",      inputFields[i].getAttribute()));
 			retval.append("        ").append(XMLHandler.addTagValue("attribute_fetch_as", inputFields[i].getFetchAttributeAsCode()) );
+			retval.append("        ").append(XMLHandler.addTagValue("sorted_key",    inputFields[i].isSortedKey()) );
 			retval.append("        ").append(XMLHandler.addTagValue("type",      inputFields[i].getTypeDesc()) );
             retval.append("        ").append(XMLHandler.addTagValue("format", inputFields[i].getFormat()));
             retval.append("        ").append(XMLHandler.addTagValue("length",    inputFields[i].getLength()) );
@@ -549,15 +550,17 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 				inputFields[i].setName( XMLHandler.getTagValue(fnode, "name") );
 				inputFields[i].setAttribute(XMLHandler.getTagValue(fnode, "attribute") );
 				inputFields[i].setFetchAttributeAs( LDAPInputField.getFetchAttributeAsByCode(XMLHandler.getTagValue(fnode, "attribute_fetch_as")) );
+				String sortedkey      = XMLHandler.getTagValue(fnode, "sorted_key");
+				if (sortedkey!=null) inputFields[i].setSortedKey( YES.equalsIgnoreCase(sortedkey) ); 
+				else               inputFields[i].setSortedKey( false );
 				inputFields[i].setType( ValueMeta.getType(XMLHandler.getTagValue(fnode, "type")) );
 				inputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
 				inputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
 				String srepeat      = XMLHandler.getTagValue(fnode, "repeat");
-				inputFields[i].setTrimType( getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
-				
 				if (srepeat!=null) inputFields[i].setRepeated( YES.equalsIgnoreCase(srepeat) ); 
 				else               inputFields[i].setRepeated( false );
-				
+				inputFields[i].setTrimType( getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
+								
 				inputFields[i].setFormat(XMLHandler.getTagValue(fnode, "format"));
 				inputFields[i].setCurrencySymbol(XMLHandler.getTagValue(fnode, "currency"));
 				inputFields[i].setDecimalSymbol(XMLHandler.getTagValue(fnode, "decimal"));
@@ -694,6 +697,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 				field.setName( rep.getStepAttributeString (id_step, i, "field_name") );
 				field.setAttribute( rep.getStepAttributeString (id_step, i, "field_attribute") );
 				field.setFetchAttributeAs( LDAPInputField.getFetchAttributeAsByCode(rep.getStepAttributeString (id_step, i, "field_attribute_fetch_as") ));
+				field.setSortedKey(rep.getStepAttributeBoolean(id_step, i, "sorted_key") );
 				field.setType(ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type") ) );
 				field.setFormat( rep.getStepAttributeString (id_step, i, "field_format") );
 				field.setCurrencySymbol( rep.getStepAttributeString (id_step, i, "field_currency") );
@@ -745,6 +749,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribute",     field.getAttribute());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_attribute_fetch_as",     field.getFetchAttributeAsCode());
+				rep.saveStepAttribute(id_transformation, id_step, i, "sorted_key",        field.isSortedKey());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());

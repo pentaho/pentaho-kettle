@@ -344,13 +344,16 @@ public class LDAPInput extends BaseStep implements StepInterface
 			//specify attributes to be returned in binary format
         	if(field.getReturnType() == LDAPInputField.FETCH_ATTRIBUTE_AS_BINARY) {
     	        if(!data.attributesBinary.contains(name)) {
-	    	        //env.put("java.naming.ldap.attributes.binary", name);
     	        	data.connection.addBinaryAttribute(name);
     	        	data.attributesBinary.add(name);
     	        }
         	}
-
+        	
         	data.attrReturned[i]=name;
+            // Do we need to sort based on some attributes?
+        	if(field.isSortedKey()) {
+        		data.connection.addSortingAttributes(name);
+        	}
 		}
 	
        if (meta.UseAuthentication()) {
@@ -369,8 +372,8 @@ public class LDAPInput extends BaseStep implements StepInterface
        if(meta.isPaging()) {
         	data.connection.SetPagingSize(Const.toInt(environmentSubstitute(meta.getPageSize()),-1));
        }
-	     
-	  }
+       
+	 }
 	 
 	 private void search(String searchBase, String filter) throws KettleException {
 

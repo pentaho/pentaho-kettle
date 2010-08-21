@@ -74,6 +74,7 @@ public class LDAPInputField implements Cloneable
 	private boolean   repeat;
 	private String  realAttribute;
 	private boolean  objectSid;
+	private boolean sortedKey;
 
     private String    samples[];
 
@@ -94,6 +95,7 @@ public class LDAPInputField implements Cloneable
 		this.precision      = -1;
 		this.repeat         = false;
 		this.realAttribute = "";
+		this.sortedKey=false;
 	}
     
     public LDAPInputField()
@@ -277,7 +279,15 @@ public class LDAPInputField implements Cloneable
 	{
 		this.trimtype= trimtype;
 	}
+	public boolean isSortedKey()
+	{
+		return sortedKey;
+	}
 	
+	public void setSortedKey(boolean value)
+	{
+		this.sortedKey = value;
+	}
 	public void setFetchAttributeAs(int fetchAttributeAs)
 	{
 		this.fetchAttributeAs= fetchAttributeAs;

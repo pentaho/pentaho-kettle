@@ -35,6 +35,7 @@ import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.PagedResultsControl;
 import javax.naming.ldap.PagedResultsResponseControl;
+import javax.naming.ldap.SortControl;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -74,6 +75,10 @@ public class LDAPConnection {
     
     private String referral;
     private String derefAliases;
+    
+    private List<String> sortingAttributes;
+    private String[] sortingAttributesKeys;
+    
 
 	
 	/**
@@ -86,6 +91,7 @@ public class LDAPConnection {
 		this.env = new Hashtable<String, String>();
 		this.referral="follow";
 		this.derefAliases="always";
+		this.sortingAttributes= new ArrayList<String>();
 	}
 	
 	/**
@@ -137,7 +143,21 @@ public class LDAPConnection {
 	    }
 	}
 	
-
+	public void setSortingAttributesKeys(String[] value) {
+		this.sortingAttributesKeys=value;
+	}
+	private String[] getSortingAttributesKeys() {
+		return this.sortingAttributesKeys;
+	}
+	public void addSortingAttributes(String value) {
+		this.sortingAttributes.add(value);
+	}
+	public List<String> getSortingAttributes() {
+		return this.sortingAttributes;
+	}
+	private boolean isSortingAttributes() {
+		return (!this.sortingAttributes.isEmpty());
+	}
 	private void setFilter(String filter) {
 		this.filter=filter;
 	}
@@ -205,14 +225,42 @@ public class LDAPConnection {
 		     //Specify the search scope
 		     this.controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 	         
+		     Control ctlp=null;
+		     Control ctlk=null;
+		     int nrCtl=0;
+	         
+		     // Set the sort search?
+		     if(isSortingAttributes()) {
+		    	// Create a sort control that sorts based on attributes
+		    	 setSortingAttributesKeys((String[]) getSortingAttributes().toArray(new String[getSortingAttributes().size()]));
+		         ctlk= new SortControl(getSortingAttributesKeys(), Control.NONCRITICAL); 
+		         nrCtl++;
+	        	if(log.isDebug()) log.logDebug(BaseMessages.getString("LDAPInput.Log.SortingKeys", getSortingAttributesKeys().toString()));
+	         }
+	         
 	         //Set the page size?
 	         if(isPagingUsed()) {
         		// paging is activated
         		//Request the paged results control
-    			Control[] ctls = new Control[]{new PagedResultsControl(GetPagingSize(),true)};
-    			getInitialContext().setRequestControls(ctls);
+	        	ctlp= new PagedResultsControl(GetPagingSize(),Control.CRITICAL); 
+	        	nrCtl++;
+    			//Control[] ctls = new Control[]{new PagedResultsControl(GetPagingSize(),true)};
+    			//getInitialContext().setRequestControls(ctls);
 
         		if(log.isDebug()) log.logDebug(BaseMessages.getString("LDAPInput.Log.PageSize", String.valueOf(GetPagingSize())) );
+	         }
+	         
+
+	         if(nrCtl>0) {
+	        	 Control[] ctls = new Control[nrCtl];
+	        	 int index=0;
+	        	 if(ctlk!=null) {
+	        		 ctls[index++]=ctlk;
+	        	 }
+	        	 if(ctlp!=null) {
+	        		 ctls[index++] =ctlp;
+	        	 }
+	    		 getInitialContext().setRequestControls(ctls);
 	         }
 	         //Search for objects using the filter
 	         this.results = getInitialContext().search(getSearchBase(), getFilter(), getSearchControls());
@@ -484,9 +532,14 @@ public class LDAPConnection {
 						}
 					}
 					// pass the cookie back for the next page
-					getInitialContext().setRequestControls(new javax.naming.ldap.Control[] 
+					if(isSortingAttributes()) {
+						getInitialContext().setRequestControls(new Control[] 
+						    { new SortControl(getSortingAttributesKeys(), Control.NONCRITICAL), 
+							  new PagedResultsControl(GetPagingSize(), cookie,Control.CRITICAL) });
+					}else {
+						getInitialContext().setRequestControls(new Control[] 
 					        { new PagedResultsControl(GetPagingSize(), cookie,Control.CRITICAL) });
-						
+					}
 					 if ((cookie != null) && (cookie.length != 0)) {
 						 // get search result for the page
 						 this.results = getInitialContext().search(getSearchBase(), getFilter(), getSearchControls());

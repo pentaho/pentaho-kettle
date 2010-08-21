@@ -1035,7 +1035,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		colinf[0].setToolTip(BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsTable.Name.Column.Tooltip"));
 		colinf[1].setUsingVariables(true);
 		colinf[1].setToolTip(BaseMessages.getString(PKG, "SalesforceInputDialog.FieldsTable.Field.Column.Tooltip"));
-
+		colinf[2].setReadOnly(true);
 		wFields=new TableView(transMeta,wFieldsComp, 
 			      SWT.FULL_SELECTION | SWT.MULTI, 
 			      colinf, 
@@ -1471,7 +1471,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 					item.setText(1, name);
 				if (path != null)
 					item.setText(2, path);
-				if (path != null)
+				if (isidlookup != null)
 					item.setText(3, isidlookup);
 				if (type != null)
 					item.setText(4, type);
