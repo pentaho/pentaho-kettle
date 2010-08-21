@@ -1095,6 +1095,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		in.setOldDnFieldName(wOldDnField.getText());
 		in.setNewDnFieldName(wNewDnField.getText());
+		in.setDeleteRDN(wDeleteRDN.getSelection());
 		
 		int nrfields = wReturn.nrNonEmpty();
 
@@ -1236,7 +1237,8 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 	}
 	private void updateOperation()
 	{
-		boolean activateFields= (LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_DELETE);
+		boolean activateFields= (LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_DELETE
+					&& LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_RENAME);
 		
 		wlReturn.setEnabled(activateFields);
 		wReturn.setEnabled(activateFields);
@@ -1246,22 +1248,26 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		wDoMapping.setEnabled(activateFields && !Const.isEmpty(wBaseDN.getText()));
 		
 		boolean activateMulTiValueSeparator = (LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_DELETE)
-					&& (LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_UPDATE);
+					&& (LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_UPDATE)
+					&& (LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_RENAME);		
 		wlMultiValuedSeparator.setEnabled(activateMulTiValueSeparator);
 		wMultiValuedSeparator.setEnabled(activateMulTiValueSeparator);
 		
 		boolean activateFailIfNotExist = (LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_UPSERT)
-		&& (LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_INSERT);
+		&& (LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_INSERT)
+		&& (LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_RENAME);
 		wlFailIfNotExist.setEnabled(activateFailIfNotExist);
 		wFailIfNotExist.setEnabled(activateFailIfNotExist);
 		
-		boolean activateRename=(LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) != LDAPOutputMeta.OPERATION_TYPE_RENAME);
+		boolean activateRename=(LDAPOutputMeta.getOperationTypeByDesc(wOperation.getText()) == LDAPOutputMeta.OPERATION_TYPE_RENAME);
 		wlOldDnField.setEnabled(activateRename);
 		wOldDnField.setEnabled(activateRename);
 		wlNewDnField.setEnabled(activateRename);
 		wNewDnField.setEnabled(activateRename);
 		wlDeleteRDN.setEnabled(activateRename);
 		wDeleteRDN.setEnabled(activateRename);
+		wlDnField.setEnabled(!activateRename);
+		wDnField.setEnabled(!activateRename);
 	}
 	public String toString()
 	{

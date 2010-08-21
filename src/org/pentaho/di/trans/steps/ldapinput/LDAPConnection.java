@@ -401,7 +401,7 @@ public class LDAPConnection {
 			for (String childName : paths) {
 				getInitialContext().destroySubcontext(childName);
 			}
-			
+
 			// Rename entry
 			try {
 				getInitialContext().rename(oldDn, newDn);
@@ -413,7 +413,7 @@ public class LDAPConnection {
 				}
 				throw e;
 			}
-		
+
 			// attach sub context
 			List<String> newpaths = new ArrayList<String>();
 			for (String childName : paths) {
@@ -423,7 +423,7 @@ public class LDAPConnection {
 			for (int i = newpaths.size(); i > 0; i--) {
 				getInitialContext().createSubcontext(newpaths.get(i - 1),childs.get(paths.get(i - 1)));
 			}
-	
+
 		}catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "LDAPConnection.Error.Renaming",oldDn, newDn), e);
 		}finally {
