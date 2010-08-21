@@ -264,7 +264,7 @@ public class SQLValuesHighlight implements LineStyleListener {
 				"interval","overlaps","adddate","age","date_add","dateformat","date_part","date_sub",
 				"datediff","dateadd","datename","datepart","day","dayname","dayofmonth","dayofweek",
 				"dayofyear","hour","last_day","minute","month","month_between","monthname","next_day","second",
-				"sub_date","week","year"
+				"sub_date","week","year","dbo", "log","objectproperty"
 		};
 			
 			private String[] fgKeywords= { 
@@ -275,7 +275,7 @@ public class SQLValuesHighlight implements LineStyleListener {
 					"nolock","with","false","datetime","dare","time","hour",
 					"array","minute","second","millisecond","view","function",
 					"catch", "const","continue","compute","browse","option",
-					"date", "default", "delete", "do","raw","auto","explicit","xmldata",
+					"date", "default", "do","raw","auto","explicit","xmldata",
 					"elements","binary","base64","read","outfile","asc","desc",
 					"else","eval","escape","having","limit","offset","of","intersect","except","using",
 					"variance","specific","language","body","returns","specific","deterministic",
@@ -284,7 +284,8 @@ public class SQLValuesHighlight implements LineStyleListener {
 					"minus","references","grant","on","top","index",
 					"bigint","text","char","use","move",
 					"exec","init","name","noskip","skip","noformat","format","stats","disk","from","to","rownum",
-					"alter","add","delete","remove",
+					"alter","add","remove",
+					"move","alter","add","remove","lineno","modify",
 					"if","else","in","is",
 					"new", "Number", "null",
 					"string", "switch",
@@ -292,7 +293,10 @@ public class SQLValuesHighlight implements LineStyleListener {
 					"return",
 					"with", "while",
 					"start","connect","optimize","first","only","rows","sequence","blob","clob","image","binary",
-					"column","decimal","distinct","primary","key","varbinary"
+					"column","decimal","distinct","primary","key","timestamp","varbinary","nvarchar","nchar","longnvarchar",
+					"nclob","numeric", "constraint", "dbcc", "backup", "bit", "clustered","pad_index",
+					"off", "statistics_norecompute", "ignore_dup_key", "allow_row_locks", "allow_page_locks",
+					"textimage_on", "double"
 			};
 
 		public JavaScanner() {
