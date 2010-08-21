@@ -50,7 +50,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
-
+	public static final String EMPTY_FILTER ="objectclass=*";
+	
 	/** Flag indicating that we use authentication for connection */
 	private boolean useAuthentication;
 
@@ -703,6 +704,6 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
      */
 	public static String correctFilter(String filter)
 	{
-		return Const.isEmpty(filter)?"":filter.replaceAll("(\\r|\\n)", "");
+		return Const.isEmpty(filter)?EMPTY_FILTER:filter.replaceAll("(\\r|\\n)", "");
 	}
 }

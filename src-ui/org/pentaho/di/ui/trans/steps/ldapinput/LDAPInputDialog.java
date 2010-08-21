@@ -20,7 +20,9 @@
 package org.pentaho.di.ui.trans.steps.ldapinput;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -774,19 +776,20 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		shell.open();
 		while (!shell.isDisposed())
 		{
-				if (!display.readAndDispatch()) display.sleep();
+			if (!display.readAndDispatch()) display.sleep();
 		}
 		return stepname;
 	}
 	private void test()
 	{
+		DirContext ctx=null;
 		try
         {
 		
 			LDAPInputMeta meta = new LDAPInputMeta();
 			getInfo(meta);
 			
-			DirContext ctx = connectServerLdap(transMeta.environmentSubstitute(meta.getHost()),
+			ctx = connectServerLdap(transMeta.environmentSubstitute(meta.getHost()),
 					transMeta.environmentSubstitute(meta.getUserName()), 
 					Encr.decryptPasswordOptionallyEncrypted(transMeta.environmentSubstitute(meta.getPassword())),
 					transMeta.environmentSubstitute(meta.getPort()));
@@ -828,10 +831,15 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			mb.setText(Messages.getString("LDAPInputDialog.Connected.Title.Error")); //$NON-NLS-1$
 			mb.open(); 
 		} 
+		finally {
+			if(ctx!=null) try {ctx.close();}catch(Exception e){};
+		}
 	}
 
 	private void get()
 	{
+		DirContext ctx=null;
+        List<String> list = new ArrayList<String>();
         try
         {
 		
@@ -845,14 +853,12 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     		String hostname=transMeta.environmentSubstitute(meta.getHost());
     		String username=transMeta.environmentSubstitute(meta.getUserName());
     		String password=Encr.decryptPasswordOptionallyEncrypted(transMeta.environmentSubstitute(meta.getPassword()));
-            //Set the filter string.  The more exact of the search string
-    		String filter=transMeta.environmentSubstitute(meta.getFilterString());
     		//Set the Search base.This is the place where the search will
     		String searchbase=transMeta.environmentSubstitute(meta.getSearchBase());
     	
     		NamingEnumeration<SearchResult> results=null;
     		
-    		DirContext ctx = connectServerLdap(hostname,username, password,port);
+    		ctx = connectServerLdap(hostname,username, password,port);
 			
 		     
 		     log.logBasic("Connection", "Connected to server [{0}]",hostname);	      
@@ -860,50 +866,51 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		     SearchControls controls = new SearchControls();
 	         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 	         // Set search
-	         results = ctx.search(searchbase, LDAPInputMeta.correctFilter(filter), controls);
-	        
-	        // Get all attributes
-	        SearchResult searchAttr = results.next();
-	        
-	        Attributes listattributes = searchAttr.getAttributes(); 
-	       
-	        NamingEnumeration<? extends Attribute> ne = listattributes.getAll();
-		   
-	        Attribute attr = null;
-	        
-	        while (ne.hasMore()) 
-	        {
-	        	attr = ne.next();
-	    	    
-	    		String fieldName = attr.getID();
-				
-				// Get Column Name
-	            TableItem item = new TableItem(wFields.table, SWT.NONE);
-	            item.setText(1, fieldName);
-	            item.setText(2, fieldName);
-	            
-	            String attributeValue=attr.getID();
-	            // Try to get the Type
-	            if(IsDate(attributeValue))
-        		{
-        			item.setText(3, "Date");
-        		}
-	            else if(IsInteger(attributeValue))
-        		{
-        			item.setText(3, "Integer");
-        		}
-	            else if(IsNumber(attributeValue))
-        		{
-        			item.setText(3, "Number");
-        		}	
-	           
-	            else
-	            {
-	            	item.setText(3, "String");	    		            
-	            }  
-	    	    
-	        }
-	        
+	         results = ctx.search(searchbase, LDAPInputMeta.EMPTY_FILTER, controls);
+	         while(results.hasMoreElements()) {
+		        // Get all attributes
+		        SearchResult searchAttr = results.next();
+		        
+		        Attributes listattributes = searchAttr.getAttributes(); 
+		       
+		        NamingEnumeration<? extends Attribute> ne = listattributes.getAll();
+			   
+		        Attribute attr = null;
+		        
+		        while (ne.hasMore()) 
+		        {
+		        	attr = ne.next();
+		    	    
+		    		String fieldName = attr.getID();
+		    		if(!list.contains(fieldName)) {
+			    		list.add(fieldName);
+						// Get Column Name
+			            TableItem item = new TableItem(wFields.table, SWT.NONE);
+			            item.setText(1, fieldName);
+			            item.setText(2, fieldName);
+			            
+			            String attributeValue=attr.get().toString();
+			            // Try to get the Type
+			            if(IsDate(attributeValue))
+		        		{
+		        			item.setText(3, "Date");
+		        		}
+			            else if(IsInteger(attributeValue))
+		        		{
+		        			item.setText(3, "Integer");
+		        		}
+			            else if(IsNumber(attributeValue))
+		        		{
+		        			item.setText(3, "Number");
+		        		}	
+			           
+			            else
+			            {
+			            	item.setText(3, "String");	    		            
+			            }  
+		    		}
+		        }
+	         }
 	        
          
             wFields.removeEmptyRows();
@@ -917,8 +924,11 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     	catch(Exception e)
 		{
     		 new ErrorDialog(shell, Messages.getString("LDAPInputDialog.ErrorGettingColums.DialogTitle"), Messages.getString("LDAPInputDialog.ErrorGettingColums.DialogMessage"), e);
-
 		}  
+    	finally {
+			if(ctx!=null) try {ctx.close();}catch(Exception e){};
+			list=null;
+		}
 	}
 	 public InitialDirContext connectServerLdap(String hostname,String username, String password,String port) throws NamingException {
 

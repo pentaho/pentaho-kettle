@@ -280,10 +280,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 		   }
 	       if(log.isBasic()) logBasic(Messages.getString("LDAPInput.Log.ConnectedToServer",hostname,username));
 		   if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.ClassUsed.Message",data.ctx.getClass().getName()));
-		   // Get the schema tree root
-		   //DirContext schema = data.ctx.getSchema("");  
-		   //if (log.isDetailed()) logDetailed(Messages.getString("LDAPInput.SchemaList.Message",""+schema.list(""))); 
-	       
+
 		   SearchControls controls = new SearchControls();
 		   controls.setCountLimit(meta.getRowLimit());
 		    
