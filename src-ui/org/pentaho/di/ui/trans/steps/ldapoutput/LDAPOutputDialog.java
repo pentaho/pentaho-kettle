@@ -1284,7 +1284,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 			}else {
 				connection.connect();
 			}
-			return connection.getFields(transMeta.environmentSubstitute(wBaseDN.getText()), null);
+			return connection.getFields(transMeta.environmentSubstitute(wBaseDN.getText()));
 		}finally {
 			  if(connection!=null) {
 				  try {
