@@ -51,6 +51,8 @@ import org.w3c.dom.Node;
 
 public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
+	public static final String EMPTY_FILTER ="objectclass=*";
+	
 	private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	/** Flag indicating that we use authentication for connection */
@@ -745,6 +747,6 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
      */
 	public static String correctFilter(String filter)
 	{
-		return Const.isEmpty(filter)?"":filter.replaceAll("(\\r|\\n)", "");
+		return Const.isEmpty(filter)?EMPTY_FILTER:filter.replaceAll("(\\r|\\n)", "");
 	}
 }
