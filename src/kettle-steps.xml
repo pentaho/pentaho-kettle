@@ -1016,7 +1016,7 @@
 	<step id="MailInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MailInput</description>
 		<classname>org.pentaho.di.trans.steps.mailinput.MailInputMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MailInput</tooltip>
 		<iconfile>ui/images/GETPOP.png</iconfile>
 	</step>
@@ -1024,7 +1024,7 @@
 	<step id="GetTableNames">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetTableNames</description>
 		<classname>org.pentaho.di.trans.steps.gettablenames.GetTableNamesMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetTableNames</tooltip>
 		<iconfile>ui/images/GTN.png</iconfile>
 	</step>

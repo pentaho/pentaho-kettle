@@ -1047,7 +1047,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	            }else {
 	            	item.setText(3, BaseMessages.getString(PKG, "LDAPInputField.FetchAttributeAs.String"));
 	            }
-	            item.setText(4,  v.getTypeDesc()); 
+	            item.setText(4,  BaseMessages.getString(PKG, "System.Combo.No"));
+	            item.setText(5,  v.getTypeDesc()); 
     		}
             colinf[1].setComboValues(fieldsName);
             wFields.removeEmptyRows();

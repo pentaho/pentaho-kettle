@@ -244,12 +244,8 @@ public class LDAPConnection {
         		//Request the paged results control
 	        	ctlp= new PagedResultsControl(GetPagingSize(),Control.CRITICAL); 
 	        	nrCtl++;
-    			//Control[] ctls = new Control[]{new PagedResultsControl(GetPagingSize(),true)};
-    			//getInitialContext().setRequestControls(ctls);
-
         		if(log.isDebug()) log.logDebug(BaseMessages.getString("LDAPInput.Log.PageSize", String.valueOf(GetPagingSize())) );
 	         }
-	         
 
 	         if(nrCtl>0) {
 	        	 Control[] ctls = new Control[nrCtl];
@@ -664,38 +660,45 @@ public class LDAPConnection {
 	}
 
 	public RowMeta getFields(String searchBase) throws KettleException {
-				
+        RowMeta fields = new RowMeta();	
+        List<String> fieldsl = new ArrayList<String>();
 		try {
 			search(searchBase, null, 0, null);
-			Attributes attributes = getAttributes();
+			Attributes attributes =null;
+			fieldsl = new ArrayList<String>();
+			while(( attributes = getAttributes())!=null) {
 	
-	        NamingEnumeration<? extends Attribute> ne = attributes.getAll();
-	        RowMeta fields = new RowMeta();
-
-	        Attribute attr = null;
-	        
-	        while (ne.hasMore()) {
-	        	attr = ne.next();
-	    		// Get fieldname
-			    ValueMetaInterface value = new ValueMeta(attr.getID());
-	
-	            String attributeValue=attr.getID();
-	            // Try to get the Type
-	            if(IsDate(attributeValue)){
-	            	value.setType(ValueMeta.TYPE_DATE);
-	    		} else if(IsInteger(attributeValue)){
-	    			value.setType(ValueMeta.TYPE_INTEGER);
-	    		} else if(IsNumber(attributeValue)){
-	    			value.setType(ValueMeta.TYPE_NUMBER);
-	    		} else {
-	    			value.setType(ValueMeta.TYPE_STRING);		            
-	            }  
-	            fields.addValueMeta(value);
-	        }
-	        
+		        NamingEnumeration<? extends Attribute> ne = attributes.getAll();
+		        
+		        while (ne.hasMore()) {
+		        	Attribute attr = ne.next();
+		        	String fieldName = attr.getID();
+		        	if(!fieldsl.contains(fieldName)){
+		        		fieldsl.add(fieldName);
+		        	
+			    		// Get fieldname
+					    ValueMetaInterface value = new ValueMeta(fieldName);
+			
+			            String attributeValue=attr.get().toString();
+			            // Try to get the Type
+			            if(IsDate(attributeValue)){
+			            	value.setType(ValueMeta.TYPE_DATE);
+			    		} else if(IsInteger(attributeValue)){
+			    			value.setType(ValueMeta.TYPE_INTEGER);
+			    		} else if(IsNumber(attributeValue)){
+			    			value.setType(ValueMeta.TYPE_NUMBER);
+			    		} else {
+			    			value.setType(ValueMeta.TYPE_STRING);		            
+			            }  
+			            fields.addValueMeta(value);
+		        	}
+		        }
+			}
 	        return fields;
 		}catch(Exception e){
 			throw new KettleException(BaseMessages.getString(PKG, "LDAPConnection.Error.RetrievingFields"));
+		}finally{
+			fieldsl=null;
 		}
 	}
 	private boolean IsNumber(String str){
