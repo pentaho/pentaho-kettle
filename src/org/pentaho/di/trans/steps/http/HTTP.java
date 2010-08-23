@@ -104,6 +104,7 @@ public class HTTP extends BaseStep implements StepInterface
             
             InputStreamReader inputStreamReader=null;
             Object[] newRow = null;
+            if(rowData!=null) newRow=rowData.clone();
             // Execute request
             // 
             try
@@ -158,12 +159,12 @@ public class HTTP extends BaseStep implements StepInterface
         		}
                 int returnFieldsOffset=rowMeta.size();
                 if (!Const.isEmpty(meta.getFieldName())) {
-                	newRow=RowDataUtil.addValueData(rowData, returnFieldsOffset, body);
+                	newRow=RowDataUtil.addValueData(newRow, returnFieldsOffset, body);
                 	returnFieldsOffset++;
                 }
                 
                 if (!Const.isEmpty(meta.getResultCodeFieldName())) {
-                	newRow=RowDataUtil.addValueData(rowData, returnFieldsOffset, new Long(statusCode));
+                	newRow=RowDataUtil.addValueData(newRow, returnFieldsOffset, new Long(statusCode));
                 }  
                 
             }
