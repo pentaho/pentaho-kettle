@@ -26,6 +26,6 @@
      <tooltip locale="en_US">Reads shape file data from an ESRI shape file and linked DBF file</tooltip>
      <tooltip locale="nl_NL">Reads shape file data from an ESRI shape file and linked DBF file</tooltip>
      <tooltip locale="fr_FR">Lecture de donnes depuis un fichier ESRI</tooltip>
-     <tooltip locale="fr_FR">ESRI Shap 文件读取</tooltip>
+     <tooltip locale="zh_CN">ESRI Shap 文件读取</tooltip>
    </localized_tooltip>
 </plugin>
