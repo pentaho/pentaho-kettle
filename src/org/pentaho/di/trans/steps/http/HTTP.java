@@ -116,15 +116,16 @@ public class HTTP extends BaseStep implements StepInterface
             
             InputStreamReader inputStreamReader=null;
             Object[] newRow = null;
+            if(rowData!=null) newRow=rowData.clone();
             // Execute request
             // 
             try
             {
                 int statusCode = httpclient.executeMethod(hostConfiguration, method);
-                
+                String body=null;
                 // The status code
                 if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTP.Log.ResponseStatusCode", ""+statusCode));
-                String body=null;
+
                 if( statusCode != -1 )
                 {
                     //  if the response is not 401: HTTP Authentication required
@@ -168,14 +169,15 @@ public class HTTP extends BaseStep implements StepInterface
 		                
 		            }
         		}
+
                 int returnFieldsOffset=rowMeta.size();
                 if (!Const.isEmpty(meta.getFieldName())) {
-                	newRow=RowDataUtil.addValueData(rowData, returnFieldsOffset, body);
+                	newRow=RowDataUtil.addValueData(newRow, returnFieldsOffset, body);
                 	returnFieldsOffset++;
                 }
                 
                 if (!Const.isEmpty(meta.getResultCodeFieldName())) {
-                	newRow=RowDataUtil.addValueData(rowData, returnFieldsOffset, new Long(statusCode));
+                	newRow=RowDataUtil.addValueData(newRow, returnFieldsOffset, new Long(statusCode));
                 }  
                 
             }
@@ -239,9 +241,6 @@ public class HTTP extends BaseStep implements StepInterface
 	{
 		meta=(HTTPMeta)smi;
 		data=(HTTPData)sdi;
-		
-		 boolean sendToErrorRow=false;
-		 String errorMessage = null;
 
 		Object[] r=getRow();     // Get row from input rowset & set row busy!
 		if (r==null)  // no more input to be expected...
@@ -317,6 +316,9 @@ public class HTTP extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
+			boolean sendToErrorRow=false;
+			String errorMessage = null;
+			 
 			if (getStepMeta().isDoingErrorHandling())
 	        {
                 sendToErrorRow = true;

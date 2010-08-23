@@ -170,6 +170,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             // 
             InputStreamReader inputStreamReader=null;
             Object[] newRow = null;
+            if(rowData!=null) newRow=rowData.clone();
             try
             {
             	// Execute the POST method
@@ -226,12 +227,12 @@ public class HTTPPOST extends BaseStep implements StepInterface
                 }
                 int returnFieldsOffset=data.inputRowMeta.size();
                 if (!Const.isEmpty(meta.getFieldName())) {
-                	newRow=RowDataUtil.addValueData(rowData, returnFieldsOffset, body);
+                	newRow=RowDataUtil.addValueData(newRow, returnFieldsOffset, body);
                 	returnFieldsOffset++;
                 }
                 
                 if (!Const.isEmpty(meta.getResultCodeFieldName())) {
-                	newRow=RowDataUtil.addValueData(rowData, returnFieldsOffset, new Long(statusCode));
+                	newRow=RowDataUtil.addValueData(newRow, returnFieldsOffset, new Long(statusCode));
                 }                
             }
             finally
