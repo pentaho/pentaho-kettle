@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <plugin
    id="DummyPlugin"
    iconfile="DPL.png"
@@ -14,16 +14,19 @@
      <category locale="en_US">Transform</category>
      <category locale="nl_NL">Transform</category>
      <category locale="fr_FR">Transformation</category>
+     <category locale="zh_CN">转换</category>
    </localized_category>
    <localized_description>
      <description locale="en_US">Dummy plugin</description>
      <description locale="nl_NL">Plugin voorbeeld</description>
      <description locale="fr_FR">Example de plugin</description>
+     <description locale="zh_CN">演示插件</description>
    </localized_description>
    <localized_tooltip>
      <tooltip locale="en_US">This is a dummy plugin test step</tooltip>
      <tooltip locale="nl_NL">Dit is een voorbeeld plugin ook wel 'dummy plugin' geheten</tooltip>
      <tooltip locale="fr_FR">Ceçi est une example de plugin</tooltip>
+     <tooltip locale="zh_CN">这是一个演示插件</tooltip>
    </localized_tooltip>
    
 </plugin>
