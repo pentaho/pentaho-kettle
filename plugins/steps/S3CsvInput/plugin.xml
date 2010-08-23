@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin
    id="S3CSVINPUT"
@@ -15,15 +15,18 @@
      <category locale="en_US">Input</category>
      <category locale="nl_NL">Input</category>
      <category locale="fr_FR">Extraction</category>
+     <category locale="zh_CN">输入</category>
    </localized_category>
    <localized_description>
      <description locale="en_US">S3 CSV Input</description>
      <description locale="nl_NL">S3 CSV Input</description>
      <description locale="fr_FR">Extraction depuis fichier CSV S3</description>
+     <description locale="zh_CN">S3 CSV 输入</description>
    </localized_description>
    <localized_tooltip>
      <tooltip locale="en_US">S3 CSV Input</tooltip>
      <tooltip locale="nl_NL">S3 CSV Input</tooltip>
      <tooltip locale="fr_FR">S3 CSV Input</tooltip>
+     <tooltip locale="zh_CN">S3 CSV 输入</tooltip>
    </localized_tooltip>
 </plugin>
