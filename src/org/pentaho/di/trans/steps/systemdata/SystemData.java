@@ -265,7 +265,7 @@ public class SystemData extends BaseStep implements StepInterface
                 break; 
             case SystemDataMeta.TYPE_SYSTEM_INFO_JVM_AVAILABLE_MEMORY:
             	Runtime rt=Runtime.getRuntime();
-                row[index] = rt.maxMemory()-rt.totalMemory()-rt.freeMemory();
+                row[index] =  rt.freeMemory()+ (rt.maxMemory()-rt.totalMemory());
                 break; 
             case SystemDataMeta.TYPE_SYSTEM_INFO_AVAILABLE_PROCESSORS:
                 row[index] = (long)Runtime.getRuntime().availableProcessors();
