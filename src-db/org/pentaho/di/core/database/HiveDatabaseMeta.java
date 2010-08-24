@@ -135,4 +135,12 @@ public class HiveDatabaseMeta
         return "select count(1) from "+tableName;
     }
 
+    
+    @Override
+    public String generateColumnAlias(int columnIndex, String suggestedName) {
+      // Column aliases are currently not supported in Hive.  The default column alias
+      // generated is in the format '_col##' where ## = column index.  Use this format
+      // so the result can be mapped back correctly.
+      return "_col" + String.valueOf(columnIndex); //$NON-NLS-1$
+    }
 }

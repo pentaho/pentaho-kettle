@@ -848,4 +848,13 @@ public interface DatabaseInterface extends Cloneable
    * @return
    */
   public String getSelectCountStatement(String tableName);
+  
+  /**
+   * Generate a column alias given the column index and suggested name.
+   * 
+   * @param columnIndex Index of column in query
+   * @param suggestedName Suggested column name
+   * @return Column alias that is valid for this database
+   */
+  public String generateColumnAlias(int columnIndex, String suggestedName);
 }

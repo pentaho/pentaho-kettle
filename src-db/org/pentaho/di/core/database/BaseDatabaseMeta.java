@@ -1486,4 +1486,8 @@ public abstract class BaseDatabaseMeta implements Cloneable
   public String getSelectCountStatement(String tableName) {
       return SELECT_COUNT_STATEMENT+" "+tableName;
   }
+  
+  public String generateColumnAlias(int columnIndex, String suggestedName) {
+    return "COL" + Integer.toString(columnIndex); //$NON-NLS-1$
+  }
 }

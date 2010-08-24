@@ -2560,4 +2560,11 @@ public class DatabaseMeta
   public String quoteSQLString(String string) {
     return databaseInterface.quoteSQLString(string);
   }
+  
+  /**
+   * @see DatabaseInterface#generateColumnAlias(int, String)
+   */
+  public String generateColumnAlias(int columnIndex, String suggestedName) {
+    return databaseInterface.generateColumnAlias(columnIndex, suggestedName);
+  }
 }
