@@ -347,7 +347,7 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CopyMoveResultFilenames.Tooltip</tooltip>
 		<iconfile>ui/images/CMR.png</iconfile>
 	</job-entry>
-		<job-entry id="JobCategory.Category.XML_WELL_FORMED">
+		<job-entry id="XML_WELL_FORMED">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.XMLWellFormed.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.xmlwellformed.JobEntryXMLWellFormed</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.XML</category>
