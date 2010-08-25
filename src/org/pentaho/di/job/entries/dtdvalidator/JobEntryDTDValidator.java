@@ -17,18 +17,8 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -38,7 +28,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
@@ -50,8 +39,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
 
 
 /**
@@ -177,180 +166,22 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
-		result.setResult( false );
+		result.setResult(true);
 
 		String realxmlfilename = getRealxmlfilename();
 		String realDTDfilename = getRealDTDfilename();
-
 	
-		FileObject xmlfile = null;
-		FileObject DTDfile = null;
-	
-		try 
-
-		{
+		DTDValidator validator = new DTDValidator(log);
+		validator.setXMLFilename(realxmlfilename);
+		if(dtdintern) validator.setInternDTD(true);
+		else validator.setDTDFilename(realDTDfilename);
 		
-			if (xmlfilename!=null &&  ((dtdfilename!=null && !dtdintern) || (dtdintern))   )
-			{
-				xmlfile = KettleVFS.getFileObject(realxmlfilename, this);
-				
-				
-				if ( xmlfile.exists())   
-					
-				{	
-					
-					//URL xmlFile = new URL (KettleVFS.getFilename(xmlfile));
-					URL xmlFile = new File(KettleVFS.getFilename(xmlfile)).toURI().toURL();
-					
-					// open XML File
-					BufferedReader xmlBufferedReader = new BufferedReader(new InputStreamReader(xmlFile.openStream()));
-					StringBuffer xmlStringbuffer = new StringBuffer("");
-					
-					char[] buffertXML = new char[1024];
-					int LenXML = -1;
-					while ((LenXML = xmlBufferedReader.read(buffertXML)) != -1)
-						xmlStringbuffer.append(buffertXML, 0,LenXML);
-					
-					// Prepare parsing ...
-					DocumentBuilderFactory DocBuilderFactory = DocumentBuilderFactory.newInstance();
-					Document xmlDocDTD=null; 
-					DocumentBuilder DocBuilder = DocBuilderFactory.newDocumentBuilder();
-					
-					// Let's try to get XML document encoding
-					DocBuilderFactory.setValidating(false);
-					xmlDocDTD = DocBuilder.parse(new ByteArrayInputStream(xmlStringbuffer.toString().getBytes("UTF-8")));
-					
-					String encoding = null;
-					if (xmlDocDTD.getXmlEncoding() == null) 
-					{
-						encoding = "UTF-8";
-					} 
-					else 
-					{
-						encoding = xmlDocDTD.getXmlEncoding();
-					}
-					
-					int xmlStartDTD = xmlStringbuffer.indexOf("<!DOCTYPE");
-					 
-					if (dtdintern)
-					{
-						// DTD find in the XML document
-						if (xmlStartDTD != -1)
-						{
-							if(log.isBasic())
-								log.logBasic(toString(),  Messages.getString("JobEntryDTDValidator.ERRORDTDFound.Label", realxmlfilename));
-						}
-						else
-						{
-							if(log.isBasic())
-								log.logBasic(toString(),  Messages.getString("JobEntryDTDValidator.ERRORDTDNotFound.Label", realxmlfilename));
-						}
-							
-					
-						
-					}
-					else
-					{
-						// DTD in external document
-						// If we find an intern declaration, we remove it
-						DTDfile = KettleVFS.getFileObject(realDTDfilename, this);
-						
-						if (DTDfile.exists())
-						{
-							if (xmlStartDTD != -1)
-							{
-								int EndDTD = xmlStringbuffer.indexOf(">",xmlStartDTD);
-								//String DocTypeDTD = xmlStringbuffer.substring(xmlStartDTD, EndDTD + 1);
-								xmlStringbuffer.replace(xmlStartDTD,EndDTD + 1, "");
-				
-							}
-							
-							
-							String xmlRootnodeDTD = xmlDocDTD.getDocumentElement().getNodeName();
-								
-							String RefDTD = "<?xml version='"
-								+ xmlDocDTD.getXmlVersion() + "' encoding='"
-								+ encoding + "'?>\n<!DOCTYPE " + xmlRootnodeDTD
-								+ " SYSTEM '" + KettleVFS.getFilename(DTDfile) + "'>\n";
-	
-							int xmloffsetDTD = xmlStringbuffer.indexOf("<"+ xmlRootnodeDTD);
-							xmlStringbuffer.replace(0, xmloffsetDTD,RefDTD);
-						}
-						else
-						{
-							log.logError(Messages.getString("JobEntryDTDValidator.ERRORDTDFileNotExists.Subject"), Messages.getString("JobEntryDTDValidator.ERRORDTDFileNotExists.Msg",realDTDfilename));
-						}
-					}
-						
-					if ((dtdintern && xmlStartDTD == -1 || (!dtdintern && !DTDfile.exists())))
-					{
-						result.setResult( false );
-						result.setNrErrors(1);
-					}
-					else
-					{
-						DocBuilderFactory.setValidating(true);
-						
-						// Let's parse now ...
-											
-						xmlDocDTD = DocBuilder.parse(new ByteArrayInputStream(xmlStringbuffer.toString().getBytes(encoding)));
-						if(log.isDetailed())
-							log.logDetailed(Messages.getString("JobEntryDTDValidator.DTDValidatorOK.Subject"),
-								Messages.getString("JobEntryDTDValidator.DTDValidatorOK.Label",		
-										realxmlfilename));
-						
-						// Everything is OK
-						result.setResult( true );
-					}
-					
-				}
-				else
-				{
-
-					if(	!xmlfile.exists())
-					{
-						log.logError(toString(),  Messages.getString("JobEntryDTDValidator.FileDoesNotExist.Label",	realxmlfilename));
-					}
-					
-					result.setResult( false );
-					result.setNrErrors(1);
-				}
-
-			}
-			else
-			{
-				log.logError(toString(),  Messages.getString("JobEntryDTDValidator.AllFilesNotNull.Label"));
-				result.setResult( false );
-				result.setNrErrors(1);
-			}
-
-
-		
-		}
-	
-		catch ( Exception e )
-		{
-			log.logError(Messages.getString("JobEntryDTDValidator.ErrorDTDValidator.Subject"),
-					Messages.getString("JobEntryDTDValidator.ErrorDTDValidator.Label",		
-							realxmlfilename,realDTDfilename,e.getMessage()));
-			
+		boolean status = validator.validate();
+		if(!status) {
+			log.logError(toString(), validator.getErrorMessage());
 			result.setResult( false );
-			result.setNrErrors(1);
-		}	
-		finally
-		{
-			try 
-			{
-			    if ( xmlfile != null )
-			    	xmlfile.close();
-			    
-			    if ( DTDfile != null )
-			    	DTDfile.close();
-				
-		    }
-			catch ( IOException e ) { }			
+			result.setNrErrors(validator.getNrErrors());
 		}
-		
 
 		return result;
 	}
