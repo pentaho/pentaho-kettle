@@ -191,7 +191,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private Image imageArrowOrange=null;
 	private Image imageArrowGreen=null;
 	private Image imageUnderGreen=null;
-
+	private Image imageAddScript=null;
+	private Image imageDeleteScript=null;
+	private Image imageDuplicateScript=null;
 	
 	private CTabFolder 	folder;
 	private Menu 		cMenu;
@@ -253,9 +255,12 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			imageInputFields = guiresource.getImage("ui/images/inSmall.png");
 			imageOutputFields = guiresource.getImage("ui/images/outSmall.png");
 			imageActiveScript = guiresource.getImage("ui/images/faScript.png");
-			imageInactiveScript = guiresource.getImage("ui/images/fScript.png");
-			imageActiveStartScript = guiresource.getImage("ui/images/sScript.png");
-			imageActiveEndScript = guiresource.getImage("ui/images/eScript.png");
+			imageInactiveScript = guiresource.getImage("ui/images/hide-inactive.png");
+			imageActiveStartScript = guiresource.getImage("ui/images/SQLbutton.png");
+			imageActiveEndScript = guiresource.getImage("ui/images/edfScript.png");
+			imageDeleteScript = guiresource.getImage("ui/images/deleteSmall.png");
+			imageAddScript = guiresource.getImage("ui/images/addSmall.png");
+			imageDuplicateScript = guiresource.getImage("ui/images/copySmall.png");
 		}catch(Exception e){
 			imageActiveScript = new Image(parent.getDisplay(), 16, 16);
 			imageInactiveScript = new Image(parent.getDisplay(), 16, 16);
@@ -266,6 +271,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			imageArrowOrange = new Image(parent.getDisplay(), 16, 16);
 			imageArrowGreen= new Image(parent.getDisplay(), 16, 16);
 			imageUnderGreen= new Image(parent.getDisplay(), 16, 16);
+			imageDeleteScript= new Image(parent.getDisplay(), 16, 16);
+			imageAddScript= new Image(parent.getDisplay(), 16, 16);
+			imageDuplicateScript= new Image(parent.getDisplay(), 16, 16);
 		}
 		
         try
@@ -1738,6 +1746,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		//styledTextPopupmenu = new Menu(, SWT.POP_UP);
 		MenuItem addNewItem = new MenuItem(cMenu, SWT.PUSH);
 		addNewItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.AddNewTab"));
+		addNewItem.setImage(imageAddScript);
 		addNewItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				addCtab("","", ADD_BLANK);
@@ -1746,6 +1755,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		MenuItem copyItem = new MenuItem(cMenu, SWT.PUSH);
 		copyItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.AddCopy"));
+		copyItem.setImage(imageDuplicateScript);
 		copyItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1757,6 +1767,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		MenuItem setActiveScriptItem = new MenuItem(cMenu, SWT.PUSH);
 		setActiveScriptItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.SetTransformScript"));
+		setActiveScriptItem.setImage(imageActiveScript);
 		setActiveScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1778,6 +1789,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		MenuItem setStartScriptItem = new MenuItem(cMenu, SWT.PUSH);
 		setStartScriptItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.SetStartScript"));
+		setStartScriptItem.setImage(imageActiveStartScript);
 		setStartScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1799,6 +1811,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
 		MenuItem setEndScriptItem = new MenuItem(cMenu, SWT.PUSH);
 		setEndScriptItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.SetEndScript"));
+		setEndScriptItem.setImage(imageActiveEndScript);
 		setEndScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1820,6 +1833,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		new MenuItem(cMenu, SWT.SEPARATOR);
 		MenuItem setRemoveScriptItem = new MenuItem(cMenu, SWT.PUSH);
 		setRemoveScriptItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.RemoveScriptType"));
+		setRemoveScriptItem.setImage(imageDeleteScript);
 		setRemoveScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
@@ -1838,6 +1852,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		//styledTextPopupmenu = new Menu(, SWT.POP_UP);
 		MenuItem addDeleteItem = new MenuItem(tMenu, SWT.PUSH);
 		addDeleteItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Delete.Label"));
+		addDeleteItem.setImage(imageDeleteScript);
 		addDeleteItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				if (wTree.getSelectionCount()<=0) return;
