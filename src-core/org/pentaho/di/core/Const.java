@@ -653,7 +653,7 @@ public class Const
     /**
      * The release type of this compilation
      */
-    public static final ReleaseType RELEASE = ReleaseType.GA;
+    public static final ReleaseType RELEASE = ReleaseType.STABLE;
     
     /** 
      *  rounds double f to any number of places after decimal point
