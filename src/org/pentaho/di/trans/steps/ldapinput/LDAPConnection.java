@@ -324,7 +324,7 @@ public class LDAPConnection {
 			Attributes attrs = buildAttributes(dn, attributes, values, multValuedSeparator);
 		    // We had all attributes
 			getInitialContext().modifyAttributes(dn,DirContext.ADD_ATTRIBUTE,attrs);
-			return 	STATUS_ADDED;
+			return STATUS_ADDED;
 		}catch(NameNotFoundException n) {
 			// The entry is not found
 			if(checkEntry) {
@@ -439,7 +439,7 @@ public class LDAPConnection {
 			Map<String, Attributes> childs = new java.util.HashMap<String, Attributes>();
 			List<String> paths = new ArrayList<String>();
 	
-			list(oldDn, childs, paths);
+			getPaths(oldDn, childs, paths);
 			
 			// Destroy sub contexts
 			for (String childName : paths) {
@@ -482,12 +482,12 @@ public class LDAPConnection {
 		
 	}
 	@SuppressWarnings("rawtypes")
-	private void list(String rootName, Map<String, Attributes> childs, List<String> paths) throws Exception {
+	private void getPaths(String rootName, Map<String, Attributes> childs, List<String> paths) throws Exception {
 		NamingEnumeration ne = getInitialContext().list(rootName);
 		while (ne.hasMore()) {
 			NameClassPair nameCP = (NameClassPair) ne.next();
 			childs.put(nameCP.getName() + "," + rootName,getInitialContext().getAttributes(nameCP.getName()+ "," + rootName));
-			list(nameCP.getName() + "," + rootName, childs, paths);
+			getPaths(nameCP.getName() + "," + rootName, childs, paths);
 			paths.add(nameCP.getName() + "," + rootName);
 		}
 	}

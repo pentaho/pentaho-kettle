@@ -1833,7 +1833,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		new MenuItem(cMenu, SWT.SEPARATOR);
 		MenuItem setRemoveScriptItem = new MenuItem(cMenu, SWT.PUSH);
 		setRemoveScriptItem.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.RemoveScriptType"));
-		setRemoveScriptItem.setImage(imageDeleteScript);
+		setRemoveScriptItem.setImage(imageInactiveScript);
 		setRemoveScriptItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				CTabItem item = folder.getSelection();
