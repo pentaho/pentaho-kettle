@@ -475,7 +475,8 @@ public class HadoopVfsFileChooserDialog extends VfsFileChooserDialog implements 
         GenericFileName genericFileName = (GenericFileName) initialFile.getFileSystem().getRoot().getName();
         wUrl.setText(genericFileName.getHostName());
         wPort.setText(String.valueOf(genericFileName.getPort()));
-        wUserID.setText(String.valueOf(genericFileName.getUserName()));
+        wUserID.setText(genericFileName.getUserName() == null ? "" : genericFileName.getUserName()); //$NON-NLS-1$
+        wPassword.setText(genericFileName.getPassword() == null ? "" : genericFileName.getPassword()); //$NON-NLS-1$
       } catch (FileSystemException fse) {
         showMessageAndLog(dialog, "HadoopVfsFileChooserDialog.error", "HadoopVfsFileChooserDialog.FileSystem.error", fse.getMessage());
       }
