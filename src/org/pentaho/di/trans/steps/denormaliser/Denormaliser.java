@@ -350,6 +350,19 @@ public class Denormaliser extends BaseStep implements StepInterface
                                 // data.sum[idx] = (Integer)data.sum[idx] + (Integer)sourceData;
                             }
                             break;
+                        case DenormaliserTargetField.TYPE_AGGR_CONCAT_COMMA:
+                            String separator=",";
+
+                            targetData = targetMeta.convertData(sourceMeta, sourceData);
+                            if (prevTargetData!=null)
+                            {
+                                prevTargetData = prevTargetData+separator+targetData;
+                            }
+                            else
+                            {
+                                prevTargetData = targetData;
+                            }
+                            break;
                         case DenormaliserTargetField.TYPE_AGGR_NONE:
                         default:
                             targetData = targetMeta.convertData(sourceMeta, sourceData);
