@@ -861,12 +861,15 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	public boolean containsSeparatorOrEnclosure(byte[] source, byte[] separator, byte[] enclosure) {
 	  boolean result = false;
 
+	  boolean enclosureExists = enclosure != null && enclosure.length > 0;
+	  boolean separatorExists = separator != null && separator.length > 0;
+	  
 	  // Skip entire test if neither separator nor enclosure exist
-	  if(separator != null && enclosure != null) {
+	  if(separatorExists || enclosureExists) {
 	  
       // Search for the first occurrence of the separator or enclosure
       for(int index = 0; !result && index < source.length; index++) {
-        if(enclosure != null && source[index] == enclosure[0]) {
+        if(enclosureExists && source[index] == enclosure[0]) {
           
           // Potential match found, make sure there are enough bytes to support a full match
           if(index + enclosure.length <= source.length) {
@@ -881,7 +884,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
             }
           }
           
-        } else if(separator != null && source[index] == separator[0]) {
+        } else if(separatorExists && source[index] == separator[0]) {
           
           // Potential match found, make sure there are enough bytes to support a full match
           if(index + separator.length <= source.length) {
