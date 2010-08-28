@@ -149,14 +149,36 @@ public class StepStatus
 	        Long.toString(linesRejected),
 	        Long.toString(errors),
 	        statusDescription,
-	        Double.toString(seconds),
+	        convertSeconds(seconds),
 	        speed,
 	        priority,
         };
         
         return fields;
     }
-    
+    private String convertSeconds(double seconds) {
+    	String retval=seconds +"s";
+    	
+    	if(seconds<60) return retval;
+
+		double donnee =  seconds;
+		int mn = (int) donnee/60;
+		int h = mn/60;
+		mn  = mn%60;
+		int s = (int) donnee%60;
+
+		if(h>0) {
+			retval=h + "h " + mn+"mn "+s + "s";
+		} else {
+			if(mn>0) {
+				retval=mn+"mn "+s +"s";
+			} else {
+				retval=seconds + "s";
+			}
+		}
+    	
+    	return retval;
+    }
     public String[] getSpoonSlaveLogFields()
     {
         String fields[] = getTransLogFields();

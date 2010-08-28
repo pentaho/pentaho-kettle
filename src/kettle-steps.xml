@@ -1297,4 +1297,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MetaInject</tooltip>
 		<iconfile>ui/images/GenericTransform.png</iconfile>
 	</step>
+	    <step id="StringOperations">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.StringOperations</description>
+		<classname>org.pentaho.di.trans.steps.stringoperations.StringOperationsMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.StringOperations</tooltip>
+		<iconfile>ui/images/STM.png</iconfile>
+	</step>
 </steps>

@@ -2450,4 +2450,30 @@ public class Const
 	  while (m.find()) { ++count; }
 	  return count;
 	}
+	 /**
+	 * 	Mask XML content.
+	 *  i.e. replace characters with &values;
+	 * 	@param content content
+	 * 	@return masked content
+	 */
+	public static String escapeXml (String content)
+	{
+		if (isEmpty(content))	return content;
+		return StringEscapeUtils.escapeXml(content);
+	}	
+	
+	public static String Lpad(String valueToPad , String filler, int size ) {	    
+		  if(size==0) return valueToPad;
+		  while (valueToPad.length() < size) {
+			 valueToPad = filler + valueToPad;
+		  }
+		  return valueToPad;
+	  }
+	public static String Rpad(String valueToPad , String filler, int size ) {	    
+		  if(size==0) return valueToPad;
+		  while (valueToPad.length() < size){
+			 valueToPad = valueToPad+filler;
+		  }
+		  return valueToPad;
+	  }
 }
