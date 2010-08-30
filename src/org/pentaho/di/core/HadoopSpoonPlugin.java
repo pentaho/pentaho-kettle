@@ -55,7 +55,7 @@ public class HadoopSpoonPlugin implements LifecycleListener, GUIOption {
 			log.logError(BaseMessages.getString(PKG, "HadoopSpoonPlugin.StartupError.FailedToLoadHdfsDriver"));
 		}
 		
-		Spoon.getInstance().setVfsFileBrowserFactory(new IVfsFileBrowserFactory() {
+		Spoon.getInstance().setVfsFileBrowserFactory("hdfs", new IVfsFileBrowserFactory() {
 			public IVfsFileChooser getFileChooser(FileObject root, FileObject initial) {
 				return new HadoopVfsFileChooserDialog(root, initial);
 			}
