@@ -490,7 +490,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   private RepositoriesDialog loginDialog;
   
-  private IVfsFileBrowserFactory vfsFileBrowserFactory = new VfsFileBrowserFactory();
+  private Map<String,IVfsFileBrowserFactory> vfsFileBrowserFactoryMap = new HashMap<String, IVfsFileBrowserFactory>();
+  private IVfsFileBrowserFactory defaultVfsFileBrowserFactory = new VfsFileBrowserFactory();
 
   /**
    * This is the main procedure for Spoon.
@@ -3676,7 +3677,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       return;
     }
 
-    IVfsFileBrowserFactory vfbFactory = getVfsFileBrowserFactory();
+    IVfsFileBrowserFactory vfbFactory = getVfsFileBrowserFactory(rootFile.getName().getScheme());
     
     if(vfbFactory != null) {
       IVfsFileChooser vfsFileChooser = vfbFactory.getFileChooser(rootFile, initialFile);
@@ -3690,12 +3691,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
   
-  public void setVfsFileBrowserFactory(IVfsFileBrowserFactory vfsFileBrowserFactory) {
-    this.vfsFileBrowserFactory = vfsFileBrowserFactory;
+  public void setVfsFileBrowserFactory(String vfsProviderName, IVfsFileBrowserFactory vfsFileBrowserFactory) {
+    vfsFileBrowserFactoryMap.put(vfsProviderName, vfsFileBrowserFactory);
   }
   
-  public IVfsFileBrowserFactory getVfsFileBrowserFactory() {
-    return vfsFileBrowserFactory;
+  public IVfsFileBrowserFactory getVfsFileBrowserFactory(String vfsProviderName) {
+    IVfsFileBrowserFactory factory = vfsFileBrowserFactoryMap.get(vfsProviderName);
+    if (factory == null) {
+      factory = defaultVfsFileBrowserFactory;
+    }
+    return factory;
   }
 
   public void addFileListener(FileListener listener) {
