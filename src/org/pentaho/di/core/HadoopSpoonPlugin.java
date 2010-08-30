@@ -41,21 +41,23 @@ public class HadoopSpoonPlugin implements LifecycleListener, GUIOption {
 	private static Class<?> PKG = HadoopSpoonPlugin.class;
 	private LogChannelInterface log = new LogChannel(HadoopSpoonPlugin.class.getName());
 
+	public static final String HDFS_SCHEME = "hdfs";
+	
 	@Override
 	public void onStart(LifeEventHandler arg0) throws LifecycleException {
 		try {
 			// Register HDFS as a file system type with VFS
 			FileSystemManager fsm = KettleVFS.getInstance().getFileSystemManager();
 			if(fsm instanceof DefaultFileSystemManager) {
-				if(!Arrays.asList(fsm.getSchemes()).contains("hdfs")) {
-					((DefaultFileSystemManager)fsm).addProvider("hdfs",  new HDFSFileProvider());
+				if(!Arrays.asList(fsm.getSchemes()).contains(HDFS_SCHEME)) {
+					((DefaultFileSystemManager)fsm).addProvider(HDFS_SCHEME,  new HDFSFileProvider());
 				}
 			}
 		} catch (FileSystemException e) {
 			log.logError(BaseMessages.getString(PKG, "HadoopSpoonPlugin.StartupError.FailedToLoadHdfsDriver"));
 		}
 		
-		Spoon.getInstance().setVfsFileBrowserFactory("hdfs", new IVfsFileBrowserFactory() {
+		Spoon.getInstance().setVfsFileBrowserFactory(HDFS_SCHEME, new IVfsFileBrowserFactory() {
 			public IVfsFileChooser getFileChooser(FileObject root, FileObject initial) {
 				return new HadoopVfsFileChooserDialog(root, initial);
 			}
