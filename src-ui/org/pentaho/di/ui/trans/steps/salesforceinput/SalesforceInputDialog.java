@@ -23,9 +23,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -76,7 +82,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
 import com.sforce.soap.partner.Field;
 
 public class SalesforceInputDialog extends BaseStepDialog implements StepDialogInterface {
@@ -136,6 +141,10 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     
     private StyledTextComp  wCondition;
     
+	
+	private Label        wlPosition;
+	private FormData     fdlPosition;
+    
     private Button wspecifyQuery;
     private FormData fdspecifyQuery;
     private Label wlspecifyQuery;
@@ -179,6 +188,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     private boolean  getModulesListError = false;     /* True if error getting modules list */
     
     private ColumnInfo[] colinf;
+    
+	private SOQLValuesHighlight lineStyler = new SOQLValuesHighlight();
     
 	public SalesforceInputDialog(Shell parent, Object in, TransMeta transMeta,
 			String sname) {
@@ -398,7 +409,15 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         }
     );
 
-       
+		
+		wlPosition=new Label(wSettingsGroup, SWT.NONE); 
+		props.setLook(wlPosition);
+		fdlPosition=new FormData();
+		fdlPosition.left  = new FormAttachment(middle,0);
+		fdlPosition.right = new FormAttachment(100, 0);
+		fdlPosition.bottom = new FormAttachment(100, -margin);
+		wlPosition.setLayoutData(fdlPosition);
+		
 	    // condition
         wlCondition = new Label(wSettingsGroup, SWT.RIGHT);
         wlCondition.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Condition.Label"));
@@ -417,11 +436,42 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         fdCondition.left = new FormAttachment(middle, margin);
         fdCondition.top = new FormAttachment(wModule, margin);
         fdCondition.right = new FormAttachment(100, -margin);
-        fdCondition.bottom = new FormAttachment(100, -margin);
+        fdCondition.bottom = new FormAttachment(wlPosition, -margin);
         wCondition.setLayoutData(fdCondition);
-        
+        wCondition.addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent arg0)
+            {
+            	setQueryToolTip();
+                setPosition(); 
+            }
+        }
+    );
 
 
+		wCondition.addKeyListener(new KeyAdapter(){
+			public void keyPressed(KeyEvent e) { setPosition(); }
+			public void keyReleased(KeyEvent e) { setPosition(); }
+			} 
+		);
+		wCondition.addFocusListener(new FocusAdapter(){
+			public void focusGained(FocusEvent e) { setPosition(); }
+			public void focusLost(FocusEvent e) { setPosition(); }
+			}
+		);
+		wCondition.addMouseListener(new MouseAdapter(){
+			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
+			public void mouseDown(MouseEvent e) { setPosition(); }
+			public void mouseUp(MouseEvent e) { setPosition(); }
+			}
+		);
+		
+		
+		
+		// Text Higlighting
+		lineStyler = new SOQLValuesHighlight();
+		wCondition.addLineStyleListener(lineStyler);
+		
 	    // Query
         wlQuery = new Label(wSettingsGroup, SWT.RIGHT);
         wlQuery.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Query.Label"));
@@ -439,7 +489,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		fdQuery.left  = new FormAttachment(middle, margin);
 		fdQuery.top   = new FormAttachment(wspecifyQuery, margin );
 		fdQuery.right = new FormAttachment(100, -margin);
-		fdQuery.bottom= new FormAttachment(100, -margin );
+		fdQuery.bottom= new FormAttachment(wlPosition, -margin );
 		wQuery.setLayoutData(fdQuery);
 		wQuery.addModifyListener(new ModifyListener()
             {
@@ -450,7 +500,28 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             }
         );
 		
+		wQuery.addKeyListener(new KeyAdapter(){
+			public void keyPressed(KeyEvent e) { setPosition(); }
+			public void keyReleased(KeyEvent e) { setPosition(); }
+			} 
+		);
+		wQuery.addFocusListener(new FocusAdapter(){
+			public void focusGained(FocusEvent e) { setPosition(); }
+			public void focusLost(FocusEvent e) { setPosition(); }
+			}
+		);
+		wQuery.addMouseListener(new MouseAdapter(){
+			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
+			public void mouseDown(MouseEvent e) { setPosition(); }
+			public void mouseUp(MouseEvent e) { setPosition(); }
+			}
+		);
 		
+		
+		
+		// Text Higlighting
+		lineStyler = new SOQLValuesHighlight();
+		wQuery.addLineStyleListener(lineStyler);
 		
         FormData fdSettingsGroup= new FormData();
         fdSettingsGroup.left = new FormAttachment(0, 0);
@@ -1255,10 +1326,6 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	}
 
 
-  protected void setQueryToolTip()
-  {
-     wQuery.setToolTipText(transMeta.environmentSubstitute(wQuery.getText()));
-  }
  private void get() 
  { 
 	 SalesforceConnection connection=null;
@@ -1663,6 +1730,30 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		 	 }
 		  }
 	  }
+	protected void setQueryToolTip()
+    {
+		StyledTextComp control = wCondition;
+		if(wspecifyQuery.getSelection()) control = wQuery;
+		control.setToolTipText(transMeta.environmentSubstitute(control.getText()));
+    }
+	public void setPosition(){
+		StyledTextComp control = wCondition;
+		if(wspecifyQuery.getSelection()) control = wQuery;
+		
+		String scr = control.getText();
+		int linenr = control.getLineAtOffset(control.getCaretOffset())+1;
+		int posnr  = control.getCaretOffset();
+				
+		// Go back from position to last CR: how many positions?
+		int colnr=0;
+		while (posnr>0 && scr.charAt(posnr-1)!='\n' && scr.charAt(posnr-1)!='\r')
+		{
+			posnr--;
+			colnr++;
+		}
+		wlPosition.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Position.Label",""+linenr,""+colnr));
+
+	}
 	public String toString() {
 		return this.getClass().getName();
 	}

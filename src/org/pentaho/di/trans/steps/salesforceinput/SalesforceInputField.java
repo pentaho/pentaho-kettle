@@ -89,6 +89,7 @@ public class SalesforceInputField implements Cloneable
         retval+="      <field>"+Const.CR;
         retval+="        "+XMLHandler.addTagValue("name",         getName());
         retval+="        "+XMLHandler.addTagValue("field",      getField());
+        retval+="        "+XMLHandler.addTagValue("idlookup",     isIdLookup());
         retval+="        "+XMLHandler.addTagValue("type",         getTypeDesc());
         retval+="        "+XMLHandler.addTagValue("format",       getFormat());
         retval+="        "+XMLHandler.addTagValue("currency",     getCurrencySymbol());
@@ -98,7 +99,6 @@ public class SalesforceInputField implements Cloneable
         retval+="        "+XMLHandler.addTagValue("precision",    getPrecision());
         retval+="        "+XMLHandler.addTagValue("trim_type",    getTrimTypeCode());
         retval+="        "+XMLHandler.addTagValue("repeat",       isRepeated());
-        retval+="        "+XMLHandler.addTagValue("idlookup",     isIdLookup());
         retval+="        </field>"+Const.CR;
         return retval;
     }
@@ -107,6 +107,7 @@ public class SalesforceInputField implements Cloneable
     {
         setName( XMLHandler.getTagValue(fnode, "name") );
         setField( XMLHandler.getTagValue(fnode, "field") );
+        setIdLookup("Y".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "idlookup")) ); 
         setType( ValueMeta.getType(XMLHandler.getTagValue(fnode, "type")) );
         setFormat( XMLHandler.getTagValue(fnode, "format") );
         setCurrencySymbol( XMLHandler.getTagValue(fnode, "currency") );
@@ -116,7 +117,6 @@ public class SalesforceInputField implements Cloneable
         setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
         setTrimType( getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
         setRepeated( !"N".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "repeat")) );
-        setIdLookup("Y".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "idlookup")) ); 
     }
 
     public final static int getTrimTypeByCode(String tt)
