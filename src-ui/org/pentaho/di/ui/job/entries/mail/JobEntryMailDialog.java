@@ -1412,7 +1412,17 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     {
         wEncoding.setEnabled(wUseHTML.getSelection());
         wlEncoding.setEnabled(wUseHTML.getSelection());
-        	
+        wlImageFilename.setEnabled(wUseHTML.getSelection());
+        wlImageFilename.setEnabled(wUseHTML.getSelection());
+        wbImageFilename.setEnabled(wUseHTML.getSelection());
+        wbaImageFilename.setEnabled(wUseHTML.getSelection());
+        wImageFilename.setEnabled(wUseHTML.getSelection());
+        wlContentID.setEnabled(wUseHTML.getSelection());
+        wContentID.setEnabled(wUseHTML.getSelection());
+        wbdImageFilename.setEnabled(wUseHTML.getSelection());
+        wbeImageFilename.setEnabled(wUseHTML.getSelection());
+        wlFields.setEnabled(wUseHTML.getSelection());
+        wFields.setEnabled(wUseHTML.getSelection()); 	
     }
     protected void setSecureConnectiontype()
     {
