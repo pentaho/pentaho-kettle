@@ -924,53 +924,52 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
       msg.setSentDate(new Date());
       StringBuffer messageText = new StringBuffer();
-
+      String endRow= isUseHTML()?"<br>":Const.CR;
       if (comment != null)
       {
-        messageText.append(environmentSubstitute(comment)).append(Const.CR).append(Const.CR);
+        messageText.append(environmentSubstitute(comment)).append(endRow).append(endRow);
       }
       if (!onlySendComment)
       {
     	  
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Job")).append(Const.CR);
-        messageText.append("-----").append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobName")+ "    : ").append(parentJob.getJobMeta().getName()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobDirectory") + "  : ").append(parentJob.getJobMeta().getRepositoryDirectory()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobEntry") + "   : ").append(getName()).append(Const.CR);
-        messageText.append(Const.CR);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Job")).append(endRow);
+        messageText.append("-----").append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobName")+ "    : ").append(parentJob.getJobMeta().getName()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobDirectory") + "  : ").append(parentJob.getJobMeta().getRepositoryDirectory()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobEntry") + "   : ").append(getName()).append(endRow);
+        messageText.append(endRow);
       }
   
       if (includeDate)
       {
-        messageText.append(Const.CR).append(BaseMessages.getString(PKG, "JobMail.Log.Comment.MsgDate") +": ").append(XMLHandler.date2string(new Date())).append(Const.CR).append(
-            Const.CR);
+        messageText.append(endRow).append(BaseMessages.getString(PKG, "JobMail.Log.Comment.MsgDate") +": ").append(XMLHandler.date2string(new Date())).append(endRow).append(endRow);
       }
       if (!onlySendComment && result != null)
       {
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.PreviousResult") +":").append(Const.CR);
-        messageText.append("-----------------").append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobEntryNr")+ "         : ").append(result.getEntryNr()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Errors") + "               : ").append(result.getNrErrors()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesRead")+ "           : ").append(result.getNrLinesRead()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesWritten") + "        : ").append(result.getNrLinesWritten()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesInput") + "          : ").append(result.getNrLinesInput()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesOutput") + "         : ").append(result.getNrLinesOutput()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesUpdated") + "        : ").append(result.getNrLinesUpdated()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesRejected") + "       : ").append(result.getNrLinesRejected()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Status") + "  : ").append(result.getExitStatus()).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Result") +"               : ").append(result.getResult()).append(Const.CR);
-        messageText.append(Const.CR);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.PreviousResult") +":").append(endRow);
+        messageText.append("-----------------").append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.JobEntryNr")+ "         : ").append(result.getEntryNr()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Errors") + "               : ").append(result.getNrErrors()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesRead")+ "           : ").append(result.getNrLinesRead()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesWritten") + "        : ").append(result.getNrLinesWritten()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesInput") + "          : ").append(result.getNrLinesInput()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesOutput") + "         : ").append(result.getNrLinesOutput()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesUpdated") + "        : ").append(result.getNrLinesUpdated()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.LinesRejected") + "       : ").append(result.getNrLinesRejected()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Status") + "  : ").append(result.getExitStatus()).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Result") +"               : ").append(result.getResult()).append(endRow);
+        messageText.append(endRow);
       }
 
       if (!onlySendComment
               && (!Const.isEmpty(environmentSubstitute(contactPerson)) || !Const
                   .isEmpty(environmentSubstitute(contactPhone))))
       {
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.ContactInfo") + " :").append(Const.CR);
-        messageText.append("---------------------").append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.PersonToContact")+" : ").append(environmentSubstitute(contactPerson)).append(Const.CR);
-        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Tel") + "  : ").append(environmentSubstitute(contactPhone)).append(Const.CR);
-        messageText.append(Const.CR);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.ContactInfo") + " :").append(endRow);
+        messageText.append("---------------------").append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.PersonToContact")+" : ").append(environmentSubstitute(contactPerson)).append(endRow);
+        messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.Tel") + "  : ").append(environmentSubstitute(contactPhone)).append(endRow);
+        messageText.append(endRow);
       }
 
       // Include the path to this job entry...
@@ -979,10 +978,13 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         JobTracker jobTracker = parentJob.getJobTracker();
         if (jobTracker != null)
         {
-          messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.PathToJobentry") +":").append(Const.CR);
-          messageText.append("------------------------").append(Const.CR);
+          messageText.append(BaseMessages.getString(PKG, "JobMail.Log.Comment.PathToJobentry") +":").append(endRow);
+          messageText.append("------------------------").append(endRow);
 
           addBacktracking(jobTracker, messageText);
+          if(isUseHTML()) {
+				 messageText.replace(0, messageText.length(), messageText.toString().replace(Const.CR, endRow));
+		  }
         }
       }
 
