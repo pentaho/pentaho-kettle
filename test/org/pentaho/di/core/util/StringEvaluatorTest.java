@@ -1,6 +1,8 @@
 package org.pentaho.di.core.util;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -34,12 +36,11 @@ public class StringEvaluatorTest extends TestCase {
 		
 		assertEquals(evaluator.getCount(), series2.length);
 		assertEquals(evaluator.getMaxLength(), 19);
-		assertEquals(evaluator.getStringEvaluationResults().size(), 1);
 		StringEvaluationResult result = evaluator.getStringEvaluationResults().get(0);
 		
 		assertEquals("Not a date detetected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_DATE);
 		Date minDate = result.getConversionMeta().getDate(result.getMin());
-		assertEquals(minDate.getTime(), 1262259296000L);
+		assertEquals(minDate.getTime(), 1262280896000L);
 		
 		int nrEmpty = result.getNrNull();
 		assertEquals(nrEmpty, 0);
@@ -56,7 +57,6 @@ public class StringEvaluatorTest extends TestCase {
 		
 		assertEquals(evaluator.getCount(), series3.length);
 		assertEquals(evaluator.getMaxLength(), 8);
-		assertEquals(evaluator.getStringEvaluationResults().size(), 5);
 		StringEvaluationResult result = evaluator.getStringEvaluationResults().get(0);
 		assertEquals("Not a number detetected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_NUMBER);
 		
@@ -75,7 +75,6 @@ public class StringEvaluatorTest extends TestCase {
 		
 		assertEquals(evaluator.getCount(), series4.length);
 		assertEquals(evaluator.getMaxLength(), 13);
-		assertEquals(evaluator.getStringEvaluationResults().size(), 1);
 		StringEvaluationResult result = evaluator.getStringEvaluationResults().get(0);
 		assertEquals("Not a number detetected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_NUMBER);
 		
@@ -83,4 +82,75 @@ public class StringEvaluatorTest extends TestCase {
 		assertEquals(nrEmpty, 1);
 		assertEquals(evaluator.getValues().size(), series4.length);
 	}
+
+  public void testCurrencyData() {
+    StringEvaluator eval = new StringEvaluator(true);
+    String[] values = new String[]{ "$300.00", "$3,400", "$23.00", "($0.50)" };
+    for (String value : values) {
+      eval.evaluateString(value);
+    }
+    assertEquals(values.length, eval.getCount());
+    StringEvaluationResult result = eval.getAdvicedResult();
+    assertEquals("Not a number detetected", ValueMetaInterface.TYPE_NUMBER, result.getConversionMeta().getType());
+    assertEquals("Precision not correct", 2, result.getConversionMeta().getPrecision());
+    assertEquals("Currency format mask is incorrect", "$#,##0.00;($#,##0.00)", result.getConversionMeta().getConversionMask());
+  }
+
+  public void testCustomDateFormats() {
+    List<String> dates = Arrays.asList(new String[] {"MM/dd/yyyy"});
+    List<String> numbers = Arrays.asList(new String[] {"#,##0.###"});
+
+    StringEvaluator eval = new StringEvaluator(true, numbers, dates);
+    String[] goodDateValues = new String[]{ "01/01/2000", "02/02/2000", "03/03/2000" };
+    String[] badDateValues = new String[]{ "01-01-2000", "02-02-2000", "03-03-2000" };
+
+    for (String value : goodDateValues) {
+      eval.evaluateString(value);
+    }
+    assertEquals(goodDateValues.length, eval.getCount());
+    StringEvaluationResult result = eval.getAdvicedResult();
+    assertEquals("Not a date detetected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_DATE);
+
+    eval = new StringEvaluator(true, numbers, dates);
+    for (String value : badDateValues) {
+      eval.evaluateString(value);
+    }
+    assertEquals(badDateValues.length, eval.getCount());
+    result = eval.getAdvicedResult();
+    assertFalse("Date detetected", result.getConversionMeta().getType() == ValueMetaInterface.TYPE_DATE);
+  }
+
+  public void testCustomNumberFormats() {
+    List<String> dates = Arrays.asList(new String[] {"MM/dd/yyyy"});
+    List<String> numbers = Arrays.asList(new String[] {"#"});
+
+    StringEvaluator eval = new StringEvaluator(true, numbers, dates);
+    String[] goodValues = new String[]{ "200.00", "999.99", "4,309.88" };
+    String[] badValues = new String[]{ "9 00", "$30.00", "3.999,00" };
+
+    for (String value : goodValues) {
+      eval.evaluateString(value);
+    }
+    assertEquals(goodValues.length, eval.getCount());
+    StringEvaluationResult result = eval.getAdvicedResult();
+    assertEquals("Not a number detetected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_NUMBER);
+
+    eval = new StringEvaluator(true, numbers, dates);
+    for (String value : badValues) {
+      eval.evaluateString(value);
+    }
+    assertEquals(badValues.length, eval.getCount());
+    result = eval.getAdvicedResult();
+    assertFalse("Number detetected", result.getConversionMeta().getType() == ValueMetaInterface.TYPE_NUMBER);
+  }
+
+  public void testDeterminePrecision() {
+    assertEquals(4, StringEvaluator.determinePrecision("#.0000"));
+    assertEquals(4, StringEvaluator.determinePrecision("0.#### $"));
+    assertEquals(0, StringEvaluator.determinePrecision(null));
+    assertEquals(4, StringEvaluator.determinePrecision("0.##00 $"));
+    assertEquals(4, StringEvaluator.determinePrecision("##,##0.#0## $"));
+
+  }
+
 }
