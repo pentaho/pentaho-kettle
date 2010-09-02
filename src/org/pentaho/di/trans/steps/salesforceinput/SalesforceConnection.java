@@ -480,7 +480,7 @@ public class SalesforceConnection {
 			// where
 			// object is the type of the object
 			// externalId is the name of the field in the object to resolve the value
-			// lookupField is the name of the field in the current object to update (is the “__r” version)
+			// lookupField is the name of the field in the current object to update (is the "__r" version)
 
 			int indexOfType = name.indexOf(":");
 			if(indexOfType>0) {

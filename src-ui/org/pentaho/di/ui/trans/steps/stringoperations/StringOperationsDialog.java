@@ -286,7 +286,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
                     }
                     catch(KettleException e)
                     {
-                    	log.logError(toString(), "Impossible de récupérer les champs depuis l'étape précédente");
+                    	logError(toString(), "Error getting fields from incoming stream!", e);
                     }
                 }
             }
