@@ -1304,4 +1304,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.StringOperations</tooltip>
 		<iconfile>ui/images/STM.png</iconfile>
 	</step>
+	<step id="YamlInput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.YamlInput</description>
+		<classname>org.pentaho.di.trans.steps.yamlinput.YamlInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.YamlInput</tooltip>
+		<iconfile>ui/images/YamlI.png</iconfile>
+	</step>
 </steps>

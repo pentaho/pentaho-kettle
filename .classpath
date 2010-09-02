@@ -140,5 +140,6 @@
 	<classpathentry kind="lib" path="libext/slf4j-api-1.5.8.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-jcl-1.5.8.jar"/>
 	<classpathentry kind="lib" path="libext/jsonpath.jar"/>
+	<classpathentry kind="lib" path="libext/snakeyaml-1.7.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
