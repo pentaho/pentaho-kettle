@@ -248,7 +248,7 @@ public class SOQLValuesHighlight implements LineStyleListener {
 			
 		private String[] fgKeywords= { 
 				"select", "from", "where", "and", "or", "with", "group", "having", "order", "by",
-				"asc", "desc", "nulls", "first", "last", "limit", "rollup", "cube"
+				"asc", "desc", "nulls", "first", "last", "limit", "rollup", "cube","true", "false"
 		};
 
 		public JavaScanner() {

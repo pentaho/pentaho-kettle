@@ -553,6 +553,20 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
                         }
                         
                         setComboBoxes(); 
+                        // Dislay in red missing field names
+	                      Display.getDefault().asyncExec(new Runnable() {
+		                        public void run() {
+		                        	if(!wReturn.isDisposed()) { 
+			                        	 for(int i=0; i< wReturn.table.getItemCount(); i++) {
+				     	            			TableItem it=wReturn.table.getItem(i);
+				     	            			if(!Const.isEmpty(it.getText(2))) {
+				     	            				if(!inputFields.containsKey(it.getText(2)))
+				     	            					it.setBackground(GUIResource.getInstance().getColorRed());
+				     	            			}
+				     	            		}
+		                        	}
+		                        }
+		                    });
                     }
                     catch(KettleException e)
                     {
