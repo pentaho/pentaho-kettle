@@ -17,11 +17,11 @@ package org.pentaho.di.trans.steps.getxmldata;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
-import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.ElementHandler;
 import org.dom4j.ElementPath;
@@ -62,6 +62,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 
 	private GetXMLDataMeta meta;
 	private GetXMLDataData data;
+  private Object[] prevRow = null; // A pre-allocated spot for the previous row
 
 	
 	public GetXMLData(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
@@ -72,6 +73,8 @@ public class GetXMLData extends BaseStep implements StepInterface
 
    protected boolean setDocument(String StringXML,FileObject file,boolean IsInXMLField,boolean readurl) throws KettleException {
 	   
+     this.prevRow = buildEmptyRow(); // pre-allocate previous row
+     
 	   try{
 			SAXReader reader = new SAXReader();
 			data.stopPruning=false;
@@ -89,6 +92,11 @@ public class GetXMLData extends BaseStep implements StepInterface
 			if(data.prunePath!=null) { 
 				// when pruning is on: reader.read() below will wait until all is processed in the handler
 				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.Activated"));
+		    if ( data.PathValue.equals(data.prunePath) )  {
+          // Edge case, but if true, there will only ever be one item in the list
+		      data.an = new ArrayList<AbstractNode>(1); // pre-allocate array and sizes
+		      data.an.add(null);
+		    }
 				reader.addHandler( data.prunePath, 
 				    new ElementHandler() {
 				        public void onStart(ElementPath path) {
@@ -110,7 +118,10 @@ public class GetXMLData extends BaseStep implements StepInterface
 				        	if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.StartProcessing"));
 				            Element row = path.getCurrent();
 				            try {
-				            	processStreaming(row.getDocument());
+				              // Pass over the row instead of just the document. If
+				              // if there's only one row, there's no need to
+				              // go back to the whole document.
+				            	processStreaming(row);
 				            }
 				            catch (Exception e ) {
 				            	// catch the KettleException or others and forward to caller, e.g. when applyXPath() has a problem
@@ -166,14 +177,31 @@ public class GetXMLData extends BaseStep implements StepInterface
 	 * Not allowed in combination with meta.getIsInFields(), but could be redesigned later on.
 	 * 
 	 */
-   private void processStreaming(Document document) throws KettleException  {
-	   	data.document = document;
+   private void processStreaming(Element row) throws KettleException  {
+	   	data.document = row.getDocument();
+	   	
 		if(meta.isNamespaceAware())	prepareNSMap(data.document.getRootElement());
 	   	if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.ApplyXPath"));
+	  // If the prune path and the path are the same, then
+	  // we're processing one row at a time through here.
+   	if ( data.PathValue.equals(data.prunePath) )  {
+   	  data.an.set(0,(AbstractNode)row);
+      data.nodesize=1; // it's always just one row.
+      data.nodenr=0;
+      if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.ProcessingRows"));
+      Object[] r=getXMLRowPutRowWithErrorhandling();
+      if (! data.errorInRowButContinue) { // do not put out the row but continue
+        putRowOut(r);  //false when limit is reached, functionality is there but we can not stop reading the hole file (slow but works)
+      }
+      data.nodesize=0;
+      data.nodenr=0;
+      return;
+   	} else {
 		if(!applyXPath())
 		{
 			throw new KettleException (BaseMessages.getString(PKG, "GetXMLData.Log.UnableApplyXPath"));
 		}
+    }
 		// main loop through the data until limit is reached or transformation is stopped
 		// similar functionality like in BaseStep.runStepThread
 		if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetXMLData.Log.StreamingMode.ProcessingRows"));
@@ -305,9 +333,9 @@ public class GetXMLData extends BaseStep implements StepInterface
 						throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Exception.CouldnotFindField",meta.getXMLField())); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
-			
 			}
 		   
+
 		   
 		   if(meta.isInFields())
 		   {
@@ -578,6 +606,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			
 			data.files = meta.getFiles(this);
 		
+
 			if(!meta.isdoNotFailIfNoFile() && data.files.nrOfFiles()==0)
 			{
 				throw new KettleException(BaseMessages.getString(PKG, "GetXMLData.Log.NoFiles"));
@@ -692,7 +721,9 @@ public class GetXMLData extends BaseStep implements StepInterface
 		try
 		{
 			data.nodenr++; 
-			if(row!=null) outputRowData = row.clone();
+			if(row!=null) { 
+			  outputRowData = row.clone();
+			}
 			// Read fields...
 			for (int i=0;i<data.nrInputFields;i++)
 			{	
@@ -816,8 +847,17 @@ public class GetXMLData extends BaseStep implements StepInterface
 
 			RowMetaInterface irow = getInputRowMeta();
 			
-			data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
-			// surely the next step doesn't change it in between...
+			if (irow == null) {
+			  data.previousRow = outputRowData;
+			} else {
+			  // clone to previously allocated array to make sure next step doesn't
+			  // change it in between...
+			  for (int i=0; i<outputRowData.length; i++) {
+			    // Clone without re-allocating array
+			    this.prevRow[i] = outputRowData[i]; // Direct copy
+			  }
+        data.previousRow = irow.cloneRow(outputRowData, this.prevRow); // Pick up everything else that needs a real deep clone 
+			}
 	    
 		}
 		catch(Exception e)
