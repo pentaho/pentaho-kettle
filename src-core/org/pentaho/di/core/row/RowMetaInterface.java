@@ -150,6 +150,12 @@ public interface RowMetaInterface extends Cloneable
      * @return a cloned Object[] object.
      * @throws KettleValueException in case something is not quite right with the expected data
      */
+    public Object[] cloneRow(Object[] objects, Object[] cloneTo) throws KettleValueException;
+
+    /**
+     * @return a cloned Object[] object.
+     * @throws KettleValueException in case something is not quite right with the expected data
+     */
     public Object[] cloneRow(Object[] objects) throws KettleValueException;
 
     /**

@@ -308,7 +308,16 @@ public class RowMeta implements RowMetaInterface
      * @return a cloned Object[] object.
      * @throws KettleValueException in case something is not quite right with the expected data
      */
-    public Object[] cloneRow(Object[] objects) throws KettleValueException {
+    public Object[] cloneRow(Object[] objects) throws KettleValueException
+    {
+      return cloneRow(objects, objects.clone());
+    }
+    
+    /**
+     * @return a cloned Object[] object.
+     * @throws KettleValueException in case something is not quite right with the expected data
+     */
+    public Object[] cloneRow(Object[] objects, Object[] newObjects) throws KettleValueException {
 		if (valuesThatNeedRealClone == null) {
 			valuesThatNeedRealClone = new ArrayList<Integer>();
 			for (int i = 0; i < size(); i++) {
@@ -318,7 +327,6 @@ public class RowMeta implements RowMetaInterface
 				}
 			}
 		}
-		Object[] newObjects = objects.clone();
 		for (Integer i : valuesThatNeedRealClone) {
 			ValueMetaInterface valueMeta = getValueMeta(i);
 			newObjects[i] = valueMeta.cloneValueData(objects[i]);
