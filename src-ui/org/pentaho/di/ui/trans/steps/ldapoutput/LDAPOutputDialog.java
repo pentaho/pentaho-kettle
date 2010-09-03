@@ -51,25 +51,19 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.ldapoutput.LDAPOutputMeta;
 import org.pentaho.di.trans.steps.ldapinput.LDAPConnection;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
-import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
-import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.core.encryption.Encr;
@@ -922,7 +916,6 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		lsTest     = new Listener() { public void handleEvent(Event e) { test(); } };
-		lsPreview  = new Listener() { public void handleEvent(Event e) { preview();   } };
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();     } };
 
 		lsGetLU = new Listener()
@@ -1119,51 +1112,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 	}
 	
 		
-	// Preview the data
-	private void preview()
-	{
-        try
-        {
-            // Create the XML input step
-            LDAPOutputMeta oneMeta = new LDAPOutputMeta();
-            getInfo(oneMeta);
-            
-            TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
-            
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "LDAPOutputDialog.NumberRows.DialogTitle"), 
-            		BaseMessages.getString(PKG, "LDAPOutputDialog.NumberRows.DialogMessage"));
-            int previewSize = numberDialog.open();
-            if (previewSize>0)
-            {
-                TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
-                progressDialog.open();
-                
-                if (!progressDialog.isCancelled())
-                {
-                    Trans trans = progressDialog.getTrans();
-                    String loggingText = progressDialog.getLoggingText();
-                    
-                    if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
-                    {
-                    	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
-                    			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
-                    	etd.setReadOnly();
-                    	etd.open();
-                    }
-                             
-                    PreviewRowsDialog prd = new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(),
-							progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog
-									.getPreviewRows(wStepname.getText()), loggingText);
-					prd.open();
-                    
-                }
-            }
-        }
-        catch(KettleException e)
-        {
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPOutputDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "LDAPOutputDialog.ErrorPreviewingData.DialogMessage"), e);
-       }
-	}
+	
 	private void getPreviousFields()
 	{
 		if(!gotPrevious) {
