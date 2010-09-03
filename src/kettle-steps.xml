@@ -100,6 +100,14 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TableOutput</tooltip>
 		<iconfile>ui/images/TOP.png</iconfile>
 	</step>
+	
+	<step id="HiveTableOutput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.HiveTableOutput</description>
+		<classname>org.pentaho.di.trans.steps.hivetableoutput.HiveTableOutputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.HiveTableOutput</tooltip>
+		<iconfile>ui/images/HTOP.png</iconfile>
+	</step>
 
 	<step id="InfobrightOutput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.InfobrightOutput</description>

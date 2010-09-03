@@ -60,8 +60,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
     private static final String FILE_COMPRESSION_TYPE_ZIP  = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_ZIP];
     private static final String FILE_COMPRESSION_TYPE_GZIP = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_GZIP];
     
-	private TextFileOutputMeta meta;
-	private TextFileOutputData data;
+	public TextFileOutputMeta meta;
+	public TextFileOutputData data;
 	 
 	public TextFileOutput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{

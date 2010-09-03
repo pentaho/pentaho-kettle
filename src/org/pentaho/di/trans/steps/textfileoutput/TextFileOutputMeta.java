@@ -630,7 +630,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		return retval;
 	}
 	
-	private void readData(Node stepnode)
+	public void readData(Node stepnode)
 		throws KettleXMLException
 	{
 		try
