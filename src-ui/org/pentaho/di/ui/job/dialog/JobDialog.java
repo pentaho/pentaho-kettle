@@ -316,6 +316,7 @@ public class JobDialog extends Dialog
 		fdJobFilename.top  = new FormAttachment(wJobname, margin);
 		fdJobFilename.right= new FormAttachment(100, 0);
 		wJobFilename.setLayoutData(fdJobFilename);
+		wJobFilename.setEnabled(false);
 
 
 		// Job description:
