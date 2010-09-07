@@ -1,4 +1,4 @@
-package excelinput;
+package org.pentaho.di.trans.steps.excelinput;
 
 import java.util.Date;
 
@@ -11,9 +11,9 @@ import org.pentaho.di.trans.steps.excelinput.WorkbookFactory;
 
 import junit.framework.TestCase;
 
-public class OdsWorkBookTest extends TestCase {
+public class PoiWorkBookTest extends TestCase {
   public void testRead() throws Exception {
-    KWorkbook workbook = WorkbookFactory.getWorkbook(SpreadSheetType.ODS, "testfiles/sample-file.ods", null);
+    KWorkbook workbook = WorkbookFactory.getWorkbook(SpreadSheetType.POI, "testfiles/sample-file.xlsx", null);
     int numberOfSheets = workbook.getNumberOfSheets();
     assertEquals(3, numberOfSheets);
     KSheet sheet1 = workbook.getSheet(0);
@@ -30,7 +30,7 @@ public class OdsWorkBookTest extends TestCase {
     assertEquals(new Date(1283817600000L), row[2].getValue());
     assertEquals(KCellType.NUMBER, row[3].getType());
     assertEquals(Double.valueOf("75"), row[3].getValue());
-    assertEquals(KCellType.BOOLEAN_FORMULA, row[4].getType()); // Always like that in ODS
+    assertEquals(KCellType.BOOLEAN, row[4].getType());
     assertEquals(Boolean.valueOf(true), row[4].getValue());
     assertEquals(KCellType.NUMBER_FORMULA, row[5].getType());
     assertEquals(Double.valueOf("75"), row[5].getValue());
@@ -42,7 +42,7 @@ public class OdsWorkBookTest extends TestCase {
     assertEquals(new Date(1283904000000L), row[2].getValue());
     assertEquals(KCellType.NUMBER, row[3].getType());
     assertEquals(Double.valueOf("42"), row[3].getValue());
-    assertEquals(KCellType.BOOLEAN_FORMULA, row[4].getType()); // Always like that in ODS
+    assertEquals(KCellType.BOOLEAN, row[4].getType());
     assertEquals(Boolean.valueOf(false), row[4].getValue());
     assertEquals(KCellType.NUMBER_FORMULA, row[5].getType());
     assertEquals(Double.valueOf("117"), row[5].getValue());
@@ -54,11 +54,18 @@ public class OdsWorkBookTest extends TestCase {
     assertEquals(new Date(1283990400000L), row[2].getValue());
     assertEquals(KCellType.NUMBER, row[3].getType());
     assertEquals(Double.valueOf("93"), row[3].getValue());
-    assertEquals(KCellType.BOOLEAN_FORMULA, row[4].getType()); // Always like that in ODS
+    assertEquals(KCellType.BOOLEAN, row[4].getType());
     assertEquals(Boolean.valueOf(true), row[4].getValue());
     assertEquals(KCellType.NUMBER_FORMULA, row[5].getType());
     assertEquals(Double.valueOf("210"), row[5].getValue());
 
+    try {
+      sheet1.getRow(5);
+      throw new Exception("No out of bounds exception thrown when expected");
+    } catch(ArrayIndexOutOfBoundsException e) {
+      // OK!
+    }
+    
     workbook.close();
   }
 }

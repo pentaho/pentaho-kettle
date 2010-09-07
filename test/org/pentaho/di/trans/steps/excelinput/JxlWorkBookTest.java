@@ -1,4 +1,4 @@
-package excelinput;
+package org.pentaho.di.trans.steps.excelinput;
 
 import java.util.Date;
 
