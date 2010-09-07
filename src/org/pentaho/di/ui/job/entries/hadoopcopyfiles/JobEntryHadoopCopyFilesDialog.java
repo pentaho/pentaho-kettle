@@ -39,7 +39,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.HadoopSpoonPlugin;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -59,7 +58,6 @@ import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
 import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -964,13 +962,6 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
         FileObject selectedFile = null;
         
         try {
-            IVfsFileBrowserFactory fileBrowserFactory = Spoon.getInstance().getVfsFileBrowserFactory(HadoopSpoonPlugin.HDFS_SCHEME);
-            
-            if(fileBrowserFactory == null) {
-                log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FactoryNotAvailable"));
-                return selectedFile;
-            }
-            
             // Get current file
             FileObject rootFile = null;
             FileObject initialFile = null;
@@ -989,8 +980,11 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
                 }
             }
             
-            IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
-            
+            if (rootFile == null) {
+              rootFile = defaultInitialFile.getFileSystem().getRoot();
+              initialFile = defaultInitialFile;
+            }
+            IVfsFileChooser fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog(rootFile, initialFile);
             selectedFile = fileChooserDialog.open(shell, defaultInitialFile, 
                     null, new String[]{"*.*"}, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
             

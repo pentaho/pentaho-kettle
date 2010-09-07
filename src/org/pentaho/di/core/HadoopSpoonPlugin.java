@@ -17,7 +17,6 @@ package org.pentaho.di.core;
 
 import java.util.Arrays;
 
-import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
@@ -33,53 +32,53 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.vfs.hadoopvfsfilechooserdialog.HadoopVfsFileChooserDialog;
 import org.pentaho.hdfs.vfs.HDFSFileProvider;
-import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
-import org.pentaho.vfs.ui.IVfsFileChooser;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
-@LifecyclePlugin (id = "HadoopSpoonPlugin", name="Hadoop Spoon Plugin")
+@LifecyclePlugin(id = "HadoopSpoonPlugin", name = "Hadoop Spoon Plugin")
 public class HadoopSpoonPlugin implements LifecycleListener, GUIOption {
-	private static Class<?> PKG = HadoopSpoonPlugin.class;
-	private LogChannelInterface log = new LogChannel(HadoopSpoonPlugin.class.getName());
+  private static Class<?> PKG = HadoopSpoonPlugin.class;
+  private LogChannelInterface log = new LogChannel(HadoopSpoonPlugin.class.getName());
 
-	public static final String HDFS_SCHEME = "hdfs";
-	
-	@Override
-	public void onStart(LifeEventHandler arg0) throws LifecycleException {
-		try {
-			// Register HDFS as a file system type with VFS
-			FileSystemManager fsm = KettleVFS.getInstance().getFileSystemManager();
-			if(fsm instanceof DefaultFileSystemManager) {
-				if(!Arrays.asList(fsm.getSchemes()).contains(HDFS_SCHEME)) {
-					((DefaultFileSystemManager)fsm).addProvider(HDFS_SCHEME,  new HDFSFileProvider());
-				}
-			}
-		} catch (FileSystemException e) {
-			log.logError(BaseMessages.getString(PKG, "HadoopSpoonPlugin.StartupError.FailedToLoadHdfsDriver"));
-		}
-		
-		Spoon.getInstance().setVfsFileBrowserFactory(HDFS_SCHEME, new IVfsFileBrowserFactory() {
-			public IVfsFileChooser getFileChooser(FileObject root, FileObject initial) {
-				return new HadoopVfsFileChooserDialog(root, initial);
-			}
-		});
-	}
-	
-	@Override
-	public void onExit(LifeEventHandler arg0) throws LifecycleException {
-	}
-	
-	public String getLabelText() {
-        return null;
+  public static final String HDFS_SCHEME = "hdfs";
+
+  public void onStart(LifeEventHandler arg0) throws LifecycleException {
+    try {
+      // Register HDFS as a file system type with VFS
+      FileSystemManager fsm = KettleVFS.getInstance().getFileSystemManager();
+      if (fsm instanceof DefaultFileSystemManager) {
+        if (!Arrays.asList(fsm.getSchemes()).contains(HDFS_SCHEME)) {
+          ((DefaultFileSystemManager) fsm).addProvider(HDFS_SCHEME, new HDFSFileProvider());
+        }
+      }
+    } catch (FileSystemException e) {
+      log.logError(BaseMessages.getString(PKG, "HadoopSpoonPlugin.StartupError.FailedToLoadHdfsDriver"));
     }
 
-    public Object getLastValue() {
-        return null;
-    }
+    VfsFileChooserDialog dialog = Spoon.getInstance().getVfsFileChooserDialog(null, null);
+    dialog.addVFSUIPanel(new HadoopVfsFileChooserDialog(dialog, null, null));
 
-    public DisplayType getType() {
-        return null;
-    }
+    // Spoon.getInstance().setVfsFileBrowserFactory(HDFS_SCHEME, new IVfsFileBrowserFactory() {
+    // public IVfsFileChooser getFileChooser(FileObject root, FileObject initial) {
+    // return new HadoopVfsFileChooserDialog(root, initial);
+    // }
+    // });
+  }
 
-    public void setValue(Object value) {
-    }
+  public void onExit(LifeEventHandler arg0) throws LifecycleException {
+  }
+
+  public String getLabelText() {
+    return null;
+  }
+
+  public Object getLastValue() {
+    return null;
+  }
+
+  public DisplayType getType() {
+    return null;
+  }
+
+  public void setValue(Object value) {
+  }
 }

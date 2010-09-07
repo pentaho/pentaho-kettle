@@ -80,7 +80,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.HadoopSpoonPlugin;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -119,8 +118,6 @@ import org.pentaho.di.ui.trans.steps.textfileinput.DirectoryDialogButtonListener
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage1;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage2;
-import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
-import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 
@@ -605,13 +602,6 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
 				public void widgetSelected(SelectionEvent e) 
 				{
 					try {
-						IVfsFileBrowserFactory fileBrowserFactory = Spoon.getInstance().getVfsFileBrowserFactory(HadoopSpoonPlugin.HDFS_SCHEME);
-						
-						if(fileBrowserFactory == null) {
-							log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FactoryNotAvailable"));
-							return;
-						}
-						
 						// Setup file type filtering
 						String[] fileFilters = null;
 						String[] fileFilterNames = null;
@@ -644,9 +634,12 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
 						}
 						
 						defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
-						IVfsFileChooser fileChooserDialog = fileBrowserFactory.getFileChooser(rootFile, initialFile);
+						if (rootFile == null) {
+						  rootFile = defaultInitialFile.getFileSystem().getRoot();
+						  initialFile = defaultInitialFile;
+						}
 						
-						FileObject selectedFile = fileChooserDialog.open(shell, defaultInitialFile, null, fileFilters, fileFilterNames,
+						FileObject selectedFile = Spoon.getInstance().getVfsFileChooserDialog(rootFile, initialFile).open(shell, defaultInitialFile, null, fileFilters, fileFilterNames,
 								VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
 					    if (selectedFile != null) {
 					      wFilename.setText(selectedFile.getURL().toString());
