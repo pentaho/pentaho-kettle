@@ -40,6 +40,7 @@ public class HadoopSpoonPlugin implements LifecycleListener, GUIOption {
   private LogChannelInterface log = new LogChannel(HadoopSpoonPlugin.class.getName());
 
   public static final String HDFS_SCHEME = "hdfs";
+  public static final String HDFS_SCHEME_DISPLAY_NAME = "HDFS";
 
   public void onStart(LifeEventHandler arg0) throws LifecycleException {
     try {
@@ -56,12 +57,6 @@ public class HadoopSpoonPlugin implements LifecycleListener, GUIOption {
 
     VfsFileChooserDialog dialog = Spoon.getInstance().getVfsFileChooserDialog(null, null);
     dialog.addVFSUIPanel(new HadoopVfsFileChooserDialog(dialog, null, null));
-
-    // Spoon.getInstance().setVfsFileBrowserFactory(HDFS_SCHEME, new IVfsFileBrowserFactory() {
-    // public IVfsFileChooser getFileChooser(FileObject root, FileObject initial) {
-    // return new HadoopVfsFileChooserDialog(root, initial);
-    // }
-    // });
   }
 
   public void onExit(LifeEventHandler arg0) throws LifecycleException {

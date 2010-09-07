@@ -90,7 +90,7 @@ public class HadoopVfsFileChooserDialog extends CustomVfsUiPanel {
   VfsFileChooserDialog vfsFileChooserDialog = null;
   
   public HadoopVfsFileChooserDialog(VfsFileChooserDialog vfsFileChooserDialog, FileObject rootFile, FileObject initialFile) {
-    super(HadoopSpoonPlugin.HDFS_SCHEME, HadoopSpoonPlugin.HDFS_SCHEME, vfsFileChooserDialog, SWT.NONE);
+    super(HadoopSpoonPlugin.HDFS_SCHEME, HadoopSpoonPlugin.HDFS_SCHEME_DISPLAY_NAME, vfsFileChooserDialog, SWT.NONE);
     this.rootFile = rootFile;
     this.initialFile = initialFile;
     this.vfsFileChooserDialog = vfsFileChooserDialog;
