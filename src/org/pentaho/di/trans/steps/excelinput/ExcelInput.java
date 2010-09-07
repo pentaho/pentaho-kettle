@@ -16,16 +16,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import jxl.BooleanCell;
-import jxl.Cell;
-import jxl.CellType;
-import jxl.DateCell;
-import jxl.LabelCell;
-import jxl.NumberCell;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -38,6 +28,9 @@ import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.spreadsheet.KCell;
+import org.pentaho.di.core.spreadsheet.KCellType;
+import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -87,7 +80,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		boolean errorHandled = false;
 
 		// Set values in the row...
-		Cell cell = null;
+		KCell cell = null;
 
 		for (int i = startcolumn; i < excelInputRow.cells.length && i - startcolumn < meta.getField().length; i++)
 		{
@@ -126,19 +119,19 @@ public class ExcelInput extends BaseStep implements StepInterface
 				}
 			}
 
-			CellType cellType = cell.getType();
-			if (CellType.BOOLEAN.equals(cellType) ||
-				CellType.BOOLEAN_FORMULA.equals(cellType))
+			KCellType cellType = cell.getType();
+			if (KCellType.BOOLEAN == cellType ||
+				KCellType.BOOLEAN_FORMULA==cellType)
 			{
-				r[rowcolumn] = Boolean.valueOf( ((BooleanCell)cell).getValue() );
+				r[rowcolumn] = (Boolean)cell.getValue();
                 sourceMeta = data.valueMetaBoolean;
 			}
 			else
 			{
-				if (CellType.DATE.equals(cellType) ||
-					CellType.DATE_FORMULA.equals(cellType) )
+				if (KCellType.DATE.equals(cellType) ||
+					KCellType.DATE_FORMULA.equals(cellType) )
 				{
-					Date date = ((DateCell) cell).getDate();
+					Date date = (Date) cell.getValue();
 					long time = date.getTime();
 					int offset = TimeZone.getDefault().getOffset(time);
                     r[rowcolumn] = new Date(time - offset);
@@ -146,10 +139,10 @@ public class ExcelInput extends BaseStep implements StepInterface
 				}
 				else
 				{
-					if (CellType.LABEL.equals(cellType) ||
-					    CellType.STRING_FORMULA.equals(cellType))
+					if (KCellType.LABEL==cellType ||
+					    KCellType.STRING_FORMULA==cellType)
 					{
-                        String string = ((LabelCell) cell).getString();
+                        String string = (String) cell.getValue();
 						switch (meta.getField()[rowcolumn].getTrimType())
 						{
 						case ExcelInputMeta.TYPE_TRIM_LEFT:
@@ -169,10 +162,10 @@ public class ExcelInput extends BaseStep implements StepInterface
 					}
 					else
 					{
-						if (CellType.NUMBER.equals(cellType) ||
-						    CellType.NUMBER_FORMULA.equals(cellType))
+						if (KCellType.NUMBER == cellType ||
+						    KCellType.NUMBER_FORMULA == cellType)
 						{
-                            r[rowcolumn] = new Double( ((NumberCell)cell).getValue() );
+                            r[rowcolumn] = (Double) cell.getValue();
                             sourceMeta = data.valueMetaNumber;
 						}
 						else
@@ -234,7 +227,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			}
 			catch (KettleException ex)
 			{
-				if (!meta.isErrorIgnored()) {
+			    if (!meta.isErrorIgnored()) {
 					ex = new KettleCellValueException(ex,
 					this.data.sheetnr,
 					cell.getRow(),
@@ -341,42 +334,41 @@ public class ExcelInput extends BaseStep implements StepInterface
 		return r;
 	}
 
-	private void checkType(Cell cell, ValueMetaInterface v) throws KettleException
+	private void checkType(KCell cell, ValueMetaInterface v) throws KettleException
 	{
 		if (!meta.isStrictTypes()) return;
-		CellType cellType = cell.getType();
-		if (cellType.equals(CellType.BOOLEAN))
-		{
-			if (!(v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_BOOLEAN))
-				throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.InvalidTypeBoolean",v.getTypeDesc()));
-			
-		}
-		else if (cellType.equals(CellType.DATE))
-		{
-			if (!(v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_DATE))
-				throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.InvalidTypeDate", cell.getContents(),v.getTypeDesc()));
-			
-		}
-		else if (cellType.equals(CellType.LABEL))
-		{
-			if (v.getType() == ValueMetaInterface.TYPE_BOOLEAN || v.getType() == ValueMetaInterface.TYPE_DATE || v.getType() == ValueMetaInterface.TYPE_INTEGER || v.getType() == ValueMetaInterface.TYPE_NUMBER)
-				throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.InvalidTypeLabel", cell.getContents(),v.getTypeDesc()));
-			
-		}
-		else if (cellType.equals(CellType.EMPTY))
-		{
-			// ok
-		}
-		else if (cellType.equals(CellType.NUMBER))
-		{
-			if (!(v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_INTEGER || v.getType() == ValueMetaInterface.TYPE_BIGNUMBER || v.getType() == ValueMetaInterface.TYPE_NUMBER))
-				throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.InvalidTypeNumber", cell.getContents(),v.getTypeDesc()));
-			
-		}
-		else
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.UnsupportedType", ""+cellType,cell.getContents()));
-			
+		switch(cell.getType()) {
+		case BOOLEAN:
+    		{
+    			if (!(v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_BOOLEAN))
+    				throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.InvalidTypeBoolean",v.getTypeDesc()));
+    		} 
+    		break;
+		case DATE:
+    		{
+    			if (!(v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_DATE))
+    				throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.InvalidTypeDate", cell.getContents(),v.getTypeDesc()));
+    		}
+    		break;
+		case LABEL:
+    		{
+    			if (v.getType() == ValueMetaInterface.TYPE_BOOLEAN || v.getType() == ValueMetaInterface.TYPE_DATE || v.getType() == ValueMetaInterface.TYPE_INTEGER || v.getType() == ValueMetaInterface.TYPE_NUMBER)
+    				throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.InvalidTypeLabel", cell.getContents(),v.getTypeDesc()));
+    		}
+    		break;
+		case EMPTY:
+    		{
+    			// ok
+    		}
+    		break;
+		case NUMBER:
+    		{
+    			if (!(v.getType() == ValueMetaInterface.TYPE_STRING || v.getType() == ValueMetaInterface.TYPE_NONE || v.getType() == ValueMetaInterface.TYPE_INTEGER || v.getType() == ValueMetaInterface.TYPE_BIGNUMBER || v.getType() == ValueMetaInterface.TYPE_NUMBER))
+    				throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.InvalidTypeNumber", cell.getContents(),v.getTypeDesc()));
+    		}
+    		break;
+		default:
+			throw new KettleException(BaseMessages.getString(PKG, "ExcelInput.Exception.UnsupportedType", cell.getType().getDescription(), cell.getContents()));
 		}
 	}
 
@@ -587,12 +579,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 				
 				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ExcelInput.Log.OpeningFile",""+data.filenr + " : " + data.filename));
 				
-                WorkbookSettings ws = new WorkbookSettings();
-                if (!Const.isEmpty(meta.getEncoding()))
-                {
-                    ws.setEncoding(meta.getEncoding());
-                }
-				data.workbook = Workbook.getWorkbook(KettleVFS.getInputStream(data.file), ws);
+				data.workbook = WorkbookFactory.getWorkbook(meta.getSpreadSheetType(), data.filename, meta.getEncoding());
                 
 				data.errorHandler.handleFile(data.file);
 				// Start at the first sheet again...
@@ -619,7 +606,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			if (log.isDebug()) logDetailed(BaseMessages.getString(PKG, "ExcelInput.Log.GetSheet",""+data.filenr + "." + data.sheetnr));
 			
 			String sheetName = data.sheetNames[data.sheetnr];
-			Sheet sheet = data.workbook.getSheet(sheetName);
+			KSheet sheet = data.workbook.getSheet(sheetName);
 			if (sheet != null)
 			{
 				// at what row do we continue reading?
@@ -639,7 +626,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 				// Build a new row and fill in the data from the sheet...
 				try
 				{
-					Cell line[] = sheet.getRow(data.rownr);
+					KCell line[] = sheet.getRow(data.rownr);
 					// Already increase cursor 1 row					
 					int lineNr = ++data.rownr;
 					// Excel starts counting at 0
@@ -712,7 +699,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			logError(BaseMessages.getString(PKG, "ExcelInput.Error.ProcessRowFromExcel",data.filename+"", e.toString()));
+			logError(BaseMessages.getString(PKG, "ExcelInput.Error.ProcessRowFromExcel",data.filename+"", e.toString()), e);
 			
 			setErrors(1);
 			stopAll();
@@ -722,14 +709,14 @@ public class ExcelInput extends BaseStep implements StepInterface
 		return retval;
 	}
 
-	private boolean isLineEmpty(Cell[] line)
+	private boolean isLineEmpty(KCell[] line)
     {
         if (line.length == 0) return true;
         
         boolean isEmpty = true;
         for (int i=0;i<line.length && isEmpty;i++)
         {
-            if ( !Const.isEmpty(line[i].getContents()) ) isEmpty=false;
+            if ( line[i]!=null && !Const.isEmpty(line[i].getContents()) ) isEmpty=false;
         }
         return isEmpty;
     }

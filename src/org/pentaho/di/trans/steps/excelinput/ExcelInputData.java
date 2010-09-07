@@ -13,15 +13,14 @@ package org.pentaho.di.trans.steps.excelinput;
 
 import java.util.Date;
 
-import jxl.Sheet;
-import jxl.Workbook;
-
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.spreadsheet.KSheet;
+import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
@@ -66,7 +65,7 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 	/**
 	 * The openFile that's being processed...
 	 */
-	public Workbook workbook;
+	public KWorkbook workbook;
 
 	/**
 	 * The sheet number that's being processed...
@@ -76,7 +75,7 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 	/**
 	 * The sheet that's being processed...
 	 */
-	public Sheet sheet;
+	public KSheet sheet;
 
 	/**
 	 * The row where we left off the previous time...

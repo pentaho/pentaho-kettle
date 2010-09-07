@@ -20,12 +20,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import jxl.Cell;
-import jxl.CellType;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -64,6 +58,10 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.spreadsheet.KCell;
+import org.pentaho.di.core.spreadsheet.KCellType;
+import org.pentaho.di.core.spreadsheet.KSheet;
+import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -74,6 +72,8 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.excelinput.ExcelInputField;
 import org.pentaho.di.trans.steps.excelinput.ExcelInputMeta;
+import org.pentaho.di.trans.steps.excelinput.SpreadSheetType;
+import org.pentaho.di.trans.steps.excelinput.WorkbookFactory;
 import org.pentaho.di.ui.core.dialog.EnterListDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -187,6 +187,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Label        wlLimit;
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
+
+    private Label        wlSpreadSheetType;
+    private CCombo       wSpreadSheetType;
+    private FormData     fdlSpreadSheetType, fdSpreadSheetType;
 
     private Label        wlEncoding;
     private CCombo       wEncoding;
@@ -824,7 +828,28 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
                 }
             }
         );
-        
+
+        wlSpreadSheetType=new Label(wContentComp, SWT.RIGHT);
+        wlSpreadSheetType.setText(BaseMessages.getString(PKG, "ExcelInputDialog.SpreadSheetType.Label"));
+        props.setLook(wlSpreadSheetType);
+        fdlSpreadSheetType=new FormData();
+        fdlSpreadSheetType.left = new FormAttachment(0, 0);
+        fdlSpreadSheetType.top  = new FormAttachment(wEncoding, margin);
+        fdlSpreadSheetType.right= new FormAttachment(middle, -margin);
+        wlSpreadSheetType.setLayoutData(fdlSpreadSheetType);
+        wSpreadSheetType=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
+        wSpreadSheetType.setEditable(true);
+        props.setLook(wSpreadSheetType);
+        wSpreadSheetType.addModifyListener(lsMod);
+        fdSpreadSheetType=new FormData();
+        fdSpreadSheetType.left = new FormAttachment(middle, 0);
+        fdSpreadSheetType.top  = new FormAttachment(wEncoding, margin);
+        fdSpreadSheetType.right= new FormAttachment(100, 0);
+        wSpreadSheetType.setLayoutData(fdSpreadSheetType);
+        for (SpreadSheetType type : SpreadSheetType.values()) {
+          wSpreadSheetType.add(type.getDescription());
+        }
+
      // ///////////////////////////////
 		// START OF AddFileResult GROUP  //
 		///////////////////////////////// 
@@ -1232,7 +1257,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		if (meta.getSheetRowNumberField()!=null) wInclSheetRownumField.setText(meta.getSheetRowNumberField());
 		if (meta.getRowNumberField()!=null) wInclRownumField.setText(meta.getRowNumberField());
 		wLimit.setText(""+meta.getRowLimit());
-        if (meta.getEncoding()!=null) wEncoding.setText(meta.getEncoding());
+        wEncoding.setText(Const.NVL(meta.getEncoding(), ""));
+        wSpreadSheetType.setText(meta.getSpreadSheetType().getDescription());
         wAddResult.setSelection(meta.isAddResultFile());
 		
 		if(isDebug()) logDebug("getting fields info...");
@@ -1333,6 +1359,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		// copy info to Meta class (input)
 		meta.setRowLimit( Const.toLong(wLimit.getText(), 0) );
         meta.setEncoding( wEncoding.getText() );
+        meta.setSpreadSheetType( SpreadSheetType.values()[wSpreadSheetType.getSelectionIndex()] );
 		meta.setFileField( wInclFilenameField.getText() );
 		meta.setSheetField( wInclSheetnameField.getText() );
 		meta.setSheetRowNumberField( wInclSheetRownumField.getText() );
@@ -1755,12 +1782,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		for (FileObject fileObject : fileList.getFiles()) {
 			try
 			{
-				Workbook workbook = Workbook.getWorkbook(KettleVFS.getInputStream(fileObject));
+				KWorkbook workbook = WorkbookFactory.getWorkbook(info.getSpreadSheetType(), KettleVFS.getFilename(fileObject), info.getEncoding());
 				
 				int nrSheets = workbook.getNumberOfSheets();
 				for (int j=0;j<nrSheets;j++)
 				{
-					Sheet sheet = workbook.getSheet(j);
+					KSheet sheet = workbook.getSheet(j);
 					String sheetname = sheet.getName();
 					
 					if (Const.indexOfString(sheetname, sheetnames)<0) sheetnames.add(sheetname);
@@ -1819,19 +1846,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		for (FileObject file : fileList.getFiles()) {
 			try
 			{
-				//Apply the workbook's encoding setting to the table fields
-				WorkbookSettings ws = new WorkbookSettings();
-				if (!Const.isEmpty(info.getEncoding()))
-				{
-					ws.setEncoding(info.getEncoding());
-				}
-
-				Workbook workbook = Workbook.getWorkbook(KettleVFS.getInputStream(file), ws);
+                KWorkbook workbook = WorkbookFactory.getWorkbook(info.getSpreadSheetType(), KettleVFS.getFilename(file), info.getEncoding());
 
 				int nrSheets = workbook.getNumberOfSheets();
 				for (int j=0;j<nrSheets;j++)
 				{
-					Sheet sheet = workbook.getSheet(j);
+					KSheet sheet = workbook.getSheet(j);
 
 					// See if it's a selected sheet:
 					int sheetIndex;
@@ -1869,8 +1889,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 								String fieldname = null;
 								int    fieldtype = ValueMetaInterface.TYPE_NONE;
 
-								Cell cell = sheet.getCell(colnr, rownr);
-								if (!cell.getType().equals( CellType.EMPTY ))
+								KCell cell = sheet.getCell(colnr, rownr);
+								if (cell.getType() != KCellType.EMPTY )
 								{
 									// We found a field.
 									fieldname = cell.getContents();
@@ -1878,23 +1898,23 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
                                 // System.out.println("Fieldname = "+fieldname);
 
-								Cell below = sheet.getCell(colnr, rownr+1);
-								if (below.getType().equals(CellType.BOOLEAN))
+								KCell below = sheet.getCell(colnr, rownr+1);
+								if (below.getType() == KCellType.BOOLEAN)
 								{
 									fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
 								}
 								else
-								if (below.getType().equals(CellType.DATE))
+								if (below.getType() == KCellType.DATE)
 								{
 									fieldtype = ValueMetaInterface.TYPE_DATE;
 								}
 								else
-								if (below.getType().equals(CellType.LABEL))
+								if (below.getType() == KCellType.LABEL)
 								{
 									fieldtype = ValueMetaInterface.TYPE_STRING;
 								}
 								else
-								if (below.getType().equals(CellType.NUMBER))
+								if (below.getType() == KCellType.NUMBER)
 								{
 									fieldtype = ValueMetaInterface.TYPE_NUMBER;
 								}

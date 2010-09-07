@@ -223,6 +223,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     private String rootUriNameFieldName;
     private String extensionFieldName;
     private String sizeFieldName;
+    
+    private SpreadSheetType spreadSheetType;
 
 	public ExcelInputMeta()
 	{
@@ -744,6 +746,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rootUriNameFieldName = XMLHandler.getTagValue(stepnode, "rootUriNameFieldName");
 			extensionFieldName = XMLHandler.getTagValue(stepnode, "extensionFieldName");
 			sizeFieldName = XMLHandler.getTagValue(stepnode, "sizeFieldName");
+
+			try {
+	          spreadSheetType = SpreadSheetType.valueOf( XMLHandler.getTagValue(stepnode, "spreadsheet_type"));
+			} catch(Exception e) {
+	          spreadSheetType = SpreadSheetType.JXL;
+	        }
 		}
 		catch(Exception e)
 		{
@@ -810,6 +818,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         errorFilesExtension = "error";
         lineNumberFilesDestinationDirectory = null;
         lineNumberFilesExtension = "line";
+        
+        spreadSheetType = SpreadSheetType.JXL; // default.
 	}
     
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
@@ -1014,6 +1024,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("extensionFieldName", extensionFieldName));
 		retval.append("    ").append(XMLHandler.addTagValue("sizeFieldName", sizeFieldName));
         
+		retval.append("    ").append(XMLHandler.addTagValue("spreadsheet_type", spreadSheetType.toString()));
         
 		return retval.toString();
 	}
@@ -1104,6 +1115,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rootUriNameFieldName = rep.getStepAttributeString(id_step, "rootUriNameFieldName");
 			extensionFieldName = rep.getStepAttributeString(id_step, "extensionFieldName");
 			sizeFieldName = rep.getStepAttributeString(id_step, "sizeFieldName");
+
+			try {
+			  spreadSheetType = SpreadSheetType.valueOf( rep.getStepAttributeString(id_step, "spreadsheet_type") );
+			} catch(Exception e) {
+              spreadSheetType = SpreadSheetType.JXL;
+            }
 		}
 		catch(Exception e)
 		{
@@ -1182,6 +1199,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName);
 			rep.saveStepAttribute(id_transformation, id_step, "extensionFieldName", extensionFieldName);
 			
+			rep.saveStepAttribute(id_transformation, id_step, "spreadsheet_type", spreadSheetType.toString());
 		}
 		catch(Exception e)
 		{
@@ -1562,4 +1580,11 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
+	public SpreadSheetType getSpreadSheetType() {
+      return spreadSheetType;
+    }
+	
+	public void setSpreadSheetType(SpreadSheetType spreadSheetType) {
+      this.spreadSheetType = spreadSheetType;
+    }
 }
