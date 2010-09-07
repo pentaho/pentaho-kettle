@@ -276,9 +276,6 @@ import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.tags.SwtDeck;
 import org.pentaho.ui.xul.swt.tags.SwtMenupopup;
 import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
-import org.pentaho.vfs.factory.IVfsFileBrowserFactory;
-import org.pentaho.vfs.factory.VfsFileBrowserFactory;
-import org.pentaho.vfs.ui.IVfsFileChooser;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabListener;
@@ -489,9 +486,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   private Map<String, XulComponent> menuMap = new HashMap<String, XulComponent>();
 
   private RepositoriesDialog loginDialog;
-  
-  private Map<String,IVfsFileBrowserFactory> vfsFileBrowserFactoryMap = new HashMap<String, IVfsFileBrowserFactory>();
-  private IVfsFileBrowserFactory defaultVfsFileBrowserFactory = new VfsFileBrowserFactory();
+
+  private VfsFileChooserDialog vfsFileChooserDialog;
 
   /**
    * This is the main procedure for Spoon.
@@ -905,6 +901,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     return staticSpoon;
   }
 
+  public VfsFileChooserDialog getVfsFileChooserDialog(FileObject rootFile, FileObject initialFile) {
+    if (vfsFileChooserDialog == null) {
+      vfsFileChooserDialog = new VfsFileChooserDialog(shell, rootFile, initialFile);
+    }
+    vfsFileChooserDialog.setRootFile(rootFile);
+    vfsFileChooserDialog.setInitialFile(initialFile);
+    return vfsFileChooserDialog;
+  }
+  
   public void closeFile() {
     TransMeta transMeta = getActiveTransformation();
     if (transMeta != null) {
@@ -3677,32 +3682,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       return;
     }
 
-    IVfsFileBrowserFactory vfbFactory = getVfsFileBrowserFactory(rootFile.getName().getScheme());
-    
-    if(vfbFactory != null) {
-      IVfsFileChooser vfsFileChooser = vfbFactory.getFileChooser(rootFile, initialFile);
-      
-      FileObject selectedFile = vfsFileChooser.open(shell, null, Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const
-              .getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
-      if (selectedFile != null) {
-        setLastFileOpened(selectedFile.getName().getFriendlyURI());
-        openFile(selectedFile.getName().getFriendlyURI(), false);
-      }
+    FileObject selectedFile = getVfsFileChooserDialog(rootFile, initialFile).open(shell, null, Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const
+        .getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
+    if (selectedFile != null) {
+      setLastFileOpened(selectedFile.getName().getFriendlyURI());
+      openFile(selectedFile.getName().getFriendlyURI(), false);
     }
   }
   
-  public void setVfsFileBrowserFactory(String vfsProviderName, IVfsFileBrowserFactory vfsFileBrowserFactory) {
-    vfsFileBrowserFactoryMap.put(vfsProviderName, vfsFileBrowserFactory);
-  }
-  
-  public IVfsFileBrowserFactory getVfsFileBrowserFactory(String vfsProviderName) {
-    IVfsFileBrowserFactory factory = vfsFileBrowserFactoryMap.get(vfsProviderName);
-    if (factory == null) {
-      factory = defaultVfsFileBrowserFactory;
-    }
-    return factory;
-  }
-
   public void addFileListener(FileListener listener) {
     this.fileListeners.add(listener);
     for (String s : listener.getSupportedExtensions()) {
@@ -4673,8 +4660,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
 
     String fname = null;
-    VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(rootFile, initialFile);
-    FileObject selectedFile = vfsFileChooser.open(shell, "Untitled", Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const
+    FileObject selectedFile = getVfsFileChooserDialog(rootFile, initialFile).open(shell, "Untitled", Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const
         .getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_SAVEAS);
     if (selectedFile != null) {
       fname = selectedFile.getName().getFriendlyURI();

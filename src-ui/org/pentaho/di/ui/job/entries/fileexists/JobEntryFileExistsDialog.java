@@ -48,6 +48,7 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -210,8 +211,8 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 						fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
 					}
 
-					
-					VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(fileName.getParent(),fileName);
+         VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog(fileName.getParent(), fileName);
+
 					FileObject selected = vfsFileChooser.open(shell, null,
 							EXTENSIONS, FILETYPES,
 							VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);

@@ -76,6 +76,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -488,7 +489,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     try {
       root = KettleVFS.getFileObject(curFile != null ? curFile : Const.USER_HOME_DIRECTORY);
 
-      VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(root.getParent(), root);
+      VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog(root.getParent(), root);
       FileObject file = vfsFileChooser.open(shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
       if (file == null) {
         return;
