@@ -753,6 +753,9 @@
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.csvinput.CsvInput2Test" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.databaselookup.DatabaseLookupTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.detectlastrow.DetectLastRowStepTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.JxlWorkBookTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.OdsWorkBookTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.PoiWorkBookTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.injector.InjectorTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.RunMapping" haltonerror="false" />
