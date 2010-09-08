@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.HadoopSpoonPlugin;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -984,8 +985,9 @@ public class JobEntryHadoopCopyFilesDialog extends JobEntryDialog implements Job
               rootFile = defaultInitialFile.getFileSystem().getRoot();
               initialFile = defaultInitialFile;
             }
-            IVfsFileChooser fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog(rootFile, initialFile);
-            selectedFile = fileChooserDialog.open(shell, defaultInitialFile, 
+            VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog(rootFile, initialFile);
+            fileChooserDialog.defaultInitialFile = defaultInitialFile;
+            selectedFile = fileChooserDialog.open(shell, null, HadoopSpoonPlugin.HDFS_SCHEME, true, 
                     null, new String[]{"*.*"}, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
             
             if (selectedFile != null) {

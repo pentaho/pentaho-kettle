@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.HadoopSpoonPlugin;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -1186,9 +1187,12 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
               rootFile = defaultInitialFile.getFileSystem().getRoot();
               initialFile = defaultInitialFile;
             }
-						
-						FileObject selectedFile = Spoon.getInstance().getVfsFileChooserDialog(rootFile, initialFile).open(shell, defaultInitialFile, 
-						        null, fileFilters, fileFilterNames, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
+
+            VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog(rootFile, initialFile);
+            fileChooserDialog.defaultInitialFile = defaultInitialFile;
+            FileObject selectedFile = fileChooserDialog.open(shell, null, HadoopSpoonPlugin.HDFS_SCHEME, true, null, fileFilters, fileFilterNames,
+                VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
+            
 					    if (selectedFile != null) {
 					    	String filename = selectedFile.getURL().toString();
 					    	
