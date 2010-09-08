@@ -148,7 +148,7 @@ public class SQLValuesHighlight implements LineStyleListener {
 				if (color != colors[0]) {		// hardcoded default foreground color, black
 					StyleRange style = new StyleRange(scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null);
 					if (token == KEY) {
-						style.fontStyle = SWT.BOLD;
+						//style.fontStyle = SWT.BOLD;
 					}
 					if (styles.isEmpty()) {
 						styles.addElement(style);
