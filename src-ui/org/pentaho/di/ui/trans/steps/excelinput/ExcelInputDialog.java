@@ -850,7 +850,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
           wSpreadSheetType.add(type.getDescription());
         }
 
-     // ///////////////////////////////
+        // ///////////////////////////////
 		// START OF AddFileResult GROUP  //
 		///////////////////////////////// 
 
@@ -868,7 +868,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
-		fdlAddResult.top  = new FormAttachment(wEncoding, margin);
+		fdlAddResult.top  = new FormAttachment(wSpreadSheetType, margin);
 		fdlAddResult.right= new FormAttachment(middle, -margin);
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(wAddFileResult, SWT.CHECK );
@@ -876,12 +876,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wAddResult.setToolTipText(BaseMessages.getString(PKG, "ExcelInputDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
-		fdAddResult.top  = new FormAttachment(wEncoding, margin);
+		fdAddResult.top  = new FormAttachment(wSpreadSheetType, margin);
 		wAddResult.setLayoutData(fdAddResult);
 
 		fdAddFileResult = new FormData();
 		fdAddFileResult.left = new FormAttachment(0, margin);
-		fdAddFileResult.top = new FormAttachment(wEncoding, margin);
+		fdAddFileResult.top = new FormAttachment(wSpreadSheetType, margin);
 		fdAddFileResult.right = new FormAttachment(100, -margin);
 		wAddFileResult.setLayoutData(fdAddFileResult);
 			
@@ -1890,48 +1890,52 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 								int    fieldtype = ValueMetaInterface.TYPE_NONE;
 
 								KCell cell = sheet.getCell(colnr, rownr);
-								if (cell.getType() != KCellType.EMPTY )
-								{
-									// We found a field.
-									fieldname = cell.getContents();
-								}
-
-                                // System.out.println("Fieldname = "+fieldname);
-
-								KCell below = sheet.getCell(colnr, rownr+1);
-								if (below.getType() == KCellType.BOOLEAN)
-								{
-									fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
-								}
-								else
-								if (below.getType() == KCellType.DATE)
-								{
-									fieldtype = ValueMetaInterface.TYPE_DATE;
-								}
-								else
-								if (below.getType() == KCellType.LABEL)
-								{
-									fieldtype = ValueMetaInterface.TYPE_STRING;
-								}
-								else
-								if (below.getType() == KCellType.NUMBER)
-								{
-									fieldtype = ValueMetaInterface.TYPE_NUMBER;
-								}
-
-                                if (fieldname!=null && fieldtype==ValueMetaInterface.TYPE_NONE)
-                                {
-                                    fieldtype = ValueMetaInterface.TYPE_STRING;
-                                }
-
-								if (fieldname!=null && fieldtype!=ValueMetaInterface.TYPE_NONE)
-								{
-									ValueMetaInterface field = new ValueMeta(fieldname, fieldtype);
-									fields.addValueMeta(field);
-								}
-								else
-								{
-									if (fieldname==null) stop=true;
+								if(cell==null) {
+									stop=true;
+								}else {
+									if (cell.getType() != KCellType.EMPTY )
+									{
+										// We found a field.
+										fieldname = cell.getContents();
+									}
+	
+	                                // System.out.println("Fieldname = "+fieldname);
+	
+									KCell below = sheet.getCell(colnr, rownr+1);
+									if (below.getType() == KCellType.BOOLEAN)
+									{
+										fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
+									}
+									else
+									if (below.getType() == KCellType.DATE)
+									{
+										fieldtype = ValueMetaInterface.TYPE_DATE;
+									}
+									else
+									if (below.getType() == KCellType.LABEL)
+									{
+										fieldtype = ValueMetaInterface.TYPE_STRING;
+									}
+									else
+									if (below.getType() == KCellType.NUMBER)
+									{
+										fieldtype = ValueMetaInterface.TYPE_NUMBER;
+									}
+	
+	                                if (fieldname!=null && fieldtype==ValueMetaInterface.TYPE_NONE)
+	                                {
+	                                    fieldtype = ValueMetaInterface.TYPE_STRING;
+	                                }
+	
+									if (fieldname!=null && fieldtype!=ValueMetaInterface.TYPE_NONE)
+									{
+										ValueMetaInterface field = new ValueMeta(fieldname, fieldtype);
+										fields.addValueMeta(field);
+									}
+									else
+									{
+										if (fieldname==null) stop=true;
+									}
 								}
 							}
 							catch(ArrayIndexOutOfBoundsException aioobe)
