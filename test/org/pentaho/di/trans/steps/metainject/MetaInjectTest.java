@@ -41,15 +41,15 @@ public class MetaInjectTest extends TestCase {
       new String[] { "state", "String", null, "30", null, null, null, null, "none", },  
     };
     String[] fieldKeys = new String[] {
-        CsvInputAttr.FIELD_NAME.getXmlCode(),
-        CsvInputAttr.FIELD_TYPE.getXmlCode(),
-        CsvInputAttr.FIELD_FORMAT.getXmlCode(),
-        CsvInputAttr.FIELD_LENGTH.getXmlCode(),
-        CsvInputAttr.FIELD_PRECISION.getXmlCode(),
-        CsvInputAttr.FIELD_CURRENCY.getXmlCode(),
-        CsvInputAttr.FIELD_DECIMAL.getXmlCode(),
-        CsvInputAttr.FIELD_GROUP.getXmlCode(),
-        CsvInputAttr.FIELD_TRIM_TYPE.getXmlCode(),
+        CsvInputAttr.FIELD_NAME.getKey(),
+        CsvInputAttr.FIELD_TYPE.getKey(),
+        CsvInputAttr.FIELD_FORMAT.getKey(),
+        CsvInputAttr.FIELD_LENGTH.getKey(),
+        CsvInputAttr.FIELD_PRECISION.getKey(),
+        CsvInputAttr.FIELD_CURRENCY.getKey(),
+        CsvInputAttr.FIELD_DECIMAL.getKey(),
+        CsvInputAttr.FIELD_GROUP.getKey(),
+        CsvInputAttr.FIELD_TRIM_TYPE.getKey(),
       };
     String filename = "test/org/pentaho/di/trans/steps/metainject/customers-100.txt";
 
