@@ -16,12 +16,10 @@
      <category locale="fr_FR">Général</category>
    </localized_category>
    <localized_description>
-     <description locale="en_US">Dummy plugin</description>
-     <description locale="nl_NL">Dummy plugin</description>
+     <description locale="en_US">Example plugin</description>
    </localized_description>
    <localized_tooltip>
-     <tooltip locale="en_US">This is a dummy plugin test step</tooltip>
-     <tooltip locale="nl_NL">Dit is een voorbeeld plugin ook wel 'dummy plugin' geheten</tooltip>
+     <tooltip locale="en_US">This is an example test job entry for a plugin</tooltip>
    </localized_tooltip>
    
 </plugin>
