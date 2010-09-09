@@ -183,8 +183,6 @@ public class XsdValidator extends BaseStep implements StepInterface
 			}
 		}
 			
-		boolean sendToErrorRow=false;
-	    String errorMessage = null;
 	    
 		try
 		{
@@ -269,12 +267,10 @@ public class XsdValidator extends BaseStep implements StepInterface
 			catch (SAXException ex) 
 			{
 				validationmsg=ex.getMessage();
-				logError("SAX Exception : " +  ex);
 			}
 			catch (IOException ex) 
 			{
 				validationmsg=ex.getMessage();
-				logError("SAX Exception : " +  ex);
 			}
 			finally
 			{
@@ -312,6 +308,9 @@ public class XsdValidator extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
+			boolean sendToErrorRow=false;
+		    String errorMessage = null;
+		    
 			if (getStepMeta().isDoingErrorHandling())
 	        {
 	           sendToErrorRow = true;
