@@ -253,12 +253,11 @@ public class XsdValidator extends BaseStep implements StepInterface
 			catch (SAXException ex) 
 			{
 				validationmsg=ex.getMessage();
-				logError("SAX Exception : " +  ex);
 			}
 			catch (IOException ex) 
 			{
 				validationmsg=ex.getMessage();
-				logError("SAX Exception : " +  ex);
+
 			}
 			finally
 			{
