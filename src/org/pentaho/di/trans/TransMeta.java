@@ -4451,7 +4451,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public int getSizeRowset()
     {
-        return sizeRowset;
+        String rowSetSize = getVariable(Const.KETTLE_TRANS_ROWSET_SIZE);
+        int altSize = Const.toInt(rowSetSize, 0);
+        if (altSize>0) {
+          return altSize;
+        } else {
+          return sizeRowset;
+        }
     }
 
     /**

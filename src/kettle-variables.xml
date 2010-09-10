@@ -131,4 +131,12 @@
 		<default-value>0</default-value>
 	</kettle-variable>
 
+	<kettle-variable>
+		<description>Contains the size of the transformation rowset size. This overwrites values that you set in your transformation settings but only if the value is an integer and larger than zero.</description>
+		<variable>KETTLE_TRANS_ROWSET_SIZE</variable>
+		<default-value>0</default-value>
+	</kettle-variable>
+	
+	
+
 </kettle-variables>

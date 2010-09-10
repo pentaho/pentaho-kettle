@@ -612,6 +612,13 @@ public class Const
 	 */
 	public static final String KETTLE_PLUGIN_CLASSES = "KETTLE_PLUGIN_CLASSES";
 
+    /**
+     * Name of the environment variable that contains the size of the transformation rowset size.
+     * This overwrites values that you set transformation settings.
+     */
+    public static final String KETTLE_TRANS_ROWSET_SIZE = "KETTLE_TRANS_ROWSET_SIZE";
+	
+	
 	/**
 	 * A general initial version comment 
 	 */
