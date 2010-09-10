@@ -1311,4 +1311,18 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.YamlInput</tooltip>
 		<iconfile>ui/images/YamlI.png</iconfile>
 	</step>
+	<step id="BlockUntilStepsFinish">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.BlockUntilStepsFinish</description>
+		<classname>org.pentaho.di.trans.steps.blockuntilstepsfinish.BlockUntilStepsFinishMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.BlockUntilStepsFinish</tooltip>
+		<iconfile>ui/images/WFS.png</iconfile>
+	</step>
+	<step id="StepsMetrics">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.StepsMetrics</description>
+		<classname>org.pentaho.di.trans.steps.stepsmetrics.StepsMetricsMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.StepsMetrics</tooltip>
+		<iconfile>ui/images/SSTAS.png</iconfile>
+	</step>
 </steps>

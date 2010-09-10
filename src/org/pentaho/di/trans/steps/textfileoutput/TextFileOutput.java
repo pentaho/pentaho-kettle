@@ -18,13 +18,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -846,7 +844,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		{
 			
 		}
-		
+
 		for (OutputStream outputStream : data.fileWriterMap.values()) {
 			try {
 				outputStream.close();
