@@ -1652,6 +1652,7 @@ public class TransDialog extends Dialog
         // Rows in Rowset:
         Label wlSizeRowset = new Label(wMiscComp, SWT.RIGHT);
         wlSizeRowset.setText(BaseMessages.getString(PKG, "TransDialog.SizeRowset.Label")); //$NON-NLS-1$
+        wlSizeRowset.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SizeRowset.Tooltip")); //$NON-NLS-1$
         props.setLook(wlSizeRowset);
         FormData fdlSizeRowset = new FormData();
         fdlSizeRowset.left = new FormAttachment(0, 0);
@@ -1659,6 +1660,7 @@ public class TransDialog extends Dialog
         fdlSizeRowset.top  = new FormAttachment(0, margin);
         wlSizeRowset.setLayoutData(fdlSizeRowset);
         wSizeRowset=new Text(wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSizeRowset.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SizeRowset.Tooltip")); //$NON-NLS-1$
         props.setLook(wSizeRowset);
         wSizeRowset.addModifyListener(lsMod);
         FormData fdSizeRowset = new FormData();
@@ -2218,7 +2220,9 @@ public class TransDialog extends Dialog
 		getLogInfo();
 
 		try {
-	
+
+		    boolean allOK = true;
+		  
 			for (LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable, channelLogTable, stepLogTable, } ) {
 				if (logTable.getDatabaseMeta()!=null && !Const.isEmpty(logTable.getTableName())) {
 					// OK, we have something to work with!
@@ -2228,27 +2232,38 @@ public class TransDialog extends Dialog
 						db = new Database(transMeta, logTable.getDatabaseMeta());
 						db.shareVariablesWith(transMeta);
 						db.connect();
+
+						StringBuilder ddl = new StringBuilder();
 						
 						RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
-						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+						String tableName = logTable.getTableName();
+						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), tableName);
 						String createTable = db.getDDL(schemaTable, fields);
-						
+
 						if (!Const.isEmpty(createTable))
 						{
-							String comments="-- "+logTable.getLogTableType()+Const.CR;
-							comments+="--"+Const.CR+Const.CR;
-							
-							SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, logTable.getDatabaseMeta(), transMeta.getDbCache(), comments+createTable);
-							sqledit.open();
-						}
-						else
-						{
-							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-							mb.setText(BaseMessages.getString(PKG, "TransDialog.NoSqlNedds.DialogTitle")); //$NON-NLS-1$
-							mb.setMessage(logTable.getLogTableType()+Const.CR+Const.CR+BaseMessages.getString(PKG, "TransDialog.NoSqlNedds.DialogMessage")); //$NON-NLS-1$
-							mb.open(); 
+							ddl.append("-- ").append(logTable.getLogTableType()).append(Const.CR);
+							ddl.append("--").append(Const.CR).append(Const.CR);
+							ddl.append(createTable).append(Const.CR);
 						}
 						
+						
+						java.util.List<RowMetaInterface> indexes = logTable.getRecommendedIndexes();
+						for (int i=0;i<indexes.size();i++) {
+						  RowMetaInterface index = indexes.get(i);
+						  if (!index.isEmpty()) {
+						    String createIndex = db.getCreateIndexStatement(schemaTable, "IDX_"+tableName+"_"+(i+1), index.getFieldNames(), false, false, false, true);
+						    if (!Const.isEmpty(createIndex)) {
+	                            ddl.append(createIndex);
+						    }
+						  }
+						}
+						
+						if (ddl.length()>0) {
+						    allOK=false;
+							SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, logTable.getDatabaseMeta(), transMeta.getDbCache(), ddl.toString());
+							sqledit.open();
+						} 
 					} finally { 
 						if (db!=null) {
 							db.disconnect();
@@ -2256,6 +2271,14 @@ public class TransDialog extends Dialog
 					}
 				}
 			}
+			
+			if (allOK) {
+              MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+              mb.setText(BaseMessages.getString(PKG, "TransDialog.NoSqlNedds.DialogTitle")); //$NON-NLS-1$
+              mb.setMessage(BaseMessages.getString(PKG, "TransDialog.NoSqlNedds.DialogMessage")); //$NON-NLS-1$
+              mb.open();
+			}
+		
 		} catch(Exception e) {
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransDialog.ErrorOccurred.DialogTitle"), BaseMessages.getString(PKG, "TransDialog.ErrorOccurred.DialogMessage"), e);
 		}
