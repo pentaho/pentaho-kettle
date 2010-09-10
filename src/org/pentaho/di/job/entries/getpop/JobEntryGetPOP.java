@@ -711,6 +711,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	public Result execute(Result previousResult, int nr) throws KettleException {
 		Result result = previousResult;
 		result.setResult( false );
+		log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Debug.BeginExecute"));
 		
 		FileObject fileObject = null;
 		MailConnection mailConn=null;
@@ -719,6 +720,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		
 		SimpleDateFormat df  = new SimpleDateFormat();
 		df.applyPattern(DEFAULT_DATE_PATTERN);
+		log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Debug.DatePatternApplied"));
 		
 		try	{
 
@@ -738,9 +740,11 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 					if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Log.OutputFolderNotExist",realOutputFolder));
 					// create folder
 					fileObject.createFolder();
-				}else
+				} else {
+				  log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Debug.OutputFolderExistsError"));
 					throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderNotExists1.Label") + 
 						realOutputFolder + BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderNotExists2.Label"));
+				}
 			}
 
 			
@@ -749,6 +753,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			boolean useDifferentFolderForAttachment=(isSaveAttachment() && isDifferentFolderForAttachment());
 			
 			if(useDifferentFolderForAttachment) {
+			  log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Debug.UseDifferentAttachmentFolder"));
 				String realFolderAttachment=environmentSubstitute(getAttachmentFolder());
 				if(Const.isEmpty(realFolderAttachment))
 					throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.AttachmentFolderEmpty"));
@@ -778,6 +783,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			
 			// check search terms
 			// Received Date
+			log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Debug.ConditionOnReceivedDate"), getConditionOnReceivedDate());
 			switch (getConditionOnReceivedDate()) {
 				case MailConnectionMeta.CONDITION_DATE_EQUAL: 
 				case MailConnectionMeta.CONDITION_DATE_GREATER:  
@@ -908,10 +914,10 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			
 			if(isIncludeSubFolders()) {
 				// Fetch also sub folders?
-				if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetPOP.FetchingSubFolders"));
+				if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobGetPOP.FetchingSubFolders"));
 				String[] subfolders=mailConn.returnAllFolders();
 				if(subfolders.length==0) {
-					if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetPOP.NoSubFolders"));
+					if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobGetPOP.NoSubFolders"));
 				}else {
 					for(int i=0; i<subfolders.length; i++) {
 						fetchOneFolder(mailConn, usePOP3, subfolders[i], 
@@ -929,17 +935,17 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			result.setNrLinesUpdated(mailConn.getMovedMessagesCounter());
 			
 			if(log.isDetailed()){
-				log.logDetailed(toString(), "=======================================");
-				log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetPOP.Log.Info.SavedMessages","" + mailConn.getSavedMessagesCounter()));
-				log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetPOP.Log.Info.DeletedMessages","" + mailConn.getDeletedMessagesCounter()));
-				log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetPOP.Log.Info.MovedMessages","" + mailConn.getMovedMessagesCounter()));
-				if(getActionType()== MailConnectionMeta.ACTION_TYPE_GET && isSaveAttachment()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetPOP.Log.Info.AttachedMessagesSuccess","" + mailConn.getSavedAttachedFilesCounter()));
-				log.logDetailed(toString(), "=======================================");
+				log.logDetailed("=======================================");
+				log.logDetailed(BaseMessages.getString(PKG, "JobGetPOP.Log.Info.SavedMessages","" + mailConn.getSavedMessagesCounter()));
+				log.logDetailed(BaseMessages.getString(PKG, "JobGetPOP.Log.Info.DeletedMessages","" + mailConn.getDeletedMessagesCounter()));
+				log.logDetailed(BaseMessages.getString(PKG, "JobGetPOP.Log.Info.MovedMessages","" + mailConn.getMovedMessagesCounter()));
+				if(getActionType()== MailConnectionMeta.ACTION_TYPE_GET && isSaveAttachment()) log.logDetailed(BaseMessages.getString(PKG, "JobGetPOP.Log.Info.AttachedMessagesSuccess","" + mailConn.getSavedAttachedFilesCounter()));
+				log.logDetailed("=======================================");
 			}			
 		} catch(Exception e) {
 			result.setNrErrors(1);
-			log.logError(toString(), "Unexpected error: "+e.getMessage());
-			log.logError(toString(),Const.getStackTracker(e));
+			log.logError("Unexpected error: "+e.getMessage());
+			log.logError(Const.getStackTracker(e));
 		} finally  {
 			if ( fileObject != null ) {
 				try  {fileObject.close();
@@ -974,7 +980,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			int messagesCount=mailConn.getMessagesCount();
 			
 			if(log.isDetailed()){
-				log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.TotalMessagesFolder.Label", 
+				log.logDetailed(BaseMessages.getString(PKG, "JobGetMailsFromPOP.TotalMessagesFolder.Label", 
 						""+messagesCount,Const.NVL(mailConn.getFolderName(),MailConnectionMeta.INBOX_FOLDER)));
 			}
 			
@@ -994,12 +1000,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 								mailConn.fetchNext();
 								// Delete this message
 								mailConn.deleteMessage();
-								if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageDeleted", ""+i));
+								if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageDeleted", ""+i));
 							}
 						}else {
 							// Delete messages
 							mailConn.deleteMessages(true);
-							if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessagesDeleted", ""+messagesCount));
+							if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessagesDeleted", ""+messagesCount));
 						}
 					break;
 					case MailConnectionMeta.ACTION_TYPE_MOVE:  
@@ -1011,12 +1017,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 								mailConn.fetchNext();
 								// Move this message
 								mailConn.moveMessage();
-								if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageMoved", ""+i, realMoveToIMAPFolder));
+								if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageMoved", ""+i, realMoveToIMAPFolder));
 							}
 						}else {
 							// Move all messages
 							mailConn.moveMessages();
-							if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessagesMoved", ""+messagesCount, realMoveToIMAPFolder));
+							if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessagesMoved", ""+messagesCount, realMoveToIMAPFolder));
 						}
 					break;
 					default:
@@ -1032,25 +1038,25 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 							if (okPOP3 || okIMAP) {
 								// display some infos on the current message
 								if(log.isDebug())  {
-									log.logDebug(toString(), "--------------------------------------------------");
-									log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageNumber.Label",""+messagenumber));
-									log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.ReceivedDate.Label",df.format(mailConn.getMessage().getReceivedDate())));
-									log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.ContentType.Label",mailConn.getMessage().getContentType()));
-									log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.EmailFrom.Label", Const.NVL(mailConn.getMessage().getFrom()[0].toString(),"")));
-									log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.EmailSubject.Label",Const.NVL(mailConn.getMessage().getSubject(),"")));
+									log.logDebug("--------------------------------------------------");
+									log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageNumber.Label",""+messagenumber));
+									log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.ReceivedDate.Label",df.format(mailConn.getMessage().getReceivedDate())));
+									log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.ContentType.Label",mailConn.getMessage().getContentType()));
+									log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.EmailFrom.Label", Const.NVL(mailConn.getMessage().getFrom()[0].toString(),"")));
+									log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.EmailSubject.Label",Const.NVL(mailConn.getMessage().getSubject(),"")));
 								}
 								if(isSaveMessage()) {
 									// get local message filename
 									String localfilename_message=replaceTokens(realFilenamePattern, i);
 	
 									if(log.isDebug()) 
-										log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.LocalFilename.Label",localfilename_message));
+										log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.LocalFilename.Label",localfilename_message));
 								
 									// save message content in the file
 									mailConn.saveMessageContentToFile(localfilename_message, realOutputFolder);
 									
 									if(log.isDetailed()) 
-										log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageSaved.Label",""+messagenumber,localfilename_message,realOutputFolder));
+										log.logDetailed(BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageSaved.Label",""+messagenumber,localfilename_message,realOutputFolder));
 								}
 								
 								// Do we need to save attached file?
@@ -1062,19 +1068,19 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 								if (usePOP3) {
 									if(getDelete()) {
 										mailConn.deleteMessage();
-										if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageDeleted", ""+messagenumber));
+										if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageDeleted", ""+messagenumber));
 									}
 								}else {
 									switch (getAfterGetIMAP()) {
 										case MailConnectionMeta.AFTER_GET_IMAP_DELETE:
 											// Delete messages
 											mailConn.deleteMessage();
-											if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageDeleted", ""+messagenumber));
+											if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageDeleted", ""+messagenumber));
 										break;
 										case MailConnectionMeta.AFTER_GET_IMAP_MOVE:
 											// Move messages
 											mailConn.moveMessage();
-											if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageMoved", ""+messagenumber, realMoveToIMAPFolder));
+											if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageMoved", ""+messagenumber, realMoveToIMAPFolder));
 										break;
 									default:
 									}
