@@ -19,6 +19,7 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -204,5 +205,10 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 
 	public String getTableNameVariable() {
 		return Const.KETTLE_STEP_LOG_TABLE; // $NON-NLS-1$
+	}
+	
+	public List<RowMetaInterface> getRecommendedIndexes() {
+	    List<RowMetaInterface> indexes = new ArrayList<RowMetaInterface>();
+	    return indexes;
 	}
 }

@@ -20,6 +20,9 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -367,5 +370,48 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 
 	public String getTableNameVariable() {
 		return Const.KETTLE_TRANS_LOG_TABLE;
+	}
+	
+	public List<RowMetaInterface> getRecommendedIndexes() {
+	    List<RowMetaInterface> indexes = new ArrayList<RowMetaInterface>();
+	    
+	    // First index : ID_BATCH if any is used.
+	    //
+	    if (isBatchIdUsed()) {
+	      RowMetaInterface batchIndex = new RowMeta();
+	      LogTableField keyField = getKeyField();
+	      
+	      ValueMetaInterface keyMeta = new ValueMeta(keyField.getFieldName(), keyField.getDataType());
+	      keyMeta.setLength(keyField.getLength());
+	      batchIndex.addValueMeta(keyMeta);
+	      
+	      indexes.add(batchIndex);
+	    }
+	    
+	    // The next index includes : ERRORS, STATUS, TRANSNAME:
+	    
+        RowMetaInterface lookupIndex = new RowMeta();
+        LogTableField errorsField = findField(ID.ERRORS);
+        if (errorsField!=null) {
+          ValueMetaInterface valueMeta = new ValueMeta(errorsField.getFieldName(), errorsField.getDataType());
+          valueMeta.setLength(errorsField.getLength());
+          lookupIndex.addValueMeta(valueMeta);
+        }
+        LogTableField statusField = findField(ID.STATUS);
+        if (statusField!=null) {
+          ValueMetaInterface valueMeta = new ValueMeta(statusField.getFieldName(), statusField.getDataType());
+          valueMeta.setLength(statusField.getLength());
+          lookupIndex.addValueMeta(valueMeta);
+        }
+        LogTableField transNameField = findField(ID.TRANSNAME);
+        if (transNameField!=null) {
+          ValueMetaInterface valueMeta = new ValueMeta(transNameField.getFieldName(), transNameField.getDataType());
+          valueMeta.setLength(transNameField.getLength());
+          lookupIndex.addValueMeta(valueMeta);
+        }
+        
+        indexes.add(lookupIndex);
+	    
+	    return indexes;
 	}
 }

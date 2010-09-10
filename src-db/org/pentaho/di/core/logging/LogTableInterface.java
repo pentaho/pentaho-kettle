@@ -17,6 +17,7 @@ import java.util.List;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.repository.RepositoryAttributeInterface;
 
 public interface LogTableInterface {
@@ -100,4 +101,9 @@ public interface LogTableInterface {
 	 * @return the field that represents the name of the object that is being used (or null if none is found)
 	 */
 	public LogTableField getNameField();
+
+	/**
+	 * @return A list of rows that contain the recommended indexed fields for this logging table.
+	 */
+    public List<RowMetaInterface> getRecommendedIndexes();
 }
