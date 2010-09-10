@@ -18,6 +18,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -267,7 +268,7 @@ public class StringUtil
 	{
 		Map<String, String> sysMap = new HashMap<String, String>();
 		synchronized(sysMap) {
-			sysMap.putAll(systemProperties);
+			sysMap.putAll(Collections.synchronizedMap(systemProperties));
 			
 			aString = substituteWindows(aString, sysMap);
 			aString = substituteUnix(aString, sysMap);
