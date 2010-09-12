@@ -347,7 +347,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 	    try {
 	    	initMetrics();
 	    }catch(Exception e) {
-			logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.Init", e.toString()));
+			logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.Init", e.toString()));
 			return result;
 	    }
 
@@ -367,7 +367,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 				
 				int indexOfResultFieldFile=-1;
 				if(Const.isEmpty(realResultFieldFile)) {
-					logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.ResultFieldsFileMissing"));
+					logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.ResultFieldsFileMissing"));
 					return result;
 				}
 				
@@ -382,20 +382,20 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 					RowMetaAndData firstRow = rows.get(0);
 					indexOfResultFieldFile= firstRow.getRowMeta().indexOfValue(realResultFieldFile);
 					if(indexOfResultFieldFile==-1) {
-						logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.CanNotFindField", realResultFieldFile));
+						logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.CanNotFindField", realResultFieldFile));
 						return result;
 					}
 					if(!Const.isEmpty(realResultFieldWildcard)) {
 						indexOfResultFieldWildcard= firstRow.getRowMeta().indexOfValue(realResultFieldWildcard);
 						if(indexOfResultFieldWildcard==-1) {
-							logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.CanNotFindField", realResultFieldWildcard));
+							logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.CanNotFindField", realResultFieldWildcard));
 							return result;
 						}
 					}
 					if(!Const.isEmpty(realResultFieldIncluseSubfolders)) {
 						indexOfResultFieldIncludeSubfolders= firstRow.getRowMeta().indexOfValue(realResultFieldIncluseSubfolders);
 						if(indexOfResultFieldIncludeSubfolders==-1) {
-							logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.CanNotFindField", realResultFieldIncluseSubfolders));
+							logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.CanNotFindField", realResultFieldIncluseSubfolders));
 							return result;
 						}
 					}
@@ -450,7 +450,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 			              }
 		        	  }catch(Exception e) {
 		        		  incrementErrors();
-		        		  logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.GettingFileFromResultFilenames", file.toString(), e.toString()));
+		        		  logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.GettingFileFromResultFilenames", file.toString(), e.toString()));
 		        	  }finally {
 		        		  if(file!=null) { try{file.close();}catch(Exception e){};};
 		        	  }
@@ -468,7 +468,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 						ProcessFileFolder(vsourcefilefolder[i], vwildcard[i],vincludeSubFolders[i],parentJob,result);
 					}	
 				}else {
-					logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.FilesGridEmpty"));
+					logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.FilesGridEmpty"));
 					return result;
 				}
 			break;
@@ -618,7 +618,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 		String realSourceFilefoldername = environmentSubstitute(sourcefilefoldername);
 		if(Const.isEmpty(realSourceFilefoldername)) {
 			// Filename is empty!
-			logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.log.FileFolderEmpty"));
+			logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.log.FileFolderEmpty"));
 			incrementErrors();
 			return;
 		}
@@ -686,15 +686,15 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
                      }	 
 				 }else {
 					 incrementErrors();
-					 logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.UnknowFileFormat",sourcefilefolder.toString()));					
+					 logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.UnknowFileFormat",sourcefilefolder.toString()));					
 				 }
 			} else {	
 				incrementErrors();
-				logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.SourceFileNotExists",realSourceFilefoldername));					
+				logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.SourceFileNotExists",realSourceFilefoldername));					
 			}
 		} catch (Exception e) {
 			incrementErrors();
-			logError(toString(), BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.Exception.Processing",realSourceFilefoldername.toString(),e.getMessage()));					
+			logError( BaseMessages.getString(PKG, "JobEvalFilesMetrics.Error.Exception.Processing",realSourceFilefoldername.toString(),e.getMessage()));					
 
 		} finally {
 			if ( sourcefilefolder != null ){

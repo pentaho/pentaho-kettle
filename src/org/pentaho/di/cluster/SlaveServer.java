@@ -446,7 +446,7 @@ public class SlaveServer  extends ChangedFlag
             
             return body;
         } catch (Exception e) {
-        	log.logError(toString(), String.format("Exception sending message to service %s", service), e);
+        	log.logError( String.format("Exception sending message to service %s", service), e);
         	throw e;
         }
         finally

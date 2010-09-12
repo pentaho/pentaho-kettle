@@ -93,7 +93,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface
         	
         	if(Const.isEmpty(url)) throw new KettleException(BaseMessages.getString(PKG, "WebServiceAvailable.Error.URLEmpty"));
             
-        	if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "WebServiceAvailable.Log.CheckingURL", url));
+        	if(log.isDetailed()) log.logDetailed( BaseMessages.getString(PKG, "WebServiceAvailable.Log.CheckingURL", url));
         	
         	boolean WebServiceAvailable=false;
         	
@@ -107,7 +107,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface
         		// Web service is available
         		WebServiceAvailable=true;
         	}catch(Exception e) {
-        		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "WebServiceAvailable.Error.ServiceNotReached", url, e.toString()));
+        		if(log.isDebug()) log.logDebug( BaseMessages.getString(PKG, "WebServiceAvailable.Error.ServiceNotReached", url, e.toString()));
             	
         	}finally {
         		if(in!=null){
@@ -154,7 +154,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "WebServiceAvailable.Error.ResultFieldMissing"));
+        		log.logError( BaseMessages.getString(PKG, "WebServiceAvailable.Error.ResultFieldMissing"));
         		return false;
         	}
         	data.connectTimeOut= Const.toInt(environmentSubstitute(meta.getConnectTimeOut()), 0);

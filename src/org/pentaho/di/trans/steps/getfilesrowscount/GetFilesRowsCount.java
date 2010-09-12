@@ -260,25 +260,25 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		            if (meta.getRowSeparatorFormat().equals("CARRIAGERETURN") || meta.getRowSeparatorFormat().equals("LF"))
 		    		{
 		    			data.separator='\r';
-		    			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
+		    			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
 		    		}
 		            // Checking for 'CR' for backwards compatibility.
 		            else if (meta.getRowSeparatorFormat().equals("LINEFEED") || meta.getRowSeparatorFormat().equals("CR"))
 		    		{
 		            	data.separator='\n';
-		    			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
+		    			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
 		    		}
 		            else if (meta.getRowSeparatorFormat().equals("TAB"))
 		    		{
 		            	data.separator='\t';
-		            	if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\t");
+		            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\t");
 		    		}
 		            else
 		    		{
 		            	
 		            	data.separator=environmentSubstitute(meta.getRowSeparator()).charAt(0);
 		            	 
-		            	if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " " +data.separator);
+		            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " " +data.separator);
 		    		}
 	            }
 			  

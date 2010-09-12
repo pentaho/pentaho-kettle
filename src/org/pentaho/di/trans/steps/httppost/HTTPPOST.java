@@ -115,7 +115,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 		        {
 	        		post.addRequestHeader(data.headerParameters[i].getName(),
 	        				data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i]));
-	        		if(isDebug()) log.logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.HeaderValue",data.headerParameters[i].getName(),data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i])));
+	        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.HeaderValue",data.headerParameters[i].getName(),data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i])));
 		        }
 	        }
             

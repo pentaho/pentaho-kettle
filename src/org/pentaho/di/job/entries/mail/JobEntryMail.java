@@ -1136,7 +1136,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     		  String realImageFile=environmentSubstitute(embeddedimages[i]);
     		  String realcontenID=environmentSubstitute(contentids[i]);
     		  if(messageText.indexOf("cid:"+realcontenID)<0) {
-    			  if (log.isDebug()) log.logDebug("Image ["+realImageFile + "] is not used in message body!");
+    			  if (log.isDebug()) logDebug("Image ["+realImageFile + "] is not used in message body!");
     		  }else{
 		    	  try {
 		    		  boolean found = false;

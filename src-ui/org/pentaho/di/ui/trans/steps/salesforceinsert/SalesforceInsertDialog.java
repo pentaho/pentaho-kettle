@@ -692,7 +692,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 		wModule.setText(Const.NVL(in.getModule(), "Account"));
 		wBatchSize.setText("" + in.getBatchSize());
 		wSalesforceIDFieldName.setText(Const.NVL(in.getSalesforceIDFieldName(),""));
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SalesforceInsertDialog.Log.GettingFieldsInfo"));
+		if(log.isDebug()) log.logDebug( BaseMessages.getString(PKG, "SalesforceInsertDialog.Log.GettingFieldsInfo"));
 
 		if (input.getUpdateLookup() != null)
 			for (int i = 0; i < input.getUpdateLookup().length; i++)

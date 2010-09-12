@@ -69,7 +69,7 @@ public class MailInput extends BaseStep implements StepInterface
 	
 		if(log.isRowLevel())
 		{
-			log.logRowlevel(toString(), BaseMessages.getString(PKG, "MailInput.Log.OutputRow",data.outputRowMeta.getString(outputRowData)));
+			log.logRowlevel( BaseMessages.getString(PKG, "MailInput.Log.OutputRow",data.outputRowMeta.getString(outputRowData)));
 		}
 		putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 	
@@ -201,7 +201,7 @@ public class MailInput extends BaseStep implements StepInterface
 			// Get next message
 			data.mailConn.fetchNext();
 			
-			if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "MailInput.Log.FetchingMessage",data.mailConn.getMessage().getMessageNumber()));
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.FetchingMessage",data.mailConn.getMessage().getMessageNumber()));
 			
 			// Execute for each Input field...
 			for (int i=0;i<meta.getInputFields().length;i++)
@@ -333,7 +333,7 @@ public class MailInput extends BaseStep implements StepInterface
 		            data.totalpreviousfields=data.inputRowMeta.size();
 					
 					if(Const.isEmpty(meta.getFolderField())) {
-						log.logError(toString(), BaseMessages.getString(PKG, "MailInput.Error.DynamicFolderFieldMissing"));
+						log.logError( BaseMessages.getString(PKG, "MailInput.Error.DynamicFolderFieldMissing"));
 						stopAll();
 						setErrors(1);
 						return false;	
@@ -341,7 +341,7 @@ public class MailInput extends BaseStep implements StepInterface
 					
 					data.indexOfFolderField=data.inputRowMeta.indexOfValue(meta.getFolderField());
 					if(data.indexOfFolderField<0){
-						log.logError(toString(), BaseMessages.getString(PKG, "MailInput.Error.DynamicFolderUnreachable",meta.getFolderField()));
+						log.logError( BaseMessages.getString(PKG, "MailInput.Error.DynamicFolderUnreachable",meta.getFolderField()));
 						stopAll();
 						setErrors(1);
 						return false;
@@ -349,7 +349,7 @@ public class MailInput extends BaseStep implements StepInterface
 					
 					// get folder
 					String foldername=data.inputRowMeta.getString(data.readrow, data.indexOfFolderField);
-					if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "MailInput.Log.FoldernameInStream", meta.getFolderField(),foldername));
+					if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.FoldernameInStream", meta.getFolderField(),foldername));
 					data.folders=getFolders(foldername);
 				} // end if first
 				
@@ -385,7 +385,7 @@ public class MailInput extends BaseStep implements StepInterface
 			data.mailConn.retrieveMessages();
 			data.messagesCount=data.mailConn.getMessagesCount();
 			
-			if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "MailInput.Log.MessagesInFolder",data.folder,data.messagesCount));	
+			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.MessagesInFolder",data.folder,data.messagesCount));	
 			
 		} catch(Exception e){
 			logError("Error opening folder "+data.folderenr + " "+ data.folder+ ": "+  e.toString());

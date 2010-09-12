@@ -348,7 +348,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 						factory = new net.sf.saxon.TransformerFactoryImpl(); 
 					}
 					
-					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactoryInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactory",factory.getClass().getName()));
+					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactoryInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactory",factory.getClass().getName()));
 			
 							
 					InputStream xslInputStream = KettleVFS.getInputStream(xslfile);
@@ -360,7 +360,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
   					// Use the template to create a transformer
   					Transformer xformer = template.newTransformer();
   					
-  					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClassInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
+  					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClassInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
   										
   					
   					// Prepare the input and output files

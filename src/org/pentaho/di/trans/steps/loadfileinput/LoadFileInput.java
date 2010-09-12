@@ -130,7 +130,7 @@ public class LoadFileInput extends BaseStep implements StepInterface
 			   // get field value
 			   String Fieldvalue= data.inputRowMeta.getString(data.readrow, data.indexOfFilenameField);
 				
-			   if(isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LoadFileInput.Log.Stream", meta.getDynamicFilenameField(),Fieldvalue));
+			   if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "LoadFileInput.Log.Stream", meta.getDynamicFilenameField(),Fieldvalue));
 
 			   FileObject file=null;
 				try
@@ -163,12 +163,12 @@ public class LoadFileInput extends BaseStep implements StepInterface
             
 			if(meta.isIgnoreEmptyFile() && data.fileSize==0)
 			{
-				log.logError(toString(),BaseMessages.getString(PKG, "LoadFileInput.Error.FileSizeZero", ""+data.file.getName()));
+				log.logError(BaseMessages.getString(PKG, "LoadFileInput.Error.FileSizeZero", ""+data.file.getName()));
 				openNextFile();
 				
 			}else
 			{
-				if (isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LoadFileInput.Log.OpeningFile", data.file.toString()));
+				if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "LoadFileInput.Log.OpeningFile", data.file.toString()));
 				
 				// get File content
 				getFileContent();
@@ -230,7 +230,7 @@ public class LoadFileInput extends BaseStep implements StepInterface
 		try{
 			data.filecontent=getTextFileContent(data.file.toString(), meta.getEncoding());
 		} catch(java.lang.OutOfMemoryError o) {
-			log.logError(toString(), "There is no enaugh memory to load the content of the file ["+data.file.getName()+"]");
+			log.logError( "There is no enaugh memory to load the content of the file ["+data.file.getName()+"]");
 			throw new KettleException(o);
 		} catch(Exception e) {
 			throw new KettleException(e);

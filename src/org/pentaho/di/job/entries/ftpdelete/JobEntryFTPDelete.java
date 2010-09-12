@@ -657,11 +657,11 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		String realkeyPass=environmentSubstitute(keyFilePass);
 		
 		
-		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.Start")); //$NON-NLS-1$
+		if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.Start")); //$NON-NLS-1$
 		
 		if(copyprevious && rows.size()==0)
 		{
-			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.ArgsFromPreviousNothing"));
+			if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.ArgsFromPreviousNothing"));
 			result.setResult(true);
 			return result;
 		}
@@ -765,7 +765,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 				}
 			}
 
-			if(log.isDetailed()) logDetailed("JobEntryFTPDelete.FoundNFiles",String.valueOf(filelist.length));
+			if(isDetailed()) logDetailed("JobEntryFTPDelete.FoundNFiles",String.valueOf(filelist.length));
 			int found = filelist == null ? 0 : filelist.length;
 			if(found==0)
 			{
@@ -809,7 +809,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 			
 				boolean getIt = false;
 			
-				if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobEntryFTPDelete.AnalysingFile",filelist[i]));
+				if(isDebug()) logDebug(BaseMessages.getString(PKG, "JobEntryFTPDelete.AnalysingFile",filelist[i]));
 			
 				try
 				{
@@ -847,7 +847,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 						{
 							sshclient.rm(filelist[i]);	
 						}
-						if(log.isDetailed()) logDetailed("JobEntryFTPDelete.RemotefileDeleted",filelist[i]);
+						if(isDetailed()) logDetailed("JobEntryFTPDelete.RemotefileDeleted",filelist[i]);
 						updateDeletedFiles();
 					}
 				}catch (Exception e)
@@ -1005,7 +1005,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	{
 		// Create sftp client to host ...
 		sftpclient = new SFTPClient(InetAddress.getByName(realservername), realport, realusername);
-		//if(log.isDetailed()) logDetailed("Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
+		//if(isDetailed()) logDetailed("Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
 
 		// login to ftp host ...
 		sftpclient.login(realpassword);
@@ -1014,7 +1014,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		if (!Const.isEmpty(realFTPDirectory))
 		{
 			sftpclient.chdir(realFTPDirectory);
-			if(log.isDetailed()) logDetailed("Changed to directory ["+realFTPDirectory+"]");
+			if(isDetailed()) logDetailed("Changed to directory ["+realFTPDirectory+"]");
 		}
 
 	}
@@ -1037,7 +1037,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	      	  if(!Const.isEmpty(realProxy_password)) {
 	      		ftpsclient.setProxyPassword(realProxy_password);
 	      	  }
-	    	  if (log.isDetailed() )
+	    	  if (isDetailed() )
 	    	      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.OpenedProxyConnectionOn",realProxy_host));
 	  
 	    	  int proxyport = Const.toInt(environmentSubstitute(proxyPort), 21);
@@ -1045,25 +1045,25 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 	    		  ftpsclient.setProxyPort(proxyport);
 	    	  }
           } else  {
-              if ( log.isDetailed() )
-        	      logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPDelete.OpenedConnectionTo",realservername));                
+              if ( isDetailed() )
+        	      logDetailed( BaseMessages.getString(PKG, "JobEntryFTPDelete.OpenedConnectionTo",realservername));                
           }
 		
 		// set activeConnection connectmode ...
         if (activeConnection)
         {
         	ftpsclient.setPassiveMode(false);
-            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetActive")); //$NON-NLS-1$
+            if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetActive")); //$NON-NLS-1$
         }
         else
         {
         	ftpsclient.setPassiveMode(true);
-            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetPassive")); //$NON-NLS-1$
+            if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetPassive")); //$NON-NLS-1$
         }
 
 		// Set the timeout
         ftpsclient.setTimeOut(realtimeout);
-	    if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetTimeout", String.valueOf(realtimeout))); //$NON-NLS-1$
+	    if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetTimeout", String.valueOf(realtimeout))); //$NON-NLS-1$
 	    
 		// now connect
 		ftpsclient.connect();
@@ -1072,7 +1072,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		if (!Const.isEmpty(realFTPDirectory))
 		{
 			ftpsclient.changeDirectory(realFTPDirectory);
-			if(log.isDetailed()) logDetailed("Changed to directory ["+realFTPDirectory+"]");
+			if(isDetailed()) logDetailed("Changed to directory ["+realFTPDirectory+"]");
 		}
 	}
 	private void FTPConnect(String realServername,String realusername, String realpassword,
@@ -1090,7 +1090,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
         if (!Const.isEmpty(realProxyhost)) 
         {
       	  ftpclient.setRemoteAddr(InetAddress.getByName(realProxyhost));
-      	  if ( log.isDetailed() )
+      	  if ( isDetailed() )
       	      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.OpenedProxyConnectionOn",realProxyhost));
 
       	  // FIXME: Proper default port for proxy    	  
@@ -1103,7 +1103,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
         {
             ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
             
-            if ( log.isDetailed() )
+            if ( isDetailed() )
       	      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.OpenedConnectionTo",realServername));                
         }
         
@@ -1112,17 +1112,17 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
         if (activeConnection)
         {
             ftpclient.setConnectMode(FTPConnectMode.ACTIVE);
-            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetActive")); //$NON-NLS-1$
+            if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetActive")); //$NON-NLS-1$
         }
         else
         {
             ftpclient.setConnectMode(FTPConnectMode.PASV);
-            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetPassive")); //$NON-NLS-1$
+            if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetPassive")); //$NON-NLS-1$
         }
 		
 		// Set the timeout
 		ftpclient.setTimeout(realtimeout);
-	      if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetTimeout", String.valueOf(realtimeout))); //$NON-NLS-1$
+	      if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.SetTimeout", String.valueOf(realtimeout))); //$NON-NLS-1$
 		
 		// login to ftp host ...
         ftpclient.connect();
@@ -1138,13 +1138,13 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
         
         ftpclient.login(realUsername, realPassword);
 		//  Remove password from logging, you don't know where it ends up.
-		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.LoggedIn", realUsername)); //$NON-NLS-1$
+		if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.LoggedIn", realUsername)); //$NON-NLS-1$
 
 		// move to spool dir ...
 		if (!Const.isEmpty(realFtpDirectory))
 		{
             ftpclient.chdir(realFtpDirectory);
-            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.ChangedDir", realFtpDirectory)); //$NON-NLS-1$
+            if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.ChangedDir", realFtpDirectory)); //$NON-NLS-1$
 		}
 
 		

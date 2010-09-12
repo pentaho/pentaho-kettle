@@ -740,7 +740,7 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "FuzzyMatchDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug( BaseMessages.getString(PKG, "FuzzyMatchDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wAlgorithm.setText(FuzzyMatchMeta.getAlgorithmTypeDesc(input.getAlgorithmType()));
 

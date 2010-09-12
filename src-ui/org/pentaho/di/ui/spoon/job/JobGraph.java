@@ -308,7 +308,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       
       setXulDomContainer(container);
     } catch (XulException e1) {
-      log.logError(toString(), Const.getStackTracker(e1));
+      log.logError( Const.getStackTracker(e1));
     }
 
     

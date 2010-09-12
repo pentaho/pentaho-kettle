@@ -771,7 +771,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 		
 		localFolder = environmentSubstitute(targetDirectory);
 		
-		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPS.Start")); //$NON-NLS-1$
+		if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPS.Start")); //$NON-NLS-1$
 
         FTPSConnection connection=null;
         
@@ -798,7 +798,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
         	  if(!Const.isEmpty(realProxy_password)) {
         		  connection.setProxyPassword(realProxy_password);
         	  }
-          	  if (log.isDetailed() )
+          	  if (isDetailed() )
           	      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPS.OpenedProxyConnectionOn",realProxy_host));
 	  
           	  int proxyport = Const.toInt(environmentSubstitute(proxyPort), 21);
@@ -806,35 +806,35 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
           		connection.setProxyPort(proxyport);
           	  }
             } else  {
-                if ( log.isDetailed() )
-          	      logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.OpenedConnectionTo",realServername));                
+                if ( isDetailed() )
+          	      logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.OpenedConnectionTo",realServername));                
             }
             
             
 			// set activeConnection connectmode ...
             if (activeConnection){
                 connection.setPassiveMode(false);
-                if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.SetActive")); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.SetActive")); //$NON-NLS-1$
             } else{
             	connection.setPassiveMode(true);
-                if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.SetPassive")); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.SetPassive")); //$NON-NLS-1$
             }
 			
             // Set binary mode
             if(isBinaryMode()) {
             	connection.setBinaryMode(true);
-            	if(log.isDetailed()) logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryFTPS.SetBinary"));
+            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPS.SetBinary"));
             }
             
 			// Set the timeout
             connection.setTimeOut(timeout);
-		    if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.SetTimeout", String.valueOf(timeout))); //$NON-NLS-1$
+		    if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.SetTimeout", String.valueOf(timeout))); //$NON-NLS-1$
 			
 			// login to FTPS host ...
             connection.connect();
-            if(log.isDetailed()) {
-            	logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.LoggedIn", realUsername));
-            	logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.WorkingDirectory", connection.getWorkingDirectory()));
+            if(isDetailed()) {
+            	logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.LoggedIn", realUsername));
+            	logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.WorkingDirectory", connection.getWorkingDirectory()));
             }
 
 
@@ -843,7 +843,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
                 String realFTPSDirectory = environmentSubstitute(FTPSDirectory);
                 realFTPSDirectory=normalizePath(realFTPSDirectory);
                 connection.changeDirectory(realFTPSDirectory);
-                if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.ChangedDir", realFTPSDirectory)); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.ChangedDir", realFTPSDirectory)); //$NON-NLS-1$
 			}
 
 			//Create move to folder if necessary
@@ -851,14 +851,14 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 				realMoveToFolder=normalizePath(environmentSubstitute(movetodirectory));
 				// Folder exists?
 				boolean folderExist=connection.isDirectoryExists(realMoveToFolder);
-				if(log.isDetailed()) logDetailed(toString(),  BaseMessages.getString(PKG, "JobEntryFTPS.CheckMoveToFolder",realMoveToFolder));
+				if(isDetailed()) logDetailed(  BaseMessages.getString(PKG, "JobEntryFTPS.CheckMoveToFolder",realMoveToFolder));
 				
 				if(!folderExist){
 					if(createmovefolder){
 						connection.createDirectory(realMoveToFolder);
-						if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.MoveToFolderCreated",realMoveToFolder));
+						if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.MoveToFolderCreated",realMoveToFolder));
 					}else{
-						logError(toString(),BaseMessages.getString(PKG, "JobEntryFTPS.MoveToFolderNotExist"));
+						logError(BaseMessages.getString(PKG, "JobEntryFTPS.MoveToFolderNotExist"));
 						exitjobentry=true;
 						NrErrors++;
 					}
@@ -881,13 +881,13 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 
 		} catch(Exception e){
 			if(!successConditionBroken && !exitjobentry) updateErrors();
-			logError(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.ErrorGetting", e.getMessage())); //$NON-NLS-1$
+			logError( BaseMessages.getString(PKG, "JobEntryFTPS.ErrorGetting", e.getMessage())); //$NON-NLS-1$
 		}  finally{
             if (connection!=null) {
                 try {
                 	connection.disconnect();
                 } catch(Exception e) {
-                	logError(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
+                	logError( BaseMessages.getString(PKG, "JobEntryFTPS.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
                 }
             }
         }
@@ -905,7 +905,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 			Pattern pattern, Result result) throws KettleException {
 		
 	 List<FTPFile> fileList = connection.getFileList(folder);
-	 if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.FoundNFiles", fileList.size())); //$NON-NLS-1$
+	 if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.FoundNFiles", fileList.size())); //$NON-NLS-1$
 		
         for (int i = 0; i < fileList.size(); i++) {
         	
@@ -918,7 +918,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 			}
 			
         	FTPFile file = fileList.get(i);
-        	if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.AnalysingFile",
+        	if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.AnalysingFile",
         			file.getPath(), file.getName(), file.getMode(), file.getDate().toString(), 
         			file.getFileType()==0?"File":"Folder",String.valueOf(file.getSize())));
 
@@ -940,7 +940,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 		        			if ((!onlyGettingNewFiles) 
         					   || (onlyGettingNewFiles && needsDownload(localFilename))) {
         			        	
-		        				if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.GettingFile",file.getName(), targetDirectory));  //$NON-NLS-1$
+		        				if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.GettingFile",file.getName(), targetDirectory));  //$NON-NLS-1$
         			        	
         			        	// download file
         			        	connection.downloadFile(file, returnTargetFilename(file.getName()));
@@ -948,7 +948,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
         			        	// Update retrieved files
         		    			updateRetrievedFiles();
         		    			
-        		    			if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.GotFile", file.getName())); //$NON-NLS-1$	
+        		    			if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.GotFile", file.getName())); //$NON-NLS-1$	
         		               
         		    			// Add filename to result filenames
         		                addFilenameToResultFilenames(result, localFilename);
@@ -957,15 +957,15 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
         		    			if (remove) {
         		    				connection.deleteFile(file);
         		    				
-        		    				if(log.isDetailed()) 
-        		    		            if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.DeletedFile", file.getName())); //$NON-NLS-1$
+        		    				if(isDetailed()) 
+        		    		            if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.DeletedFile", file.getName())); //$NON-NLS-1$
         		    			}else {
         		    				if(movefiles){
         		    					// Try to move file to destination folder ...
         		    					connection.moveToFolder(file, realMoveToFolder);
         		    					
-        		    					if(log.isDetailed()) 
-        		    						logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.MovedFile",file.getName(),realMoveToFolder));
+        		    					if(isDetailed()) 
+        		    						logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.MovedFile",file.getName(),realMoveToFolder));
         		    				}
         		    			}
 	        			    }
@@ -973,7 +973,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 					}catch (Exception e){
 						// Update errors number
 						updateErrors();
-						logError(toString(),BaseMessages.getString(PKG, "JobFTPS.UnexpectedError",e.toString()));
+						logError(BaseMessages.getString(PKG, "JobFTPS.UnexpectedError",e.toString()));
 					}
 				}
         	}
@@ -1008,7 +1008,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 	            resultFile.setComment(BaseMessages.getString(PKG, "JobEntryFTPS.Downloaded", serverName)); //$NON-NLS-1$
 				result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 				
-	            if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.FileAddedToResult", filename)); //$NON-NLS-1$
+	            if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.FileAddedToResult", filename)); //$NON-NLS-1$
 			}catch (Exception e){
 				throw new KettleException(e);
 			} finally{
@@ -1021,11 +1021,11 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 	}
 	private void displayResults()
 	{
-		if(log.isDetailed()){
-			logDetailed(toString(), "=======================================");
-			logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.Log.Info.FilesInError","" + NrErrors));
-			logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPS.Log.Info.FilesRetrieved","" + NrfilesRetrieved));
-			logDetailed(toString(), "=======================================");
+		if(isDetailed()){
+			logDetailed( "=======================================");
+			logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.Log.Info.FilesInError","" + NrErrors));
+			logDetailed( BaseMessages.getString(PKG, "JobEntryFTPS.Log.Info.FilesRetrieved","" + NrfilesRetrieved));
+			logDetailed( "=======================================");
 		}
 	}
 	private boolean getSuccessStatus()
@@ -1135,12 +1135,12 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
    
         if(!file.exists()){
         	// Local file not exists!
-        	if(log.isDebug()) logDebug(toString() , BaseMessages.getString(PKG, "JobEntryFTPS.LocalFileNotExists"), filename);
+        	if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobEntryFTPS.LocalFileNotExists"), filename);
         	return true;
         }else{
         	// Local file exists!
         	if(ifFileExists==ifFileExistsCreateUniq){
-        		if(log.isDebug()) logDebug(toString() , BaseMessages.getString(PKG, "JobEntryFTPS.LocalFileExists"), filename);
+        		if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobEntryFTPS.LocalFileExists"), filename);
         		// Create file with unique name
         		
         		int lenstring=filename.length();
@@ -1156,7 +1156,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
         		logError(toString() , BaseMessages.getString(PKG, "JobEntryFTPS.LocalFileExists"), filename);
         		updateErrors();
         	}else{
-        		if(log.isDebug()) logDebug(toString() , BaseMessages.getString(PKG, "JobEntryFTPS.LocalFileExists"), filename);
+        		if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobEntryFTPS.LocalFileExists"), filename);
         	}
         }
         	

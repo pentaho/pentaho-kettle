@@ -422,7 +422,7 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "ChangeFileEncodingDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug( BaseMessages.getString(PKG, "ChangeFileEncodingDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getDynamicFilenameField() !=null)   wFileName.setText(input.getDynamicFilenameField());
 		if (input.getTargetFilenameField() !=null)   wTargetFileName.setText(input.getTargetFilenameField());

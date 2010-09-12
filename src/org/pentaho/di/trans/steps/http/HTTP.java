@@ -131,7 +131,7 @@ public class HTTP extends BaseStep implements StepInterface
 			                }
 		                }
 		                
-		                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTP.Log.ResponseHeaderEncoding",encoding));
+		                if(log.isDebug()) logDebug( BaseMessages.getString(PKG, "HTTP.Log.ResponseHeaderEncoding",encoding));
 		                
 		                // the response
 		                if (!Const.isEmpty(encoding)) {

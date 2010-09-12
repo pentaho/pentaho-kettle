@@ -3715,7 +3715,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       root = document.getDocumentElement();
     } catch (KettleXMLException e) {
       if (log.isDetailed()) {
-        log.logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.File.Xml.Parse.Error"));
+        log.logDetailed( BaseMessages.getString(PKG, "Spoon.File.Xml.Parse.Error"));
       }
     }
 

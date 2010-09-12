@@ -290,7 +290,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 							// We are in the Base folder
 							if((isSpecifyWildcard() && GetFileWildcard(info.getFile().getName().getBaseName())) || !isSpecifyWildcard())
 							{
-								if(log.isDetailed()) log.logDetailed("We found file : " + info.getFile().toString());
+								if(log.isDetailed()) logDetailed("We found file : " + info.getFile().toString());
 								filescount++; 
 							}
 						 }
@@ -302,7 +302,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 							{
 								if((isSpecifyWildcard() && GetFileWildcard(info.getFile().getName().getBaseName())) || !isSpecifyWildcard())
 								{
-									if(log.isDetailed()) log.logDetailed("We found file : " + info.getFile().toString());
+									if(log.isDetailed()) logDetailed("We found file : " + info.getFile().toString());
 									filescount++; 
 								}
 							}

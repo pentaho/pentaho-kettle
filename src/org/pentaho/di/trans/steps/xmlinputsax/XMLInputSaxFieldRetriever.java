@@ -276,7 +276,7 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler{
 		path[2]=new XMLvInputFieldPosition("Ea=managedObject/class:BTS");
 	} catch (KettleValueException e) {
 		// TODO Auto-generated catch block
-		LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+		LogWriter.getInstance().logError( Const.getStackTracker(e));
 	}
     //System.out.println(new xmlElement("hello","hello","hello").equals(new xmlElement("hello","hello","hello")));
     XMLvSaxFieldRetreiver spe = new XMLvSaxFieldRetreiver("D:\\NOKIA\\Project\\Ressources\\CASA-1.XML",path,"name");

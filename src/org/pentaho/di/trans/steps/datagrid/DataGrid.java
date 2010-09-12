@@ -88,7 +88,7 @@ public class DataGrid extends BaseStep implements StepInterface
         
         if (log.isRowLevel())
         {
-            log.logRowlevel(toString(), BaseMessages.getString(PKG, "DataGrid.Log.Wrote.Row", Long.toString(getLinesWritten()), data.outputRowMeta.getString(outputRowData)) );
+            log.logRowlevel( BaseMessages.getString(PKG, "DataGrid.Log.Wrote.Row", Long.toString(getLinesWritten()), data.outputRowMeta.getString(outputRowData)) );
         }
         
         if (checkFeedback(getLinesWritten())) 

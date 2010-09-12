@@ -245,7 +245,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
             {
     		  db.connect();
     		  
-    		  if(log.isDetailed()) logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Connected", connections[i].getDatabaseName(),connections[i].getName()));
+    		  if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Connected", connections[i].getDatabaseName(),connections[i].getName()));
     		  
     		  int iMaximumTimeout=Const.toInt(environmentSubstitute(waitfors[i]),0);
     		  if(iMaximumTimeout>0)
@@ -272,7 +272,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 	                		waitTimeMessage=unitTimeDesc[1];
 		                	break;
 		           }
-	    		  if(log.isDetailed()) logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Wait", ""+iMaximumTimeout,waitTimeMessage));
+	    		  if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Wait", ""+iMaximumTimeout,waitTimeMessage));
         		  
 	    	      // starttime (in seconds ,Minutes or Hours)
 	    	      long timeStart = System.currentTimeMillis() / Multiple;
@@ -286,7 +286,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 	    	          if ((now >= (timeStart + iMaximumTimeout)))
 	    	          {
 	    	            // We have reached the time limit
-	    	            if (log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckDbConnections.WaitTimeIsElapsed.Label", connections[i].getDatabaseName(),connections[i].getName())); //$NON-NLS-1$
+	    	            if (isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobEntryCheckDbConnections.WaitTimeIsElapsed.Label", connections[i].getDatabaseName(),connections[i].getName())); //$NON-NLS-1$
 	    	            
 	    	            continueLoop = false;
 	    	          }
@@ -298,12 +298,12 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
     		   }
     		  
     		  nrsuccess++;
-    		  if(log.isDetailed()) logDetailed(toString(),BaseMessages.getString(PKG, "JobEntryCheckDbConnections.ConnectionOK", connections[i].getDatabaseName(),connections[i].getName()));
+    		  if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryCheckDbConnections.ConnectionOK", connections[i].getDatabaseName(),connections[i].getName()));
             }
     	  	catch (KettleDatabaseException e)
             {
     	  		nrerrors++;
-                logError(toString(), BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Exception", connections[i].getDatabaseName(), connections[i].getName(),e.toString())); //$NON-NLS-1$
+                logError( BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Exception", connections[i].getDatabaseName(), connections[i].getName(),e.toString())); //$NON-NLS-1$
             }
     	  	finally
     	  	{
@@ -321,11 +321,11 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 			result.setResult(false);
 		}
 		
-		if(log.isDetailed()){
-			logDetailed(toString(), "=======================================");
-			logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Log.Info.ConnectionsInError","" + nrerrors));
-			logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Log.Info.ConnectionsInSuccess","" + nrsuccess));
-			logDetailed(toString(), "=======================================");
+		if(isDetailed()){
+			logDetailed( "=======================================");
+			logDetailed( BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Log.Info.ConnectionsInError","" + nrerrors));
+			logDetailed( BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Log.Info.ConnectionsInSuccess","" + nrsuccess));
+			logDetailed( "=======================================");
 		}
 
 		return result;

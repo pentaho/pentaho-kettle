@@ -3922,7 +3922,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
 				else schemaTable = table;
 				
-                if (log.isRowLevel()) log.logRowlevel(toString(), "got table from meta-data: "+schemaTable);
+                if (log.isRowLevel()) log.logRowlevel( "got table from meta-data: "+schemaTable);
 				names.add(schemaTable);
 			}
 		}
@@ -3996,7 +3996,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
 				else schemaTable = table;
 				
-				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+schemaTable);
+				if (log.isRowLevel()) log.logRowlevel( "got view from meta-data: "+schemaTable);
 				names.add(schemaTable);
 			}
 		}
@@ -4070,7 +4070,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
 				else schemaTable = table;
 				
-				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+schemaTable);
+				if (log.isRowLevel()) log.logRowlevel( "got view from meta-data: "+schemaTable);
 				names.add(schemaTable);
 			}
 		}
@@ -4156,7 +4156,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 		}
 	
-		if(log.isDetailed()) log.logDetailed(toString(), "read :"+catalogList.size()+" catalogs from db meta-data.");
+		if(log.isDetailed()) log.logDetailed( "read :"+catalogList.size()+" catalogs from db meta-data.");
 	
 		return catalogList.toArray(new String[catalogList.size()]);
 	}
@@ -4713,11 +4713,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			String keyname=allkeys.getString("PK_NAME");
 			String col_name=allkeys.getString("COLUMN_NAME");
 			if(!names.contains(col_name)) names.add(col_name);
-            if (log.isRowLevel()) log.logRowlevel(toString(), "getting key : "+keyname + " on column "+col_name);
+            if (log.isRowLevel()) log.logRowlevel( "getting key : "+keyname + " on column "+col_name);
 		}
 	}
 	catch(SQLException e) {
-		log.logError(toString(), "Error getting primary keys columns from table ["+tablename+"]");
+		log.logError( "Error getting primary keys columns from table ["+tablename+"]");
 	}
 	finally {
 		try {

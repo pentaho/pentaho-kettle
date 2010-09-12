@@ -276,7 +276,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	        	if(status)
 	        	{
 	                if(log.isDetailed())
-	                	log.logDetailed(BaseMessages.getString(PKG, "JobPing.SystemPing"), BaseMessages.getString(PKG, "JobPing.OK.Label",hostname));
+	                	logDetailed(BaseMessages.getString(PKG, "JobPing.SystemPing"), BaseMessages.getString(PKG, "JobPing.OK.Label",hostname));
 	        	}else
 	        		log.logError(BaseMessages.getString(PKG, "JobPing.SystemPing"),BaseMessages.getString(PKG, "JobPing.NOK.Label",hostname));
         	}
@@ -287,7 +287,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         		if(status)
         		{
                     if(log.isDetailed())
-                    	log.logDetailed(BaseMessages.getString(PKG, "JobPing.ClassicPing"), BaseMessages.getString(PKG, "JobPing.OK.Label",hostname));
+                    	logDetailed(BaseMessages.getString(PKG, "JobPing.ClassicPing"), BaseMessages.getString(PKG, "JobPing.OK.Label",hostname));
         		}else
         			log.logError(BaseMessages.getString(PKG, "JobPing.ClassicPing"),BaseMessages.getString(PKG, "JobPing.NOK.Label",hostname));
         	}	

@@ -327,14 +327,14 @@ public class Mail extends BaseStep implements StepInterface
 				    	    imagePart.setHeader("Content-ID","<"+ contentID + ">");
 				    	    // keep this part for further user
 				    	    data.embeddedMimePart.add(imagePart);
-				    	    log.logBasic(toString(), BaseMessages.getString(PKG, "Mail.Log.ImageAdded", imageFile));
+				    	    log.logBasic( BaseMessages.getString(PKG, "Mail.Log.ImageAdded", imageFile));
 							
 						}else {
-							log.logError(toString(), BaseMessages.getString(PKG, "Mail.Log.WrongImage",imageFile));
+							log.logError( BaseMessages.getString(PKG, "Mail.Log.WrongImage",imageFile));
 						}	
 					}
 				}catch(Exception e) {
-					log.logError(toString(), BaseMessages.getString(PKG, "Mail.Error.AddingImage", e.getMessage()));
+					log.logError( BaseMessages.getString(PKG, "Mail.Error.AddingImage", e.getMessage()));
 				}finally {
 					if(image!=null) {
 						try {

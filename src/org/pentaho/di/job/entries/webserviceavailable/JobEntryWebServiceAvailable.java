@@ -174,7 +174,7 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
             } catch (Exception e) {
                 result.setNrErrors(1);
                 String message = BaseMessages.getString(PKG, "JobEntryWebServiceAvailable.ERROR_0004_Exception", realURL, e.toString());
-                logError(toString(), message); //$NON-NLS-1$
+                logError( message); //$NON-NLS-1$
                 result.setLogText(message);
             }finally {
             	if(in!=null)
@@ -187,7 +187,7 @@ public class JobEntryWebServiceAvailable extends JobEntryBase implements Cloneab
 		}else{
 			result.setNrErrors(1);
 			String message = BaseMessages.getString(PKG, "JobEntryWebServiceAvailable.ERROR_0005_No_URL_Defined");
-			logError(toString(), message); //$NON-NLS-1$
+			logError( message); //$NON-NLS-1$
 			result.setLogText(message);
 		}
 

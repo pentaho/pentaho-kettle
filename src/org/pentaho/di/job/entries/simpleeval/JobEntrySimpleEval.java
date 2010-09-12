@@ -448,7 +448,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 				
 				if(Const.isEmpty(variablename))
 				{
-					logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.VariableMissing"));
+					logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.VariableMissing"));
 					return result;
 				}
 				if(isSuccessWhenVarSet())
@@ -457,12 +457,12 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 					String variableName=StringUtil.getVariableName(getVariableWithSpec());
 					if(System.getProperty(variableName)!=null)
 					{
-						if(isDetailed()) logDetailed(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.VariableSet",variableName));
+						if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntrySimpleEval.VariableSet",variableName));
 						result.setResult(true);
 						result.setNrErrors(0);
 						return result;
 					}else {
-						if(isDetailed()) logDetailed(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.VariableNotSet",variableName));
+						if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntrySimpleEval.VariableNotSet",variableName));
 						return result;
 					}
 				}
@@ -485,7 +485,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 				switch (successcondition)
 				{
 				case SUCCESS_CONDITION_EQUAL: // equal
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					success=(sourcevalue.equals(realCompareValue));
 					if(valuetype== VALUE_TYPE_VARIABLE && !success) {
 						// make the empty value evaluate to true when compared to a not set variable 
@@ -498,35 +498,35 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 					}
 				break;
 				case SUCCESS_CONDITION_DIFFERENT: // different
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					success=(!sourcevalue.equals(realCompareValue));
 				break;
 				case SUCCESS_CONDITION_CONTAINS: // contains
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					success=(sourcevalue.contains(realCompareValue));
 				break;
 				case SUCCESS_CONDITION_NOT_CONTAINS: // not contains
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					success=(!sourcevalue.contains(realCompareValue));
 				break;
 				case SUCCESS_CONDITION_START_WITH: // starts with
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					success=(sourcevalue.startsWith(realCompareValue));
 				break;
 				case SUCCESS_CONDITION_NOT_START_WITH: // not start with
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					success=(!sourcevalue.startsWith(realCompareValue));
 				break;
 				case SUCCESS_CONDITION_END_WITH: // ends with
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					success=(sourcevalue.endsWith(realCompareValue));
 				break;
 				case SUCCESS_CONDITION_NOT_END_WITH: // not ends with
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					success=(!sourcevalue.endsWith(realCompareValue));
 				break;
 				case SUCCESS_CONDITION_REGEX: // regexp
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					success=(Pattern.compile(realCompareValue).matcher(sourcevalue).matches());
 				break;
 				default:
@@ -536,58 +536,58 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 			case FIELD_TYPE_NUMBER: 
 				double valuenumber;
 				try{valuenumber=Double.parseDouble(sourcevalue);
-				}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",sourcevalue,e.getMessage()));return result;}
+				}catch(Exception e)	{logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",sourcevalue,e.getMessage()));return result;}
 				
 				double valuecompare;
 				switch (successnumbercondition)
 				{
 				case SUCCESS_NUMBER_CONDITION_EQUAL: // equal
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));					
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));					
 					try{valuecompare=Double.parseDouble(realCompareValue);
-					}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
+					}catch(Exception e)	{logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
 					success=(valuenumber==valuecompare);
 				break;
 				case SUCCESS_NUMBER_CONDITION_DIFFERENT: // different
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					try{valuecompare=Double.parseDouble(realCompareValue);
-					}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
+					}catch(Exception e)	{logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
 					success=(valuenumber!=valuecompare);
 				break;
 				case SUCCESS_NUMBER_CONDITION_SMALLER: // smaller
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					try{valuecompare=Double.parseDouble(realCompareValue);
-					}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
+					}catch(Exception e)	{logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
 					success=(valuenumber<valuecompare);
 				break;
 				case SUCCESS_NUMBER_CONDITION_SMALLER_EQUAL: // smaller or equal
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					try{valuecompare=Double.parseDouble(realCompareValue);
-					}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
+					}catch(Exception e)	{logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
 					success=(valuenumber<=valuecompare);
 				break;
 				case SUCCESS_NUMBER_CONDITION_GREATER: // greater
 					try{valuecompare=Double.parseDouble(realCompareValue);
-					}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
+					}catch(Exception e)	{logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
 					success=(valuenumber>valuecompare);
 				break;
 				case SUCCESS_NUMBER_CONDITION_GREATER_EQUAL: // greater or equal
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					try{valuecompare=Double.parseDouble(realCompareValue);
-					}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
+					}catch(Exception e)	{logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realCompareValue,e.getMessage()));return result;}
 					success=(valuenumber>=valuecompare);
 				break;
 				case SUCCESS_NUMBER_CONDITION_BETWEEN: // between min and max
-					if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValues",realMinValue,realMaxValue));
+					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValues",realMinValue,realMaxValue));
 					double valuemin;
 					try{valuemin=Double.parseDouble(realMinValue);
-					}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realMinValue,e.getMessage()));return result;}
+					}catch(Exception e)	{logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realMinValue,e.getMessage()));return result;}
 					double valuemax;
 					try{valuemax=Double.parseDouble(realMaxValue);
-					}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realMaxValue,e.getMessage()));return result;}
+					}catch(Exception e)	{logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",realMaxValue,e.getMessage()));return result;}
 					
 					if(valuemin>=valuemax)
 					{
-						logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.IncorrectNumbers",realMinValue,realMaxValue));
+						logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.IncorrectNumbers",realMinValue,realMaxValue));
 						return result;
 					}
 					success=(valuenumber>=valuemin && valuenumber<=valuemax);
@@ -603,61 +603,61 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 				
 				Date datevalue=null;
 				try{datevalue=convertToDate(sourcevalue, realMask, df);
-				}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+				}catch(Exception e)	{logError(e.getMessage());return result;}
 				
 				Date datecompare;
 				switch (successnumbercondition)
 				{
 					case SUCCESS_NUMBER_CONDITION_EQUAL: // equal
-						if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 						try{datecompare=convertToDate(realCompareValue, realMask, df);
-						}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+						}catch(Exception e)	{logError(e.getMessage());return result;}
 						success=(datevalue.equals(datecompare));
 					break;
 					case SUCCESS_NUMBER_CONDITION_DIFFERENT: // different
-						if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 						try{datecompare=convertToDate(realCompareValue, realMask, df);
-						}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+						}catch(Exception e)	{logError(e.getMessage());return result;}
 						success=(!datevalue.equals(datecompare));
 					break;
 					case SUCCESS_NUMBER_CONDITION_SMALLER: // smaller
-						if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 						try{datecompare=convertToDate(realCompareValue, realMask, df);
-						}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+						}catch(Exception e)	{logError(e.getMessage());return result;}
 						success=(datevalue.before(datecompare));
 					break;
 					case SUCCESS_NUMBER_CONDITION_SMALLER_EQUAL: // smaller or equal
-						if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 						try{datecompare=convertToDate(realCompareValue, realMask, df);
-						}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+						}catch(Exception e)	{logError(e.getMessage());return result;}
 						success=(datevalue.before(datecompare) || datevalue.equals(datecompare));
 					break;
 					case SUCCESS_NUMBER_CONDITION_GREATER: // greater
-						if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 						try{datecompare=convertToDate(realCompareValue, realMask, df);
-						}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+						}catch(Exception e)	{logError(e.getMessage());return result;}
 						success=(datevalue.after(datecompare));
 					break;
 					case SUCCESS_NUMBER_CONDITION_GREATER_EQUAL: // greater or equal
-						if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 						try{datecompare=convertToDate
 							(realCompareValue, realMask, df);
-						}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+						}catch(Exception e)	{logError(e.getMessage());return result;}
 						success=(datevalue.after(datecompare)  || datevalue.equals(datecompare)) ;
 					break;
 					case SUCCESS_NUMBER_CONDITION_BETWEEN: // between min and max
-						if(isDebug()) logDebug(toString(), BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValues",realMinValue,realMaxValue));
+						if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValues",realMinValue,realMaxValue));
 						Date datemin;
 						try{datemin=convertToDate(realMinValue, realMask, df);
-						}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+						}catch(Exception e)	{logError(e.getMessage());return result;}
 						
 						Date datemax;
 						try{datemax=convertToDate(realMaxValue, realMask, df);
-						}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+						}catch(Exception e)	{logError(e.getMessage());return result;}
 						
 						if(datemin.after(datemax) || datemin.equals(datemax))
 						{
-							logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.IncorrectDates",realMinValue,realMaxValue));
+							logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.IncorrectDates",realMinValue,realMaxValue));
 							return result;
 						}
 						
@@ -672,7 +672,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 			case FIELD_TYPE_BOOLEAN: 
 				boolean valuebool;
 				try{valuebool=Boolean.parseBoolean(sourcevalue);
-				}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableBoolean",sourcevalue,e.getMessage()));return result;}
+				}catch(Exception e)	{logError(BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableBoolean",sourcevalue,e.getMessage()));return result;}
 				
 				switch (successbooleancondition)
 				{

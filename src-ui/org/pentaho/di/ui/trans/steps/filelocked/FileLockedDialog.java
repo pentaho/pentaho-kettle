@@ -237,7 +237,7 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "FileLockedDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug( BaseMessages.getString(PKG, "FileLockedDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getDynamicFilenameField() !=null)   wFileName.setText(input.getDynamicFilenameField());
 		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());

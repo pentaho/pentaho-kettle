@@ -276,7 +276,7 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "WebServiceAvailableDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(log.isDebug()) log.logDebug( BaseMessages.getString(PKG, "WebServiceAvailableDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getURLField() !=null)   wURL.setText(input.getURLField());
 		if (input.getConnectTimeOut() !=null)   wConnectTimeOut.setText(input.getConnectTimeOut());

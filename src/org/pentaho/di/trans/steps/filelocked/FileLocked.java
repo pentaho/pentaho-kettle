@@ -101,7 +101,7 @@ public class FileLocked extends BaseStep implements StepInterface
         			resultFile.setComment(BaseMessages.getString(PKG, "FileLocked.Log.FileAddedResult"));
         			addResultFile(resultFile);
         			
-        			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "FileLocked.Log.FilenameAddResult",filename));
+        			if(log.isDetailed()) logDetailed( BaseMessages.getString(PKG, "FileLocked.Log.FilenameAddResult",filename));
         		}
         	}
        		
@@ -141,7 +141,7 @@ public class FileLocked extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "FileLocked.Error.ResultFieldMissing"));
+        		log.logError( BaseMessages.getString(PKG, "FileLocked.Error.ResultFieldMissing"));
         		return false;
         	}
             return true;

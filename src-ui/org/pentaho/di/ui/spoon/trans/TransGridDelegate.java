@@ -228,7 +228,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
       swtToolBar.layout(true, true);
     } catch (Throwable t) {
-      log.logError(toString(), Const.getStackTracker(t));
+      log.logError( Const.getStackTracker(t));
       new ErrorDialog(transGridComposite.getShell(), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_GRID_TOOLBAR), new Exception(t));
     }
   }

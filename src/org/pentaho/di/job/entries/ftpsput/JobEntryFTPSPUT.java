@@ -491,7 +491,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 		result.setResult( false );
 		long filesput = 0;
 
-		if(log.isDetailed())	
+		if(isDetailed())	
 			logDetailed(BaseMessages.getString(PKG, "JobFTPSPUT.Log.Starting"));
         
         // String substitution..
@@ -523,7 +523,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
             	  if(!Const.isEmpty(realProxy_password)) {
             		  connection.setProxyPassword(realProxy_password);
             	  }
-            	  if ( log.isDetailed() )
+            	  if ( isDetailed() )
             	      logDetailed(BaseMessages.getString(PKG, "JobEntryFTPSPUT.OpenedProxyConnectionOn",realProxy_host));
   	  
             	  int proxyport = Const.toInt(environmentSubstitute(proxyPort), 21);
@@ -531,8 +531,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
             		connection.setProxyPort(proxyport);
             	  }
               } else  {
-                  if ( log.isDetailed() )
-            	      logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryFTPSPUT.OpenedConnectionTo",realServerName));                
+                  if ( isDetailed() )
+            	      logDetailed( BaseMessages.getString(PKG, "JobEntryFTPSPUT.OpenedConnectionTo",realServerName));                
               }
               
             
@@ -540,34 +540,34 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 			// set activeConnection connectmode ...            
             if (activeConnection){
                 connection.setPassiveMode(false);
-                if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetActiveConnection")); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetActiveConnection")); //$NON-NLS-1$
             } else{
             	connection.setPassiveMode(true);
-                if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetPassiveConnection")); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetPassiveConnection")); //$NON-NLS-1$
             }
             
             // Set binary mode
             if(isBinaryMode()) {
             	connection.setBinaryMode(true);
-            	if(log.isDetailed()) logDetailed(toString(),BaseMessages.getString(PKG, "JobFTPSPUT.Log.BinaryMod"));
+            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobFTPSPUT.Log.BinaryMod"));
             }
             
 			// Set the timeout
             connection.setTimeOut(timeout);
-		    if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetTimeout", timeout)); //$NON-NLS-1$
+		    if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.SetTimeout", timeout)); //$NON-NLS-1$
 
 			// login to FTPS host ...
             connection.connect();
-            if(log.isDetailed()) {
+            if(isDetailed()) {
     			// Remove password from logging, you don't know where it ends up.
-            	logDetailed(toString(), BaseMessages.getString(PKG, "JobFTPSPUT.Log.Logged", realUsername));
-            	logDetailed(toString(), BaseMessages.getString(PKG, "JobFTPSPUT.WorkingDirectory", connection.getWorkingDirectory()));
+            	logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.Logged", realUsername));
+            	logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.WorkingDirectory", connection.getWorkingDirectory()));
             }
 			
 			// move to spool dir ...
 			if (!Const.isEmpty(realRemoteDirectory)) {
                 connection.changeDirectory(realRemoteDirectory);
-                if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobFTPSPUT.Log.ChangedDirectory", realRemoteDirectory)); //$NON-NLS-1$
+                if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobFTPSPUT.Log.ChangedDirectory", realRemoteDirectory)); //$NON-NLS-1$
 			}
 			realRemoteDirectory=Const.NVL(realRemoteDirectory, FTPSConnection.HOME_FOLDER);
 
@@ -585,7 +585,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 			myFileList.toArray(filelist);
 			
 			
-			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobFTPSPUT.Log.FoundFileLocalDirectory",filelist.length,realLocalDirectory));
+			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobFTPSPUT.Log.FoundFileLocalDirectory",filelist.length,realLocalDirectory));
 			
 			Pattern pattern = null;
 			if (!Const.isEmpty(realWildcard)) {
@@ -608,7 +608,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 					// File exists?
 					boolean fileExist= connection.isFileExists(filelist[i]);
 					
-					if (log.isDebug()) {
+					if (isDebug()) {
 						if(fileExist)
 							logDebug(BaseMessages.getString(PKG, "JobFTPSPUT.Log.FileExists",filelist[i]));
 						else
@@ -618,7 +618,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 					if (!fileExist || (!onlyPuttingNewFiles && fileExist)) {
 
 						String localFilename = realLocalDirectory+Const.FILE_SEPARATOR+filelist[i]; 
-						if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobFTPSPUT.Log.PuttingFileToRemoteDirectory",localFilename,realRemoteDirectory));
+						if (isDebug()) logDebug(BaseMessages.getString(PKG, "JobFTPSPUT.Log.PuttingFileToRemoteDirectory",localFilename,realRemoteDirectory));
 						
 						connection.uploadFile(localFilename, filelist[i]);
 						
@@ -627,7 +627,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 						// Delete the file if this is needed!
 						if (remove) {
 							new File(localFilename).delete();
-							if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobFTPSPUT.Log.DeletedFile",localFilename));
+							if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobFTPSPUT.Log.DeletedFile",localFilename));
 						}
 					}
 				}
@@ -635,7 +635,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 		
 			result.setResult( true );
 			result.setNrLinesOutput(filesput);
-			if (log.isDetailed()) logDebug(BaseMessages.getString(PKG, "JobFTPSPUT.Log.WeHavePut",filesput));
+			if (isDebug()) logDebug(BaseMessages.getString(PKG, "JobFTPSPUT.Log.WeHavePut",filesput));
 		} catch(Exception e) {
 			result.setNrErrors(1);
 			logError(BaseMessages.getString(PKG, "JobFTPSPUT.Log.ErrorPuttingFiles",e.getMessage()));

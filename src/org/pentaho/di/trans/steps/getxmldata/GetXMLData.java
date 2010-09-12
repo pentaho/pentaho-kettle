@@ -704,7 +704,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 					// PDI will search for Fieldname value and replace it
 					// Fieldname must be defined before the current node
 					XPathValue=substituteToken(XPathValue, outputRowData);
-					if (isDetailed() ) 	logDetailed(toString(),XPathValue);
+					if (isDetailed() ) 	logDetailed(XPathValue);
 				}
 				
 				// Get node value

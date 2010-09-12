@@ -261,7 +261,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
                     setComboBoxes();
                 } catch (KettleException e) {
-                    TeraFastDialog.this.log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    TeraFastDialog.this.log.logError( BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                 }
             }
         };

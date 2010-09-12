@@ -907,17 +907,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       if (!parentfolder.exists()) {
         if (createParentFolder) {
           if (log.isDebug())
-            log.logDebug(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder.getName().toString()));
+            logDebug(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder.getName().toString()));
           parentfolder.createFolder();
           if (log.isDebug())
-            log.logDebug(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderCreated", parentfolder.getName().toString()));
+            logDebug(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderCreated", parentfolder.getName().toString()));
         } else {
           log.logError(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder.getName().toString()));
           resultat = false;
         }
       } else {
         if (log.isDebug())
-          log.logDebug(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderExists", parentfolder.getName().toString()));
+          logDebug(BaseMessages.getString(PKG, "JobJob.Log.ParentLogFolderExists", parentfolder.getName().toString()));
       }
     } catch (Exception e) {
       resultat = false;

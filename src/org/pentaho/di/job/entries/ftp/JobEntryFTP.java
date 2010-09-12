@@ -1330,13 +1330,13 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
    
         if(!file.exists()){
         	// Local file not exists!
-        	if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobEntryFTP.LocalFileNotExists"), filename);
+        	if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "JobEntryFTP.LocalFileNotExists"), filename);
         	return true;
         }else{
 
         	// Local file exists!
         	if(ifFileExists==ifFileExistsCreateUniq){
-        		if(log.isDebug()) log.logDebug(toString() , BaseMessages.getString(PKG, "JobEntryFTP.LocalFileExists"), filename);
+        		if(log.isDebug()) logDebug( BaseMessages.getString(PKG, "JobEntryFTP.LocalFileExists"), filename);
         		// Create file with unique name
         		
         		int lenstring=targetFilename.length();
@@ -1353,7 +1353,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         		log.logError(BaseMessages.getString(PKG, "JobEntryFTP.LocalFileExists"), filename);
         		updateErrors();
         	}else{
-        		if(log.isDebug()) log.logDebug(toString() , BaseMessages.getString(PKG, "JobEntryFTP.LocalFileExists"), filename);
+        		if(log.isDebug()) logDebug( BaseMessages.getString(PKG, "JobEntryFTP.LocalFileExists"), filename);
         	}
         }
         	
