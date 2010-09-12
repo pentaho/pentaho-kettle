@@ -121,7 +121,15 @@ public class HTTP extends BaseStep implements StepInterface
             // 
             try
             {
+                // used for calculating the responseTime
+                long startTime = System.currentTimeMillis();
+               
                 int statusCode = httpclient.executeMethod(hostConfiguration, method);
+                
+                // calculate the responseTime
+                long responseTime = System.currentTimeMillis() - startTime;
+                if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "HTTP.Log.ResponseTime", responseTime,url));
+                
                 String body=null;
                 // The status code
                 if (isDebug()) logDebug(BaseMessages.getString(PKG, "HTTP.Log.ResponseStatusCode", ""+statusCode));
@@ -178,7 +186,11 @@ public class HTTP extends BaseStep implements StepInterface
                 
                 if (!Const.isEmpty(meta.getResultCodeFieldName())) {
                 	newRow=RowDataUtil.addValueData(newRow, returnFieldsOffset, new Long(statusCode));
+                	returnFieldsOffset++;
                 }  
+                if (!Const.isEmpty(meta.getResponseTimeFieldName())) {
+                   newRow=RowDataUtil.addValueData(newRow, returnFieldsOffset, new Long(responseTime));
+                 }  
                 
             }
             finally
