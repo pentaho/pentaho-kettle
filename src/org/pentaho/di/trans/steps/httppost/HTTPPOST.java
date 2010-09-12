@@ -173,8 +173,16 @@ public class HTTPPOST extends BaseStep implements StepInterface
             if(rowData!=null) newRow=rowData.clone();
             try
             {
-            	// Execute the POST method
+                // used for calculating the responseTime
+                long startTime = System.currentTimeMillis();
+                
+            	 // Execute the POST method
                 int statusCode = HTTPPOSTclient.executeMethod(hostConfiguration, post);
+                
+                // calculate the responseTime
+                long responseTime = System.currentTimeMillis() - startTime;
+                
+                if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseTime", responseTime,data.realUrl));
                 
                 // Display status code
                 if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseCode", String.valueOf(statusCode)));
@@ -233,7 +241,11 @@ public class HTTPPOST extends BaseStep implements StepInterface
                 
                 if (!Const.isEmpty(meta.getResultCodeFieldName())) {
                 	newRow=RowDataUtil.addValueData(newRow, returnFieldsOffset, new Long(statusCode));
+                	returnFieldsOffset++;
                 }                
+                if (!Const.isEmpty(meta.getResponseTimeFieldName())) {
+                  newRow=RowDataUtil.addValueData(newRow, returnFieldsOffset, new Long(responseTime));
+                }  
             }
             finally
             {

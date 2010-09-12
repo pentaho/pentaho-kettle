@@ -90,6 +90,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
     
     private String httpPassword;
 
+    private String responseTimeFieldName;
+
     public HTTPPOSTMeta()
     {
         super(); // allocate BaseStepMeta
@@ -311,6 +313,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 
         fieldName = "result"; //$NON-NLS-1$
         resultCodeFieldName = ""; //$NON-NLS-1$
+        responseTimeFieldName = ""; //$NON-NLS-1$
         postafile=false;
     }
     public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException    
@@ -324,6 +327,11 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         if (!Const.isEmpty(resultCodeFieldName))
         {
             ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultCodeFieldName), ValueMeta.TYPE_INTEGER);
+            inputRowMeta.addValueMeta(v);
+        }
+        if (!Const.isEmpty(responseTimeFieldName))
+        {
+            ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(responseTimeFieldName), ValueMeta.TYPE_INTEGER);
             inputRowMeta.addValueMeta(v);
         }
     }
@@ -366,6 +374,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    <result>" + Const.CR); //$NON-NLS-1$
         retval.append("      " + XMLHandler.addTagValue("name", fieldName)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      " + XMLHandler.addTagValue("code", resultCodeFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      " + XMLHandler.addTagValue("response_time", responseTimeFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      </result>" + Const.CR); //$NON-NLS-1$
 
         return retval.toString();
@@ -411,6 +420,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             
             fieldName = XMLHandler.getTagValue(stepnode, "result", "name"); // Optional, can be null //$NON-NLS-1$
             resultCodeFieldName = XMLHandler.getTagValue(stepnode, "result", "code"); // Optional, can be null //$NON-NLS-1$
+            responseTimeFieldName = XMLHandler.getTagValue(stepnode, "result", "response_time"); // Optional, can be null //$NON-NLS-1$
         }
         catch (Exception e)
         {
@@ -455,6 +465,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 
             fieldName = rep.getStepAttributeString(id_step, "result_name"); //$NON-NLS-1$
             resultCodeFieldName = rep.getStepAttributeString(id_step, "result_code"); //$NON-NLS-1$            
+            responseTimeFieldName = rep.getStepAttributeString(id_step, "response_time"); //$NON-NLS-1$            
         }
         catch (Exception e)
         {
@@ -491,6 +502,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 
             rep.saveStepAttribute(id_transformation, id_step, "result_name", fieldName); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "result_code", resultCodeFieldName); //$NON-NLS-1$            
+            rep.saveStepAttribute(id_transformation, id_step, "response_time", responseTimeFieldName); //$NON-NLS-1$            
         }
         catch (Exception e)
         {
@@ -638,5 +650,13 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
     public String getHttpPassword() {
         return httpPassword;
     }
+
+   public String getResponseTimeFieldName() {
+        return responseTimeFieldName;   
+   }
+
+   public void setResponseTimeFieldName(String responseTimeFieldName) {
+        this.responseTimeFieldName = responseTimeFieldName;
+   }
 }
 
