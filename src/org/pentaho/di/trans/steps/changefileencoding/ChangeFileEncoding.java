@@ -216,7 +216,7 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface
     			resultFile.setComment(BaseMessages.getString(PKG, "ChangeFileEncoding.Log.FileAddedResult"));
     			addResultFile(resultFile);
     			
-    			if(isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "ChangeFileEncoding.Log.FilenameAddResult",data.sourceFile.toString()));
+    			if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "ChangeFileEncoding.Log.FilenameAddResult",data.sourceFile.toString()));
     		}
     		// add filename to result filenames?
     		if(meta.addTargetResultFilenames())
@@ -226,7 +226,7 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface
     			resultFile.setComment(BaseMessages.getString(PKG, "ChangeFileEncoding.Log.FileAddedResult"));
     			addResultFile(resultFile);
     			
-    			if(isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "ChangeFileEncoding.Log.FilenameAddResult",targetFilename));
+    			if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "ChangeFileEncoding.Log.FilenameAddResult",targetFilename));
     		}
 			
     	}catch(Exception e) {

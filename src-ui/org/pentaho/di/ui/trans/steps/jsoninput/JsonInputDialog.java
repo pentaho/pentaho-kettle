@@ -1229,7 +1229,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 		wLimit.setText(""+in.getRowLimit());
 		
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "JsonInputDialog.Log.GettingFieldsInfo"));
+		if(isDebug()) logDebug( BaseMessages.getString(PKG, "JsonInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    JsonInputField field = in.getInputFields()[i];

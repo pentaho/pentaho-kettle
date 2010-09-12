@@ -712,7 +712,7 @@ public class SalesforceUpdateDialog extends BaseStepDialog implements StepDialog
 		wModule.setText(Const.NVL(in.getModule(), "Account"));
 		wBatchSize.setText("" + in.getBatchSize());
 
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SalesforceUpdateDialog.Log.GettingFieldsInfo"));
+		if(isDebug()) logDebug( BaseMessages.getString(PKG, "SalesforceUpdateDialog.Log.GettingFieldsInfo"));
 
 		if (input.getUpdateLookup() != null)
 		{

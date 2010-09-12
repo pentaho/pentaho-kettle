@@ -571,17 +571,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     		// 
         switch(specificationMethod) {
         case FILENAME:
-          if (log.isDetailed()) {
+          if (isDetailed()) {
             logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningTrans",environmentSubstitute(getFilename())));
           }
           break;
         case REPOSITORY_BY_NAME:
-          if (log.isDetailed()) {
+          if (isDetailed()) {
             logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningTransInDirec",environmentSubstitute(getFilename()),environmentSubstitute(directory)));
           }
           break;
         case REPOSITORY_BY_REFERENCE:
-          if (log.isDetailed()) {
+          if (isDetailed()) {
             logDetailed(BaseMessages.getString(PKG, "JobTrans.Log.OpeningTransByReference",transObjectId));
           }
           break;
@@ -661,7 +661,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     		try
     		{
-                if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobTrans.StartingTrans",getFilename(),getName(),getDescription()));
+                if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobTrans.StartingTrans",getFilename(),getName(),getDescription()));
 
                 // Set the result rows for the next one...
                 transMeta.setPreviousResult(result);
@@ -1055,19 +1055,19 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     		parentfolder=KettleVFS.getFileObject(filename, this).getParent();	    		
     		if(!parentfolder.exists()){
     			if(createParentFolder){
-    				if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobTrans.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));
+    				if (isDebug()) logDebug(BaseMessages.getString(PKG, "JobTrans.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));
         			parentfolder.createFolder();
-        			if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobTrans.Log.ParentLogFolderCreated",parentfolder.getName().toString()));
+        			if (isDebug()) logDebug(BaseMessages.getString(PKG, "JobTrans.Log.ParentLogFolderCreated",parentfolder.getName().toString()));
     			} else {
-    				log.logError(toString(), BaseMessages.getString(PKG, "JobTrans.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));
+    				logError( BaseMessages.getString(PKG, "JobTrans.Log.ParentLogFolderNotExist",parentfolder.getName().toString()));
     	    		resultat= false;
     			}
     		} else{
-    			if (log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "JobTrans.Log.ParentLogFolderExists",parentfolder.getName().toString()));
+    			if (isDebug()) logDebug(BaseMessages.getString(PKG, "JobTrans.Log.ParentLogFolderExists",parentfolder.getName().toString()));
     		}
 		} catch (Exception e) {
 			resultat=false;
-			log.logError(BaseMessages.getString(PKG, "JobTrans.Error.ChekingParentLogFolderTitle"), BaseMessages.getString(PKG, "JobTrans.Error.ChekingParentLogFolder",parentfolder.getName().toString()),e);
+			logError(BaseMessages.getString(PKG, "JobTrans.Error.ChekingParentLogFolderTitle"), BaseMessages.getString(PKG, "JobTrans.Error.ChekingParentLogFolder",parentfolder.getName().toString()),e);
 		}
 		 finally {
          	if ( parentfolder != null ){

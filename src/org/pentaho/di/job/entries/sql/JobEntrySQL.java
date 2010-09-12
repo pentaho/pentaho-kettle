@@ -260,10 +260,10 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 						SQLfile=KettleVFS.getFileObject(realfilename, this);
 						if(!SQLfile.exists()) 
 						{
-							log.logError(toString(),BaseMessages.getString(PKG, "JobSQL.SQLFileNotExist",realfilename));
+							logError(BaseMessages.getString(PKG, "JobSQL.SQLFileNotExist",realfilename));
 							throw new KettleDatabaseException(BaseMessages.getString(PKG, "JobSQL.SQLFileNotExist",realfilename));
 						}
-						if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSQL.SQLFileExists",realfilename));
+						if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSQL.SQLFileExists",realfilename));
 						
 						InputStream IS = KettleVFS.getInputStream(SQLfile);
             try {
@@ -302,7 +302,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 				{
 					// let it run
 					if (useVariableSubstitution) mySQL = environmentSubstitute(mySQL);
-					if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobSQL.Log.SQlStatement",mySQL));
+					if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSQL.Log.SQlStatement",mySQL));
 					if(sendOneStatement)
 						db.execStatement(mySQL);
 					else
@@ -312,7 +312,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			catch(KettleDatabaseException je)
 			{
 				result.setNrErrors(1);
-				log.logError(toString(), BaseMessages.getString(PKG, "JobSQL.ErrorRunJobEntry",je.getMessage()));
+				logError( BaseMessages.getString(PKG, "JobSQL.ErrorRunJobEntry",je.getMessage()));
 			}
 			finally
 			{
@@ -328,7 +328,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		else
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), BaseMessages.getString(PKG, "JobSQL.NoDatabaseConnection"));
+			logError( BaseMessages.getString(PKG, "JobSQL.NoDatabaseConnection"));
 		}
 
 		if (result.getNrErrors()==0)

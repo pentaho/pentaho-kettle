@@ -261,7 +261,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
                     setComboBoxes();
                 } catch (KettleException e) {
-                    TeraFastDialog.this.log.logError(toString(), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                    TeraFastDialog.this.logError( BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
                 }
             }
         };
@@ -1016,7 +1016,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
                     });
                 }
             } catch (KettleException e) {
-                this.dialog.log.logError(this.toString(), "Error while reading fields", e);
+                this.dialog.logError(this.toString(), "Error while reading fields", e);
                 // ignore any errors here. drop downs will not be
                 // filled, but no problem for the user
             }

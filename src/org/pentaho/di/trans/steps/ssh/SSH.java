@@ -202,19 +202,19 @@ public class SSH extends BaseStep implements StepInterface
        		
         	// Check target server
     		if(Const.isEmpty(servername)) {
-    			log.logError(toString(), BaseMessages.getString(PKG, "SSH.MissingServerName"));
+    			logError( BaseMessages.getString(PKG, "SSH.MissingServerName"));
     		}
     		
     		// Check if username field is provided
 			if (Const.isEmpty(meta.getuserName())) {
-				log.logError(toString(),BaseMessages.getString(PKG, "SSH.Error.UserNamedMissing"));
+				logError(BaseMessages.getString(PKG, "SSH.Error.UserNamedMissing"));
 				return false;
 			}
 
 			// Get output fields
 			data.stdOutField = environmentSubstitute(meta.getStdOutFieldName());
 			if(Const.isEmpty(data.stdOutField)) {
-				log.logError(toString(),BaseMessages.getString(PKG, "SSH.Error.StdOutFieldNameMissing"));
+				logError(BaseMessages.getString(PKG, "SSH.Error.StdOutFieldNameMissing"));
 				return false;
 			}
 			data.stdTypeField = environmentSubstitute(meta.getStdErrFieldName());
@@ -228,7 +228,7 @@ public class SSH extends BaseStep implements StepInterface
     			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SSH.Log.ConnectionOpened"));
 
     		}catch(Exception e) {
-    			log.logError(toString(),BaseMessages.getString(PKG, "SSH.Error.OpeningConnection", e.getMessage()));
+    			logError(BaseMessages.getString(PKG, "SSH.Error.OpeningConnection", e.getMessage()));
     			return false;
     		}
     		

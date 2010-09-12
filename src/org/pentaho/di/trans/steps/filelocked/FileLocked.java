@@ -101,14 +101,14 @@ public class FileLocked extends BaseStep implements StepInterface
         			resultFile.setComment(BaseMessages.getString(PKG, "FileLocked.Log.FileAddedResult"));
         			addResultFile(resultFile);
         			
-        			if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "FileLocked.Log.FilenameAddResult",filename));
+        			if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "FileLocked.Log.FilenameAddResult",filename));
         		}
         	}
        		
         	// add file locked
             putRow(data.outputRowMeta, RowDataUtil.addValueData(r, data.NrPrevFields, FileLocked));  // copy row to output rowset(s);
                 
-    	    if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FileLocked.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+    	    if (isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FileLocked.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
         } catch(Exception e) {
             boolean sendToErrorRow=false;
             String errorMessage = null;
@@ -141,7 +141,7 @@ public class FileLocked extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "FileLocked.Error.ResultFieldMissing"));
+        		logError( BaseMessages.getString(PKG, "FileLocked.Error.ResultFieldMissing"));
         		return false;
         	}
             return true;

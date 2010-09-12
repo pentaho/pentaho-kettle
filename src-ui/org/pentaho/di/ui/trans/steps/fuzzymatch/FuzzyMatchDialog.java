@@ -740,7 +740,7 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 	 */ 
 	public void getData()
 	{
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "FuzzyMatchDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(isDebug()) logDebug( BaseMessages.getString(PKG, "FuzzyMatchDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wAlgorithm.setText(FuzzyMatchMeta.getAlgorithmTypeDesc(input.getAlgorithmType()));
 
@@ -799,7 +799,7 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		
 		int nrvalues           = wReturn.nrNonEmpty();
 		input.allocate(nrvalues);
-		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "FuzzyMatchDialog.Log.FoundFields",nrvalues+"")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(isDebug()) logDebug(BaseMessages.getString(PKG, "FuzzyMatchDialog.Log.FoundFields",nrvalues+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrvalues;i++)
 		{
 			TableItem item        = wReturn.getNonEmpty(i);

@@ -93,7 +93,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface
         	
         	if(Const.isEmpty(url)) throw new KettleException(BaseMessages.getString(PKG, "WebServiceAvailable.Error.URLEmpty"));
             
-        	if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "WebServiceAvailable.Log.CheckingURL", url));
+        	if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "WebServiceAvailable.Log.CheckingURL", url));
         	
         	boolean WebServiceAvailable=false;
         	
@@ -107,7 +107,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface
         		// Web service is available
         		WebServiceAvailable=true;
         	}catch(Exception e) {
-        		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "WebServiceAvailable.Error.ServiceNotReached", url, e.toString()));
+        		if(isDebug()) logDebug( BaseMessages.getString(PKG, "WebServiceAvailable.Error.ServiceNotReached", url, e.toString()));
             	
         	}finally {
         		if(in!=null){
@@ -121,7 +121,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface
             putRow(data.outputRowMeta, RowDataUtil.addValueData(r, data.NrPrevFields, WebServiceAvailable));  // copy row to output rowset(s);
            
             
-	        if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FileExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
+	        if (isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "FileExists.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
         } catch(Exception e) {
             boolean sendToErrorRow=false;
             String errorMessage = null;
@@ -154,7 +154,7 @@ public class WebServiceAvailable extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getResultFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "WebServiceAvailable.Error.ResultFieldMissing"));
+        		logError( BaseMessages.getString(PKG, "WebServiceAvailable.Error.ResultFieldMissing"));
         		return false;
         	}
         	data.connectTimeOut= Const.toInt(environmentSubstitute(meta.getConnectTimeOut()), 0);

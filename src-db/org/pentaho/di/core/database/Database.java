@@ -4156,7 +4156,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 		}
 	
-		if(log.isDetailed()) log.logDetailed(toString(), "read :"+catalogList.size()+" catalogs from db meta-data.");
+		if(log.isDetailed()) log.logDetailed( "read :"+catalogList.size()+" catalogs from db meta-data.");
 	
 		return catalogList.toArray(new String[catalogList.size()]);
 	}

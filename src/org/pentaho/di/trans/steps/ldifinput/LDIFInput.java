@@ -89,23 +89,23 @@ public class LDIFInput extends BaseStep implements StepInterface
 		switch (contentLDIF.getType())
 		{
 		case LDIFContent.DELETE_CONTENT:
-			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","DELETE_CONTENT"));
+			if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","DELETE_CONTENT"));
 			contentTYPE="DELETE_CONTENT";
 			break;
 		case LDIFContent.ADD_CONTENT:
-			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ADD_CONTENT"));
+			if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ADD_CONTENT"));
 			contentTYPE="ADD_CONTENT";
 			break;
 		case LDIFContent.MODDN_CONTENT:
-			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODDN_CONTENT"));
+			if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODDN_CONTENT"));
 			contentTYPE="MODDN_CONTENT";
 			break;
 		case LDIFContent.MODIFICATION_CONTENT:
-			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODIFICATION_CONTENT"));
+			if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","MODIFICATION_CONTENT"));
 			contentTYPE="MODIFICATION_CONTENT";
 			break;
 		default:
-			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ATTRIBUTE_CONTENT"));
+			if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.ContentType","ATTRIBUTE_CONTENT"));
 			break;
 		}
 		
@@ -298,7 +298,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 			{
 			    if (data.filenr>=data.files.nrOfFiles()) // finished processing!
 	            {
-	            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.FinishedProcessing"));
+	            	if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.FinishedProcessing"));
 	                return false;
 	            }
 	            
@@ -313,7 +313,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 				data.readrow=getRow();     // Get row from input rowset & set row busy!
 				if (data.readrow==null)
 			    {
-					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.FinishedProcessing"));
+					if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.FinishedProcessing"));
 			         return false;
 			    }
 				
@@ -360,7 +360,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 	            	
 		        }// End if first
 				String filename=getInputRowMeta().getString(data.readrow,data.indexOfFilenameField);
-				if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "LDIFInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
+				if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.FilenameInStream", meta.getDynamicFilenameField(),filename));
 
 				data.file= KettleVFS.getFileObject(filename, getTransMeta());
 			}
@@ -403,7 +403,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 			}catch(Exception e){ 
 				throw new KettleException(e);
 			}
-			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.OpeningFile", data.file.toString()));
+			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.OpeningFile", data.file.toString()));
     
 			if(meta.AddToResultFilename())
 			{
@@ -415,7 +415,7 @@ public class LDIFInput extends BaseStep implements StepInterface
 
 			data.InputLDIF = new LDIF(KettleVFS.getFilename(data.file));
 	
-	        if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.FileOpened", data.file.toString()));
+	        if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "LDIFInput.Log.FileOpened", data.file.toString()));
 
 		}
 		catch(Exception e)

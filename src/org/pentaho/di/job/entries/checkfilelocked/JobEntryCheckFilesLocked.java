@@ -187,8 +187,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 
     try {
 	    if (argFromPrevious) {
-	      if(log.isDetailed()) 
-	    	  logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
+	      if(isDetailed()) 
+	    	  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
 	    }
 	
 	    if (argFromPrevious && rows != null)  {
@@ -201,8 +201,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 	        String fmasks_previous = resultRow.getString(1, "");        
 	
 	          // ok we can process this file/folder
-	          if(log.isDetailed()) 
-	        	  logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingRow", filefolder_previous, fmasks_previous)); //$NON-NLS-1$
+	          if(isDetailed()) 
+	        	  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingRow", filefolder_previous, fmasks_previous)); //$NON-NLS-1$
 	
 	          ProcessFile(filefolder_previous, fmasks_previous);
 	      }
@@ -210,8 +210,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 	
 	      for (int i = 0; i < arguments.length && !parentJob.isStopped(); i++) {
 	          // ok we can process this file/folder
-	    	  if(log.isDetailed()) 
-	    		  logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
+	    	  if(isDetailed()) 
+	    		  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
 	         
 	    	  ProcessFile(arguments[i], filemasks[i]);
 	      }
@@ -241,26 +241,26 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
         // the file or folder exists
         if (filefolder.getType() == FileType.FOLDER) {
           // It's a folder
-          if (log.isDetailed())
-            logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingFolder", realFilefoldername)); //$NON-NLS-1$
+          if (isDetailed())
+            logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingFolder", realFilefoldername)); //$NON-NLS-1$
           // Retrieve all files
           files = filefolder.findFiles(new TextFileSelector(filefolder.toString(),realwilcard));
 
           if (isDetailed())
-            logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.TotalFilesToCheck", String.valueOf(files.length))); //$NON-NLS-1$;
+            logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.TotalFilesToCheck", String.valueOf(files.length))); //$NON-NLS-1$;
         } else {
           // It's a file
           if(isDetailed()) 
-        	  logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingFile", realFilefoldername)); //$NON-NLS-1$
+        	  logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.ProcessingFile", realFilefoldername)); //$NON-NLS-1$
         }
         // Check files locked
         checkFilesLocked(files);
       } else {
         // We can not find thsi file
-        logBasic(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.FileNotExist", realFilefoldername)); //$NON-NLS-1$
+        logBasic( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.FileNotExist", realFilefoldername)); //$NON-NLS-1$
       }
     } catch (Exception e) {
-      logError(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
+      logError( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
     } finally {
       if (filefolder != null) {
         try {
@@ -278,9 +278,9 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 		  LockFile locked = new LockFile(filename);
 		  if(locked.isLocked()) {
 			  oneFileLocked= true;
-			  logError(toString(), BaseMessages.getString(PKG, "JobCheckFilesLocked.Log.FileLocked",filename));
+			  logError( BaseMessages.getString(PKG, "JobCheckFilesLocked.Log.FileLocked",filename));
 		  }else {
-			  if(log.isDetailed()) logDetailed(toString(), BaseMessages.getString(PKG, "JobCheckFilesLocked.Log.FileNotLocked",filename));  
+			  if(isDetailed()) logDetailed( BaseMessages.getString(PKG, "JobCheckFilesLocked.Log.FileNotLocked",filename));  
 		  }
 	  }
   }
@@ -322,8 +322,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 						// Not in the Base Folder..Only if include sub folders  
 						 if (includeSubfolders && (info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
-							if (log.isDetailed())
-								logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CheckingFile",info.getFile().toString())); //$NON-NLS-1$
+							if (isDetailed())
+								logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CheckingFile",info.getFile().toString())); //$NON-NLS-1$
 							
 							returncode= true; 				
 							 
@@ -335,8 +335,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 						 
 						 if ((info.getFile().getType() == FileType.FILE) && GetFileWildcard(short_filename,file_wildcard))
 						 {
-							if (log.isDetailed())
-								logDetailed(toString(), BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CheckingFile",info.getFile().toString())); //$NON-NLS-1$
+							if (isDetailed())
+								logDetailed( BaseMessages.getString(PKG, "JobEntryCheckFilesLocked.CheckingFile",info.getFile().toString())); //$NON-NLS-1$
 							
 							returncode= true; 				
 							 

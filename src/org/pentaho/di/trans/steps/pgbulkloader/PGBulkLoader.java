@@ -155,7 +155,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 	   }
 	   else
 	   {
-		   if(log.isDetailed()) log.logDetailed(toString(), "psql defaults to system path");
+		   if(isDetailed()) logDetailed( "psql defaults to system path");
 		   sb.append("psql");
 	   }
 

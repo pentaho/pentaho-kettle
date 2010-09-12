@@ -286,7 +286,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
                     }
                     catch(KettleException e)
                     {
-                    	logError(toString(), "Error getting fields from incoming stream!", e);
+                    	logError( "Error getting fields from incoming stream!", e);
                     }
                 }
             }
@@ -350,8 +350,8 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 		int nrkeys = wFields.nrNonEmpty();
 
 		inf.allocate(nrkeys);
-		if(log.isDebug())
-			log.logDebug(toString(), BaseMessages.getString(PKG, "StringOperationsDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(isDebug())
+			logDebug( BaseMessages.getString(PKG, "StringOperationsDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			inf.getFieldInStream()[i] = item.getText(1);

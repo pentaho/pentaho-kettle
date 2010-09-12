@@ -327,14 +327,14 @@ public class Mail extends BaseStep implements StepInterface
 				    	    imagePart.setHeader("Content-ID","<"+ contentID + ">");
 				    	    // keep this part for further user
 				    	    data.embeddedMimePart.add(imagePart);
-				    	    log.logBasic(toString(), BaseMessages.getString(PKG, "Mail.Log.ImageAdded", imageFile));
+				    	    logBasic( BaseMessages.getString(PKG, "Mail.Log.ImageAdded", imageFile));
 							
 						}else {
-							log.logError(toString(), BaseMessages.getString(PKG, "Mail.Log.WrongImage",imageFile));
+							logError( BaseMessages.getString(PKG, "Mail.Log.WrongImage",imageFile));
 						}	
 					}
 				}catch(Exception e) {
-					log.logError(toString(), BaseMessages.getString(PKG, "Mail.Error.AddingImage", e.getMessage()));
+					logError( BaseMessages.getString(PKG, "Mail.Error.AddingImage", e.getMessage()));
 				}finally {
 					if(image!=null) {
 						try {
@@ -444,12 +444,12 @@ public class Mail extends BaseStep implements StepInterface
 	      data.props.put("mail." + protocol + ".host", server);
 	      if (port!=-1) data.props.put("mail." + protocol + ".port", port);
 	      
-	      if (log.isDebug()) data.props.put("mail.debug", "true");
+	      if (isDebug()) data.props.put("mail.debug", "true");
 
 	      if (meta.isUsingAuthentication())  data.props.put("mail." + protocol + ".auth", "true");
 
 	      Session session = Session.getInstance(data.props);
-	      session.setDebug(log.isDebug());
+	      session.setDebug(isDebug());
 
 	      // create a message
 	      Message msg = new MimeMessage(session);
@@ -676,8 +676,8 @@ public class Mail extends BaseStep implements StepInterface
 						    	  }
 					        } // end for
 						 	if(zipFiles) {	
-						 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "Mail.Log.FileSize",""+FileSize));
-						 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "Mail.Log.LimitSize",""+data.zipFileLimit));
+						 		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Mail.Log.FileSize",""+FileSize));
+						 		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Mail.Log.LimitSize",""+data.zipFileLimit));
 						 		
 						 		if(data.zipFileLimit>0 && FileSize>data.zipFileLimit){
 							
@@ -750,7 +750,7 @@ public class Mail extends BaseStep implements StepInterface
           files.setFileName(file.getName().getBaseName());
           // add the part with the file in the BodyPart();
           data.parts.addBodyPart(files);
-          if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Mail.Log.AttachedFile",fds.getName()));
+          if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "Mail.Log.AttachedFile",fds.getName()));
           
 	  }
 	  private void addImagePart() throws Exception

@@ -67,7 +67,7 @@ public class MailInput extends BaseStep implements StepInterface
 			return false;
 		}
 	
-		if(log.isRowLevel())
+		if(isRowLevel())
 		{
 			log.logRowlevel(toString(), BaseMessages.getString(PKG, "MailInput.Log.OutputRow",data.outputRowMeta.getString(outputRowData)));
 		}
@@ -201,7 +201,7 @@ public class MailInput extends BaseStep implements StepInterface
 			// Get next message
 			data.mailConn.fetchNext();
 			
-			if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "MailInput.Log.FetchingMessage",data.mailConn.getMessage().getMessageNumber()));
+			if(isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.FetchingMessage",data.mailConn.getMessage().getMessageNumber()));
 			
 			// Execute for each Input field...
 			for (int i=0;i<meta.getInputFields().length;i++)
@@ -311,7 +311,7 @@ public class MailInput extends BaseStep implements StepInterface
 				// let's check if we fetched all values in list
 				 if (data.folderenr>=data.folders.length){	
 					 // We have fetched all folders
-	            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "MailInput.Log.FinishedProcessing"));
+	            	if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "MailInput.Log.FinishedProcessing"));
 	                return false;
 	            }
 			}else {
@@ -321,7 +321,7 @@ public class MailInput extends BaseStep implements StepInterface
 					
 					data.readrow=getRow();     // Get row from input rowset & set row busy!
 					if (data.readrow==null) {
-						if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "MailInput.Log.FinishedProcessing"));
+						if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "MailInput.Log.FinishedProcessing"));
 					    return false;
 					}
 					
@@ -333,7 +333,7 @@ public class MailInput extends BaseStep implements StepInterface
 		            data.totalpreviousfields=data.inputRowMeta.size();
 					
 					if(Const.isEmpty(meta.getFolderField())) {
-						log.logError(toString(), BaseMessages.getString(PKG, "MailInput.Error.DynamicFolderFieldMissing"));
+						logError( BaseMessages.getString(PKG, "MailInput.Error.DynamicFolderFieldMissing"));
 						stopAll();
 						setErrors(1);
 						return false;	
@@ -341,7 +341,7 @@ public class MailInput extends BaseStep implements StepInterface
 					
 					data.indexOfFolderField=data.inputRowMeta.indexOfValue(meta.getFolderField());
 					if(data.indexOfFolderField<0){
-						log.logError(toString(), BaseMessages.getString(PKG, "MailInput.Error.DynamicFolderUnreachable",meta.getFolderField()));
+						logError( BaseMessages.getString(PKG, "MailInput.Error.DynamicFolderUnreachable",meta.getFolderField()));
 						stopAll();
 						setErrors(1);
 						return false;
@@ -349,7 +349,7 @@ public class MailInput extends BaseStep implements StepInterface
 					
 					// get folder
 					String foldername=data.inputRowMeta.getString(data.readrow, data.indexOfFolderField);
-					if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "MailInput.Log.FoldernameInStream", meta.getFolderField(),foldername));
+					if(isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.FoldernameInStream", meta.getFolderField(),foldername));
 					data.folders=getFolders(foldername);
 				} // end if first
 				
@@ -358,7 +358,7 @@ public class MailInput extends BaseStep implements StepInterface
 					 // grab another row
 					 data.readrow=getRow();     // Get row from input rowset & set row busy!
 					 if (data.readrow==null) {
-						if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "MailInput.Log.FinishedProcessing"));
+						if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "MailInput.Log.FinishedProcessing"));
 					    return false;
 					 }
 					 // get folder
@@ -385,7 +385,7 @@ public class MailInput extends BaseStep implements StepInterface
 			data.mailConn.retrieveMessages();
 			data.messagesCount=data.mailConn.getMessagesCount();
 			
-			if(log.isDebug()) log.logDebug(toString(),BaseMessages.getString(PKG, "MailInput.Log.MessagesInFolder",data.folder,data.messagesCount));	
+			if(isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.MessagesInFolder",data.folder,data.messagesCount));	
 			
 		} catch(Exception e){
 			logError("Error opening folder "+data.folderenr + " "+ data.folder+ ": "+  e.toString());

@@ -383,7 +383,7 @@ public class GetTableNames extends BaseStep implements StepInterface
         {
         	if(Const.isEmpty(meta.getTablenameFieldName()))
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "GetTableNames.Error.TablenameFieldNameMissing"));
+        		logError( BaseMessages.getString(PKG, "GetTableNames.Error.TablenameFieldNameMissing"));
         		return false;
         	}
         	String realSchemaName=environmentSubstitute(meta.getSchemaName());
@@ -396,7 +396,7 @@ public class GetTableNames extends BaseStep implements StepInterface
         			&& !meta.isIncludeTable() && !meta.isIncludeView() 
         			&& !meta.isIncludeProcedure() && !meta.isIncludeSynonym())
         	{
-        		log.logError(toString(), BaseMessages.getString(PKG, "GetTableNames.Error.includeAtLeastOneType"));
+        		logError( BaseMessages.getString(PKG, "GetTableNames.Error.includeAtLeastOneType"));
         		return false;
         	}
         	

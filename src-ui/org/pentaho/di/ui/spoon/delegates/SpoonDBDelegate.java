@@ -428,7 +428,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 						rep.insertLogEntry("Save database : "+versionComment);
 					}
 					rep.save(db, versionComment, null);
-					spoon.getLog().logDetailed(toString(), BaseMessages.getString(PKG, "Spoon.Log.SavedDatabaseConnection", db.getDatabaseName()));
+					spoon.getLog().logDetailed( BaseMessages.getString(PKG, "Spoon.Log.SavedDatabaseConnection", db.getDatabaseName()));
 
 					db.setChanged(false);
 				} catch (KettleException ke)

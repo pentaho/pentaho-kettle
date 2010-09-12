@@ -312,7 +312,7 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
                   }
                   catch(KettleException e)
                   {
-                  	log.logError(toString(), BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.ErrorGettingPreviousFields", e.getMessage()));
+                  	logError( BaseMessages.getString(PKG, "FieldsChangeSequenceDialog.ErrorGettingPreviousFields", e.getMessage()));
                   }
               }
           }

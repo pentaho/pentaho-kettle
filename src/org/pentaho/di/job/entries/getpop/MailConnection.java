@@ -202,7 +202,7 @@ public class MailConnection {
 				this.store = this.session.getStore(protocolString);
 			}
 			
-			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobGetMailsFromPOP.NewConnectionDefined"));
+			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobGetMailsFromPOP.NewConnectionDefined"));
 		}catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.NewConnection",Const.NVL(this.server,"")),e);
 		}
@@ -254,7 +254,7 @@ public class MailConnection {
      * @throws KettleException if something went wrong.
      */
     public void connect() throws KettleException {
-    	if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobGetMailsFromPOP.Connecting",this.server, this.username, ""+this.port));
+    	if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Connecting",this.server, this.username, ""+this.port));
     	try{
     		if(this.usessl) {
 				// Supports IMAP/POP3 connection with SSL, 
@@ -266,7 +266,7 @@ public class MailConnection {
 				else
 					this.store.connect(this.server,this.username,this.password);
 			}
-			if(log.isDetailed()) log.logDetailed(toString(),BaseMessages.getString(PKG, "JobGetMailsFromPOP.Connected",this.server, this.username, ""+this.port));
+			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Connected",this.server, this.username, ""+this.port));
     	} catch(Exception e){
     		throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.Connecting",this.server, this.username, Const.NVL(""+this.port,"")),e);
     	}
@@ -332,13 +332,13 @@ public class MailConnection {
 	        	this.folder.open(Folder.READ_ONLY); 
 	        }
 	        
-	        if(log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderOpened.Label", getFolderName()));
+	        if(log.isDetailed()) log.logDetailed( BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderOpened.Label", getFolderName()));
 	        if(log.isDebug()) {
 	        	// display some infos on folder
-	          	log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderOpened.Name", getFolderName()));
-	          	log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderOpened.FullName", this.folder.getFullName()));
-	          	log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder.getURLName().toString()));
-	          	log.logDebug(toString(), BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderOpened.Subscribed", ""+this.folder.isSubscribed()));
+	          	log.logDebug( BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderOpened.Name", getFolderName()));
+	          	log.logDebug( BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderOpened.FullName", this.folder.getFullName()));
+	          	log.logDebug( BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder.getURLName().toString()));
+	          	log.logDebug( BaseMessages.getString(PKG, "JobGetMailsFromPOP.FolderOpened.Subscribed", ""+this.folder.isSubscribed()));
 	        }
 	        
 	    } catch (Exception e) {
@@ -375,13 +375,13 @@ public class MailConnection {
    public void closeFolder(boolean expunge) throws KettleException {
 	   try {
 		   if(this.folder!=null && this.folder.isOpen())  { 
-			   if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MailConnection.ClosingFolder",getFolderName()));
+			   if(log.isDebug()) log.logDebug( BaseMessages.getString(PKG, "MailConnection.ClosingFolder",getFolderName()));
 			   this.folder.close(expunge);
 			   this.folder=null;
 			   this.messages=null;
 			   this.message=null;
 			   this.messagenr=-1;
-			   if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MailConnection.FolderClosed",getFolderName()));
+			   if(log.isDebug()) log.logDebug( BaseMessages.getString(PKG, "MailConnection.FolderClosed",getFolderName()));
 		  }
 		}catch(Exception e){
 			throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.ClosingFolder",getFolderName()),e);
@@ -547,7 +547,7 @@ public class MailConnection {
 	 * @throws KettleException
 	 */
     public void disconnect(boolean expunge) throws KettleException {
-    	if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MailConnection.ClosingConnection"));
+    	if(log.isDebug()) log.logDebug( BaseMessages.getString(PKG, "MailConnection.ClosingConnection"));
 		try{
 			//close the folder, passing in a true value to expunge the deleted message
 			closeFolder(expunge);
@@ -556,7 +556,7 @@ public class MailConnection {
 			if(this.session != null) {this.session=null;}
 			if(this.destinationIMAPFolder!=null) this.destinationIMAPFolder.close(expunge);
 			
-			if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "MailConnection.ConnectionClosed"));
+			if(log.isDebug()) log.logDebug( BaseMessages.getString(PKG, "MailConnection.ConnectionClosed"));
 		}catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.ClosingConnection"),e);
 		}
@@ -651,7 +651,7 @@ public class MailConnection {
 						saveFile(foldername,filename, part.getInputStream());
 						updateSavedAttachedFilesCounter();
 						if(log.isDetailed()) 
-							log.logDetailed(toString(),BaseMessages.getString(PKG, "JobGetMailsFromPOP.AttachedFileSaved",
+							log.logDetailed(BaseMessages.getString(PKG, "JobGetMailsFromPOP.AttachedFileSaved",
 									filename,""+getMessage().getMessageNumber(),foldername));	
 					}
 				}

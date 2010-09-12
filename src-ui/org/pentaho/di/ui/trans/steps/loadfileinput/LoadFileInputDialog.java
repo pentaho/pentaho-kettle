@@ -1278,7 +1278,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wLimit.setText(""+in.getRowLimit());
         wEncoding.setText(Const.NVL(in.getEncoding(),""));
         
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "LoadFileInputDialog.Log.GettingFieldsInfo"));
+		if(isDebug()) logDebug( BaseMessages.getString(PKG, "LoadFileInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    LoadFileInputField field = in.getInputFields()[i];

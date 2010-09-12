@@ -82,7 +82,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 				try {
 					row[index]=generateRandomMACHash(RandomValueMeta.TYPE_RANDOM_MAC_HMACMD5);
 				}catch(Exception e){
-					log.logError(toString(), BaseMessages.getString(PKG, "RandomValue.Log.ErrorGettingRandomHMACMD5", e.getMessage()));
+					logError( BaseMessages.getString(PKG, "RandomValue.Log.ErrorGettingRandomHMACMD5", e.getMessage()));
 					setErrors(1);
 					stopAll();
 				}
@@ -91,7 +91,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 				try {
 					row[index]=generateRandomMACHash(RandomValueMeta.TYPE_RANDOM_MAC_HMACSHA1);
 				}catch(Exception e){
-					log.logError(toString(), BaseMessages.getString(PKG, "RandomValue.Log.ErrorGettingRandomHMACSHA1", e.getMessage()));
+					logError( BaseMessages.getString(PKG, "RandomValue.Log.ErrorGettingRandomHMACSHA1", e.getMessage()));
 					setErrors(1);
 					stopAll();
 				}
@@ -219,7 +219,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 				try  {
 					data.keyGenHmacMD5 = KeyGenerator.getInstance("HmacMD5");
 				}catch(NoSuchAlgorithmException s){
-					log.logError(toString(), BaseMessages.getString(PKG, "RandomValue.Log.HmacMD5AlgorithmException", s.getMessage()));
+					logError( BaseMessages.getString(PKG, "RandomValue.Log.HmacMD5AlgorithmException", s.getMessage()));
 					return false;
 				}
 			}
@@ -227,7 +227,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 				try  {
 					data.keyGenHmacSHA1 = KeyGenerator.getInstance("HmacSHA1");
 				}catch(NoSuchAlgorithmException s){
-					log.logError(toString(), BaseMessages.getString(PKG, "RandomValue.Log.HmacSHA1AlgorithmException", s.getMessage()));
+					logError( BaseMessages.getString(PKG, "RandomValue.Log.HmacSHA1AlgorithmException", s.getMessage()));
 					return false;
 				}
 			}

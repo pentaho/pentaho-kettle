@@ -83,7 +83,7 @@ public class HTTP extends BaseStep implements StepInterface
         String url = determineUrl(rowMeta, rowData);
         try
         {
-            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTP.Log.Connecting",url));
+            if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTP.Log.Connecting",url));
             
             // Prepare HTTP get
             // 
@@ -110,7 +110,7 @@ public class HTTP extends BaseStep implements StepInterface
                {
                   method.addRequestHeader(data.headerParameters[i].getName(),
                         data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i]));
-                  if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.HeaderValue",data.headerParameters[i].getName(),data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i])));
+                  if(isDebug()) log.logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.HeaderValue",data.headerParameters[i].getName(),data.inputRowMeta.getString(rowData,data.header_parameters_nrs[i])));
                }
             }
             
@@ -124,7 +124,7 @@ public class HTTP extends BaseStep implements StepInterface
                 int statusCode = httpclient.executeMethod(hostConfiguration, method);
                 String body=null;
                 // The status code
-                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "HTTP.Log.ResponseStatusCode", ""+statusCode));
+                if (isDebug()) logDebug(BaseMessages.getString(PKG, "HTTP.Log.ResponseStatusCode", ""+statusCode));
 
                 if( statusCode != -1 )
                 {
@@ -143,7 +143,7 @@ public class HTTP extends BaseStep implements StepInterface
 			                }
 		                }
 		                
-		                if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTP.Log.ResponseHeaderEncoding",encoding));
+		                if(isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "HTTP.Log.ResponseHeaderEncoding",encoding));
 		                
 		                // the response
 		                if (!Const.isEmpty(encoding)) {
@@ -161,7 +161,7 @@ public class HTTP extends BaseStep implements StepInterface
 		                inputStreamReader.close(); 
 		                
 		                body = bodyBuffer.toString();
-		                if (log.isDebug()) logDebug("Response body: "+body);
+		                if (isDebug()) logDebug("Response body: "+body);
                 
 		            }
 		            else {  //  the status is a 401
@@ -311,7 +311,7 @@ public class HTTP extends BaseStep implements StepInterface
 				
             if (checkFeedback(getLinesRead())) 
             {
-            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTP.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTP.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		}
 		catch(KettleException e)

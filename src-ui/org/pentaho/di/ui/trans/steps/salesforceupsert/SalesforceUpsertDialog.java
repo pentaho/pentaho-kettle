@@ -812,7 +812,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 		wUpsertField.setText(Const.NVL(in.getUpsertField(), "Id"));
 		wBatchSize.setText("" + in.getBatchSize());
 		wSalesforceIDFieldName.setText(Const.NVL(in.getSalesforceIDFieldName(),""));
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SalesforceUpsertDialog.Log.GettingFieldsInfo"));
+		if(isDebug()) logDebug( BaseMessages.getString(PKG, "SalesforceUpsertDialog.Log.GettingFieldsInfo"));
 
 		if (input.getUpdateLookup() != null)
 			for (int i = 0; i < input.getUpdateLookup().length; i++)
