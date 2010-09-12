@@ -84,6 +84,10 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 	private TextVar      wResultCode;
 	private FormData     fdlResultCode, fdResultCode;
 
+   private Label wlResponseTime;
+   private TextVar wResponseTime;
+   private FormData fdlResponseTime, fdResponseTime;
+
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -458,6 +462,24 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		fdResultCode.top  = new FormAttachment(wResult, margin);
 		fdResultCode.right= new FormAttachment(100, -margin);
 		wResultCode.setLayoutData(fdResultCode);
+
+      // Response time line...
+      wlResponseTime = new Label(gOutputFields, SWT.RIGHT);
+      wlResponseTime.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ResponseTime.Label")); //$NON-NLS-1$
+      props.setLook(wlResponseTime);
+      fdlResponseTime=new FormData();
+      fdlResponseTime.left = new FormAttachment(0, 0);
+      fdlResponseTime.right= new FormAttachment(middle, -margin);
+      fdlResponseTime.top  = new FormAttachment(wResultCode, margin);
+      wlResponseTime.setLayoutData(fdlResponseTime);
+      wResponseTime=new TextVar(transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wResponseTime);
+      wResponseTime.addModifyListener(lsMod);
+      fdResponseTime=new FormData();
+      fdResponseTime.left = new FormAttachment(middle, 0);
+      fdResponseTime.top  = new FormAttachment(wResultCode, margin);
+      fdResponseTime.right= new FormAttachment(100, 0);
+      wResponseTime.setLayoutData(fdResponseTime);
 		
 	    FormData fdOutputFields = new FormData();
         fdOutputFields.left = new FormAttachment(0, 0);
@@ -767,6 +789,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         wUrl.addSelectionListener( lsDef );
         wResult.addSelectionListener( lsDef );
         wResultCode.addSelectionListener( lsDef );
+        wResponseTime.addSelectionListener( lsDef );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -893,6 +916,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         if (input.getRequestEntity() !=null)      wrequestEntity.setText(input.getRequestEntity());
 		if (input.getFieldName()!=null) wResult.setText(input.getFieldName());
 		if (input.getResultCodeFieldName()!=null) wResultCode.setText(input.getResultCodeFieldName());
+		if (input.getResponseTimeFieldName()!=null) wResponseTime.setText(input.getResponseTimeFieldName());
 		if (input.getEncoding()!=null) wEncoding.setText(input.getEncoding());
 		wPostAFile.setSelection(input.isPostAFile());
 		
@@ -946,6 +970,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		input.setUrlInField(wUrlInField.getSelection() );
 		input.setFieldName( wResult.getText() );
 		input.setResultCodeFieldName( wResultCode.getText() );
+		input.setResponseTimeFieldName( wResponseTime.getText() );
 		input.setEncoding( wEncoding.getText() );
 		input.setPostAFile(wPostAFile.getSelection());
 		input.setHttpLogin(wHttpLogin.getText());

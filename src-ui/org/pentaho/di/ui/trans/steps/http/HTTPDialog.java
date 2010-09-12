@@ -77,7 +77,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	private FormData     fdlUrl, fdUrl;
 
 	private Label        wlResult;
-	private Text         wResult;
+	private TextVar      wResult;
 	private FormData     fdlResult, fdResult;
 
 	private Label        wlFields;
@@ -122,8 +122,12 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	private FormData     fdGeneralComp, fdAdditionalComp;
 	
 	private Label        wlResultCode;
-	private Text         wResultCode;
+	private TextVar         wResultCode;
 	private FormData     fdlResultCode, fdResultCode;
+
+   private Label wlResponseTime;
+   private TextVar wResponseTime;
+   private FormData fdlResponseTime, fdResponseTime;
 	
 	private HTTPMeta input;
 	
@@ -374,7 +378,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		fdlResult.right= new FormAttachment(middle, -margin);
 		fdlResult.top  = new FormAttachment(lastControl, margin);
 		wlResult.setLayoutData(fdlResult);
-		wResult=new Text(gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wResult=new TextVar(transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wResult);
 		wResult.addModifyListener(lsMod);
 		fdResult=new FormData();
@@ -392,7 +396,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		fdlResultCode.right= new FormAttachment(middle, -margin);
 		fdlResultCode.top  = new FormAttachment(wResult, margin);
 		wlResultCode.setLayoutData(fdlResultCode);
-		wResultCode=new Text(gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wResultCode=new TextVar(transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wResultCode);
 		wResultCode.addModifyListener(lsMod);
 		fdResultCode=new FormData();
@@ -400,6 +404,24 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		fdResultCode.top  = new FormAttachment(wResult, margin);
 		fdResultCode.right= new FormAttachment(100, 0);
 		wResultCode.setLayoutData(fdResultCode);
+
+      // Response time line...
+      wlResponseTime = new Label(gOutputFields, SWT.RIGHT);
+      wlResponseTime.setText(BaseMessages.getString(PKG, "HTTPDialog.ResponseTime.Label")); //$NON-NLS-1$
+      props.setLook(wlResponseTime);
+      fdlResponseTime=new FormData();
+      fdlResponseTime.left = new FormAttachment(0, 0);
+      fdlResponseTime.right= new FormAttachment(middle, -margin);
+      fdlResponseTime.top  = new FormAttachment(wResultCode, margin);
+      wlResponseTime.setLayoutData(fdlResponseTime);
+      wResponseTime=new TextVar(transMeta, gOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wResponseTime);
+      wResponseTime.addModifyListener(lsMod);
+      fdResponseTime=new FormData();
+      fdResponseTime.left = new FormAttachment(middle, 0);
+      fdResponseTime.top  = new FormAttachment(wResultCode, margin);
+      fdResponseTime.right= new FormAttachment(100, 0);
+      wResponseTime.setLayoutData(fdResponseTime);
 		
         FormData fdOutputFields = new FormData();
         fdOutputFields.left = new FormAttachment(0, 0);
@@ -824,7 +846,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	    if(input.getHttpPassword() != null) wHttpPassword.setText(input.getHttpPassword());
 	    if(input.getProxyHost() != null) wProxyHost.setText(input.getProxyHost());
 	    if(input.getProxyPort() != null) wProxyPort.setText(input.getProxyPort());
-		if (input.getResultCodeFieldName()!=null) wResultCode.setText(input.getResultCodeFieldName());
+	    if (input.getResultCodeFieldName()!=null) wResultCode.setText(input.getResultCodeFieldName());
+       if (input.getResponseTimeFieldName()!=null) wResponseTime.setText(input.getResponseTimeFieldName());
 		
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -875,6 +898,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		input.setProxyHost(wProxyHost.getText());
 		input.setProxyPort(wProxyPort.getText());
 		input.setResultCodeFieldName( wResultCode.getText() );
+		input.setResponseTimeFieldName( wResponseTime.getText() );
 		
 		stepname = wStepname.getText(); // return value
 
