@@ -61,12 +61,14 @@ import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 /**
- * Description: Dialog class for the LucidDB Streaming Loader step.
+ * Description: Dialog class for the Farrago Streaming Loader step.
  * 
  * @author Ray Zhang
  * @since Jan-05-2010
@@ -120,19 +122,19 @@ public class LucidDBStreamingLoaderDialog
 
     private CTabItem wFieldsTab;
 
-    // private CTabItem wCustomTab;
+    private CTabItem wCustomTab;
 
     private Composite wKeysComp;
 
     private Composite wFieldsComp;
 
-    // private Composite wCustomComp;
+    private Composite wCustomComp;
 
     private FormData fdKeysComp;
 
     private FormData fdFieldsComp;
 
-    // private FormData fdCustomComp;
+    private FormData fdCustomComp;
 
     private Label wlKeysTb;
 
@@ -146,11 +148,11 @@ public class LucidDBStreamingLoaderDialog
 
     private FormData fdlFieldsTb, fdFieldsTb;
 
-    // private Label wlCustomTb;
+    private Label wlCustomTb;
 
-    // private StyledTextComp wCustomTb;
+    private StyledTextComp wCustomTb;
 
-    // private FormData fdlCustomTb, fdCustomTb;
+    private FormData fdlCustomTb, fdCustomTb;
 
     private Button wGetFieldsForKeys;
 
@@ -169,6 +171,12 @@ public class LucidDBStreamingLoaderDialog
     private FormData fdDoMappingForFields;
 
     private LucidDBStreamingLoaderMeta input;
+
+    private Label lAutoCreateTable;
+
+    private Button bAutoCreateTable;
+
+    private FormData fdlAutoCreateTable, fdbAutoCreateTable;
 
     public LucidDBStreamingLoaderDialog(
         Shell parent,
@@ -291,6 +299,26 @@ public class LucidDBStreamingLoaderDialog
         fdTable.right = new FormAttachment(wbTable, -margin);
         wTable.setLayoutData(fdTable);
 
+        // Auto create table check.
+        lAutoCreateTable = new Label(shell, SWT.RIGHT);
+        lAutoCreateTable.setText(BaseMessages.getString(
+            PKG,
+            "LucidDBStreamingLoaderDialog.AutoCreateTable.Label"));
+        props.setLook(lAutoCreateTable);
+        fdlAutoCreateTable = new FormData();
+        fdlAutoCreateTable.left = new FormAttachment(0, 0);
+        fdlAutoCreateTable.top = new FormAttachment(wTable, margin);
+        fdlAutoCreateTable.right = new FormAttachment(middle, -margin);
+        lAutoCreateTable.setLayoutData(fdlAutoCreateTable);
+
+        bAutoCreateTable = new Button(shell, SWT.CHECK);
+        props.setLook(bAutoCreateTable);
+
+        fdbAutoCreateTable = new FormData();
+        fdbAutoCreateTable.left = new FormAttachment(lAutoCreateTable, 10);
+        fdbAutoCreateTable.top = new FormAttachment(wTable, margin);
+        bAutoCreateTable.setLayoutData(fdbAutoCreateTable);
+
         // Host
         wlHost = new Label(shell, SWT.RIGHT);
         wlHost.setText(BaseMessages.getString(
@@ -299,7 +327,7 @@ public class LucidDBStreamingLoaderDialog
         props.setLook(wlHost);
         fdlHost = new FormData();
         fdlHost.left = new FormAttachment(0, 0);
-        fdlHost.top = new FormAttachment(wTable, margin);
+        fdlHost.top = new FormAttachment(lAutoCreateTable, margin);
         fdlHost.right = new FormAttachment(middle, -margin);
         wlHost.setLayoutData(fdlHost);
         wHost = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
@@ -308,7 +336,7 @@ public class LucidDBStreamingLoaderDialog
         wHost.addModifyListener(lsMod);
         fdHost = new FormData();
         fdHost.left = new FormAttachment(middle, 0);
-        fdHost.top = new FormAttachment(wTable, margin);
+        fdHost.top = new FormAttachment(lAutoCreateTable, margin);
         fdHost.right = new FormAttachment(100, 0);
         wHost.setLayoutData(fdHost);
 
@@ -363,11 +391,11 @@ public class LucidDBStreamingLoaderDialog
                 "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2"),
             BaseMessages.getString(
                 PKG,
-                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item3")
-        // BaseMessages.getString(
-        // PKG,
-        // "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4") // disable
-        // operation CUSTOM
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item3"),
+            BaseMessages.getString(
+                PKG,
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4")
+
         };
 
         wOperation.setItems(operations);
@@ -389,71 +417,73 @@ public class LucidDBStreamingLoaderDialog
                 // MERGE
                 if (operations[0].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
-
+                   bAutoCreateTable.setEnabled(true);
                     wKeysTb.table.removeAll();
                     wKeysTb.table.setItemCount(1);
                     wKeysTb.setRowNums();
                     wFieldsTb.table.removeAll();
                     wFieldsTb.table.setItemCount(1);
                     wFieldsTb.setRowNums();
-                    // wCustomTb.setText("");
+                    wCustomTb.setText("");
 
                     wTabFolder.setSelection(wKeysTab);
                     wKeysTab.getControl().setEnabled(true);
                     wFieldsTab.getControl().setEnabled(true);
-                    // wCustomTab.getControl().setEnabled(false);
+                    wCustomTab.getControl().setEnabled(false);
                     wFieldsTb.table.getColumn(3).setWidth(80);
                     // INSERT
                 } else if (operations[1].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
-
+                    bAutoCreateTable.setEnabled(true);
                     wKeysTb.table.removeAll();
                     wKeysTb.table.setItemCount(1);
                     wKeysTb.setRowNums();
                     wFieldsTb.table.removeAll();
                     wFieldsTb.table.setItemCount(1);
                     wFieldsTb.setRowNums();
-                    // wCustomTb.setText("");
+                    wCustomTb.setText("");
 
                     wTabFolder.setSelection(wFieldsTab);
                     wKeysTab.getControl().setEnabled(false);
                     wFieldsTab.getControl().setEnabled(true);
-                    // wCustomTab.getControl().setEnabled(false);
+                    wCustomTab.getControl().setEnabled(false);
                     wFieldsTb.table.getColumn(3).setWidth(0);
                     // UPDATE
                 } else if (operations[2].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
-
+                    bAutoCreateTable.setEnabled(true);
                     wKeysTb.table.removeAll();
                     wKeysTb.table.setItemCount(1);
                     wKeysTb.setRowNums();
                     wFieldsTb.table.removeAll();
                     wFieldsTb.table.setItemCount(1);
                     wFieldsTb.setRowNums();
-                    // wCustomTb.setText("");
+                    wCustomTb.setText("");
 
                     wTabFolder.setSelection(wKeysTab);
                     wKeysTab.getControl().setEnabled(true);
                     wFieldsTab.getControl().setEnabled(true);
-                    // wCustomTab.getControl().setEnabled(false);
+                    wCustomTab.getControl().setEnabled(false);
                     // grey out update field in Field TabelView
                     wFieldsTb.table.getColumn(3).setWidth(80);
                     // CUSTOM
                 } else if (operations[3].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
 
+                    bAutoCreateTable.setSelection(false);
+                    bAutoCreateTable.setEnabled(false);
                     wKeysTb.table.removeAll();
                     wKeysTb.table.setItemCount(1);
                     wKeysTb.setRowNums();
                     wFieldsTb.table.removeAll();
                     wFieldsTb.table.setItemCount(1);
                     wFieldsTb.setRowNums();
-                    // wCustomTb.setText("");
+                    wCustomTb.setText("");
 
                     wTabFolder.setSelection(wKeysTab);
                     wKeysTab.getControl().setEnabled(true);
                     wFieldsTab.getControl().setEnabled(true);
-                    // wCustomTab.getControl().setEnabled(true);
+                    wCustomTab.getControl().setEnabled(true);
                     wFieldsTb.table.getColumn(3).setWidth(80);
                 }
 
@@ -685,51 +715,51 @@ public class LucidDBStreamingLoaderDialog
         wFieldsTab.setControl(wFieldsComp);
 
         // TabItem: Custom disable Custom tab
-        // wCustomTab = new CTabItem(wTabFolder, SWT.NONE);
-        // wCustomTab.setText(BaseMessages.getString(
-        // PKG,
-        // "LucidDBStreamingLoaderDialog.CustomTab.TabTitle"));
-        //
-        // wCustomComp = new Composite(wTabFolder, SWT.NONE);
-        // wCustomComp.setLayout(fieldsLayout);
-        // props.setLook(wCustomComp);
-        //
-        // wlCustomTb = new Label(wCustomComp, SWT.LEFT);
-        // wlCustomTb.setText(BaseMessages.getString(
-        // PKG,
-        // "LucidDBStreamingLoaderDialog.CustomTab.Label"));
-        //
-        // fdlCustomTb = new FormData();
-        // fdlCustomTb.left = new FormAttachment(0, 0);
-        // fdlCustomTb.top = new FormAttachment(0, 0);
-        // fdlCustomTb.right = new FormAttachment(100, 0);
-        // wlCustomTb.setLayoutData(fdlCustomTb);
-        //
-        // wCustomTb = new StyledTextComp(wCustomComp, SWT.MULTI | SWT.LEFT
-        // | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
-        // props.setLook(wCustomTb, Props.WIDGET_STYLE_FIXED);
-        // wCustomTb.addModifyListener(lsMod);
-        //
-        // fdCustomTb = new FormData();
-        // fdCustomTb.left = new FormAttachment(0, 0);
-        // fdCustomTb.top = new FormAttachment(wlCustomTb, margin);
-        // fdCustomTb.right = new FormAttachment(100, -margin);
-        // fdCustomTb.bottom = new FormAttachment(100, -margin);
-        // wCustomTb.setLayoutData(fdCustomTb);
-        //
-        // // Text Higlighting
-        // SQLValuesHighlight lineStyler = new SQLValuesHighlight();
-        // wCustomTb.addLineStyleListener(lineStyler);
-        //
-        // fdCustomComp = new FormData();
-        // fdCustomComp.left = new FormAttachment(0, 0);
-        // fdCustomComp.top = new FormAttachment(0, 0);
-        // fdCustomComp.right = new FormAttachment(100, 0);
-        // fdCustomComp.bottom = new FormAttachment(100, 0);
-        // wCustomComp.setLayoutData(fdCustomComp);
-        //
-        // wCustomComp.layout();
-        // wCustomTab.setControl(wCustomComp);
+        wCustomTab = new CTabItem(wTabFolder, SWT.NONE);
+        wCustomTab.setText(BaseMessages.getString(
+            PKG,
+            "LucidDBStreamingLoaderDialog.CustomTab.TabTitle"));
+
+        wCustomComp = new Composite(wTabFolder, SWT.NONE);
+        wCustomComp.setLayout(fieldsLayout);
+        props.setLook(wCustomComp);
+
+        wlCustomTb = new Label(wCustomComp, SWT.LEFT);
+        wlCustomTb.setText(BaseMessages.getString(
+            PKG,
+            "LucidDBStreamingLoaderDialog.CustomTab.Label"));
+
+        fdlCustomTb = new FormData();
+        fdlCustomTb.left = new FormAttachment(0, 0);
+        fdlCustomTb.top = new FormAttachment(0, 0);
+        fdlCustomTb.right = new FormAttachment(100, 0);
+        wlCustomTb.setLayoutData(fdlCustomTb);
+
+        wCustomTb = new StyledTextComp(wCustomComp, SWT.MULTI | SWT.LEFT
+            | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+        props.setLook(wCustomTb, Props.WIDGET_STYLE_FIXED);
+        wCustomTb.addModifyListener(lsMod);
+
+        fdCustomTb = new FormData();
+        fdCustomTb.left = new FormAttachment(0, 0);
+        fdCustomTb.top = new FormAttachment(wlCustomTb, margin);
+        fdCustomTb.right = new FormAttachment(100, -margin);
+        fdCustomTb.bottom = new FormAttachment(100, -margin);
+        wCustomTb.setLayoutData(fdCustomTb);
+
+        // Text Higlighting
+        SQLValuesHighlight lineStyler = new SQLValuesHighlight();
+        wCustomTb.addLineStyleListener(lineStyler);
+
+        fdCustomComp = new FormData();
+        fdCustomComp.left = new FormAttachment(0, 0);
+        fdCustomComp.top = new FormAttachment(0, 0);
+        fdCustomComp.right = new FormAttachment(100, 0);
+        fdCustomComp.bottom = new FormAttachment(100, 0);
+        wCustomComp.setLayoutData(fdCustomComp);
+
+        wCustomComp.layout();
+        wCustomTab.setControl(wCustomComp);
 
         // THE BUTTONS
         wOK = new Button(shell, SWT.PUSH);
@@ -741,7 +771,7 @@ public class LucidDBStreamingLoaderDialog
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-        setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, null);
+        setButtonPositions(new Button[] { wOK, wCancel, wSQL }, margin, null);
 
         // Add listeners
         lsOK = new Listener()
@@ -833,6 +863,7 @@ public class LucidDBStreamingLoaderDialog
             wSchema.setText(input.getSchemaName());
         if (input.getTableName() != null)
             wTable.setText(input.getTableName());
+        bAutoCreateTable.setSelection(input.isAutoCreateTbFlag());
         if (input.getHost() != null)
             wHost.setText("" + input.getHost());
         if (input.getPort() != null)
@@ -851,10 +882,18 @@ public class LucidDBStreamingLoaderDialog
 
                 wTabFolder.setSelection(0);
             }
+            if (BaseMessages.getString(
+                PKG,
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4").equals(
+                input.getOperation()))
+            {
+                bAutoCreateTable.setSelection(false);
+                bAutoCreateTable.setEnabled(false);
+            }
         }
 
-        // if (input.getCustom_sql() != null)
-        // wCustomTb.setText(input.getCustom_sql());
+        if (input.getCustom_sql() != null)
+            wCustomTb.setText(input.getCustom_sql());
 
         if (input.getFieldTableForKeys() != null) {
 
@@ -903,15 +942,12 @@ public class LucidDBStreamingLoaderDialog
 
             wKeysTab.getControl().setEnabled(input.getTabIsEnable()[0]);
             wFieldsTab.getControl().setEnabled(input.getTabIsEnable()[1]);
-            // wCustomTab.getControl().setEnabled(input.getTabIsEnable()[2]);
+            wCustomTab.getControl().setEnabled(input.getTabIsEnable()[2]);
 
         }
 
         int fieldWidth = wFieldsTb.table.getColumn(3).getWidth();
-        
-        //Temporarily resolve index out of bounds
-        wFieldsTb.table.getColumn(3).setWidth(fieldWidth);
-        /*if (input.getOperation() != null
+        if (input.getOperation() != null
             && "INSERT".equalsIgnoreCase(wOperation.getItem(wOperation.getSelectionIndex())))
         {
 
@@ -920,7 +956,7 @@ public class LucidDBStreamingLoaderDialog
         } else {
 
             wFieldsTb.table.getColumn(3).setWidth(fieldWidth);
-        }*/
+        }
 
         wStepname.selectAll();
 
@@ -1109,6 +1145,8 @@ public class LucidDBStreamingLoaderDialog
         inf.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()));
         inf.setSchemaName(wSchema.getText());
         inf.setTableName(wTable.getText());
+
+        inf.setAutoCreateTbFlag(bAutoCreateTable.getSelection());
         inf.setHost(wHost.getText());
         inf.setPort(wPort.getText());
         inf.setOperation(wOperation.getItem(wOperation.getSelectionIndex()));
@@ -1129,12 +1167,18 @@ public class LucidDBStreamingLoaderDialog
             inf.getFieldStreamForFields()[i] = item.getText(2);
             inf.getInsOrUptFlag()[i] = "Y".equalsIgnoreCase(item.getText(3));
         }
-
         inf.getTabIsEnable()[0] = wKeysTab.getControl().getEnabled();
         inf.getTabIsEnable()[1] = wFieldsTab.getControl().getEnabled();
-        // inf.getTabIsEnable()[2] = wCustomTab.getControl().getEnabled();
+        inf.getTabIsEnable()[2] = wCustomTab.getControl().getEnabled();
+        if (BaseMessages.getString(
+            PKG,
+            "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4").equals(
+            inf.getOperation()))
+        {
+            inf.setCustom_sql(wCustomTb.getText());
 
-        // inf.setCustom_sql(wCustomTb.getText());
+        }
+
         stepname = wStepname.getText(); // return value
     }
 
@@ -1150,7 +1194,7 @@ public class LucidDBStreamingLoaderDialog
         TableView myTb;
 
         boolean flag = false; // disable update field when select insert
-                              // operation.
+        // operation.
 
         if (tabName.equals(BaseMessages.getString(
             PKG,
@@ -1172,14 +1216,11 @@ public class LucidDBStreamingLoaderDialog
                 .equalsIgnoreCase(
                     wOperation.getItem(wOperation.getSelectionIndex())))
             {
-
                 flag = true;
             }
 
         } else {
-
             return;
-
         }
 
         RowMetaInterface streamMeta;
@@ -1187,67 +1228,57 @@ public class LucidDBStreamingLoaderDialog
         try {
 
             streamMeta = transMeta.getPrevStepFields(stepMeta);
-
             String[] fieldNamesOfStream = streamMeta.getFieldNames();
-
             input.setSchemaName(wSchema.getText());
             input.setTableName(wTable.getText());
             input.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()));
-
             StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
-
-            RowMetaInterface tblMeta = stepMetaInterface.getRequiredFields(transMeta);
-
-            String[] fieldsNamesOfTbl = tblMeta.getFieldNames();
-
-            int count = ((fieldNamesOfStream.length >= fieldsNamesOfTbl.length) ? fieldNamesOfStream.length
-                : fieldsNamesOfTbl.length);
-
-            myTb.table.setItemCount(count);
-
-            for (int i = 0; i < count; i++) {
-                TableItem item = myTb.table.getItem(i);
-
-                if (i >= (fieldsNamesOfTbl.length)) {
-
-                    // item.setText(1, "");
-
-                } else {
-
-                    if (fieldsNamesOfTbl[i] != null) {
-
-                        item.setText(1, fieldsNamesOfTbl[i]);
-
-                    }
-                }
-
-                if (i >= fieldNamesOfStream.length) {
-
-                    // item.setText(2, "");
-
-                } else {
-
-                    if (fieldNamesOfStream[i] != null) {
-                        item.setText(2, fieldNamesOfStream[i]);
-                    }
-                }
+            RowMetaInterface tblMeta = null;
+            String[] fieldsNamesOfTbl = null;
+            try {
+                tblMeta = stepMetaInterface.getRequiredFields(transMeta);
+                fieldsNamesOfTbl = tblMeta.getFieldNames();
+            } catch (KettleException ke) {
 
             }
-
+            int count = 0;
+            if (fieldsNamesOfTbl == null) {
+                count = fieldNamesOfStream.length;
+                myTb.table.setItemCount(count);
+                for (int i = 0; i < count; i++) {
+                    TableItem item = myTb.table.getItem(i);
+                    item.setText(1, fieldNamesOfStream[i]);
+                    item.setText(2, fieldNamesOfStream[i]);
+                }
+            } else {
+                count = ((fieldNamesOfStream.length >= fieldsNamesOfTbl.length) ? fieldNamesOfStream.length
+                    : fieldsNamesOfTbl.length);
+                myTb.table.setItemCount(count);
+                for (int i = 0; i < count; i++) {
+                    TableItem item = myTb.table.getItem(i);
+                    if (i >= (fieldsNamesOfTbl.length)) {
+                        // item.setText(1, "");
+                    } else {
+                        if (fieldsNamesOfTbl[i] != null) {
+                            item.setText(1, fieldsNamesOfTbl[i]);
+                        }
+                    }
+                    if (i >= fieldNamesOfStream.length) {
+                        // item.setText(2, "");
+                    } else {
+                        if (fieldNamesOfStream[i] != null) {
+                            item.setText(2, fieldNamesOfStream[i]);
+                        }
+                    }
+                }
+            }
             myTb.setRowNums();
             myTb.optWidth(true);
             if (flag) {
-
                 myTb.table.getColumn(3).setWidth(0);
                 System.out.println(myTb.table.getColumn(3).getWidth());
-
             }
         } catch (KettleStepException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (KettleException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
 
     }
@@ -1260,10 +1291,26 @@ public class LucidDBStreamingLoaderDialog
         // Get the information for the dialog into the input structure.
         getInfo(input);
 
+        // String name = stepname; // new name might not yet be linked to other
+        // steps!
+        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(
+        // PKG,
+        // "LucidDBStreamingLoaderDialog.StepMeta.Title"), name, input);
         RowMetaInterface prev;
         try {
             prev = transMeta.getPrevStepFields(stepname);
-            input.setSql_statement(input.getSQLStatements(prev));
+
+            if (BaseMessages.getString(
+                PKG,
+                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4").equals(
+                input.getOperation()))
+            {
+                input.setSql_statement(input.getCustom_sql());
+
+            } else {
+                input.setSql_statement(input.getSQLStatements(prev));
+            }
+            input.setSelectStmt(input.getselectStmtForCreateTb(prev));
         } catch (KettleStepException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -1329,13 +1376,21 @@ public class LucidDBStreamingLoaderDialog
         LucidDBStreamingLoaderMeta info = new LucidDBStreamingLoaderMeta();
         getInfo(info);
 
+        // String name = stepname; // new name might not yet be linked to other
+        // steps!
+        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(
+        // PKG,
+        // "LucidDBStreamingLoaderDialog.StepMeta.Title"), name, info);
         RowMetaInterface prev;
         try {
             prev = transMeta.getPrevStepFields(stepname);
             info.setSql_statement(info.getSQLStatements(prev));
+            info.setSelectStmt(info.getselectStmtForCreateTb(prev));
+            info.setCustom_sql(info.getSql_statement());
+            wCustomTb.setText(info.getCustom_sql());
+            wTabFolder.setSelection(wCustomTab);
             return;
         } catch (KettleStepException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

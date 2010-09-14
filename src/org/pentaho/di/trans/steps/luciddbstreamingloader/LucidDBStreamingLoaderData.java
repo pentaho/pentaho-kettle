@@ -22,39 +22,37 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * Stores data for the LucidDB Streaming Loader step.
  * 
- * @author Matt
+ * @author Ray Zhang
  * @since Jan-05-2010
  */
-public class LucidDBStreamingLoaderData
-    extends BaseStepData
-    implements StepDataInterface
-{
-    public Database db;
+public class LucidDBStreamingLoaderData extends BaseStepData implements
+    StepDataInterface {
+  public Database db;
 
-    public int keynrs[]; // nr of keylookup -value in row...
+  public int keynrs[]; // nr of keylookup -value in row...
 
-    public String format[];
+  public String format[];
 
-    public StreamLogger errorLogger;
+  public StreamLogger errorLogger;
 
-    public StreamLogger outputLogger;
+  public StreamLogger outputLogger;
 
-    public String schemaTable;
+  public String schemaTable;
 
-    public String sql_statement;
+  public String sql_statement;
 
-    public Socket client;
-    public ObjectOutputStream objOut;
+  public Socket client;
 
-    public LucidDBStreamingLoader.SqlRunner sqlRunner;
+  public ObjectOutputStream objOut;
 
-    /**
-     * Default constructor.
-     */
-    public LucidDBStreamingLoaderData()
-    {
-        super();
+  public LucidDBStreamingLoader.SqlRunner sqlRunner;
 
-        db = null;
-    }
+  /**
+   * Default constructor.
+   */
+  public LucidDBStreamingLoaderData() {
+    super();
+
+    db = null;
+  }
 }
