@@ -23,7 +23,6 @@ public class SelectCountTests {
      * 
      */
     private final static String NonHiveSelect = "select count(*) from ";
-    private final static String HiveSelect = "select count(1) from ";
     private final static String TableName = "NON_EXISTANT";
     
     public static final String h2DatabaseXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -61,18 +60,6 @@ public class SelectCountTests {
             "<username>sa</username>" +
             "<password></password>" +
           "</connection>";
-
-    public static final String HiveDatabaseXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-          "<connection>" +
-            "<name>Hadoop Hive</name>" +
-            "<server>127.0.0.1</server>" +
-            "<type>Hadoop Hive</type>" +
-            "<access></access>" + 
-            "<database>default</database>" +
-            "<port>10000</port>" +
-            "<username>sean</username>" +
-            "<password>sean</password>" +
-          "</connection>"; 
 
     @Test
     public void testH2Database() {
@@ -115,19 +102,4 @@ public class SelectCountTests {
                 e.printStackTrace();
         }
     }
-    
-    @Test
-    public void testHiveDatabase() throws Exception {
-        try {
-            KettleEnvironment.init();
-            String expectedSQL = HiveSelect+TableName;
-            DatabaseMeta databaseMeta = new DatabaseMeta(HiveDatabaseXML);
-            String sql= databaseMeta.getDatabaseInterface().getSelectCountStatement(TableName);
-            assertTrue(sql.equalsIgnoreCase(expectedSQL));
-        }
-        catch (Exception e ) {
-                e.printStackTrace();
-        }
-    }
-
 }
