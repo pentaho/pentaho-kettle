@@ -22,8 +22,6 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -32,6 +30,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
+import org.apache.commons.validator.GenericValidator;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -41,14 +40,7 @@ public class MailValidation {
 	private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	public static boolean isRegExValid(String emailAdress) {
-		//Set the email pattern string
-		Pattern p = Pattern.compile(".+@.+\\.[a-z]+");
-
-		//Match the given string with the pattern
-		Matcher m = p.matcher(emailAdress);
-
-		//check whether match is found 
-		return (m.matches());
+		return GenericValidator.isEmail(emailAdress);
 	}
 
 	/** 

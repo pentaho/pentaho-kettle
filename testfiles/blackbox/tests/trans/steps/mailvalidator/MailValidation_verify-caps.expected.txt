@@ -1,0 +1,3 @@
+comment;Email;result;Error message
+Email lower case  ;test@example.com;Y;                                                                                                    
+Email with cap TLD;test@example.Com;Y;                                                                                                    
