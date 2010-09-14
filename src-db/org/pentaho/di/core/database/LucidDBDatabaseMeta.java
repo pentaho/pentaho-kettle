@@ -29,7 +29,7 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     
 	public int[] getAccessTypeList()
 	{
-		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
 	public int getDefaultDatabasePort()
@@ -40,30 +40,18 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
 	public String getDriverClass()
 	{
-		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
-		{
-			return "sun.jdbc.odbc.JdbcOdbcDriver";
-		}
-		else
-		{
-			return "com.dynamobi.jdbc.Driver";
-		}
+	    return "org.luciddb.jdbc.LucidDbClientDriver";
+	
 	}
 
     public String getURL(String hostname, String port, String databaseName)
     {
-		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
-		{
-			return "jdbc:odbc:"+databaseName;
-		}
-		else
-		{
+
 			if (!Const.isEmpty(port) && Const.toInt(port, -1)>0) {
 				return "jdbc:luciddb:http://"+hostname+":"+port;
 			} else {
 				return "jdbc:luciddb:http://"+hostname;
 			}
-		}
 	}
     
     public String getSQLTableExists(String tablename)
@@ -278,7 +266,7 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "dynamodb-client-jdbc-minimal.jar" };
+        return new String[] { "LucidDbClient.jar" };
     }
     
     public String getExtraOptionsHelpText()
@@ -298,12 +286,6 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         // which is good, otherwise when it generates SQL to select from them,
         // there is no schema qualifier, resulting in an error.
 		return true;
-	}
-    
-	public void setDatabaseName(String databaseName)
-	{
-        // ignore parameter, since LucidDB has no concept of database names
-        super.setDatabaseName(UNUSED_DB_NAME);
 	}
 
 }
