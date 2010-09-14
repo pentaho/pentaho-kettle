@@ -53,12 +53,7 @@
   <database-type id="SQLBASE">
     <description>Gupta SQL Base</description>
     <classname>org.pentaho.di.core.database.GuptaDatabaseMeta</classname>
-  </database-type>                                                       
-
-  <database-type id="HIVE">
-    <description>Hadoop Hive</description>
-    <classname>org.pentaho.di.core.database.HiveDatabaseMeta</classname>
-  </database-type>    
+  </database-type>                                                        
 
   <database-type id="H2">
     <description>H2</description>
