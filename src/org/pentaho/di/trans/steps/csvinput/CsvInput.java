@@ -39,6 +39,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 
 /**
  * Read a simple CSV file
@@ -384,6 +385,56 @@ public class CsvInput extends BaseStep implements StepInterface
 		return false;
 	}
 	
+	/*
+    private boolean isReturn(byte[] source, int location) {
+      switch (data.encodingType) {
+      case SINGLE:
+        return source[location] == '\n';
+  
+      case DOUBLE_BIG_ENDIAN:
+        if (location >= 1) {
+          return source[location - 1] == 0 && source[location] == 0x0d;
+        } else {
+          return false;
+        }
+  
+      case DOUBLE_LITTLE_ENDIAN:
+        if (location >= 1) {
+          return source[location - 1] == 0x0d && source[location] == 0x00;
+        } else {
+          return false;
+        }
+  
+      default:
+        return source[location] == '\n';
+      }
+    }
+
+    private boolean isLineFeed(byte[] source, int location) {
+      switch (data.encodingType) {
+      case SINGLE:
+        return source[location] == '\r';
+  
+      case DOUBLE_BIG_ENDIAN:
+        if (location >= 1) {
+          return source[location - 1] == 0 && source[location] == 0x0a;
+        } else {
+          return false;
+        }
+  
+      case DOUBLE_LITTLE_ENDIAN:
+        if (location >= 1) {
+          return source[location - 1] == 0x0a && source[location] == 0x00;
+        } else {
+          return false;
+        }
+  
+      default:
+        return source[location] == '\r';
+      }
+    }
+	*/
+	
 	/** Read a single row of data from the file... 
 	 * 
 	 * @param doConversions if you want to do conversions, set to false for the header row.
@@ -440,13 +491,14 @@ public class CsvInput extends BaseStep implements StepInterface
 					// If we find the first char, we might find others as well ;-)
 					// Single byte delimiters only for now.
 					//
-					if (data.byteBuffer[data.endBuffer]==data.delimiter[0]) {
+					if (data.delimiterMatcher.matchesPattern(data.byteBuffer, data.endBuffer, data.delimiter)) {
 						delimiterFound = true;
 					}
 					// Perhaps we found a new line?
 					// 
 					//
-					else if (data.byteBuffer[data.endBuffer]=='\n' || data.byteBuffer[data.endBuffer]=='\r') {
+					else if (data.crLfMatcher.isReturn(data.byteBuffer, data.endBuffer) || 
+					    data.crLfMatcher.isLineFeed(data.byteBuffer, data.endBuffer)) {
 						
 						data.endBuffer++;
 						data.totalBytesRead++;
@@ -465,7 +517,8 @@ public class CsvInput extends BaseStep implements StepInterface
 						}
 						
 						// re-check for double delimiters...
-						if (data.byteBuffer[data.endBuffer]=='\n' || data.byteBuffer[data.endBuffer]=='\r') {
+						if (data.crLfMatcher.isReturn(data.byteBuffer, data.endBuffer) || 
+						    data.crLfMatcher.isLineFeed(data.byteBuffer, data.endBuffer)) {
 							data.endBuffer++;
 							data.totalBytesRead++;
 							newLines=2;
@@ -490,7 +543,7 @@ public class CsvInput extends BaseStep implements StepInterface
 					// If we find the enclosure doubled, we consider it escaped.
 					// --> "" is converted to " later on.
 					//
-					else if (data.enclosure != null && data.byteBuffer[data.endBuffer]==data.enclosure[0]) {
+					else if (data.enclosure != null && data.enclosureMatcher.matchesPattern(data.byteBuffer, data.endBuffer, data.enclosure)) {
 						
 						enclosureFound=true;
 						boolean keepGoing;
@@ -500,7 +553,7 @@ public class CsvInput extends BaseStep implements StepInterface
 								enclosureFound=false;
 								break;
 							}
-							keepGoing = data.byteBuffer[data.endBuffer]!=data.enclosure[0];
+							keepGoing = !data.enclosureMatcher.matchesPattern(data.byteBuffer, data.endBuffer, data.enclosure);
 							if (!keepGoing)
 							{
 								// We found an enclosure character.
@@ -514,7 +567,7 @@ public class CsvInput extends BaseStep implements StepInterface
 								// If this character is also an enclosure, we can consider the enclosure "escaped".
 								// As such, if this is an enclosure, we keep going...
 								//
-								keepGoing = data.byteBuffer[data.endBuffer]==data.enclosure[0];
+								keepGoing = data.enclosureMatcher.matchesPattern(data.byteBuffer, data.endBuffer, data.enclosure);
 								if (keepGoing) escapedEnclosureFound++;
 							}
 						} while (keepGoing);
@@ -550,19 +603,9 @@ public class CsvInput extends BaseStep implements StepInterface
 				//    [startBuffer-endBuffer[
 				//
 				// This is the part we want.
+				// data.byteBuffer[data.startBuffer]
 				//
-				int length = data.endBuffer-data.startBuffer;
-				if (newLineFound) {
-					length-=newLines;
-					if (length<=0) length=0;
-					if (endOfBuffer) data.startBuffer++; // offset for the enclosure in last field before EOF
-				}
-				if (enclosureFound) {
-					data.startBuffer++;
-					length-=2;
-					if (length<=0) length=0;
-				}
-				if (length<=0) length=0;
+				int length = calculateFieldLength(newLineFound, newLines, enclosureFound, endOfBuffer);
 				
 				byte[] field = new byte[length];
 				System.arraycopy(data.byteBuffer, data.startBuffer, field, 0, length);
@@ -631,10 +674,12 @@ public class CsvInput extends BaseStep implements StepInterface
 					// TODO: if we're using quoting we might be dealing with a very dirty file with quoted newlines in trailing fields. (imagine that)
 					// In that particular case we want to use the same logic we use above (refactored a bit) to skip these fields.
 					
-				} while (data.byteBuffer[data.endBuffer]!='\n' && data.byteBuffer[data.endBuffer]!='\r');
+				} while (!data.crLfMatcher.isReturn(data.byteBuffer, data.endBuffer) && 
+				    !data.crLfMatcher.isLineFeed(data.byteBuffer, data.endBuffer));
 				
 				if (!checkBufferSize()) {
-					while (data.byteBuffer[data.endBuffer]=='\n' || data.byteBuffer[data.endBuffer]=='\r') {
+					while (data.crLfMatcher.isReturn(data.byteBuffer, data.endBuffer) || 
+					    data.crLfMatcher.isLineFeed(data.byteBuffer, data.endBuffer)) {
 						data.endBuffer++;
 						data.totalBytesRead++;
 						if (checkBufferSize()) {
@@ -682,7 +727,27 @@ public class CsvInput extends BaseStep implements StepInterface
 
 	}
 
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
+	private int calculateFieldLength(boolean newLineFound, int newLines, boolean enclosureFound, boolean endOfBuffer) {
+	  
+	  int length = data.endBuffer-data.startBuffer;
+      if (newLineFound) {
+          length-=newLines;
+          if (length<=0) length=0;
+          if (endOfBuffer) data.startBuffer++; // offset for the enclosure in last field before EOF
+      }
+      if (enclosureFound) {
+          data.startBuffer++;
+          length-=2;
+          if (length<=0) length=0;
+      }
+      if (length<=0) length=0;
+      if (data.encodingType!=EncodingType.SINGLE) {
+        length--;
+      }
+      return length;
+  }
+
+  public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(CsvInputMeta)smi;
 		data=(CsvInputData)sdi;
@@ -709,25 +774,24 @@ public class CsvInput extends BaseStep implements StepInterface
 			}
 			
 			data.totalBytesRead=0L;
+			
+			data.encodingType = EncodingType.guessEncodingType(meta.getEncoding());
 							
-			//PDI-2489 - set the delimiter byte value to the code point of the 
-			//character as represented in the input file's encoding
-			try {
-			  if(Const.isEmpty(meta.getEncoding())) {
-			    data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes();
-			  } else {
-			    data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes(meta.getEncoding());
-			  }
-      } catch (UnsupportedEncodingException e) {
-        logError(BaseMessages.getString(PKG, "CsvInput.BadEncoding.Message"), e); //$NON-NLS-1$
-        return false;
-      }
+            // PDI-2489 - set the delimiter byte value to the code point of the
+            // character as represented in the input file's encoding
+            try {
+              data.delimiter = data.encodingType.getBytes( environmentSubstitute(meta.getDelimiter()), meta.getEncoding());
 
-			if( Const.isEmpty(meta.getEnclosure()) ) {
-				data.enclosure = null;
-			} else {
-				data.enclosure = environmentSubstitute(meta.getEnclosure()).getBytes();
-			}
+  			  if( Const.isEmpty(meta.getEnclosure()) ) {
+  				data.enclosure = null;
+  			  } else {
+  				data.enclosure = data.encodingType.getBytes( environmentSubstitute(meta.getEnclosure()), meta.getEncoding() );
+  			  }
+  			  
+            } catch (UnsupportedEncodingException e) {
+              logError(BaseMessages.getString(PKG, "CsvInput.BadEncoding.Message"), e); //$NON-NLS-1$
+              return false;
+            }
 			
 			data.isAddingRowNumber = !Const.isEmpty(meta.getRowNumField());
 			
@@ -748,6 +812,32 @@ public class CsvInput extends BaseStep implements StepInterface
 	            data.totalFileSize = 0L;
 			}
 			
+			// Set the most efficient pattern matcher to match the delimiter.
+			//
+			if (data.delimiter.length==1) {
+      		  data.delimiterMatcher = new SingleBytePatternMatcher();
+			} else {
+              data.delimiterMatcher = new MultiBytePatternMatcher();
+			}
+
+	         // Set the most efficient pattern matcher to match the enclosure.
+            //
+			if (data.enclosure==null) {
+			  data.enclosureMatcher = new EmptyPatternMatcher();
+			} else {
+              if (data.enclosure.length==1) {
+                  data.enclosureMatcher = new SingleBytePatternMatcher();
+              } else {
+                data.enclosureMatcher = new MultiBytePatternMatcher();
+              }
+			}
+            
+            switch(data.encodingType) {
+            case DOUBLE_BIG_ENDIAN: data.crLfMatcher = new MultiByteBigCrLfMatcher(); break;
+            case DOUBLE_LITTLE_ENDIAN: data.crLfMatcher = new MultiByteLittleCrLfMatcher(); break;
+            default: data.crLfMatcher = new SingleByteCrLfMatcher(); break;
+            }
+
 			return true;
 
 		}

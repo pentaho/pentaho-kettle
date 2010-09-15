@@ -1,0 +1,33 @@
+<attributes>  
+
+  <!-- Top level attributes -->
+  <attribute id="FILENAME"> <xmlcode>filename</xmlcode> <repcode/> <description>CsvInputDialog.Filename.Label</description> <tooltip/> <valuetype>String</valuetype> <parentid/> </attribute>
+  <attribute id="FILENAME_FIELD"> <xmlcode>filename_field</xmlcode> <repcode/> <description>CsvInputDialog.FilenameField.Label</description> <tooltip/> <valuetype>String</valuetype> <parentid/></attribute>
+  <attribute id="INCLUDE_FILENAME"> <xmlcode>include_filename</xmlcode>  <repcode/> <description>CsvInputDialog.IncludeFilenameField.Label</description> <tooltip/> <valuetype>Boolean</valuetype> <parentid/></attribute>
+  <attribute id="ROW_NUM_FIELD"> <xmlcode>rownum_field</xmlcode>  <repcode/> <description>CsvInputDialog.RowNumField.Label</description> <tooltip/> <valuetype>String</valuetype> <parentid/></attribute>
+  <attribute id="HEADER_PRESENT"> <xmlcode>header</xmlcode>  <repcode/> <description>CsvInputDialog.HeaderPresent.Label</description> <tooltip/> <valuetype>Boolean</valuetype> <parentid/></attribute>
+  <attribute id="DELIMITER"> <xmlcode>separator</xmlcode>  <repcode/> <description>CsvInputDialog.Delimiter.Label</description> <tooltip/> <valuetype>String</valuetype> <parentid/></attribute>
+  <attribute id="ENCLOSURE"> <xmlcode>enclosure</xmlcode>  <repcode/> <description>CsvInputDialog.Enclosure.Label</description> <tooltip/> <valuetype>String</valuetype> <parentid/></attribute>
+  <attribute id="BUFFERSIZE"> <xmlcode>buffer_size</xmlcode>  <repcode/> <description>CsvInputDialog.BufferSize.Label</description> <tooltip/> <valuetype>String</valuetype> <parentid/></attribute>
+  <attribute id="LAZY_CONVERSION"> <xmlcode>lazy_conversion</xmlcode>  <repcode/> <description>CsvInputDialog.LazyConversion.Label</description> <tooltip/> <valuetype>Boolean</valuetype> <parentid/></attribute>
+  <attribute id="PARALLEL"> <xmlcode>parallel</xmlcode>  <repcode/> <description>CsvInputDialog.RunningInParallel.Label</description> <tooltip/> <valuetype>Boolean</valuetype> <parentid/></attribute>
+  <attribute id="ADD_FILENAME_RESULT"> <xmlcode>add_filename_result</xmlcode>  <repcode/> <description>CsvInputDialog.AddResult.Label</description> <tooltip>CsvInputDialog.AddResult.Tooltip</tooltip> <valuetype>Boolean</valuetype> <parentid/></attribute>
+  <attribute id="ENCODING"> <xmlcode>encoding</xmlcode>  <repcode/> <description>CsvInputDialog.Encoding.Label</description> <tooltip/> <valuetype>String</valuetype> <parentid/> </attribute>
+
+  <!-- The fields grid defining all CSV Input fields -->
+  <attribute id="FIELDS"> <xmlcode>fields</xmlcode>  <repcode/> <description>CsvInputDialog.Fields.Label</description> <tooltip/> ValueMetaInterface.TYPE_NONE <parentid/> </attribute>
+
+  <!-- The definition of a single CSV input field -->
+  <attribute id="FIELD"> <xmlcode>field</xmlcode>  <repcode/> <description>CsvInputDialog.Field.Label</description> <tooltip/> ValueMetaInterface.TYPE_NONE <parentid>FIELDS</parentid> </attribute>
+
+  <attribute id="FIELD_NAME"> <xmlcode>name</xmlcode>  <repcode>field_name</repcode> <description>CsvInputDialog.NameColumn.Column</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_TYPE"> <xmlcode>type</xmlcode>  <repcode>field_type</repcode> <description>CsvInputDialog.TypeColumn.Column</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_FORMAT"> <xmlcode>format</xmlcode>  <repcode>field_format</repcode> <description>CsvInputDialog.FormatColumn.Column</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_LENGTH"> <xmlcode>length</xmlcode>  <repcode>field_length</repcode> <description>CsvInputDialog.LengthColumn.Column</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_PRECISION"> <xmlcode>precision</xmlcode>  <repcode>field_precision</repcode> <description>CsvInputDialog.PrecisionColumn.Column</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_CURRENCY"> <xmlcode>currency</xmlcode>  <repcode>field_currency</repcode> <description>CsvInputDialog.CurrencyColumn.Column</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_DECIMAL"> <xmlcode>decimal</xmlcode>  <repcode>field_decimal</repcode> <description>CsvInputDialog.DecimalColumn.Column</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_GROUP"> <xmlcode>group</xmlcode>  <repcode>field_group</repcode> <description>CsvInputDialog.GroupColumn.Column</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_TRIM_TYPE"> <xmlcode>trim_type</xmlcode>  <repcode>field_trim_type</repcode> <description>CsvInputDialog.TrimTypeColumn.Column</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  
+</attributes>

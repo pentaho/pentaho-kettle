@@ -21,6 +21,7 @@ import java.util.List;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 
 
 /**
@@ -67,6 +68,10 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 	public boolean parallel;
 	public int filenameFieldIndex;
 	public int rownumFieldIndex;
+    public EncodingType encodingType;
+    public PatternMatcherInterface delimiterMatcher;
+    public PatternMatcherInterface enclosureMatcher;
+    public CrLfMatcherInterface crLfMatcher;
 	
 	/**
 	 * 
@@ -131,7 +136,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface
 			//
 			bb.position(endBuffer);
 			bb.get( byteBuffer, endBuffer, n);
-		} 
+		}
 		
 		return n;
 	}
