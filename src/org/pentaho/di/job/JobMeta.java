@@ -1313,8 +1313,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public JobHopMeta findJobHop(JobEntryCopy from, JobEntryCopy to) {
+	  return findJobHop(from, to, false);
+	}
+	
+	public JobHopMeta findJobHop(JobEntryCopy from, JobEntryCopy to, boolean includeDisabled) {
 		for (JobHopMeta hi : jobhops) {
-			if (hi.isEnabled()) {
+			if (hi.isEnabled() || includeDisabled) {
 				if (hi != null && hi.getFromEntry() != null && hi.getToEntry() != null && hi.getFromEntry().equals(from)
 						&& hi.getToEntry().equals(to)) {
 					return hi;
@@ -1323,7 +1327,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		}
 		return null;
 	}
-
+	
 	public JobHopMeta findJobHopTo(JobEntryCopy jge) {
 		for (JobHopMeta hi : jobhops) {
 			if (hi != null && hi.getToEntry() != null && hi.getToEntry().equals(jge)) // Return

@@ -68,7 +68,16 @@
     <menuitem id="job-graph-hop-flip" label="${JobGraph.PopupMenu.Hop.FlipDirection}" command="jobgraph.flipHop()" />
     <menuitem id="job-graph-hop-enabled" label="${JobGraph.PopupMenu.Hop.Disable}" command="jobgraph.disableHop()" />
     <menuitem id="job-graph-hop-delete" label="${JobGraph.PopupMenu.Hop.Delete}" command="jobgraph.deleteHop()" />
+    <menu id="job-graph-graph-hop-bulk" label="${JobGraph.PopupMenu.BulkHop}">
+      <menupopup id="job-graph-entry-hop-bulk">
+        <menuitem id="job-graph-entry-hop-enable-selected" label="${JobGraph.PopupMenu.HopEnableSelected}" command="jobgraph.enableHopsBetweenSelectedEntries()" />
+        <menuitem id="job-graph-entry-hop-disable-selected" label="${JobGraph.PopupMenu.HopDisableSelected}" command="jobgraph.disableHopsBetweenSelectedEntries()" />
+        <menuitem id="job-graph-entry-hop-enable-downstream" label="${JobGraph.PopupMenu.HopEnableDownstream}" command="jobgraph.enableHopsDownstream()" />
+        <menuitem id="job-graph-entry-hop-disable-downstream" label="${JobGraph.PopupMenu.HopDisableDownstream}" command="jobgraph.disableHopsDownstream()" />
+      </menupopup>
+    </menu>
   </menupopup>
+
 
   <menupopup id="job-graph-note">
     <menuitem id="job-graph-note-edit" label="${JobGraph.PopupMenu.Note.Edit}" command="jobgraph.editNote()" />

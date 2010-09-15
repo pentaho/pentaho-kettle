@@ -110,6 +110,14 @@
     <menuitem id="trans-graph-hop-flip" label="${TransGraph.PopupMenu.FlipDirection}" command="transgraph.flipHopDirection()" />
     <menuitem id="trans-graph-hop-enabled" label="${TransGraph.PopupMenu.DisableHop}" command="transgraph.enableHop() " />
     <menuitem id="trans-graph-hop-delete" label="${TransGraph.PopupMenu.DeleteHop}" command="transgraph.deleteHop()" />
+    <menu id="trans-graph-graph-hop-bulk" label="${TransGraph.PopupMenu.BulkHop}">
+      <menupopup id="trans-graph-entry-hop-bulk">
+        <menuitem id="trans-graph-entry-hop-enable-selected" label="${TransGraph.PopupMenu.HopEnableSelected}" command="transgraph.enableHopsBetweenSelectedSteps()" />
+        <menuitem id="trans-graph-entry-hop-disable-selected" label="${TransGraph.PopupMenu.HopDisableSelected}" command="transgraph.disableHopsBetweenSelectedSteps()" />
+        <menuitem id="trans-graph-entry-hop-enable-downstream" label="${TransGraph.PopupMenu.HopEnableDownstream}" command="transgraph.enableHopsDownstream()" />
+        <menuitem id="trans-graph-entry-hop-disable-downstream" label="${TransGraph.PopupMenu.HopDisableDownstream}" command="transgraph.disableHopsDownstream()" />
+      </menupopup>
+    </menu>
   </menupopup>
 
   <menupopup id="trans-graph-note">

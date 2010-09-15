@@ -1039,24 +1039,36 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         boolean bcExists = transMeta.findTransHop(hi.getToStep(), selectedStep) != null; 
         if (!caExists && !bcExists) {
 
+          StepMeta fromStep = hi.getFromStep();
+          StepMeta toStep = hi.getToStep();
+          
           // In case step A targets B then we now need to target C
           //
-          StepIOMetaInterface fromIo = hi.getFromStep().getStepMetaInterface().getStepIOMeta();
+          StepIOMetaInterface fromIo = fromStep.getStepMetaInterface().getStepIOMeta();
           for (StreamInterface stream : fromIo.getTargetStreams()) {
-            if (stream.getStepMeta()!=null && stream.getStepMeta().equals(hi.getToStep())) {
+            if (stream.getStepMeta()!=null && stream.getStepMeta().equals(toStep)) {
               // This target stream was directed to B, now we need to direct it to C
               stream.setStepMeta(selectedStep);
+              fromStep.getStepMetaInterface().handleStreamSelection(stream);
             }
           }
 
           // In case step B sources from A then we now need to source from C
           //
-          StepIOMetaInterface toIo = hi.getToStep().getStepMetaInterface().getStepIOMeta();
+          StepIOMetaInterface toIo = toStep.getStepMetaInterface().getStepIOMeta();
           for (StreamInterface stream : toIo.getInfoStreams()) {
-            if (stream.getStepMeta()!=null && stream.getStepMeta().equals(hi.getFromStep())) {
+            if (stream.getStepMeta()!=null && stream.getStepMeta().equals(fromStep)) {
               // This info stream was reading from B, now we need to direct it to C
               stream.setStepMeta(selectedStep);
+              toStep.getStepMetaInterface().handleStreamSelection(stream);
             }
+          }
+          
+          // In case there is error handling on A, we want to make it point to C now
+          //
+          StepErrorMeta errorMeta = fromStep.getStepErrorMeta();
+          if (fromStep.isDoingErrorHandling() && toStep.equals(errorMeta.getTargetStep())) {
+            errorMeta.setTargetStep(selectedStep);
           }
 
           TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selectedStep);

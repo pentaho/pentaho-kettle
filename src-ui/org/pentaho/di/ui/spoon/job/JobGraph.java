@@ -733,6 +733,16 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 					break;
 				}
 			} else {
+	          // A hop? --> enable/disable
+              //
+              JobHopMeta hop = findJobHop(real.x, real.y);
+              if (hop!=null) {
+                JobHopMeta before = (JobHopMeta) hop.clone();
+                hop.setEnabled(!hop.isEnabled());
+                JobHopMeta after = (JobHopMeta) hop.clone();
+                spoon.addUndoChange(jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta.indexOfJobHop(hop) });
+                redraw();
+              } else {
 				// No area-owner means: background:
 				//
 				startHopEntry = null;
@@ -740,6 +750,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 					selectionRegion = new org.pentaho.di.core.gui.Rectangle(real.x, real.y, 0, 0);
 				}
 				redraw();
+              }
 			}
 		}
 	}
@@ -1957,6 +1968,74 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   protected JobHopMeta getCurrentHop() {
     return currentHop;
   }
+  
+  public void enableHopsBetweenSelectedEntries() {
+    enableHopsBetweenSelectedEntries(true);
+  }
+
+  public void disableHopsBetweenSelectedEntries() {
+    enableHopsBetweenSelectedEntries(false);
+  }
+
+  /**
+   * This method enables or disables all the hops between the selected Entries.
+   * 
+   **/
+  public void enableHopsBetweenSelectedEntries(boolean enabled) {
+    List<JobEntryCopy> list = jobMeta.getSelectedEntries();
+    
+    for (int i=0;i<jobMeta.nrJobHops();i++) {
+      JobHopMeta hop = jobMeta.getJobHop(i);
+      if (list.contains(hop.getFromEntry()) && list.contains(hop.getToEntry())) {
+        
+        JobHopMeta before = (JobHopMeta) hop.clone();
+        hop.setEnabled(enabled);
+        JobHopMeta after = (JobHopMeta) hop.clone();
+        spoon.addUndoChange(jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta.indexOfJobHop(hop) });
+      }
+    }
+    
+    spoon.refreshGraph();
+  }
+  
+  public void enableHopsDownstream() {
+    enableDisableHopsDownstream(true);    
+  }
+  
+  public void disableHopsDownstream() {
+    enableDisableHopsDownstream(false);    
+  }
+
+  public void enableDisableHopsDownstream(boolean enabled) {
+    if (currentHop==null) return;
+
+    JobHopMeta before = (JobHopMeta) currentHop.clone();
+    currentHop.setEnabled(enabled);
+    JobHopMeta after = (JobHopMeta) currentHop.clone();
+    spoon.addUndoChange(jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta.indexOfJobHop(currentHop) });
+
+    enableDisableNextHops(currentHop.getToEntry(), enabled, 1);
+    
+    spoon.refreshGraph();
+  }
+
+  private void enableDisableNextHops(JobEntryCopy from, boolean enabled, int level) {
+    
+    if (level>100) return; // prevent endless running with loops in jobs
+    
+    for (JobEntryCopy to : jobMeta.getJobCopies()) {
+      JobHopMeta hop = jobMeta.findJobHop(from, to, true);
+      if (hop!=null) {
+        JobHopMeta before = (JobHopMeta) hop.clone();
+        hop.setEnabled(enabled);
+        JobHopMeta after = (JobHopMeta) hop.clone();
+        spoon.addUndoChange(jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta.indexOfJobHop(hop) });
+
+        enableDisableNextHops(to, enabled, level++);
+      }
+    }
+  }
+
 
   protected void setToolTip(int x, int y, int screenX, int screenY) {
     if (!spoon.getProperties().showToolTips())
