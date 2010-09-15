@@ -61,14 +61,14 @@ public class MetaInjectTest extends TestCase {
     
     // Inject the filename...
     //
-    StepInjectionMetaEntry filenameEntry = findMetaEntry(entries, csvInputMeta.getXmlCode("FILENAME"));
+    StepInjectionMetaEntry filenameEntry = findMetaEntry(entries, "FILENAME");
     assertNotNull(filenameEntry);
     filenameEntry.setValue(filename);
     injection.add(filenameEntry);
 
     // Inject the fields too...
     //
-    StepInjectionMetaEntry fieldsEntry = findMetaEntry(entries, csvInputMeta.getXmlCode("FIELDS"));
+    StepInjectionMetaEntry fieldsEntry = findMetaEntry(entries, "FIELDS");
     assertNotNull(fieldsEntry);
     StepInjectionMetaEntry fieldEntry = fieldsEntry.getDetails().get(0);
     
