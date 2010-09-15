@@ -2766,6 +2766,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void tabSelected(TabItem item) {
     delegates.tabs.tabSelected(item);
+    enableMenus();
   }
 
   public String getRepositoryName() {
@@ -5640,6 +5641,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
         disableMenuItem(doc, "edit-clear-selection", disableTransMenu);
         disableMenuItem(doc, "edit-select-all", disableTransMenu);
+        updateSettingsMenu(doc, disableTransMenu, disableJobMenu);
+        disableMenuItem(doc, "edit-settings" ,disableTransMenu && disableJobMenu && disableMetaMenu);
 
         // View Menu
         ((XulMenuitem) doc.getElementById("view-results")).setSelected(isExecutionResultsPaneVisible());
@@ -5680,6 +5683,27 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         for (ISpoonMenuController menuController : menuControllers) {
           menuController.updateMenu(doc);
         }
+      }
+    }
+  }
+
+  /**
+   * @param doc
+   * @param disableJobMenu 
+   * @param disableTransMenu 
+   */
+  private void updateSettingsMenu(org.pentaho.ui.xul.dom.Document doc, boolean disableTransMenu, boolean disableJobMenu) {
+    XulMenuitem settingsItem = (XulMenuitem) doc.getElementById("edit-settings");
+    if (settingsItem != null) {
+      if (disableTransMenu && !disableJobMenu) {
+        settingsItem.setAcceltext("CTRL-J");
+        settingsItem.setAccesskey("ctrl-j");
+      } else if (!disableTransMenu && disableJobMenu) {
+        settingsItem.setAcceltext("CTRL-T");
+        settingsItem.setAccesskey("ctrl-t");        
+      } else {
+        settingsItem.setAcceltext("");
+        settingsItem.setAccesskey("");
       }
     }
   }

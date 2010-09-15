@@ -82,7 +82,7 @@
         <menuitem id="edit-show-arguments" acceltext="CTRL-ALT-U" accesskey="ctrl-alt-u" label="${Spoon.Menu.Edit.ShowArguments}"
           command="spoon.showArguments()" />
         <menuseparator />
-        <menuitem id="trans-settings" acceltext="CTRL-T" accesskey="ctrl-t" label="${Spoon.Menu.Transformation.Settings}"
+        <menuitem id="edit-settings" acceltext="CTRL-T" accesskey="ctrl-t" label="${Spoon.Menu.Transformation.Settings}"
           command="spoon.editProperties()" />
       </menupopup>
     </menu>
