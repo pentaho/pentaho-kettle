@@ -1037,8 +1037,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			if(!exitjobentry)
 			{
 				// Get all the files in the current directory...
-        String curLocation = ftpclient.pwd();
-        FTPFile[] ftpFiles = ftpclient.dirDetails(curLocation);
+        FTPFile[] ftpFiles = ftpclient.dirDetails(null);
 				
 			    //if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.FoundNFiles", String.valueOf(filelist.length))); //$NON-NLS-1$
 				if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.FoundNFiles", String.valueOf(ftpFiles.length))); //$NON-NLS-1$
