@@ -30,29 +30,29 @@ import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.IUIUser;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIObjectRegistry;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity;
-import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurityUser;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurityUser;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 /**
- *
- * This is the XulEventHandler for the browse panel of the repository explorer. It sets up the bindings for  
- * browse functionality.
+ * {@code XulEventHandler} for the Security panel of the repository explorer.
  * 
+ * <p>
+ * This class handles only user-related functionality. If supported, other controllers handle roles, etc.
+ * </p>
  */
-public class SecurityController extends AbstractXulEventHandler  implements IUISupportController {
+public class SecurityController extends LazilyInitializedController implements IUISupportController {
 
   private ResourceBundle messages = new ResourceBundle() {
 
@@ -86,7 +86,7 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
 
   private XulButton userRemoveButton;
 
-  private RepositorySecurityManager service;
+  protected RepositorySecurityManager service;
   
   protected UISecurity security;
 
@@ -102,21 +102,23 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
   }
 
   public void init(Repository rep) throws ControllerInitializationException{
+    this.repository = rep;
+  }
+
+  @Override
+  protected boolean doLazyInit() {
+    boolean serviceInitialized = initService();
+    if (!serviceInitialized) {
+      return false;
+    }
     try {
-      // Get the service from the repository
-      if(rep != null && rep.hasService(RepositorySecurityManager.class)) {
-        service = (RepositorySecurityManager) rep.getService(RepositorySecurityManager.class);
-        managed = service.isManaged();
-      } else {
-        throw new ControllerInitializationException(BaseMessages.getString(RepositoryExplorer.class,
-            "SecurityController.ERROR_0001_UNABLE_TO_INITIAL_REPOSITORY_SERVICE", RepositorySecurityManager.class)); //$NON-NLS-1$
-      }
+      managed = service.isManaged();
       createModel();
       messageBox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
-      bf = new DefaultBindingFactory();
+      bf = new SwtBindingFactory();
       bf.setDocument(this.getXulDomContainer().getDocumentRoot());
     } catch (Exception e) {
-      throw new ControllerInitializationException(e);
+      throw new RuntimeException(e);
     }
     if (bf != null) {
       createBindings();
@@ -125,8 +127,23 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
       showButtons(false, false, false);
     }
     setInitialDeck();
+    return true;
   }
-
+  
+  protected boolean initService() {
+    try {
+      // Get the service from the repository
+      if(repository != null && repository.hasService(RepositorySecurityManager.class)) {
+        service = (RepositorySecurityManager) repository.getService(RepositorySecurityManager.class);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);  
+    }
+  }
+  
   protected void setInitialDeck() {
     changeToUserDeck();
   }
@@ -366,4 +383,9 @@ public class SecurityController extends AbstractXulEventHandler  implements IUIS
     userEditButton.setVisible(showEdit);
     userRemoveButton.setVisible(showRemove);    
   }
+  
+  public void tabClicked() {
+    lazyInit();
+  }
+
 }

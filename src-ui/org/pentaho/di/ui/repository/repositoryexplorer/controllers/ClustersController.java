@@ -16,6 +16,7 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,24 +28,21 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
-import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UICluster;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIClusters;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class ClustersController extends AbstractXulEventHandler implements IUISupportController {
+public class ClustersController extends LazilyInitializedController implements IUISupportController {
 
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -52,42 +50,40 @@ public class ClustersController extends AbstractXulEventHandler implements IUISu
 
   private Shell shell = null;
 
-  private Repository repository = null;
-
   private XulTree clustersTable = null;
 
   private UIClusters clusterList = new UIClusters();
-
+  
   @Override
   public String getName() {
     return "clustersController"; //$NON-NLS-1$
   }
 
-  public void init(Repository repository) throws ControllerInitializationException {
-    this.repository = repository;
-    // Load the SWT Shell from the explorer dialog
-    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
-    bf = new DefaultBindingFactory();
-    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
-    enableButtons(true, false, false);
-    if (bf != null) {
-      createBindings();
-    }
-  }
-
   public void createBindings() {
+    refreshClusters();
     try {
       clustersTable = (XulTree) document.getElementById("clusters-table"); //$NON-NLS-1$
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(clusterList, "children", clustersTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(clusterList, "children", clustersTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(clustersTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
     } catch (Exception e) {
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
     }
-    refreshClusters();
   }
 
+  protected boolean doLazyInit() {
+    // Load the SWT Shell from the explorer dialog
+    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
+    bf = new SwtBindingFactory();
+    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
+    enableButtons(true, false, false);
+    if (bf != null) {
+      createBindings();
+    }
+    return true;
+  }
+  
   public void editCluster() {
     String clusterSchemaName = ""; //$NON-NLS-1$
     try {
@@ -209,19 +205,25 @@ public class ClustersController extends AbstractXulEventHandler implements IUISu
 
   public void refreshClusters() {
     if (repository != null) {
-      try {
-        clusterList.clear();
-        ObjectId[] clusterIdList = repository.getClusterIDs(false);
-
-        for (ObjectId clusterId : clusterIdList) {
-          ClusterSchema cluster = repository.loadClusterSchema(clusterId, repository.getSlaveServers(), null);
-          // Add the cluster schema to the list
-          clusterList.add(new UICluster(cluster));
+      final List<UICluster> tmpList = new ArrayList<UICluster>();
+      Runnable r = new Runnable() {
+        public void run() {
+          try {
+            ObjectId[] clusterIdList = repository.getClusterIDs(false);
+  
+            for (ObjectId clusterId : clusterIdList) {
+              ClusterSchema cluster = repository.loadClusterSchema(clusterId, repository.getSlaveServers(), null);
+              // Add the cluster schema to the list
+              tmpList.add(new UICluster(cluster));
+            }
+          } catch (KettleException e) {
+            // convert to runtime exception so it bubbles up through the UI
+            throw new RuntimeException(e);
+          }
         }
-      } catch (KettleException e) {
-        // convert to runtime exception so it bubbles up through the UI
-        throw new RuntimeException(e);
-      }
+      };
+      doWithBusyIndicator(r);
+      clusterList.setChildren(tmpList);
     }
   }
 
@@ -248,4 +250,8 @@ public class ClustersController extends AbstractXulEventHandler implements IUISu
     bRemove.setDisabled(!enableRemove);
   }
   
+  public void tabClicked() {
+    lazyInit();
+  }
+
 }

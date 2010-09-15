@@ -38,6 +38,7 @@ public class UISecurity extends XulEventSourceAdapter {
 
   public UISecurity(RepositorySecurityManager rsm) throws Exception {
     this();
+    
     if (rsm != null && rsm.getUsers() != null) {
       for (IUser user : rsm.getUsers()) {
         userList.add(UIObjectRegistry.getInstance().constructUIRepositoryUser(user));

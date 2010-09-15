@@ -38,10 +38,10 @@
 	
 			<tabs id="repository-tab-set">
 				<tab id="browse-tab" label="${RepositoryExplorerDialog.Tabs.Browse}" />
-				<tab id="connections-tab" label="${RepositoryExplorerDialog.Tabs.Connections}" />
-				<tab id="slaves-tab" label="${RepositoryExplorerDialog.Tabs.Slaves}" />
-				<tab id="partitions-tab" label="${RepositoryExplorerDialog.Tabs.Partitions}" />
-				<tab id="clusters-tab" label="${RepositoryExplorerDialog.Tabs.Clusters}" />
+				<tab id="connections-tab" label="${RepositoryExplorerDialog.Tabs.Connections}" onclick="connectionsController.tabClicked()" />
+				<tab id="slaves-tab" label="${RepositoryExplorerDialog.Tabs.Slaves}" onclick="slavesController.tabClicked()" />
+				<tab id="partitions-tab" label="${RepositoryExplorerDialog.Tabs.Partitions}" onclick="partitionsController.tabClicked()" />
+				<tab id="clusters-tab" label="${RepositoryExplorerDialog.Tabs.Clusters}" onclick="clustersController.tabClicked()" />
 			</tabs>
 	
 			<tabpanels id="repository-panels-set" flex="1">
@@ -347,8 +347,13 @@
       </vbox>
       <vbox id="role-to-user-box" flex="1"/>
   </dialog>
-	
-	
+  
+  <dialog id="wait-dialog" title="${LazilyInitializedController.Wait.Title}" width="220" height="40">
+    <hbox>
+      <label id="wait-dialog" value="${LazilyInitializedController.Wait.Message}"/>
+    </hbox>
+  </dialog>
+  
 	</dialog>
 
 </window>  

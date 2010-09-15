@@ -49,7 +49,7 @@
 	<!--					END - SECURITY TAB				                      -->
 	<!--######################################################################### -->
 	<tabs id="repository-tab-set">
-		<tab id="security-tab" label="${RepositoryExplorerDialog.Tabs.Security}" insertbefore="slaves-tab"/>
+		<tab id="security-tab" label="${RepositoryExplorerDialog.Tabs.Security}" insertbefore="slaves-tab"  onclick="iSecurityController.tabClicked()" />
 	</tabs>   	
 	
   </overlay>

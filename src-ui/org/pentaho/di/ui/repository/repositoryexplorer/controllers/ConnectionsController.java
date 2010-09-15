@@ -11,6 +11,7 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,18 +36,15 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class ConnectionsController extends AbstractXulEventHandler implements IUISupportController {
+public class ConnectionsController extends LazilyInitializedController implements IUISupportController {
 
   private static Class<?> PKG = RepositoryExplorer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private XulTree connectionsTable = null;
 
   protected BindingFactory bf = null;
-
-  private Repository repository = null;;
 
   private boolean isRepReadOnly = true;
 
@@ -57,8 +55,6 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
   private Binding bindButtonRemove = null;
 
   private Shell shell = null;
-
-  private boolean initComplete = false;
 
   private UIDatabaseConnections dbConnectionList = new UIDatabaseConnections();
 
@@ -74,19 +70,6 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
 
   public void init(Repository repository) throws ControllerInitializationException {
     this.repository = repository;
-    setRepReadOnly(this.repository.getRepositoryMeta().getRepositoryCapabilities().isReadOnly());
-
-    // Load the SWT Shell from the explorer dialog
-    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
-    bf = new DefaultBindingFactory();
-    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
-
-    if (bf != null) {
-      createBindings();
-    }
-    enableButtons(true, false, false);
-
-    initComplete = true;
   }
 
   private DatabaseDialog getDatabaseDialog() {
@@ -98,6 +81,7 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
   }
 
   private void createBindings() {
+    refreshConnectionList();
     connectionsTable = (XulTree) document.getElementById("connections-table"); //$NON-NLS-1$
 
     // Bind the connection table to a list of connections
@@ -116,7 +100,22 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(ex);
     }
-    refreshConnectionList();
+  }
+  
+  @Override
+  protected boolean doLazyInit() {
+    setRepReadOnly(this.repository.getRepositoryMeta().getRepositoryCapabilities().isReadOnly());
+
+    // Load the SWT Shell from the explorer dialog
+    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
+    bf = new DefaultBindingFactory();
+    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
+
+    if (bf != null) {
+      createBindings();
+    }
+    enableButtons(true, false, false);
+    return true;
   }
 
   public Repository getRepository() {
@@ -128,7 +127,7 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
       if (this.isRepReadOnly != isRepReadOnly) {
         this.isRepReadOnly = isRepReadOnly;
 
-        if (initComplete) {
+        if (initialized) {
           bindButtonNew.fireSourceChanged();
           bindButtonEdit.fireSourceChanged();
           bindButtonRemove.fireSourceChanged();
@@ -145,19 +144,23 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
   }
 
   private void refreshConnectionList() {
-    try {
-      dbConnectionList.clear();
-      ObjectId[] dbIdList = repository.getDatabaseIDs(false);
-      for (ObjectId dbId : dbIdList) {
-        DatabaseMeta dbMeta = repository.loadDatabaseMeta(dbId, null);
-
-        // Add the database connection to the list
-        dbConnectionList.add(new UIDatabaseConnection(dbMeta));
+    final List<UIDatabaseConnection> tmpList = new ArrayList<UIDatabaseConnection>();
+    Runnable r = new Runnable() {
+      public void run() {
+        try {
+          ObjectId[] dbIdList = repository.getDatabaseIDs(false);
+          for (ObjectId dbId : dbIdList) {
+            DatabaseMeta dbMeta = repository.loadDatabaseMeta(dbId, null);
+            tmpList.add(new UIDatabaseConnection(dbMeta));
+          }
+        } catch (KettleException e) {
+          // convert to runtime exception so it bubbles up through the UI
+          throw new RuntimeException(e);
+        }
       }
-    } catch (KettleException e) {
-      // convert to runtime exception so it bubbles up through the UI
-      throw new RuntimeException(e);
-    }
+    };
+    doWithBusyIndicator(r);
+    dbConnectionList.setChildren(tmpList);
   }
 
   public void createConnection() {
@@ -309,4 +312,10 @@ public class ConnectionsController extends AbstractXulEventHandler implements IU
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
   }
+  
+  public void tabClicked() {
+    lazyInit();
+  }
+
+
 }

@@ -16,6 +16,7 @@
  */
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -42,13 +43,12 @@ import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartition;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartitions;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class PartitionsController extends AbstractXulEventHandler implements IUISupportController {
+public class PartitionsController extends LazilyInitializedController implements IUISupportController {
 
   protected ResourceBundle messages = new ResourceBundle() {
 
@@ -70,12 +70,10 @@ public class PartitionsController extends AbstractXulEventHandler implements IUI
 
   private Shell shell = null;
 
-  private Repository repository = null;
-
   private XulTree partitionsTable = null;
 
   private UIPartitions partitionList = new UIPartitions();
-
+  
   private VariableSpace variableSpace = Variables.getADefaultVariableSpace();
 
   @Override
@@ -85,31 +83,35 @@ public class PartitionsController extends AbstractXulEventHandler implements IUI
 
   public void init(Repository repository) throws ControllerInitializationException {
     this.repository = repository;
-    // Load the SWT Shell from the explorer dialog
-    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
-
-    enableButtons(true, false, false);
-    bf = new DefaultBindingFactory();
-    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
-
-    if (bf != null) {
-      createBindings();
-    }
   }
-
+  
   public void createBindings() {
+    refreshPartitions();
     try {
       partitionsTable = (XulTree) document.getElementById("partitions-table"); //$NON-NLS-1$
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(partitionList, "children", partitionsTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(partitionList, "children", partitionsTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(partitionsTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
     } catch (Exception e) {
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
     }
-    refreshPartitions();
   }
 
+  protected boolean doLazyInit() {
+    // Load the SWT Shell from the explorer dialog
+    shell = ((SwtDialog) document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
+
+    enableButtons(true, false, false);
+    bf = new SwtBindingFactory();
+    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
+
+    if (bf != null) {
+      createBindings();
+    }
+    return true;
+  }
+  
   public void setVariableSpace(VariableSpace variableSpace) {
     this.variableSpace = variableSpace;
   }
@@ -237,19 +239,26 @@ public class PartitionsController extends AbstractXulEventHandler implements IUI
 
   public void refreshPartitions() {
     if (repository != null) {
-      try {
-        partitionList.clear();
-        ObjectId[] partitionIdList = repository.getPartitionSchemaIDs(false);
-
-        for (ObjectId partitionId : partitionIdList) {
-          PartitionSchema partition = repository.loadPartitionSchema(partitionId, null);
-          // Add the partition schema to the list
-          partitionList.add(new UIPartition(partition));
+      final List<UIPartition> tmpList = new ArrayList<UIPartition>();
+      Runnable r = new Runnable() {
+        public void run() {
+          try {
+            ObjectId[] partitionIdList = repository.getPartitionSchemaIDs(false);
+  
+            for (ObjectId partitionId : partitionIdList) {
+              PartitionSchema partition = repository.loadPartitionSchema(partitionId, null);
+              // Add the partition schema to the list
+              tmpList.add(new UIPartition(partition));
+            }
+          } catch (KettleException e) {
+            // convert to runtime exception so it bubbles up through the UI
+            throw new RuntimeException(e);
+          }
+        
         }
-      } catch (KettleException e) {
-        // convert to runtime exception so it bubbles up through the UI
-        throw new RuntimeException(e);
-      }
+      };
+      doWithBusyIndicator(r);
+      partitionList.setChildren(tmpList);
     }
   }
 
@@ -274,5 +283,10 @@ public class PartitionsController extends AbstractXulEventHandler implements IUI
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
   }
+  
+  public void tabClicked() {
+    lazyInit();
+  }
 
+  
 }

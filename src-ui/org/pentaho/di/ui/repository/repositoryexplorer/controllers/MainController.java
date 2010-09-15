@@ -28,10 +28,10 @@ import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.util.DialogController;
 
 
@@ -82,7 +82,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   }
 
   public void init() {
-    bf = new DefaultBindingFactory();
+    bf = new SwtBindingFactory();
     bf.setDocument(this.getXulDomContainer().getDocumentRoot());
     createBindings();
     

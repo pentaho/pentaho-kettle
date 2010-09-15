@@ -11,6 +11,7 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -35,13 +36,12 @@ import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlaves;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
-public class SlavesController extends AbstractXulEventHandler  implements IUISupportController {
+public class SlavesController extends LazilyInitializedController implements IUISupportController {
 
   protected ResourceBundle messages = new ResourceBundle() {
 
@@ -60,8 +60,6 @@ public class SlavesController extends AbstractXulEventHandler  implements IUISup
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private XulTree slavesTable = null;
-
-  private Repository repository = null;
   
   protected BindingFactory bf = null;
   
@@ -74,16 +72,6 @@ public class SlavesController extends AbstractXulEventHandler  implements IUISup
 
   public void init(Repository repository) throws ControllerInitializationException {
     this.repository = repository;
-    // Load the SWT Shell from the explorer dialog
-    shell = ((SwtDialog)document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
-    
-    enableButtons(true, false, false);
-    bf = new DefaultBindingFactory();
-    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
-
-    if (bf!=null){
-      createBindings();
-    }
   }
   
   @Override
@@ -92,33 +80,55 @@ public class SlavesController extends AbstractXulEventHandler  implements IUISup
   }
 
   public void createBindings() {
+    refreshSlaves();
     try {
       slavesTable = (XulTree) document.getElementById("slaves-table"); //$NON-NLS-1$
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(slaveList, "children", slavesTable, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+      bf.createBinding(slaveList, "children", slavesTable, "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$
       bf.createBinding(slavesTable, "selectedItems", this, "enableButtons"); //$NON-NLS-1$ //$NON-NLS-2$
     } catch (Exception e) {
       // convert to runtime exception so it bubbles up through the UI
       throw new RuntimeException(e);
     }
-    refreshSlaves();
   }
 
+  @Override
+  protected boolean doLazyInit() {
+    // Load the SWT Shell from the explorer dialog
+    shell = ((SwtDialog)document.getElementById("repository-explorer-dialog")).getShell(); //$NON-NLS-1$
+    
+    enableButtons(true, false, false);
+    bf = new SwtBindingFactory();
+    bf.setDocument(this.getXulDomContainer().getDocumentRoot());
+
+    if (bf!=null){
+      createBindings();
+    }
+    return true;
+  }
+  
   public void refreshSlaves() {
     if(repository != null) {
-      try {
-        slaveList.clear();
-        ObjectId[] slaveIdList = repository.getSlaveIDs(false);
+      final List<UISlave> tmpList = new ArrayList<UISlave>();
+      Runnable r = new Runnable() {
+        public void run() {
+          try {
+            ObjectId[] slaveIdList = repository.getSlaveIDs(false);
+            
+            for(ObjectId slaveId : slaveIdList) {
+              SlaveServer slave = repository.loadSlaveServer(slaveId, null);
+              // Add the database slave to the list
+              tmpList.add(new UISlave(slave));
+            }
+          } catch (KettleException e) {
+            // convert to runtime exception so it bubbles up through the UI
+            throw new RuntimeException(e);
+          }
         
-        for(ObjectId slaveId : slaveIdList) {
-          SlaveServer slave = repository.loadSlaveServer(slaveId, null);
-          // Add the database slave to the list
-          slaveList.add(new UISlave(slave));
         }
-      } catch (KettleException e) {
-        // convert to runtime exception so it bubbles up through the UI
-        throw new RuntimeException(e);
-      }
+      };
+      doWithBusyIndicator(r);
+      slaveList.setChildren(tmpList);
     }
   }
   
@@ -270,4 +280,9 @@ public class SlavesController extends AbstractXulEventHandler  implements IUISup
     bEdit.setDisabled(!enableEdit);
     bRemove.setDisabled(!enableRemove);
   }
+
+  public void tabClicked() {
+    lazyInit();
+  }
+  
 }
