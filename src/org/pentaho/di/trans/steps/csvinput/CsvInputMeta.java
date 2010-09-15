@@ -700,7 +700,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
             throw new RuntimeException("Unhandled metadata injection of attribute: "+attr.toString()+" - "+attr.getDescription());
           }
         } else {
-          if (attr.getXmlCode().equals("FIELDS")) {
+          if (attr.getKey().equals("FIELDS")) {
             // This entry contains a list of lists...
             // Each list contains a single CSV input field definition (one line in the dialog)
             //
@@ -716,15 +716,15 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
                 KettleAttributeInterface fieldAttr = findAttribute(fieldAttribute.getKey());
 
                 String attributeValue = (String)fieldAttribute.getValue();
-                if (attr.getKey().equals("FIELD_NAME")) { inputField.setName(attributeValue); } else 
-                if (attr.getKey().equals("FIELD_TYPE")) { inputField.setType(ValueMeta.getType(attributeValue)); } else 
-                if (attr.getKey().equals("FIELD_FORMAT")) { inputField.setFormat(attributeValue); } else 
-                if (attr.getKey().equals("FIELD_LENGTH")) { inputField.setLength(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); } else 
-                if (attr.getKey().equals("FIELD_PRECISION")) { inputField.setPrecision(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); } else 
-                if (attr.getKey().equals("FIELD_CURRENCY")) { inputField.setCurrencySymbol(attributeValue); } else 
-                if (attr.getKey().equals("FIELD_DECIMAL")) { inputField.setDecimalSymbol(attributeValue); } else 
-                if (attr.getKey().equals("FIELD_GROUP")) { inputField.setGroupSymbol(attributeValue); } else 
-                if (attr.getKey().equals("FIELD_TRIM_TYPE")) { inputField.setTrimType(ValueMeta.getTrimTypeByCode(attributeValue)); } else
+                if (fieldAttr.getKey().equals("FIELD_NAME")) { inputField.setName(attributeValue); } else 
+                if (fieldAttr.getKey().equals("FIELD_TYPE")) { inputField.setType(ValueMeta.getType(attributeValue)); } else 
+                if (fieldAttr.getKey().equals("FIELD_FORMAT")) { inputField.setFormat(attributeValue); } else 
+                if (fieldAttr.getKey().equals("FIELD_LENGTH")) { inputField.setLength(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); } else 
+                if (fieldAttr.getKey().equals("FIELD_PRECISION")) { inputField.setPrecision(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); } else 
+                if (fieldAttr.getKey().equals("FIELD_CURRENCY")) { inputField.setCurrencySymbol(attributeValue); } else 
+                if (fieldAttr.getKey().equals("FIELD_DECIMAL")) { inputField.setDecimalSymbol(attributeValue); } else 
+                if (fieldAttr.getKey().equals("FIELD_GROUP")) { inputField.setGroupSymbol(attributeValue); } else 
+                if (fieldAttr.getKey().equals("FIELD_TRIM_TYPE")) { inputField.setTrimType(ValueMeta.getTrimTypeByCode(attributeValue)); } else
                 {
                   throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
                 }
