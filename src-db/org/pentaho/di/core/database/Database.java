@@ -1100,10 +1100,19 @@ public class Database implements VariableSpace
 		try
 		{
 			keys=ps.getGeneratedKeys(); // 1 row of keys
-			ResultSetMetaData resultSetMetaData = keys.getMetaData();
-			RowMetaInterface rowMeta = getRowInfo(resultSetMetaData, false, false);
-
-			return new RowMetaAndData(rowMeta, getRow(keys, resultSetMetaData, rowMeta));
+            ResultSetMetaData resultSetMetaData = keys.getMetaData();
+            if (resultSetMetaData==null) {
+              resultSetMetaData = ps.getMetaData();
+            }
+            RowMetaInterface rowMeta;
+            if (resultSetMetaData==null) {
+                rowMeta = new RowMeta();
+                rowMeta.addValueMeta(new ValueMeta("ai-key", ValueMetaInterface.TYPE_INTEGER));
+            } else {
+              rowMeta = getRowInfo(resultSetMetaData, false, false);
+            }
+            
+            return new RowMetaAndData(rowMeta, getRow(keys, resultSetMetaData, rowMeta));
 		}
 		catch(Exception ex) 
 		{
