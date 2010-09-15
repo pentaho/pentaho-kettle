@@ -75,15 +75,27 @@ public class TextFileInput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
         this.transmeta = transMeta;
 	}
-
+	
 	public static final String getLine(LogChannelInterface log, InputStreamReader reader, int formatNr, StringBuilder line) throws KettleFileException
 	{
 		int c = 0;
 		line.setLength(0);
-        
 		try
 		{
-            switch(formatNr)
+	        String encoding = reader.getEncoding();
+            final EncodingType encodingType = EncodingType.guessEncodingType(encoding);
+
+	        // Single byte encoding or no marker: add the character to the line.
+            //
+            int marker = reader.read(); // skip the marker
+	        if (encodingType==EncodingType.SINGLE || 
+	            ( marker!=EncodingType.DOUBLE_BIG_ENDIAN.getBom() && 
+	              marker!=EncodingType.DOUBLE_LITTLE_ENDIAN.getBom())
+	            ) {
+              line.append((char)marker);
+	        }
+		  
+	        switch(formatNr)
             {
             case TextFileInputMeta.FILE_FORMAT_DOS:
                 {
@@ -91,10 +103,10 @@ public class TextFileInput extends BaseStep implements StepInterface
                     {
                         c = reader.read();
                         
-                        if (c == '\r' || c == '\n' )
+                        if (encodingType.isReturn(c) || encodingType.isLinefeed(c)) 
                         {
                             c = reader.read(); // skip \n and \r
-                            if( c != '\r' && c != '\n' ) 
+                            if( !encodingType.isReturn(c) && !encodingType.isLinefeed(c) ) 
                             { 
                                 // make sure its really a linefeed or cariage return
                                 // raise an error this is not a DOS file
@@ -113,7 +125,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                     {
                         c = reader.read();
                         
-    					if (c == '\n' || c == '\r')
+    					if (encodingType.isLinefeed(c) || encodingType.isReturn(c))
     					{
     						return line.toString();
     					}
@@ -129,11 +141,11 @@ public class TextFileInput extends BaseStep implements StepInterface
                     {
                         c = reader.read();
                         
-        				if (c == '\n')
+        				if (encodingType.isLinefeed(c))
         				{
         					return line.toString();
         				}
-        				else if (c != '\r')
+        				else if (!encodingType.isReturn(c))
         				{
         					if (c >= 0) line.append((char) c);
         				}
@@ -158,8 +170,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 		return null;
 	}
-	
-	public static final String[] guessStringsFromLine(LogChannelInterface log, String line, TextFileInputMeta inf, String delimiter) throws KettleException
+
+  public static final String[] guessStringsFromLine(LogChannelInterface log, String line, TextFileInputMeta inf, String delimiter) throws KettleException
 	{
 		List<String> strings = new ArrayList<String>();
         int fieldnr;
