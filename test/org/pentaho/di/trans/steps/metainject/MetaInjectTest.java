@@ -3,6 +3,8 @@ package org.pentaho.di.trans.steps.metainject;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -13,10 +15,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
-import org.pentaho.di.trans.steps.csvinput.CsvInputAttr;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
-
-import junit.framework.TestCase;
 
 public class MetaInjectTest extends TestCase {
 
@@ -41,15 +40,15 @@ public class MetaInjectTest extends TestCase {
       new String[] { "state", "String", null, "30", null, null, null, null, "none", },  
     };
     String[] fieldKeys = new String[] {
-        CsvInputAttr.FIELD_NAME.getKey(),
-        CsvInputAttr.FIELD_TYPE.getKey(),
-        CsvInputAttr.FIELD_FORMAT.getKey(),
-        CsvInputAttr.FIELD_LENGTH.getKey(),
-        CsvInputAttr.FIELD_PRECISION.getKey(),
-        CsvInputAttr.FIELD_CURRENCY.getKey(),
-        CsvInputAttr.FIELD_DECIMAL.getKey(),
-        CsvInputAttr.FIELD_GROUP.getKey(),
-        CsvInputAttr.FIELD_TRIM_TYPE.getKey(),
+        "FIELD_NAME",
+        "FIELD_TYPE",
+        "FIELD_FORMAT",
+        "FIELD_LENGTH",
+        "FIELD_PRECISION",
+        "FIELD_CURRENCY",
+        "FIELD_DECIMAL",
+        "FIELD_GROUP",
+        "FIELD_TRIM_TYPE",
       };
     String filename = "test/org/pentaho/di/trans/steps/metainject/customers-100.txt";
 
@@ -62,14 +61,14 @@ public class MetaInjectTest extends TestCase {
     
     // Inject the filename...
     //
-    StepInjectionMetaEntry filenameEntry = findMetaEntry(entries, CsvInputAttr.FILENAME.getXmlCode());
+    StepInjectionMetaEntry filenameEntry = findMetaEntry(entries, csvInputMeta.getXmlCode("FILENAME"));
     assertNotNull(filenameEntry);
     filenameEntry.setValue(filename);
     injection.add(filenameEntry);
 
     // Inject the fields too...
     //
-    StepInjectionMetaEntry fieldsEntry = findMetaEntry(entries, CsvInputAttr.FIELDS.getXmlCode());
+    StepInjectionMetaEntry fieldsEntry = findMetaEntry(entries, csvInputMeta.getXmlCode("FIELDS"));
     assertNotNull(fieldsEntry);
     StepInjectionMetaEntry fieldEntry = fieldsEntry.getDetails().get(0);
     

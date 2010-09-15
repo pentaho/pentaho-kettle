@@ -56,7 +56,7 @@ import org.w3c.dom.Node;
  *
  */
 
-public class BaseStepMeta implements Cloneable
+public class BaseStepMeta implements Cloneable, StepAttributesInterface
 {
 	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step metadata", LoggingObjectType.STEPMETA, null);
 		
@@ -511,7 +511,7 @@ public class BaseStepMeta implements Cloneable
       }
     }
 
-    protected KettleAttributeInterface findParent(List<KettleAttributeInterface> attributes, String parentId) {
+    public KettleAttributeInterface findParent(List<KettleAttributeInterface> attributes, String parentId) {
       if (Const.isEmpty(parentId)) {
         return null;
       }

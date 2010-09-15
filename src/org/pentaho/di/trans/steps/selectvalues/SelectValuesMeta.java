@@ -20,6 +20,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -270,29 +271,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 
 	public void setDefault()
 	{
-		int nrfields = 0;
-		int nrremove = 0;
-		int nrmeta   = 0;
-
-		allocate(nrfields, nrremove, nrmeta);
-		
-		for (int i=0;i<nrfields;i++)
-		{
-			selectName     [i] = "fieldname"+(i+1); //$NON-NLS-1$
-			selectRename   [i] = ""; //$NON-NLS-1$
-			selectLength   [i] = -2;
-			selectPrecision[i] = -2;
-		}
-
-		for (int i=0;i<nrremove;i++)
-		{
-			deleteName     [i] = "fieldname"+(i+1); //$NON-NLS-1$
-		}
-
-		for (int i=0;i<nrmeta;i++)
-		{
-			meta[i] = new SelectMetadataChange("fieldname"+(i+1), "", ValueMetaInterface.TYPE_NONE, -2, -2, -1, null, null, null, null);
-		}
+		allocate(0, 0, 0);
 	}
 	
 	public void getSelectFields(RowMetaInterface inputRowMeta, String name) throws KettleStepException
@@ -449,17 +428,17 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 		for (int i=0;i<selectName.length;i++)
 		{
 			retval.append("      <field>"); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.FIELD_NAME,      selectName[i])); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.FIELD_RENAME,    selectRename[i])); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.FIELD_LENGTH,    selectLength[i])); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.FIELD_PRECISION, selectPrecision[i])); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_NAME"),      selectName[i])); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_RENAME"),    selectRename[i])); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_LENGTH"),    selectLength[i])); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("FIELD_PRECISION"), selectPrecision[i])); //$NON-NLS-1$
 			retval.append("      </field>"); //$NON-NLS-1$
 		}
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.SELECT_UNSPECIFIED, selectingAndSortingUnspecifiedFields)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("SELECT_UNSPECIFIED"), selectingAndSortingUnspecifiedFields)); //$NON-NLS-1$
 		for (int i=0;i<deleteName.length;i++)
 		{
 			retval.append("      <remove>"); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("name",      deleteName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue(getXmlCode("REMOVE_NAME"),      deleteName[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("      </remove>"); //$NON-NLS-1$
 		}
 		for (int i=0;i<meta.length;i++)
@@ -475,40 +454,40 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 	{
 		try
 		{
-			int nrfields = rep.countNrStepAttributes(id_step, SelectValuesAttr.FIELD_NAME.getRepCode()); //$NON-NLS-1$
-			int nrremove = rep.countNrStepAttributes(id_step, "remove_name"); //$NON-NLS-1$
-			int nrmeta   = rep.countNrStepAttributes(id_step, "meta_name"); //$NON-NLS-1$
+			int nrfields = rep.countNrStepAttributes(id_step, getRepCode("FIELD_NAME")); //$NON-NLS-1$
+			int nrremove = rep.countNrStepAttributes(id_step, getRepCode("REMOVE_NAME")); //$NON-NLS-1$
+			int nrmeta   = rep.countNrStepAttributes(id_step, getRepCode("META_NAME")); //$NON-NLS-1$
 			
 			allocate(nrfields, nrremove, nrmeta);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				selectName[i]      =      rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
-				selectRename[i]    =      rep.getStepAttributeString (id_step, i, "field_rename"); //$NON-NLS-1$
-				selectLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
-				selectPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
+				selectName[i]      =      rep.getStepAttributeString (id_step, i, getRepCode("FIELD_NAME")); //$NON-NLS-1$
+				selectRename[i]    =      rep.getStepAttributeString (id_step, i, getRepCode("FIELD_RENAME")); //$NON-NLS-1$
+				selectLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, getRepCode("FIELD_LENGTH")); //$NON-NLS-1$
+				selectPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, getRepCode("FIELD_PRECISION")); //$NON-NLS-1$
 			}
-			selectingAndSortingUnspecifiedFields = rep.getStepAttributeBoolean(id_step, "select_unspecified");
+			selectingAndSortingUnspecifiedFields = rep.getStepAttributeBoolean(id_step, getRepCode("SELECT_UNSPECIFIED"));
 			
 			for (int i=0;i<nrremove;i++)
 			{
-				deleteName[i]      =      rep.getStepAttributeString(id_step, i, "remove_name"); //$NON-NLS-1$
+				deleteName[i]      =      rep.getStepAttributeString(id_step, i, getRepCode("REMOVE_NAME")); //$NON-NLS-1$
 			}
 
 			for (int i=0;i<nrmeta;i++)
 			{
-				meta[i] = new SelectMetadataChange();
-				meta[i].setName(rep.getStepAttributeString (id_step, i, "meta_name")); //$NON-NLS-1$
-				meta[i].setRename(rep.getStepAttributeString (id_step, i, "meta_rename")); //$NON-NLS-1$
-				meta[i].setType((int)rep.getStepAttributeInteger(id_step, i, "meta_type")); //$NON-NLS-1$
-				meta[i].setLength((int)rep.getStepAttributeInteger(id_step, i, "meta_length")); //$NON-NLS-1$
-				meta[i].setPrecision((int)rep.getStepAttributeInteger(id_step, i, "meta_precision")); //$NON-NLS-1$
-				meta[i].setStorageType(ValueMeta.getStorageType(rep.getStepAttributeString (id_step, i, "meta_storage_type"))); //$NON-NLS-1$ 
-				meta[i].setConversionMask(rep.getStepAttributeString (id_step, i, "meta_conversion_mask")); //$NON-NLS-1$
-				meta[i].setEncoding(rep.getStepAttributeString (id_step, i, "meta_encoding")); //$NON-NLS-1$
-				meta[i].setDecimalSymbol(rep.getStepAttributeString (id_step, i, "meta_decimal_symbol")); //$NON-NLS-1$
-				meta[i].setGroupingSymbol(rep.getStepAttributeString (id_step, i, "meta_grouping_symbol")); //$NON-NLS-1$
-				meta[i].setCurrencySymbol(rep.getStepAttributeString (id_step, i, "meta_currency_symbol")); //$NON-NLS-1$
+				meta[i] = new SelectMetadataChange(this);
+				meta[i].setName(rep.getStepAttributeString (id_step, i, getRepCode("META_NAME"))); //$NON-NLS-1$
+				meta[i].setRename(rep.getStepAttributeString (id_step, i, getRepCode("META_RENAME"))); //$NON-NLS-1$
+				meta[i].setType((int)rep.getStepAttributeInteger(id_step, i, getRepCode("META_TYPE"))); //$NON-NLS-1$
+				meta[i].setLength((int)rep.getStepAttributeInteger(id_step, i, getRepCode("META_LENGTH"))); //$NON-NLS-1$
+				meta[i].setPrecision((int)rep.getStepAttributeInteger(id_step, i, getRepCode("META_PRECISION"))); //$NON-NLS-1$
+				meta[i].setStorageType(ValueMeta.getStorageType(rep.getStepAttributeString (id_step, i, getRepCode("META_STORAGE_TYPE")))); //$NON-NLS-1$ 
+				meta[i].setConversionMask(rep.getStepAttributeString (id_step, i, getRepCode("META_CONVERSION_MASK"))); //$NON-NLS-1$
+				meta[i].setEncoding(rep.getStepAttributeString (id_step, i, getRepCode("META_ENCODING"))); //$NON-NLS-1$
+				meta[i].setDecimalSymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_DECIMAL"))); //$NON-NLS-1$
+				meta[i].setGroupingSymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_GROUPING"))); //$NON-NLS-1$
+				meta[i].setCurrencySymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_CURRENCY"))); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -524,30 +503,30 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 		{
 			for (int i=0;i<selectName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      selectName[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_rename",    selectRename[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    selectLength[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", selectPrecision[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_NAME"),      selectName[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_RENAME"),    selectRename[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_LENGTH"),    selectLength[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("FIELD_PRECISION"), selectPrecision[i]); //$NON-NLS-1$
 			}
-			rep.saveStepAttribute(id_transformation, id_step, "select_unspecified", selectingAndSortingUnspecifiedFields); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, getRepCode("SELECT_UNSPECIFIED"), selectingAndSortingUnspecifiedFields); //$NON-NLS-1$
 	
 			for (int i=0;i<deleteName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "remove_name",      deleteName[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("REMOVE_NAME"),      deleteName[i]); //$NON-NLS-1$
 			}
 	
 			for (int i=0;i<meta.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_name",            meta[i].getName()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_rename",          meta[i].getRename()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_type",            meta[i].getType()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_length",          meta[i].getLength()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_precision",       meta[i].getPrecision()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_storage_type",    ValueMeta.getStorageTypeCode(meta[i].getStorageType())); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_conversion_mask", meta[i].getConversionMask()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_decimal_symbol",  meta[i].getDecimalSymbol()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_grouping_symbol", meta[i].getGroupingSymbol()); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_currency_symbol", meta[i].getCurrencySymbol()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_NAME"),            meta[i].getName()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_RENAME"),          meta[i].getRename()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_TYPE"),            meta[i].getType()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_LENGTH"),          meta[i].getLength()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_PRECISION"),       meta[i].getPrecision()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_STORAGE_TYPE"),    ValueMeta.getStorageTypeCode(meta[i].getStorageType())); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_CONVERSION_MASK"), meta[i].getConversionMask()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DECIMAL"),  meta[i].getDecimalSymbol()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_GROUPING"), meta[i].getGroupingSymbol()); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_CURRENCY"), meta[i].getCurrencySymbol()); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -831,25 +810,24 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
      * Describe the metadata attributes that can be injected into this step metadata object.
      */
     public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries() {
-      return getStepInjectionMetadataEntries(SelectValuesAttr.values(), PKG);
+      return getStepInjectionMetadataEntries(PKG);
     }
 
     public void injectStepMetadataEntries(List<StepInjectionMetaEntry> metadata) {
       for (StepInjectionMetaEntry entry : metadata) {
-        SelectValuesAttr attr = SelectValuesAttr.findByKey(entry.getKey());
+        KettleAttributeInterface attr = findAttribute(entry.getKey());
         
         // Set top level attributes...
         //
         if (entry.getValueType()!=ValueMetaInterface.TYPE_NONE) {
-          switch(attr) {
-          case SELECT_UNSPECIFIED: selectingAndSortingUnspecifiedFields = (Boolean) entry.getValue(); break;
-          default: throw new RuntimeException("Unhandled metadata injection of attribute: "+attr.toString()+" - "+attr.getDescription());
+          if (entry.getKey().equals("SELECT_UNSPECIFIED")) { selectingAndSortingUnspecifiedFields = (Boolean) entry.getValue(); } else
+          {
+            throw new RuntimeException("Unhandled metadata injection of attribute: "+attr.toString()+" - "+attr.getDescription());
           }
         } else {
           // The data sets...
           //
-          switch(attr) {
-          case FIELDS: 
+          if (attr.getKey().equals("FIELDS")) {
             List<StepInjectionMetaEntry> selectFields = entry.getDetails();
             allocateSelect(selectFields.size());
             for (int row=0;row<selectFields.size();row++) {
@@ -858,21 +836,19 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
               List<StepInjectionMetaEntry> fieldAttributes = selectField.getDetails();
               for (int i=0;i<fieldAttributes.size();i++) {
                 StepInjectionMetaEntry fieldAttribute = fieldAttributes.get(i);
-                SelectValuesAttr fieldAttr = SelectValuesAttr.findByKey(fieldAttribute.getKey());
+                KettleAttributeInterface fieldAttr = findAttribute(fieldAttribute.getKey());
 
                 String attributeValue = (String)fieldAttribute.getValue();
-                switch(fieldAttr) {
-                case FIELD_NAME : getSelectName()[row] = attributeValue; break;
-                case FIELD_RENAME : getSelectRename()[row] = attributeValue; break;
-                case FIELD_LENGTH : getSelectLength()[row] = attributeValue==null ? -1 : Integer.parseInt(attributeValue); break;
-                case FIELD_PRECISION : getSelectPrecision()[row] = attributeValue==null ? -1 : Integer.parseInt(attributeValue); break;
-                default: throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
+                if (fieldAttr.getKey().equals("FIELD_NAME")) { getSelectName()[row] = attributeValue; } else
+                if (fieldAttr.getKey().equals("FIELD_RENAME")) { getSelectRename()[row] = attributeValue; } else
+                if (fieldAttr.getKey().equals("FIELD_LENGTH")) { getSelectLength()[row] = attributeValue==null ? -1 : Integer.parseInt(attributeValue); } else
+                if (fieldAttr.getKey().equals("FIELD_PRECISION")) { getSelectPrecision()[row] = attributeValue==null ? -1 : Integer.parseInt(attributeValue); } else
+                {
+                  throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
                 }
               }
             }
-            break;
-            
-          case REMOVES: 
+          } else if (attr.getKey().equals("REMOVES")) {
             List<StepInjectionMetaEntry> removeFields = entry.getDetails();
             allocateRemove(removeFields.size());
             for (int row=0;row<removeFields.size();row++) {
@@ -881,44 +857,41 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
               List<StepInjectionMetaEntry> fieldAttributes = removeField.getDetails();
               for (int i=0;i<fieldAttributes.size();i++) {
                 StepInjectionMetaEntry fieldAttribute = fieldAttributes.get(i);
-                SelectValuesAttr fieldAttr = SelectValuesAttr.findByKey(fieldAttribute.getKey());
-
+                KettleAttributeInterface fieldAttr = findAttribute(fieldAttribute.getKey());
                 String attributeValue = (String)fieldAttribute.getValue();
-                switch(fieldAttr) {
-                case REMOVE_NAME : getDeleteName()[row] = attributeValue; break;
-                default: throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
+                
+                if (fieldAttr.getKey().equals("REMOVE_NAME")) { getDeleteName()[row] = attributeValue; } else
+                {
+                  throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
                 }
               }
             }
-            break;
-
-          case METAS: 
+          } else if (attr.getKey().equals("METAS")) { 
             List<StepInjectionMetaEntry> metaFields = entry.getDetails();
             allocateMeta(metaFields.size());
             for (int row=0;row<metaFields.size();row++) {
               StepInjectionMetaEntry metaField = metaFields.get(row);
-              SelectMetadataChange metaChange = new SelectMetadataChange();
+              SelectMetadataChange metaChange = new SelectMetadataChange(this);
               List<StepInjectionMetaEntry> fieldAttributes = metaField.getDetails();
               for (int i=0;i<fieldAttributes.size();i++) {
                 StepInjectionMetaEntry fieldAttribute = fieldAttributes.get(i);
                 SelectValuesAttr fieldAttr = SelectValuesAttr.findByKey(fieldAttribute.getKey());
-
                 String attributeValue = (String)fieldAttribute.getValue();
-                switch(fieldAttr) {
-                case META_NAME : metaChange.setName(attributeValue); break;
-                case META_RENAME : metaChange.setRename(attributeValue); break;
-                case META_TYPE : metaChange.setType(ValueMeta.getType(attributeValue)); break;
-                case META_CONVERSION_MASK : metaChange.setConversionMask(attributeValue); break;
-                case META_LENGTH : metaChange.setLength(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); break;
-                case META_PRECISION : metaChange.setPrecision(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); break;
-                case META_CURRENCY : metaChange.setCurrencySymbol(attributeValue); break;
-                case META_DECIMAL :metaChange.setDecimalSymbol(attributeValue); break;
-                case META_GROUPING :metaChange.setGroupingSymbol(attributeValue); break;
-                case META_STORAGE_TYPE : metaChange.setStorageType(ValueMeta.getStorageType(attributeValue)); break;
-                case META_ENCODING : metaChange.setEncoding(attributeValue); break;
-                default: throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
-                }
                 
+                if (fieldAttr.getKey().equals("META_NAME")) { metaChange.setName(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_RENAME")) { metaChange.setRename(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_TYPE")) { metaChange.setType(ValueMeta.getType(attributeValue)); } else
+                if (fieldAttr.getKey().equals("META_CONVERSION_MASK")) { metaChange.setConversionMask(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_LENGTH")) { metaChange.setLength(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); } else
+                if (fieldAttr.getKey().equals("META_PRECISION")) { metaChange.setPrecision(attributeValue==null ? -1 : Integer.parseInt(attributeValue)); } else
+                if (fieldAttr.getKey().equals("META_CURRENCY")) { metaChange.setCurrencySymbol(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_DECIMAL")) { metaChange.setDecimalSymbol(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_GROUPING")) { metaChange.setGroupingSymbol(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_STORAGE_TYPE")) { metaChange.setStorageType(ValueMeta.getStorageType(attributeValue)); } else
+                if (fieldAttr.getKey().equals("META_ENCODING")) { metaChange.setEncoding(attributeValue); } else
+                {
+                  throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
+                }
               }
               meta[row] = metaChange;
             }
@@ -927,6 +900,4 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
         }
       }
     }
-    
-    
 }

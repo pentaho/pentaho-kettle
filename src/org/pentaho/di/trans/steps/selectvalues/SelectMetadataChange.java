@@ -16,6 +16,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.trans.step.StepAttributesInterface;
 import org.w3c.dom.Node;
 
 public class SelectMetadataChange implements Cloneable, XMLInterface{
@@ -45,8 +46,11 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	private String currencySymbol;
 	/** The encoding to use when decoding binary data to Strings */
   private String encoding;
+
+  private StepAttributesInterface attributesInterface;
 	
-	public SelectMetadataChange() {
+	public SelectMetadataChange(StepAttributesInterface attributesInterface) {
+	  this.attributesInterface = attributesInterface;
 		storageType=-1; // storage type is not used by default!
 	}
 
@@ -62,8 +66,9 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	 * @param groupingSymbol
 	 * @param currencySymbol
 	 */
-	public SelectMetadataChange(String name, String rename, int type, int length, int precision, int storageType,
+	public SelectMetadataChange(StepAttributesInterface attributesInterface, String name, String rename, int type, int length, int precision, int storageType,
 			String conversionMask, String decimalSymbol, String groupingSymbol, String currencySymbol) {
+	    this(attributesInterface);
 		this.name = name;
 		this.rename = rename;
 		this.type = type;
@@ -79,33 +84,33 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	public String getXML() {
 		StringBuffer retval = new StringBuffer();
 		retval.append("      ").append(XMLHandler.openTag(XML_TAG)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_NAME,            name)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_RENAME,          rename)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_TYPE,            ValueMeta.getTypeDesc(type)) ); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_LENGTH,          length)); //$NON-NLS-1$ 
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_PRECISION,       precision)); //$NON-NLS-1$ 
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_CONVERSION_MASK, conversionMask)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_ENCODING,        encoding)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_DECIMAL,         decimalSymbol)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_GROUPING,        groupingSymbol)); //$NON-NLS-1$
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_CURRENCY,        currencySymbol)); //$NON-NLS-1$		
-		retval.append("        ").append(XMLHandler.addTagValue(SelectValuesAttr.META_STORAGE_TYPE,    ValueMeta.getStorageTypeCode(storageType))); //$NON-NLS-1$		
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_NAME"),            name)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_RENAME"),          rename)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_TYPE"),            ValueMeta.getTypeDesc(type)) ); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_LENGTH"),          length)); //$NON-NLS-1$ 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_PRECISION"),       precision)); //$NON-NLS-1$ 
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_CONVERSION_MASK"), conversionMask)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_ENCODING"),        encoding)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DECIMAL"),         decimalSymbol)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_GROUPING"),        groupingSymbol)); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_CURRENCY"),        currencySymbol)); //$NON-NLS-1$		
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_STORAGE_TYPE"),    ValueMeta.getStorageTypeCode(storageType))); //$NON-NLS-1$		
 		retval.append("      ").append(XMLHandler.closeTag(XML_TAG)); //$NON-NLS-1$
 		return retval.toString();
 	}
 	
 	public SelectMetadataChange(Node metaNode) {
-		name           = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_NAME); //$NON-NLS-1$
-		rename         = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_RENAME); //$NON-NLS-1$
-		type           = ValueMeta.getType(XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_TYPE)); //$NON-NLS-1$
-		length         = Const.toInt(XMLHandler.getTagValue(metaNode,SelectValuesAttr.META_LENGTH), -2); //$NON-NLS-1$
-		precision      = Const.toInt(XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_PRECISION), -2); //$NON-NLS-1$
-		storageType    = ValueMeta.getStorageType( XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_STORAGE_TYPE) ); //$NON-NLS-1$
-		conversionMask = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_CONVERSION_MASK); //$NON-NLS-1$
-		encoding       = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_ENCODING); //$NON-NLS-1$
-		decimalSymbol  = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_DECIMAL); //$NON-NLS-1$
-		groupingSymbol = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_GROUPING); //$NON-NLS-1$
-		currencySymbol = XMLHandler.getTagValue(metaNode, SelectValuesAttr.META_CURRENCY); //$NON-NLS-1$
+		name           = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_NAME")); //$NON-NLS-1$
+		rename         = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_RENAME")); //$NON-NLS-1$
+		type           = ValueMeta.getType(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_TYPE"))); //$NON-NLS-1$
+		length         = Const.toInt(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_LENGTH")), -2); //$NON-NLS-1$
+		precision      = Const.toInt(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_PRECISION")), -2); //$NON-NLS-1$
+		storageType    = ValueMeta.getStorageType( XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_STORAGE_TYPE")) ); //$NON-NLS-1$
+		conversionMask = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_CONVERSION_MASK")); //$NON-NLS-1$
+		encoding       = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_ENCODING")); //$NON-NLS-1$
+		decimalSymbol  = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DECIMAL")); //$NON-NLS-1$
+		groupingSymbol = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_GROUPING")); //$NON-NLS-1$
+		currencySymbol = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_CURRENCY")); //$NON-NLS-1$
 	}
 	
 	public SelectMetadataChange clone() {
