@@ -65,6 +65,7 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.parallelgzipcsv.ParGzipCsvInputMeta;
+import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
@@ -743,12 +744,12 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 			wFields.table.removeAll();
 			
 			inputStream = new GZIPInputStream(KettleVFS.getInputStream(fileObject));
-	        
-            InputStreamReader reader = new InputStreamReader(inputStream);
+	        InputStreamReader reader = new InputStreamReader(inputStream);
+	        EncodingType encodingType = EncodingType.guessEncodingType(reader.getEncoding());
             
             // Read a line of data to determine the number of rows...
             //
-            String line = TextFileInput.getLine(log, reader, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder(1000));
+            String line = TextFileInput.getLine(log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder(1000));
             
             // Split the string, header or data into parts...
             //

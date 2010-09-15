@@ -122,6 +122,8 @@ public class TextFileInputData extends BaseStepData implements
 	public String uriName;	
 	public String rootUriName;	
 	public long size;
+
+    public EncodingType encodingType;
     
 	/**
 	 * 

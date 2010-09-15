@@ -65,6 +65,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInput;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
+import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
@@ -752,11 +753,11 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
               reader = new InputStreamReader(inputStream, meta.getEncoding());
             }
             
-            System.out.println("Encoding is : "+reader.getEncoding());
+            EncodingType encodingType = EncodingType.guessEncodingType(reader.getEncoding());
             
             // Read a line of data to determine the number of rows...
             //
-            String line = TextFileInput.getLine(log, reader, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder(1000));
+            String line = TextFileInput.getLine(log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder(1000));
             
             // Split the string, header or data into parts...
             //

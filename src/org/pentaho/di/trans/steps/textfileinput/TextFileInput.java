@@ -76,25 +76,12 @@ public class TextFileInput extends BaseStep implements StepInterface
         this.transmeta = transMeta;
 	}
 	
-	public static final String getLine(LogChannelInterface log, InputStreamReader reader, int formatNr, StringBuilder line) throws KettleFileException
+	public static final String getLine(LogChannelInterface log, InputStreamReader reader, EncodingType encodingType, int formatNr, StringBuilder line) throws KettleFileException
 	{
 		int c = 0;
 		line.setLength(0);
 		try
 		{
-	        String encoding = reader.getEncoding();
-            final EncodingType encodingType = EncodingType.guessEncodingType(encoding);
-
-	        // Single byte encoding or no marker: add the character to the line.
-            //
-            int marker = reader.read(); // skip the marker
-	        if (encodingType==EncodingType.SINGLE || 
-	            ( marker!=EncodingType.DOUBLE_BIG_ENDIAN.getBom() && 
-	              marker!=EncodingType.DOUBLE_LITTLE_ENDIAN.getBom())
-	            ) {
-              line.append((char)marker);
-	        }
-		  
 	        switch(formatNr)
             {
             case TextFileInputMeta.FILE_FORMAT_DOS:
@@ -953,7 +940,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				// Read a number of lines...
 				for (int i = 0; i < repeats && !data.doneReading; i++)
 				{
-					String line = getLine(log, data.isr, data.fileFormatType, data.lineStringBuilder); // Get one line of data;
+					String line = getLine(log, data.isr, data.encodingType, data.fileFormatType, data.lineStringBuilder); // Get one line of data;
 					if (line != null)
 					{
 						// Filter row?
@@ -1412,6 +1399,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 					data.isr = new InputStreamReader(new BufferedInputStream(data.fr, BUFFER_SIZE_INPUT_STREAM));
 				}
 			}
+			
+	        String encoding = data.isr.getEncoding();
+	        data.encodingType = EncodingType.guessEncodingType(encoding);
 
 			// Move file pointer ahead!
 			data.filenr++;
@@ -1439,7 +1429,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				for (int i = 0; i < meta.getNrLinesDocHeader(); i++)
 				{
 					// Just skip these...
-					getLine(log, data.isr, data.fileFormatType, data.lineStringBuilder); // header and footer: not wrapped
+					getLine(log, data.isr, data.encodingType, data.fileFormatType, data.lineStringBuilder); // header and footer: not wrapped
 					lineNumberInFile++;
 				}
 			}
@@ -1447,7 +1437,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			String line;
 			for (int i = 0; i < bufferSize && !data.doneReading; i++)
 			{
-				line = getLine(log, data.isr, data.fileFormatType, data.lineStringBuilder);
+				line = getLine(log, data.isr, data.encodingType, data.fileFormatType, data.lineStringBuilder);
 				if (line != null)
 				{
 					// when there is no header, check the filter for the first line

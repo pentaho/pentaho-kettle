@@ -42,6 +42,7 @@ import org.pentaho.di.core.util.StringEvaluationResult;
 import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -79,6 +80,8 @@ public class TextFileCSVImportProgressDialog
     private TransMeta         transMeta;
 
 	private LogChannelInterface	log;
+
+    private EncodingType encodingType;
     
     /**
      * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
@@ -98,6 +101,9 @@ public class TextFileCSVImportProgressDialog
         rownumber = 1L;
         
         this.log = new LogChannel(transMeta);
+        
+        this.encodingType = EncodingType.guessEncodingType(reader.getEncoding());
+
     }
 
     public String open()
@@ -246,7 +252,7 @@ public class TextFileCSVImportProgressDialog
         // However, if it doesn't have a header, take a new line
         //
         
-        line = TextFileInput.getLine(log, reader, fileFormatType, lineBuffer);
+        line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineBuffer);
         fileLineNumber++;
         int skipped=1;
         
@@ -255,7 +261,7 @@ public class TextFileCSVImportProgressDialog
             
             while (line!=null && skipped<meta.getNrHeaderLines())
             {
-                line = TextFileInput.getLine(log, reader, fileFormatType, lineBuffer);
+                line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineBuffer);
                 skipped++;
                 fileLineNumber++;
             }
@@ -306,6 +312,10 @@ public class TextFileCSVImportProgressDialog
             	}
             	
                 String string = rowMeta.getString(r, i);
+                
+                if (i==0) {
+                  System.out.println();
+                }
                 evaluator.evaluateString(string);
             }
 
@@ -319,7 +329,7 @@ public class TextFileCSVImportProgressDialog
 
             // Grab another line...
             //
-            line = TextFileInput.getLine(log, reader, fileFormatType, lineBuffer);
+            line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineBuffer);
         }
 
         monitor.worked(1);

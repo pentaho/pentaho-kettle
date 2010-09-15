@@ -95,6 +95,7 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 import org.pentaho.di.trans.steps.textfileinput.TextFileFilter;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -2556,7 +2557,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                 {
                     reader = new InputStreamReader(inputStream);
                 }
-	
+                
+                EncodingType encodingType = EncodingType.guessEncodingType(reader.getEncoding());
+                
 				if (clearFields == SWT.YES || !meta.hasHeader() || nrInputFields >0)
 				{
                     // Scan the header-line, determine fields...
@@ -2564,7 +2567,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     
                     if (meta.hasHeader() || meta.getInputFields().length == 0)
                     {
-                        line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
+                        line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
                         if (line != null)
                         { 
                         	// Estimate the number of input fields...
@@ -2877,7 +2880,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                 {
                     reader = new InputStreamReader(f);
                 }
-
+                EncodingType encodingType = EncodingType.guessEncodingType(reader.getEncoding());
 
 				String firstlines="";
 				int    linenr=0;
@@ -2889,11 +2892,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     if (meta.isLayoutPaged() && meta.getNrLinesDocHeader()>0)
                     {
                         int skipped = 0;
-                        String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
+                        String line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
                         while (line!=null && skipped<meta.getNrLinesDocHeader()-1)
                         {
                             skipped++;
-                            line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
+                            line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
                         }
                     }
                     
@@ -2901,22 +2904,22 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     if (meta.hasHeader() && meta.getNrHeaderLines()>0)
                     {
                         int skipped = 0;
-                        String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
+                        String line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
                         while (line!=null && skipped<meta.getNrHeaderLines()-1)
                         {
                             skipped++;
-                            line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
+                            line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
                         }
                     }
                 }
                 
-				String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
+				String line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
 				while(line!=null && (linenr<maxnr || nrlines==0))
 				{
 					retval.add(line);
 					firstlines+=line+Const.CR;
 					linenr++;
-					line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuilder);
+					line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
 				}
 			}
 			catch(Exception e)
