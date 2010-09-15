@@ -35,13 +35,13 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
 	public static final int COLOR_RGB_BLACK_GREEN = 0;
 	public static final int COLOR_RGB_BLACK_BLUE = 0;
 	
-	public static final int COLOR_RGB_YELLOW_RED = 255;
-	public static final int COLOR_RGB_YELLOW_GREEN = 255;
-	public static final int COLOR_RGB_YELLOW_BLUE = 0;
+	public static final int COLOR_RGB_DEFAULT_BG_RED   = 0xFF;
+	public static final int COLOR_RGB_DEFAULT_BG_GREEN = 0xA5;
+	public static final int COLOR_RGB_DEFAULT_BG_BLUE  = 0x00;
 	
-	public static final int COLOR_RGB_GRAY_RED = 100;
-	public static final int COLOR_RGB_GRAY_GREEN = 100;
-	public static final int COLOR_RGB_GRAY_BLUE = 100;
+	public static final int COLOR_RGB_DEFAULT_BORDER_RED   = 100;
+	public static final int COLOR_RGB_DEFAULT_BORDER_GREEN = 100;
+	public static final int COLOR_RGB_DEFAULT_BORDER_BLUE  = 100;
 	
     private String note;
     private String fontname;
@@ -79,6 +79,10 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
 		height = -1;
 		selected = false;
 		setDefaultFont();
+		
+		backgroundcolorred=0xFF;
+		backgroundcolorgreen=0xA5;
+		backgroundcolorblue=0x00;
 	}
 	public NotePadMeta(String n, int xl, int yl, int w, int h)
 	{
@@ -146,13 +150,13 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
 			this.fontcolorgreen = Const.toInt(XMLHandler.getTagValue(notepadnode, "fontcolorgreen"),COLOR_RGB_BLACK_GREEN);
 			this.fontcolorblue = Const.toInt(XMLHandler.getTagValue(notepadnode, "fontcolorblue"),COLOR_RGB_BLACK_BLUE);
 			// background color
-			this.backgroundcolorred = Const.toInt(XMLHandler.getTagValue(notepadnode, "backgroundcolorred"),COLOR_RGB_YELLOW_RED);
-			this.backgroundcolorgreen = Const.toInt(XMLHandler.getTagValue(notepadnode, "backgroundcolorgreen"),COLOR_RGB_YELLOW_GREEN);
-			this.backgroundcolorblue = Const.toInt(XMLHandler.getTagValue(notepadnode, "backgroundcolorblue"),COLOR_RGB_YELLOW_BLUE);
+			this.backgroundcolorred = Const.toInt(XMLHandler.getTagValue(notepadnode, "backgroundcolorred"),COLOR_RGB_DEFAULT_BG_RED);
+			this.backgroundcolorgreen = Const.toInt(XMLHandler.getTagValue(notepadnode, "backgroundcolorgreen"),COLOR_RGB_DEFAULT_BG_GREEN);
+			this.backgroundcolorblue = Const.toInt(XMLHandler.getTagValue(notepadnode, "backgroundcolorblue"),COLOR_RGB_DEFAULT_BG_BLUE);
 			// border color
-			this.bordercolorred = Const.toInt(XMLHandler.getTagValue(notepadnode, "bordercolorred"),COLOR_RGB_GRAY_RED);
-			this.bordercolorgreen = Const.toInt(XMLHandler.getTagValue(notepadnode, "bordercolorgreen"),COLOR_RGB_GRAY_GREEN);
-			this.bordercolorblue = Const.toInt(XMLHandler.getTagValue(notepadnode, "bordercolorblue"),COLOR_RGB_GRAY_BLUE);
+			this.bordercolorred = Const.toInt(XMLHandler.getTagValue(notepadnode, "bordercolorred"),COLOR_RGB_DEFAULT_BORDER_RED);
+			this.bordercolorgreen = Const.toInt(XMLHandler.getTagValue(notepadnode, "bordercolorgreen"),COLOR_RGB_DEFAULT_BORDER_GREEN);
+			this.bordercolorblue = Const.toInt(XMLHandler.getTagValue(notepadnode, "bordercolorblue"),COLOR_RGB_DEFAULT_BORDER_BLUE);
 			this.drawshadow    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(notepadnode, "drawshadow"));
 		}
 		catch(Exception e)
@@ -550,14 +554,14 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
 		this.fontcolorblue=COLOR_RGB_BLACK_BLUE;
 		
 		// background yellow
-		this.backgroundcolorred=COLOR_RGB_YELLOW_RED;
-		this.backgroundcolorgreen=COLOR_RGB_YELLOW_GREEN;
-		this.backgroundcolorblue=COLOR_RGB_YELLOW_BLUE;
+		this.backgroundcolorred=COLOR_RGB_DEFAULT_BG_RED;
+		this.backgroundcolorgreen=COLOR_RGB_DEFAULT_BG_GREEN;
+		this.backgroundcolorblue=COLOR_RGB_DEFAULT_BG_BLUE;
 		
 		// border gray
-		this.bordercolorred=COLOR_RGB_GRAY_RED;
-		this.bordercolorgreen=COLOR_RGB_GRAY_GREEN;;
-		this.bordercolorblue=COLOR_RGB_GRAY_BLUE;
+		this.bordercolorred=COLOR_RGB_DEFAULT_BORDER_RED;
+		this.bordercolorgreen=COLOR_RGB_DEFAULT_BORDER_GREEN;;
+		this.bordercolorblue=COLOR_RGB_DEFAULT_BORDER_BLUE;
 		
 		this.drawshadow=true;
 	}
