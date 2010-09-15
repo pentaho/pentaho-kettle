@@ -11,10 +11,13 @@
  
 
 package org.pentaho.di.trans.step;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleAttribute;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -30,7 +33,9 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
@@ -42,6 +47,8 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 
 /*
@@ -53,6 +60,8 @@ public class BaseStepMeta implements Cloneable
 {
 	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step metadata", LoggingObjectType.STEPMETA, null);
 		
+	public static final String STEP_ATTRIBUTES_FILE = "step-attributes.xml";
+	
 	private boolean changed;
 	
     /** database connection object to use for searching fields & checking steps */
@@ -67,7 +76,12 @@ public class BaseStepMeta implements Cloneable
 	
 	public BaseStepMeta()
 	{
-		changed    = false;
+		changed    = false; 
+		try {
+		  loadStepAttributes();
+		} catch(Exception e) {
+		  e.printStackTrace();
+		}
 	}
 	
 	public Object clone()
@@ -327,6 +341,8 @@ public class BaseStepMeta implements Cloneable
     //
     
     protected LogChannelInterface log;
+
+    protected ArrayList<KettleAttributeInterface> attributes;
     
     // Late init to prevent us from logging blank step names, etc.
     public LogChannelInterface getLog() {
@@ -450,7 +466,7 @@ public class BaseStepMeta implements Cloneable
     /**
      * Describe the metadata attributes that can be injected into this step metadata object.
      */
-    public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries(KettleAttributeInterface[] attributes, Class<?> PKG) {
+    public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries(Class<?> PKG) {
       List<StepInjectionMetaEntry> entries = new ArrayList<StepInjectionMetaEntry>();
       
       for (KettleAttributeInterface attr : attributes) {
@@ -467,6 +483,69 @@ public class BaseStepMeta implements Cloneable
       }
       
       return entries;
+    }
+    
+    protected void loadStepAttributes() throws KettleException {
+      try {
+        InputStream inputStream = getClass().getResourceAsStream(STEP_ATTRIBUTES_FILE);
+        if (inputStream!=null) {
+          Document document = XMLHandler.loadXMLFile(inputStream);
+          Node attrsNode = XMLHandler.getSubNode(document, "attributes");
+          List<Node> nodes = XMLHandler.getNodes(attrsNode, "attribute");
+          attributes = new ArrayList<KettleAttributeInterface>();
+          for (Node node : nodes) {
+            String key = XMLHandler.getTagAttribute(node, "id");
+            String xmlCode = XMLHandler.getTagValue(node, "xmlcode");
+            String repCode = XMLHandler.getTagValue(node, "repcode");
+            String description = XMLHandler.getTagValue(node, "description");
+            String tooltip = XMLHandler.getTagValue(node, "tooltip");
+            int valueType = ValueMeta.getType( XMLHandler.getTagValue(node, "valuetype") );
+            String parentId =  XMLHandler.getTagValue(node, "parentid");
+            
+            KettleAttribute attribute = new KettleAttribute(key, xmlCode, repCode, description, tooltip, valueType, findParent(attributes, parentId));
+            attributes.add(attribute);
+          }
+        }
+      } catch(Exception e) {
+        throw new KettleException("Unable to load file "+STEP_ATTRIBUTES_FILE, e);
+      }
+    }
+
+    protected KettleAttributeInterface findParent(List<KettleAttributeInterface> attributes, String parentId) {
+      if (Const.isEmpty(parentId)) {
+        return null;
+      }
+      for (KettleAttributeInterface attribute : attributes) {
+        if (attribute.getKey().equals(parentId)) {
+          return attribute;
+        }
+      }
+      return null;
+    }
+    
+    public KettleAttributeInterface findAttribute(String key) {
+      for (KettleAttributeInterface attribute : attributes) {
+        if (attribute.getKey().equals(key)) {
+          return attribute;
+        }
+      }
+      return null;
+    }
+    
+    public String getXmlCode(String attributeKey) {
+      return findAttribute(attributeKey).getXmlCode();
+    }
+
+    public String getRepCode(String attributeKey) {
+      return findAttribute(attributeKey).getXmlCode();
+    }
+    
+    public String getDescription(String attributeKey) {
+      return findAttribute(attributeKey).getDescription();
+    }
+
+    public String getTooltip(String attributeKey) {
+      return findAttribute(attributeKey).getTooltip();
     }
 
 }
