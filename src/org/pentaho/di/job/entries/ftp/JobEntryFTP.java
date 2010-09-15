@@ -18,6 +18,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,6 +39,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -57,6 +59,9 @@ import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPFile;
 import com.enterprisedt.net.ftp.FTPTransferType;
+import com.enterprisedt.net.ftp.FTPFileFactory;
+import com.enterprisedt.net.ftp.FTPFileParser;
+
 /**
  * This defines an FTP job entry.
  *
@@ -985,6 +990,9 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			//  Remove password from logging, you don't know where it ends up.
 			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.LoggedIn", realUsername)); //$NON-NLS-1$
 
+			// Fix for PDI-2534 - add auxilliary FTP File List parsers to the ftpclient object.
+			this.hookInOtherParsers(ftpclient);
+			
 			// move to spool dir ...
 			if (!Const.isEmpty(ftpDirectory)) {
                 String realFtpDirectory = environmentSubstitute(ftpDirectory);
@@ -1399,4 +1407,52 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       return references;
     }
 
+    /**
+     * Hook in known parsers, and then those that have been specified in the variable
+     * ftp.file.parser.class.names
+     * @param ftpClient
+     * @throws FTPException
+     * @throws IOException
+     */
+    protected void hookInOtherParsers(FTPClient ftpClient) throws FTPException, IOException {
+      if (log.isDebug()) {logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Hooking.Parsers"));}
+      String system = ftpClient.system();
+      MVSFileParser parser = new MVSFileParser();
+      if (log.isDebug()) {logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Created.MVS.Parser"));}
+      FTPFileFactory factory = new FTPFileFactory(system);
+      if (log.isDebug()) {logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Created.Factory"));}
+      factory.addParser(parser);
+      ftpClient.setFTPFileFactory(factory);
+      if (log.isDebug()) {logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Get.Variable.Space"));}
+      VariableSpace vs = this.getVariables();
+      if (vs != null) {
+        if (log.isDebug()) {logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Getting.Other.Parsers"));}
+        String otherParserNames = vs.getVariable("ftp.file.parser.class.names");
+        if (otherParserNames != null) {
+          if (log.isDebug()) {logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Creating.Parsers"));}
+          String[] parserClasses = otherParserNames.split("|");
+          String cName = null;
+          Class clazz = null;
+          Object parserInstance = null;
+          for (int i=0; i<parserClasses.length; i++) {
+            cName = parserClasses[i].trim();
+            if (cName.length() > 0) {
+              try {
+                clazz = Class.forName(cName);
+                parserInstance = clazz.newInstance();
+                if (parserInstance instanceof FTPFileParser) {
+                  if (log.isDetailed()) {logDetailed(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Created.Other.Parser", cName));}
+                  factory.addParser((FTPFileParser)parserInstance);
+                }
+              } catch (Exception ignored) {
+                if (log.isDebug()) {
+                  ignored.printStackTrace();
+                  logError(BaseMessages.getString(PKG, "JobEntryFTP.ERROR.Creating.Parser", cName));
+                }
+              }
+            }
+          }
+        }
+      }
+    }   
 }
