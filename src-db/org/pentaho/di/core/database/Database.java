@@ -1152,7 +1152,16 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		{
 			keys=ps.getGeneratedKeys(); // 1 row of keys
 			ResultSetMetaData resultSetMetaData = keys.getMetaData();
-			RowMetaInterface rowMeta = getRowInfo(resultSetMetaData, false, false);
+			if (resultSetMetaData==null) {
+			  resultSetMetaData = ps.getMetaData();
+			}
+			RowMetaInterface rowMeta;
+			if (resultSetMetaData==null) {
+	            rowMeta = new RowMeta();
+	            rowMeta.addValueMeta(new ValueMeta("ai-key", ValueMetaInterface.TYPE_INTEGER));
+			} else {
+			  rowMeta = getRowInfo(resultSetMetaData, false, false);
+			}
 
 			return new RowMetaAndData(rowMeta, getRow(keys, resultSetMetaData, rowMeta));
 		}
