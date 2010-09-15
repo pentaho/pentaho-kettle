@@ -851,13 +851,24 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
 				}
 			} else {
-				// No area-owner means: background:
+			  // A hop? --> enable/disable
+			  //
+			  TransHopMeta hop = findHop(real.x, real.y);
+			  if (hop!=null) {
+		        TransHopMeta before = (TransHopMeta) hop.clone();
+		        hop.setEnabled(!hop.isEnabled());
+		        TransHopMeta after = (TransHopMeta) hop.clone();
+		        spoon.addUndoChange(transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta.indexOfTransHop(hop) });
+			    redraw();
+			  } else {
+				// No area-owner & no hop means : background click:
 				//
 				startHopStep = null;
 				if (!control) {
 					selectionRegion = new org.pentaho.di.core.gui.Rectangle(real.x, real.y, 0, 0);
 				}
 				redraw();
+			  }
 			}
 		}
 	}
@@ -936,43 +947,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             if (split_hop) {
               TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2, selectedStep);
               if (hi != null) {
-                int id = 0;
-                if (!spoon.props.getAutoSplit()) {
-                  MessageDialogWithToggle md = new MessageDialogWithToggle(
-                      shell,
-                      BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Title"), null, //$NON-NLS-1$
-                      BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
-                      BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, 0, BaseMessages.getString(PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                  MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-                  id = md.open();
-                  spoon.props.setAutoSplit(md.getToggleState());
-                }
-
-                if ((id & 0xFF) == 0) // Means: "Yes" button clicked!
-                {
-                  // Only split A-->--B by putting C in between IF...
-                  // C-->--A or B-->--C don't exists...
-                  // A ==> hi.getFromStep()
-                  // B ==> hi.getToStep();
-                  // C ==> selected_step
-                  //
-                  if (transMeta.findTransHop(selectedStep, hi.getFromStep()) == null && transMeta.findTransHop(hi.getToStep(), selectedStep) == null) {
-                	  
-                    TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selectedStep);
-                    transMeta.addTransHop(newhop1);
-                    spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop1 }, new int[] { transMeta.indexOfTransHop(newhop1) }, true);
-                    TransHopMeta newhop2 = new TransHopMeta(selectedStep, hi.getToStep());
-                    transMeta.addTransHop(newhop2);
-                    spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop2 }, new int[] { transMeta.indexOfTransHop(newhop2) }, true);
-                    int idx = transMeta.indexOfTransHop(hi);
-                    spoon.addUndoDelete(transMeta, new TransHopMeta[] { hi }, new int[] { idx }, true);
-                    transMeta.removeTransHop(idx);
-                    spoon.refreshTree();
-                    
-                  } else {
-                    // Silently discard this hop-split attempt. 
-                  }
-                }
+                splitHop(hi);
               }
               split_hop = false;
             }
@@ -1039,7 +1014,68 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       lastButton = 0;
     }
 
-	public void mouseMove(MouseEvent e) {
+	private void splitHop(TransHopMeta hi) {
+      int id = 0;
+      if (!spoon.props.getAutoSplit()) {
+        MessageDialogWithToggle md = new MessageDialogWithToggle(
+            shell,
+            BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Title"), null, //$NON-NLS-1$
+            BaseMessages.getString(PKG, "TransGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
+            BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, 0, BaseMessages.getString(PKG, "TransGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+        id = md.open();
+        spoon.props.setAutoSplit(md.getToggleState());
+      }
+
+      if ((id & 0xFF) == 0) // Means: "Yes" button clicked!
+      {
+        // Only split A-->--B by putting C in between IF...
+        // C-->--A or B-->--C don't exists...
+        // A ==> hi.getFromStep()
+        // B ==> hi.getToStep();
+        // C ==> selected_step
+        //
+        boolean caExists = transMeta.findTransHop(selectedStep, hi.getFromStep()) != null;
+        boolean bcExists = transMeta.findTransHop(hi.getToStep(), selectedStep) != null; 
+        if (!caExists && !bcExists) {
+
+          // In case step A targets B then we now need to target C
+          //
+          StepIOMetaInterface fromIo = hi.getFromStep().getStepMetaInterface().getStepIOMeta();
+          for (StreamInterface stream : fromIo.getTargetStreams()) {
+            if (stream.getStepMeta()!=null && stream.getStepMeta().equals(hi.getToStep())) {
+              // This target stream was directed to B, now we need to direct it to C
+              stream.setStepMeta(selectedStep);
+            }
+          }
+
+          // In case step B sources from A then we now need to source from C
+          //
+          StepIOMetaInterface toIo = hi.getToStep().getStepMetaInterface().getStepIOMeta();
+          for (StreamInterface stream : toIo.getInfoStreams()) {
+            if (stream.getStepMeta()!=null && stream.getStepMeta().equals(hi.getFromStep())) {
+              // This info stream was reading from B, now we need to direct it to C
+              stream.setStepMeta(selectedStep);
+            }
+          }
+
+          TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selectedStep);
+          transMeta.addTransHop(newhop1);
+          TransHopMeta newhop2 = new TransHopMeta(selectedStep, hi.getToStep());
+          transMeta.addTransHop(newhop2);
+          spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop2 }, new int[] { transMeta.indexOfTransHop(newhop2) }, true);
+          int idx = transMeta.indexOfTransHop(hi);
+          spoon.addUndoDelete(transMeta, new TransHopMeta[] { hi }, new int[] { idx }, true);
+          transMeta.removeTransHop(idx);
+          spoon.refreshTree();
+          
+        } else {
+          // Silently discard this hop-split attempt. 
+        }
+      }
+  }
+
+  public void mouseMove(MouseEvent e) {
         boolean shift = (e.stateMask & SWT.SHIFT) != 0;
         noInputStep = null;
 
@@ -1399,7 +1435,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 			spoon.newHop(transMeta, candidate); 
 			break;
 		case OUTPUT :
-			candidate.getFromStep().setStepErrorMeta(null);
+		    StepErrorMeta stepErrorMeta = candidate.getFromStep().getStepErrorMeta();
+		    if (stepErrorMeta!=null && stepErrorMeta.getTargetStep()!=null) {
+		      if (stepErrorMeta.getTargetStep().equals(candidate.getToStep())) {
+		        candidate.getFromStep().setStepErrorMeta(null);
+		      }
+		    }
 			spoon.newHop(transMeta, candidate); 
 			break;
 		case INFO   :  
@@ -2068,6 +2109,70 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     spoon.refreshGraph();
   }
 
+  public void enableHopsBetweenSelectedSteps() {
+    enableHopsBetweenSelectedSteps(true);
+  }
+
+  public void disableHopsBetweenSelectedSteps() {
+    enableHopsBetweenSelectedSteps(false);
+  }
+
+  /**
+   * This method enables or disables all the hops between the selected steps.
+   * 
+   **/
+  public void enableHopsBetweenSelectedSteps(boolean enabled) {
+    List<StepMeta> list = transMeta.getSelectedSteps();
+    
+    for (int i=0;i<transMeta.nrTransHops();i++) {
+      TransHopMeta hop = transMeta.getTransHop(i);
+      if (list.contains(hop.getFromStep()) && list.contains(hop.getToStep())) {
+        
+        TransHopMeta before = (TransHopMeta) hop.clone();
+        hop.setEnabled(enabled);
+        TransHopMeta after = (TransHopMeta) hop.clone();
+        spoon.addUndoChange(transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta.indexOfTransHop(hop) });
+      }
+    }
+    
+    spoon.refreshGraph();
+  }
+  
+  public void enableHopsDownstream() {
+    enableDisableHopsDownstream(true);    
+  }
+  
+  public void disableHopsDownstream() {
+    enableDisableHopsDownstream(false);    
+  }
+
+  public void enableDisableHopsDownstream(boolean enabled) {
+    if (currentHop==null) return;
+
+    TransHopMeta before = (TransHopMeta) currentHop.clone();
+    currentHop.setEnabled(enabled);
+    TransHopMeta after = (TransHopMeta) currentHop.clone();
+    spoon.addUndoChange(transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta.indexOfTransHop(currentHop) });
+
+    enableDisableNextHops(currentHop.getToStep(), enabled);
+    
+    spoon.refreshGraph();
+  }
+
+  private void enableDisableNextHops(StepMeta from, boolean enabled) {
+    for (StepMeta to : transMeta.getSteps()) {
+      TransHopMeta hop = transMeta.findTransHop(from, to, true);
+      if (hop!=null) {
+        TransHopMeta before = (TransHopMeta) hop.clone();
+        hop.setEnabled(enabled);
+        TransHopMeta after = (TransHopMeta) hop.clone();
+        spoon.addUndoChange(transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta.indexOfTransHop(hop) });
+
+        enableDisableNextHops(to, enabled);
+      }
+    }
+  }
+
   public void editNote() {
     selectionRegion = null;
     editNote(getCurrentNote());
@@ -2180,7 +2285,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-sniff-error"); //$NON-NLS-1$
             item.setDisabled(!(stepMeta.supportsErrorHandling() && stepMeta.getStepErrorMeta()!=null && stepMeta.getStepErrorMeta().getTargetStep()!=null && trans!=null && trans.isRunning()));
 
-            
             XulMenu aMenu = (XulMenu) doc.getElementById("trans-graph-entry-align"); //$NON-NLS-1$
             if (aMenu != null) {
               aMenu.setDisabled(sels < 2);
