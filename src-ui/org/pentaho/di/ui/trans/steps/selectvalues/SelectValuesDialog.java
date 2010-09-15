@@ -667,7 +667,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 
 		for (int i=0;i<nrmeta;i++)
 		{
-			SelectMetadataChange change = new SelectMetadataChange();
+			SelectMetadataChange change = new SelectMetadataChange(input);
 			input.getMeta()[i] = change;
 			
 			TableItem item = wMeta.getNonEmpty(i);
