@@ -14,7 +14,7 @@
 
   <dependencies defaultconf="default->default">
 
-    <dependency org="commons-vfs" name="commons-vfs" rev="1.0" transitive="false" conf="default->default" />
+    <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false" />
 
     <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}" transitive="false" conf="default->default"
       changing="true" />
