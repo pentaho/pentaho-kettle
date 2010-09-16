@@ -38,17 +38,16 @@ public abstract class LazilyInitializedController extends AbstractXulEventHandle
 
   protected synchronized void lazyInit() {
     if (!initialized) {
-      boolean succeeded = false;
       try {
-        succeeded = doLazyInit();
+        boolean succeeded = doLazyInit();
+        if (succeeded) {
+          initialized = true;
+        } else {
+          showErrorDialog(null);
+        }
       } catch (Exception e) {
         e.printStackTrace();
         showErrorDialog(e);
-      }
-      if (succeeded) {
-        initialized = true;
-      } else {
-        showErrorDialog(null);
       }
     }
   }
