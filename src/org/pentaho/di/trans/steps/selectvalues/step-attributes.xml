@@ -1,0 +1,30 @@
+<attributes>  
+
+  <attribute id="FIELDS"> <xmlcode>fields</xmlcode> <repcode/> <description>CsvInputDialog.Fields.Label</description> <tooltip/> <valuetype>None</valuetype> <parentid/> </attribute>
+  <attribute id="FIELD"> <xmlcode>field</xmlcode> <repcode/>  <description>CsvInputDialog.Field.Label</description> <tooltip/> <valuetype>None</valuetype> <parentid>FIELDS</parentid> </attribute>
+  <attribute id="FIELD_NAME"> <xmlcode>name</xmlcode> <repcode>field_name</repcode> <description>SelectValuesDialog.ColumnInfo.Fieldname</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_RENAME"> <xmlcode>rename</xmlcode> <repcode>field_rename</repcode> <description>SelectValuesDialog.ColumnInfo.RenameTo</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_LENGTH"> <xmlcode>length</xmlcode> <repcode>field_length</repcode> <description>SelectValuesDialog.ColumnInfo.Length</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  <attribute id="FIELD_PRECISION"> <xmlcode>precision</xmlcode> <repcode>field_precision</repcode> <description>SelectValuesDialog.ColumnInfo.Precision</description> <tooltip/> <valuetype>String</valuetype> <parentid>FIELD</parentid> </attribute>
+  
+  <attribute id="SELECT_UNSPECIFIED"> <xmlcode>select_unspecified</xmlcode> <repcode/>  <description>SelectValuesDialog.Unspecified.Label</description> <tooltip/> <valuetype>Boolean</valuetype> <parentid/> </attribute>
+  
+  <attribute id="REMOVES"> <xmlcode>removes</xmlcode> <repcode/>  <description>CsvInputDialog.Removes.Label</description> <tooltip/> <valuetype>None</valuetype> <parentid/> </attribute>
+  <attribute id="REMOVE"> <xmlcode>remove</xmlcode> <repcode/>  <description>CsvInputDialog.Remove.Label</description> <tooltip/> <valuetype>None</valuetype> <parentid>REMOVES</parentid> </attribute>
+  <attribute id="REMOVE_NAME"> <xmlcode>name</xmlcode> <repcode>remove_name</repcode> <description>SelectValuesDialog.ColumnInfo.Fieldname</description> <tooltip/> <valuetype>String</valuetype> <parentid>REMOVE</parentid> </attribute>
+
+  <attribute id="METAS"> <xmlcode>metas</xmlcode> <repcode/>  <description>CsvInputDialog.Metas.Label</description> <tooltip/> <valuetype>None</valuetype> <parentid/> </attribute>
+  <attribute id="META"> <xmlcode>meta</xmlcode> <repcode/>  <description>CsvInputDialog.Meta.Label</description> <tooltip/> <valuetype>None</valuetype> <parentid>METAS</parentid> </attribute>
+  <attribute id="META_NAME"> <xmlcode>name</xmlcode>  <repcode>meta_name</repcode> <description>SelectValuesDialog.ColumnInfo.Fieldname</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+  <attribute id="META_RENAME"> <xmlcode>rename</xmlcode>  <repcode>meta_rename</repcode> <description>SelectValuesDialog.ColumnInfo.Renameto</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+  <attribute id="META_TYPE"> <xmlcode>type</xmlcode>  <repcode>meta_type</repcode> <description>SelectValuesDialog.ColumnInfo.Type</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+  <attribute id="META_LENGTH"> <xmlcode>length</xmlcode>  <repcode>meta_length</repcode> <description>SelectValuesDialog.ColumnInfo.Length</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+  <attribute id="META_PRECISION"> <xmlcode>precision</xmlcode>  <repcode>meta_precision</repcode> <description>SelectValuesDialog.ColumnInfo.Precision</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+  <attribute id="META_STORAGE_TYPE"> <xmlcode>storage_type</xmlcode>  <repcode>meta_storage_type</repcode> <description>SelectValuesDialog.ColumnInfo.Storage.Label</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+  <attribute id="META_CONVERSION_MASK"> <xmlcode>conversion_mask</xmlcode>  <repcode>meta_conversion_mask</repcode> <description>SelectValuesDialog.ColumnInfo.Format</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+  <attribute id="META_ENCODING"> <xmlcode>encoding</xmlcode>  <repcode>meta_encoding</repcode> <description>SelectValuesDialog.ColumnInfo.Encoding</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+  <attribute id="META_DECIMAL"> <xmlcode>decimal_symbol</xmlcode>  <repcode>meta_edecimal_symbol</repcode> <description>SelectValuesDialog.ColumnInfo.Decimal</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+  <attribute id="META_GROUPING"> <xmlcode>grouping_symbol</xmlcode>  <repcode>meta_grouping_symbol</repcode> <description>SelectValuesDialog.ColumnInfo.Grouping</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+  <attribute id="META_CURRENCY"> <xmlcode>currency_symbol</xmlcode>  <repcode>meta_currency_symbol</repcode> <description>SelectValuesDialog.ColumnInfo.Currency</description> <tooltip/> <valuetype>String</valuetype> <parentid>META</parentid> </attribute>
+ 
+</attributes>
