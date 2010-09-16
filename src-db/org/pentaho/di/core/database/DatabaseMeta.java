@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
@@ -66,6 +68,8 @@ public class DatabaseMeta
 
   public static final String XML_TAG = "connection";
 
+  private static final Log logger = LogFactory.getLog(DatabaseMeta.class);
+  
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.DATABASE;
 
   // Comparator for sorting databases alphabetically by name
@@ -1296,7 +1300,7 @@ public class DatabaseMeta
 				databaseInterface.setPluginName(plugin.getName());
 				tmpAllDatabaseInterfaces.put(plugin.getIds()[0], databaseInterface);
 			} catch(Exception e) {
-				throw new RuntimeException("Error creating class for: "+plugin, e);
+			  logger.error("Error loading plugin: " + plugin, e); //$NON-NLS-1$
 			}
 		}
 		allDatabaseInterfaces = tmpAllDatabaseInterfaces;
