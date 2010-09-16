@@ -66,14 +66,14 @@ public class KettleDatabaseRepositoryNotePadDelegate extends KettleDatabaseRepos
 				note.setFontColorBlue((int) r.getInteger("FONT_COLOR_BLUE", NotePadMeta.COLOR_RGB_BLACK_BLUE));
 
 				// Background color
-				note.setBackGroundColorRed((int) r.getInteger("FONT_BACK_GROUND_COLOR_RED", NotePadMeta.COLOR_RGB_YELLOW_RED));
-				note.setBackGroundColorGreen((int) r.getInteger("FONT_BACK_GROUND_COLOR_GREEN", NotePadMeta.COLOR_RGB_YELLOW_GREEN));
-				note.setBackGroundColorBlue((int) r.getInteger("FONT_BACK_GROUND_COLOR_BLUE", NotePadMeta.COLOR_RGB_YELLOW_BLUE));
+				note.setBackGroundColorRed((int) r.getInteger("FONT_BACK_GROUND_COLOR_RED", NotePadMeta.COLOR_RGB_DEFAULT_BG_RED));
+				note.setBackGroundColorGreen((int) r.getInteger("FONT_BACK_GROUND_COLOR_GREEN", NotePadMeta.COLOR_RGB_DEFAULT_BG_GREEN));
+				note.setBackGroundColorBlue((int) r.getInteger("FONT_BACK_GROUND_COLOR_BLUE", NotePadMeta.COLOR_RGB_DEFAULT_BG_BLUE));
 
 				// Border color
-				note.setBorderColorRed((int) r.getInteger("FONT_BORDER_COLOR_RED", NotePadMeta.COLOR_RGB_GRAY_RED));
-				note.setBorderColorGreen((int) r.getInteger("FONT_BORDER_COLOR_GREEN", NotePadMeta.COLOR_RGB_GRAY_GREEN));
-				note.setBorderColorBlue((int) r.getInteger("FONT_BORDER_COLOR_BLUE", NotePadMeta.COLOR_RGB_GRAY_BLUE));
+				note.setBorderColorRed((int) r.getInteger("FONT_BORDER_COLOR_RED", NotePadMeta.COLOR_RGB_DEFAULT_BORDER_RED));
+				note.setBorderColorGreen((int) r.getInteger("FONT_BORDER_COLOR_GREEN", NotePadMeta.COLOR_RGB_DEFAULT_BORDER_GREEN));
+				note.setBorderColorBlue((int) r.getInteger("FONT_BORDER_COLOR_BLUE", NotePadMeta.COLOR_RGB_DEFAULT_BORDER_BLUE));
 				note.setDrawShadow(r.getBoolean("DRAW_SHADOW", true));
 
 				// Done!

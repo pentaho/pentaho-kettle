@@ -604,13 +604,13 @@ public class NotePadDialog extends Dialog {
 					NotePadMeta.COLOR_RGB_BLACK_GREEN,
 					NotePadMeta.COLOR_RGB_BLACK_BLUE));
 			bgColor = new Color(shell.getDisplay(),
-					new RGB(NotePadMeta.COLOR_RGB_YELLOW_RED,
-							NotePadMeta.COLOR_RGB_YELLOW_GREEN,
-							NotePadMeta.COLOR_RGB_YELLOW_BLUE));
+					new RGB(NotePadMeta.COLOR_RGB_DEFAULT_BG_RED,
+							NotePadMeta.COLOR_RGB_DEFAULT_BG_GREEN,
+							NotePadMeta.COLOR_RGB_DEFAULT_BG_BLUE));
 			borderColor = new Color(shell.getDisplay(), new RGB(
-					NotePadMeta.COLOR_RGB_GRAY_RED,
-					NotePadMeta.COLOR_RGB_GRAY_GREEN,
-					NotePadMeta.COLOR_RGB_GRAY_BLUE));
+					NotePadMeta.COLOR_RGB_DEFAULT_BORDER_RED,
+					NotePadMeta.COLOR_RGB_DEFAULT_BORDER_GREEN,
+					NotePadMeta.COLOR_RGB_DEFAULT_BORDER_BLUE));
 			wDrawShadow.setSelection(true);
 		}
 
