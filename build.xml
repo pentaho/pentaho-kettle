@@ -26,6 +26,8 @@
 
 	<property name="plugin.destination" location="kettle-dist" />
 	
+	<property name="samples.dir" value="${basedir}/samples" />
+	
 	
 	<path id="cp-meta">
 	    <fileset dir="${libswt}" includes="*.jar" />
@@ -129,6 +131,10 @@
 		<unzip dest="${kettle.dist.dir}">
 			<fileset file="${dist.dir}/${package.basename}.zip"/>
 			</unzip>
+	</target>
+	
+	<target name="package" depends="subfloor-pkg.package">
+		<zip destfile="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" basedir="${samples.dir}" />
 	</target>
 	
 </project>
