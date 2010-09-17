@@ -73,7 +73,28 @@
 	
 	  <target name="assemble.copy-libs">
 	    <copy todir="${stage.dir}/${ivy.artifact.id}/lib">
-	      <fileset dir="${lib.dir}" />
+	      <fileset dir="${lib.dir}">
+			<exclude name="kettle-*.jar" />
+			<exclude name="pentaho-xul-*.jar" />
+			<exclude name="metro-*.jar" />
+			<exclude name="log4j-*.jar" />
+			<exclude name="pentaho-ee-dsc-core-${dependency.pentaho-ee-dsc.revision}.jar" />
+			<exclude name="pentaho-bi-platform-ee-${dependency.bi-platform.revision}.jar" />
+			<exclude name="jface*.jar" />
+			<exclude name="jets3t-*.jar" />
+			<exclude name="hadoop-*.jar" />
+			<exclude name="jug-*.jar" />
+			<exclude name="commons-codec*.jar" />
+			<exclude name="commons-io*.jar" />
+			<exclude name="commons-lang*.jar" />
+			<exclude name="commons-logging*.jar" />
+			<exclude name="commons-vfs*.jar" />
+			<exclude name="pentaho-hdfs-vfs*.jar" />
+			<exclude name="pentaho-s3-vfs*.jar" />
+			<exclude name="pentaho-vfs-browser*.jar" />
+			<exclude name="scannotation*.jar" />
+			<exclude name="dom4j*.jar" />	      	
+          </fileset>
 	    </copy>
 	    <copy todir="${stage.dir}/${ivy.artifact.id}">
 	      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />

@@ -16,8 +16,6 @@
 
     <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false" />
 
-    <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}" transitive="false" conf="default->default"
-      changing="true" />
     <dependency org="pentaho.kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
       changing="true" />
     <dependency org="pentaho.kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
@@ -38,7 +36,7 @@
     <dependency org="pentaho" name="pentaho-hdfs-vfs" rev="${dependency.pentaho-hdfs-vfs.revision}" transitive="false" conf="default->default"
       changing="true" />
     
-    <dependency org="org.apache.hadoop" name="hadoop-core" rev="${dependency.pentaho-hadoop.revision}" transitive="true" conf="default->default"
+    <dependency org="org.apache.hadoop" name="hadoop-core" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="default->default"
       changing="false" />
       
     <dependency org="pentaho" name="pentaho-vfs-browser" rev="${dependency.vfs-browser.revision}" transitive="false" conf="default->default"
