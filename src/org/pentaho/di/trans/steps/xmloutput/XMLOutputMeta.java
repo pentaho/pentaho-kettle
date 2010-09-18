@@ -25,7 +25,9 @@ import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -503,6 +505,15 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
       }
     }
 
+  }
+  
+  public RowMetaInterface getRequiredFields(VariableSpace space) throws KettleException {
+    RowMeta row = new RowMeta();
+    for (int i = 0; i < outputFields.length; i++) {
+      XMLField field = outputFields[i];
+      row.addValueMeta(new ValueMeta(field.getFieldName(), field.getType(), field.getLength(), field.getPrecision()));
+    }
+    return row;
   }
 
   public String getXML() {
