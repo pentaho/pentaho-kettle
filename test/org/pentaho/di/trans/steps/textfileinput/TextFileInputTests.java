@@ -3,6 +3,8 @@ package org.pentaho.di.trans.steps.textfileinput;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +23,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -31,6 +34,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
+import org.pentaho.reporting.libraries.base.util.CSVTokenizer;
 
 /**
  * This class was a "copy and modification" of Kettle's 
@@ -326,4 +330,18 @@ public class TextFileInputTests extends TestCase {
             fail(tfe.getMessage());
         }
     }
+
+  /**
+   * Verify that lines are properly identified when parsing a mixed format file.
+   */
+  public void testGetLine_FILE_FORMAT_MIXED() throws Exception {
+    String fileLocation = "testfiles/example.csv"; //$NON-NLS-1$
+    InputStream inputStream = KettleVFS.getInputStream(fileLocation);
+    InputStreamReader reader = new InputStreamReader(inputStream);
+    // Grab the first line and verify it only has 4 tokens instead of 24 (the total tokens in the file)
+    StringBuilder stringBuilder = new StringBuilder(1000);
+    String line = TextFileInput.getLine(null, reader, TextFileInputMeta.FILE_FORMAT_MIXED, stringBuilder);
+    CSVTokenizer csvt = new CSVTokenizer(line, ",", "\""); //$NON-NLS-1$ //$NON-NLS-2$
+    assertEquals(4, csvt.countTokens());
+  }
 }

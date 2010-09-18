@@ -133,11 +133,11 @@ public class TextFileInput extends BaseStep implements StepInterface
                     {
                         c = reader.read();
                         
-        				if (encodingType.isLinefeed(c))
+        				if (encodingType.isReturn(c))
         				{
         					return line.toString();
         				}
-        				else if (!encodingType.isReturn(c))
+        				else if (!encodingType.isLinefeed(c))
         				{
         					if (c >= 0) line.append((char) c);
         				}
