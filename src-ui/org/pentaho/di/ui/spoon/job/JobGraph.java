@@ -1667,7 +1667,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     return !entry.isStart();
   }
 
-  public void detatchEntry() {
+  public void detachEntry() {
     detach(getJobEntry());
     jobMeta.unselectAll();
   }
