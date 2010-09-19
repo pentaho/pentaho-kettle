@@ -4425,34 +4425,33 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			String resultname, int resulttype) throws KettleDatabaseException {
 		RowMetaAndData ret;
 		try {
-			cstmt.execute();
-
+			boolean moreResults = cstmt.execute();
 			ret = new RowMetaAndData();
 			int pos = 1;
 			if (resultname != null && resultname.length() != 0) {
 				ValueMeta vMeta = new ValueMeta(resultname, resulttype);
-				Object v =null;
+				Object v = null;
 				switch (resulttype) {
 				case ValueMetaInterface.TYPE_BOOLEAN:
-					v=Boolean.valueOf(cstmt.getBoolean(pos));
+					v = Boolean.valueOf(cstmt.getBoolean(pos));
 					break;
 				case ValueMetaInterface.TYPE_NUMBER:
-					v=new Double(cstmt.getDouble(pos));
+					v = new Double(cstmt.getDouble(pos));
 					break;
 				case ValueMetaInterface.TYPE_BIGNUMBER:
-					v=cstmt.getBigDecimal(pos);
+					v = cstmt.getBigDecimal(pos);
 					break;
 				case ValueMetaInterface.TYPE_INTEGER:
-					v=Long.valueOf(cstmt.getLong(pos));
+					v = Long.valueOf(cstmt.getLong(pos));
 					break;
 				case ValueMetaInterface.TYPE_STRING:
-					v=cstmt.getString(pos);
+					v = cstmt.getString(pos);
 					break;
 				case ValueMetaInterface.TYPE_BINARY: 
                     if (databaseMeta.supportsGetBlob())
                     {
                         Blob blob = cstmt.getBlob(pos);
-                        if (blob!=null)
+                        if (blob != null)
                         {
                             v = blob.getBytes(1L, (int)blob.length());
                         }
@@ -4465,15 +4464,15 @@ public class Database implements VariableSpace, LoggingObjectInterface
                     {
                         v = cstmt.getBytes(pos);
                     }
-	                break;					
+	                break;
 				case ValueMetaInterface.TYPE_DATE:
 					if (databaseMeta.supportsTimeStampToDateConversion())
                     {
-						v=cstmt.getTimestamp(pos);
+						v = cstmt.getTimestamp(pos);
                     }
                     else 
                     {
-                    	v=cstmt.getDate(pos); 
+                    	v = cstmt.getDate(pos); 
                     }					
 					break;
 				}
@@ -4484,28 +4483,28 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				if (argdir[i].equalsIgnoreCase("OUT")
 						|| argdir[i].equalsIgnoreCase("INOUT")) {
 					ValueMeta vMeta = new ValueMeta(arg[i], argtype[i]);
-					Object v=null;
+					Object v = null;
 					switch (argtype[i]) {
 					case ValueMetaInterface.TYPE_BOOLEAN:
-						v=Boolean.valueOf(cstmt.getBoolean(pos + i));
+						v = Boolean.valueOf(cstmt.getBoolean(pos + i));
 						break;
 					case ValueMetaInterface.TYPE_NUMBER:
-						v=new Double(cstmt.getDouble(pos + i));
+						v = new Double(cstmt.getDouble(pos + i));
 						break;
 					case ValueMetaInterface.TYPE_BIGNUMBER:
-						v=cstmt.getBigDecimal(pos + i);
+						v = cstmt.getBigDecimal(pos + i);
 						break;
 					case ValueMetaInterface.TYPE_INTEGER:
-						v=Long.valueOf(cstmt.getLong(pos + i));
+						v = Long.valueOf(cstmt.getLong(pos + i));
 						break;
 					case ValueMetaInterface.TYPE_STRING:
-						v=cstmt.getString(pos + i);
+						v = cstmt.getString(pos + i);
 						break;
-					case ValueMetaInterface.TYPE_BINARY: 
+					case ValueMetaInterface.TYPE_BINARY:
 	                    if (databaseMeta.supportsGetBlob())
 	                    {
 	                        Blob blob = cstmt.getBlob(pos + i);
-	                        if (blob!=null)
+	                        if (blob != null)
 	                        {
 	                            v = blob.getBytes(1L, (int)blob.length());
 	                        }
@@ -4518,27 +4517,76 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	                    {
 	                        v = cstmt.getBytes(pos + i);
 	                    }
-		                break;					
+		                break;
 					case ValueMetaInterface.TYPE_DATE:
 						if (databaseMeta.supportsTimeStampToDateConversion())
 	                    {
-							v=cstmt.getTimestamp(pos + i);
+							v = cstmt.getTimestamp(pos + i);
 	                    }
 	                    else 
 	                    {
-	                    	v=cstmt.getDate(pos + i); 
+	                    	v = cstmt.getDate(pos + i);
 	                    }					
 						break;
 					}
 					ret.addValue(vMeta, v);
 				}
 			}
+			ResultSet rs = null;
+			int updateCount = -1;
+			
+			// CHE: Iterate through the result sets and update counts
+			// to receive all error messages from within the stored procedure.
+			// This is only the first step to ensure that the stored procedure
+			// is properly executed. A future extension would be to return all
+			// result sets and update counts properly.
+
+			do {
+				rs = null;
+				try {
+					// Save the result set
+					if (moreResults) {
+						rs = cstmt.getResultSet();
+
+					} else {
+						// Save the update count if it is available (> -1)
+						updateCount = cstmt.getUpdateCount();
+
+					}
+
+					moreResults = cstmt.getMoreResults();
+
+				} finally {
+					if (rs != null) {
+						rs.close();
+						rs = null;
+					}
+				}
+
+			} while (moreResults || (updateCount > -1));
 
 			return ret;
 		} catch (SQLException ex) {
 			throw new KettleDatabaseException("Unable to call procedure", ex);
 		}
+		
 	}
+	
+	
+	public void closeProcedureStatement() throws KettleDatabaseException {
+		// CHE: close the callable statement involved in the stored
+		// procedure call!
+		try {
+			if (cstmt != null) {
+				cstmt.close();
+				cstmt = null;
+			}
+		} catch (SQLException ex) {
+			throw new KettleDatabaseException(
+			    BaseMessages.getString(PKG, "Database.Exception.ErrorClosingCallableStatement"), ex);
+		}
+	}
+	
 	
 	
 	/**

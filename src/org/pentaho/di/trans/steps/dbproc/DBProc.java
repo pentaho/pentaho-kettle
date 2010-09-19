@@ -11,6 +11,7 @@
  
 package org.pentaho.di.trans.steps.dbproc;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
@@ -159,13 +160,23 @@ public class DBProc extends BaseStep implements StepInterface
 		catch(KettleException e)
 		{
 			
-			if (getStepMeta().isDoingErrorHandling())
-	        {
+			if (getStepMeta().isDoingErrorHandling()) {
                 sendToErrorRow = true;
                 errorMessage = e.toString();
-	        }
-	        else
-	        {
+				// CHE: Read the chained SQL exceptions and add them
+				// to the errorMessage
+				SQLException nextSQLExOnChain = null;
+				if ((e.getCause() != null)
+						&& (e.getCause() instanceof SQLException)) {
+					nextSQLExOnChain = ((SQLException) e.getCause())
+							.getNextException();
+					while (nextSQLExOnChain != null) {
+						errorMessage = errorMessage
+								+ nextSQLExOnChain.getMessage() + Const.CR;
+						nextSQLExOnChain = nextSQLExOnChain.getNextException();
+					}
+				}
+	        } else {
 			
 				logError(BaseMessages.getString(PKG, "DBProc.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 				setErrors(1);
@@ -236,6 +247,13 @@ public class DBProc extends BaseStep implements StepInterface
 	    meta = (DBProcMeta)smi;
 	    data = (DBProcData)sdi;
 	    
+		// CHE: Properly close the callable statement
+		try {
+			data.db.closeProcedureStatement();
+		} catch (KettleDatabaseException e) {
+			logError(BaseMessages.getString(PKG, "DBProc.Log.CloseProcedureError") + e.getMessage());
+		}
+
         try
         {
             if (!meta.isAutoCommit())
