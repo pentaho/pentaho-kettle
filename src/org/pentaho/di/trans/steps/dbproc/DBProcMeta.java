@@ -406,6 +406,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
         if (database != null)
         {
             Database db = new Database(database);
+            db.shareVariablesWith(transmeta);
             try
             {
                 db.connect();

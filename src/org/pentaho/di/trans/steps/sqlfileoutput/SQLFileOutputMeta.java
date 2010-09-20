@@ -655,6 +655,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 
 			Database db = new Database(databaseMeta);
+			db.shareVariablesWith(transMeta);
 			try
 			{
 				db.connect();
@@ -895,6 +896,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 		if (databaseMeta != null) {
 			Database db = new Database(databaseMeta);
+			db.shareVariablesWith(space);
 			try {
 				db.connect();
 

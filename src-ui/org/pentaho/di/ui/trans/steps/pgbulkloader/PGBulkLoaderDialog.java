@@ -935,6 +935,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
 						Database db = new Database(ci);
+						db.shareVariablesWith(transMeta);
 						try {
 							db.connect();
 

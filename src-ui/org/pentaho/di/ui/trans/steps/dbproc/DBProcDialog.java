@@ -186,6 +186,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 				if (dbInfo!=null)
 				{
 					Database db = new Database(dbInfo);
+					db.shareVariablesWith(transMeta);
 					try
 					{
 						db.connect();

@@ -430,6 +430,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
 						Database db = new Database(ci);
+						db.shareVariablesWith(transMeta);
 						try {
 							db.connect();
 

@@ -946,6 +946,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 				if (!Const.isEmpty(tableName))
 				{
                     Database db = new Database(databaseMeta);
+                    db.shareVariablesWith(transMeta);
 					try
 					{
 						db.connect();
@@ -1062,6 +1063,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
         if (databaseMeta!=null)
         {
             Database db = new Database(databaseMeta);
+            db.shareVariablesWith(space);
             try
             {
                 db.connect();

@@ -811,6 +811,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                 if (databaseMeta!=null)
                 {
                     db = new Database(databaseMeta);
+                    db.shareVariablesWith(space);
                     // First try without connecting to the database... (can be  S L O W)
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
                     RowMetaInterface extraFields = db.getTableFields(schemaTable);
@@ -1070,9 +1071,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		if (update)
-			checkUpdate(remarks, stepinfo, prev);
+			checkUpdate(remarks, stepinfo, prev, transMeta);
 		else
-			checkLookup(remarks, stepinfo, prev);
+			checkLookup(remarks, stepinfo, prev, transMeta);
 
 		if ( techKeyCreation != null )
 		{
@@ -1102,7 +1103,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 
-	private void checkUpdate(List<CheckResultInterface> remarks, StepMeta stepinfo, RowMetaInterface prev)
+	private void checkUpdate(List<CheckResultInterface> remarks, StepMeta stepinfo, RowMetaInterface prev, VariableSpace space)
 	{
 		LogWriter log = LogWriter.getInstance();
 		
@@ -1112,7 +1113,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		if (databaseMeta != null)
 		{
 			Database db = new Database(databaseMeta);
-			// TODO SB: Share VariableSpace
+	        db.shareVariablesWith(space);
 			try
 			{
 				db.connect();
@@ -1323,7 +1324,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 
-	private void checkLookup(List<CheckResultInterface> remarks, StepMeta stepinfo, RowMetaInterface prev)
+	private void checkLookup(List<CheckResultInterface> remarks, StepMeta stepinfo, RowMetaInterface prev, VariableSpace space)
 	{
 		int i;
 		boolean error_found = false;
@@ -1334,7 +1335,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		if (databaseMeta != null)
 		{
 			Database db = new Database(databaseMeta);
-			// TODO SB: share variable space
+	        db.shareVariablesWith(space);
 			try
 			{
 				db.connect();

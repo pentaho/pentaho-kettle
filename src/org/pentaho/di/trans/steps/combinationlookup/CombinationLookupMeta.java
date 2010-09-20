@@ -567,6 +567,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		if (databaseMeta!=null)
 		{
 			Database db = new Database(databaseMeta);
+	        db.shareVariablesWith(transMeta);
+
 			try
 			{
 				db.connect();
@@ -753,6 +755,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 				{
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
 					Database db = new Database(databaseMeta);
+			        db.shareVariablesWith(transMeta);
+
 					try
 					{
 						boolean doHash = false;

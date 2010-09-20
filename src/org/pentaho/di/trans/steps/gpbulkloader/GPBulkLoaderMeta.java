@@ -696,6 +696,8 @@ public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
         if (databaseMeta!=null)
         {
             Database db = new Database(databaseMeta);
+            db.shareVariablesWith(space);
+
             try
             {
                 db.connect();

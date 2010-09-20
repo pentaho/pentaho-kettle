@@ -1109,6 +1109,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
 						Database db = new Database(ci);
+						db.shareVariablesWith(transMeta);
 						try {
 							db.connect();
 

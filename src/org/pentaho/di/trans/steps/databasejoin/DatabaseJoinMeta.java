@@ -293,6 +293,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		if (databaseMeta==null) return;
 		
 		Database db = new Database(databaseMeta);
+        db.shareVariablesWith(space);
         databases = new Database[] { db }; // Keep track of this one for cancelQuery
 		
 		// Which fields are parameters?
@@ -428,6 +429,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		if (databaseMeta!=null)
 		{
 			Database db = new Database(databaseMeta);
+	        db.shareVariablesWith(transMeta);
             databases = new Database[] { db }; // Keep track of this one for cancelQuery
 
 			try

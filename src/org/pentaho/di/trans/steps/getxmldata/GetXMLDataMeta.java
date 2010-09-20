@@ -14,29 +14,29 @@
 
 package org.pentaho.di.trans.steps.getxmldata;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.w3c.dom.Node;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -44,7 +44,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.fileinput.FileInputList;
+import org.w3c.dom.Node;
 
 /**
  * Store run-time data on the getXMLData step.
@@ -949,31 +949,25 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 			// So let's change the filename from relative to absolute by grabbing the file object...
 			// In case the name of the file comes from previous steps, forget about this!
 			//
-			List<String> newFilenames = new ArrayList<String>();
-			
 			if (!isInFields()) {
-				FileInputList fileList = getFiles(space);
-				if (fileList.getFiles().size()>0) {
-					for (FileObject fileObject : fileList.getFiles()) {
-						// From : ${Internal.Transformation.Filename.Directory}/../foo/bar.xml
-						// To   : /home/matt/test/files/foo/bar.xml
-						//
-						// If the file doesn't exist, forget about this effort too!
-						//
-						if (fileObject.exists()) {
-							// Convert to an absolute path and add it to the list.
-							// 
-							newFilenames.add(fileObject.getName().getPath());
-						}
-					}
-					
-					// Still here: set a new list of absolute filenames!
-					//
-					fileName = newFilenames.toArray(new String[newFilenames.size()]);
-					fileMask = new String[newFilenames.size()]; // all null since converted to absolute path.
-					fileRequired = new String[newFilenames.size()]; // all null, turn to "Y" :
-					for (int i=0;i<newFilenames.size();i++) fileRequired[i]="Y";
-				}
+              // Replace the filename ONLY (folder or filename)
+              // 
+              for (int i=0;i<fileName.length;i++) {
+                FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName[i]), space);
+                String prefix;
+                String path;
+                if (Const.isEmpty(fileMask[i])) {
+                  prefix = fileObject.getName().getBaseName(); 
+                  path = fileObject.getParent().getName().getPath();
+                } else {
+                  prefix = "";
+                  path = fileObject.getName().getPath();
+                }
+                
+                fileName[i] = resourceNamingInterface.nameResource(
+                    prefix, path, space.toString(), FileNamingType.DATA_FILE
+                  );
+              }
 			}
 			return null;
 		} catch (Exception e) {

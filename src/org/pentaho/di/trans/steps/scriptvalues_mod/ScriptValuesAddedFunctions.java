@@ -449,6 +449,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				ci.shareVariablesWith(scm);
 			
 				Database db=new Database(ci);
+				// TODO: add support for variables in shared connections by sharing the ones from the step.
 	    		db.setQueryLimit(0);
 	    		try{
 	    			 if (scm.getTransMeta().isUsingUniqueConnections())

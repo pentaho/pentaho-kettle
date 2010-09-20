@@ -651,6 +651,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
         if (databaseMeta!=null)
         {
             Database db = new Database(databaseMeta);
+            db.shareVariablesWith(space);
             try
             {
                 db.connect();

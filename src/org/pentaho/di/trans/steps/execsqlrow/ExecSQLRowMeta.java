@@ -297,6 +297,8 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 
 			Database db = new Database(databaseMeta);
+	        db.shareVariablesWith(transMeta);
+
             databases = new Database[] { db }; // keep track of it for cancelling purposes...
 
 			try

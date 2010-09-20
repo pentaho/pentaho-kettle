@@ -39,6 +39,7 @@ public class InfobrightLoaderData extends BaseStepData implements StepDataInterf
   void databaseSetup(InfobrightLoaderMeta meta, InfobrightLoader step) throws KettleException {
     
     db = new Database(meta.getDatabaseMeta());
+    db.shareVariablesWith(step);
     db.connect();
 
     // FIXME: This will fail if the first row of the table contains a value that

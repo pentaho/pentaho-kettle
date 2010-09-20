@@ -1472,6 +1472,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
 						Database db = new Database(ci);
+						db.shareVariablesWith(transMeta);
 						try {
 							db.connect();
 
@@ -1580,6 +1581,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
 						Database db = new Database(ci);
+						db.shareVariablesWith(transMeta);
 						try {
 							db.connect();
 							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema.getText()), 

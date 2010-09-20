@@ -290,6 +290,7 @@ public class TransHistoryDelegate extends SpoonDelegate {
 			mb.setText(Messages.getString("TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title")); // Sorry!
 			if (mb.open()==SWT.YES) {
 				Database database = new Database(databaseMeta);
+				database.shareVariablesWith(transGraph.getManagedObject());
 				try {
 					database.connect();
 					database.truncateTable(logTable);

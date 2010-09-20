@@ -216,6 +216,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
         boolean param=false;
 
 		Database db = new Database(databaseMeta);
+		db.shareVariablesWith(space);
         databases = new Database[] { db }; // keep track of it for canceling purposes...
 
 		// First try without connecting to the database... (can be  S L O W)

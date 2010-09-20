@@ -638,6 +638,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
 						Database db = new Database(ci);
+						db.shareVariablesWith(transMeta);
 						try {
 							db.connect();
 

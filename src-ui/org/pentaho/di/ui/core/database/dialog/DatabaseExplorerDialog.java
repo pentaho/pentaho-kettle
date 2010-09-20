@@ -754,6 +754,7 @@ public class DatabaseExplorerDialog extends Dialog
 		}
 	}
 	
+	// TODO: add supprt for variables in shared connections
 	public void getDDLForOther(String tableName)
 	{
         if (databases!=null)

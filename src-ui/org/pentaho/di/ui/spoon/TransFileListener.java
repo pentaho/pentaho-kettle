@@ -58,7 +58,9 @@ public class TransFileListener implements FileListener {
             if (!importfile) transMeta.clearChanged();
             transMeta.setFilename(fname);
             spoon.addTransGraph(transMeta);
-            spoon.sharedObjectsFileMap.put(transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects());
+            if (transMeta.getSharedObjects()!=null) {
+              spoon.sharedObjectsFileMap.put(transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects());
+            }
 
             spoon.refreshTree();
             spoon.refreshHistory();

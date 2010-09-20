@@ -640,6 +640,8 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         if (databaseMeta!=null)
         {
             Database db = new Database(databaseMeta);
+            db.shareVariablesWith(space);
+
             try
             {
                 db.connect();
