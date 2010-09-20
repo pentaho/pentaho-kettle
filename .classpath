@@ -84,8 +84,6 @@
 	<classpathentry kind="lib" path="libext/ini4j-0.5.1.jar"/>
 	<classpathentry kind="lib" path="libext/edtftpj2.0.4.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.42.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/kettle-vfs-20091118.jar" sourcepath="libext-src/vfs-1.0.zip"/>
 	<classpathentry kind="lib" path="libext/salesforce/salesforce16.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/vertica_3.5_jdk_5.jar"/>
@@ -95,8 +93,6 @@
 	<classpathentry kind="lib" path="libext/mondrian/commons-math-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/eigenbase-properties-1.1.0.10924.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/javacup-10k.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/libbase-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/libformula-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/sqleonardo-swt-wrapper.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/sqleonardo.jar"/>
 	<classpathentry kind="lib" path="libext/web/jetty-6.1.21.jar"/>
@@ -131,10 +127,8 @@
 	<classpathentry kind="lib" path="libext/rules/drools-core-5.0.1.jar"/>
 	<classpathentry kind="lib" path="libext/rules/mvel2-2.0.10.jar"/>
 	<classpathentry kind="lib" path="libext/rules/core-3.4.2.v_883_R34x.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/eigenbase-resgen-1.3.0.13768.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/eigenbase-xom-1.3.0.13768.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/json_simple-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-api-1.5.8.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-jcl-1.5.8.jar"/>
@@ -148,7 +142,13 @@
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/hadoop-core-0.20.2.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/jets3t-0.7.4.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/libbase-1.2.0.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/libformula-1.2.0.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-4.0.3.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.1.2.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.1.2.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2.1.13841.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
