@@ -142,9 +142,11 @@ public class TableView extends Composite
 	
 	private ModifyListener lsMod, lsUndo;
 	private Clipboard  clipboard;
-	private Image      dummy_image;
-	private GC         dummy_gc;
-    private Font       gridFont;
+
+  // The following Image and Graphics Context are used for font metrics. We only want them created once.
+	private static Image      dummy_image;
+	private static GC         dummy_gc;
+  private Font       gridFont;
 	
 	// private int last_carret_position;
 	
@@ -207,13 +209,15 @@ public class TableView extends Composite
 				}
 			}
 			;
-		
-		Display disp = parent.getDisplay();
-		dummy_image = new Image(disp, 1, 1);
-		dummy_gc = new GC(dummy_image);
+		if(TableView.dummy_gc == null){
+      Display disp = parent.getDisplay();
+      TableView.dummy_image = new Image(disp, 1, 1);
+      TableView.dummy_gc = new GC(TableView.dummy_image);
         
-        gridFont = new Font(disp, props.getGridFont());
-        dummy_gc.setFont(gridFont);
+      gridFont = new Font(disp, props.getGridFont());
+      TableView.dummy_gc.setFont(gridFont);
+
+    }
 		
 		FormLayout controlLayout = new FormLayout();
 		controlLayout.marginLeft   = 0;
@@ -995,10 +999,10 @@ public class TableView extends Composite
 					{
 						clipboard.dispose();
 						clipboard=null;
-					} 
-					dummy_gc.dispose();
-					dummy_image.dispose();
-                    gridFont.dispose();
+					}
+          if(gridFont != null){
+            gridFont.dispose();
+          }
 				}
 			}
 		);
@@ -2013,7 +2017,7 @@ public class TableView extends Composite
 	private void setColumnWidthBasedOnTextField(final int colnr, final boolean useVariables)
     {
         String str = getTextWidgetValue(colnr);
-        int strmax = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x+20;
+        int strmax = TableView.dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x+20;
         int colmax = tablecolumn[colnr].getWidth(); 
         if (strmax>colmax) 
         {
@@ -2214,7 +2218,7 @@ public class TableView extends Composite
 			int max=0;
 			if (header) 
 			{
-				max=dummy_gc.textExtent(tc.getText(), SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
+				max=TableView.dummy_gc.textExtent(tc.getText(), SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
 				
                 // Check if the column has a sorted mark set. In that case, we need the header to be a bit wider...
                 //
@@ -2265,7 +2269,7 @@ public class TableView extends Composite
     				    str = ti.getText(c);
     				}
     				if (str==null) str="";
-    				int len = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
+    				int len = TableView.dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
     				if (len>max) max=len;
                 }
 			}
