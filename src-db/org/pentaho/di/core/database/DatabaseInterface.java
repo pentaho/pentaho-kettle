@@ -12,6 +12,7 @@
 
 package org.pentaho.di.core.database;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -857,4 +858,12 @@ public interface DatabaseInterface extends Cloneable
    * @return Column alias that is valid for this database
    */
   public String generateColumnAlias(int columnIndex, String suggestedName);
+
+  /**
+   * Parse all possible statements from the provided SQL script.
+   * 
+   * @param sqlScript Raw SQL Script to be parsed into executable statements.
+   * @return List of parsed SQL statements to be executed separately.
+   */
+  public List<String> parseStatements(String sqlScript);
 }

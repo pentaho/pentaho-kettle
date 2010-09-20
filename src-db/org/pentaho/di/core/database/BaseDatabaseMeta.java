@@ -14,9 +14,11 @@
 package org.pentaho.di.core.database;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -1489,5 +1491,124 @@ public abstract class BaseDatabaseMeta implements Cloneable
   
   public String generateColumnAlias(int columnIndex, String suggestedName) {
     return "COL" + Integer.toString(columnIndex); //$NON-NLS-1$
+  }
+  
+  /**
+   * Parse all possible statements from the provided SQL script.
+   * 
+   * @param sqlScript Raw SQL Script to be parsed into executable statements.
+   * @return List of parsed SQL statements to be executed separately.
+   */
+  public List<String> parseStatements(String sqlScript) {
+    List<String> statements = new ArrayList<String>();
+    String all = sqlScript;
+    int from = 0;
+    int to = 0;
+    int length = all.length();
+
+    while (to < length) {
+      char c = all.charAt(to);
+
+      // Skip comment lines...
+      //
+      while (all.substring(from).startsWith("--")) {
+        int nextLineIndex = all.indexOf(Const.CR, from);
+        from = nextLineIndex + Const.CR.length();
+        if (to >= length)
+          break;
+        c = all.charAt(c);
+      }
+      if (to >= length)
+        break;
+
+      // Skip over double quotes...
+      //
+      if (c == '"') {
+        int nextDQuoteIndex = all.indexOf('"', to + 1);
+        if (nextDQuoteIndex >= 0) {
+          to = nextDQuoteIndex + 1;
+        }
+      }
+      
+      // Skip over back-ticks
+      if (c == '`') {
+        int nextBacktickIndex = all.indexOf('`', to + 1);
+        if (nextBacktickIndex >= 0) {
+          to = nextBacktickIndex + 1;
+        }
+      }
+      
+      c = all.charAt(to);
+      if (c == '\'') {
+        boolean skip = true;
+
+        // Don't skip over \' or ''
+        //
+        if (to > 0) {
+          char prevChar = all.charAt(to - 1);
+          if (prevChar == '\\' || prevChar == '\'') {
+            skip = false;
+          }
+        }
+
+        // Jump to the next quote and continue from there.
+        //
+        while (skip) {
+          int nextQuoteIndex = all.indexOf('\'', to + 1);
+          if (nextQuoteIndex >= 0) {
+            to = nextQuoteIndex + 1;
+
+            skip = false;
+
+            if (to < all.length()) {
+              char nextChar = all.charAt(to);
+              if (nextChar == '\'') {
+                skip = true;
+                to++;
+              }
+            }
+            if (to > 0) {
+              char prevChar = all.charAt(to - 2);
+              if (prevChar == '\\') {
+                skip = true;
+                to++;
+              }
+            }
+          }
+        }
+      }
+
+      c = all.charAt(to);
+
+      if (c == ';' || to >= length - 1) // end of statement
+      {
+        if (to >= length - 1)
+          to++; // grab last char also!
+
+        String stat = all.substring(from, to);
+        if (!onlySpaces(stat)) {
+          statements.add(Const.trim(stat));
+        }
+        to++;
+        from = to;
+      } else {
+        to++;
+      }
+    }
+    return statements;
+  }
+
+  /**
+   * @param str 
+   * @return True if {@code str} contains only spaces.
+   */
+  protected boolean onlySpaces(String str) {
+    for (int i = 0; i < str.length(); i++) {
+      int c = str.charAt(i);
+      if (c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+        return false;
+      }
+    }
+    return true;
   }
 }
