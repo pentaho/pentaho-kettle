@@ -140,7 +140,9 @@ public class RepositoriesController extends AbstractXulEventHandler {
     bf.createBinding(loginModel, "selectedRepository", repositoryEditButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(loginModel, "selectedRepository", repositoryRemoveButton, "disabled", buttonConverter);//$NON-NLS-1$ //$NON-NLS-2$
 
-    helper = new RepositoriesHelper(loginModel, document, getMessages(), shell);
+    final Shell loginShell = (Shell) loginDialog.getRootObject();
+
+    helper = new RepositoriesHelper(loginModel, document, getMessages(), loginShell);
     helper.setPreferredRepositoryName(preferredRepositoryName);
     helper.getMetaData();
   }

@@ -113,7 +113,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     this.masterRepositoriesMeta = repositoriesMeta.clone();
     this.masterRepositoryName = repositoryMeta.getName();
 
-    shell = new Shell(parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+    shell = new Shell(parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL);
     shell.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Main.Title")); //$NON-NLS-1$
 
   }
@@ -469,6 +469,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
             EnterPasswordDialog etd = new EnterPasswordDialog(
                 shell,
                 BaseMessages.getString(PKG, "RepositoryDialog.Dialog.EnterPassword.Title"), BaseMessages.getString(PKG, "RepositoryDialog.Dialog.EnterPassword.Message"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            etd.setModal();
             String pwd = etd.open();
             if (pwd != null) {
               try {
