@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.dom4j.Element;
 import org.dom4j.ElementHandler;
 import org.dom4j.ElementPath;
@@ -544,7 +545,12 @@ public class GetXMLData extends BaseStep implements StepInterface
 				data.rootUriName = data.file.getName().getRootURI();
 			}
 			// Check if file is empty
-			long fileSize= data.file.getContent().getSize();	
+			long fileSize;
+			try {
+			  fileSize= data.file.getContent().getSize();
+			} catch(FileSystemException e) {
+			  fileSize = -1;
+			}
 	
 			if (meta.getSizeField()!=null && meta.getSizeField().length()>0)
 			{
@@ -553,7 +559,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			// Move file pointer ahead!
 			data.filenr++;
             
-			if(meta.isIgnoreEmptyFile() && data.file.getContent().getSize()==0)
+			if(meta.isIgnoreEmptyFile() && data.size==0)
 			{
 				// log only basic as a warning (was before logError)
 				logBasic(BaseMessages.getString(PKG, "GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
