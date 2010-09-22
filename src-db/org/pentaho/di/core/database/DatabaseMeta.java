@@ -458,7 +458,11 @@ public class DatabaseMeta
 	 */
 	public static final DatabaseInterface getDatabaseInterface(String databaseType) throws KettleDatabaseException
 	{
-		return (DatabaseInterface)findDatabaseInterface(databaseType).clone();
+	  DatabaseInterface di = findDatabaseInterface(databaseType);
+    if (di == null) {
+      throw new KettleDatabaseException(BaseMessages.getString(PKG, "DatabaseMeta.Error.DatabaseInterfaceNotFound", databaseType)); //$NON-NLS-1$
+    }
+		return (DatabaseInterface) di.clone();
 	}
 	
 	/**
