@@ -16,6 +16,9 @@ if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 
 cd %KETTLE_DIR%
 
+set PENTAHO_JAVA=java
+call "%~dp0set-pentaho-env.bat"
+
 REM **************************************************
 REM   Platform Specific SWT       **
 REM **************************************************
@@ -28,7 +31,7 @@ REM java version "1.6.0_17"
 REM Java(TM) SE Runtime Environment (build 1.6.0_17-b04)
 REM Java HotSpot(TM) 64-Bit Server VM (build 14.3-b01, mixed mode)
 REM
-FOR /F %%a IN ('java -version 2^>^&1^|find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+FOR /F %%a IN ('""%_PENTAHO_JAVA%" -version" 2^>^&1^|find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
 IF %IS64BITJAVA% == 1 GOTO :USE64
 :USE32
 REM ===========================================
@@ -60,11 +63,21 @@ REM ** Set java runtime options                                     **
 REM ** Change 256m to higher values in case you run out of memory.  **
 REM ******************************************************************
 
-set OPT=-Xmx256m "-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
+set PENTAHO_JAVA=javaw
+call "%~dp0set-pentaho-env.bat"
 
+set OPT="-Xmx256m" "-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
+
+if not "%PENTAHO_INSTALLED_LICENSE_PATH%" == "" goto setLicenseVar
+goto skipToStartup
+
+:setLicenseVar
+set OPT=%OPT% -Dpentaho.installed.licenses.file="%PENTAHO_INSTALLED_LICENSE_PATH%"
+
+:skipToStartup
 REM ***************
 REM ** Run...    **
 REM ***************
 
 @echo on
-start javaw %OPT% -jar launcher\launcher.jar -lib %LIBSPATH% %_cmdline%
+start "Spoon" "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib %LIBSPATH% %_cmdline%

@@ -10,6 +10,8 @@ if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 
 cd  %KETTLE_DIR%
 
+call "%~dp0set-pentaho-env.bat"
+
 REM **************************************************
 REM ** Set up usage of JAVA_EXT_LIBS                **
 REM **************************************************
@@ -24,19 +26,18 @@ set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%~dp0
 
 :endExtDirs
 
-if DEFINED JAVA_HOME goto withJavaHome
-:noJavaHome
-goto endJavaHome
-
-:withJavaHome
+if DEFINED _PENTAHO_JAVA_HOME goto withPentahoJavaHome
+goto endPentahoJavaHome
+:withPentahoJavaHome
 REM Every directory contains the null device. So check
 REM for directory existence:
-if exist %JAVA_HOME%\jre\lib\ext\nul set JAVA_EXT_DIRS=%JAVA_HOME%\jre\lib\ext;%JAVA_EXT_DIRS%
-if exist %JAVA_HOME%\lib\ext\nul set JAVA_EXT_DIRS=%JAVA_HOME%\lib\ext;%JAVA_EXT_DIRS%
-set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;lib
-goto endJavaHome
+if exist %_PENTAHO_JAVA_HOME%\jre\lib\ext\nul set JAVA_EXT_DIRS=%_PENTAHO_JAVA_HOME%\jre\lib\ext;%JAVA_EXT_DIRS%
+if exist %_PENTAHO_JAVA_HOME%\lib\ext\nul set JAVA_EXT_DIRS=%_PENTAHO_JAVA_HOME%\lib\ext;%JAVA_EXT_DIRS%
+set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%
+goto endPentahoJavaHome
 
-:endJavaHome
+:endPentahoJavaHome
+
 
 REM ******************
 REM   KETTLE Library
@@ -84,8 +85,16 @@ REM ******************************************************************
 
 set OPT=-Xmx512M "-Djava.ext.dirs=%JAVA_EXT_DIRS%" -Djava.library.path=libswt\win32\ "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
 
+if not "%PENTAHO_INSTALLED_LICENSE_PATH%" == "" goto setLicenseVar
+goto skipToStartup
+
+:setLicenseVar
+set OPT=%OPT% -Dpentaho.installed.licenses.file="%PENTAHO_INSTALLED_LICENSE_PATH%"
+
+:skipToStartup
+
 REM ***************
 REM ** Run...    **
 REM ***************
 
-java %OPT% org.pentaho.di.pan.Pan %_cmdline%
+"%_PENTAHO_JAVA%" %OPT% org.pentaho.di.pan.Pan %_cmdline%

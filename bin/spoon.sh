@@ -23,12 +23,17 @@ export GDK_NATIVE_WINDOWS=1
 
 BASEDIR=`dirname $0`
 cd $BASEDIR
+DIR=`pwd`
+cd -
+
+. "$DIR/set-pentaho-env.sh"
+
+setPentahoEnv
 
 # **************************************************
 # ** Platform specific libraries ...              **
 # **************************************************
 
-JAVA_BIN=java
 LIBPATH="NONE"
 STARTUP="-jar launcher/launcher.jar"
 
@@ -52,7 +57,7 @@ case `uname -s` in
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				if $($JAVA_BIN -version 2>&1 | grep "64-Bit" > /dev/null )
+				if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
                                 then
 				  LIBPATH=$BASEDIR/../libswt/linux/x86_64/
                                 else
@@ -123,8 +128,11 @@ export LIBPATH
 # ******************************************************************
 
 OPT="$OPT -Xmx256m -Xms256m -XX:MaxPermSize=128m -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
+if [ -n "$PENTAHO_INSTALLED_LICENSE_PATH" ]; then
+     export OPT="$OPT -Dpentaho.installed.licenses.file=$PENTAHO_INSTALLED_LICENSE_PATH"
+fi
 
 # ***************
 # ** Run...    **
 # ***************
-$JAVA_BIN $OPT $STARTUP -lib $LIBPATH "${1+$@}"
+"$_PENTAHO_JAVA" $OPT $STARTUP -lib $LIBPATH "${1+$@}"

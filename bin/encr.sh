@@ -6,6 +6,12 @@
 
 BASEDIR=`dirname $0`
 cd $BASEDIR
+DIR=`pwd`
+cd -
+
+. "$DIR/set-pentaho-env.sh"
+
+setPentahoEnv
 
 CLASSPATH=$BASEDIR
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core.jar
@@ -26,15 +32,16 @@ done
 # ** Platform specific libraries ...              **
 # **************************************************
 
-JAVA_BIN=java
-
 OPT="-cp $CLASSPATH"
 
+if [ -n "$PENTAHO_INSTALLED_LICENSE_PATH" ]; then
+     export OPT="$OPT -Dpentaho.installed.licenses.file=$PENTAHO_INSTALLED_LICENSE_PATH"
+fi
 # ***************
 # ** Run...    **
 # ***************
 
-$JAVA_BIN $OPT org.pentaho.di.core.encryption.Encr "${1+$@}"
+"$_PENTAHO_JAVA" $OPT org.pentaho.di.core.encryption.Encr "${1+$@}"
 
 
 

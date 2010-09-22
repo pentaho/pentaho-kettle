@@ -4,8 +4,15 @@
 # ** Libraries used by Kettle:                    **
 # **************************************************
 
+
 BASEDIR=`dirname $0`
 cd $BASEDIR
+DIR=`pwd`
+cd -
+
+. "$DIR/set-pentaho-env.sh"
+
+setPentahoEnv
 
 CLASSPATH=$BASEDIR
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core.jar
@@ -26,8 +33,6 @@ done
 # ** Platform specific libraries ...              **
 # **************************************************
 
-JAVA_BIN=java
-
 # circumvention for the IBM JVM behavior (seems to be a problem with the IBM JVM native compiler)
 if [ `uname -s` = "OS400" ]
 then
@@ -46,6 +51,9 @@ fi
 
 OPT="-Xmx${JAVAMAXMEM}m -cp $CLASSPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
 
+if [ -n "$PENTAHO_INSTALLED_LICENSE_PATH" ]; then
+     export OPT="$OPT -Dpentaho.installed.licenses.file=$PENTAHO_INSTALLED_LICENSE_PATH"
+fi
 if [ "$1" = "-x" ]; then
   set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BASEDIR/libext
   export LD_LIBRARY_PATH
@@ -57,5 +65,5 @@ fi
 # ** Run...    **
 # ***************
 
-$JAVA_BIN $OPT org.pentaho.di.kitchen.Kitchen "${1+$@}"
+"$_PENTAHO_JAVA" $OPT org.pentaho.di.kitchen.Kitchen "${1+$@}"
 
