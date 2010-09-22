@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
-import org.dom4j.Document;
+import org.apache.commons.vfs.FileSystemException;
 import org.dom4j.Element;
 import org.dom4j.ElementHandler;
 import org.dom4j.ElementPath;
@@ -29,7 +29,6 @@ import org.dom4j.Namespace;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.AbstractNode;
-import java.io.InputStream;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -517,8 +516,16 @@ public class GetXMLData extends BaseStep implements StepInterface
 			
 			// Move file pointer ahead!
 			data.filenr++;
+			
+	         // Check if file is empty
+            long fileSize;
+            try {
+              fileSize= data.file.getContent().getSize();
+            } catch(FileSystemException e) {
+              fileSize = -1;
+            }
             
-			if(meta.isIgnoreEmptyFile() && data.file.getContent().getSize()==0)
+			if(meta.isIgnoreEmptyFile() && fileSize==0)
 			{
 				// log only basic as a warning (was before logError)
 				logBasic(BaseMessages.getString(PKG, "GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
