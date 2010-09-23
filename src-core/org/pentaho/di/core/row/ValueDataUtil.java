@@ -800,26 +800,28 @@ public class ValueDataUtil
 
     	throw new KettleValueException("The 'add_months' function only works on a dates");
 	}
-    /**
-     * This method introduces rounding errors based on time of day and timezones. It should not be used
-     * except for the case where this rounding error is desired.
-     * @deprecated
-     */
-    public static Object DateDiffLegacy(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
-    {
-        if (metaA.isDate() && metaB.isDate())
-        {
-           if (dataA!=null && dataB!=null)
-             {
-                 // Get msec from each, and subtract.
-                 long diff = metaA.getDate(dataA).getTime() - metaB.getDate(dataB).getTime();
-                 return new Long(diff / (1000 * 60 * 60 * 24));  
-             }else
-               return null;
-        }
-
-        throw new KettleValueException("The 'DateDiff' function only works with dates");
-    }
+    
+//    /**
+//     * This method introduces rounding errors based on time of day and timezones. It should not be used
+//     * except for the case where this rounding error is desired.
+//     * @deprecated
+//     */
+//    public static Object DateDiffLegacy(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+//    {
+//        if (metaA.isDate() && metaB.isDate())
+//        {
+//           if (dataA!=null && dataB!=null)
+//             {
+//                 // Get msec from each, and subtract.
+//                 long diff = metaA.getDate(dataA).getTime() - metaB.getDate(dataB).getTime();
+//                 return new Long(diff / (1000 * 60 * 60 * 24));  
+//             }else
+//               return null;
+//        }
+//
+//        throw new KettleValueException("The 'DateDiff' function only works with dates");
+//    }
+    
     /**
      * Returns the number of days that have elapsed between dataA and dataB.
      * 
