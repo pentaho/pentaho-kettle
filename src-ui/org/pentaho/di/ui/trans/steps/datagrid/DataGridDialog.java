@@ -335,7 +335,12 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 	}
 		
 	private void getMetaData() {
-		for (int i=0;i<input.getFieldName().length;i++)
+		int nrfields=input.getFieldName().length;
+		if(nrfields>wFields.table.getItemCount()) 
+		{
+			nrfields=wFields.table.getItemCount();
+		}
+		for (int i=0;i<nrfields;i++)
 		{
 			if (input.getFieldName()[i]!=null)
 			{
