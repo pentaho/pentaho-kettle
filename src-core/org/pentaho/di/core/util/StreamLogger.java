@@ -46,12 +46,12 @@ public class StreamLogger implements Runnable
             String line = null;
             while ((line = br.readLine()) != null)
             {
-                log.logBasic(type, line);
+                log.logBasic(type + " " + line); //$NON-NLS-1$
             }
         }
         catch (IOException ioe)
         {
-            log.logError(type, Const.getStackTracker(ioe));
+            log.logError(type + " " + Const.getStackTracker(ioe)); //$NON-NLS-1$
         }
     }
 }
