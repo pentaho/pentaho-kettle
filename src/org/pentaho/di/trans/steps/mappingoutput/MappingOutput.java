@@ -69,15 +69,16 @@ public class MappingOutput extends BaseStep implements StepInterface
             // However, don't wait forever, if we don't have a connection after 60 seconds: bail out! 
             //
             int totalsleep = 0;
-            while (!isStopped() && !getTrans().getParentTrans().isRunning())
-            {
-                try { totalsleep+=10; Thread.sleep(10); } catch(InterruptedException e) { stopAll(); }
-                if (totalsleep>60000)
+            if (getTrans().getParentTrans() != null) {
+                while (!isStopped() && !getTrans().getParentTrans().isRunning())
                 {
-                	throw new KettleException(Messages.getString("MappingOutput.Exception.UnableToConnectWithParentMapping", ""+(totalsleep/1000)));
+                    try { totalsleep+=10; Thread.sleep(10); } catch(InterruptedException e) { stopAll(); }
+                    if (totalsleep>60000)
+                    {
+                    	throw new KettleException(Messages.getString("MappingOutput.Exception.UnableToConnectWithParentMapping", ""+(totalsleep/1000)));
+                    }
                 }
             }
-
             // Now see if there is a target step to send data to.
             // If not, simply eat the data...
             //
