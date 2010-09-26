@@ -2347,7 +2347,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void delConnection() {
-
     if (RepositorySecurityUI.verifyOperations(shell, rep, RepositoryOperation.DELETE_DATABASE))
       return;
 
@@ -5675,6 +5674,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         disableMenuItem(doc, "wizard-copy-table", disableTransMenu && disableJobMenu);
         disableMenuItem(doc, "wizard-copy-tables", isRepositoryRunning && disableTransMenu && disableJobMenu);
 
+        disableMenuItem(doc, "database-inst-dependancy", !isRepositoryRunning);
+        
         SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
 
         // What steps & plugins to show?
@@ -7745,4 +7746,54 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   public RepositorySecurityManager getSecurityManager() {
     return rep.getSecurityManager();
   }
+  public void displayDbDependancies() {
+		  TreeItem[] selection = selectionTree.getSelection();
+		  if(selection==null || selection.length!=1) return;
+		  // Clear all dependancies for select connection
+		  TreeItem parent=selection[0];
+			if(parent!=null) {
+				int nrChilds=parent.getItemCount();
+				if(nrChilds>0) {
+					for(int i=0; i<nrChilds; i++) {
+						parent.getItem(i).dispose();
+					}
+				}
+			}
+		 if(rep==null) {
+			 return;
+		 }
+		
+		try {
+		
+		    final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
+			String jobList[] = rep.getJobsUsingDatabase(databaseMeta.getObjectId());
+			String transList[] = rep.getTransformationsUsingDatabase(databaseMeta.getObjectId());
+			if (jobList.length == 0 && transList.length == 0) {
+				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION	| SWT.OK);
+				box.setText("Connection dependancies");
+				box.setMessage("This connection is not used by a job nor a transformation.");
+				box.open();
+			} else {
+				for (int i = 0; i < jobList.length; i++) {
+					if(jobList[i]!=null) {
+						TreeItem tidep = new TreeItem(parent, SWT.NONE);
+						tidep.setImage(GUIResource.getInstance().getImageJobGraph());
+						tidep.setText(jobList[i]);
+					}
+				}
+			
+
+				for (int i = 0; i < transList.length; i++) {
+					if(transList[i]!=null) {
+						TreeItem tidep = new TreeItem(parent, SWT.NONE);
+						tidep.setImage(GUIResource.getInstance().getImageTransGraph());
+						tidep.setText(transList[i]);
+					}
+				}
+				parent.setExpanded(true);
+			}
+		} catch (Exception e) {
+			new ErrorDialog(shell,"Error","Error getting dependancies! :",e);
+		}
+	}
 }

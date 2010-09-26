@@ -244,6 +244,8 @@
     <menuitem id="database-inst-clear-cache" label="${Spoon.Menu.Popup.CONNECTIONS.ClearDBCache}" command="spoon.clearDBCache('database-inst-clear-cache')"/>
     <menuitem id="database-inst-share" label="${Spoon.Menu.Popup.CONNECTIONS.Share}" command="spoon.shareObject('database-inst-share')" />
     <menuitem id="database-inst-explore" label="${Spoon.Menu.Popup.CONNECTIONS.Explore}" command="spoon.exploreDB()" />
+    <menuseparator />
+  	<menuitem id="database-inst-dependancy" label="${Spoon.Menu.Popup.CONNECTIONS.ShowDependancies}" command="spoon.displayDbDependancies()" />
   </menupopup>
 
   <menupopup id="step-inst">

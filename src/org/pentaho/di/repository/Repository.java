@@ -502,4 +502,12 @@ public interface Repository {
    * @return message
    */
   public String getConnectMessage();
+  
+  /**
+   * Get the repository version.
+   * @return The repository version as a string
+   */
+  public String[] getJobsUsingDatabase(ObjectId id_database) throws KettleException;
+  
+  public String[] getTransformationsUsingDatabase(ObjectId id_database) throws KettleException;
 }
