@@ -260,7 +260,8 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 			for (int i=0;i<nrmeta;i++)
 			{
 				Node metaNode = XMLHandler.getSubNodeByNr(fields, SelectMetadataChange.XML_TAG, i); //$NON-NLS-1$
-				meta[i] = new SelectMetadataChange(metaNode);
+				meta[i] = new SelectMetadataChange(this);
+				meta[i].loadXML(metaNode);
 			}
 		}
 		catch(Exception e)

@@ -86,7 +86,6 @@
 	<classpathentry kind="lib" path="libext/jsch-0.1.42.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/kettle-vfs-20100924.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/salesforce16.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/vertica_3.5_jdk_5.jar"/>
 	<classpathentry kind="lib" path="libext/spring/spring-beans-2.5.6.jar"/>
@@ -150,5 +149,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/jets3t-0.7.4.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/kettle-vfs-20100924.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

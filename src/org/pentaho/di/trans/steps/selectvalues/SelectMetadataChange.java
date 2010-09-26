@@ -99,7 +99,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		return retval.toString();
 	}
 	
-	public SelectMetadataChange(Node metaNode) {
+	public void loadXML(Node metaNode) {
 		name           = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_NAME")); //$NON-NLS-1$
 		rename         = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_RENAME")); //$NON-NLS-1$
 		type           = ValueMeta.getType(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_TYPE"))); //$NON-NLS-1$
