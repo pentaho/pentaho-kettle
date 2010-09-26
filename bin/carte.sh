@@ -39,9 +39,6 @@ fi
 
 OPT="$JAVAMEMOPTIONS -cp $CLASSPATH -Dorg.mortbay.util.URI.charset=UTF-8 -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
 
-if [ -n "$PENTAHO_INSTALLED_LICENSE_PATH" ]; then
-     export OPT="$OPT -Dpentaho.installed.licenses.file=$PENTAHO_INSTALLED_LICENSE_PATH"
-fi
 # ******************************************************************
 # ** Set up the options for JAAS                                  **
 # ******************************************************************

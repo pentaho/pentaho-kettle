@@ -62,13 +62,6 @@ REM ******************************************************************
 
 set OPT="-Djava.ext.dirs=%JAVA_EXT_DIRS%"
 
-if not "%PENTAHO_INSTALLED_LICENSE_PATH%" == "" goto setLicenseVar
-goto skipToStartup
-
-:setLicenseVar
-set OPT=%OPT% -Dpentaho.installed.licenses.file="%PENTAHO_INSTALLED_LICENSE_PATH%"
-
-:skipToStartup
 REM ***************
 REM ** Run...    **
 REM ***************

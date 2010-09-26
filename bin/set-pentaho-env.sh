@@ -1,36 +1,94 @@
 #!/bin/sh
 # -----------------------------------------------------------------------------
-# Set environment variables for pentaho
+# Finds a suitable Java
 #
-# Calls set-pentaho-java to find PENTAHO_JAVA and PENTAHO_JAVA_HOME
-# Then searches to find the pentaho installed licence file
+# Looks in well-known locations to find a suitable Java then sets two 
+# environment variables for use in other script files. The two environment
+# variables are:
+# 
+# * _PENTAHO_JAVA_HOME - absolute path to Java home
+# * _PENTAHO_JAVA - absolute path to Java launcher (e.g. java)
+# 
+# The order of the search is as follows:
 #
+# 1. environment variable PENTAHO_JAVA_HOME - path to Java home
+# 2. jre folder at current folder level
+# 3. java folder at current folder level
+# 4. jre folder one level up
+# 5. java folder one level up
+# 6. jre folder two levels up
+# 7. java folder two levels up
+# 8. environment variable JAVA_HOME - path to Java home
+# 9. environment variable JRE_HOME - path to Java home
+# 10. argument #1 - path to Java home
+# 
+# If a suitable Java is found at one of these locations, then 
+# _PENTAHO_JAVA_HOME is set to that location and _PENTAHO_JAVA is set to the 
+# absolute path of the Java launcher at that location. If none of these 
+# locations are suitable, then _PENTAHO_JAVA_HOME is set to empty string and 
+# _PENTAHO_JAVA is set to java.
+# 
+# Finally, there is one final optional environment variable: PENTAHO_JAVA.
+# If set, this value is used in the construction of _PENTAHO_JAVA. If not 
+# set, then the value java is used. 
 # -----------------------------------------------------------------------------
 
-setPentahoEnv() {
-	DIR_REL=`dirname $0`
-	cd $DIR_REL
-	DIR=`pwd`
-	cd -
-	
-	. "$DIR/set-pentaho-java.sh"
-	
-	if [ -d "$1" ]; then
-	  setPentahoJava "$1"
-	else
-	  setPentahoJava
-	fi
-	if [ -z "$PENTAHO_INSTALLED_LICENSE_PATH" ]; then
-	    if [ -f "$DIR/.installedLicenses.xml" ]; then
-	      echo "DEBUG: Found Pentaho License at the current folder"
-	      PENTAHO_INSTALLED_LICENSE_PATH="$DIR/.installedLicenses.xml"
-	    elif [ -f "$DIR/../.installedLicenses.xml" ]; then
-	      echo "DEBUG: Found Pentaho License one folder up"
-	      PENTAHO_INSTALLED_LICENSE_PATH="$DIR/../.installedLicenses.xml"
-	    elif [ -f "$DIR/../../.installedLicenses.xml" ]; then
-	      echo "DEBUG: Found Pentaho License two folders up"
-	      PENTAHO_INSTALLED_LICENSE_PATH="$DIR/../../.installedLicenses.xml"
-	    fi
-	fi
-	echo "DEBUG: PENTAHO_INSTALLED_LICENSE_PATH=$PENTAHO_INSTALLED_LICENSE_PATH"
-} 
+setPentahoJava() {
+  DIR_REL=`dirname $0`
+  cd $DIR_REL
+  DIR=`pwd`
+  cd -
+  
+  if [ -n "$PENTAHO_JAVA" ]; then
+    __LAUNCHER="$PENTAHO_JAVA"
+  else
+    __LAUNCHER="java"
+  fi
+  if [ -n "$PENTAHO_JAVA_HOME" ]; then
+    echo "DEBUG: Using PENTAHO_JAVA_HOME"
+    _PENTAHO_JAVA_HOME="$PENTAHO_JAVA_HOME"
+    _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
+  elif [ -d "$DIR/jre" ]; then
+    echo DEBUG: Found JRE at the current folder
+    _PENTAHO_JAVA_HOME="$DIR/jre"
+    _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
+  elif [ -d "$DIR/java" ]; then
+    echo DEBUG: Found JAVA at the current folder
+    _PENTAHO_JAVA_HOME="$DIR/java"
+    _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
+  elif [ -d "$DIR/../jre" ]; then
+    echo DEBUG: Found JRE one folder up
+    _PENTAHO_JAVA_HOME="$DIR/../jre"
+    _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
+  elif [ -d "$DIR/../java" ]; then
+    echo DEBUG: Found JAVA one folder up
+    _PENTAHO_JAVA_HOME="$DIR/../java"
+    _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
+  elif [ -d "$DIR/../../jre" ]; then
+    echo DEBUG: Found JRE two folders up
+    _PENTAHO_JAVA_HOME="$DIR/../../jre"
+    _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
+  elif [ -d "$DIR/../../java" ]; then
+    echo DEBUG: Found JAVA two folders up
+    _PENTAHO_JAVA_HOME="$DIR/../../java"
+    _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
+  elif [ -n "$JAVA_HOME" ]; then
+    echo "DEBUG: Using JAVA_HOME"
+    _PENTAHO_JAVA_HOME="$JAVA_HOME"
+    _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
+  elif [ -n "$JRE_HOME" ]; then
+    echo "DEBUG: Using JRE_HOME"
+    _PENTAHO_JAVA_HOME="$JRE_HOME"
+    _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
+  elif [ -n "$1" ] && [ -x "$1"/bin/$__LAUNCHER ]; then
+    echo "DEBUG: Using value ($1) from calling script"
+    _PENTAHO_JAVA_HOME="$1"
+    _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
+  else
+    echo "WARNING: Using java from path"
+    _PENTAHO_JAVA_HOME=
+    _PENTAHO_JAVA=$__LAUNCHER
+  fi
+  echo "DEBUG: _PENTAHO_JAVA_HOME=$_PENTAHO_JAVA_HOME"
+  echo "DEBUG: _PENTAHO_JAVA=$_PENTAHO_JAVA"
+}

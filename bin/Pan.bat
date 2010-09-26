@@ -85,14 +85,6 @@ REM ******************************************************************
 
 set OPT=-Xmx512M "-Djava.ext.dirs=%JAVA_EXT_DIRS%" -Djava.library.path=libswt\win32\ "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
 
-if not "%PENTAHO_INSTALLED_LICENSE_PATH%" == "" goto setLicenseVar
-goto skipToStartup
-
-:setLicenseVar
-set OPT=%OPT% -Dpentaho.installed.licenses.file="%PENTAHO_INSTALLED_LICENSE_PATH%"
-
-:skipToStartup
-
 REM ***************
 REM ** Run...    **
 REM ***************
