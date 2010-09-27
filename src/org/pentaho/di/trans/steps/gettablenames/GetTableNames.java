@@ -413,7 +413,8 @@ public class GetTableNames extends BaseStep implements StepInterface
 				return false;
 			}
             
-            data.db=new Database(this, meta.getDatabase()); 
+            data.db=new Database(this, meta.getDatabase());
+            data.db.shareVariablesWith(this);
             try
             {
                 if (getTransMeta().isUsingUniqueConnections())

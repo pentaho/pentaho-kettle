@@ -241,6 +241,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 	      for (int i = 0; i < connections.length && !parentJob.isStopped(); i++) 
 	      {
 	    	Database db = new Database(this, connections[i]);
+			db.shareVariablesWith(this);
 	    	try
             {
     		  db.connect();
