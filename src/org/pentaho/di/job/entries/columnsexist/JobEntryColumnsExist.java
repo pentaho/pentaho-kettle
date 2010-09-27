@@ -252,7 +252,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 		if (connection!=null)
 		{
 			Database db = new Database(this, connection);
-
+			db.shareVariablesWith(this);
 			try
 			{
 				String realSchemaname = environmentSubstitute(schemaname);

@@ -370,6 +370,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 			try
 			{
 				dbchecked = new Database(this, connection);	
+				dbchecked.shareVariablesWith(this);
 				dbchecked.connect();
 			}
 			finally
@@ -497,7 +498,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		List<Object[]> ar = null;
 		RowMetaInterface rowMeta=null;
 		Database db = new Database(this, connection);
-	
+		db.shareVariablesWith(this);
 		try
 		{
 			db.connect();

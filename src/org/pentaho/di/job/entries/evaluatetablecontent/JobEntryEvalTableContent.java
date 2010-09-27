@@ -298,7 +298,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 		if (connection!=null)
 		{ 
 			Database db = new Database(this, connection);
-		
+			db.shareVariablesWith(this);
 			try
 			{
 				db.connect();
