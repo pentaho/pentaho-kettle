@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${project.revision}" />
+  <configurations>
+    <conf name="default" />
+    <conf name="runtime" visibility="public" />
+    <conf name="test" visibility="private" />
+    <conf name="codegen" visibility="private" />
+    <conf name="codegen-linux" extends="codegen" visibility="private" />
+    <conf name="codegen-mac" extends="codegen" visibility="private" />
+    <conf name="codegen-win" extends="codegen" visibility="private" />
+  </configurations>
+
+  <publications>
+    <artifact name="${ivy.artifact.id}-samples" type="zip" />
+  </publications>
+
+  <dependencies defaultconf="default->default">
+  </dependencies>
+</ivy-module>

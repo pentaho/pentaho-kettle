@@ -28,6 +28,13 @@
 	
 	<property name="samples.dir" value="${basedir}/samples" />
 	
+	<property name="package-samples.artifact.ivyfile"
+	            value="package-samples-ivy.xml"
+	            description="The ivy file defining dependencies of the package" />
+    <property name="package-samples.artifact.pomfile"
+                value="package-samples-pom.xml"
+                description="The Maven pom file defining dependencies of the package" />
+	
 	
 	<path id="cp-meta">
 	    <fileset dir="${libswt}" includes="*.jar" />
@@ -136,6 +143,31 @@
 			<fileset file="${dist.dir}/${package.basename}.zip"/>
 			</unzip>
 	</target>
+	
+	<target name="publish-local-nojar" depends="install-ivy,subfloor.publish-local-nojar">
+	  <ivy:resolve file="${package.artifact.ivyfile}" />
+	  <ivy:publish resolver="local" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
+		<artifacts pattern="${dist.dir}/[artifact]-[revision].[ext]" />
+	  </ivy:publish>
+	  <ivy:resolve file="${package-samples.artifact.ivyfile}" />
+	  <ivy:publish resolver="local" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
+	    <artifacts pattern="${dist.dir}/[artifact]-[revision].[ext]" />
+	  </ivy:publish>
+	</target>
+	
+	<target name="publish-nojar" depends="subfloor-pkg.publish-nojar,create-package-pom">
+      <antcall target="maven-publish-artifact">
+        <param name="publish.pomFile" value="${package-samples.artifact.pomfile}" />
+        <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" />
+      </antcall>
+    </target>
+	
+	<target name="create-package-pom"
+	          depends="install-ivy"
+	          description="Creates a POM file based on the ivy dependencies for a separate package">
+      <ivy:makepom ivyfile="${package-samples.artifact.ivyfile}" pomfile="${package-samples.artifact.pomfile}" />
+      <replace file="${package-samples.artifact.pomfile}" token="jar" value="zip" />
+    </target>
 	
 	<target name="package" depends="subfloor-pkg.package">
 		<zip destfile="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" basedir="${samples.dir}" />
