@@ -34,16 +34,24 @@ REM
 REM Below is a logic to find the directory where java can found. We will
 REM temporarily change the directory to that folder where we can run java there
 pushd "%_PENTAHO_JAVA_HOME%"
-if exist java.exe goto GOTJAVA
+if exist java.exe goto USEJAVAFROMPENTAHOJAVAHOME
 cd bin
-if exist java.exe goto GOTJAVA
+if exist java.exe goto USEJAVAFROMPENTAHOJAVAHOME
 popd
 pushd "%_PENTAHO_JAVA_HOME%\jre\bin"
-if exist java.exe goto GOTJAVA
-goto USE32
-:GOTJAVA
+if exist java.exe goto USEJAVAFROMPATH
+goto USEJAVAFROMPATH
+:USEJAVAFROMPENTAHOJAVAHOME
 FOR /F %%a IN ('.\java.exe -version 2^>^&1^|%windir%\system32\find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+GOTO CHECK32VS64BITJAVA
+:USEJAVAFROMPATH
+FOR /F %%a IN ('java -version 2^>^&1^|find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+GOTO CHECK32VS64BITJAVA
+:CHECK32VS64BITJAVA
+
+
 IF %IS64BITJAVA% == 1 GOTO :USE64
+
 :USE32
 REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
