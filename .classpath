@@ -120,7 +120,6 @@
 	<classpathentry kind="lib" path="libext/webservices/xalan-2.4.1.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.2.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/orai18n.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/olap4j-0.9.7.309.jar"/>
 	<classpathentry kind="lib" path="libext/secondstring.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.0-remote.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/wstx-asl-3.2.9.jar"/>
@@ -150,5 +149,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/kettle-vfs-20100924.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/olap4j-0.9.8.340.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
