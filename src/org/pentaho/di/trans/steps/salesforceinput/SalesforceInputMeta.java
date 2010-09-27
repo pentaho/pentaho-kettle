@@ -592,9 +592,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 		if (includeTimestamp && !Const.isEmpty(timestampField))
 		{
-			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(timestampField), ValueMeta.TYPE_STRING);
-			v.setLength(250);
-            v.setPrecision(-1);
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(timestampField), ValueMeta.TYPE_DATE);
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}

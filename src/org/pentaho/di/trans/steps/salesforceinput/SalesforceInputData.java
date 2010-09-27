@@ -16,6 +16,8 @@
 
 package org.pentaho.di.trans.steps.salesforceinput;
 
+import java.util.Date;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -43,7 +45,7 @@ public class SalesforceInputData extends BaseStepData implements StepDataInterfa
     public String URL;
     public String Module;
     public String SQL;
-    public String Timestamp;
+    public Date Timestamp;
 	public SoapBindingStub binding;
 	// We store here the number of records
 	// available before we call query more if needed

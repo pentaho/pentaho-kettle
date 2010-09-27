@@ -152,7 +152,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		    if (log.isDetailed()) logDetailed(Messages.getString("SalesforceInput.Log.SQLString") + " : " +  SQLString);        
 		    
 		    if(meta.includeSQL()) data.SQL=SQLString;
-	    	if(meta.includeTimestamp()) data.Timestamp= data.binding.getServerTimestamp().toString();
+	    	if(meta.includeTimestamp()) data.Timestamp= data.binding.getServerTimestamp().getTimestamp().getTime();
 	 		if(log.isDebug()) Messages.getString("SalesforceInput.Log.ServerTimestamp",""+data.binding.getServerTimestamp());
 	 		
 	    	// return query result
