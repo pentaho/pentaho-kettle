@@ -15,6 +15,7 @@
 package org.pentaho.di.trans.steps.salesforceinput;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class SalesforceConnection {
 	private LoginResult loginResult;
 	private GetUserInfoResult userInfo;
 	private String sql;
-	private String serverTimestamp;
+	private Date serverTimestamp;
 	private QueryResult qr ;
 	private GregorianCalendar startDate;
 	private GregorianCalendar endDate;
@@ -140,7 +141,7 @@ public class SalesforceConnection {
 	public String getSQL(){
 		return this.sql;
 	}
-	public String getServerTimestamp(){
+	public Date getServerTimestamp(){
 		return this.serverTimestamp;
 	}
 	public String getModule() {
@@ -244,7 +245,7 @@ public class SalesforceConnection {
 	        	log.logDebug("<-----------------------------------------");
 	        }
 	        
-	    	this.serverTimestamp= this.binding.getServerTimestamp().toString();
+	    	this.serverTimestamp= getBinding().getServerTimestamp().getTimestamp().getTime();
 	 		if(log.isDebug()) BaseMessages.getString(PKG, "SalesforceInput.Log.ServerTimestamp",""+this.serverTimestamp);
 	 		
 	       if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));
