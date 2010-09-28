@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleRepositoryNotSupportedException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogWriter;
@@ -210,9 +211,17 @@ public class RepositoriesMeta
 			{
 				log.logDebug("Looking at connection #"+i);
 				Node dbnode = XMLHandler.getSubNodeByNr(repsnode, "connection", i);
-				DatabaseMeta dbcon = new DatabaseMeta(dbnode);
-				addDatabase(dbcon);
-				log.logDebug("Read connection : "+dbcon.getName());
+            
+				DatabaseMeta dbcon = null;
+				try {
+   				dbcon = new DatabaseMeta(dbnode);
+	     			addDatabase(dbcon);
+			   	log.logDebug("Read connection : "+dbcon.getName());
+            }
+            catch (Exception kpe) {
+               
+               log.logError("Exception creating database meta for "+dbcon.getName());
+   			}
 			}
 
 			// Handle repositories...

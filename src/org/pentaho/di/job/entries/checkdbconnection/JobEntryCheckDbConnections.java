@@ -193,14 +193,9 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 	        // Read them all...
 	        for (int a = 0; a < argnr; a++) 
 	        {
-				long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "connection");
-				if (id_db>0)
-				{
-					connections[a]  = DatabaseMeta.findDatabase(databases, new LongObjectId(id_db));
-				}
-				
-				waitfors[a] = rep.getJobEntryAttributeString(id_jobentry,"waitfor");
-				waittimes[a] = getWaitByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry,"waittime"), ""));
+				   connections[a] = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "connection", "id_database", databases);	
+				   waitfors[a] = rep.getJobEntryAttributeString(id_jobentry,"waitfor");
+				   waittimes[a] = getWaitByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry,"waittime"), ""));
 	        }
 		}
 		catch(KettleException dbe)
