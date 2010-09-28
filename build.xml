@@ -156,10 +156,12 @@
 	</target>
 	
 	<target name="publish-nojar" depends="subfloor-pkg.publish-nojar,create-package-pom">
-      <antcall target="maven-publish-artifact">
-        <param name="publish.pomFile" value="${package-samples.artifact.pomfile}" />
-        <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" />
-      </antcall>
+		<antcall target="maven-publish-sources">
+	      <param name="publish.groupId" value="${ivy.artifact.group}" />
+	      <param name="publish.artifactId" value="${ivy.artifact.id}" />
+	      <param name="publish.version" value="${project.revision}" />
+	      <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" />
+	    </antcall>
     </target>
 	
 	<target name="create-package-pom"
