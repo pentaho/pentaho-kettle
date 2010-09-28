@@ -33,7 +33,7 @@
 # set, then the value java is used. 
 # -----------------------------------------------------------------------------
 
-setPentahoJava() {
+setPentahoEnv() {
   DIR_REL=`dirname $0`
   cd $DIR_REL
   DIR=`pwd`
