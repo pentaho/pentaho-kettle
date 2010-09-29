@@ -145,7 +145,6 @@
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2.1.13852.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/libbase-1.2.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/libformula-1.2.0.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-4.0.3.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.2.0.jar"/>
@@ -154,5 +153,6 @@
 	<classpathentry kind="lib" path="libext/hive/hive-exec-0.5.0-pentaho-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/hive/hive-metastore-0.5.0-pentaho-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/hive/hive-service-0.5.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-4.0.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
