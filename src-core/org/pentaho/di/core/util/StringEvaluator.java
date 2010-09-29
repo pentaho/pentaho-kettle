@@ -172,7 +172,7 @@ public class StringEvaluator {
 			}
 		}
 		
-		System.out.println("Evaluated '"+value+"' and now there are "+evaluationResults.size()+" evaluation results left");
+//		System.out.println("Evaluated '"+value+"' and now there are "+evaluationResults.size()+" evaluation results left");
 	}
 
 	private void evaluateLength(String value) {
