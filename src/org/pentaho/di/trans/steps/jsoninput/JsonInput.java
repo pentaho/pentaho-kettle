@@ -388,7 +388,10 @@ public class JsonInput extends BaseStep implements StepInterface
 			JSONArray jsona=data.resultList.get(i);
 			String nodevalue=null;
 			if(jsona!=null) {
-				nodevalue = jsona.get(data.recordnr).toString();
+				Object jo= (Object) jsona.get(data.recordnr);
+				if(jo!=null){
+					nodevalue = jo.toString();
+				}
 			}
 
 			// Do trimming
