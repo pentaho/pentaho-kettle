@@ -151,7 +151,7 @@
 	  </ivy:publish>
 	</target>
 	
-	<target name="publish-nojar" depends="subfloor-pkg.publish-nojar,create-package-pom">
+	<target name="publish-nojar" depends="subfloor-pkg.publish-nojar">
       <antcall target="maven-publish-artifact">
         <param name="publish.pomFile" value="${package-samples.artifact.pomfile}" />
         <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" />
@@ -159,7 +159,7 @@
     </target>
 	
 	<target name="create-package-pom"
-	          depends="install-ivy"
+	          depends="install-ivy,subfloor-pkg.create-package-pom"
 	          description="Creates a POM file based on the ivy dependencies for a separate package">
       <ivy:makepom ivyfile="${package-samples.artifact.ivyfile}" pomfile="${package-samples.artifact.pomfile}" />
       <replace file="${package-samples.artifact.pomfile}" token="jar" value="zip" />
