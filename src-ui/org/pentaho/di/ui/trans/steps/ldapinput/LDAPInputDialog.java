@@ -182,6 +182,12 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private FormData fdfilterField;
     
     private Listener lsTest;
+    
+	private Label 		wlsearchScope;
+	private CCombo 		wsearchScope;
+	private FormData    fdlsearchScope;
+	private FormData    fdsearchScope;
+
 	
 	public static final int dateLengths[] = new int[]
 	{
@@ -413,14 +419,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		searchgroupLayout.marginHeight = 10;
 		wSearchGroup.setLayout(searchgroupLayout);
 		
-
+		
 		//Is base defined in a Field		
 		wldynamicBase= new Label(wSearchGroup, SWT.RIGHT);
 		wldynamicBase.setText(BaseMessages.getString(PKG, "LDAPInputDialog.dynamicBase.Label"));
 		props.setLook(wldynamicBase);
 		fdlynamicBase= new FormData();
 		fdlynamicBase.left = new FormAttachment(0, -margin);
-		fdlynamicBase.top = new FormAttachment(0, margin);
+		fdlynamicBase.top = new FormAttachment(wStepname, margin);
 		fdlynamicBase.right = new FormAttachment(middle, -2*margin);
 		wldynamicBase.setLayoutData(fdlynamicBase);
 		
@@ -430,7 +436,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wdynamicBase.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.dynamicBase.Tooltip"));
 		fdynamicBase= new FormData();
 		fdynamicBase.left = new FormAttachment(middle, -margin);
-		fdynamicBase.top = new FormAttachment(0, margin);
+		fdynamicBase.top = new FormAttachment(wStepname, margin);
 		wdynamicBase.setLayoutData(fdynamicBase);		
 		SelectionAdapter ldynamicBase= new SelectionAdapter()
         {
@@ -780,6 +786,35 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
  		fdPageSize.right= new FormAttachment(100, 0);
 		wPageSize.setLayoutData(fdPageSize);
 		
+		// searchScope
+		wlsearchScope=new Label(wContentComp, SWT.RIGHT);
+		wlsearchScope.setText(BaseMessages.getString(PKG, "LDAPInputDialog.SearchScope.Label")); //$NON-NLS-1$
+ 		props.setLook(wlsearchScope);
+		fdlsearchScope=new FormData();
+		fdlsearchScope.left = new FormAttachment(0, 0);
+		fdlsearchScope.right= new FormAttachment(middle, -margin);
+		fdlsearchScope.top  = new FormAttachment(wPageSize, margin);
+		wlsearchScope.setLayoutData(fdlsearchScope);
+		
+		wsearchScope=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
+ 		props.setLook(wsearchScope);
+ 		wsearchScope.addModifyListener(lsMod);
+		fdsearchScope=new FormData();
+		fdsearchScope.left = new FormAttachment(middle, 0);
+		fdsearchScope.top  = new FormAttachment(wPageSize, margin);
+		fdsearchScope.right= new FormAttachment(100, -margin);
+		wsearchScope.setLayoutData(fdsearchScope);
+		wsearchScope.setItems(LDAPInputMeta.searchScopeDesc);
+		wsearchScope.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				
+			}
+		});
+		
+
+		
 		
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
@@ -1116,7 +1151,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		wdynamicFilter.setSelection(in.isDynamicFilter());
 		if (in.getDynamicFilterFieldName() != null)  wfilterField.setText(in.getDynamicFilterFieldName());
-		
+		wsearchScope.setText(LDAPInputMeta.getSearchScopeDesc(input.getSearchScope()));
 		if(isDebug()) logDebug(BaseMessages.getString(PKG, "LDAPInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
@@ -1240,6 +1275,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
             
 			in.getInputFields()[i] = field;
 		}	
+		input.setSearchScope(LDAPInputMeta.getSearchScopeByDesc(wsearchScope.getText()));
 	}
 	
 	private void useAuthentication()

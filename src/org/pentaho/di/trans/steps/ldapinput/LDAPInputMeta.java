@@ -101,13 +101,28 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private static final String YES = "Y";
 	
-    public final static String type_trim_code[] = { "none", "left", "right", "both" };
-    
 	private boolean dynamicSearch;
 	private String dynamicSeachFieldName;
 	
 	private boolean dynamicFilter;
 	private String dynamicFilterFieldName;
+	
+	/** Search scope */
+	private int searchScope;
+	
+	/**
+	 * The search scopes description
+	 */
+	public final static String searchScopeDesc[] = {
+			BaseMessages.getString(PKG, "LDAPInputMeta.SearchScope.Object"),
+			BaseMessages.getString(PKG, "LDAPInputMeta.SearchScope.OneLevel"),
+			BaseMessages.getString(PKG, "LDAPInputMeta.SearchScope.Subtree")};
+	
+	/**
+	 * The search scope codes
+	 */
+	public final static String searchScopeCode[] = { "object", "onelevel", "subtree" };
+
     
 	public LDAPInputMeta()
 	{
@@ -512,12 +527,16 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("dynamicseachfieldname",    dynamicSeachFieldName));
         retval.append("    ").append(XMLHandler.addTagValue("dynamicfilter",          dynamicFilter));
         retval.append("    ").append(XMLHandler.addTagValue("dynamicfilterfieldname",    dynamicFilterFieldName));
-        
+        retval.append("    ").append(XMLHandler.addTagValue("searchScope",getSearchScopeCode(searchScope)));
         
 
         return retval.toString();
     }
-
+	private static String getSearchScopeCode(int i) {
+		if (i < 0 || i >= searchScopeCode.length)
+			return searchScopeCode[0];
+		return searchScopeCode[i];
+	}
 	private void readData(Node stepnode) throws KettleXMLException
 	{
 		try
@@ -559,7 +578,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 				String srepeat      = XMLHandler.getTagValue(fnode, "repeat");
 				if (srepeat!=null) inputFields[i].setRepeated( YES.equalsIgnoreCase(srepeat) ); 
 				else               inputFields[i].setRepeated( false );
-				inputFields[i].setTrimType( getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
+				inputFields[i].setTrimType( ValueMeta.getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
 								
 				inputFields[i].setFormat(XMLHandler.getTagValue(fnode, "format"));
 				inputFields[i].setCurrencySymbol(XMLHandler.getTagValue(fnode, "currency"));
@@ -576,7 +595,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			dynamicSeachFieldName    = XMLHandler.getTagValue(stepnode, "dynamicseachfieldname");
 			dynamicFilter  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dynamicfilter"));
 			dynamicFilterFieldName    = XMLHandler.getTagValue(stepnode, "dynamicfilterfieldname");
-			
+			searchScope = getSearchScopeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"searchScope"), ""));
 			
 		}
 		catch(Exception e)
@@ -584,7 +603,16 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			throw new KettleXMLException(BaseMessages.getString(PKG, "LDAPInputMeta.UnableToLoadFromXML"), e);
 		}
 	}
-	
+   private static int getSearchScopeByCode(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < searchScopeCode.length; i++) {
+			if (searchScopeCode[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		return 0;
+	}
 	public void allocate(int nrfields)
 	{
 
@@ -602,7 +630,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		userName="";
 		password="";
 		port="389";
-		filterString="objectclass=*";
+		filterString=LDAPConnection.DEFAUL_FILTER_STRING;
 		searchBase="";
 		multiValuedSeparator=";";
 		dynamicSearch=false;
@@ -620,6 +648,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 
 		rowLimit=0;
 		timeLimit=0;
+		searchScope= LDAPConnection.SEARCH_SCOPE_SUBTREE_SCOPE;
 	}
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
@@ -647,17 +676,6 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	  public final static int getTrimTypeByCode(String tt)
-		{
-			if (tt!=null) 
-			{		
-			    for (int i=0;i<type_trim_code.length;i++)
-			    {
-				    if (type_trim_code[i].equalsIgnoreCase(tt)) return i;
-			    }
-			}
-			return 0;
-		}
 
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	throws KettleException
@@ -710,13 +728,35 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 
 				inputFields[i] = field;
 			}
+        	searchScope = getSearchScopeByCode(Const.NVL(rep.getStepAttributeString(id_step, "searchScope"), ""));
         }
 		catch(Exception e)
 		{
 			throw new KettleException(BaseMessages.getString(PKG, "LDAPInputMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
-	
+	public static String getSearchScopeDesc(int i) {
+		if (i < 0 || i >= searchScopeDesc.length)
+			return searchScopeDesc[0];
+		return searchScopeDesc[i];
+	}
+	public static int getSearchScopeByDesc(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < searchScopeDesc.length; i++) {
+			if (searchScopeDesc[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		// If this fails, try to match using the code.
+		return getSearchScopeByCode(tt);
+	}
+	public void setSearchScope(int value) {
+		this.searchScope = value;
+	}
+	   public int getSearchScope() {
+			return searchScope;
+		}
 	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
@@ -761,6 +801,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",        field.isRepeated());
 
 			}
+            rep.saveStepAttribute(id_transformation, id_step, "searchScope", getSearchScopeCode(searchScope));
 		}
 		catch(Exception e)
 		{
