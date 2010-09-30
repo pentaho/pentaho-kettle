@@ -114,10 +114,13 @@ goto TopArg
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **
-REM ** Change 512m to higher values in case you run out of memory.  **
+REM ** Change 512m to higher values in case you run out of memory   **
+REM ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
 REM ******************************************************************
 
-set OPT=-Xmx512M "-Djava.ext.dirs=%JAVA_EXT_DIRS%" "-Dorg.mortbay.util.URI.charset=UTF-8" "-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
+if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS=-Xmx512m
+
+set OPT="%PENTAHO_DI_JAVA_OPTIONS%" "-Djava.ext.dirs=%JAVA_EXT_DIRS%" "-Dorg.mortbay.util.URI.charset=UTF-8" "-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
 
 REM ***********************************************************************
 REM ** Optionally set up the options for JAAS (uncomment to make active) **

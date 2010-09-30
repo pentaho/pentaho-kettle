@@ -66,10 +66,13 @@ set JAVA_EXT_DIRS=%JAVA_EXT_DIRS%;%~dp0libswt
 
 :: ******************************************************************
 :: ** Set java runtime options                                     **
-:: ** Change 512m to higher values in case you run out of memory.  **
-:: ******************************************************************
+REM ** Change 512m to higher values in case you run out of memory   **
+REM ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
+REM ******************************************************************
 
-set OPT=-Xmx512m "-Djava.ext.dirs=%JAVA_EXT_DIRS%" "-Djava.library.path=%~dp0libswt\win32" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
+if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS=-Xmx512m
+
+set OPT="%PENTAHO_DI_JAVA_OPTIONS%" "-Djava.ext.dirs=%JAVA_EXT_DIRS%" "-Djava.library.path=%~dp0libswt\win32" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
 
 :: ***************
 :: ** Run...    **
