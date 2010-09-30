@@ -124,10 +124,15 @@ export LIBPATH
 
 # ******************************************************************
 # ** Set java runtime options                                     **
-# ** Change 256m to higher values in case you run out of memory.  **
+# ** Change 512m to higher values in case you run out of memory   **
+# ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
 # ******************************************************************
 
-OPT="$OPT -Xmx256m -Xms256m -XX:MaxPermSize=128m -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
+if [ -z "$PENTAHO_DI_JAVA_OPTIONS" ]; then
+    PENTAHO_DI_JAVA_OPTIONS="-Xmx512m"
+fi
+
+OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
 
 # ***************
 # ** Run...    **

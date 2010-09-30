@@ -42,14 +42,20 @@ fi
 
 # ******************************************************************
 # ** Set java runtime options                                     **
-# ** Change 128m to higher values in case you run out of memory.  **
+# ** Change 512m to higher values in case you run out of memory   **
+# ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
+# ** (JAVAMAXMEM is there for compatibility reasons)              **
 # ******************************************************************
 
 if [ -z "$JAVAMAXMEM" ]; then
   JAVAMAXMEM="512"
 fi
 
-OPT="-Xmx${JAVAMAXMEM}m -cp $CLASSPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
+if [ -z "$PENTAHO_DI_JAVA_OPTIONS" ]; then
+    PENTAHO_DI_JAVA_OPTIONS="-Xmx${JAVAMAXMEM}m"
+fi
+
+OPT="$PENTAHO_DI_JAVA_OPTIONS -cp $CLASSPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
 
 if [ "$1" = "-x" ]; then
   set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BASEDIR/libext

@@ -27,17 +27,22 @@ do
   CLASSPATH=$CLASSPATH:$f
 done
 
-if [ -z "$JAVAMEMOPTIONS" ]; then
-    JAVAMEMOPTIONS="-Xmx256m"
-fi
-
 # ******************************************************************
 # ** Set java runtime options                                     **
-# ** Set JAVAMEMOPTIONS to a higher value e.g. -Xms512m -Xmx512m  **
-# ** in case you run out of memory.                               **
+# ** Change 512m to higher values in case you run out of memory   **
+# ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
+# ** (JAVAMEMOPTIONS is there for compatibility reasons)          **
 # ******************************************************************
 
-OPT="$JAVAMEMOPTIONS -cp $CLASSPATH -Dorg.mortbay.util.URI.charset=UTF-8 -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
+if [ -z "$JAVAMEMOPTIONS" ]; then
+    JAVAMEMOPTIONS="-Xmx512m"
+fi
+
+if [ -z "$PENTAHO_DI_JAVA_OPTIONS" ]; then
+    PENTAHO_DI_JAVA_OPTIONS=JAVAMEMOPTIONS
+fi
+
+OPT="$PENTAHO_DI_JAVA_OPTIONS -cp $CLASSPATH -Dorg.mortbay.util.URI.charset=UTF-8 -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT"
 
 # ******************************************************************
 # ** Set up the options for JAAS                                  **
