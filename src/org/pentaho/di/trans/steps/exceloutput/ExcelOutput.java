@@ -17,6 +17,7 @@ import java.util.Locale;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.format.CellFormat;
 import jxl.write.DateFormat;
 import jxl.write.DateFormats;
 import jxl.write.DateTime;
@@ -82,8 +83,10 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			
 			if(meta.isDoNotOpenNewFileInit())
 			{
-				data.oneFileOpened=true;
+				 data.oneFileOpened=true;
 			
+                 addFilenameToResult();
+
 		         if (!openNewFile())
 				 {
 					 logError("Couldn't open file "+buildFilename());
@@ -264,8 +267,11 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	try {
             		if (column<data.templateColumns)
             		{
-            			cellFormat=new WritableCellFormat(data.sheet.getColumnView(column).getFormat());
-            			data.formats.put(hashName, cellFormat); // save for next time around...
+            		    CellFormat format = data.sheet.getColumnView(column).getFormat();
+            		    if (format!=null) {
+                			cellFormat=new WritableCellFormat(format);
+                			data.formats.put(hashName, cellFormat); // save for next time around...
+            		    }
             		}
 				} catch (RuntimeException e) {
 					//ignore if the column is not found, format as usual
@@ -433,18 +439,9 @@ public class ExcelOutput extends BaseStep implements StepInterface
             {
                 ws.setEncoding(meta.getEncoding());
             }
-            String buildFilename=buildFilename();
-            data.file = KettleVFS.getFileObject(buildFilename, getTransMeta());
-            if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.OpeningFile",buildFilename));
             
-            if(meta.isAddToResultFiles())
-            {
-				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-				resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
-	            addResultFile(resultFile);
-            }
-
+            if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.OpeningFile", data.file.toString()));
+            
             // Create the workbook
             if (!meta.isTemplateEnabled())
             {				
@@ -539,7 +536,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }*/
             data.headerWrote=false;
             
-            if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.FileOpened",buildFilename));
+            if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.FileOpened", data.file.toString()));
 			retval=true;
 		}
 		catch(Exception e)
@@ -623,9 +620,19 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		{
 			data.splitnr=0;
 			data.realSheetname=environmentSubstitute(meta.getSheetname());
+			
+			// See if we need to add the filename to the result.
+			// If the file doesn't exist we report the problem.
+			//
+			if (!addFilenameToResult()) {
+			  return false;
+			}
+			
 			if(!meta.isDoNotOpenNewFileInit())
 			{
 				data.oneFileOpened=true;
+				
+				addFilenameToResult();
 				
 				if (openNewFile())
 				{
@@ -637,6 +644,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 					setErrors(1L);
 					stopAll();
 				}
+				
 			}else
 			{
 				return true;
@@ -645,7 +653,28 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		return false;
 	}
 	
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+	private boolean addFilenameToResult() {
+	  try {
+        String buildFilename=buildFilename();
+        data.file = KettleVFS.getFileObject(buildFilename, getTransMeta());
+
+        if(meta.isAddToResultFiles())
+        {
+            // Add this to the result file names...
+            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
+            resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
+            addResultFile(resultFile);
+        }
+        
+        return true;
+
+	  } catch(Exception e) {
+	    log.logError("Unable to add filename to the result", e);
+	    return false;
+	  }
+    }
+
+    public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(ExcelOutputMeta)smi;
 		data=(ExcelOutputData)sdi;
