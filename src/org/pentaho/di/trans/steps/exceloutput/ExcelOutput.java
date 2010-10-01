@@ -430,17 +430,8 @@ public class ExcelOutput extends BaseStep implements StepInterface
             {
                 ws.setEncoding(meta.getEncoding());
             }
-            String buildFilename=buildFilename();
-            data.file = KettleVFS.getFileObject(buildFilename, getTransMeta());
-            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.OpeningFile",buildFilename));
-            
-            if(meta.isAddToResultFiles())
-            {
-				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-				resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
-	            addResultFile(resultFile);
-            }
+
+            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.OpeningFile", data.file.toString()));
 
             // Create the workbook
             if (!meta.isTemplateEnabled())
@@ -535,7 +526,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }*/
             data.headerWrote=false;
             
-            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.FileOpened",buildFilename));
+            if(log.isDebug()) log.logDebug(toString(),Messages.getString("ExcelOutput.Log.FileOpened", data.file.toString()));
 			retval=true;
 		}
 		catch(Exception e)
@@ -620,6 +611,14 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		{
 			data.splitnr=0;
 			data.realSheetname=environmentSubstitute(meta.getSheetname());
+			
+	        // See if we need to add the filename to the result.
+            // If the file doesn't exist we report the problem.
+            //
+            if (!addFilenameToResult()) {
+              return false;
+            }
+            
 			if(!meta.isDoNotOpenNewFileInit())
 			{
 				data.oneFileOpened=true;
@@ -642,6 +641,26 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		return false;
 	}
 	
+    private boolean addFilenameToResult() {
+      try {
+        String buildFilename = buildFilename();
+        data.file = KettleVFS.getFileObject(buildFilename, getTransMeta());
+  
+        if (meta.isAddToResultFiles()) {
+          // Add this to the result file names...
+          ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
+          resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
+          addResultFile(resultFile);
+        }
+  
+        return true;
+  
+      } catch (Exception e) {
+        log.logError(toString(), "Unable to add filename to the result", e);
+        return false;
+      }
+    }
+	   
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(ExcelOutputMeta)smi;
