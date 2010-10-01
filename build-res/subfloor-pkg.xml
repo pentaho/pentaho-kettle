@@ -27,8 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <!--===========================================================================
     == SUBFLOOR-PKG ==
     
-    $Rev$
-    $Date$
+    $Rev: 100 $
+    $Date: 2009-12-09 11:43:26 -0500 (Wed, 09 Dec 2009) $
     Project Home: http://code.google.com/p/subfloor/
     
     Provides default targets for creating application archives such as zip and tar.gzip
@@ -96,7 +96,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </target>
 
   <target name="assemble" depends="assemble.init,assemble.copy-libs">
-    <copy todir="${approot.stage.dir}">
+    <copy todir="${approot.stage.dir}" overwrite="true">
       <fileset dir="${package.resdir}" />
     </copy>
     <chmod perm="a+x" dir="${stage.dir}" includes="**/*.sh" />
