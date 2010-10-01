@@ -181,8 +181,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	{
 		this.parentLoggingObject = parentObject;
 		this.databaseMeta = databaseMeta;
-		
+
 		shareVariablesWith(databaseMeta);
+		if (parentObject instanceof VariableSpace) {
+		  shareVariablesWith((VariableSpace)parentObject);
+		}
 		
 		log=new LogChannel(this, parentObject);
 		this.containerObjectId = log.getContainerObjectId();
@@ -631,7 +634,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
         }
         catch(Exception e)
         {
-            if (log.isDebug()) log.logDebug("Can't turn auto commit "+onOff);
+            if (log.isDebug()) log.logDebug("Can't turn auto commit "+onOff+Const.CR+Const.getStackTracker(e));
         }
 	}
 	
