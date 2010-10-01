@@ -72,6 +72,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		boolean performInsert=false;
 		boolean performUpdate=false;
 		boolean performDelete=false;
+		boolean lineSkipped=false;
         
 		try{
 			if(operation==null) throw new KettleException(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.OperationFieldEmpty",meta.getOperationOrderField()));
@@ -83,8 +84,6 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		       if (Const.isEmpty(data.realTableName))  throw new KettleStepException("The name of the table is not specified!");
 				data.realSchemaTable = data.db.getDatabaseMeta().getQuotedSchemaTableCombination(data.realSchemaName, data.realTableName);
 			}
-			
-			incrementLinesInput();
 			
 			if(operation.equals(data.insertValue))
 			{
@@ -176,7 +175,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		    		data.db.setValues(data.lookupParameterRowMeta, lookupRow, data.lookupStatement);
 		    		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.ValuesSetForLookup",data.lookupParameterRowMeta.getString(lookupRow))); //$NON-NLS-1$
 		    		Object[] add = data.db.getLookup(data.lookupStatement);
-		    		
+		            incrementLinesInput();
 		    		
 			        if (add==null) 
 					{
@@ -269,8 +268,10 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 					    
 						
 					} // end if operation update
-					else
+					else {
 						incrementLinesSkipped();
+						lineSkipped=true;
+					}
 				}
 				else if(operation.equals(data.deleteValue))
 				{
@@ -322,10 +323,14 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 				else
 				{
 					incrementLinesSkipped();
+					lineSkipped=true;
 				}
 			} // endif operation insert
 			
-			if(performInsert || performUpdate || performDelete)
+			// If we skip a line we need to empty the buffer and skip the line in question.
+			// The skipped line is never added to the buffer!
+			//
+			if(performInsert || performUpdate || performDelete || (data.batchBuffer.size()>0 && lineSkipped))
 			{
 				// Get a commit counter per prepared statement to keep track of separate tables, etc. 
 			    //
@@ -481,7 +486,9 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
             }
             else
             {
-                data.batchBuffer.add(row);
+                if (!lineSkipped) {
+                  data.batchBuffer.add(row);
+                }
                 
                 if (rowIsSafe) // A commit was done and the rows are all safe (no error)
                 {
@@ -493,6 +500,12 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
                     }
                     // Clear the buffer
                     data.batchBuffer.clear();
+                }
+                
+                // Don't forget to pass this line to the following steps
+                //
+                if (lineSkipped) {
+                  putRow(data.outputRowMeta, row);
                 }
             }
         }
@@ -850,7 +863,9 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		try
 		{
 			lookupValues(r); // add new values to the row in rowset[0].
-			putRow(data.outputRowMeta, r);       // copy row to output rowset(s);
+			if (!data.batchMode) {
+			  putRow(data.outputRowMeta, r);       // copy row to output rowset(s);
+			}
 			
 			if (checkFeedback(getLinesRead())) 
 			{
