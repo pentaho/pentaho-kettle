@@ -16,11 +16,15 @@
 package org.pentaho.di.trans.steps.hadoopfileoutput;
 
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 
 @Step(id = "HadoopFileOutputPlugin", image = "HDO.png", name = "Hadoop File Output", description="Create files in an HDFS location", categoryDescription="Hadoop")
 public class HadoopFileOutputMeta extends TextFileOutputMeta {
 
+    // for message resolution
+    private static Class<?> PKG = HadoopFileOutputMeta.class;
+   
     @Override
     public void setDefault()
     {
@@ -30,6 +34,17 @@ public class HadoopFileOutputMeta extends TextFileOutputMeta {
         // now set the default for the 
         // filename to an empty string
         setFileName("");
+        super.setFileAsCommand(false);
+    }
+    
+    @Override
+    public void setFileAsCommand(boolean fileAsCommand) {
+      //  Don't do anything.  We want to keep this property as false
+      //  Throwing a KettleStepException would be desirable but then we 
+      //  need to change the base class' method which is 
+      //  open source.
+       
+      throw new RuntimeException(new RuntimeException(BaseMessages.getString(PKG, "HadoopFileOutput.MethodNotSupportedException.Message")));
     }
     
 }

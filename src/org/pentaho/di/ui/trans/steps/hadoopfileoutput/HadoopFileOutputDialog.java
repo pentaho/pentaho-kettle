@@ -93,10 +93,6 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 	private TextVar     wFilename;
 	private FormData     fdlFilename, fdbFilename, fdFilename;
 
-	private Label        wlFileIsCommand;
-	private Button       wFileIsCommand;
-	private FormData     fdlFileIsCommand, fdFileIsCommand;
-
 	private Label        wlExtension;
 	private TextVar         wExtension;
 	private FormData     fdlExtension, fdExtension;
@@ -313,40 +309,13 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
 		
-
-		// Run this as a command instead?
-		wlFileIsCommand=new Label(wFileComp, SWT.RIGHT);
-		wlFileIsCommand.setText(BaseMessages.getString(BASE_PKG, "TextFileOutputDialog.FileIsCommand.Label"));
- 		props.setLook(wlFileIsCommand);
-		fdlFileIsCommand=new FormData();
-		fdlFileIsCommand.left = new FormAttachment(0, 0);
-		fdlFileIsCommand.top  = new FormAttachment(wFilename, margin);
-		fdlFileIsCommand.right= new FormAttachment(middle, -margin);
-		wlFileIsCommand.setLayoutData(fdlFileIsCommand);
-		wFileIsCommand=new Button(wFileComp, SWT.CHECK);
- 		props.setLook(wFileIsCommand);
-		fdFileIsCommand=new FormData();
-		fdFileIsCommand.left = new FormAttachment(middle, 0);
-		fdFileIsCommand.top  = new FormAttachment(wFilename, margin);
-		fdFileIsCommand.right= new FormAttachment(100, 0);
-		wFileIsCommand.setLayoutData(fdFileIsCommand);
-		wFileIsCommand.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					input.setChanged();
-				}
-			}
-		);
-		
-
 		// Open new File at Init
 		wlDoNotOpenNewFileInit=new Label(wFileComp, SWT.RIGHT);
 		wlDoNotOpenNewFileInit.setText(BaseMessages.getString(BASE_PKG, "TextFileOutputDialog.DoNotOpenNewFileInit.Label"));
  		props.setLook(wlDoNotOpenNewFileInit);
 		fdlDoNotOpenNewFileInit=new FormData();
 		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
-		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wFileIsCommand, margin);
+		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
 		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
 		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit=new Button(wFileComp, SWT.CHECK );
@@ -354,7 +323,7 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
  		props.setLook(wDoNotOpenNewFileInit);
 		fdDoNotOpenNewFileInit=new FormData();
 		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
-		fdDoNotOpenNewFileInit.top  = new FormAttachment(wFileIsCommand, margin);
+		fdDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
 		fdDoNotOpenNewFileInit.right= new FormAttachment(100, 0);
 		wDoNotOpenNewFileInit.setLayoutData(fdDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit.addSelectionListener(new SelectionAdapter() 
@@ -1365,7 +1334,6 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 	public void getData()
 	{
 		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
-		wFileIsCommand.setSelection(input.isFileAsCommand());
 		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
 		if (input.getExtension() != null) wExtension.setText(input.getExtension());
 		if (input.getSeparator() !=null) wSeparator.setText(input.getSeparator());
@@ -1433,7 +1401,6 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 	private void getInfo(TextFileOutputMeta tfoi)
 	{
 		tfoi.setFileName(   wFilename.getText() );
-		tfoi.setFileAsCommand( wFileIsCommand.getSelection() );
 		tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
 		tfoi.setFileFormat( wFormat.getText() );
 		tfoi.setFileCompression( wCompression.getText() );
