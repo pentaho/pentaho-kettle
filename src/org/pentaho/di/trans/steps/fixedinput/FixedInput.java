@@ -11,8 +11,10 @@
  
 package org.pentaho.di.trans.steps.fixedinput;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.vfs.FileObject;
@@ -249,7 +251,7 @@ public class FixedInput extends BaseStep implements StepInterface
 				FileObject fileObject = KettleVFS.getFileObject(data.filename, getTransMeta());
 				try
 				{
-					FileInputStream fileInputStream = new FileInputStream(fileObject.getName().getPathDecoded());
+				   FileInputStream fileInputStream = new FileInputStream(new File(new URI(fileObject.getName().getFriendlyURI())));
 					data.fc = fileInputStream.getChannel();
 					data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
 				}
