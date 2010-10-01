@@ -402,6 +402,7 @@ public class TransDialog extends Dialog
         fdTransFilename.right= new FormAttachment(100, 0);
         wTransFilename.setLayoutData(fdTransFilename);
         wTransFilename.setEditable(false);
+        wTransFilename.setBackground(GUIResource.getInstance().getColorLightGray());
 
 		// Transformation description:
 		Label wlTransdescription = new Label(wTransComp, SWT.RIGHT);
