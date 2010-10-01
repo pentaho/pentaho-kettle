@@ -107,6 +107,8 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** Flag : do not fail if no file */
 	private boolean doNotFailIfNoFile;
+
+	private boolean ignoreMissingPath;
 	
 	/** Flag : read url as source */
 	private boolean readurl;
@@ -481,6 +483,21 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	
+	/** 
+	 * @return the ignoreMissingPath flag
+	 */
+	public boolean isIgnoreMissingPath()
+	{
+		return ignoreMissingPath;
+	}
+	
+	/** 
+	 * @param ignoreMissingPath the ignoreMissingPath to set
+	 */
+	public void setIgnoreMissingPath(boolean ignoreMissingPath)
+	{
+		this.ignoreMissingPath= ignoreMissingPath;
+	}
     /**
      * @return Returns the rowNumberField.
      */
@@ -559,7 +576,8 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface
 
         retval.append("    "+XMLHandler.addTagValue("IsIgnoreEmptyFile",   IsIgnoreEmptyFile));
         retval.append("    "+XMLHandler.addTagValue("doNotFailIfNoFile",   doNotFailIfNoFile));
-         
+        retval.append("    "+XMLHandler.addTagValue("ignoreMissingPath",   ignoreMissingPath));
+        
         retval.append("    ").append(XMLHandler.addTagValue("rownum_field",    rowNumberField));
         
         retval.append("    <file>").append(Const.CR);
@@ -623,6 +641,8 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface
 			addResultFile     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "addresultfile"));
 			readurl    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "readurl"));
 			IsIgnoreEmptyFile  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "IsIgnoreEmptyFile"));
+			ignoreMissingPath  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignoreMissingPath"));
+			
 			doNotFailIfNoFile  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "doNotFailIfNoFile"));
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
@@ -698,6 +718,7 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface
 	    sizeFieldName=null;
 	    
 		IsIgnoreEmptyFile=false;
+		ignoreMissingPath=false;
 		doNotFailIfNoFile=true;
 		includeFilename = false;
 		filenameField = "";
@@ -847,6 +868,8 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface
 			
 
 			IsIgnoreEmptyFile  =      rep.getStepAttributeBoolean(id_step, "IsIgnoreEmptyFile");
+			ignoreMissingPath  =      rep.getStepAttributeBoolean(id_step, "ignoreMissingPath");
+			
 			doNotFailIfNoFile  =      rep.getStepAttributeBoolean(id_step, "doNotFailIfNoFile");
 
 			includeRowNumber  =   rep.getStepAttributeBoolean(id_step, "rownum");
@@ -915,6 +938,8 @@ public class JsonInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "readurl",   readurl);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "IsIgnoreEmptyFile",   IsIgnoreEmptyFile);
+			rep.saveStepAttribute(id_transformation, id_step, "ignoreMissingPath",   ignoreMissingPath);
+			
 			rep.saveStepAttribute(id_transformation, id_step, "doNotFailIfNoFile",   doNotFailIfNoFile);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);

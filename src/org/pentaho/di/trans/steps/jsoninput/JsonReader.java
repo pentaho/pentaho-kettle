@@ -28,8 +28,15 @@ public class JsonReader {
 	
 	private ScriptEngine jsEngine;
 	
+	private boolean ignoreMissingPath;
+
 	public JsonReader() throws KettleException {
 		init();
+		this.ignoreMissingPath=false;
+	}
+	
+	public void SetIgnoreMissingPath(boolean value) {
+		this.ignoreMissingPath=value;
 	}
 	private void init() throws KettleException {
 		
@@ -123,18 +130,31 @@ public class JsonReader {
 	private void eval(Object o) throws Exception {
 		getEngine().eval(EVAL + o.toString());
 	}
-	public JSONArray getPath(String value) throws KettleException{
+	public NJSONArray getPath(String value) throws KettleException{
 		try {
 			String ro = getInvocable().invokeFunction(JSON_PATH, value).toString();
 			if(!ro.equals(EVAL_FALSE)) {
 				
-				 JSONArray ra = (JSONArray) JSONValue.parse(ro);
+				NJSONArray ra = new NJSONArray((JSONArray) JSONValue.parse(ro));
 				return ra;
 			} else {
-				throw new KettleException(BaseMessages.getString(PKG, "JsonReader.Error.CanNotFindPath", value));
+				if(!isIgnoreMissingPath()) throw new KettleException(BaseMessages.getString(PKG, "JsonReader.Error.CanNotFindPath", value));
 			}
 		}catch(Exception e) {
 			throw new KettleException(e);
 		}
+		
+		// The Json Path is missing
+		// and user do not want to fail
+		// so we need to populate it with NULL values
+		NJSONArray ja= new NJSONArray();
+		ja.setNull(true);
+	
+		return ja;
 	}
+	
+	public boolean isIgnoreMissingPath() {
+		return this.ignoreMissingPath;
+	}
+	
 }

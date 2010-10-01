@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.jsoninput;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
@@ -259,20 +260,41 @@ public class JsonInput extends BaseStep implements StepInterface
 				data.jsonReader.readString(data.stringToParse);
 			}
 		}
-		data.resultList = new ArrayList<JSONArray>();
+		List<NJSONArray> resultList = new ArrayList<NJSONArray>();
 		data.nrrecords=-1;
 		data.recordnr=0;
 		String prevPath="";
 		for(int i =0; i<data.nrInputFields; i++) {
 			String path = meta.getInputFields()[i].getPath();
-			JSONArray ja =data.jsonReader.getPath(path);
+			NJSONArray ja =data.jsonReader.getPath(path);
 			if(data.nrrecords!=-1 && data.nrrecords!= ja.size()) {
 				throw new KettleException(BaseMessages.getString(PKG, "JsonInput.Error.BadStructure", ja.size(), path, prevPath, data.nrrecords));
 			}
-			data.resultList.add(ja);
-			if(data.nrrecords==-1) data.nrrecords=ja.size();
+			resultList.add(ja);
+			if(data.nrrecords==-1 && !ja.isNull()) {
+				data.nrrecords=ja.size();
+			}
 			prevPath=path;
 		}
+
+		data.resultList=new ArrayList<NJSONArray>();
+			
+		Iterator<NJSONArray> it=resultList.iterator();
+		while(it.hasNext()) {
+			NJSONArray j= it.next();
+			if(j.isNull()) {
+				// The object is empty means that we do not
+				// find Json path
+				// We need here to create a dummy structure
+				j = new NJSONArray();
+				for(int i=0; i<data.nrrecords; i++){
+					j.add(null);
+				}
+			}
+			data.resultList.add(j);
+		}
+		resultList=null;
+		
         if (log.isDetailed())  {
             logDetailed(BaseMessages.getString(PKG, "JsonInput.Log.NrRecords",data.nrrecords));
         } 
@@ -385,7 +407,7 @@ public class JsonInput extends BaseStep implements StepInterface
 			JsonInputField field = meta.getInputFields()[i];
 
 			// get json array for field
-			JSONArray jsona=data.resultList.get(i);
+			JSONArray jsona=data.resultList.get(i).getJSONArray();
 			String nodevalue=null;
 			if(jsona!=null) {
 				Object jo= (Object) jsona.get(data.recordnr);
@@ -495,6 +517,8 @@ public class JsonInput extends BaseStep implements StepInterface
 			try{
 				// Init a new JSON reader
 				data.jsonReader= new JsonReader();
+				data.jsonReader.SetIgnoreMissingPath(meta.isIgnoreMissingPath());
+
 			}catch(KettleException e){
 				logError(e.getMessage());
 				return false;
