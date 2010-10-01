@@ -580,7 +580,7 @@ public class Database implements VariableSpace
         }
         catch(Exception e)
         {
-            log.logError(toString(), "Can't turn auto commit "+onOff);
+          if (log.isDebug()) log.logDebug(toString(), "Can't turn auto commit "+onOff+Const.CR+Const.getStackTracker(e));
         }
 	}
 	
