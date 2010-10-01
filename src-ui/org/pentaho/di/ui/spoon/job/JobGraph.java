@@ -2271,8 +2271,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       
       // Try to see if this transformation is already loaded in another tab...
       //
-      String tabName = spoon.delegates.tabs.makeTabName(launchTransMeta, true);
-      TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry(tabName, ObjectType.TRANSFORMATION_GRAPH);
+      TabMapEntry tabEntry = spoon.delegates.tabs.findTabForTransformation(launchTransMeta);
       if (tabEntry != null) {
         // Switch to this one!
         //
