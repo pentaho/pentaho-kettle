@@ -61,6 +61,12 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
 		if (result!=null) 
         { 
             this.result = (Result) result.clone(); 
+
+            // prevent excessive memory consumption!
+            // PDI-4721
+            //
+            this.result.setLogText(null); 
+            this.result.setRows(null);
         }
         else 
         { 
