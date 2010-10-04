@@ -267,7 +267,7 @@ public class JsonInput extends BaseStep implements StepInterface
 		for(int i =0; i<data.nrInputFields; i++) {
 			String path = meta.getInputFields()[i].getPath();
 			NJSONArray ja =data.jsonReader.getPath(path);
-			if(data.nrrecords!=-1 && data.nrrecords!= ja.size()) {
+			if(data.nrrecords!=-1 && data.nrrecords!= ja.size() && !ja.isNull()) {
 				throw new KettleException(BaseMessages.getString(PKG, "JsonInput.Error.BadStructure", ja.size(), path, prevPath, data.nrrecords));
 			}
 			resultList.add(ja);
@@ -280,9 +280,14 @@ public class JsonInput extends BaseStep implements StepInterface
 		data.resultList=new ArrayList<NJSONArray>();
 			
 		Iterator<NJSONArray> it=resultList.iterator();
+		boolean firstIteration=false;
 		while(it.hasNext()) {
 			NJSONArray j= it.next();
 			if(j.isNull()) {
+				if(!firstIteration && data.nrrecords==-1) {
+					data.nrrecords=1;
+					firstIteration=true;
+				}
 				// The object is empty means that we do not
 				// find Json path
 				// We need here to create a dummy structure
@@ -536,6 +541,7 @@ public class JsonInput extends BaseStep implements StepInterface
 				data.file.close();
 			}catch (Exception e){}
 		}
+		data.resultList=null;
 		super.dispose(smi, sdi);
 	}
 }
