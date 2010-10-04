@@ -280,13 +280,12 @@ public class JsonInput extends BaseStep implements StepInterface
 		data.resultList=new ArrayList<NJSONArray>();
 			
 		Iterator<NJSONArray> it=resultList.iterator();
-		boolean firstIteration=false;
+
 		while(it.hasNext()) {
 			NJSONArray j= it.next();
 			if(j.isNull()) {
-				if(!firstIteration && data.nrrecords==-1) {
+				if(data.nrrecords==-1) {
 					data.nrrecords=1;
-					firstIteration=true;
 				}
 				// The object is empty means that we do not
 				// find Json path
