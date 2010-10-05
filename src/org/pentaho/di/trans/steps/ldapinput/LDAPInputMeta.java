@@ -49,6 +49,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
+
 public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
 	private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -595,7 +596,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			dynamicSeachFieldName    = XMLHandler.getTagValue(stepnode, "dynamicseachfieldname");
 			dynamicFilter  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "dynamicfilter"));
 			dynamicFilterFieldName    = XMLHandler.getTagValue(stepnode, "dynamicfilterfieldname");
-			searchScope = getSearchScopeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"searchScope"), ""));
+			searchScope = getSearchScopeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"searchScope"), getSearchScopeCode(LDAPConnection.SEARCH_SCOPE_SUBTREE_SCOPE)));
 			
 		}
 		catch(Exception e)
@@ -728,7 +729,7 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 
 				inputFields[i] = field;
 			}
-        	searchScope = getSearchScopeByCode(Const.NVL(rep.getStepAttributeString(id_step, "searchScope"), ""));
+        	searchScope = getSearchScopeByCode(Const.NVL(rep.getStepAttributeString(id_step, "searchScope"), getSearchScopeCode(LDAPConnection.SEARCH_SCOPE_SUBTREE_SCOPE)));
         }
 		catch(Exception e)
 		{

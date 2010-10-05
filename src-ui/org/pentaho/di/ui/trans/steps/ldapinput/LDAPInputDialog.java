@@ -1151,7 +1151,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		wdynamicFilter.setSelection(in.isDynamicFilter());
 		if (in.getDynamicFilterFieldName() != null)  wfilterField.setText(in.getDynamicFilterFieldName());
-		wsearchScope.setText(LDAPInputMeta.getSearchScopeDesc(input.getSearchScope()));
+		wsearchScope.setText(LDAPInputMeta.getSearchScopeDesc(in.getSearchScope()));
 		if(isDebug()) logDebug(BaseMessages.getString(PKG, "LDAPInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
@@ -1275,7 +1275,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
             
 			in.getInputFields()[i] = field;
 		}	
-		input.setSearchScope(LDAPInputMeta.getSearchScopeByDesc(wsearchScope.getText()));
+		in.setSearchScope(LDAPInputMeta.getSearchScopeByDesc(wsearchScope.getText()));
 	}
 	
 	private void useAuthentication()
