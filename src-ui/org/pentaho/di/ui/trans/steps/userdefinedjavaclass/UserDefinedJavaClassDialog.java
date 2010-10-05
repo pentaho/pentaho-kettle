@@ -694,7 +694,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		fdlFields.top = new FormAttachment(0, 0);
 		wlFields.setLayoutData(fdlFields);
 
-		final int nrRows = input.getInfoStepDefinitions().size();
+		final int nrRows = input.getTargetStepDefinitions().size();
 		ColumnInfo[] colinf = new ColumnInfo[] {
 						new ColumnInfo(
 										BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.ColumnInfo.StepTag"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
