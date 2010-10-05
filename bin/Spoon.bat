@@ -43,13 +43,13 @@ IF %IS64BITJAVA% == 1 GOTO :USE64
 REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
 REM ===========================================
-set LIBSPATH=..\libswt\win32
+set LIBSPATH=libswt\win32
 GOTO :CONTINUE
 :USE64
 REM ===========================================
 REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
-set LIBSPATH=..\libswt\win64
+set LIBSPATH=libswt\win64
 :CONTINUE
 
 REM FOR /D %%F IN (plugins\spoon\*) DO call :addpp %%F
