@@ -85,7 +85,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
       for (CarteObjectEntry entry : jobEntries) {
         String name = entry.getName();
         String id = entry.getId();
-        Job job = getJobMap().getJob(name);
+        Job job = getJobMap().getJob(entry);
         String status = job.getStatus();
 
         serverStatus.getJobStatusList().add(new SlaveServerJobStatus(name, id, status));
@@ -149,7 +149,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
         for (CarteObjectEntry entry : jobEntries) {
           String name = entry.getName();
           String id = entry.getId();
-          Job job = getJobMap().getJob(name);
+          Job job = getJobMap().getJob(entry);
           String status = job.getStatus();
 
           String removeText;
