@@ -137,6 +137,7 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 		table.fields.add( new LogTableField(ID.NR_RESULT_FILES.id, true, false, "NR_RESULT_FILES", BaseMessages.getString(PKG, "JobEntryLogTable.FieldName.NrResultFiles"), BaseMessages.getString(PKG, "JobEntryLogTable.FieldDescription.NrResultFiles"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.LOG_FIELD.id, false, false, "LOG_FIELD", BaseMessages.getString(PKG, "JobEntryLogTable.FieldName.LogField"), BaseMessages.getString(PKG, "JobEntryLogTable.FieldDescription.LogField"), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH) );
 
+	    table.findField(ID.JOBNAME.id).setNameField(true);
 		table.findField(ID.LOG_DATE.id).setLogDateField(true);
 		table.findField(ID.CHANNEL_ID.id).setVisible(false);
 		table.findField(ID.LOG_FIELD.id).setLogField(true);
@@ -192,8 +193,8 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 						case LINES_REJECTED : value = new Long(result!=null ? result.getNrLinesRejected() : 0); break;
 						case ERRORS : value = new Long(result!=null ? result.getNrErrors() : 0); break;
 						case RESULT : value = new Boolean(result!=null ? result.getResult() : false); break;
-						case NR_RESULT_FILES : value = new Long(result!=null ? result.getResultFiles().size() : 0); break;
-						case NR_RESULT_ROWS : value = new Long(result!=null ? result.getRows().size() : 0); break;
+						case NR_RESULT_FILES : value = new Long(result!=null && result.getResultFiles()!=null ? result.getResultFiles().size() : 0); break;
+						case NR_RESULT_ROWS : value = new Long(result!=null && result.getRows()!=null ? result.getRows().size() : 0); break;
 						case LOG_FIELD : 
 						    if (result!=null) {
 							   value = result.getLogText();

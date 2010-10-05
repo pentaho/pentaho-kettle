@@ -256,6 +256,16 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
               case ValueMetaInterface.TYPE_STRING:
                 column.setAllignement(SWT.LEFT);
                 break;
+              case ValueMetaInterface.TYPE_BOOLEAN:
+                DatabaseMeta databaseMeta = logTable.getDatabaseMeta(); 
+                if (databaseMeta!=null) {
+                  if (!databaseMeta.supportsBooleanDataType()) {
+                    // Boolean gets converted to String!
+                    //
+                    valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+                  }
+                }
+                break;
             }
             column.setValueMeta(valueMeta);
             columnList.add(column);
@@ -410,7 +420,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
             List<Object[]> rows;
             try {
               rows = getHistoryData(logTables.get(i));
-            } catch (KettleException e) {
+            } catch (Exception e) {
               LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+logTables.get(i), e);
               rows = new ArrayList<Object[]>();
             }
