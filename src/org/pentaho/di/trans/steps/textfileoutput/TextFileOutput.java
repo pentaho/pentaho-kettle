@@ -839,6 +839,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
               outputStream.close();
             } catch (IOException e) {
               logError("Unexpected error closing file", e);
+              setErrors(1);
             }
           }
     
@@ -852,6 +853,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
             }
           } catch (Exception e) {
             logError("Unexpected error closing file", e);
+            setErrors(1);
           }
         }
     
