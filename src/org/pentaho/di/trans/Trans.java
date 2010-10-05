@@ -774,7 +774,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 								// Grab the performance statistics one last time (if enabled)
 								//
 								addStepPerformanceSnapShot();
-								
+
+                                // Commit or roll back the transaction in the unique database connections...
+                                // 
+                                if (transMeta.isUsingUniqueConnections()) {
+                                    trans.closeUniqueDatabaseConnections(getResult());
+                                }
+                                
 								try {
 									fireTransFinishedListeners();
 								} catch(Exception e) {
@@ -1808,14 +1814,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		TransLogTable transLogTable = transMeta.getTransLogTable(); 
         int intervalInSeconds = Const.toInt( environmentSubstitute(transLogTable.getLogInterval()), -1);
 
-		Result result = getResult();
-
-		if (transMeta.isUsingUniqueConnections() && (status.equals(LogStatus.END) || status.equals(LogStatus.STOP)) ) {
-			// Commit or roll back the transaction in the unique database connections...
-			// 
-			closeUniqueDatabaseConnections(result);
-		}
-		
 		logDate     = new Date();
 
 		// OK, we have some logging to do...
