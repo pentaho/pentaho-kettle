@@ -828,33 +828,35 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			throw new KettleException("Unexpected error while encoding binary fields", e);
 		}
 	}
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(TextFileOutputMeta)smi;
-		data=(TextFileOutputData)sdi;
-		
-		if(data.oneFileOpened) closeFile();
-		
-		try{
-			if(data.fos!=null) { 
-				data.fos.close();
-			}
-		}
-		catch (Exception e)
-		{
-			
-		}
 
-		for (OutputStream outputStream : data.fileWriterMap.values()) {
-			try {
-				outputStream.close();
-			} catch (IOException e) {
-				// Eat exception.
-			}
-		}
-		
+      public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+        meta = (TextFileOutputMeta) smi;
+        data = (TextFileOutputData) sdi;
+    
+        if (meta.isFileNameInField()) {
+          for (OutputStream outputStream : data.fileWriterMap.values()) {
+            try {
+              outputStream.close();
+            } catch (IOException e) {
+              logError("Unexpected error closing file", e);
+            }
+          }
+    
+        } else {
+          if (data.oneFileOpened)
+            closeFile();
+    
+          try {
+            if (data.fos != null) {
+              data.fos.close();
+            }
+          } catch (Exception e) {
+            logError("Unexpected error closing file", e);
+          }
+        }
+    
         super.dispose(smi, sdi);
-	}
+    }
 	
 	public boolean containsSeparatorOrEnclosure(byte[] source, byte[] separator, byte[] enclosure) {
 	  boolean result = false;
