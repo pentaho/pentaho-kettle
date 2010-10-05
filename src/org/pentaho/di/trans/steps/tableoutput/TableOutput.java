@@ -578,7 +578,11 @@ public class TableOutput extends BaseStep implements StepInterface
                 }
                 
                 if(log.isBasic()) logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+data.commitSize+")");
-				data.db.setCommit(data.commitSize);
+				if (data.commitSize>0) {
+				  data.db.setCommit(data.commitSize);
+				} else {
+				  data.db.setCommit(Integer.MAX_VALUE); // never commit until the end.  PDI-2091
+				}
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
                 {    
