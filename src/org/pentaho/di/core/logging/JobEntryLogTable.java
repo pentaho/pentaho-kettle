@@ -136,6 +136,7 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 		table.fields.add( new LogTableField(ID.NR_RESULT_FILES.id, true, false, "NR_RESULT_FILES", BaseMessages.getString(PKG, "JobEntryLogTable.FieldName.NrResultFiles"), BaseMessages.getString(PKG, "JobEntryLogTable.FieldDescription.NrResultFiles"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.LOG_FIELD.id, false, false, "LOG_FIELD", BaseMessages.getString(PKG, "JobEntryLogTable.FieldName.LogField"), BaseMessages.getString(PKG, "JobEntryLogTable.FieldDescription.LogField"), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH) );
 
+		table.findField(ID.JOBNAME.id).setNameField(true);
 		table.findField(ID.LOG_DATE.id).setLogDateField(true);
 		table.findField(ID.CHANNEL_ID.id).setVisible(false);
 		table.findField(ID.LOG_FIELD.id).setLogField(true);

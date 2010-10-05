@@ -256,6 +256,16 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
               case ValueMetaInterface.TYPE_STRING:
                 column.setAllignement(SWT.LEFT);
                 break;
+              case ValueMetaInterface.TYPE_BOOLEAN:
+                DatabaseMeta databaseMeta = logTable.getDatabaseMeta(); 
+                if (databaseMeta!=null) {
+                  if (!databaseMeta.supportsBooleanDataType()) {
+                    // Boolean gets converted to String!
+                    //
+                    valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+                  }
+                }
+                break;
             }
             column.setValueMeta(valueMeta);
             columnList.add(column);
