@@ -2055,6 +2055,7 @@ public class TableView extends Composite
 				case ValueMetaInterface.TYPE_INTEGER:
 				case ValueMetaInterface.TYPE_BIGNUMBER:
 				case ValueMetaInterface.TYPE_NUMBER: return Const.getNumberFormats();
+				case ValueMetaInterface.TYPE_STRING: return Const.getConversionFormats();
 				default: return new String[0];
 			}
 		} 
