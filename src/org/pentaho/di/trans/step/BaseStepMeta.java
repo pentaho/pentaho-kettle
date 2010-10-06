@@ -537,7 +537,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
     }
 
     public String getRepCode(String attributeKey) {
-      return findAttribute(attributeKey).getXmlCode();
+      return findAttribute(attributeKey).getRepCode();
     }
     
     public String getDescription(String attributeKey) {
