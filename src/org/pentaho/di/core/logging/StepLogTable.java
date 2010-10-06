@@ -169,10 +169,9 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 						case LINES_OUTPUT : value = new Long(combi.step.getLinesOutput()); break;
 						case LINES_REJECTED : value = new Long(combi.step.getLinesRejected()); break;
 						case ERRORS : value = new Long(combi.step.getErrors()); break;
-						case LOG_FIELD : 
-							StringBuffer buffer = CentralLogStore.getAppender().getBuffer(combi.step.getLogChannel().getLogChannelId(), false);
-							value = buffer.toString();
-							break;
+                        case LOG_FIELD : 
+                          value = getLogBuffer(combi.step, combi.step.getLogChannel().getLogChannelId(), status, null);
+                          break;
 						}
 					}
 

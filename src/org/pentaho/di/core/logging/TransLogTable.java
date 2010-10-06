@@ -333,10 +333,9 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 						case ENDDATE: value = trans.getEndDate(); break;
 						case DEPDATE: value = trans.getDepDate(); break;
 						case REPLAYDATE: value = trans.getCurrentDate(); break;
-						case LOG_FIELD: 
-							StringBuffer buffer = CentralLogStore.getAppender().getBuffer(trans.getLogChannelId(), true);
-							value = buffer.append(Const.CR+status.getStatus().toUpperCase()+Const.CR).toString();
-							break;
+                        case LOG_FIELD: 
+                          value = getLogBuffer(trans, trans.getLogChannelId(), status, logSizeLimit);
+                          break;
 						}
 					}
 

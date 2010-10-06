@@ -369,4 +369,24 @@ abstract class BaseLogTable {
 		this.connectionName = connectionName;
 	}
 
+    protected String getLogBuffer(VariableSpace space, String logChannelId, LogStatus status, String limit) {
+
+      StringBuffer buffer = CentralLogStore.getAppender().getBuffer(logChannelId, true);
+
+      // See if we need to limit the amount of rows
+      //
+      int nrLines = Const.isEmpty(limit) ? -1 : Const.toInt(space.environmentSubstitute(limit), -1);
+      
+      if (nrLines>0) {
+        int start = buffer.length()-1;
+        for (int i=0;i<nrLines && start>0;i++) {
+          start = buffer.lastIndexOf(Const.CR, start-1);
+        }
+        if (start>0) {
+          buffer.delete(0, start+Const.CR.length());
+        }
+      }
+  
+      return buffer.append(Const.CR + status.getStatus().toUpperCase() + Const.CR).toString();
+    }
 }

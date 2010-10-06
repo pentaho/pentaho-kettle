@@ -295,10 +295,9 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 						case ENDDATE: value = job.getEndDate(); break;
 						case DEPDATE: value = job.getDepDate(); break;
 						case REPLAYDATE: value = job.getCurrentDate(); break;
-						case LOG_FIELD: 
-							StringBuffer buffer = CentralLogStore.getAppender().getBuffer(job.getLogChannelId(), true);
-							value = buffer.append(Const.CR+status.getStatus().toUpperCase()+Const.CR).toString();
-							break;
+                        case LOG_FIELD: 
+                          value = getLogBuffer(job, job.getLogChannelId(), status, logSizeLimit);
+                          break;
 						}
 					}
 
