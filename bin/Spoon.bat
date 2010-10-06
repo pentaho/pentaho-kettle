@@ -1,6 +1,8 @@
 @echo off
 setlocal 
 
+cd /D %~dp0
+
 REM **************************************************
 REM ** Set console window properties                **
 REM **************************************************

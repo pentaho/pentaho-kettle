@@ -38,7 +38,7 @@ setPentahoEnv() {
   cd $DIR_REL
   DIR=`pwd`
   cd -
-  
+	
   if [ -n "$PENTAHO_JAVA" ]; then
     __LAUNCHER="$PENTAHO_JAVA"
   else
@@ -80,7 +80,7 @@ setPentahoEnv() {
     echo "DEBUG: Using JRE_HOME"
     _PENTAHO_JAVA_HOME="$JRE_HOME"
     _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
-  elif [ -n "$1" ] && [ -x "$1"/bin/$__LAUNCHER ]; then
+  elif [ -n "$1" ] && [ -d "$1" ] && [ -x "$1"/bin/$__LAUNCHER ]; then
     echo "DEBUG: Using value ($1) from calling script"
     _PENTAHO_JAVA_HOME="$1"
     _PENTAHO_JAVA="$_PENTAHO_JAVA_HOME"/bin/$__LAUNCHER
