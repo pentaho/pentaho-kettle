@@ -742,6 +742,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
                 hop.setEnabled(!hop.isEnabled());
                 JobHopMeta after = (JobHopMeta) hop.clone();
                 spoon.addUndoChange(jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta.indexOfJobHop(hop) });
+                spoon.setShellText();
                 redraw();
               } else {
 				// No area-owner means: background:

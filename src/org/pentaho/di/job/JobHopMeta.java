@@ -159,7 +159,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 
 	public void setEnabled(boolean en)
 	{
-	    if (evaluation!=en) setChanged();
+	    if (enabled!=en) setChanged();
 		enabled=en;
 	}
 
