@@ -728,6 +728,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 								hop.setUnconditional(true);
 							}
 						}
+                        spoon.setShellText();
 						redraw();
 					}
 					break;
