@@ -718,7 +718,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 				case JOB_HOP_ICON:
 					JobHopMeta hop = (JobHopMeta) areaOwner.getOwner();
 					if (hop.getFromEntry().evaluates()) {
-						if (hop.isUnconditional()) {
+					    if (hop.isUnconditional()) {
 							hop.setUnconditional(false);
 							hop.setEvaluation(true);
 						} else {
@@ -728,6 +728,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 								hop.setUnconditional(true);
 							}
 						}
+						spoon.setShellText();
 						redraw();
 					}
 					break;
