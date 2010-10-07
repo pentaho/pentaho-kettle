@@ -59,7 +59,6 @@ REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
 REM ===========================================
 set LIBSPATH=libswt\win32
-set SWTJAR=..\libswt\win32
 GOTO :CONTINUE
 :USE64
 REM ===========================================
@@ -97,4 +96,4 @@ REM ** Run...    **
 REM ***************
 
 @echo on
-start "Spoon" "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib %SWTJAR% %_cmdline%
+start "Spoon" "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%
