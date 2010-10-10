@@ -356,7 +356,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		
 		ciKey=new ColumnInfo[nrKeyCols];
 		ciKey[0]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.TableField"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-		ciKey[1]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.Comparator"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+		ciKey[1]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.Comparator"),    ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "= ~NULL", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
 		ciKey[2]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		ciKey[3]=new ColumnInfo(BaseMessages.getString(PKG, "UpdateDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
 		tableFieldColumns.add(ciKey[0]);
