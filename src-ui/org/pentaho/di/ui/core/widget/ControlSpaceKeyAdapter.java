@@ -87,6 +87,9 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
   {
 	  if (System.getProperty("user.language").equals("zh")) 
 		  return e.character == ' ' && ((e.stateMask & SWT.CONTROL) != 0) && ((e.stateMask & SWT.ALT) != 0);
+	  // Detect Command-space on Mac OS X to fix PDI-4319
+	  else if (System.getProperty("os.name").startsWith("Mac OS X"))
+		  return e.character == ' ' && ((e.stateMask & SWT.MOD1) != 0) && ((e.stateMask & SWT.ALT) == 0);
 	  else
 		  return e.character == ' ' && ((e.stateMask & SWT.CONTROL) != 0) && ((e.stateMask & SWT.ALT) == 0);
   }
