@@ -68,6 +68,7 @@ public class GetXMLDataData extends BaseStepData implements StepDataInterface
     public int totalpreviousfields;
     public Map<String, String> NAMESPACE = new HashMap<String, String>();
 	public List<String> NSPath = new ArrayList<String>();
+	public int nrReadRow;
     
     
 	/**
@@ -124,5 +125,6 @@ public class GetXMLDataData extends BaseStepData implements StepDataInterface
 		prunePath="";
 		stopPruning=false;
 		errorInRowButContinue=false;
+		nrReadRow=0;
 	}
 }
