@@ -17,6 +17,9 @@ package org.pentaho.di.trans.steps.janino;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 import org.codehaus.janino.ExpressionEvaluator;
 import org.pentaho.di.core.Const;
@@ -32,6 +35,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import com.javainc.jperl.JPerl;
 
 
 
@@ -152,6 +157,10 @@ public class Janino extends BaseStep implements StepInterface
                 System.arraycopy(outputRowData, 0, rowData, 0, rowData.length);
                 
                 Object formulaResult  = data.expressionEvaluators[i].evaluate(rowData);
+                Map<String, String> has = new Hashtable<String, String>();
+                has.put("$VAR1", "xxx");
+                
+                JPerl.interpret("C:\\Documents and Settings\\shassan\\Bureau\\test.pl", System.out, new Hashtable<String, String>());
                     
                 // Calculate the return type on the first row...
                 //

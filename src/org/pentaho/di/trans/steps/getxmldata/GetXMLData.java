@@ -263,7 +263,9 @@ public class GetXMLData extends BaseStep implements StepInterface
 		   if(first)
 			{
 			    first=false;
-
+			    if(data.readrow!=null) {
+			    	data.nrReadRow=data.readrow.length;
+			    }
 				data.inputRowMeta = getInputRowMeta();
 	            data.outputRowMeta = data.inputRowMeta.clone();
 	            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
@@ -639,10 +641,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				}
 			 }
 			 	
-			if(meta.isInFields())
-				r= processPutRow(data.readrow,(AbstractNode)data.an.get(data.nodenr));
-			else
-				r= processPutRow(null,(AbstractNode)data.an.get(data.nodenr));
+			 r= processPutRow((AbstractNode)data.an.get(data.nodenr));
 		 }
 		 catch (Exception e)
 		 {
@@ -653,15 +652,17 @@ public class GetXMLData extends BaseStep implements StepInterface
 	}
 
 		
-	private Object[] processPutRow(Object[] row,AbstractNode node) throws KettleException
+	private Object[] processPutRow(AbstractNode node) throws KettleException
 	{
 		// Create new row...
 		Object[] outputRowData = buildEmptyRow();
-
+		if(meta.isInFields()) {
+			 System.arraycopy(data.readrow, 0, outputRowData, 0, data.nrReadRow);
+		}
 		try
 		{
 			data.nodenr++; 
-			if(row!=null) outputRowData = row.clone();
+	
 			// Read fields...
 			for (int i=0;i<data.nrInputFields;i++)
 			{	
@@ -727,11 +728,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 					break;
 				}
 				
-				if(meta.isInFields())
-				{
-					// Add result field to input stream
-	                outputRowData = RowDataUtil.addValueData(outputRowData,data.totalpreviousfields+i, nodevalue);
-				}
+	
 				// Do conversions
 				//
 				ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+i);
@@ -748,7 +745,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				}
 			}// End of loop over fields...	
 			
-			int rowIndex = data.nrInputFields;
+			int rowIndex = data.totalpreviousfields+ data.nrInputFields;
 			
 			// See if we need to add the filename to the row...
 			if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
@@ -827,6 +824,31 @@ public class GetXMLData extends BaseStep implements StepInterface
 			data.file.close();
 			}catch (Exception e){}
 		}
+		if(data.an!=null){
+			data.an.clear();
+			data.an=null;
+		}
+		if(data.NAMESPACE!=null) {
+			data.NAMESPACE.clear();
+			data.NAMESPACE=null;
+		}
+		if(data.NSPath!=null) {
+			data.NSPath.clear();
+			data.NSPath=null;
+		}
+		if(data.readrow!=null) {
+			data.readrow=null;
+		}
+		if(data.document!=null) {
+			data.document=null;
+		}
+	    if (data.fr != null) {
+	       BaseStep.closeQuietly(data.fr);
+	    }
+	    if (data.is != null) {
+		       BaseStep.closeQuietly(data.is);
+		    }
+	    if(data.files!=null) data.files=null;
 		super.dispose(smi, sdi);
 	}
 
