@@ -16,12 +16,21 @@
 package org.pentaho.di.trans.steps.rssinput;
 
 import it.sauronsoftware.feed4j.FeedParser;
+import it.sauronsoftware.feed4j.FeedXMLParseException;
+import it.sauronsoftware.feed4j.UnsupportedFeedException;
 import it.sauronsoftware.feed4j.bean.FeedItem;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import org.dom4j.DocumentException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -37,120 +46,146 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.ui.database.Messages;
+import org.xml.sax.SAXParseException;
 
 
 /**
  * Read data from RSS and writes these to one or more output streams.
- * 
+ * <br/>
+ * <br/>
+ * When error handling is turned on:<br/>
+ * <ul>
+ *  <li>The input row will be passed through if it is present</li>
+ *  <li>The "Nr of errors" field will always be 1 (we do not presently check for multiple errors)</li>
+ *  <li>The "Error descriptions" field contains a .toString of the caught exception (Usually contains useful info, such as the HTTP return code)</li>
+ *  <li>The "Error fields" contains the URL that caused the failure</li>
+ *  <li>The "Error code" field contains one of the following Strings:
+ *    <ul>
+ *      <li>UnknownError - Unexpected; Check the "Error description" field</li>
+ *      <li>XMLError - Typically the file is not XML; Could be non-xml HTML</li>
+ *      <li>FileNotFound - Can be caused by a HTTP/404</li>
+ *      <li>UnknownHost - Domain name cannot be resolved; May be caused by network outage</li>
+ *      <li>TransferError - Can be caused by any Server error code (401, 403, 500, 502, etc...)</li>
+ *      <li>BadURL - Url cannot be understood; May lack protocol (e.g.- http://) or use an unrecognized protocol</li>
+ *      <li>BadRSSFormat - Typically the file is valid XML, but is not RSS</li>
+ *    </ul>
+ *  </li> 
+ * </ul>
+ *  
+ *  Notes:
+ *  
+ *    Turn on debug logging to see the full stack trace from a handled error. <br />
+ *  
  * @author Samatar
  * @since 13-10-2007
  */
 public class RssInput extends BaseStep implements StepInterface
 {
-	private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private RssInputMeta meta;
 	private RssInputData data;
+
+	private int errors = 0;
 	
 	public RssInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private boolean readNextUrl()
+	private boolean readNextUrl() throws Exception
 	{
-		try
+	  // Clear out previous feed
+	  data.feed = null;
+	  data.itemssize = 0;
+	  
+		if(meta.urlInField())
 		{
-			if(meta.urlInField())
-			{
-				 data.readrow= getRow();  // Grab another row ...
-				 if(data.readrow==null)
-				 {
-		            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.FinishedProcessing"));
-		            return false; 
-				 }
-				 if(first)
-				 {
-					first=false;
-					data.inputRowMeta = getInputRowMeta();
-		            data.outputRowMeta = data.inputRowMeta.clone();
-		            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-		            
-		            // Get total previous fields
-		            data.totalpreviousfields=data.inputRowMeta.size();
+			 data.readrow= getRow();  // Grab another row ...
+			 if(data.readrow==null)
+			 {
+	            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.FinishedProcessing")); //$NON-NLS-1$
+	            return false; 
+			 }
+			 if(first)
+			 {
+				first=false;
+				data.inputRowMeta = getInputRowMeta();
+	            data.outputRowMeta = data.inputRowMeta.clone();
+	            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+	            
+	            // Get total previous fields
+	            data.totalpreviousfields=data.inputRowMeta.size();
 
-					// Create convert meta-data objects that will contain Date & Number formatters
-		            data.convertRowMeta = data.outputRowMeta.clone();
-		            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
-		  
-		            // For String to <type> conversions, we allocate a conversion meta data row as well...
-					//
-					data.convertRowMeta = data.outputRowMeta.clone();
-					for (int i=0;i<data.convertRowMeta.size();i++) {
-						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
-					}
-					
-					// Check is URL field is provided
-					if (Const.isEmpty(meta.getUrlFieldname()))
-					{
-						logError(BaseMessages.getString(PKG, "RssInput.Log.UrlFieldNameMissing"));
-						throw new KettleException(BaseMessages.getString(PKG, "RssInput.Log.UrlFieldNameMissing"));
-					}
-					
-					// cache the position of the field			
-					if (data.indexOfUrlField<0)
-					{	
-						data.indexOfUrlField =data.inputRowMeta.indexOfValue(meta.getUrlFieldname());
-						if (data.indexOfUrlField<0)
-						{
-							// The field is unreachable !
-							logError(BaseMessages.getString(PKG, "RssInput.Log.ErrorFindingField")+ "[" + meta.getUrlFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-							throw new KettleException(BaseMessages.getString(PKG, "RssInput.Exception.ErrorFindingField",meta.getUrlFieldname())); //$NON-NLS-1$ //$NON-NLS-2$
-						}
-					}		
-						
+				// Create convert meta-data objects that will contain Date & Number formatters
+	            data.convertRowMeta = data.outputRowMeta.clone();
+	            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+	  
+	            // For String to <type> conversions, we allocate a conversion meta data row as well...
+				//
+				data.convertRowMeta = data.outputRowMeta.clone();
+				for (int i=0;i<data.convertRowMeta.size();i++) {
+					data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
 				}
-				// get URL field value
-				data.currenturl= data.inputRowMeta.getString(data.readrow,data.indexOfUrlField);
-				 
-			}else{
-				if(data.last_url) return false;
-	            if (data.urlnr>=data.urlsize) // finished processing!
-	            {
-	            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.FinishedProcessing"));
-	                return false;
-	            }
-				// Is this the last url?
-	            data.last_url = ( data.urlnr==data.urlsize-1);
-				data.currenturl =environmentSubstitute(meta.getUrl()[data.urlnr]) ;
+				
+				// Check is URL field is provided
+				if (Const.isEmpty(meta.getUrlFieldname()))
+				{
+					logError(BaseMessages.getString(PKG, "RssInput.Log.UrlFieldNameMissing")); //$NON-NLS-1$
+					throw new KettleException(BaseMessages.getString(PKG, "RssInput.Log.UrlFieldNameMissing")); //$NON-NLS-1$
+				}
+				
+				// cache the position of the field			
+				if (data.indexOfUrlField<0)
+				{	
+					data.indexOfUrlField =data.inputRowMeta.indexOfValue(meta.getUrlFieldname());
+					if (data.indexOfUrlField<0)
+					{
+						// The field is unreachable !
+						logError(BaseMessages.getString(PKG, "RssInput.Log.ErrorFindingField")+ "[" + meta.getUrlFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$  //$NON-NLS-3$
+						throw new KettleException(BaseMessages.getString(PKG, "RssInput.Exception.ErrorFindingField",meta.getUrlFieldname())); //$NON-NLS-1$
+					}
+				}		
+					
 			}
-            
-
-			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.ReadingUrl", data.currenturl));
-			
-			URL rss = new URL(data.currenturl);
-			data.feed = FeedParser.parse(rss);
-			data.itemssize = data.feed.getItemCount();
-			
-			// Move url pointer ahead!
-			data.urlnr++;
-			data.itemsnr=0;
-
-			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.UrlReaded", data.currenturl,data.itemssize));
-
+			// get URL field value
+			data.currenturl= data.inputRowMeta.getString(data.readrow,data.indexOfUrlField);
+			 
+		}else{
+			if(data.last_url) return false;
+            if (data.urlnr>=data.urlsize) // finished processing!
+            {
+            	if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.FinishedProcessing")); //$NON-NLS-1$
+                return false;
+            }
+			// Is this the last url?
+            data.last_url = ( data.urlnr==data.urlsize-1);
+			data.currenturl =environmentSubstitute(meta.getUrl()[data.urlnr]) ;
 		}
-		catch(Exception e)
-		{
-			logError(BaseMessages.getString(PKG, "RssInput.Log.UnableToReadUrl", ""+data.urlnr, data.currenturl, e.toString()));
-			stopAll();
-			setErrors(1);
-			logError(Const.getStackTracker(e));
-			return false;
+          
+
+		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.ReadingUrl", data.currenturl)); //$NON-NLS-1$
+		
+		try {
+		
+		URL rss = new URL(data.currenturl);
+		data.feed = FeedParser.parse(rss);
+		data.itemssize = data.feed.getItemCount();
+		} finally {
+  		
+  		// Move url pointer ahead!
+  		data.urlnr++;
+  		data.itemsnr=0;
+  		
+  		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.UrlReadFailed", data.currenturl)); //$NON-NLS-1$
 		}
+		
+		if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "RssInput.Log.UrlReaded", data.currenturl,data.itemssize)); //$NON-NLS-1$
+
 		return true;
 	}
 	
-	private Object[] getOneRow()  throws KettleException
+	private Object[] getOneRow() throws Exception
 	{
 
 		if(meta.urlInField())
@@ -177,118 +212,110 @@ public class RssInput extends BaseStep implements StepInterface
 		Object[] outputRowData = buildEmptyRow();
 			
 		if (data.readrow!=null) System.arraycopy(data.readrow, 0, outputRowData, 0, data.readrow.length);
-				
-		try{
 			
-			// Get item
-			FeedItem item = data.feed.getItem(data.itemsnr);
+		// Get item
+		FeedItem item = data.feed.getItem(data.itemsnr);
 
-			if((Const.isEmpty(meta.getRealReadFrom()) 
-					|| (!Const.isEmpty(meta.getRealReadFrom()) 
-							&& item.getPubDate().compareTo(data.readfromdatevalide)>0))) 
-			{
-						
-				// Execute for each Input field...
-				for (int j=0;j<meta.getInputFields().length;j++)
-				{
-					RssInputField RSSInputField = meta.getInputFields()[j];
-							
-					String valueString=null;
-					switch (RSSInputField.getColumn())
-					{
-						case RssInputField.COLUMN_TITLE:
-							valueString=item.getTitle();
-							break;
-						case RssInputField.COLUMN_LINK:
-							valueString=item.getLink()== null ? "" :item.getLink().toString();
-							break;
-						case RssInputField.COLUMN_DESCRIPTION_AS_TEXT:
-							valueString=item.getDescriptionAsText();
-							break;
-						case RssInputField.COLUMN_DESCRIPTION_AS_HTML:
-							valueString=item.getDescriptionAsHTML();
-							break;
-						case RssInputField.COLUMN_COMMENTS:
-							valueString=item.getComments()== null ? "": item.getComments().toString();
-							break;
-						case RssInputField.COLUMN_GUID:
-							valueString=item.getGUID();
-							break;
-						case RssInputField.COLUMN_PUB_DATE:
-							valueString=item.getPubDate()== null ? "":DateFormat.getInstance().format(item.getPubDate());
-							break;
-						default:
-							break;
-					}
-
-							
-					// Do trimming
-					switch (RSSInputField.getTrimType())
-					{
-						case RssInputField.TYPE_TRIM_LEFT:
-							valueString = Const.ltrim(valueString);
-							break;
-						case RssInputField.TYPE_TRIM_RIGHT:
-							valueString = Const.rtrim(valueString);
-							break;
-						case RssInputField.TYPE_TRIM_BOTH:
-							valueString = Const.trim(valueString);
-							break;
-						default:
-							break;
-					}
-					
-							
-					// Do conversions
-					//
-					ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+j);
-					ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(data.totalpreviousfields+j);
-					outputRowData[data.totalpreviousfields+j] = targetValueMeta.convertData(sourceValueMeta, valueString);
-
-					// Do we need to repeat this field if it is null?
-					if (meta.getInputFields()[j].isRepeated())
-					{
-						if (data.previousRow!=null && Const.isEmpty(valueString))
-						{
-							outputRowData[data.totalpreviousfields+j] = data.previousRow[data.totalpreviousfields+j];
-						}
-					}
-							
-				} // end of loop over fields ...
-						
-				int rowIndex = data.nrInputFields;
-				
-				// See if we need to add the url to the row...
-				 if (meta.includeUrl()) {
-					outputRowData[data.totalpreviousfields+rowIndex++] = data.currenturl;
-				}
-				 // See if we need to add the row number to the row...  
-				if (meta.includeRowNumber())
-		        {
-		            outputRowData[data.totalpreviousfields+rowIndex++] = new Long(data.rownr);
-		        }
-				
-				RowMetaInterface irow = getInputRowMeta();
-				
-				data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
-				// surely the next step doesn't change it in between...
-				
-				data.rownr++; 
-				
-				putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
-
-				 if (meta.getRowLimit()>0 && data.rownr>meta.getRowLimit())  // limit has been reached: stop now.
-			     {
-					 return null;	
-			     }	
-			}
-			data.itemsnr++;
-		}
-		catch(Exception e)
+		if((Const.isEmpty(meta.getRealReadFrom()) 
+				|| (!Const.isEmpty(meta.getRealReadFrom()) 
+						&& item.getPubDate().compareTo(data.readfromdatevalide)>0))) 
 		{
-			throw new KettleException(e);
+					
+			// Execute for each Input field...
+			for (int j=0;j<meta.getInputFields().length;j++)
+			{
+				RssInputField RSSInputField = meta.getInputFields()[j];
+						
+				String valueString=null;
+				switch (RSSInputField.getColumn())
+				{
+					case RssInputField.COLUMN_TITLE:
+						valueString=item.getTitle();
+						break;
+					case RssInputField.COLUMN_LINK:
+						valueString=item.getLink()== null ? "" :item.getLink().toString(); //$NON-NLS-1$
+						break;
+					case RssInputField.COLUMN_DESCRIPTION_AS_TEXT:
+						valueString=item.getDescriptionAsText();
+						break;
+					case RssInputField.COLUMN_DESCRIPTION_AS_HTML:
+						valueString=item.getDescriptionAsHTML();
+						break;
+					case RssInputField.COLUMN_COMMENTS:
+						valueString=item.getComments()== null ? "": item.getComments().toString(); //$NON-NLS-1$
+						break;
+					case RssInputField.COLUMN_GUID:
+						valueString=item.getGUID();
+						break;
+					case RssInputField.COLUMN_PUB_DATE:
+						valueString=item.getPubDate()== null ? "":DateFormat.getInstance().format(item.getPubDate()); //$NON-NLS-1$
+						break;
+					default:
+						break;
+				}
 
-		} 
+						
+				// Do trimming
+				switch (RSSInputField.getTrimType())
+				{
+					case RssInputField.TYPE_TRIM_LEFT:
+						valueString = Const.ltrim(valueString);
+						break;
+					case RssInputField.TYPE_TRIM_RIGHT:
+						valueString = Const.rtrim(valueString);
+						break;
+					case RssInputField.TYPE_TRIM_BOTH:
+						valueString = Const.trim(valueString);
+						break;
+					default:
+						break;
+				}
+				
+						
+				// Do conversions
+				//
+				ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+j);
+				ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(data.totalpreviousfields+j);
+				outputRowData[data.totalpreviousfields+j] = targetValueMeta.convertData(sourceValueMeta, valueString);
+
+				// Do we need to repeat this field if it is null?
+				if (meta.getInputFields()[j].isRepeated())
+				{
+					if (data.previousRow!=null && Const.isEmpty(valueString))
+					{
+						outputRowData[data.totalpreviousfields+j] = data.previousRow[data.totalpreviousfields+j];
+					}
+				}
+						
+			} // end of loop over fields ...
+					
+			int rowIndex = data.nrInputFields;
+			
+			// See if we need to add the url to the row...
+			 if (meta.includeUrl()) {
+				outputRowData[data.totalpreviousfields+rowIndex++] = data.currenturl;
+			}
+			 // See if we need to add the row number to the row...  
+			if (meta.includeRowNumber())
+	        {
+	            outputRowData[data.totalpreviousfields+rowIndex++] = new Long(data.rownr);
+	        }
+			
+			RowMetaInterface irow = getInputRowMeta();
+			
+			data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
+			// surely the next step doesn't change it in between...
+			
+			data.rownr++; 
+			
+			putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+
+			 if (meta.getRowLimit()>0 && data.rownr>meta.getRowLimit())  // limit has been reached: stop now.
+		     {
+				 return null;	
+		     }	
+		}
+		data.itemsnr++;
 		return outputRowData;
 	}
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -307,31 +334,58 @@ public class RssInput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			boolean sendToErrorRow=false;
-			String errorMessage = null;
-			 
 			if (getStepMeta().isDoingErrorHandling())
 			{
-		         sendToErrorRow = true;
-		         errorMessage = e.toString();
+         RowMeta errorMeta = new RowMeta();
+         Object[] errorData = new Object[0];
+         
+         if(this.data.readrow != null) {
+           errorMeta.addRowMeta(getInputRowMeta());
+           errorData = this.data.readrow;
+         }
+
+         String errorCode = "UnknownError"; //$NON-NLS-1$
+         
+         // Determine error code
+         if(e instanceof FeedXMLParseException) {
+           if(e.getCause() instanceof DocumentException) {
+             if(((DocumentException)e.getCause()).getNestedException() instanceof SAXParseException) {
+               errorCode = "XMLError"; //$NON-NLS-1$
+             } else if(((DocumentException)e.getCause()).getNestedException() instanceof FileNotFoundException) {
+               errorCode = "FileNotFound"; //$NON-NLS-1$
+             } else if(((DocumentException)e.getCause()).getNestedException() instanceof IOException) {
+               if(((DocumentException)e.getCause()).getNestedException() instanceof UnknownHostException) {
+                 errorCode = "UnknownHost"; //$NON-NLS-1$
+               } else {
+                 errorCode = "TransferError"; //$NON-NLS-1$
+               }
+             }             
+           }
+         } else if(e instanceof MalformedURLException) {
+           errorCode = "BadURL"; //$NON-NLS-1$
+         } else if (e instanceof UnsupportedFeedException) {
+           errorCode = "BadRSSFormat"; //$NON-NLS-1$
+         }
+
+         putError(errorMeta, errorData, 1, e.toString(), this.data.currenturl, errorCode);
+         errors++;
+         logError(BaseMessages.getString(PKG, "RssInput.ErrorProcessing.Run",e.toString())); //$NON-NLS-1$
+         
+         ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
+         e.printStackTrace(new PrintStream(byteOS));
+         logDebug(byteOS.toString());
 			}
 			else
 			{
-				logError(BaseMessages.getString(PKG, "RssInput.Exception.Run",e.toString()));
+				logError(BaseMessages.getString(PKG, "RssInput.Exception.Run",e.toString())); //$NON-NLS-1$
 				logError(Const.getStackTracker(e));
 				setErrors(1);
 				throw new KettleException(e);
 		
 			}
-			if (sendToErrorRow)
-			{
-			   // Simply add this row to the error row
-			   putError(getInputRowMeta(), outputRowData, 1, errorMessage, null, "RssInput001");
-			}
-
 		}
 
-		 return true;
+		return true;
 	
 	}
 	/**
@@ -355,12 +409,12 @@ public class RssInput extends BaseStep implements StepInterface
 		{
 			if (meta.includeRowNumber() && Const.isEmpty(meta.getRowNumberField()))
 		    {
-				logError(Messages.getString("RssInput.Error.RowNumberFieldMissing"));
+				logError(Messages.getString("RssInput.Error.RowNumberFieldMissing")); //$NON-NLS-1$
 				return false;
 		    }
 			if (meta.includeUrl() && Const.isEmpty(meta.geturlField()))
 		    {
-				logError(Messages.getString("RssInput.Error.UrlFieldMissing"));
+				logError(Messages.getString("RssInput.Error.UrlFieldMissing")); //$NON-NLS-1$
 				return false;
 		    }
 			
@@ -369,7 +423,7 @@ public class RssInput extends BaseStep implements StepInterface
 				// Let's check validity of the read from date
 				try
 				{
-					SimpleDateFormat fdrss = new SimpleDateFormat("yyyy-MM-dd");
+					SimpleDateFormat fdrss = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
 					fdrss.setLenient(false);
 					data.readfromdatevalide = fdrss.parse(meta.getRealReadFrom());	
 				}
@@ -383,7 +437,7 @@ public class RssInput extends BaseStep implements StepInterface
 			{
 				if (meta.getUrl()==null && meta.getUrl().length==0)
 			    {
-					logError(BaseMessages.getString(PKG, "RssInput.Log.UrlMissing"));
+					logError(BaseMessages.getString(PKG, "RssInput.Log.UrlMissing")); //$NON-NLS-1$
 					return false;
 				}
 				
