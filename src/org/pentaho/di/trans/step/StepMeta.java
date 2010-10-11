@@ -685,7 +685,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
      */
     public void setDistributes(boolean distributes)
     {
-        this.distributes = distributes;
+    	if (this.distributes != distributes){
+    		this.distributes = distributes;
+    		setChanged();
+    	}
+
     }
 
     /**
