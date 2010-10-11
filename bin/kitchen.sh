@@ -8,7 +8,7 @@
 BASEDIR=`dirname $0`
 cd $BASEDIR
 DIR=`pwd`
-cd -
+cd - > /dev/null
 
 . "$DIR/set-pentaho-env.sh"
 
