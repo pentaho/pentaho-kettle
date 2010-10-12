@@ -35,8 +35,11 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.HadoopSpoonPlugin;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.hdfs.vfs.HDFSFileObject;
 import org.pentaho.vfs.ui.CustomVfsUiPanel;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
@@ -132,6 +135,7 @@ public class HadoopVfsFileChooserDialog extends CustomVfsUiPanel {
     fdUrl = new GridData();
     fdUrl.widthHint = 150;
     wUrl.setLayoutData(fdUrl);
+    wUrl.setText(Props.getInstance().getCustomParameter("HadoopVfsFileChooserDialog.host", "localhost"));
     wUrl.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent arg0) {
         handleConnectionButton();
@@ -149,7 +153,8 @@ public class HadoopVfsFileChooserDialog extends CustomVfsUiPanel {
     fdUserID = new GridData();
     fdUserID.widthHint = 150;
     wUserID.setLayoutData(fdUserID);
-
+    wUserID.setText(Props.getInstance().getCustomParameter("HadoopVfsFileChooserDialog.user", ""));
+    
     // Place holder
     wPlaceHolderLabel = new Label(textFieldPanel, SWT.RIGHT);
     wPlaceHolderLabel.setText("");
@@ -168,12 +173,12 @@ public class HadoopVfsFileChooserDialog extends CustomVfsUiPanel {
     fdPort = new GridData();
     fdPort.widthHint = 150;
     wPort.setLayoutData(fdPort);
+    wPort.setText(Props.getInstance().getCustomParameter("HadoopVfsFileChooserDialog.port", "9000"));
     wPort.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent arg0) {
         handleConnectionButton();
       }
     });
-
 
     // password label and field
     wlPassword = new Label(textFieldPanel, SWT.RIGHT);
@@ -187,7 +192,9 @@ public class HadoopVfsFileChooserDialog extends CustomVfsUiPanel {
     fdPassword = new GridData();
     fdPassword.widthHint = 150;
     wPassword.setLayoutData(fdPassword);
+    wPassword.setText(Props.getInstance().getCustomParameter("HadoopVfsFileChooserDialog.password", ""));
 
+    
     // Connection button
     wConnectionButton = new Button(textFieldPanel, SWT.CENTER);
     fdConnectionButton = new GridData();
@@ -205,6 +212,12 @@ public class HadoopVfsFileChooserDialog extends CustomVfsUiPanel {
           showMessageAndLog("HadoopVfsFileChooserDialog.error", "HadoopVfsFileChooserDialog.Connection.error", t.getMessage());
           return;
         }
+        
+        Props.getInstance().setCustomParameter("HadoopVfsFileChooserDialog.host", wUrl.getText());
+        Props.getInstance().setCustomParameter("HadoopVfsFileChooserDialog.port", wPort.getText());
+        Props.getInstance().setCustomParameter("HadoopVfsFileChooserDialog.user", wUserID.getText());
+        Props.getInstance().setCustomParameter("HadoopVfsFileChooserDialog.password", wPassword.getText());
+        
         vfsFileChooserDialog.openFileCombo.setText(buildHadoopFileSystemUrlString());
         vfsFileChooserDialog.resolveVfsBrowser();
       }
