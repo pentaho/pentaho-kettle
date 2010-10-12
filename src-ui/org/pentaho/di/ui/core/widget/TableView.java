@@ -1078,7 +1078,10 @@ public class TableView extends Composite
         
         sortTable(sortfield, sortingDescending);
     }
-    
+	public void setSelection(int[] selectedItems)
+	{
+		table.select(selectedItems);
+	}
     public void sortTable(int sortField, boolean sortingDescending)
     {
         this.sortfield = sortField;

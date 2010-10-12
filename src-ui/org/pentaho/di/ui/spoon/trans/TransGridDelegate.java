@@ -271,7 +271,8 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 			
 			int sortColumn = transGridView.getSortField();
 			boolean sortDescending = transGridView.isSortingDescending();
-
+			int[] selectedItems=transGridView.getSelectionIndices();
+			
 			if (table.getItemCount() != nrSteps)
             {
 				table.removeAll();
@@ -338,6 +339,9 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 			// Only need to resort if the output has been sorted differently to the default
 			if (sortColumn != 0 || !sortDescending) {
 				transGridView.sortTable(sortColumn, sortDescending);
+			}
+			if(selectedItems!=null && selectedItems.length>0) {
+				transGridView.setSelection(selectedItems);
 			}
 			transGridView.getTable().setTopIndex(topIdx);
 		}
