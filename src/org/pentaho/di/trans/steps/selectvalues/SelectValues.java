@@ -287,6 +287,9 @@ public class SelectValues extends BaseStep implements StepInterface
 				{
 					valueMeta.setConversionMask(change.getConversionMask());
 				}
+				
+				valueMeta.setDateFormatLenient(change.isDateFormatLenient());
+				
 				if (!Const.isEmpty(change.getEncoding()))
 				{
 				  valueMeta.setStringEncoding(change.getEncoding());
