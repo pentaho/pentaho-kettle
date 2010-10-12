@@ -206,12 +206,12 @@ public class BasePainter {
         if (resizedMax.x <= area.x)
             thumb.x = 100;
         else
-            thumb.x = Math.round( 100f * area.x / resizedMax.x );
+            thumb.x = (int) Math.floor( 100d * area.x / resizedMax.x );
 
         if (resizedMax.y <= area.y)
             thumb.y = 100;
         else
-            thumb.y = Math.round( 100f * area.y / resizedMax.y );
+            thumb.y = (int) Math.floor( 100d * area.y / resizedMax.y );
 
         return thumb;
     }
