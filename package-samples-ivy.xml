@@ -12,7 +12,7 @@
   </configurations>
 
   <publications>
-    <artifact name="${ivy.artifact.id}" type="zip" />
+    <artifact name="${ivy.artifact.id}-samples" type="zip" />
   </publications>
 
   <dependencies defaultconf="default->default">

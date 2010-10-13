@@ -1,5 +1,5 @@
 <!--===========================================================================
-  This is the build file for the Pentaho Agile BI Project
+  This is the build file for the Pentaho PDI Hadoop Plugin Project
   
   This build file will use the subfloor.xml file as the default build
   process and should only override the tasks that need to differ from
@@ -11,7 +11,7 @@
 	xmlns:ivy="antlib:org.apache.ivy.ant" >
 	
 	<description>
-	  This build file is used to create the Agile BI project
+	  This build file is used to create the PDI Hadoop Plugin project
 		and works with the subfloor.xml file.
 	</description>
 
