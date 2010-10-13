@@ -75,9 +75,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 */
 	public String getSchemaTableCombination(String schema_name, String table_part)
 	{
-		return "\""+schema_name+"\".\""+table_part+"\"";
-	}
-	
+		return getBackwardsCompatibleSchemaTableCombination(schema_name, table_part);
+	}	
 	/**
 	 * Get the maximum length of a text field for this database connection.
 	 * This includes optional CLOB, Memo and Text fields. (the maximum!)

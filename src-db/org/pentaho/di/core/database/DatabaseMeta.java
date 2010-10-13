@@ -1452,22 +1452,35 @@ public class DatabaseMeta
 		return remarks.toArray(new String[remarks.size()]);
 	}
 	
+	/**
+	 * This is now replaced with getQuotedSchemaTableCombination(), enforcing the use of the quoteFields call
+	 * 
+	 * @param schemaName
+	 * @param tableName
+	 * @return
+     * @deprecated please use getQuotedSchemaTableCombination()
+	 */
+	public String getSchemaTableCombination(String schemaName, String tableName) 
+	{
+	  return getQuotedSchemaTableCombination(schemaName, tableName);
+	}
+	
     /**
      * Calculate the schema-table combination, usually this is the schema and table separated with a dot. (schema.table)
      * @param schemaName the schema-name or null if no schema is used.
      * @param tableName the table name
      * @return the schemaname-tablename combination
      */
-	public String getSchemaTableCombination(String schemaName, String tableName)
+	public String getQuotedSchemaTableCombination(String schemaName, String tableName)
 	{
 		if (Const.isEmpty(schemaName)) {
 			if (Const.isEmpty(getPreferredSchemaName())) {
-				return tableName; // no need to look further
+				return quoteField(tableName); // no need to look further
 			} else {
-				return databaseInterface.getSchemaTableCombination(getPreferredSchemaName(), tableName);
+				return databaseInterface.getSchemaTableCombination(quoteField(environmentSubstitute(getPreferredSchemaName())), quoteField(environmentSubstitute(tableName)));
 			}
 		} else {
-			return databaseInterface.getSchemaTableCombination(environmentSubstitute(schemaName), environmentSubstitute(tableName));
+			return databaseInterface.getSchemaTableCombination(quoteField(environmentSubstitute(schemaName)), quoteField(environmentSubstitute(tableName)));
 		}
 	}
 	
@@ -1889,7 +1902,7 @@ public class DatabaseMeta
             // Count function 
             r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "COUNT aggregate function"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getFunctionCount()); list.add(r);
             // Schema-table combination
-            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Schema / Table combination"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getSchemaTableCombination("SCHEMA", "TABLE")); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Schema / Table combination"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getQuotedSchemaTableCombination("SCHEMA", "TABLE")); list.add(r);
             // Limit clause 
             r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "LIMIT clause for 100 rows"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getLimitClause(100)); list.add(r);
             // add column statement 
@@ -2193,15 +2206,6 @@ public class DatabaseMeta
     public boolean needsToLockAllTables()
     {
         return databaseInterface.needsToLockAllTables();
-    }
-
-    public String getQuotedSchemaTableCombination(String schemaName, String tableName)
-    {
-    	if (Const.isEmpty(schemaName)) {
-    		return getSchemaTableCombination(quoteField(getPreferredSchemaName()), quoteField(tableName));
-    	} else {
-    		return getSchemaTableCombination(quoteField(schemaName), quoteField(tableName));
-    	}
     }
 
     /**

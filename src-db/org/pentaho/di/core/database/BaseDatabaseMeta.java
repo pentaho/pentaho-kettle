@@ -636,6 +636,51 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	{
 		return schema_name+"."+table_part;
 	}
+	
+	/**
+	 * Checks for quotes before quoting schema and table.  Many dialects had hardcoded quotes, they probably didn't get updated properly
+     * when quoteFields() was introduced to DatabaseMeta.
+	 * 
+	 * @param schemaPart
+	 * @param tablePart
+	 * @return quoted schema and table
+	 * 
+	 * @deprecated we should phase this out in 5.0, but it's there to keep backwards compatibility in the 4.x releases.
+	 */
+	public String getBackwardsCompatibleSchemaTableCombination(String schemaPart, String tablePart) {
+      String schemaTable = "";
+      if (schemaPart != null && (schemaPart.contains(getStartQuote()) || schemaPart.contains(getEndQuote()))) {
+        schemaTable+=schemaPart;
+      } else {
+        schemaTable+=getStartQuote()+schemaPart+getEndQuote();
+      }
+      schemaTable+=".";
+      if (tablePart != null && (tablePart.contains(getStartQuote()) || tablePart.contains(getEndQuote()))) {
+        schemaTable+=tablePart;
+      } else {
+        schemaTable+=getStartQuote()+tablePart+getEndQuote();
+      }
+      return schemaTable;
+    }
+	
+    /**
+     * Checks for quotes before quoting table.  Many dialects had hardcoded quotes, they probably didn't get updated properly
+     * when quoteFields() was introduced to DatabaseMeta.
+     * 
+     * @param tablePart
+     * 
+     * @return quoted table
+     * 
+     * @deprecated we should phase this out in 5.0, but it's there to keep backwards compatibility in the 4.x releases.
+     */
+    public String getBackwardsCompatibleTable(String tablePart) {
+      if (tablePart != null && tablePart.contains(getStartQuote()) || tablePart.contains(getEndQuote())) {
+        return tablePart;
+      } else {
+        return getStartQuote()+tablePart+getEndQuote();
+      }
+    }
+
 
 	/**
 	 * Get the maximum length of a text field for this database connection.

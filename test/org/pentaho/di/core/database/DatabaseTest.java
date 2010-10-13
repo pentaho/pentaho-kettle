@@ -144,8 +144,8 @@ public class DatabaseTest extends TestCase
             assertEquals("\"schema1\".\"table1\"", dbInfo.getQuotedSchemaTableCombination("schema1", "table1"));
             
             // These 2 are maybe dodgy, but current behaviour
-            assertEquals("\"\"schema 1\"\".\"\"table 1\"\"", dbInfo.getQuotedSchemaTableCombination("schema 1", "table 1"));
-            assertEquals("\"schema1\".\"\"table1\"\"", dbInfo.getQuotedSchemaTableCombination("schema1", "\"table1\""));
+            assertEquals("\"schema 1\".\"table 1\"", dbInfo.getQuotedSchemaTableCombination("schema 1", "table 1"));
+            assertEquals("\"schema1\".\"table1\"", dbInfo.getQuotedSchemaTableCombination("schema1", "\"table1\""));
             
             database.disconnect();
         }     
