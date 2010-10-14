@@ -522,7 +522,7 @@
 		<classname>org.pentaho.di.trans.steps.addxml.AddXMLMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AddXML</tooltip>
-		<iconfile>ui/images/XIN.png</iconfile>
+		<iconfile>ui/images/add_xml.png</iconfile>
 	</step>
 
 	<step id="AggregateRows">
