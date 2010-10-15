@@ -68,6 +68,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataField;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta;
+import org.pentaho.di.trans.steps.getxmldata.IgnoreDTDEntityResolver;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -1369,6 +1370,16 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
    					String encoding="UTF-8";
    					if (!Const.isEmpty(meta.getEncoding())) encoding=meta.getEncoding();
    					SAXReader reader = new SAXReader();
+   					// Validate XML against specified schema?
+   	    			if(meta.isValidating())
+   	    			{
+   	    				reader.setValidation(true);
+   	    				reader.setFeature("http://apache.org/xml/features/validation/schema", true);
+   	    			}
+   	    			else
+   	    			{
+   	    				reader.setEntityResolver(new IgnoreDTDEntityResolver());	
+   	    			}
    	    			Document document  = reader.read( KettleVFS.getInputStream(fileinputList.getFile(0)), encoding);	
    	    			List<Node> nodes = document.selectNodes(document.getRootElement().getName());
 
@@ -1434,6 +1445,16 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     			}
     			
     			SAXReader reader = new SAXReader();
+    			// Validate XML against specified schema?
+    			if(meta.isValidating())
+    			{
+    				reader.setValidation(true);
+    				reader.setFeature("http://apache.org/xml/features/validation/schema", true);
+    			}
+    			else
+    			{
+    				reader.setEntityResolver(new IgnoreDTDEntityResolver());	
+    			}
     			Document document  = reader.read( KettleVFS.getInputStream(inputList.getFile(0)),encoding );	
     			String realXPath=transMeta.environmentSubstitute(meta.getLoopXPath());
     			List<Node> nodes = document.selectNodes(realXPath);

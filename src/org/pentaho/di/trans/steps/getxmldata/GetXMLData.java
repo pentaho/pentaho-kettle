@@ -85,6 +85,11 @@ public class GetXMLData extends BaseStep implements StepInterface
 				reader.setValidation(true);
 				reader.setFeature("http://apache.org/xml/features/validation/schema", true);
 			}
+			else
+			{
+				// Ignore DTD declarations
+				reader.setEntityResolver(new IgnoreDTDEntityResolver());	
+			}
 			
 			// Ignore comments?
 			if(meta.isIgnoreComments())	reader.setIgnoreComments(true);
