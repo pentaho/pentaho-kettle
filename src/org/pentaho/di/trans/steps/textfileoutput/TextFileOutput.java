@@ -553,7 +553,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
 	public String buildFilename(String filename, boolean ziparchive)
 	{
-		return TextFileOutputMeta.buildFilename(filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr, ziparchive, meta);
+		return meta.buildFilename(filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr, ziparchive, meta);
 	}
 	
 	public void openNewFile(String baseFilename) throws KettleException

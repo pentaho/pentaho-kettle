@@ -845,7 +845,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		return buildFilename(fileName, extension, space, stepnr, partnr, splitnr, ziparchive, this);
 	}
 	
-	public static String buildFilename(String filename, String extension, VariableSpace space, int stepnr, String partnr, int splitnr, boolean ziparchive, TextFileOutputMeta meta)
+	public String buildFilename(String filename, String extension, VariableSpace space, int stepnr, String partnr, int splitnr, boolean ziparchive, TextFileOutputMeta meta)
 	{
 		SimpleDateFormat daf = new SimpleDateFormat();
 
