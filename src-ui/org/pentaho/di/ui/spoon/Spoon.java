@@ -2756,6 +2756,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void tabSelected(TabItem item) {
     delegates.tabs.tabSelected(item);
+    enableMenus();
   }
 
   public String getRepositoryName() {
