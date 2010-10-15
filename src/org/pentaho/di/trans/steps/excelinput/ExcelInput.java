@@ -677,9 +677,9 @@ public class ExcelInput extends BaseStep implements StepInterface
 		List<FileErrorHandler> errorHandlers = new ArrayList<FileErrorHandler>(2);
 
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
-			errorHandlers.add(new FileErrorHandlerContentLineNumber(getTrans().getCurrentDate(), meta.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), "Latin1", this));
+			errorHandlers.add(new FileErrorHandlerContentLineNumber(getTrans().getCurrentDate(), environmentSubstitute(meta.getLineNumberFilesDestinationDirectory()), meta.getLineNumberFilesExtension(), "Latin1", this));
 		if (meta.getErrorFilesDestinationDirectory() != null)
-			errorHandlers.add(new FileErrorHandlerMissingFiles(getTrans().getCurrentDate(), meta.getErrorFilesDestinationDirectory(), meta.getErrorFilesExtension(), "Latin1", this));
+			errorHandlers.add(new FileErrorHandlerMissingFiles(getTrans().getCurrentDate(), environmentSubstitute(meta.getErrorFilesDestinationDirectory()), meta.getErrorFilesExtension(), "Latin1", this));
 		data.errorHandler = new CompositeFileErrorHandler(errorHandlers);
 	}
 
@@ -689,7 +689,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (replayDate == null)
 			data.filePlayList = FilePlayListAll.INSTANCE;
 		else
-			data.filePlayList = new FilePlayListReplay(replayDate, meta.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta.getErrorFilesDestinationDirectory(), meta
+			data.filePlayList = new FilePlayListReplay(replayDate, environmentSubstitute(meta.getLineNumberFilesDestinationDirectory()), meta.getLineNumberFilesExtension(), environmentSubstitute(meta.getErrorFilesDestinationDirectory()), meta
 					.getErrorFilesExtension(), "Latin1");
 	}
 
