@@ -942,6 +942,11 @@ public class TextFileInput extends BaseStep implements StepInterface
 				int repeats = 1;
 				if (meta.isLineWrapped()) repeats = meta.getNrWraps() > 0 ? meta.getNrWraps() : repeats;
 
+        if (!data.doneWithHeader && data.headerLinesRead == 0) { 
+          // We are just starting to read header lines, read them all
+          repeats += meta.getNrHeaderLines() + 1;
+        }
+
 				// Read a number of lines...
 				for (int i = 0; i < repeats && !data.doneReading; i++)
 				{
@@ -1425,7 +1430,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			 */
 			int bufferSize = 1; 
 			bufferSize += meta.hasHeader() ? meta.getNrHeaderLines() : 0;
-			bufferSize += meta.isLayoutPaged() ? meta.getNrLinesPerPage() : 0;
+			bufferSize += meta.isLayoutPaged() ? meta.getNrLinesPerPage() * (Math.max(0, meta.getNrWraps()) + 1) : 0;
 			bufferSize += meta.hasFooter() ? meta.getNrFooterLines() : 0;
 
 			// See if we need to skip the document header lines...
