@@ -86,6 +86,11 @@ public class GetXMLData extends BaseStep implements StepInterface
 				reader.setValidation(true);
 				reader.setFeature("http://apache.org/xml/features/validation/schema", true);
 			}
+			else
+			{
+				// Ignore DTD declarations
+				reader.setEntityResolver(new IgnoreDTDEntityResolver());	
+			}
 			
 			// Ignore comments?
 			if(meta.isIgnoreComments())	reader.setIgnoreComments(true);
@@ -731,9 +736,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 		try
 		{
 			data.nodenr++; 
-			/*if(row!=null) { 
-			  outputRowData = row.clone();
-			}*/
+
 			// Read fields...
 			for (int i=0;i<data.nrInputFields;i++)
 			{	
@@ -782,11 +785,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 						break;
 				}
 				
-				/*if(meta.isInFields())
-				{
-					// Add result field to input stream
-	                outputRowData = RowDataUtil.addValueData(outputRowData,data.totalpreviousfields+i, nodevalue);
-				}*/
+	
 				// Do conversions
 				//
 				ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+i);
@@ -803,7 +802,6 @@ public class GetXMLData extends BaseStep implements StepInterface
 				}
 			}// End of loop over fields...	
 			
-			//int rowIndex = data.nrInputFields;
 			int rowIndex = data.totalpreviousfields+ data.nrInputFields;
 			
 			// See if we need to add the filename to the row...
