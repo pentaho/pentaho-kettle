@@ -802,8 +802,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		}
 	}
 
-	public RowMetaInterface getTableFields()
-	{
+	public RowMetaInterface getTableFields() {
 		RowMetaInterface fields = null;
 		if (databaseMeta!=null)
 		{
@@ -813,7 +812,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			try
 			{
 				db.connect();
-                String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
+				    String tableName = databaseMeta.environmentSubstitute(tablename);
+				    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
                 fields = db.getTableFields(schemaTable);
 			}
 			catch(KettleDatabaseException dbe)
