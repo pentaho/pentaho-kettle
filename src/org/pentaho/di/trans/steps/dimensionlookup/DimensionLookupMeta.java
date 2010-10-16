@@ -885,11 +885,11 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("          ").append(XMLHandler.addTagValue("to", dateTo)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("        </date>").append(Const.CR); //$NON-NLS-1$
 
-		if (fieldStream != null)
+		if (fieldLookup != null)
         {
-			for (int i = 0; i < fieldStream.length; i++)
+			for (int i = 0; i < fieldLookup.length; i++)
 			{
-				if (fieldStream[i] != null)
+				if (fieldLookup[i] != null)
 				{
 					retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
 					retval.append("          ").append(XMLHandler.addTagValue("name", fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1001,9 +1001,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
             rep.saveStepAttribute(id_transformation, id_step, "date_from", dateFrom); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "date_to", dateTo); //$NON-NLS-1$
 
-            if (fieldStream != null) for (int i = 0; i < fieldStream.length; i++)
+            if (fieldLookup != null) for (int i = 0; i < fieldLookup.length; i++)
             {
-                if (fieldStream[i] != null)
+                if (fieldLookup[i] != null)
                 {
                     rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldStream[i]); //$NON-NLS-1$
                     rep.saveStepAttribute(id_transformation, id_step, i, "field_lookup", fieldLookup[i]); //$NON-NLS-1$
