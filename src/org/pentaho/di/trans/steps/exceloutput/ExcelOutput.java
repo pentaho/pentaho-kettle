@@ -554,7 +554,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 
 			if ( data.workbook != null )
 			{
-				if(meta.isAutoSizeColums())
+				if(meta.isAutoSizeColums() && (data.fieldsWidth != null))
 				{
 					// auto resize columns
 					int nrfields=data.fieldsWidth.length;
