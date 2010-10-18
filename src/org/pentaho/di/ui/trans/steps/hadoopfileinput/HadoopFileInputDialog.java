@@ -46,6 +46,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileType;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -115,7 +116,6 @@ import org.pentaho.di.ui.core.widget.VariableButtonListenerFactory;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.textfileinput.DirectoryDialogButtonListenerFactory;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage1;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage2;
@@ -130,6 +130,8 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
 	private LogChannel log = new LogChannel(this);
 
 	private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString(BASE_PKG, "System.Combo.No"), BaseMessages.getString(BASE_PKG, "System.Combo.Yes") };
+	
+	private static final String[] ALL_FILES_TYPE = new String[] { BaseMessages.getString(PKG, "System.FileType.AllFiles") }; //$NON-NLS-1$
 	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
@@ -1568,6 +1570,63 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
         }
     }
 
+    private class DirectoryBrowserAdapter extends SelectionAdapter
+    {
+      private Text widget;
+      
+      /**
+       * Create a new Directory Browser Adapter that reads/sets the text of {@code widget} to the directory chosen.
+       *  
+       * @param widget Text widget linked to the VFS browser
+       */
+      public DirectoryBrowserAdapter(Text widget) {
+        this.widget = widget;
+      }
+
+      public void widgetSelected(SelectionEvent e) 
+      {
+        try {
+          // Get current file
+          FileObject rootFile = null;
+          FileObject initialFile = null;
+          FileObject defaultInitialFile = null;
+          
+          if (widget.getText()!=null) {
+            String fileName = transMeta.environmentSubstitute(widget.getText());
+            
+            if(fileName != null && !fileName.equals("")) {
+              initialFile = KettleVFS.getFileObject(fileName);
+              rootFile = initialFile.getFileSystem().getRoot();
+            }
+            else {
+                defaultInitialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+            }
+          }
+          
+          defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
+          if (rootFile == null) {
+            rootFile = defaultInitialFile.getFileSystem().getRoot();
+            initialFile = defaultInitialFile;
+          }
+
+          VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog(rootFile, initialFile);
+          fileChooserDialog.defaultInitialFile = defaultInitialFile;
+          FileObject selectedFile = fileChooserDialog.open(shell, null, HadoopSpoonPlugin.HDFS_SCHEME,true, null, 
+              new String[]{"*.*"}, ALL_FILES_TYPE, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
+            if (selectedFile != null) {
+              if (!selectedFile.getType().equals(FileType.FOLDER)) {
+                selectedFile = selectedFile.getParent();
+              }
+              widget.setText(selectedFile.getURL().toString());
+            }
+        } catch (KettleFileException ex) {
+          log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.KettleFileException"));
+        } catch (FileSystemException ex) {
+          log.logError(BaseMessages.getString(PKG, "HadoopFileInputDialog.FileBrowser.FileSystemException"));
+        }
+      }
+    }
+    
     private void addErrorTab()
     {
         //////////////////////////
@@ -1731,7 +1790,7 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
         wWarnDestDir.setLayoutData(fdBadDestDir);
         
         // Listen to the Browse... button
-        wbbWarnDestDir.addSelectionListener(DirectoryDialogButtonListenerFactory.getSelectionAdapter(shell, wWarnDestDir));
+        wbbWarnDestDir.addSelectionListener(new DirectoryBrowserAdapter(wWarnDestDir));
 
         // Listen to the Variable... button
         wbvWarnDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wWarnDestDir, transMeta));        
@@ -1798,7 +1857,7 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
         wErrorDestDir.setLayoutData(fdErrorDestDir);
         
         // Listen to the Browse... button
-        wbbErrorDestDir.addSelectionListener(DirectoryDialogButtonListenerFactory.getSelectionAdapter(shell, wErrorDestDir));
+        wbbErrorDestDir.addSelectionListener(new DirectoryBrowserAdapter(wErrorDestDir));
 
         // Listen to the Variable... button
         wbvErrorDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wErrorDestDir, transMeta));        
@@ -1865,7 +1924,7 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
         wLineNrDestDir.setLayoutData(fdLineNrDestDir);
         
         // Listen to the Browse... button
-        wbbLineNrDestDir.addSelectionListener(DirectoryDialogButtonListenerFactory.getSelectionAdapter(shell, wLineNrDestDir));
+        wbbLineNrDestDir.addSelectionListener(new DirectoryBrowserAdapter(wLineNrDestDir));
 
         // Listen to the Variable... button
         wbvLineNrDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wLineNrDestDir, transMeta));        
