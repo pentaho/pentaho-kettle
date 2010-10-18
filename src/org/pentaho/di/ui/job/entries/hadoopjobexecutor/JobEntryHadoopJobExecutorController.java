@@ -134,7 +134,9 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
   }
 
   public void browseJar() {
-    FileDialog dialog = new FileDialog(Spoon.getInstance().getShell(), SWT.OPEN);
+    XulDialog xulDialog = (XulDialog) getXulDomContainer().getDocumentRoot().getRootElement();
+    Shell shell = (Shell) xulDialog.getRootObject();
+    FileDialog dialog = new FileDialog(shell, SWT.OPEN);
     dialog.setFilterExtensions(new String[] { "*.jar;*.zip" });
     dialog.setFilterNames(new String[] { "Java Archives (jar)" });
     String prevName = jobEntry.environmentSubstitute(jarUrl);
