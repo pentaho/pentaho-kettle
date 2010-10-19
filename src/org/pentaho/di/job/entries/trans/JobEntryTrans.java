@@ -845,6 +845,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 //
                 else if (remoteSlaveServer!=null)
                 {
+                  
+                    // Make sure we can parameterize the slave server connection
+                    //
+                    remoteSlaveServer.shareVariablesWith(this);
+                    
                 	// Remote execution...
                 	//
                 	TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
