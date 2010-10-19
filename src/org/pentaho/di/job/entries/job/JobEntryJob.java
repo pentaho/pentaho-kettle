@@ -771,6 +771,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           oneResult = runner.getResult();
 
         } else {
+          
+          // Make sure we can parameterize the slave server connection
+          //
+          remoteSlaveServer.shareVariablesWith(this);
+          
           // Remote execution...
           //
           JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
