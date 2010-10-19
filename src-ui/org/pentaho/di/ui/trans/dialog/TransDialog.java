@@ -2237,8 +2237,8 @@ public class TransDialog extends Dialog
 						StringBuilder ddl = new StringBuilder();
 						
 						RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
-						String tableName = logTable.getTableName();
-						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), tableName);
+						String tableName = db.environmentSubstitute(logTable.getTableName());
+						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(db.environmentSubstitute(logTable.getSchemaName()), tableName);
 						String createTable = db.getDDL(schemaTable, fields);
 
 						if (!Const.isEmpty(createTable))

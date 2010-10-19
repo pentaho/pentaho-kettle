@@ -1343,10 +1343,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		endDate     = currentDate;
 		
 		DatabaseMeta logConnection = transLogTable.getDatabaseMeta();
-		String logTable = transLogTable.getTableName();
-		String logSchema = transLogTable.getSchemaName();
+		String logTable = environmentSubstitute(transLogTable.getTableName());
+		String logSchema = environmentSubstitute(transLogTable.getSchemaName());
 
-        try
+		  try
         {
         	boolean lockedTable = false;
 			if (logConnection!=null)

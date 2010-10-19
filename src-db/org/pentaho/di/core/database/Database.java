@@ -3578,7 +3578,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			if (logRecord==null) return;
 			
 			boolean update = (logTable.getKeyField()!=null) && !status.equals(LogStatus.START);
-			String schemaTable = databaseMeta.getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+			String schemaTable = databaseMeta.getSchemaTableCombination(environmentSubstitute(logTable.getSchemaName()), this.environmentSubstitute(logTable.getTableName()));
 			RowMetaInterface rowMeta = logRecord.getRowMeta();
 			Object[] rowData = logRecord.getData();
 			
@@ -3607,7 +3607,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 			} else {
 				
-				insertRow(logTable.getSchemaName(), logTable.getTableName(), logRecord.getRowMeta(), logRecord.getData());
+				insertRow(environmentSubstitute(logTable.getSchemaName()), this.environmentSubstitute(logTable.getTableName()), logRecord.getRowMeta(), logRecord.getData());
 
 			}			
 		} catch(Exception e) {

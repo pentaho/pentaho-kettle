@@ -1475,7 +1475,7 @@ public class DatabaseMeta
 	{
 		if (Const.isEmpty(schemaName)) {
 			if (Const.isEmpty(getPreferredSchemaName())) {
-				return quoteField(tableName); // no need to look further
+				return quoteField(environmentSubstitute(tableName)); // no need to look further
 			} else {
 				return databaseInterface.getSchemaTableCombination(quoteField(environmentSubstitute(getPreferredSchemaName())), quoteField(environmentSubstitute(tableName)));
 			}
