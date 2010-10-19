@@ -500,7 +500,12 @@ public class CsvInput extends BaseStep implements StepInterface
 					else if (data.crLfMatcher.isReturn(data.byteBuffer, data.endBuffer) || 
 					    data.crLfMatcher.isLineFeed(data.byteBuffer, data.endBuffer)) {
 						
-						data.endBuffer++;
+						if(data.encodingType.equals(EncodingType.DOUBLE_LITTLE_ENDIAN) || data.encodingType.equals(EncodingType.DOUBLE_BIG_ENDIAN)) {
+							data.endBuffer += 2;
+						} else {
+							data.endBuffer ++;
+						}
+						
 						data.totalBytesRead++;
 						newLines=1;
 						
