@@ -15,6 +15,10 @@ package org.pentaho.di.core.database;
 
 public class InfobrightDatabaseMeta extends MySQLDatabaseMeta implements DatabaseInterface {
 
-	// Only has a different ID to catch exceptions here and there.
+  public int getDefaultDatabasePort()
+  {
+      if (getAccessType() == DatabaseMeta.TYPE_ACCESS_NATIVE) return 5029;
+      return -1;
+  }
 
 }

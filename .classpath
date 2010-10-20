@@ -5,150 +5,150 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" output="classes-core" path="src-core"/>
 	<classpathentry kind="src" output="classes-db" path="src-db"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libext/js.jar"/>
-	<classpathentry kind="lib" path="libext/mail.jar"/>
-	<classpathentry kind="lib" path="libext/javadbf.jar" sourcepath="/javadbf/javadbf"/>
-	<classpathentry kind="lib" path="libswt/jface.jar"/>
-	<classpathentry kind="lib" path="libswt/runtime.jar"/>
-	<classpathentry kind="lib" path="libswt/commands.jar"/>
-	<classpathentry kind="lib" path="libswt/common.jar"/>
-	<classpathentry kind="lib" path="libext/jakarta-oro-2.0.8.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-codec-1.3.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-collections-3.1.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-dbcp-1.2.1.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-fileupload-1.0.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-httpclient-3.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-logging-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-net-1.4.1.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-pool-1.3.jar"/>
-	<classpathentry kind="lib" path="libext/web/simple-jndi-0.11.1.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/asjava.zip"/>
-	<classpathentry kind="lib" path="libext/JDBC/db2jcc_license_cu.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/db2jcc.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/hsqldb.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/ifxjdbc.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/iijdbc.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/interclient.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/jaybird-full-2.1.0.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/jt400.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-3.1.14-bin.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/ojdbc14.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/rdbthin.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/sapdbc.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/unijdbc.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/xdbjdbc.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/jsr173_api.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/qname.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/wsdl4j.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/derbyclient.jar"/>
-	<classpathentry kind="lib" path="libext/ldapjdk.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/derby.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/LucidDbClient-minimal.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-i18n.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-digester-1.8.jar"/>
-	<classpathentry kind="lib" path="libext/jug-lgpl-2.0.0.jar"/>
-	<classpathentry kind="lib" path="libext/ognl-2.6.9.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-validator-1.3.1.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-beanutils-1.7.0.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/saxon8-xom.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.3-603.jdbc3.jar"/>
-	<classpathentry kind="lib" path="test/libext/junit.jar"/>
-	<classpathentry kind="lib" path="libext/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="libext/jaxen-1.1.1.jar"/>
-	<classpathentry kind="lib" path="libext/jfree/jfreechart-1.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/kingbasejdbc.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
-	<classpathentry kind="lib" path="libext/jxl.jar"/>
-	<classpathentry kind="lib" path="libext/web/servlet-api-2.5-6.1.9.jar"/>
-	<classpathentry kind="lib" path="libext/trilead-ssh2-build213.jar"/>
-	<classpathentry kind="lib" path="libext/web/activation.jar"/>
-	<classpathentry kind="lib" path="libext/feeds/georss-rome-0.9.8.jar"/>
-	<classpathentry kind="lib" path="libext/feeds/jdom.jar"/>
-	<classpathentry kind="lib" path="libext/feeds/feed4j.jar"/>
-	<classpathentry kind="lib" path="libext/feeds/nekohtml.jar"/>
-	<classpathentry kind="lib" path="libext/feeds/xml-apis.jar"/>
-	<classpathentry kind="lib" path="libext/salesforce/axis.jar"/>
-	<classpathentry kind="lib" path="libext/salesforce/commons-discovery-0.2.jar"/>
-	<classpathentry kind="lib" path="libext/salesforce/jaxrpc.jar"/>
-	<classpathentry kind="lib" path="libext/salesforce/saaj.jar"/>
-	<classpathentry kind="lib" path="libext/janino.jar" sourcepath="libext-src/janino-2.5.16-src.zip"/>
-	<classpathentry kind="lib" path="libext/SNMP4J.jar"/>
-	<classpathentry kind="lib" path="libext/jcifs-1.3.3.jar"/>
-	<classpathentry kind="lib" path="libext/jfree/jcommon-1.0.14.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-formula-editor-0.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/saxon8.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="libext/ini4j-0.5.1.jar"/>
-	<classpathentry kind="lib" path="libext/edtftpj2.0.4.jar"/>
-	<classpathentry kind="lib" path="libext/jsch-0.1.42.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/vertica_3.5_jdk_5.jar"/>
-	<classpathentry kind="lib" path="libext/spring/spring-beans-2.5.6.jar"/>
-	<classpathentry kind="lib" path="libext/spring/spring-context-2.5.6.jar"/>
-	<classpathentry kind="lib" path="libext/spring/spring-context-support-2.5.6.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/commons-math-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/eigenbase-properties-1.1.0.10924.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/javacup-10k.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/libbase-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/libformula-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/sqleonardo-swt-wrapper.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/sqleonardo.jar"/>
-	<classpathentry kind="lib" path="libext/web/jetty-6.1.21.jar"/>
-	<classpathentry kind="lib" path="libext/web/jetty-plus-6.1.21.jar"/>
-	<classpathentry kind="lib" path="libext/web/jetty-util-6.1.21.jar"/>
-	<classpathentry kind="lib" path="libext/junit-4.7.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="test/libext/jetty-servlet-tester-6.1.21.jar"/>
-	<classpathentry kind="lib" path="libext/javassist.jar"/>
-	<classpathentry kind="lib" path="libext/spring/spring-core-2.5.6.jar"/>
-	<classpathentry kind="lib" path="libext/scannotation-1.0.2.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/h2.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/jtds-1.2.5.jar"/>
-	<classpathentry kind="lib" path="libext/ftp4che-0.7.1.jar"/>
-	<classpathentry kind="lib" path="libext/ascsapjco3wrp.jar"/>
-	<classpathentry kind="lib" path="libext/syslog4j-0.9.34.jar"/>
-	<classpathentry kind="lib" path="libext/livetribe-jsr223-2.0.6.jar"/>
-	<classpathentry kind="lib" path="libext/log4j-1.2.14.jar"/>
-	<classpathentry kind="lib" path="libext/xercesImpl-2.9.1.jar"/>
-	<classpathentry kind="lib" path="libext/palo-core.jar"/>
-	<classpathentry kind="lib" path="libext/feeds/rome-1.0.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/xalan-2.4.1.jar"/>
-	<classpathentry kind="lib" path="libext/jackcess-1.2.0.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/orai18n.jar"/>
-	<classpathentry kind="lib" path="libext/secondstring.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.0-remote.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/wstx-asl-3.2.9.jar"/>
-	<classpathentry kind="lib" path="libext/rules/antlr-runtime-3.1.1.jar"/>
-	<classpathentry kind="lib" path="libext/rules/drools-api-5.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/rules/drools-compiler-5.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/rules/drools-core-5.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/rules/mvel2-2.0.10.jar"/>
-	<classpathentry kind="lib" path="libext/rules/core-3.4.2.v_883_R34x.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/eigenbase-resgen-1.3.0.13768.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/eigenbase-xom-1.3.0.13768.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/json_simple-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/slf4j-api-1.5.8.jar"/>
-	<classpathentry kind="lib" path="libext/slf4j-jcl-1.5.8.jar"/>
-	<classpathentry kind="lib" path="libext/jsonpath.jar"/>
-	<classpathentry kind="lib" path="libext/snakeyaml-1.7.jar"/>
-	<classpathentry kind="lib" path="libext/odfdom.jar"/>
-	<classpathentry kind="lib" path="libext/poi-3.6-20091214.jar"/>
-	<classpathentry kind="lib" path="libext/poi-ooxml-3.6-20091214.jar"/>
-	<classpathentry kind="lib" path="libext/poi-ooxml-schemas-3.6-20091214.jar"/>
-	<classpathentry kind="lib" path="libext/xbean.jar"/>
-	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/hadoop-core-0.20.2.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/jets3t-0.7.4.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/kettle-vfs-20100924.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/olap4j-0.9.8.340.jar"/>
-	<classpathentry kind="lib" path="libext/salesforce/salesforce20.0.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/mail.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/javadbf.jar" sourcepath="/javadbf/javadbf"/>
+	<classpathentry exported="true" kind="lib" path="libswt/jface.jar"/>
+	<classpathentry exported="true" kind="lib" path="libswt/runtime.jar"/>
+	<classpathentry exported="true" kind="lib" path="libswt/commands.jar"/>
+	<classpathentry exported="true" kind="lib" path="libswt/common.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jakarta-oro-2.0.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-codec-1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-collections-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-dbcp-1.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-fileupload-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-httpclient-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-logging-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-net-1.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-pool-1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/web/simple-jndi-0.11.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/asjava.zip"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/db2jcc_license_cu.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/db2jcc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/hsqldb.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/ifxjdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/iijdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/interclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/jaybird-full-2.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/jt400.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/mysql-connector-java-3.1.14-bin.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/ojdbc14.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/rdbthin.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/sapdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/unijdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/xdbjdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/webservices/jsr173_api.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/webservices/qname.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/webservices/wsdl4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/derbyclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/ldapjdk.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/derby.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/LucidDbClient-minimal.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-vfs-browser.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-vfs-browser-i18n.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-digester-1.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jug-lgpl-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/ognl-2.6.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-validator-1.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-beanutils-1.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/mondrian/saxon8-xom.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/postgresql-8.3-603.jdbc3.jar"/>
+	<classpathentry exported="true" kind="lib" path="test/libext/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/dom4j-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jaxen-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jfree/jfreechart-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/kingbasejdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jxl.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/web/servlet-api-2.5-6.1.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/trilead-ssh2-build213.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/web/activation.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/feeds/georss-rome-0.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/feeds/jdom.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/feeds/feed4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/feeds/nekohtml.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/feeds/xml-apis.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/salesforce/axis.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/salesforce/commons-discovery-0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/salesforce/jaxrpc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/salesforce/saaj.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/janino.jar" sourcepath="libext-src/janino-2.5.16-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="libext/SNMP4J.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jcifs-1.3.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jfree/jcommon-1.0.14.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-formula-editor-0.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/saxon8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-lang-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/ini4j-0.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/edtftpj2.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jsch-0.1.42.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/vertica_3.5_jdk_5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/spring/spring-beans-2.5.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/spring/spring-context-2.5.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/spring/spring-context-support-2.5.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/mondrian/commons-math-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/mondrian/eigenbase-properties-1.1.0.10924.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/mondrian/javacup-10k.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/libbase-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/libformula-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/sqleonardo-swt-wrapper.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/sqleonardo.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/web/jetty-6.1.21.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/web/jetty-plus-6.1.21.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/web/jetty-util-6.1.21.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/junit-4.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-io-1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="test/libext/jetty-servlet-tester-6.1.21.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/javassist.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/spring/spring-core-2.5.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/scannotation-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/h2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/jtds-1.2.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/ftp4che-0.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/ascsapjco3wrp.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/syslog4j-0.9.34.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/livetribe-jsr223-2.0.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/log4j-1.2.14.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/xercesImpl-2.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/palo-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/feeds/rome-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/webservices/xalan-2.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jackcess-1.2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/orai18n.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/secondstring.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/webservices/wstx-asl-3.2.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/rules/antlr-runtime-3.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/rules/drools-api-5.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/rules/drools-compiler-5.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/rules/drools-core-5.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/rules/mvel2-2.0.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/rules/core-3.4.2.v_883_R34x.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-database-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/mondrian/eigenbase-resgen-1.3.0.13768.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/mondrian/eigenbase-xom-1.3.0.13768.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/mondrian/mondrian-3.2-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/json_simple-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/slf4j-api-1.5.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/slf4j-jcl-1.5.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jsonpath.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/snakeyaml-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/odfdom.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/poi-3.6-20091214.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/poi-ooxml-3.6-20091214.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/poi-ooxml-schemas-3.6-20091214.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/xbean.jar"/>
+	<classpathentry exported="true" kind="lib" path="libswt/win32/swt.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/hadoop-core-0.20.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/jets3t-0.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/kettle-vfs-20100924.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/olap4j-0.9.8.340.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/salesforce/salesforce20.0.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

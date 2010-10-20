@@ -131,8 +131,8 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
   
   @Override
   public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
-	  	safeClosePipe();
-		super.dispose(smi, sdi);
+    safeClosePipe();
+    super.dispose(smi, sdi);
   }
 
 
@@ -183,7 +183,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
     Object[] outputRowData = row; // TODO set to null if there's an error
     try {
       populator.populate(data.record, row, rowMeta);
-      data.record.writeTo(data.loader.getOutputStream());
+      data.record.writeTo(data.loader.getOutputStream2());
       //logRowlevel("loading: ..."); // does it make sense to have this for binary format?
     } catch (IOException ex) {
       throw new KettleException(ex);

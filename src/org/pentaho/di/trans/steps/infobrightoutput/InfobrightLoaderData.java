@@ -12,6 +12,9 @@
  */
 package org.pentaho.di.trans.steps.infobrightoutput;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -35,7 +38,7 @@ public class InfobrightLoaderData extends BaseStepData implements StepDataInterf
   
   private Database db;  // only for initial use and the loader.
   private String[] requiredFields;
-  com.infobright.io.InfobrightNamedPipeLoader loader;
+  InfobrightNamedPipeLoader loader;
   BrighthouseRecord record;
   public RowMetaInterface requiredRowMeta;
   public RowMetaInterface outputRowMeta;
@@ -69,11 +72,18 @@ public class InfobrightLoaderData extends BaseStepData implements StepDataInterf
         meta.setDataFormat(DataFormat.TXT_VARIABLE); // default for ICE
       }
       DataFormat dataFormat = DataFormat.valueForDisplayName(meta.getInfobrightProductType());
-
+      int agentPort = meta.getAgentPort();
+      Charset charset = meta.getCharset();
       Connection conn = db.getConnection();
       String tableName = meta.getDatabaseMeta().getQuotedSchemaTableCombination(step.environmentSubstitute(meta.getSchemaName()), step.environmentSubstitute(meta.getTablename()));
       EtlLogger logger = new KettleEtlLogger(step);
-      loader = new InfobrightNamedPipeLoader(tableName, conn, logger, dataFormat);
+      loader = new InfobrightNamedPipeLoader(tableName, conn, logger, dataFormat, charset, agentPort);
+      loader.setTimeout(30);
+      String debugFile = meta.getDebugFile();
+      if (debugFile != null) {
+        OutputStream debugOutputStream = new FileOutputStream(debugFile);
+        loader.setDebugOutputStream(debugOutputStream);
+      }
       record = loader.createRecord(false); // TODO set to true to support error path
       loader.start();
       
