@@ -864,10 +864,11 @@ public class GetXMLData extends BaseStep implements StepInterface
 			// do it once
 			for(int i=0; i<data.nrInputFields; i++) {
 				GetXMLDataField xmlDataField = meta.getInputFields()[i];
+				String XPathValue=environmentSubstitute(xmlDataField.getXPath());
+				
 				if (xmlDataField.getElementType() == GetXMLDataField.ELEMENT_TYPE_ATTRIBUT){
-					// We have an attribut
+					// We have an attribute
 					// do we need to add leading @
-					String XPathValue=environmentSubstitute(xmlDataField.getXPath());
 					
 					//Only put @ to the last element in path, not in front at all
 					int last=XPathValue.lastIndexOf(GetXMLDataMeta.N0DE_SEPARATOR);
@@ -876,15 +877,14 @@ public class GetXMLData extends BaseStep implements StepInterface
 						String attribut=XPathValue.substring(last, XPathValue.length());
 						if(!attribut.startsWith(GetXMLDataMeta.AT)) {
 							XPathValue=XPathValue.substring(0, last)+GetXMLDataMeta.AT+attribut;
-							xmlDataField.setXPath(XPathValue);
 						}
 					}else{
 						if(!XPathValue.startsWith(GetXMLDataMeta.AT)) {
 							XPathValue=GetXMLDataMeta.AT+XPathValue; 
-							xmlDataField.setXPath(XPathValue);
 						}
 					}
 				}
+				xmlDataField.setXPath(XPathValue);
 			}
 			
 			data.PathValue=environmentSubstitute(meta.getLoopXPath());
