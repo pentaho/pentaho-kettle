@@ -112,12 +112,14 @@ public class StringEvaluator {
 						boolean stop=false;
 						int nrDots=0;
 						int nrCommas=0;
+            int pos = 0;
 						for (char c : value.toCharArray()) {
+
 							if (!Character.isDigit(c) && c!='.' && c!=',' && !Character.isSpaceChar(c) &&
-                  (
-                    !String.valueOf(c).equals(cmm.getConversionMeta().getCurrencySymbol())
-                    && c!= '(' && c!= ')')
-                  ) {
+                  (!String.valueOf(c).equals(cmm.getConversionMeta().getCurrencySymbol())
+                    && c!= '(' && c!= ')') &&
+                  (pos > 0 && (c == '+' || c == '-'))  // allow + & - at the 1st position
+              ) {
 								evaluationResults.remove(cmm);
 								stop=true;
 								break;
@@ -133,6 +135,7 @@ public class StringEvaluator {
 							}
 							if (c=='.') nrDots++;
 							if (c==',') nrCommas++;
+              pos++;
 						}
 						
 						if (nrDots>1 && nrCommas>1) {
