@@ -20,6 +20,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -266,7 +267,7 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
 		allocate( sizegroup, nrfields );
 	}
 
-	public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+	public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
 		// re-assemble a new row of metadata
 		//
@@ -274,21 +275,34 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
     	
     	// Add existing values
     	fields.addRowMeta(r);
-        
-        
-        // add analytic values
-        for (int i = 0 ; i < number_of_fields; i ++ ){
-        	int index_of_subject = -1;
+      
+      // add analytic values
+      for (int i = 0 ; i < number_of_fields; i ++ ){
+         
+      	int index_of_subject = -1;
         	index_of_subject = r.indexOfValue(subjectField[i]);
-        	ValueMetaInterface vmi = r.getValueMeta(index_of_subject).clone();
-        	vmi.setOrigin(origin);
-        	vmi.setName(aggregateField[i]);
-        	fields.addValueMeta(r.size() + i, vmi);
-        }
+
+        	//  if we found the subjectField in the RowMetaInterface, and we should....
+        	if (index_of_subject > -1) {
+           	ValueMetaInterface vmi = r.getValueMeta(index_of_subject).clone();
+           	vmi.setOrigin(origin);
+           	vmi.setName(aggregateField[i]);
+           	fields.addValueMeta(r.size() + i, vmi);
+        	}
+        	else {
+        	   //  we have a condition where the subjectField can't be found from the rowMetaInterface
+        	   StringBuilder sbfieldNames = new StringBuilder();
+        	   String[] fieldNames = r.getFieldNames();
+        	   for (int j=0; j < fieldNames.length; j++) {
+        	    sbfieldNames.append("["+fieldNames[j]+"]"+(j<fieldNames.length-1?", ":""));
+            }
+            throw new KettleStepException(BaseMessages.getString(PKG, "AnalyticQueryMeta.Exception.SubjectFieldNotFound", getParentStepMeta().getName(), subjectField[i], sbfieldNames.toString()));
+        	}
+      }
         
-        r.clear();
-        // Add back to Row Meta
-        r.addRowMeta(fields);
+      r.clear();
+      // Add back to Row Meta
+      r.addRowMeta(fields);
 	}
 
 	public String getXML()
