@@ -46,7 +46,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/derby.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/LucidDbClient-minimal.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-vfs-browser.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-vfs-browser-i18n.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-digester-1.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jug-lgpl-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/ognl-2.6.9.jar"/>
