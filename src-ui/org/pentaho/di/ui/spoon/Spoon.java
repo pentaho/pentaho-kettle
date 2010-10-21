@@ -5681,9 +5681,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         // What steps & plugins to show?
         refreshCoreObjects();
 
-        for (ISpoonMenuController menuController : menuControllers) {
-          menuController.updateMenu(doc);
-        }
+        fireMenuControlers();
       }
     }
   }
@@ -7796,4 +7794,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			new ErrorDialog(shell,"Error","Error getting dependancies! :",e);
 		}
 	}
+  
+    public void fireMenuControlers() { 
+        org.pentaho.ui.xul.dom.Document doc = null;
+        if(mainSpoonContainer != null) {
+          doc = mainSpoonContainer.getDocumentRoot();    	
+	      for (ISpoonMenuController menuController : menuControllers) {
+	        menuController.updateMenu(doc);
+	      }
+        }
+    }
 }
