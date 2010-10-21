@@ -131,6 +131,11 @@ public class LoggingObject implements LoggingObjectInterface {
 			return;
 		}
 		
+		if (parentObject instanceof LoggingObjectInterface) {
+		  parent = (LoggingObjectInterface)parentObject;
+		  return;
+		}
+		
 		LoggingRegistry registry = LoggingRegistry.getInstance();
 		
 		// Extract the hierarchy information from the parentObject...
