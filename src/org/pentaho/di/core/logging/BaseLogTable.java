@@ -61,7 +61,7 @@ abstract class BaseLogTable {
 
 	public String toString() {
 		if (isDefined()) {
-			return getDatabaseMeta().getName()+"-"+tableName;
+			return getDatabaseMeta().getName()+"-"+getActualTableName();
 		}
 		return super.toString();
 	}
@@ -137,11 +137,11 @@ abstract class BaseLogTable {
 		
 		return databasesInterface.findDatabase(name);
 	}
-
+	
 	/**
 	 * @return the schemaName
 	 */
-	public String getSchemaName() {
+	public String getActualSchemaName() {
 	  if (!Const.isEmpty(schemaName)) return schemaName;
 	  
 	  String name = space.getVariable(getSchemaNameVariable());
@@ -158,11 +158,15 @@ abstract class BaseLogTable {
 	public void setSchemaName(String schemaName) {
 		this.schemaName = schemaName;
 	}
+	
+	public String getSchemaName() {
+      return schemaName;
+    }
 
 	/**
 	 * @return the tableName
 	 */
-	public String getTableName() {
+	public String getActualTableName() {
       if (!Const.isEmpty(tableName)) return tableName;
       
       String name = space.getVariable(getTableNameVariable());
@@ -173,6 +177,11 @@ abstract class BaseLogTable {
       }
 	}
 
+	public String getTableName() {
+	  return tableName;
+	}
+
+
 	/**
 	 * @param tableName the tableName to set
 	 */
@@ -181,7 +190,7 @@ abstract class BaseLogTable {
 	}
 	
 	public String getQuotedSchemaTableCombination() {
-		return getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
+		return getDatabaseMeta().getQuotedSchemaTableCombination(getActualSchemaName(), getActualTableName());
 	}
 
 	/**
@@ -352,7 +361,7 @@ abstract class BaseLogTable {
 	}
 	
 	public boolean isDefined() {
-		return getDatabaseMeta()!=null && !Const.isEmpty(tableName);
+		return getDatabaseMeta()!=null && !Const.isEmpty(getActualTableName());
 	}
 
 	/**
