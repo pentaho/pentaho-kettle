@@ -405,7 +405,7 @@
   	        <!-- external libs (jdbc etc) -->
 	  		<mkdir dir="${distrib}/libext"/>
 	  		<copy todir="${distrib}/libext">
-	  			<fileset dir="${libext}" includes="**/*.jar **/*.zip" excludes="**/.vpn"/>
+	  			<fileset dir="${libext}" includes="**/*.jar **/*.zip **/*.properties" excludes="**/.vpn"/>
 	  			</copy>
 
 	        <!-- swt libs (jdbc etc) -->
