@@ -419,6 +419,10 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
+	    RowMetaInterface rowMeta = inputRowMeta.clone();
+	    inputRowMeta.clear();
+	    inputRowMeta.addRowMeta(rowMeta);
+	    
         getSelectFields(inputRowMeta, name);
 		getDeleteFields(inputRowMeta);
 		getMetadataFields(inputRowMeta, name);
@@ -881,7 +885,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
               List<StepInjectionMetaEntry> fieldAttributes = metaField.getDetails();
               for (int i=0;i<fieldAttributes.size();i++) {
                 StepInjectionMetaEntry fieldAttribute = fieldAttributes.get(i);
-                SelectValuesAttr fieldAttr = SelectValuesAttr.findByKey(fieldAttribute.getKey());
+                KettleAttributeInterface fieldAttr = findAttribute(fieldAttribute.getKey());
                 String attributeValue = (String)fieldAttribute.getValue();
                 
                 if (fieldAttr.getKey().equals("META_NAME")) { metaChange.setName(attributeValue); } else
