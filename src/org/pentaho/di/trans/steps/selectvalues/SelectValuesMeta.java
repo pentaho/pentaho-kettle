@@ -760,6 +760,10 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 		this.meta = meta;
 	}
 	
+	public boolean supportsErrorHandling() {
+	   return true;
+	}
+	   
 	/**
 	 * We will describe in which way the field names change between input and output in this step.
 	 * 
