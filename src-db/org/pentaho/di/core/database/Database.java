@@ -3575,7 +3575,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			if (logRecord==null) return;
 			
 			boolean update = (logTable.getKeyField()!=null) && !status.equals(LogStatus.START);
-			String schemaTable = databaseMeta.getQuotedSchemaTableCombination(logTable.getActualSchemaName(), logTable.getActualTableName());
+            String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
+                environmentSubstitute(logTable.getActualSchemaName()), 
+                environmentSubstitute(logTable.getActualTableName())
+                );
 			RowMetaInterface rowMeta = logRecord.getRowMeta();
 			Object[] rowData = logRecord.getData();
 			
@@ -3604,7 +3607,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 			} else {
 				
-				insertRow(logTable.getActualSchemaName(), logTable.getActualTableName(), logRecord.getRowMeta(), logRecord.getData());
+              insertRow(environmentSubstitute(logTable.getActualSchemaName()), environmentSubstitute(logTable.getActualTableName()), logRecord.getRowMeta(), logRecord.getData());
 
 			}			
 		} catch(Exception e) {
@@ -3618,7 +3621,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			if (timeout>0.000001) { 
 				// The timeout has to be at least a few seconds, otherwise we don't bother
 				//
-				String schemaTable = databaseMeta.getQuotedSchemaTableCombination(logTable.getActualSchemaName(), logTable.getActualTableName());
+				String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
+				    environmentSubstitute(logTable.getActualSchemaName()), 
+				    environmentSubstitute(logTable.getActualTableName())
+				    );
 				
 				// The log date field
 				//
