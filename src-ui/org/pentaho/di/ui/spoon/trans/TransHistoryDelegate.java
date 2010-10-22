@@ -44,13 +44,10 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
-import org.pentaho.di.core.logging.PerformanceLogTable;
-import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -471,26 +468,19 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         //
         LogTableField nameField = logTable.getNameField();
         LogTableField keyField = logTable.getKeyField();
-        if (keyField!=null && (
-            logTable instanceof StepLogTable || 
-            logTable instanceof PerformanceLogTable || 
-            logTable instanceof ChannelLogTable)
-            ) {
-          String keyFieldName = logConnection.quoteField(keyField.getFieldName());
-
-          // Get the max batch ID if any...
-          //
-          String maxSql = "SELECT MAX("+keyFieldName+") FROM "+schemaTable;
-          RowMetaAndData maxRow = database.getOneRow(maxSql);
-          Long lastId = maxRow.getInteger(0);
-          
-          sql += " WHERE " + keyFieldName + " = "+(lastId==null?0:lastId.longValue()); //$NON-NLS-1$ //$NON-NLS-2$
-        } else if (nameField != null) {
-            sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
+        
+        if (nameField != null) {
+          if (transMeta.isUsingAClusterSchema()) {
+              sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
+              params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
+  
+              sql += " OR    " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
+              params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
+          } else {
+            sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " = ?"; //$NON-NLS-1$ //$NON-NLS-2$
             params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
-
-            sql += " OR    " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
-            params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
+            
+          }
         }
 
         if (keyField != null && keyField.isEnabled()) {

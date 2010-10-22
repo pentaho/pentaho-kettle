@@ -759,8 +759,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     if (jobLogTable.isDefined()) {
 
       DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
-      String schemaName = jobMeta.getJobLogTable().getSchemaName();
-      String tableName = jobMeta.getJobLogTable().getTableName();
+      String schemaName = jobMeta.getJobLogTable().getActualSchemaName();
+      String tableName = jobMeta.getJobLogTable().getActualTableName();
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
       try {
@@ -937,7 +937,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			JobLogTable jobLogTable = jobMeta.getJobLogTable();
 			if (jobLogTable.isDefined()) {
 
-				String tableName = jobMeta.getJobLogTable().getTableName();
+				String tableName = jobMeta.getJobLogTable().getActualTableName();
 				DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
 
 				Database ldb = new Database(this, logcon);
