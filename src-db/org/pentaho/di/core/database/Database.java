@@ -1657,26 +1657,32 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		int length = all.length();
 		int nrstats = 0;
 			
+		boolean isComment;
 		while (to<length)
 		{
+		  isComment = false;
 			char c = all.charAt(to);
 			if (c=='"')
 			{
 				c=' ';
-				while (to<length && c!='"') { to++; c=all.charAt(to); }
+				while (++to<length && ((c=all.charAt(to))!='"'));
 			}
 			else
 			if (c=='\'') // skip until next '
 			{
 				c=' ';
-				while (to<length && c!='\'') { to++; c=all.charAt(to); }
+				while (++to<length && ((c=all.charAt(to))!='\''));
 			}
 			else
 			if (all.substring(to).startsWith("--"))  // -- means: ignore comment until end of line...
 			{
-				while (to<length && c!='\n' && c!='\r') { to++; c=all.charAt(to); }
+			  isComment = true;
+			  do {
+			    c = all.charAt(to);
+			  } while(c!='\n' && c!='\r' && ++to<length);
+			  from=to;
 			}
-			if (c==';' || to>=length-1) // end of statement
+			if (!isComment && (c==';' || to>=length-1)) // end of statement
 			{
 				if (to>=length-1) to++; // grab last char also!
                 
@@ -1747,7 +1753,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				to++;
 				from=to;
 			}
-			else
+			else if(!isComment)
 			{
 				to++;
 			}
