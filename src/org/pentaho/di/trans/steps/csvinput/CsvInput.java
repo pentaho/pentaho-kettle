@@ -153,7 +153,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			}
 		}
 		catch(KettleConversionException e) {
-			if (meta.supportsErrorHandling()) {
+			if (getStepMeta().isDoingErrorHandling()) {
 				StringBuffer errorDescriptions = new StringBuffer(100);
 				StringBuffer errorFields = new StringBuffer(50);
 				for (int i=0;i<e.getCauses().size();i++) {
@@ -166,6 +166,10 @@ public class CsvInput extends BaseStep implements StepInterface
 				}
 				
 				putError(data.outputRowMeta, e.getRowData(), e.getCauses().size(), errorDescriptions.toString(), errorFields.toString(), "CSVINPUT001"); //$NON-NLS-1$
+			} else {
+			  // Only forward the first cause.
+			  //
+			  throw new KettleException(e.getMessage(), e.getCauses().get(0));
 			}
 		}
 			

@@ -3496,7 +3496,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         setControlStates();
         checkErrorVisuals();
 
-        PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.APPLICATION_MODAL,
+        PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.APPLICATION_MODAL,
             stepDebugMeta.getStepMeta().getName(), rowBufferMeta, rowBuffer);
         previewRowsDialog.setProposingToGetMoreRows(true);
         previewRowsDialog.setProposingToStop(true);

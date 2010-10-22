@@ -152,6 +152,7 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
 		
 		table.findField(ID.ID_BATCH.id).setKey(true);
 		table.findField(ID.LOGDATE.id).setLogDateField(true);
+		table.findField(ID.TRANSNAME.id).setNameField(true);
 
 		return table;
 	}

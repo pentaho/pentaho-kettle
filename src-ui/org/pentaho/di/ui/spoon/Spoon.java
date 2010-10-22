@@ -2163,9 +2163,50 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     previousShowJob = showJob;
   }
 
-  protected void shareObject(SharedObjectInterface sharedObjectInterface) {
-    sharedObjectInterface.setShared(true);
+  protected void shareObject(SharedObjectInterface sharedObject) {
+    sharedObject.setShared(true);
+    EngineMetaInterface meta = getActiveMeta();
+    try {
+      if (meta!=null) {
+        SharedObjects sharedObjects = null;
+        if (meta instanceof TransMeta) sharedObjects=((TransMeta)meta).getSharedObjects();
+        if (meta instanceof JobMeta) sharedObjects=((TransMeta)meta).getSharedObjects();
+        if (sharedObjects!=null) {
+          sharedObjects.storeObject(sharedObject);
+          sharedObjects.saveToFile();
+        }
+      }
+    } catch(Exception e) {
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Title"),
+          BaseMessages.getString(PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Message"), e);
+    }
     refreshTree();
+  }
+
+  protected void unShareObject(SharedObjectInterface sharedObject) {
+    MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
+    mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.StopSharing.Message"));// "Are you sure you want to stop sharing?"
+    mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.StopSharing.Title"));// Warning!
+    int answer = mb.open();
+    if (answer==SWT.YES) {
+      sharedObject.setShared(false);
+      EngineMetaInterface meta = getActiveMeta();
+      try {
+        if (meta!=null) {
+          SharedObjects sharedObjects = null;
+          if (meta instanceof TransMeta) sharedObjects=((TransMeta)meta).getSharedObjects();
+          if (meta instanceof JobMeta) sharedObjects=((TransMeta)meta).getSharedObjects();
+          if (sharedObjects!=null) {
+            sharedObjects.removeObject(sharedObject);
+            sharedObjects.saveToFile();
+          }
+        }
+      } catch(Exception e) {
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Title"),
+            BaseMessages.getString(PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Message"), e);
+      }
+      refreshTree();
+    }
   }
 
   /**
@@ -2452,7 +2493,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   public void shareObject(String id) {
     if ("database-inst-share".equals(id)) {
       final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-      shareObject(databaseMeta);
+      if (databaseMeta.isShared()) {
+        unShareObject(databaseMeta);
+      } else {
+        shareObject(databaseMeta);
+      }
     }
     if ("step-inst-share".equals(id)) {
       final StepMeta stepMeta = (StepMeta) selectionObject;
@@ -2604,6 +2649,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
           item.setLabel(BaseMessages.getString(PKG, "Spoon.Menu.Popup.CONNECTIONS.ClearDBCache")
               + databaseMeta.getName());// Clear
+        }
+
+        item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById("database-inst-share");
+        if (item!=null) {
+          final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
+          if (databaseMeta.isShared()) {
+            item.setLabel(BaseMessages.getString(PKG, "Spoon.Menu.Popup.CONNECTIONS.UnShare"));
+          } else {
+            item.setLabel(BaseMessages.getString(PKG, "Spoon.Menu.Popup.CONNECTIONS.Share"));
+          }
         }
       } else if (selection instanceof StepMeta) {
         spoonMenu = (XulMenupopup) menuMap.get("step-inst");

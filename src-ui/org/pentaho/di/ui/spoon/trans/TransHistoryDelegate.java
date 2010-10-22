@@ -49,8 +49,6 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
-import org.pentaho.di.core.logging.PerformanceLogTable;
-import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -442,6 +440,8 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     if (transMeta != null && !Const.isEmpty(transMeta.getName()) && logTable.isDefined()) {
       DatabaseMeta logConnection = logTable.getDatabaseMeta();
 
+      int maxLines = Props.getInstance().getMaxNrLinesInHistory();
+      
       Database database = null;
       try {
         // open a connection
@@ -471,26 +471,26 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         //
         LogTableField nameField = logTable.getNameField();
         LogTableField keyField = logTable.getKeyField();
-        if (keyField!=null && (
-            logTable instanceof StepLogTable || 
-            logTable instanceof PerformanceLogTable || 
-            logTable instanceof ChannelLogTable)
-            ) {
-          String keyFieldName = logConnection.quoteField(keyField.getFieldName());
-
-          // Get the max batch ID if any...
-          //
-          String maxSql = "SELECT MAX("+keyFieldName+") FROM "+schemaTable;
-          RowMetaAndData maxRow = database.getOneRow(maxSql);
-          Long lastId = maxRow.getInteger(0);
-          
-          sql += " WHERE " + keyFieldName + " = "+(lastId==null?0:lastId.longValue()); //$NON-NLS-1$ //$NON-NLS-2$
-        } else if (nameField != null) {
-            sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
+        
+        if (nameField != null) {
+          if (transMeta.isUsingAClusterSchema()) {
+              sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
+              params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
+  
+              sql += " OR    " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
+              params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
+          } else {
+            sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " = ?"; //$NON-NLS-1$ //$NON-NLS-2$
             params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
+            
+          }
+        } else if (logTable instanceof ChannelLogTable){
 
-            sql += " OR    " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
-            params.addValue(new ValueMeta("transname_cluster", ValueMetaInterface.TYPE_STRING), transMeta.getName() + " (%"); //$NON-NLS-1$ //$NON-NLS-2$
+          // Set a reasonable default on this until we find a more convenient way to limit this large block of data.
+          if (maxLines<=0) {
+            maxLines=250;
+          }
+          
         }
 
         if (keyField != null && keyField.isEnabled()) {
@@ -503,7 +503,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         Object[] rowData = database.getRow(resultSet);
         while (rowData != null) {
           rows.add(rowData);
-          if (rowList.size() < Props.getInstance().getMaxNrLinesInHistory() || Props.getInstance().getMaxNrLinesInHistory() <= 0) {
+          if (rowList.size() < maxLines || maxLines <= 0) {
             rowData = database.getRow(resultSet);
           } else {
             break;
@@ -684,7 +684,6 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -699,7 +698,6 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -707,24 +705,18 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
   public void setData(Object data) {
-    // TODO Auto-generated method stub
-
   }
 
   /* (non-Javadoc)
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
   public void setName(String name) {
-    // TODO Auto-generated method stub
-
   }
 
   /* (non-Javadoc)
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer(XulDomContainer xulDomContainer) {
-    // TODO Auto-generated method stub
-
   }
 
 }

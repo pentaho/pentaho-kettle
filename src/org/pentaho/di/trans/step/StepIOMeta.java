@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
-public class StepIOMeta implements StepIOMetaInterface {
+public class StepIOMeta implements StepIOMetaInterface, Cloneable {
 	private boolean inputAcceptor;
 	private boolean outputProducer;
 	private boolean	inputOptional;
@@ -42,6 +42,14 @@ public class StepIOMeta implements StepIOMetaInterface {
 		this.streams = java.util.Collections.synchronizedList(new ArrayList<StreamInterface>());
 		this.inputDynamic = inputDynamic;
 		this.outputDynamic = outputDynamic;
+	}
+	
+	@Override
+	protected StepIOMeta clone() throws CloneNotSupportedException {
+  	  StepIOMeta ioMeta = (StepIOMeta) super.clone();
+  	  ioMeta.streams = new ArrayList<StreamInterface>();
+  	  ioMeta.streams.addAll(streams);
+  	  return ioMeta;
 	}
 	
 	/**

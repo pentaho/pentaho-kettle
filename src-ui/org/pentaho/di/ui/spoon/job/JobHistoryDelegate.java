@@ -45,7 +45,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.ChannelLogTable;
-import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
@@ -511,6 +510,8 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     if (jobMeta != null && !Const.isEmpty(jobMeta.getName()) && logTable.isDefined()) {
       DatabaseMeta logConnection = logTable.getDatabaseMeta();
 
+      int maxLines = Props.getInstance().getMaxNrLinesInHistory();
+
       Database database = null;
       try {
         // open a connection
@@ -540,23 +541,18 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         //
         LogTableField nameField = logTable.getNameField();
         LogTableField keyField = logTable.getKeyField();
-        if (keyField!=null && (
-            logTable instanceof JobEntryLogTable || 
-            logTable instanceof ChannelLogTable)
-            ) {
-          String keyFieldName = logConnection.quoteField(keyField.getFieldName());
-
-          // Get the max batch ID if any...
-          //
-          String maxSql = "SELECT MAX("+keyFieldName+") FROM "+schemaTable;
-          RowMetaAndData maxRow = database.getOneRow(maxSql);
-          Long lastId = maxRow.getInteger(0);
-          
-          sql += " WHERE " + keyFieldName + " = "+(lastId==null?0:lastId.longValue()); //$NON-NLS-1$ //$NON-NLS-2$
-        } else if (nameField != null) {
+        
+        if (nameField != null) {
             sql += " WHERE " + logConnection.quoteField(nameField.getFieldName()) + " LIKE ?"; //$NON-NLS-1$ //$NON-NLS-2$
             params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), jobMeta.getName()); //$NON-NLS-1$
-        }
+        } else if (logTable instanceof ChannelLogTable){
+
+          // Set a reasonable default on this until we find a more convenient way to limit this large block of data.
+          if (maxLines<=0) {
+            maxLines=250;
+          }
+          
+        } 
 
         if (keyField!=null && keyField.isEnabled()) {
           sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -568,7 +564,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         Object[] rowData = database.getRow(resultSet);
         while (rowData != null) {
           rows.add(rowData);
-          if (rowList.size() < Props.getInstance().getMaxNrLinesInHistory() || Props.getInstance().getMaxNrLinesInHistory() <= 0) {
+          if (rowList.size() < maxLines || maxLines <= 0) {
             rowData = database.getRow(resultSet);
           } else {
             break;

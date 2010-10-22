@@ -18,4 +18,13 @@ public enum SpreadSheetType {
   public String getDescription() {
     return description;
   }
+  
+  public static SpreadSheetType getStpreadSheetTypeByDescription(String description) {
+    for (SpreadSheetType type : values()) {
+      if (type.getDescription().equalsIgnoreCase(description)) {
+        return type;
+      }
+    }
+    return null;
+  }
 }

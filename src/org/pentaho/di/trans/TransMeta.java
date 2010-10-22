@@ -1921,14 +1921,25 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
         return false;
     }
-    
+
+    /**
+     * @return true if a cluster schema is used on one or more steps in this transformation
+     */
+    public boolean isUsingAClusterSchema() {
+      return isUsingClusterSchema(null);
+    }
+
+    /**
+     * @param clusterSchema the cluster schema to check
+     * @return true if the specified cluster schema is used on one or more steps in this transformation
+     */
     public boolean isUsingClusterSchema(ClusterSchema clusterSchema)
     {
         // Loop over all steps and see if the partition schema is used.
         for (int i=0;i<nrSteps();i++)
         {
             ClusterSchema check = getStep(i).getClusterSchema();
-            if (check!=null && check.equals(clusterSchema))
+            if (check!=null && (clusterSchema==null || check.equals(clusterSchema)))
             {
                 return true;
             }

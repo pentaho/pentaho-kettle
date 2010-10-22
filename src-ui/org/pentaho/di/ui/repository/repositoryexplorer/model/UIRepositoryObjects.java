@@ -20,10 +20,10 @@ import java.util.List;
 
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
-
 public class UIRepositoryObjects extends AbstractModelNode<UIRepositoryObject> {
 
-    
+  private static final long serialVersionUID = -8589134015520102516L;
+
   public UIRepositoryObjects() {
   }
   

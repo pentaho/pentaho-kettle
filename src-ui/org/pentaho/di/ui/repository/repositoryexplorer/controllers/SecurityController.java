@@ -19,7 +19,6 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 import java.util.Enumeration;
 import java.util.ResourceBundle;
 
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectRecipient;
 import org.pentaho.di.repository.Repository;

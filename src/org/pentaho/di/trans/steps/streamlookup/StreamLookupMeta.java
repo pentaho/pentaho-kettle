@@ -222,26 +222,6 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 	public Object clone()
 	{
 		StreamLookupMeta retval = (StreamLookupMeta)super.clone();
-
-		int nrkeys   = keystream.length;
-		int nrvalues = value.length;
-
-		retval.allocate(nrkeys, nrvalues);
-		
-		for (int i=0;i<nrkeys;i++)
-		{
-			retval.keystream[i] = keystream[i];
-			retval.keylookup[i] = keylookup[i];
-		}
-
-		for (int i=0;i<nrvalues;i++)
-		{
-			retval.value[i]            = value[i];
-			retval.valueName[i]    	   = valueName[i];
-			retval.valueDefault[i]     = valueDefault[i]; 
-			retval.valueDefaultType[i] = valueDefaultType[i];
-		}
-		
 		return retval;
 	}
 	

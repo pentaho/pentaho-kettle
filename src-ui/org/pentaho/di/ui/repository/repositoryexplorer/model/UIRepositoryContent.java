@@ -26,6 +26,8 @@ import org.pentaho.di.repository.RepositoryObjectType;
 
 public abstract class UIRepositoryContent extends UIRepositoryObject {
 
+  private static final long serialVersionUID = -1376494760112305976L;
+  
   protected RepositoryElementMetaInterface rc;
   protected UIRepositoryDirectory uiParent;
   

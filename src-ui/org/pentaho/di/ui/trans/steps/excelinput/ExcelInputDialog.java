@@ -1115,7 +1115,16 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 					else
 					{
 						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-						dialog.setFilterExtensions(new String[] {"*.xls;*.XLS", "*"});
+						String[] extentions = new String[] {"*.xls;*.XLS", "*"};
+						SpreadSheetType type = SpreadSheetType.getStpreadSheetTypeByDescription(wSpreadSheetType.getText());
+						switch(type) {
+                        case POI : extentions = new String[] {"*.xls;*.XLS;*.xlxs;*.XLSX", "*"}; break;
+                        case ODS : extentions = new String[] {"*.ods;*.ODS;", "*"}; break;
+                        case JXL : 
+                        default: extentions = new String[] {"*.xls;*.XLS", "*"}; break;
+						}
+						
+						dialog.setFilterExtensions(extentions);
 						if (wFilename.getText()!=null)
 						{
 							String fname = transMeta.environmentSubstitute(wFilename.getText());

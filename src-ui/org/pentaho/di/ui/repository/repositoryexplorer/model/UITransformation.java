@@ -22,6 +22,8 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 
 public class UITransformation extends UIRepositoryContent {
 
+  private static final long serialVersionUID = 3826725834758429573L;
+
   public UITransformation() {
   }
 

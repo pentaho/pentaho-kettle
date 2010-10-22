@@ -22,6 +22,8 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 
 public class UIJob extends UIRepositoryContent {
 
+  private static final long serialVersionUID = -7673439096628166542L;
+
   public UIJob() {
   }
 

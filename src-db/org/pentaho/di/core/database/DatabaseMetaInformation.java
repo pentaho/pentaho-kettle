@@ -199,12 +199,12 @@ public class DatabaseMetaInformation
 
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingInfo"));
-			Map connectionExtraOptions = databaseMeta.getExtraOptions();
+			Map<String, String> connectionExtraOptions = databaseMeta.getExtraOptions();
 			if (databaseMeta.supportsCatalogs() && dbmd.supportsCatalogsInTableDefinitions())
 			{
 				ArrayList<Catalog> catalogList = new ArrayList<Catalog>();
 				
-        String catalogFilterKey = databaseMeta.getDatabaseTypeDesc() + "." + FILTER_CATALOG_LIST; //$NON-NLS-1$
+        String catalogFilterKey = databaseMeta.getPluginId() + "." + FILTER_CATALOG_LIST; //$NON-NLS-1$
         if ( (connectionExtraOptions != null) && connectionExtraOptions.containsKey(catalogFilterKey) ) {
           String catsFilterCommaList =  (String)connectionExtraOptions.get(catalogFilterKey);
           String[] catsFilterArray = catsFilterCommaList.split(","); //$NON-NLS-1$
@@ -279,7 +279,7 @@ public class DatabaseMetaInformation
 				ArrayList<Schema> schemaList = new ArrayList<Schema>();
 				try 
 				{
-				  String schemaFilterKey = databaseMeta.getDatabaseTypeDesc() + "." +FILTER_SCHEMA_LIST; //$NON-NLS-1$
+				  String schemaFilterKey = databaseMeta.getPluginId() + "." +FILTER_SCHEMA_LIST; //$NON-NLS-1$
 	        if ( (connectionExtraOptions != null) && connectionExtraOptions.containsKey(schemaFilterKey) ) {
 	          String schemasFilterCommaList =  (String)connectionExtraOptions.get(schemaFilterKey);
 	          String[] schemasFilterArray = schemasFilterCommaList.split(","); //$NON-NLS-1$

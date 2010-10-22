@@ -16,29 +16,16 @@
 
 package org.pentaho.di.ui.trans.steps.checksum;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -50,14 +37,10 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.checksum.CheckSumMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.BaseStepXulDialog;
 import org.pentaho.di.ui.trans.step.StepTableDataObject;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -74,7 +57,7 @@ public class CheckSumDialog extends BaseStepXulDialog implements StepDialogInter
 
   private List<String> checkSumTypes = new ArrayList<String>();
   private String[] fieldNames;
-  private XulMenuList checkTypeCombo, resultTypeCombo;
+  private XulMenuList<String> checkTypeCombo, resultTypeCombo;
   private XulTree fieldTable;
   private List<Field> fields;
   private XulTextbox resultName;

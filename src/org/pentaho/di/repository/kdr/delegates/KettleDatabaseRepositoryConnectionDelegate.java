@@ -14,10 +14,13 @@ package org.pentaho.di.repository.kdr.delegates;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
@@ -31,6 +34,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -75,6 +79,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
 	protected boolean             useBatchProcessing;
 	
+	protected Map<String, PreparedStatement> sqlMap;
+	
     private class StepAttributeComparator implements Comparator<Object[]> {
 
     	public int compare(Object[] r1, Object[] r2) 
@@ -93,6 +99,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
 		this.databaseMeta = databaseMeta;
 		this.database = new Database(loggingObject, databaseMeta);
+		
+		sqlMap = new HashMap<String, PreparedStatement>();
 		
 		useBatchProcessing = true; // defaults to true;
         
@@ -239,6 +247,15 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 				repository.connectionDelegate.closeTransAttributeLookupPreparedStatement();
 				repository.connectionDelegate.closeLookupJobEntryAttribute();
 	            
+	            for (String sql : sqlMap.keySet()) {
+	              PreparedStatement ps = sqlMap.get(sql);
+	              try {
+	                ps.close();
+	              } catch (SQLException e) {
+	                log.logError("Error closing prepared statement: " + sql, e);
+	              }
+	            }
+
 	            if (!database.isAutoCommit()) commit();
 	            repository.setConnected(false);	
 			}
@@ -1418,59 +1435,74 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     }
     
     
-    public ObjectId[] getIDs(String sql) throws KettleException
+    public ObjectId[] getIDs(String sql, ObjectId...objectId) throws KettleException
     {
-        List<Long> ids = new ArrayList<Long>();
-        
-        ResultSet rs = database.openQuery(sql);
-        try 
-        {
-            Object[] r = database.getRow(rs);
-            while (r != null)
-            {
-                RowMetaInterface rowMeta = database.getReturnRowMeta();
-                Long id = rowMeta.getInteger(r, 0);
-                if (id==null) id=new Long(0);
-                
-                ids.add(id);
-                r = database.getRow(rs);
-            }
-        }
-        finally
-        {
-        	if ( rs != null )
-        	{
-        		database.closeQuery(rs);        		
-        	}
-        }
-        return convertLongList(ids);
+      // Get the prepared statement
+      //
+      PreparedStatement ps = sqlMap.get(sql);
+      if (ps == null) {
+        ps = database.prepareSQL(sql);
+        sqlMap.put(sql, ps);
+      }
+
+      // Assemble the parameters (if any)
+      //
+      RowMetaInterface parameterMeta = new RowMeta();
+      Object[] parameterData = new Object[objectId.length];
+      for (int i = 0; i < objectId.length; i++) {
+        parameterMeta.addValueMeta(new ValueMeta("id" + (i + 1), ValueMetaInterface.TYPE_INTEGER));
+        parameterData[i] = ((LongObjectId)objectId[i]).longValue();
+      }        
+
+      ResultSet resultSet = database.openQuery(ps, parameterMeta, parameterData);
+      List<Object[]> rows = database.getRows(resultSet, 0, null);
+      if (Const.isEmpty(rows)) {
+        return new ObjectId[0];
+      }
+      
+      RowMetaInterface rowMeta = database.getReturnRowMeta();
+      ObjectId[] ids = new ObjectId[rows.size()];
+      for (int i=0;i<ids.length;i++) {
+        Object[] row = rows.get(i);
+        ids[i] = new LongObjectId(rowMeta.getInteger(row, 0));
+      }
+      
+      return ids;
     }
     
     public String[] getStrings(String sql) throws KettleException
     {
-        List<String> ids = new ArrayList<String>();
-        
-        ResultSet rs = database.openQuery(sql);
-        try 
-        {
-            Object[] r = database.getRow(rs);
-            while (r != null)
-            {
-                RowMetaInterface rowMeta = database.getReturnRowMeta();
-                ids.add( rowMeta.getString(r, 0) );
-                r = database.getRow(rs);
-            }
-        }
-        finally 
-        {
-        	if ( rs != null )
-        	{
-        		database.closeQuery(rs);        		
-        	}
-        }            
+      // Get the prepared statement
+      //
+      PreparedStatement ps = sqlMap.get(sql);
+      if (ps == null) {
+        ps = database.prepareSQL(sql);
+        sqlMap.put(sql, ps);
+      }
 
-        return (String[]) ids.toArray(new String[ids.size()]);
+      // Assemble the parameters (if any)
+      //
+      RowMetaInterface parameterMeta = new RowMeta();
+      Object[] parameterData = new Object[0];
 
+      // Get the result set back...
+      //
+      ResultSet resultSet = database.openQuery(ps, parameterMeta, parameterData);
+      List<Object[]> rows = database.getRows(resultSet, 0, null);
+      if (Const.isEmpty(rows)) {
+        return new String[0];
+      }
+      
+      // assemble the result
+      //
+      RowMetaInterface rowMeta = database.getReturnRowMeta();
+      String[] strings = new String[rows.size()];
+      for (int i=0;i<strings.length;i++) {
+        Object[] row = rows.get(i);
+        strings[i] = rowMeta.getString(row, 0);
+      }
+      
+      return strings;
     }
     
     public static final ObjectId[] convertLongList(List<Long> list)

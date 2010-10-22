@@ -1343,8 +1343,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		endDate     = currentDate;
 		
 		DatabaseMeta logConnection = transLogTable.getDatabaseMeta();
-		String logTable = environmentSubstitute(transLogTable.getTableName());
-		String logSchema = environmentSubstitute(transLogTable.getSchemaName());
+		String logTable = environmentSubstitute(transLogTable.getActualTableName());
+		String logSchema = environmentSubstitute(transLogTable.getActualSchemaName());
 
 		  try
         {
@@ -1591,7 +1591,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
         try
 		{
-			String logTable = transLogTable.getTableName();
+			String logTable = transLogTable.getActualTableName();
 
 			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
 			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
@@ -1829,7 +1829,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		// OK, we have some logging to do...
 		//
 		DatabaseMeta logcon = transMeta.getTransLogTable().getDatabaseMeta();
-		String logTable = transMeta.getTransLogTable().getTableName();
+		String logTable = transMeta.getTransLogTable().getActualTableName();
 		if (logcon!=null)
 		{
 			Database ldb = null;
@@ -1862,7 +1862,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			}
 			catch(Exception e)
 			{
-				throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingLogRecordToTable", transMeta.getTransLogTable().getTableName()), e); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.ErrorWritingLogRecordToTable", transMeta.getTransLogTable().getActualTableName()), e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			finally
 			{
@@ -1893,7 +1893,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			// Write to the step performance log table...
 			//
 			RowMetaInterface rowMeta = performanceLogTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
-			ldb.prepareInsert(rowMeta, performanceLogTable.getTableName());
+			ldb.prepareInsert(rowMeta, performanceLogTable.getActualTableName());
 			
 			synchronized(stepPerformanceSnapShots) {
 				Iterator<List<StepPerformanceSnapShot>> iterator = stepPerformanceSnapShots.values().iterator();

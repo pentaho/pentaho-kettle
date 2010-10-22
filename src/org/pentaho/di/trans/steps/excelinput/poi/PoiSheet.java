@@ -37,6 +37,7 @@ public class PoiSheet implements KSheet {
   
   public KCell getCell(int colnr, int rownr) {
     Row row = sheet.getRow(rownr);
+    if (row==null) return null;
     Cell cell = row.getCell(colnr);
     if (cell==null) return null;
     return new PoiCell(cell);

@@ -172,10 +172,10 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		wStep=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wStep);
 		
-		for (int i=0;i<transMeta.findNrPrevSteps(stepname, true);i++)
+ 		List<StepMeta> previousSteps = transMeta.findPreviousSteps(stepMeta, true);
+		for (StepMeta previousStep : previousSteps)
 		{
-			StepMeta stepMeta = transMeta.findPrevStep(stepname, i, true);
-			wStep.add(stepMeta.getName());
+			wStep.add(previousStep.getName());
 		}
 		// transMeta.getInfoStep()
 		
