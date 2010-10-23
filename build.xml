@@ -479,6 +479,25 @@
 
 	  <!--
 	       ==========================
+	             targz file
+	       ==========================
+	  -->
+		
+	  <target name="targz" depends="distrib" description="generate the ${impl.productID}-${version}-r${revision}.tar.gz file">
+	  	<echo>Generating the Kettle distribution package ${impl.productID}-${version}-r${revision}.tar.gz ...</echo>
+	    <tar destfile="${dist.dir}/${impl.productID}-${version}-r${revision}.tar.gz" longfile="gnu" compression="gzip">
+	      <tarfileset dir="${distrib}" mode="755" excludes="**/Thumbs.db">
+	        <include name="**/*.sh" />
+	      </tarfileset>
+	      <tarfileset dir="${distrib}" excludes="**/Thumbs.db">
+	        <exclude name="**/*.sh" />
+	      </tarfileset>
+	    </tar>
+
+	  </target>	
+	
+	  <!--
+	       ==========================
 	             Source zipfile
 	       ==========================
 	  -->
