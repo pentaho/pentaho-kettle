@@ -81,13 +81,16 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
   public RepositoryDirectoryInterface loadRepositoryDirectoryTree(RepositoryDirectoryInterface root) throws KettleException {
     try {
-      root.clear();
-      ObjectId subids[] = repository.getSubDirectoryIDs(root.getObjectId());
-      for (int i = 0; i < subids.length; i++) {
-        RepositoryDirectory subdir = new RepositoryDirectory();
-        loadRepositoryDirectory(subdir, subids[i]);
-        root.addSubdirectory(subdir);
-      }
+    	synchronized(repository){
+    		
+	      root.clear();
+	      ObjectId subids[] = repository.getSubDirectoryIDs(root.getObjectId());
+	      for (int i = 0; i < subids.length; i++) {
+	        RepositoryDirectory subdir = new RepositoryDirectory();
+	        loadRepositoryDirectory(subdir, subids[i]);
+	        root.addSubdirectory(subdir);
+	      }
+    	}
 
       return root;
     } catch (Exception e) {
