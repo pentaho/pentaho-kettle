@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -399,20 +401,30 @@ public class ConditionEditor extends Composite
 					}
 				}
 
-				//
-				// Set the pop-up menu
-				//
-				if (e.button == 3)
-				{
-					setMenu(area, screen);
-				}
 			}
 
 			public void mouseUp(MouseEvent e)
 			{
 			}
 		});
-	
+
+		widget.addMenuDetectListener(new MenuDetectListener(){
+			
+			//
+			// set the pop-up menu
+			//
+			@Override
+			public void menuDetected(MenuDetectEvent e) {
+				
+				Point screen = new Point(e.x, e.y);
+				Point widgetScreen = widget.toDisplay(1,1);
+				Point wRel = new Point(screen.x-widgetScreen.x, screen.y-widgetScreen.y);
+				int area = getAreaCode(wRel);
+				setMenu(area,wRel);
+			}
+			
+		});		
+		
 		sbVertical.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
