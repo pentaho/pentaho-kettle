@@ -304,8 +304,6 @@ public class RepositoryImporter implements ProgressMonitorListener, RepositoryIm
 
   /**
    * 
-   * @param transformationNumber
-   *          the transformation number (for logging only)
    * @param transnode
    *          The XML DOM node to read the transformation from
    * @return false if the import should be canceled.
@@ -352,7 +350,11 @@ public class RepositoryImporter implements ProgressMonitorListener, RepositoryIm
         // Keep info on who & when this transformation was created...
         if (transMeta.getCreatedUser() == null || transMeta.getCreatedUser().equals("-")) {
           transMeta.setCreatedDate(new Date());
-          transMeta.setCreatedUser(rep.getUserInfo().getLogin());
+          if (rep.getUserInfo() != null) {
+            transMeta.setCreatedUser(rep.getUserInfo().getLogin());
+          } else {
+            transMeta.setCreatedUser(null);
+          }
         }
         rep.save(transMeta, versionComment, this);
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.TransSaved.Log", Integer.toString(transformationNumber), transMeta.getName()));
