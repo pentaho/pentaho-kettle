@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:pen="http://www.pentaho.org/2008/xul"
+  onload="fileOverwriteDialogController.init()"
+  >
+
+	<dialog id="file-overwrite-dialog"  
+		title="${FileOverwriteDialog.Title}" 
+		resizable="true"
+		height="200" width="150"
+		appicon="ui/images/spoon.ico"
+		buttons="accept,cancel"
+		buttonalign="end" 
+		buttonlabelaccept="${FileOverwriteDialog.Button.Accept}" 
+		buttonlabelcancel="${FileOverwriteDialog.Button.Cancel}" 
+		ondialogaccept="fileOverwriteDialogController.closeOverwrite()"
+		ondialogcancel="fileOverwriteDialogController.closeCancel()">
+		<vbox flex="1">
+			<label value="${FileOverwriteDialog.Label.Header}"/>
+			<tree id="file-list" flex="1">
+				<treecols>
+					<treecol id="name-col" flex="1" label="${FileOverwriteDialog.Table.Column.FilePath}" pen:binding="path" sortActive="true" sortDirection="ASCENDING"/>
+				</treecols>
+				<treechildren/>
+			</tree>
+			<label value="${FileOverwriteDialog.Label.Footer}"/>
+		</vbox>
+	</dialog>
+
+</window>

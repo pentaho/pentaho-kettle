@@ -129,6 +129,10 @@ public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryO
     }
     
   }
+  
+  public String getPath() {
+    return getParentPath() + "/" + getName(); //$NON-NLS-1$
+  }
 
   public RepositoryObjectComparator getComparator() {
     return roc;
