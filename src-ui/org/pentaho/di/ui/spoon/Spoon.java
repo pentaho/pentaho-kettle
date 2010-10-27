@@ -7851,6 +7851,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
   
     public void fireMenuControlers() { 
+    	if (!Display.getDefault().getThread().equals(Thread.currentThread()) ) {
+            display.syncExec(new Runnable() {
+                public void run() {
+                	fireMenuControlers();
+                }
+            });
+            return;
+    	}
         org.pentaho.ui.xul.dom.Document doc = null;
         if(mainSpoonContainer != null) {
           doc = mainSpoonContainer.getDocumentRoot();    	
