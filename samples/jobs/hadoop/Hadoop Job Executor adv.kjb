@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <job>
-  <name>hadoop-simple</name>
+  <name>Hadoop Job Executor adv</name>
     <description/>
     <extended_description/>
     <job_version/>
@@ -12,6 +12,51 @@
   <modified_date>2010&#47;07&#47;12 13:45:27.737</modified_date>
     <parameters>
     </parameters>
+  <connection>
+    <name>myconnections</name>
+    <server>localhost</server>
+    <type>HYPERSONIC</type>
+    <access>Native</access>
+    <database>sampledata</database>
+    <port>9001</port>
+    <username>sa</username>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace>af</data_tablespace>
+    <index_tablespace>sdaf</index_tablespace>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>9001</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>mysql</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>stock_market</database>
+    <port>3306</port>
+    <username>root</username>
+    <password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password>
+    <servername/>
+    <data_tablespace>af</data_tablespace>
+    <index_tablespace>sdaf</index_tablespace>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
     <slaveservers>
     </slaveservers>
 <job-log-table><connection/>
@@ -35,31 +80,32 @@
    <shared_objects_file/>
   <entries>
     <entry>
-      <name>WordCount - Simple</name>
+      <name>WordCount - Advanced</name>
       <description/>
       <type>HadoopJobExecutorPlugin</type>
-      <hadoop_job_name>PDI Hadoop - WordCount - Simple</hadoop_job_name>
-      <simple>Y</simple>
+      <hadoop_job_name>hadoopjob - wordcount</hadoop_job_name>
+      <simple>N</simple>
       <jar_url>.&#47;samples&#47;jobs&#47;hadoop&#47;pentaho-mapreduce-sample.jar</jar_url>
-      <command_line_args>&#47;junit&#47;wordcount&#47;input &#47;junit&#47;wordcount&#47;pdioutput</command_line_args>
+      <command_line_args>-inputpath=&#47;home&#47;mdamour&#47;input -outputpath=&#47;tmp&#47;output</command_line_args>
       <blocking>Y</blocking>
-      <hadoop_job_name>PDI Hadoop - WordCount - Simple</hadoop_job_name>
-      <mapper_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Map</mapper_class>
-      <combiner_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Reduce</combiner_class>
-      <reducer_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Reduce</reducer_class>
-      <input_path>&#47;junit&#47;wordcount&#47;input</input_path>
+      <logging_interval>5</logging_interval>
+      <hadoop_job_name>hadoopjob - wordcount</hadoop_job_name>
+      <mapper_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Map</mapper_class>
+      <combiner_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Reduce</combiner_class>
+      <reducer_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Reduce</reducer_class>
+      <input_path>&#47;wordcount&#47;input</input_path>
       <input_format_class>org.apache.hadoop.mapred.TextInputFormat</input_format_class>
-      <output_path>&#47;junit&#47;wordcount&#47;output</output_path>
+      <output_path>&#47;wordcount&#47;output</output_path>
       <output_key_class>org.apache.hadoop.io.Text</output_key_class>
       <output_value_class>org.apache.hadoop.io.IntWritable</output_value_class>
       <output_format_class>org.apache.hadoop.mapred.TextOutputFormat</output_format_class>
-      <hdfs_hostname>hadoop-vm1.pentaho.com</hdfs_hostname>
+      <hdfs_hostname>hadoop-server</hdfs_hostname>
       <hdfs_port>9000</hdfs_port>
-      <job_tracker_hostname>hadoop-vm1.pentaho.com</job_tracker_hostname>
+      <job_tracker_hostname>hadoop-server</job_tracker_hostname>
       <job_tracker_port>9001</job_tracker_port>
       <num_map_tasks>2</num_map_tasks>
-      <num_reduce_tasks>2</num_reduce_tasks>
-      <working_dir>&#47;tmp&#47;wordcount</working_dir>
+      <num_reduce_tasks>1</num_reduce_tasks>
+      <working_dir>&#47;tmp&#47;pdiwordcount</working_dir>
       <user_defined_list>
         <user_defined>
           <name>pentaho.hadoop.property.name1</name>
@@ -73,8 +119,8 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>506</xloc>
-      <yloc>164</yloc>
+      <xloc>478</xloc>
+      <yloc>290</yloc>
       </entry>
     <entry>
       <name>START</name>
@@ -93,8 +139,8 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>84</xloc>
-      <yloc>40</yloc>
+      <xloc>56</xloc>
+      <yloc>290</yloc>
       </entry>
     <entry>
       <name>Clean Output</name>
@@ -105,14 +151,14 @@
       <limit_folders>10</limit_folders>
       <fields>
         <field>
-          <name>hdfs:&#47;&#47;hadoop-vm1.pentaho.com:9000&#47;junit&#47;wordcount&#47;pdioutput</name>
+          <name>hdfs:&#47;&#47;hadoop-server:9000&#47;wordcount&#47;output</name>
         </field>
       </fields>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>280</xloc>
-      <yloc>94</yloc>
+      <xloc>252</xloc>
+      <yloc>290</yloc>
       </entry>
     <entry>
       <name>Success</name>
@@ -121,8 +167,8 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>706</xloc>
-      <yloc>225</yloc>
+      <xloc>678</xloc>
+      <yloc>290</yloc>
       </entry>
   </entries>
   <hops>
@@ -137,7 +183,7 @@
     </hop>
     <hop>
       <from>Clean Output</from>
-      <to>WordCount - Simple</to>
+      <to>WordCount - Advanced</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -145,7 +191,7 @@
       <unconditional>Y</unconditional>
     </hop>
     <hop>
-      <from>WordCount - Simple</from>
+      <from>WordCount - Advanced</from>
       <to>Success</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
@@ -157,8 +203,8 @@
   <notepads>
     <notepad>
       <note>Cleans up the output directory</note>
-      <xloc>246</xloc>
-      <yloc>46</yloc>
+      <xloc>191</xloc>
+      <yloc>236</yloc>
       <width>156</width>
       <heigth>22</heigth>
       <fontname>Microsoft Sans Serif</fontname>
@@ -177,11 +223,15 @@
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Hadoop WordCount Map Reduce Job</note>
-      <xloc>497</xloc>
-      <yloc>115</yloc>
-      <width>193</width>
-      <heigth>22</heigth>
+      <note>Hadoop WordCount Map Reduce Job
+- Edit the Input and Output directory paths
+- Edit the HDFS hostname
+- Edit the Job Tracker hostname
+</note>
+      <xloc>399</xloc>
+      <yloc>353</yloc>
+      <width>219</width>
+      <heigth>60</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -191,6 +241,56 @@
       <fontcolorblue>0</fontcolorblue>
       <backgroundcolorred>255</backgroundcolorred>
       <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Monitor the logs for progress
+(if blocking option is selected)</note>
+      <xloc>610</xloc>
+      <yloc>222</yloc>
+      <width>156</width>
+      <heigth>35</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>SETUP INSTRUCTIONS:
+1. Update the HDFS path within the &apos;Clean Output&apos; step to match your Hadoop server location and path to where you intend to generate output from the wordcount example
+2. Create an input directory in HDFS and place text file(s) in the input directory that you want to use to test the wordcount example
+3. Update the &apos;Wordcount - Advanced&apos; step (Job Setup and Cluster tabs) to configure the correct paths and server name including:
+    - Input Path - the path in HDFS from which to read files for counting
+    - Output Path - where the processed count of words will be placed
+    - HDFS Hostname
+    - Job Tracker Hostname</note>
+      <xloc>15</xloc>
+      <yloc>26</yloc>
+      <width>847</width>
+      <heigth>110</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>165</backgroundcolorgreen>
       <backgroundcolorblue>0</backgroundcolorblue>
       <bordercolorred>100</bordercolorred>
       <bordercolorgreen>100</bordercolorgreen>
