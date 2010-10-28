@@ -60,6 +60,7 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
     public RowMetaInterface insertRowMeta;
 	public boolean specialErrorHandling;
 	public Savepoint savepoint;
+	public boolean releaseSavepoint;
 
 	public DatabaseMeta databaseMeta;
 	
@@ -82,5 +83,7 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
         
         batchBuffer = new ArrayList<Object[]>();
         commitCounterMap = new HashMap<String, Integer>();
+        
+        releaseSavepoint = true;
 	}
 }
