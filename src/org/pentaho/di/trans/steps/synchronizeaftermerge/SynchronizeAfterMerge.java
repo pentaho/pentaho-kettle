@@ -20,6 +20,7 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -343,8 +344,10 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 			    // Release the savepoint if needed
 			    //
 				if (data.specialErrorHandling) {
-					data.db.releaseSavepoint(data.savepoint);
-				}
+   				if (data.releaseSavepoint) {
+					    data.db.releaseSavepoint(data.savepoint);
+				   }
+			   }
 				
 				// Perform a commit if needed
 				//
@@ -453,7 +456,9 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
     			
             	if (data.specialErrorHandling) {
             		data.db.rollback(data.savepoint);
-            		data.db.releaseSavepoint(data.savepoint);
+            		if (data.releaseSavepoint) {
+            		    data.db.releaseSavepoint(data.savepoint);
+            	   }
             	}
                 sendToErrorRow = true;
                 errorMessage = dbe.toString();
@@ -900,6 +905,12 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		    	}
 				
 		    	data.databaseMeta = meta.getDatabaseMeta();
+		    	
+            //  if we are using Oracle then set releaseSavepoint to false
+            if (data.databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta) {
+               data.releaseSavepoint = false;
+            }
+		    	
 		    	data.commitSize = Integer.parseInt(environmentSubstitute(""+meta.getCommitSize()));
 		    	data.batchMode = data.commitSize>0 && meta.useBatchUpdate();
                 
