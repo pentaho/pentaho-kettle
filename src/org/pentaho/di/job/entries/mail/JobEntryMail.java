@@ -856,10 +856,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         address[i] = new InternetAddress(destinations[i]);
       msg.setRecipients(Message.RecipientType.TO, address);
 
-      if (!Const.isEmpty(destinationCc))
+      String realCC=environmentSubstitute(getDestinationCc());
+      if (!Const.isEmpty(realCC))
       {
         // Split the mail-address Cc: space separated
-        String destinationsCc[] = environmentSubstitute(destinationCc).split(" ");
+        String destinationsCc[] = realCC.split(" ");
         InternetAddress[] addressCc = new InternetAddress[destinationsCc.length];
         for (int i = 0; i < destinationsCc.length; i++)
           addressCc[i] = new InternetAddress(destinationsCc[i]);
@@ -867,10 +868,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         msg.setRecipients(Message.RecipientType.CC, addressCc);
       }
 
-      if (!Const.isEmpty(destinationBCc))
+      String realBCc=environmentSubstitute(getDestinationBCc());
+      if (!Const.isEmpty(realBCc))
       {
         // Split the mail-address BCc: space separated
-        String destinationsBCc[] = environmentSubstitute(destinationBCc).split(" ");
+        String destinationsBCc[] = realBCc.split(" ");
         InternetAddress[] addressBCc = new InternetAddress[destinationsBCc.length];
         for (int i = 0; i < destinationsBCc.length; i++)
           addressBCc[i] = new InternetAddress(destinationsBCc[i]);
@@ -886,9 +888,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       msg.setSentDate(new Date());
       StringBuffer messageText = new StringBuffer();
 
-      if (comment != null)
+      String realComment=environmentSubstitute(comment);
+      if (!Const.isEmpty(realComment))
       {
-        messageText.append(environmentSubstitute(comment)).append(Const.CR).append(Const.CR);
+        messageText.append(realComment).append(Const.CR).append(Const.CR);
       }
       if (!onlySendComment)
       {
