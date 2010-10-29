@@ -5693,8 +5693,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         disableMenuItem(doc, UNDO_MENUITEM, disableTransMenu && disableJobMenu);
         disableMenuItem(doc, REDO_MENUITEM, disableTransMenu && disableJobMenu);
 
-        disableMenuItem(doc, "edit-clear-selection", disableTransMenu);
-        disableMenuItem(doc, "edit-select-all", disableTransMenu);
+        disableMenuItem(doc, "edit-clear-selection", disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, "edit-select-all", disableTransMenu && disableJobMenu);
         updateSettingsMenu(doc, disableTransMenu, disableJobMenu);
         disableMenuItem(doc, "edit-settings" ,disableTransMenu && disableJobMenu && disableMetaMenu);
 
