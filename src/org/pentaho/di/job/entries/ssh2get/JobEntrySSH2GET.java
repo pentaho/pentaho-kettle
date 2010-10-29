@@ -803,7 +803,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				}else
 				{
 					mandatoryok=false;
-					log.logError(toString(),Messages.getString("JobSSH2GET.Log.LocalFolderNotExists"));
+					log.logError(toString(),Messages.getString("JobSSH2GET.Log.LocalFolderNotExists", realLocalDirectory));
 				}
 			}else{
 				if(!new File(realLocalDirectory).isDirectory())
