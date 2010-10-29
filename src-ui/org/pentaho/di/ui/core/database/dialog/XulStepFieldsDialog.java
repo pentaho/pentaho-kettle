@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
+import org.pentaho.reporting.libraries.base.util.StringUtils;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -48,6 +49,17 @@ public class XulStepFieldsDialog {
 		this.databaseMeta = aDatabaseMeta;
 		this.rowMeta = anInput;
 	}
+
+  public XulStepFieldsDialog(Shell aShell, int aStyle, DatabaseMeta aDatabaseMeta, String aTableName, RowMetaInterface anInput, String schemaName) {
+    this.shell = aShell;
+    if (StringUtils.isEmpty(schemaName)) {
+      this.table = aTableName;
+    } else {
+      this.table = aDatabaseMeta.getQuotedSchemaTableCombination(schemaName, aTableName);
+    }
+    this.databaseMeta = aDatabaseMeta;
+    this.rowMeta = anInput;
+  }
 
 	public void open(boolean isAcceptButtonHidden) {
 		try {
