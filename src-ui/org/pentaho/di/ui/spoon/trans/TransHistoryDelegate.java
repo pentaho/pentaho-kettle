@@ -167,16 +167,18 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       public void run() {
         if (displayRefreshNeeded) {
           displayRefreshNeeded = false;
-          for (int i = 0; i < logTables.size(); i++) {
-            final int index = i;
-            spoon.getDisplay().syncExec(new Runnable() {
+          synchronized(rowList){
+            for (int i = 0; i < logTables.size(); i++) {
+              final int index = i;
+              spoon.getDisplay().syncExec(new Runnable() {
 
-              public void run() {
-            	  if (!Const.isEmpty(rowList) && index < rowList.size()) {
-            		 displayHistoryData(logTables.get(index), index, rowList.get(index));
-            	  }
-              }
-            });
+                public void run() {
+                  if (!Const.isEmpty(rowList) && index < rowList.size()) {
+                   displayHistoryData(logTables.get(index), index, rowList.get(index));
+                  }
+                }
+              });
+            }
           }
         }
       };
@@ -407,17 +409,18 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       public void run() {
         if (!gettingHistoryData) {
           gettingHistoryData = true;
-
-          rowList.clear();
-          for (int i = 0; i < logTables.size(); i++) {
-            List<Object[]> rows;
-            try {
-              rows = getHistoryData(logTables.get(i));
-            } catch (Exception e) {
-              LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+logTables.get(i), e);
-              rows = new ArrayList<Object[]>();
+          synchronized(rowList){
+            rowList.clear();
+            for (int i = 0; i < logTables.size(); i++) {
+              List<Object[]> rows;
+              try {
+                rows = getHistoryData(logTables.get(i));
+              } catch (Exception e) {
+                LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+logTables.get(i), e);
+                rows = new ArrayList<Object[]>();
+              }
+              rowList.add(rows);
             }
-            rowList.add(rows);
           }
 
           // Signal the refresh timer that there is work...
