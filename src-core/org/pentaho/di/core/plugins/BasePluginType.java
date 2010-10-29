@@ -51,6 +51,8 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	protected LogChannel log;
 	
 	protected Map<Class<?>, String> objectTypes = new HashMap<Class<?>, String>();
+
+  protected boolean searchLibDir;
 	
 	Class<? extends java.lang.annotation.Annotation> pluginType;
 
@@ -445,8 +447,8 @@ public abstract class BasePluginType implements PluginTypeInterface{
 		try {
 			String libFolderName = new File(URLDecoder.decode(jarFileUrl.getFile(), "UTF-8")).getParent()+"/lib";
 			if (new File(libFolderName).exists()) {
-				PluginFolder pluginFolder = new PluginFolder(libFolderName, false, true);
-				FileObject[] libFiles = pluginFolder.findJarFiles();
+				PluginFolder pluginFolder = new PluginFolder(libFolderName, false, true, searchLibDir);
+				FileObject[] libFiles = pluginFolder.findJarFiles(true);
 				for (FileObject libFile : libFiles) {
 					urls.add(libFile.getURL());
 				}
@@ -467,7 +469,17 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	protected abstract String extractImageFile(java.lang.annotation.Annotation annotation);
 	protected abstract boolean extractSeparateClassLoader(java.lang.annotation.Annotation annotation);
 	protected abstract String extractI18nPackageName(java.lang.annotation.Annotation annotation);
-	
+
+  /**
+   * When set to true the FluginFolder objects created by this type will be instructed to search
+   * for additional plugins in the lib directory of plugin folders.
+   *
+   * @param transverseLibDirs
+   */
+  protected void setTransverseLibDirs(boolean transverseLibDirs) {
+    this.searchLibDir = transverseLibDirs;
+  }
+
 	protected void registerPluginJars() throws KettlePluginException {
 	    
 	    List<JarFileAnnotationPlugin> jarFilePlugins = findAnnotatedClassFiles(pluginType.getName());
@@ -490,12 +502,26 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	        	FileObject fileObject = KettleVFS.getFileObject(jarFilename);
 	        	FileObject parentFolder = fileObject.getParent();
 	        	String parentFolderName = KettleVFS.getFilename(parentFolder);
-	        	String libFolderName = parentFolderName+Const.FILE_SEPARATOR+"lib";
-	        	PluginFolder folder = new PluginFolder(libFolderName, false, false);
-	        	FileObject[] jarFiles = folder.findJarFiles();
+            String libFolderName = null;
+            if(parentFolderName.endsWith(Const.FILE_SEPARATOR+"lib")){
+	        	  libFolderName = parentFolderName;
+            } else {
+              libFolderName = parentFolderName+Const.FILE_SEPARATOR+"lib";
+            }
+
+            PluginFolder folder = new PluginFolder(libFolderName, false, false, searchLibDir);
+	        	FileObject[] jarFiles = folder.findJarFiles(true);
+            
 	        	if (jarFiles!=null) {
 		          for(FileObject jarFile : jarFiles) {
-		            libraries.add( KettleVFS.getFilename(jarFile) );
+
+                String fileName = KettleVFS.getFilename(jarFile);
+                
+                // If the plugin is in the lib folder itself, we'll ignore it here
+                if(fileObject.equals(jarFile)){
+                  continue;
+                }
+		            libraries.add( fileName );
 		          }
 		        }
 	        } catch(Exception e) {

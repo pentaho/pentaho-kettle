@@ -34,18 +34,32 @@ public class PluginFolder implements PluginFolderInterface {
 
 	private String folder;
 	private boolean pluginXmlFolder; 
-	private boolean pluginAnnotationsFolder; 
-	
-	/**
+	private boolean pluginAnnotationsFolder;
+  private boolean searchLibDir;
+
+
+
+  /**
 	 * @param folder The folder location
 	 * @param pluginXmlFolder set to true if the folder needs to be searched for plugin.xml appearances
 	 * @param pluginAnnotationsFolder set to true if the folder needs to be searched for jar files with plugin annotations
-	 */
+   */
 	public PluginFolder(String folder, boolean pluginXmlFolder, boolean pluginAnnotationsFolder) {
+		this(folder, pluginXmlFolder, pluginAnnotationsFolder, false);
+  }
+
+  /**
+	 * @param folder The folder location
+	 * @param pluginXmlFolder set to true if the folder needs to be searched for plugin.xml appearances
+	 * @param pluginAnnotationsFolder set to true if the folder needs to be searched for jar files with plugin annotations
+   * @param searchLibDir look inside the plugins lib dir for additional plugins
+	 */
+	public PluginFolder(String folder, boolean pluginXmlFolder, boolean pluginAnnotationsFolder, boolean searchLibDir) {
 		this.folder = folder;
 		this.pluginXmlFolder = pluginXmlFolder;
 		this.pluginAnnotationsFolder = pluginAnnotationsFolder;
-	}
+    this.searchLibDir = searchLibDir;
+  }
 	
 	public String toString() {
 		return folder;
@@ -75,8 +89,12 @@ public class PluginFolder implements PluginFolderInterface {
 		}
 		return pluginFolders;
 	}
-	
-	public FileObject[] findJarFiles() throws KettleFileException {
+
+    public FileObject[] findJarFiles() throws KettleFileException {
+      return findJarFiles(searchLibDir);
+    }
+
+	public FileObject[] findJarFiles(final boolean includeLibJars) throws KettleFileException {
 		
 		try {
 			// Find all the jar files in this folder...
@@ -84,7 +102,7 @@ public class PluginFolder implements PluginFolderInterface {
 			FileObject folderObject = KettleVFS.getFileObject( this.getFolder() );
 			FileObject[] fileObjects = folderObject.findFiles(new FileSelector() {
 				public boolean traverseDescendents(FileSelectInfo fileSelectInfo) throws Exception {
-				  return fileSelectInfo.getDepth() < 2;
+				  return includeLibJars || !"lib".equals( fileSelectInfo.getFile().getName().getBaseName() );				  
 				}
 				
 				public boolean includeFile(FileSelectInfo fileSelectInfo) throws Exception {
