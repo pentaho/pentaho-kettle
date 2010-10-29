@@ -286,9 +286,11 @@ public class TableOutput extends BaseStep implements StepInterface
 		    data.commitCounterMap.put(tableName, Integer.valueOf(commitCounter.intValue()));
 
 		    // Release the savepoint if needed
-		    //
+		    //	    
 			if (data.specialErrorHandling) {
-				data.db.releaseSavepoint(data.savepoint);
+	          if (data.releaseSavepoint) {
+	             data.db.releaseSavepoint(data.savepoint);
+	          }
 			}
 			
 			// Perform a commit if needed
