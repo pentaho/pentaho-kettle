@@ -13,12 +13,7 @@
 package org.pentaho.di.ui.spoon.trans;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -177,8 +172,8 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
             spoon.getDisplay().syncExec(new Runnable() {
 
               public void run() {
-            	  if (!Const.isEmpty(rowList)) {
-            		  displayHistoryData(logTables.get(index), index, rowList.get(index));
+            	  if (!Const.isEmpty(rowList) && index < rowList.size()) {
+            		 displayHistoryData(logTables.get(index), index, rowList.get(index));
             	  }
               }
             });
