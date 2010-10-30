@@ -643,11 +643,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                             {
                                 if ( zippedFiles[i] != null)
                                 {                               
-                                    // Delete File
-                                    FileObject fileObjectd = zippedFiles[i];
-                                    if(sourceFileOrFolder.getType().equals(FileType.FILE)) {
-                                      fileObjectd = KettleVFS.getFileObject(localSourceFilename, this);     
-                                    }
+                                   // Delete, Move File
+              	                   FileObject fileObjectd =  zippedFiles[i];
+              	                   if (!isSourceDirectory) {
+              	                    fileObjectd = KettleVFS.getFileObject(localSourceFilename);
+              	                   }
                                     
                                     // Here we can move, delete files
                                     if (afterzip == 1)
@@ -671,17 +671,23 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                                     else if(afterzip == 2)
                                     {
                                         // Move File    
-                                        try
-                                        {
-                                            FileObject fileObjectm = KettleVFS.getFileObject(realMoveToDirectory + Const.FILE_SEPARATOR+zippedFiles[i], this);
-                                            fileObjectd.moveTo(fileObjectm);
+                                    	FileObject fileObjectm=null;
+                                        try {
+                  	                      fileObjectm = KettleVFS.getFileObject(realMoveToDirectory + Const.FILE_SEPARATOR + fileObjectd.getName().getBaseName());
+                  	                      fileObjectd.moveTo(fileObjectm);
                                         }
                                         catch (IOException e) 
                                         {
                                             log.logError(toString(), Messages.getString("JobZipFiles.Cant_Move_File1.Label") +zippedFiles[i]+
                                                 Messages.getString("JobZipFiles.Cant_Move_File2.Label") + e.getMessage());
                                             resultat = false;
-                                        }
+                                        }finally {
+                	                    	try {
+                	                    		if(fileObjectm!=null) {
+                	                    			fileObjectm.close();
+                	                    		}
+                	                    	}catch(Exception e){};
+                	                    }
                                         // File moved
                                         if (log.isDebug())
                                             log.logDebug(toString(), Messages.getString("JobZipFiles.File_Moved1.Label") + zippedFiles[i] + 
