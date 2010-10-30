@@ -589,10 +589,10 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
               // iterate through the array of Zipped files
               for (int i = 0; i < zippedFiles.length; i++) {
                 if (zippedFiles[i] != null) {
-                  // Delete File
-                  FileObject fileObjectd = KettleVFS.getFileObject(localSourceFilename + Const.FILE_SEPARATOR + zippedFiles[i], this);
+                 // Delete, Move File
+                  FileObject fileObjectd =  zippedFiles[i];
                   if (!isSourceDirectory) {
-                    fileObjectd = KettleVFS.getFileObject(localSourceFilename, this);
+                    fileObjectd = KettleVFS.getFileObject(localSourceFilename);
                   }
 
                   // Here we can move, delete files
@@ -611,13 +611,20 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                           + BaseMessages.getString(PKG, "JobZipFiles.File_Deleted2.Label"));
                   } else if (afterzip == 2) {
                     // Move File
+                		FileObject fileObjectm=null;
                     try {
-                      FileObject fileObjectm = KettleVFS.getFileObject(realMovetodirectory + Const.FILE_SEPARATOR + zippedFiles[i], this);
-                      fileObjectd.moveTo(fileObjectm);
+                          fileObjectm = KettleVFS.getFileObject(realMovetodirectory + Const.FILE_SEPARATOR + fileObjectd.getName().getBaseName());
+	                      fileObjectd.moveTo(fileObjectm);
                     } catch (IOException e) {
                       logError(BaseMessages.getString(PKG, "JobZipFiles.Cant_Move_File1.Label") + zippedFiles[i]
                           + BaseMessages.getString(PKG, "JobZipFiles.Cant_Move_File2.Label") + e.getMessage());
                       resultat = false;
+                    }finally {
+                    	try {
+                    		if(fileObjectm!=null) {
+                    			fileObjectm.close();
+                    		}
+                    	}catch(Exception e){};
                     }
                     // File moved
                     if (log.isDebug())
