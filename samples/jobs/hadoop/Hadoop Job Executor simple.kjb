@@ -88,23 +88,23 @@
       <jar_url>.&#47;samples&#47;jobs&#47;hadoop&#47;pentaho-mapreduce-sample.jar</jar_url>
       <command_line_args>&#47;wordcount&#47;input &#47;wordcount&#47;pdioutput</command_line_args>
       <blocking>Y</blocking>
-      <logging_interval>60</logging_interval>
+      <logging_interval>5</logging_interval>
       <hadoop_job_name>PDI Hadoop - WordCount - Simple</hadoop_job_name>
-      <mapper_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Map</mapper_class>
-      <combiner_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Reduce</combiner_class>
-      <reducer_class>org.pentaho.hadoop.mapreduce.sample.MRWordCount$Reduce</reducer_class>
-      <input_path>&#47;junit&#47;wordcount&#47;input</input_path>
+      <mapper_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Map</mapper_class>
+      <combiner_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Reduce</combiner_class>
+      <reducer_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Reduce</reducer_class>
+      <input_path>&#47;wordcount&#47;input</input_path>
       <input_format_class>org.apache.hadoop.mapred.TextInputFormat</input_format_class>
-      <output_path>&#47;junit&#47;wordcount&#47;output</output_path>
+      <output_path>&#47;wordcount&#47;output</output_path>
       <output_key_class>org.apache.hadoop.io.Text</output_key_class>
       <output_value_class>org.apache.hadoop.io.IntWritable</output_value_class>
       <output_format_class>org.apache.hadoop.mapred.TextOutputFormat</output_format_class>
-      <hdfs_hostname>hadoop-vm1.pentaho.com</hdfs_hostname>
+      <hdfs_hostname>hadoop-server</hdfs_hostname>
       <hdfs_port>9000</hdfs_port>
-      <job_tracker_hostname>hadoop-vm1.pentaho.com</job_tracker_hostname>
+      <job_tracker_hostname>hadoop-server</job_tracker_hostname>
       <job_tracker_port>9001</job_tracker_port>
       <num_map_tasks>2</num_map_tasks>
-      <num_reduce_tasks>2</num_reduce_tasks>
+      <num_reduce_tasks>1</num_reduce_tasks>
       <working_dir>&#47;tmp&#47;wordcount</working_dir>
       <user_defined_list>
         <user_defined>
@@ -119,7 +119,7 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>509</xloc>
+      <xloc>508</xloc>
       <yloc>208</yloc>
       </entry>
     <entry>
@@ -205,8 +205,8 @@
       <note>Cleans up the output directory</note>
       <xloc>216</xloc>
       <yloc>145</yloc>
-      <width>156</width>
-      <heigth>22</heigth>
+      <width>161</width>
+      <heigth>28</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -226,8 +226,8 @@
       <note>Hadoop WordCount Map Reduce Job</note>
       <xloc>421</xloc>
       <yloc>275</yloc>
-      <width>193</width>
-      <heigth>22</heigth>
+      <width>197</width>
+      <heigth>28</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -250,8 +250,8 @@
 3. Update the &apos;Wordcount - Simple&apos; step to provide the appropriate input and output directory locations in HDFS (defined in command line interface)</note>
       <xloc>22</xloc>
       <yloc>28</yloc>
-      <width>847</width>
-      <heigth>60</heigth>
+      <width>1132</width>
+      <heigth>78</heigth>
       <fontname/>
       <fontsize>-1</fontsize>
       <fontbold>N</fontbold>
