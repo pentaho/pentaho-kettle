@@ -780,7 +780,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
         	// Null as a start date is possible...
         	//
 	        sql += " AND ( "+dateFromField+" IS NULL OR "+dateFromField+" <= ? )"+Const.CR;
-	        sql += " AND "+dateToField+" >= ?"+Const.CR;
+	        sql += " AND "+dateToField+" > ?"+Const.CR;
 	        
 	        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
 	        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
