@@ -783,6 +783,7 @@
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.injector.InjectorTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.insertupdate.InsertUpdateTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.RunMapping" haltonerror="false" />
+        <test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.MappingTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.metainject.MetaInjectTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.nullif.NullIfTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.numberrange.NumberRangeRuleTest" haltonerror="false" />

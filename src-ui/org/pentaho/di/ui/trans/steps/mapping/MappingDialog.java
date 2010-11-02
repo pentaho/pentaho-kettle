@@ -1570,6 +1570,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		mappingMeta.setMappingParameters(mappingParameters);
 		mappingMeta.setInputMappings(inputMappings);
+		// Set the input steps for input mappings
+		mappingMeta.searchInfoAndTargetSteps(transMeta.getSteps());
 		mappingMeta.setOutputMappings(outputMappings);
 
 		mappingMeta.setChanged(true);

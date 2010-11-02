@@ -36,16 +36,21 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
-import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
 import org.w3c.dom.Node;
@@ -467,18 +472,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String[] getInfoSteps() {
-
-    List<String> infoSteps = new ArrayList<String>();
-    // The infosteps are those steps that are specified in the input mappings
-    for (MappingIODefinition definition : inputMappings) {
-      if (!definition.isMainDataPath() && !Const.isEmpty(definition.getInputStepname())) {
-        infoSteps.add(definition.getInputStepname());
-      }
-    }
-    if (infoSteps.isEmpty())
-      return null;
-
-    return infoSteps.toArray(new String[infoSteps.size()]);
+    String[] infoSteps = getStepIOMeta().getInfoStepnames();
+    // Return null instead of empty array to preserve existing behavior
+    return infoSteps.length == 0 ? null : infoSteps;
   }
 
   public String[] getTargetSteps() {
@@ -706,6 +702,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setInputMappings(List<MappingIODefinition> inputMappings) {
     this.inputMappings = inputMappings;
+    resetStepIoMeta();
   }
 
   /**
@@ -846,5 +843,46 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setSpecificationMethod(ObjectLocationSpecificationMethod specificationMethod) {
     this.specificationMethod = specificationMethod;
+  }
+
+  @Override
+  public StepIOMetaInterface getStepIOMeta() {
+    if (ioMeta == null) {
+      // TODO Create a dynamic StepIOMeta so that we can more easily manipulate the info streams?
+      ioMeta = new StepIOMeta(true, true, true, false, true, false);
+      for (MappingIODefinition def : inputMappings) {
+        if (isInfoMapping(def)) {
+          Stream stream = new Stream(StreamType.INFO, def.getInputStep(), BaseMessages.getString(PKG,
+              "MappingMeta.InfoStream.Description"), StreamIcon.INFO, null); //$NON-NLS-1$
+          ioMeta.addStream(stream);
+        }
+      }
+    }
+    return ioMeta;
+  }
+  
+  private boolean isInfoMapping(MappingIODefinition def) {
+    return !def.isMainDataPath() && !Const.isEmpty(def.getInputStepname());
+  }
+
+  /**
+   * Remove the cached {@link StepIOMeta} so it is recreated when it is next accessed.
+   */
+  public void resetStepIoMeta() {
+    ioMeta = null;
+  }
+
+  public boolean excludeFromRowLayoutVerification() {
+    return true;
+  }
+  
+  @Override
+  public void searchInfoAndTargetSteps(List<StepMeta> steps) {
+    // Assign all StepMeta references for Input Mappings that are INFO inputs
+    for(MappingIODefinition def : inputMappings) {
+      if(isInfoMapping(def)) {
+        def.setInputStep(StepMeta.findStep(steps, def.getInputStepname()));
+      }
+    }
   }
 }
