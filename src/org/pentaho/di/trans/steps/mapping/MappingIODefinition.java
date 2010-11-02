@@ -20,6 +20,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
 /**
@@ -33,6 +34,8 @@ import org.w3c.dom.Node;
 public class MappingIODefinition implements Cloneable {
 
 	public static final String XML_TAG = "mapping";
+	
+	private StepMeta inputStep;
 	
 	private String inputStepname;
 
@@ -241,4 +244,18 @@ public class MappingIODefinition implements Cloneable {
 	public void setValueRenames(List<MappingValueRename> valueRenames) {
 		this.valueRenames = valueRenames;
 	}
+
+  /**
+   * @return the inputStep
+   */
+  public StepMeta getInputStep() {
+    return inputStep;
+  }
+
+  /**
+   * @param inputStep the inputStep to set
+   */
+  public void setInputStep(StepMeta inputStep) {
+    this.inputStep = inputStep;
+  }
 }
