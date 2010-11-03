@@ -2174,7 +2174,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       if (meta!=null) {
         SharedObjects sharedObjects = null;
         if (meta instanceof TransMeta) sharedObjects=((TransMeta)meta).getSharedObjects();
-        if (meta instanceof JobMeta) sharedObjects=((TransMeta)meta).getSharedObjects();
+        if (meta instanceof JobMeta) sharedObjects=((JobMeta)meta).getSharedObjects();
         if (sharedObjects!=null) {
           sharedObjects.storeObject(sharedObject);
           sharedObjects.saveToFile();
@@ -2199,7 +2199,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         if (meta!=null) {
           SharedObjects sharedObjects = null;
           if (meta instanceof TransMeta) sharedObjects=((TransMeta)meta).getSharedObjects();
-          if (meta instanceof JobMeta) sharedObjects=((TransMeta)meta).getSharedObjects();
+          if (meta instanceof JobMeta) sharedObjects=((JobMeta)meta).getSharedObjects();
           if (sharedObjects!=null) {
             sharedObjects.removeObject(sharedObject);
             sharedObjects.saveToFile();
