@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.swt.SWT;
@@ -73,6 +75,8 @@ public class KettlePropertiesFileDialog extends Dialog
 
 	private Shell          shell;
 	private PropsUI 		   props;
+	
+	private Map<String,String> kettleProperties;
     
     /**
      * Constructs a new dialog
@@ -84,9 +88,10 @@ public class KettlePropertiesFileDialog extends Dialog
 	{
 		super(parent, style);
 		props=PropsUI.getInstance();
+		kettleProperties=null;
 	}
 
-	public void open()
+	public Map<String,String> open()
 	{
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
@@ -176,12 +181,13 @@ public class KettlePropertiesFileDialog extends Dialog
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return;
+		return kettleProperties;
 	}
 
 	public void dispose()
 	{
 		props.setScreen(new WindowProperty(shell));
+		kettleProperties=null;
 		shell.dispose();
 	}
 	
@@ -258,6 +264,7 @@ public class KettlePropertiesFileDialog extends Dialog
 	private void ok()
 	{
 		Properties properties = new Properties();
+        kettleProperties = new HashMap<String, String>();
 		
 		int nr = wFields.nrNonEmpty();
 		for (int i=0;i<nr;i++) {
@@ -268,6 +275,7 @@ public class KettlePropertiesFileDialog extends Dialog
 			
 			if (!Const.isEmpty(variable)) {
 				properties.put(variable, value);
+                kettleProperties.put(variable, value);
 			}
 		}
 		
@@ -276,7 +284,7 @@ public class KettlePropertiesFileDialog extends Dialog
 		FileOutputStream out = null;
 		try {
 			out = new FileOutputStream(getKettlePropertiesFilename());
-			properties.store(out, Const.getKettlePropertiesFileHeader());
+			properties.store(out, Const.getKettlePropertiesFileHeader());			
 		} catch(Exception e) {
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Title"), BaseMessages.getString(PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message"), e);
 		} finally {
@@ -286,6 +294,7 @@ public class KettlePropertiesFileDialog extends Dialog
 				LogChannel.GENERAL.logError(BaseMessages.getString(PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message", Const.KETTLE_PROPERTIES, getKettlePropertiesFilename()), e);
 			}
 		}
+		
         dispose();
 	}
 }
