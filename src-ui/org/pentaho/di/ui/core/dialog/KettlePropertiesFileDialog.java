@@ -187,7 +187,6 @@ public class KettlePropertiesFileDialog extends Dialog
     public void dispose()
     {
         props.setScreen(new WindowProperty(shell));
-        kettleProperties=null;
         shell.dispose();
     }
     
@@ -258,6 +257,7 @@ public class KettlePropertiesFileDialog extends Dialog
 
     private void cancel()
     {
+        kettleProperties=null;
         dispose();
     }
     
