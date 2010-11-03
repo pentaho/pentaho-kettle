@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -1626,9 +1627,33 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
 	public RowMetaAndData getOneRow(String tablename, String keyfield, ObjectId id) throws KettleException
 	{
-		String sql = "SELECT * FROM " + tablename + " WHERE " + keyfield + " = " + id;
+	  String sql = "SELECT * FROM " + tablename + " WHERE " + keyfield + " = ?"; // TODO add parameters
 
-		return getOneRow(sql);
+      // Get the prepared statement
+      //
+      PreparedStatement ps = sqlMap.get(sql);
+      if (ps == null) {
+        ps = database.prepareSQL(sql);
+        sqlMap.put(sql, ps);
+      }
+      
+      // Assemble the parameter (if any)
+      //
+      RowMetaInterface parameterMeta = new RowMeta();
+      parameterMeta.addValueMeta(new ValueMeta("id", ValueMetaInterface.TYPE_INTEGER));
+      Object[] parameterData = new Object[] { ((LongObjectId)id).longValue(), } ;
+      
+      ResultSet resultSet = null;
+      try {
+        resultSet = database.openQuery(ps, parameterMeta, parameterData);
+        Object[] result = database.getRow(resultSet);
+        if (result==null) return null;
+        return new RowMetaAndData(database.getReturnRowMeta(), result);
+      } catch(KettleException e) {
+        throw e;
+      } finally {
+        if (resultSet!=null) database.closeQuery(resultSet);
+      }
 	}
 
     public RowMetaAndData getOneRow(String sql) throws KettleDatabaseException { 
@@ -1667,5 +1692,45 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		database.insertRow();
 		database.closeInsert();
 	}
-	
+
+    public Collection<RowMetaAndData> getDatabaseAttributes(ObjectId id_database) throws KettleDatabaseException, KettleValueException {
+
+      String sql = "SELECT * FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE) + " WHERE " + quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE) + " = ?";
+      
+      // Get the prepared statement
+      //
+      PreparedStatement ps = sqlMap.get(sql);
+      if (ps == null) {
+        ps = database.prepareSQL(sql);
+        sqlMap.put(sql, ps);
+      }
+      
+      // Assemble the parameter (if any)
+      //
+      RowMetaInterface parameterMeta = new RowMeta();
+      parameterMeta.addValueMeta(new ValueMeta("id", ValueMetaInterface.TYPE_INTEGER));
+      Object[] parameterData = new Object[] { ((LongObjectId)id_database).longValue(), } ;
+
+      
+      List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
+      
+      ResultSet resultSet = null;
+      try {
+        resultSet = database.openQuery(ps, parameterMeta, parameterData);
+        List<Object[]> rows = database.getRows(resultSet, 0, null);
+        for (Object[] row : rows) {
+          RowMetaAndData rowWithMeta = new RowMetaAndData(repository.connectionDelegate.getReturnRowMeta(), row);
+          long id = rowWithMeta.getInteger(quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), 0);
+          if (id > 0) {
+            attrs.add(rowWithMeta);
+          }
+        }
+        return attrs;
+      } catch(KettleDatabaseException e) {
+        throw e;
+      } finally {
+        database.closeQuery(resultSet);
+      }
+    }
+
 }
