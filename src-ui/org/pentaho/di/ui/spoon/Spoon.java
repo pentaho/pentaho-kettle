@@ -261,7 +261,6 @@ import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulSettingsManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.WaitBoxRunnable;
@@ -1095,27 +1094,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         String name = variables.getValueMeta(i).getName();
         String value = variables.getString(i, "");
 
-        // We want to insert the variables into all loaded jobs and
-        // transformations
-        //
-        for (TransMeta transMeta : getLoadedTransformations()) {
-          transMeta.setVariable(name, Const.NVL(value, ""));
-        }
-        for (JobMeta jobMeta : getLoadedJobs()) {
-          jobMeta.setVariable(name, Const.NVL(value, ""));
-        }
-
-        // Not only that, we also want to set the variables in the
-        // execution configurations...
-        //
-        transExecutionConfiguration.getVariables().put(name, value);
-        jobExecutionConfiguration.getVariables().put(name, value);
-        transDebugExecutionConfiguration.getVariables().put(name, value);
+        applyVariableToAllLoadedObjects(name, value);
       } catch (KettleValueException e) {
         // Just eat the exception. getString() should never give an
         // exception.
       }
     }
+  }
+
+  public void applyVariableToAllLoadedObjects(String name, String value) {
+    // We want to insert the variables into all loaded jobs and
+    // transformations
+    //
+    for (TransMeta transMeta : getLoadedTransformations()) {
+      transMeta.setVariable(name, Const.NVL(value, ""));
+    }
+    for (JobMeta jobMeta : getLoadedJobs()) {
+      jobMeta.setVariable(name, Const.NVL(value, ""));
+    }
+
+    // Not only that, we also want to set the variables in the
+    // execution configurations...
+    //
+    transExecutionConfiguration.getVariables().put(name, value);
+    jobExecutionConfiguration.getVariables().put(name, value);
+    transDebugExecutionConfiguration.getVariables().put(name, value);
   }
 
   public void showVariables() {
@@ -4889,9 +4892,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void editKettlePropertiesFile() {
     KettlePropertiesFileDialog dialog = new KettlePropertiesFileDialog(shell, SWT.NONE);
-    dialog.open();
+    Map<String,String> newProperties = dialog.open();
+    if (newProperties!=null) {
+      for (String name : newProperties.keySet()) {
+        String value = newProperties.get(name);
+        applyVariableToAllLoadedObjects(name, value);
+        
+        // Also set as a JVM property
+        //
+        System.setProperty(name, value);
+      }
+    }
   }
-
   /**
    * Matches if the filter is non-empty
    * 
