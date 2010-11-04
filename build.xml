@@ -469,6 +469,10 @@
 	  				     includes="**/*.*"
 	  				     excludes="**/.svn"/>
 	  			</copy>
+	  	
+	  	    <!-- make JavaApplicationStub executable for OSX -->
+	  	    <chmod file="${distrib}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+  	        <chmod file="${distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
 
 	  </target>
 

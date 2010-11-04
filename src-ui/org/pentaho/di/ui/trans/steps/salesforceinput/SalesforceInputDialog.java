@@ -1715,7 +1715,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 				  String[] modules = connection.getModules();
 				  if(modules!=null && modules.length>0) {
 					  // populate Combo
-					  wModule.setItems(connection.getModules());	
+					  wModule.setItems(modules);	
 				  }
 				  
 			      gotModule = true;
