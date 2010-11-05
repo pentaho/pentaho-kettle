@@ -16,7 +16,7 @@ package org.pentaho.di.trans.steps.salesforceinsert;
 
 import java.util.ArrayList;
 
-import com.salesforce.soap.partner.sobject.SObject;
+import com.sforce.soap.partner.sobject.SObject;
 
 import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
@@ -126,16 +126,39 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 			// if there is room in the buffer
 			if ( data.iBufferPos < meta.getBatchSizeInt()) {
 				ArrayList<MessageElement> insertfields = new ArrayList<MessageElement>();
-				for ( int i = 0; i < data.nrfields; i++) {
+				// Reserve for empty fields
+				ArrayList<String> fieldsToNull = new ArrayList<String>();
+				
+				/*for ( int i = 0; i < data.nrfields; i++) {
 					if(!data.inputRowMeta.isNull(rowData, data.fieldnrs[i])) {
 						insertfields.add(SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]], meta.getUseExternalId()[i]));
 					}
-				}				
+				}*/		
+				
+				
+				// Add fields to insert
+				for ( int i = 0; i < data.nrfields; i++) {
+					if(data.inputRowMeta.isNull(rowData, data.fieldnrs[i])) {
+						// The value is null
+						// We need to keep track of this field
+						fieldsToNull.add(meta.getUpdateLookup()[i]);
+					} else {
+						insertfields.add(SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]], meta.getUseExternalId()[i]));
+					}
+				}	
 				
 				//build the SObject
 				SObject	sobjPass = new SObject();
-				sobjPass.set_any((MessageElement[])insertfields.toArray(new MessageElement[insertfields.size()]));
 				sobjPass.setType(data.realModule);
+				
+				if(insertfields.size()>0) {
+					sobjPass.set_any((MessageElement[])insertfields.toArray(new MessageElement[insertfields.size()]));
+				}
+				if(fieldsToNull.size()>0) {
+					// Set Null to fields
+					sobjPass.setFieldsToNull((String[])fieldsToNull.toArray(new String[fieldsToNull.size()]));
+				}
+				
 
 				//Load the buffer array
 				data.sfBuffer[data.iBufferPos] = sobjPass;
@@ -185,39 +208,30 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 					// there were errors during the create call, go through the
 					// errors
 					// array and write them to the screen
-			        boolean sendToErrorRow=false;
-					String errorMessage = null;
 					
-					if (getStepMeta().isDoingErrorHandling())
-					{
-				         sendToErrorRow = true;
-				         errorMessage = "";
-				         for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
-								// get the next error
-								com.salesforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];
-								errorMessage+= BaseMessages.getString(PKG, "SalesforceInsert.Error.FlushBuffer", 
-										new Integer(j), err.getStatusCode(), err.getMessage());
-						}
-					}
-					else 
-					{
-						if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceInsert.ErrorFound")); 
-						//for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
+					if (!getStepMeta().isDoingErrorHandling())	{
 						
+						if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceInsert.ErrorFound")); 
+
 						// Only show the first error
 						//
-							com.salesforce.soap.partner.Error err = data.saveResult[j].getErrors()[0];
-							throw new KettleException(BaseMessages.getString(PKG, "SalesforceInsert.Error.FlushBuffer", 
-									new Integer(j), err.getStatusCode(), err.getMessage()));
-							
-						// } // for error messages
+						com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[0];
+						throw new KettleException(BaseMessages.getString(PKG, "SalesforceInsert.Error.FlushBuffer", 
+								new Integer(j), err.getStatusCode(), err.getMessage()));	
 					}
 					
-					if (sendToErrorRow) {
-						   // Simply add this row to the error row
-						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInsert.PassingRowToErrorStep"));
-						   putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceInsert001");
+					 String errorMessage="";
+			         for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
+							// get the next error
+							com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];
+							errorMessage+= BaseMessages.getString(PKG, "SalesforceInsert.Error.FlushBuffer", 
+									new Integer(j), err.getStatusCode(), err.getMessage());
 					}
+					
+					// Simply add this row to the error row
+					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInsert.PassingRowToErrorStep"));
+					   putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceInsert001");
+				
 				} 
 				
 			} 
@@ -228,7 +242,15 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 			data.iBufferPos = 0;
 			
 		} catch (Exception e) {
-			throw new KettleException(BaseMessages.getString(PKG, "SalesforceInsert.FailedToInsertObject", e.getMessage()));
+			if (!getStepMeta().isDoingErrorHandling())	{
+				throw new KettleException(BaseMessages.getString(PKG, "SalesforceInsert.FailedToInsertObject", e.getMessage()));
+			}
+			// Simply add this row to the error row
+			if(log.isDebug()) logDebug("Passing row to error step");
+
+			for(int i=0; i<data.iBufferPos; i++) {
+					putError(data.inputRowMeta, data.outputBuffer[i], 1, e.getMessage(), null, "SalesforceInsert002");
+			 }
 		} finally{
 			if(data.saveResult!=null) data.saveResult=null;
 		}

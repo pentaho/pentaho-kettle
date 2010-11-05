@@ -157,7 +157,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 				         errorMessage = "";
 				         for (int i = 0; i < data.deleteResult[j].getErrors().length; i++) {
 								// get the next error
-								com.salesforce.soap.partner.Error err = data.deleteResult[j].getErrors()[i];
+								com.sforce.soap.partner.Error err = data.deleteResult[j].getErrors()[i];
 								errorMessage+= BaseMessages.getString(PKG, "SalesforceDelete.Error.FlushBuffer", 
 										new Integer(j), err.getStatusCode(), err.getMessage());
 						}
@@ -170,7 +170,7 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 						//	Just throw the first error...
 						///
 						
-							com.salesforce.soap.partner.Error err = data.deleteResult[j].getErrors()[0];
+							com.sforce.soap.partner.Error err = data.deleteResult[j].getErrors()[0];
 							throw new KettleException(BaseMessages.getString(PKG, "SalesforceDelete.Error.FlushBuffer", 
 									new Integer(j), err.getStatusCode(), err.getMessage()));
 							

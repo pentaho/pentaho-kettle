@@ -29,25 +29,25 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Element;
 
-import com.salesforce.soap.partner.DeleteResult;
-import com.salesforce.soap.partner.DeletedRecord;
-import com.salesforce.soap.partner.DescribeGlobalResult;
-import com.salesforce.soap.partner.DescribeGlobalSObjectResult;
-import com.salesforce.soap.partner.DescribeSObjectResult;
-import com.salesforce.soap.partner.Field;
-import com.salesforce.soap.partner.GetDeletedResult;
-import com.salesforce.soap.partner.GetUpdatedResult;
-import com.salesforce.soap.partner.GetUserInfoResult;
-import com.salesforce.soap.partner.LoginResult;
-import com.salesforce.soap.partner.QueryResult;
-import com.salesforce.soap.partner.SaveResult;
-import com.salesforce.soap.partner.SessionHeader;
-import com.salesforce.soap.partner.SforceServiceLocator;
-import com.salesforce.soap.partner.SoapBindingStub;
-import com.salesforce.soap.partner.UpsertResult;
-import com.salesforce.soap.partner.fault.ExceptionCode;
-import com.salesforce.soap.partner.fault.LoginFault;
-import com.salesforce.soap.partner.sobject.SObject;
+import com.sforce.soap.partner.DeleteResult;
+import com.sforce.soap.partner.DeletedRecord;
+import com.sforce.soap.partner.DescribeGlobalResult;
+import com.sforce.soap.partner.DescribeGlobalSObjectResult;
+import com.sforce.soap.partner.DescribeSObjectResult;
+import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.GetDeletedResult;
+import com.sforce.soap.partner.GetUpdatedResult;
+import com.sforce.soap.partner.GetUserInfoResult;
+import com.sforce.soap.partner.LoginResult;
+import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.partner.SaveResult;
+import com.sforce.soap.partner.SessionHeader;
+import com.sforce.soap.partner.SforceServiceLocator;
+import com.sforce.soap.partner.SoapBindingStub;
+import com.sforce.soap.partner.UpsertResult;
+import com.sforce.soap.partner.fault.ExceptionCode;
+import com.sforce.soap.partner.fault.LoginFault;
+import com.sforce.soap.partner.sobject.SObject;
 
 public class SalesforceConnection {
 	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -488,7 +488,7 @@ public class SalesforceConnection {
   public static MessageElement createMessageElement(String name, Object value, boolean useExternalKey) throws Exception {
 
 		MessageElement me =  new MessageElement(new QName(name),value); 
-		if(true) {
+		if(useExternalKey) {
 			// We use an external key
 			// the structure should be like this :
 			// object:externalId/lookupField

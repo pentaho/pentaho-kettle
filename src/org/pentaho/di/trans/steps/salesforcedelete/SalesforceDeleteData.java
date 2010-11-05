@@ -21,7 +21,7 @@ import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
 
-import com.salesforce.soap.partner.DeleteResult;
+import com.sforce.soap.partner.DeleteResult;
 
 
 

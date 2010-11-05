@@ -21,8 +21,8 @@ import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
 
-import com.salesforce.soap.partner.SaveResult;
-import com.salesforce.soap.partner.sobject.SObject;
+import com.sforce.soap.partner.SaveResult;
+import com.sforce.soap.partner.sobject.SObject;
 
 /*
  * @author Samatar

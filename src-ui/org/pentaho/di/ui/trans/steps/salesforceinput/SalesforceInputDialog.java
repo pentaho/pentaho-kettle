@@ -83,7 +83,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-import com.salesforce.soap.partner.Field;
+import com.sforce.soap.partner.Field;
 
 
 public class SalesforceInputDialog extends BaseStepDialog implements StepDialogInterface {

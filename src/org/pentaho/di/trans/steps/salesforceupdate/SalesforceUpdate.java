@@ -16,7 +16,7 @@ package org.pentaho.di.trans.steps.salesforceupdate;
 
 import java.util.ArrayList;
 
-import com.salesforce.soap.partner.sobject.SObject;
+import com.sforce.soap.partner.sobject.SObject;
 
 import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
@@ -131,7 +131,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 				
 				// Add fields to update
 				for ( int i = 0; i < data.nrfields; i++) {
-					if(data.inputRowMeta.isNull(rowData, data.fieldnrs[i])) {
+					boolean valueIsNull=data.inputRowMeta.isNull(rowData, data.fieldnrs[i]);
+					if(valueIsNull){
 						// The value is null
 						// We need to keep track of this field
 						fieldsToNull.add(meta.getUpdateLookup()[i]);
@@ -172,7 +173,8 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 		try {
 			// create the object(s) by sending the array to the web service
 			data.saveResult = data.connection.update(data.sfBuffer);
-			for (int j = 0; j < data.saveResult.length; j++) {
+			int nr=data.saveResult.length;
+			for (int j = 0; j < nr; j++) {
 				if (data.saveResult[j].isSuccess()) {
 					// Row was updated
 					String id=data.saveResult[j].getId();
@@ -195,41 +197,33 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 					// there were errors during the create call, go through the
 					// errors
 					// array and write them to the screen
-			        boolean sendToErrorRow=false;
-					String errorMessage = null;
+
 					
-					if (getStepMeta().isDoingErrorHandling())
-					{
-				         sendToErrorRow = true;
-				         errorMessage = "";
-				         for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
-								// get the next error
-								com.salesforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];								
-								errorMessage+= BaseMessages.getString(PKG, "SalesforceUpdate.Error.FlushBuffer", 
-										new Integer(j), err.getStatusCode(), err.getMessage());
-						}
-					}
-					else 
-					{
+					if (!getStepMeta().isDoingErrorHandling()) {
 						if(log.isDetailed()) logDetailed("Found error from SalesForce and raising the exception"); 
-						// for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
-							
+	
 						// Only send the first error
 						//
-							com.salesforce.soap.partner.Error err = data.saveResult[j].getErrors()[0];
+						com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[0];
 							throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpdate.Error.FlushBuffer", 
-											new Integer(j), err.getStatusCode(), err.getMessage()));
-							
-						// } // for error messages
+											new Integer(j), err.getStatusCode(), err.getMessage()));		
 					}
+				        
+			         String errorMessage = "";
+			         for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
+							// get the next error
+							com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];								
+							errorMessage+= BaseMessages.getString(PKG, "SalesforceUpdate.Error.FlushBuffer", 
+									new Integer(j), err.getStatusCode(), err.getMessage());
+					 }
 					
-					if (sendToErrorRow) {
-						   // Simply add this row to the error row
-						if(log.isDebug()) logDebug("Passing row to error step");
-						   putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceUpdate001");
-						}
+					// Simply add this row to the error row
+					if(log.isDebug()) logDebug("Passing row to error step");
+					
+					putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceUpdate001");
+					
 				} 
-				
+			
 			} 
 			
 			// reset the buffers
@@ -238,7 +232,17 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 			data.iBufferPos = 0;
 			
 		} catch (Exception e) {
-			throw new KettleException("\nFailed to update object, error message was: \n"+ e.getMessage());
+			if (!getStepMeta().isDoingErrorHandling()) {
+				throw new KettleException("\nFailed to update object, error message was: \n"+ e.getMessage());
+			}
+			
+			// Simply add this row to the error row
+			if(log.isDebug()) logDebug("Passing row to error step");
+
+			for(int i=0; i<data.iBufferPos; i++) {
+					putError(data.inputRowMeta, data.outputBuffer[i], 1, e.getMessage(), null, "SalesforceUpdate002");
+			 }
+
 		} finally{
 			if(data.saveResult!=null) data.saveResult=null;
 		}

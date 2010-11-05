@@ -16,7 +16,7 @@ package org.pentaho.di.trans.steps.salesforceupsert;
 
 import java.util.ArrayList;
 
-import com.salesforce.soap.partner.sobject.SObject;
+import com.sforce.soap.partner.sobject.SObject;
 
 import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
@@ -199,39 +199,29 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 					// there were errors during the create call, go through the
 					// errors
 					// array and write them to the screen
-			        boolean sendToErrorRow=false;
-					String errorMessage = null;
 					
-					if (getStepMeta().isDoingErrorHandling())
-					{
-				         sendToErrorRow = true;
-				         errorMessage = "";
-				         for (int i = 0; i < data.upsertResult[j].getErrors().length; i++) {
-								// get the next error
-								com.salesforce.soap.partner.Error err = data.upsertResult[j].getErrors()[i];
-								errorMessage+= BaseMessages.getString(PKG, "SalesforceUpsert.Error.FlushBuffer", 
-										new Integer(j), err.getStatusCode(), err.getMessage());
-						}
-					}
-					else 
-					{
+					if (!getStepMeta().isDoingErrorHandling()) {
 						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceUpsert.ErrorFound")); 
-						// for (int i = 0; i < data.upsertResult[j].getErrors().length; i++) {
-							
+	
 						// Only throw the first error
 						//
-							com.salesforce.soap.partner.Error err = data.upsertResult[j].getErrors()[0];
-							throw new KettleException( BaseMessages.getString(PKG, "SalesforceUpsert.Error.FlushBuffer", 
+					    com.sforce.soap.partner.Error err = data.upsertResult[j].getErrors()[0];
+						throw new KettleException( BaseMessages.getString(PKG, "SalesforceUpsert.Error.FlushBuffer", 
 												new Integer(j), err.getStatusCode(), err.getMessage()));
-							
 					}
-					
-					if (sendToErrorRow) {
-						   // Simply add this row to the error row
-						if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceUpsert.PassingRowToErrorStep"));
-						   putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceUpsert001");
-						}
-				} 
+		
+			         String errorMessage = "";
+			         for (int i = 0; i < data.upsertResult[j].getErrors().length; i++) {
+							// get the next error
+							com.sforce.soap.partner.Error err = data.upsertResult[j].getErrors()[i];
+							errorMessage+= BaseMessages.getString(PKG, "SalesforceUpsert.Error.FlushBuffer", 
+									new Integer(j), err.getStatusCode(), err.getMessage());
+					}
+				
+					// Simply add this row to the error row
+					if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceUpsert.PassingRowToErrorStep"));
+					   putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceUpsert001");
+					}
 				
 			} 
 			
@@ -241,7 +231,15 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 			data.iBufferPos = 0;
 			
 		} catch (Exception e) {
-			throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsert.FailedUpsert", e.getMessage()));
+			if (!getStepMeta().isDoingErrorHandling()) {
+				throw new KettleException(BaseMessages.getString(PKG, "SalesforceUpsert.FailedUpsert", e.getMessage()));
+			}
+			// Simply add this row to the error row
+			if(log.isDebug()) logDebug("Passing row to error step");
+
+			for(int i=0; i<data.iBufferPos; i++) {
+					putError(data.inputRowMeta, data.outputBuffer[i], 1, e.getMessage(), null, "SalesforceUpsert002");
+			 }
 		} finally {
 			if(data.upsertResult!=null) data.upsertResult=null;
 		}
