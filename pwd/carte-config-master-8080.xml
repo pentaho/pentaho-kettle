@@ -15,7 +15,7 @@
   <slaveserver>
     <name>master1</name>
     <hostname>localhost</hostname>
-    <port>8081</port>
+    <port>8080</port>
     <master>Y</master>
   </slaveserver>
 
