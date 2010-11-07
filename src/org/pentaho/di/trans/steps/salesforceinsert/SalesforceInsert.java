@@ -127,13 +127,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 			if ( data.iBufferPos < meta.getBatchSizeInt()) {
 				ArrayList<MessageElement> insertfields = new ArrayList<MessageElement>();
 				// Reserve for empty fields
-				ArrayList<String> fieldsToNull = new ArrayList<String>();
-				
-				/*for ( int i = 0; i < data.nrfields; i++) {
-					if(!data.inputRowMeta.isNull(rowData, data.fieldnrs[i])) {
-						insertfields.add(SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]], meta.getUseExternalId()[i]));
-					}
-				}*/		
+				ArrayList<String> fieldsToNull = new ArrayList<String>();	
 				
 				
 				// Add fields to insert
@@ -195,7 +189,6 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 					}
 					if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceInsert.NewRow", newRow[0]));
 					
-					//putRow(data.outputRowMeta, data.outputRowMeta.cloneRow(newRow));  // copy row to output rowset(s);
 					putRow(data.outputRowMeta, newRow);  // copy row to output rowset(s);
 					incrementLinesOutput();
 					
@@ -249,8 +242,8 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 			if(log.isDebug()) logDebug("Passing row to error step");
 
 			for(int i=0; i<data.iBufferPos; i++) {
-					putError(data.inputRowMeta, data.outputBuffer[i], 1, e.getMessage(), null, "SalesforceInsert002");
-			 }
+				putError(data.inputRowMeta, data.outputBuffer[i], 1, e.getMessage(), null, "SalesforceInsert002");
+			}
 		} finally{
 			if(data.saveResult!=null) data.saveResult=null;
 		}
@@ -297,7 +290,10 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 				// set timeout
 				data.connection.setTimeOut(Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
 				// Do we use compression?
-				if(meta.isUsingCompression()) data.connection.setUsingCompression(true);
+				data.connection.setUsingCompression(meta.isUsingCompression());
+				// Do we need to rollback all changes on error?
+				data.connection.rollbackAllChangesOnError(meta.isRollbackAllChangesOnError());
+				
 				// Now connect ...
 				data.connection.connect();
 

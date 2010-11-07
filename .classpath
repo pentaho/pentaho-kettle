@@ -148,6 +148,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.3.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.2.1.jar"/>
 	<classpathentry kind="lib" path="libext/edtftpj2.1.jar"/>
-	<classpathentry kind="lib" path="libext/salesforce/salesforce19.jar"/>
+	<classpathentry kind="lib" path="libext/salesforce/SFpartner20.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

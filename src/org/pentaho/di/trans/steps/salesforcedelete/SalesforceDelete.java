@@ -133,7 +133,8 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 		try {
 			// create the object(s) by sending the array to the web service
 			data.deleteResult = data.connection.delete(data.deleteId);
-			for (int j = 0; j < data.deleteResult.length; j++) {
+			int nr=data.deleteResult.length;
+			for (int j = 0; j < nr; j++) {
 				if (data.deleteResult[j].isSuccess()) {
 
 					putRow(data.outputRowMeta, data.outputBuffer[j]);  // copy row to output rowset(s);
@@ -148,41 +149,27 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 					// there were errors during the create call, go through the
 					// errors
 					// array and write them to the screen
-			        boolean sendToErrorRow=false;
-					String errorMessage = null;
 					
-					if (getStepMeta().isDoingErrorHandling())
-					{
-				         sendToErrorRow = true;
-				         errorMessage = "";
-				         for (int i = 0; i < data.deleteResult[j].getErrors().length; i++) {
-								// get the next error
-								com.sforce.soap.partner.Error err = data.deleteResult[j].getErrors()[i];
-								errorMessage+= BaseMessages.getString(PKG, "SalesforceDelete.Error.FlushBuffer", 
-										new Integer(j), err.getStatusCode(), err.getMessage());
-						}
-					}
-					else 
-					{
+					if (!getStepMeta().isDoingErrorHandling()) {
 						if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "SalesforceDelete.Found.Error"));
+
+						com.sforce.soap.partner.Error err = data.deleteResult[j].getErrors()[0];
+						throw new KettleException(BaseMessages.getString(PKG, "SalesforceDelete.Error.FlushBuffer", 
+								new Integer(j), err.getStatusCode(), err.getMessage()));
 						
-						// for (int i = 0; i < data.deleteResult[j].getErrors().length; i++) {
-						//	Just throw the first error...
-						///
-						
-							com.sforce.soap.partner.Error err = data.deleteResult[j].getErrors()[0];
-							throw new KettleException(BaseMessages.getString(PKG, "SalesforceDelete.Error.FlushBuffer", 
-									new Integer(j), err.getStatusCode(), err.getMessage()));
-							
-						// } // for error messages
 					}
-					
-					if (sendToErrorRow) {
-						   // Simply add this row to the error row
-						if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceDelete.PassingRowToErrorStep"));
-						   putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceDelete001");
-						}
-				} 
+				    String errorMessage = "";
+				    int nrErrors=data.deleteResult[j].getErrors().length;
+			        for (int i = 0; i < nrErrors; i++) {
+							// get the next error
+							com.sforce.soap.partner.Error err = data.deleteResult[j].getErrors()[i];
+							errorMessage+= BaseMessages.getString(PKG, "SalesforceDelete.Error.FlushBuffer", 
+									new Integer(j), err.getStatusCode(), err.getMessage());
+					}
+					// Simply add this row to the error row
+					if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "SalesforceDelete.PassingRowToErrorStep"));
+					putError(getInputRowMeta(), data.outputBuffer[j], 1, errorMessage, null, "SalesforceDelete001");
+				}
 				
 			} 
 			
@@ -192,7 +179,15 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 			data.iBufferPos = 0;
 			
 		} catch (Exception e) {
-			throw new KettleException(BaseMessages.getString(PKG, "SalesforceDelete.FailedToDeleted", e.getMessage()));
+			if(!getStepMeta().isDoingErrorHandling()) {
+				throw new KettleException(BaseMessages.getString(PKG, "SalesforceDelete.FailedToDeleted", e.getMessage()));
+			}
+			// Simply add this row to the error row
+			if(log.isDebug()) logDebug("Passing row to error step");
+
+			for(int i=0; i<data.iBufferPos; i++) {
+				putError(data.inputRowMeta, data.outputBuffer[i], 1, e.getMessage(), null, "SalesforceDelete002");
+			}
 		} finally {
 			if(data.deleteResult!=null) data.deleteResult=null;
 		}
@@ -234,7 +229,10 @@ public class SalesforceDelete extends BaseStep implements StepInterface
 				// set timeout
 				data.connection.setTimeOut(Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
 				// Do we use compression?
-				if(meta.isUsingCompression()) data.connection.setUsingCompression(true);
+				data.connection.setUsingCompression(meta.isUsingCompression());
+				// Do we rollback all changes on error
+				data.connection.rollbackAllChangesOnError(meta.isRollbackAllChangesOnError());
+				
 				// Now connect ...
 				data.connection.connect();
 

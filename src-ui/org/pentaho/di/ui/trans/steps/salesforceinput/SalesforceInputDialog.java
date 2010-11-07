@@ -1396,7 +1396,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		}else{
 			connection.connect();
 
-            Field[] fields = connection.getModuleFields(realModule);
+            Field[] fields = connection.getObjectFields(realModule);
             fieldsName= new String[fields.length];
             for (int i = 0; i < fields.length; i++)  {
             	Field field = fields[i];
@@ -1712,7 +1712,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 				  connection.connect();
 				  
 				  // retrieve modules list
-				  String[] modules = connection.getModules();
+				  String[] modules = connection.getAllAvailableObjects(true);
 				  if(modules!=null && modules.length>0) {
 					  // populate Combo
 					  wModule.setItems(modules);	

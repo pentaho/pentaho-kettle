@@ -285,7 +285,10 @@ public class SalesforceUpdate extends BaseStep implements StepInterface
 				// set timeout
 				data.connection.setTimeOut(Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
 				// Do we use compression?
-				if(meta.isUsingCompression()) data.connection.setUsingCompression(true);
+				data.connection.setUsingCompression(meta.isUsingCompression());
+				// Do we need to rollback all changes on error
+				data.connection.rollbackAllChangesOnError(meta.isRollbackAllChangesOnError());
+				
 				// Now connect ...
 				data.connection.connect();
 

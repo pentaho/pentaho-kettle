@@ -169,7 +169,8 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 		try {
 			// create the object(s) by sending the array to the web service
 			data.upsertResult = data.connection.upsert(meta.getUpsertField(), data.sfBuffer);
-			for (int j = 0; j < data.upsertResult.length; j++) {
+			int nr=data.upsertResult.length;
+			for (int j = 0; j < nr; j++) {
 				if (data.upsertResult[j].isSuccess()) {
 					String id=data.upsertResult[j].getId();
 					if(data.upsertResult[j].isCreated()) {
@@ -286,7 +287,9 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 				// set timeout
 				data.connection.setTimeOut(Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
 				// Do we use compression?
-				if(meta.isUsingCompression()) data.connection.setUsingCompression(true);
+				data.connection.setUsingCompression(meta.isUsingCompression());
+				// Do we need to rollback all changes on error
+				data.connection.rollbackAllChangesOnError(meta.isRollbackAllChangesOnError());
 				// Now connect ...
 				data.connection.connect();
 				 return true;

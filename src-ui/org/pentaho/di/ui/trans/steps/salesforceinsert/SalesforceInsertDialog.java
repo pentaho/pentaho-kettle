@@ -77,6 +77,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.util.StringUtil;
 
+
 public class SalesforceInsertDialog extends BaseStepDialog implements StepDialogInterface {
 	
 	private static Class<?> PKG = SalesforceInsertMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -155,6 +156,12 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
     private boolean  gotModule = false;
 	private boolean gotFields=false;
+	
+    
+    private Label wlRollbackAllChangesOnError;
+    private FormData fdlRollbackAllChangesOnError;
+    private Button wRollbackAllChangesOnError;
+    private FormData fdRollbackAllChangesOnError;
     
     private boolean  getModulesListError = false;     /* True if error getting modules list */
     
@@ -364,6 +371,24 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 		fdUseCompression.top  = new FormAttachment(wTimeOut, margin);
 		wUseCompression.setLayoutData(fdUseCompression);
 
+
+		// Rollback all changes on error?
+		wlRollbackAllChangesOnError=new Label(wSettingsGroup, SWT.RIGHT);
+		wlRollbackAllChangesOnError.setText(BaseMessages.getString(PKG, "SalesforceInsertDialog.RollbackAllChangesOnError.Label"));
+ 		props.setLook(wlRollbackAllChangesOnError);
+		fdlRollbackAllChangesOnError=new FormData();
+		fdlRollbackAllChangesOnError.left = new FormAttachment(0, 0);
+		fdlRollbackAllChangesOnError.top  = new FormAttachment(wUseCompression, margin);
+		fdlRollbackAllChangesOnError.right= new FormAttachment(middle, -margin);
+		wlRollbackAllChangesOnError.setLayoutData(fdlRollbackAllChangesOnError);
+		wRollbackAllChangesOnError=new Button(wSettingsGroup, SWT.CHECK );
+ 		props.setLook(wRollbackAllChangesOnError);
+		wRollbackAllChangesOnError.setToolTipText(BaseMessages.getString(PKG, "SalesforceInsertDialog.RollbackAllChangesOnError.Tooltip"));
+		fdRollbackAllChangesOnError=new FormData();
+		fdRollbackAllChangesOnError.left = new FormAttachment(middle, 0);
+		fdRollbackAllChangesOnError.top  = new FormAttachment(wUseCompression, margin);
+		wRollbackAllChangesOnError.setLayoutData(fdRollbackAllChangesOnError);
+
 		
 		
 		// BatchSize value
@@ -372,7 +397,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 		props.setLook(wlBatchSize);
 		fdlBatchSize = new FormData();
 		fdlBatchSize.left = new FormAttachment(0, 0);
-		fdlBatchSize.top = new FormAttachment(wUseCompression, margin);
+		fdlBatchSize.top = new FormAttachment(wRollbackAllChangesOnError, margin);
 		fdlBatchSize.right = new FormAttachment(middle, -margin);
 		wlBatchSize.setLayoutData(fdlBatchSize);
 		wBatchSize = new TextVar(transMeta,wSettingsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -380,7 +405,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 		wBatchSize.addModifyListener(lsMod);
 		fdBatchSize = new FormData();
 		fdBatchSize.left = new FormAttachment(middle, 0);
-		fdBatchSize.top = new FormAttachment(wUseCompression, margin);
+		fdBatchSize.top = new FormAttachment(wRollbackAllChangesOnError, margin);
 		fdBatchSize.right = new FormAttachment(100, 0);
 		wBatchSize.setLayoutData(fdBatchSize);
 		
@@ -781,6 +806,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 
 		wTimeOut.setText(Const.NVL(in.getTimeOut(), SalesforceConnectionUtils.DEFAULT_TIMEOUT));
 		wUseCompression.setSelection(in.isUsingCompression());
+		wRollbackAllChangesOnError.setSelection(in.isRollbackAllChangesOnError());
 		wStepname.selectAll();
 	}
 
@@ -826,6 +852,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 		}
 		in.setUseCompression(wUseCompression.getSelection());
 		in.setTimeOut(Const.NVL(wTimeOut.getText(),"0"));
+		in.setRollbackAllChangesOnError(wRollbackAllChangesOnError.getSelection());
 	}
 
 	// check if module, username is given
@@ -1065,7 +1092,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
 				  // connect to Salesforce
 				  connection.connect();
 				  // return 
-				  wModule.setItems(connection.getModules());				  
+				  wModule.setItems(connection.getAllAvailableObjects(false));				  
 				  
 				  if(!Const.isEmpty(selectedField)) wModule.setText(selectedField);
 				  

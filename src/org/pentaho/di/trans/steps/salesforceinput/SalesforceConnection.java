@@ -20,6 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPException;
 
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.transport.http.HTTPConstants;
@@ -29,6 +30,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Element;
 
+import com.sforce.soap.partner.AllOrNoneHeader;
 import com.sforce.soap.partner.DeleteResult;
 import com.sforce.soap.partner.DeletedRecord;
 import com.sforce.soap.partner.DescribeGlobalResult;
@@ -73,7 +75,7 @@ public class SalesforceConnection {
 	private int queryResultSize;
 	private int recordsCount;
 	private boolean useCompression;
-	
+	private boolean rollbackAllChangesOnError;
 
 
 
@@ -105,7 +107,7 @@ public class SalesforceConnection {
 		this.queryResultSize=0;
 		this.recordsCount=0;
 		setUsingCompression(false);
-
+		rollbackAllChangesOnError(false);
 		
 		// check target URL
 		if(Const.isEmpty(this.url))	throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.TargetURLMissing.Error"));
@@ -115,7 +117,12 @@ public class SalesforceConnection {
 				
 		if(log.isDetailed()) logInterface.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.NewConnection"));
 	}
-    
+    public boolean isRollbackAllChangesOnError() {
+    	return this.rollbackAllChangesOnError;
+    }
+    public void rollbackAllChangesOnError(boolean value) {
+    	this.rollbackAllChangesOnError=value;
+    }
 	public void setCalendar(int recordsFilter,GregorianCalendar startDate, GregorianCalendar endDate) throws KettleException {
 		 this.startDate=startDate;
 		 this.endDate=endDate;
@@ -192,7 +199,7 @@ public class SalesforceConnection {
 		      
 	        //  Set timeout
 	      	if(getTimeOut()>0) {
-	      		binding.setTimeout(getTimeOut());
+	      		this.binding.setTimeout(getTimeOut());
 	      		 if (log.isDebug())  log.logDebug(BaseMessages.getString(PKG, "SalesforceInput.Log.SettingTimeout",""+this.timeout));
 	      	}
 	        
@@ -202,10 +209,16 @@ public class SalesforceConnection {
 	      	
 	      	// Do we need compression?
 	      	if(isUsingCompression()) {
-	      		binding._setProperty(HTTPConstants.MC_ACCEPT_GZIP, useCompression);
-	      		binding._setProperty(HTTPConstants.MC_GZIP_REQUEST, useCompression);
+	      		this.binding._setProperty(HTTPConstants.MC_ACCEPT_GZIP, useCompression);
+	      		this.binding._setProperty(HTTPConstants.MC_GZIP_REQUEST, useCompression);
 	      	}
-	        
+	       	if(isRollbackAllChangesOnError()) {
+	      	    // Set the SOAP header to rollback all changes
+	      		// unless all records are processed successfully.
+	      	    AllOrNoneHeader allOrNoneHeader = new AllOrNoneHeader();
+	      	    allOrNoneHeader.setAllOrNone(true);
+	      	    this.binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(), "AllOrNoneHeader", allOrNoneHeader);
+	      	}
 	        // Attempt the login giving the user feedback
 	        if (log.isDetailed()) {
 	        	log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.LoginNow"));
@@ -292,13 +305,13 @@ public class SalesforceConnection {
 		 			GetUpdatedResult updatedRecords = getBinding().getUpdated(getModule(), this.startDate, this.endDate);
 						
 		 			if (updatedRecords.getIds() != null	&& updatedRecords.getIds().length > 0) {
-		 				this.sObjects = getBinding().retrieve(this.fieldsList,this.module, updatedRecords.getIds());
+		 				this.sObjects = getBinding().retrieve(this.fieldsList,getModule(), updatedRecords.getIds());
 		 				this.queryResultSize=this.sObjects.length;
 		 			}
 				break;
 				case SalesforceConnectionUtils.RECORDS_FILTER_DELETED:
 					  // Deleted records ...
-			 		GetDeletedResult deletedRecordsResult = this.binding.getDeleted(this.module, this.startDate, this.endDate);
+			 		GetDeletedResult deletedRecordsResult = getBinding().getDeleted(getModule(), this.startDate, this.endDate);
 					
 					DeletedRecord[] deletedRecords = deletedRecordsResult.getDeletedRecords();
 					List<String> idlist = new ArrayList<String>();
@@ -327,7 +340,7 @@ public class SalesforceConnection {
 	 public void close() throws KettleException
 	 {
 		 try {
-				if(!this.qr.isDone()) {
+				if(!getQueryResult().isDone()) {
 					this.qr.setDone(true);
 					this.qr=null;
 				}
@@ -363,9 +376,9 @@ public class SalesforceConnection {
 		 // Query first
 		 this.qr = getBinding().query(getSQL());
 		 // and then return records
-		 SObject con=qr.getRecords()[0];
+		 SObject con=getQueryResult().getRecords()[0];
 		 if(con==null) return null;
-			 return con.get_any();
+		 return con.get_any();
 	 }
 	 public boolean queryMore() throws KettleException {
 		 try {
@@ -384,39 +397,46 @@ public class SalesforceConnection {
 			 throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.QueringMore"),e);
 		 }
 	}
-	public String[] getModules() throws KettleException
+	public String[] getAllAvailableObjects(boolean OnlyQueryableObjects) throws KettleException
 	{
 	  DescribeGlobalResult dgr=null;
-	  List<String> modules = null;
+	  List<String> objects = null;
+	  DescribeGlobalSObjectResult[] sobjectResults=null;
 	  try  {
 		  // Get object
 		  dgr = getBinding().describeGlobal();
 		  // let's get all objects
-	      int nrModules= dgr.getSobjects().length;
-	      modules = new ArrayList<String>();
-	      for(int i=0; i<nrModules; i++) {
+	      sobjectResults = dgr.getSobjects();
+	      int nrObjects= dgr.getSobjects().length;
+	      
+	      objects = new ArrayList<String>();
+	      
+	      for(int i=0; i<nrObjects; i++) {
 	    	  DescribeGlobalSObjectResult o= dgr.getSobjects(i);
-	    	  if(o.isQueryable()) {
-	    		  modules.add(dgr.getSobjects(i).getName());
+	    	  if((OnlyQueryableObjects && o.isQueryable()) || !OnlyQueryableObjects) {
+	    		  objects.add(o.getName());
 	    	  }
 	      }
-	      return  (String[]) modules.toArray(new String[modules.size()]);
+	      return  (String[]) objects.toArray(new String[objects.size()]);
 	   } catch(Exception e){
 		   throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.GettingModules"),e);
 	   }finally  {
 		   if(dgr!=null) dgr=null;
-		   if(modules!=null) {
-			   modules.clear();
-			   modules=null;
+		   if(objects!=null) {
+			   objects.clear();
+			   objects=null;
+		   }
+		   if(sobjectResults!=null) {
+			   sobjectResults=null;
 		   }
 	   }
 	}  
-  public Field[] getModuleFields(String module) throws KettleException
+  public Field[] getObjectFields(String objectName) throws KettleException
   {
 	  DescribeSObjectResult describeSObjectResult=null;
 	  try  {
 		  // Get object
-	      describeSObjectResult = getBinding().describeSObject(module);
+	      describeSObjectResult = getBinding().describeSObject(objectName);
 	      if(describeSObjectResult==null) return null;
      
 		   if(!describeSObjectResult.isQueryable()){
@@ -432,9 +452,9 @@ public class SalesforceConnection {
 	   }
   }  
 
-  public String[] getFields(String module) throws KettleException
+  public String[] getFields(String objectName) throws KettleException
   {
-	  Field[] fields= getModuleFields(module);
+	  Field[] fields= getObjectFields(objectName);
 	  if(fields!=null) {
 		    int nrFields=fields.length;
 		    String[] fieldsMapp= new String[nrFields];
@@ -485,9 +505,11 @@ public class SalesforceConnection {
 		  throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.ErrorDelete"), e);
 	  }
   }
-  public static MessageElement createMessageElement(String name, Object value, boolean useExternalKey) throws Exception {
+  public static MessageElement createMessageElement(String name, Object value, boolean useExternalKey) 
+  throws Exception {
 
-		MessageElement me =  new MessageElement(new QName(name),value); 
+		MessageElement me  = null;
+		
 		if(useExternalKey) {
 			// We use an external key
 			// the structure should be like this :
@@ -512,33 +534,53 @@ public class SalesforceConnection {
 					extIdName=rest;
 					lookupField=extIdName;
 				}
-				
 				me= createForeignKeyElement(type, lookupField ,extIdName, value);
+			}else {
+				throw new KettleException(BaseMessages.getString(PKG, "SalesforceConnection.UnableToFindObjectType"));
 			}
+		}else {
+			me= fromTemplateElement(name, value, true);
 		}
 
-		Element e = me.getAsDOM();
-		e.removeAttribute("xsi:type");
-		e.removeAttribute("xmlns:ns1");
-		e.removeAttribute("xmlns:xsd");
-		e.removeAttribute("xmlns:xsi");
-
-		me = new MessageElement(e);
 		return me;
   }
 	private static MessageElement createForeignKeyElement(String type, String lookupField ,String extIdName, 
 			Object extIdValue) throws Exception {
 
         // Foreign key relationship to the object
-        MessageElement me = new MessageElement(new QName(lookupField));
-        me.addChild(new MessageElement(new QName("type"), type));
+		MessageElement me = fromTemplateElement(lookupField, null, false);
+		me.addChild(new MessageElement(new QName("type"), type));
         me.addChild(new MessageElement(new QName(extIdName),  extIdValue));
         
         return me;
     }
-  public String toString()
-  {
-	  return "SalesforceConnection";
-  }
+	
+	private static MessageElement TEMPLATE_MESSAGE_ELEMENT = new MessageElement("", "temp");
+	
+	// The Template org.w3c.dom.Element instance
+	private static Element TEMPLATE_XML_ELEMENT;
+	
+	static {
+		try {
+			// Create and cache this org.w3c.dom.Element instance for once here.
+			TEMPLATE_XML_ELEMENT = TEMPLATE_MESSAGE_ELEMENT.getAsDOM();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		TEMPLATE_XML_ELEMENT.removeAttribute("xsi:type");
+		TEMPLATE_XML_ELEMENT.removeAttribute("xmlns:ns1");
+		TEMPLATE_XML_ELEMENT.removeAttribute("xmlns:xsd");
+		TEMPLATE_XML_ELEMENT.removeAttribute("xmlns:xsi");
+	}
+	
+	
+	public static MessageElement fromTemplateElement(String name, Object value, boolean setValue)
+			throws SOAPException {
+		// Use the TEMPLATE org.w3c.dom.Element to create new Message Elements
+		MessageElement me = new MessageElement(TEMPLATE_XML_ELEMENT);
+		if(setValue) me.setObjectValue(value);
+		me.setName(name);
+		return me;
+	}
 
 }

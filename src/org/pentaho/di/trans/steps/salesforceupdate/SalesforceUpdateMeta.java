@@ -84,11 +84,28 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 	
 	private boolean useCompression;
 	
+	private boolean rollbackAllChangesOnError;
 	
 	public SalesforceUpdateMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
+	/**
+	 * @return Returns the rollbackAllChangesOnError.
+	 */
+	public boolean isRollbackAllChangesOnError()
+	{
+		return rollbackAllChangesOnError;
+	}
+    
+	/**
+	 * @param rollbackAllChangesOnError The rollbackAllChangesOnError to set.
+	 */
+	public void setRollbackAllChangesOnError(boolean rollbackAllChangesOnError)
+	{
+		this.rollbackAllChangesOnError = rollbackAllChangesOnError;
+	}	
+	
 	/**
 	 * @return Returns the useCompression.
 	 */
@@ -298,6 +315,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 		retval.append("      </fields>"+Const.CR);
 		retval.append("    "+XMLHandler.addTagValue("timeout", timeout));
 		retval.append("    "+XMLHandler.addTagValue("useCompression",   useCompression));
+		retval.append("    "+XMLHandler.addTagValue("rollbackAllChangesOnError",   rollbackAllChangesOnError));
 		return retval.toString();
 	}
 
@@ -342,6 +360,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 				
 			}
 			useCompression   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "useCompression"));
+			rollbackAllChangesOnError   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rollbackAllChangesOnError"));
 			timeout = XMLHandler.getTagValue(stepnode, "timeout");
 		}
 		catch(Exception e)
@@ -374,6 +393,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 			useExternalId[i]=Boolean.FALSE; //$NON-NLS-1$
 		}
 		useCompression=false;
+		rollbackAllChangesOnError=false;
 		timeout= "60000";
 	}
 	
@@ -406,6 +426,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 			}
 			useCompression   = rep.getStepAttributeBoolean(id_step, "useCompression"); 
 			timeout          =  rep.getStepAttributeString(id_step, "timeout");
+			rollbackAllChangesOnError   = rep.getStepAttributeBoolean(id_step, "rollbackAllChangesOnError"); 
 		}
 		catch(Exception e)
 		{
@@ -433,6 +454,7 @@ public class SalesforceUpdateMeta extends BaseStepMeta implements StepMetaInterf
 			}
 			rep.saveStepAttribute(id_transformation, id_step, "useCompression",  useCompression);
 			rep.saveStepAttribute(id_transformation, id_step, "timeout",           timeout);
+			rep.saveStepAttribute(id_transformation, id_step, "rollbackAllChangesOnError",  rollbackAllChangesOnError);
 		}
 		catch(Exception e)
 		{
