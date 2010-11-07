@@ -111,7 +111,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface
 		} 
 		catch(Exception e)
 		{
-			throw new KettleStepException(BaseMessages.getString(PKG, "SalesforceUpsert.log.Exception", e.getMessage()), e);
+			throw new KettleStepException(BaseMessages.getString(PKG, "SalesforceUpsert.log.Exception"), e);
 		} 
 	    return true; 
 	}		

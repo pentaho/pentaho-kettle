@@ -112,7 +112,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 		} 
 		catch(Exception e)
 		{
-			throw new KettleStepException(BaseMessages.getString(PKG, "SalesforceInsert.log.Exception", e.getMessage()), e);
+			throw new KettleStepException(BaseMessages.getString(PKG, "SalesforceInsert.log.Exception", e));
 		} 
 	    return true; 
 	}		
