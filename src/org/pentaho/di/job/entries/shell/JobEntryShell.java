@@ -232,7 +232,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logext", logext);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", logFileLevel.getCode());
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", logFileLevel == null ? LogLevel.NOTHING.getCode() : logFileLevel.getCode());
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "insertScript", insertScript);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "script", script);
 			
