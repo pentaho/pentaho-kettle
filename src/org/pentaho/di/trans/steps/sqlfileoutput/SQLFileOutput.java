@@ -267,16 +267,17 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 		
 		try
 		{
-			if(log.isDebug()) logDebug("Closing output stream");
-			data.writer.close();
-			if(log.isDebug()) logDebug("Closed output stream");
-			data.writer = null;
-		
-			
-			if(log.isDebug()) logDebug("Closing normal file ..");
+			if(data.writer!=null)
+			{
+				if(log.isDebug()) logDebug("Closing output stream");
+				data.writer.close();
+				if(log.isDebug()) logDebug("Closed output stream");
+				data.writer = null;
+			}
 		
             if (data.fos!=null)
             {
+    			if(log.isDebug()) logDebug("Closing normal file ..");
                 data.fos.close();
                 data.fos=null;
             }
@@ -387,8 +388,6 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 		try
 		{
             if(data.db!=null) data.db.closeInsert();
-            if(data.fos!=null) data.fos.close();
-            if(data.writer!=null) data.writer.close();
             closeFile();
 		}
 		
