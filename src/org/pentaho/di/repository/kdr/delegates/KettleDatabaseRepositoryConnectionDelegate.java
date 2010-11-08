@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -47,6 +48,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRepositoryBaseDelegate {
@@ -1640,14 +1642,15 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
       // Assemble the parameter (if any)
       //
       RowMetaInterface parameterMeta = new RowMeta();
+      
       parameterMeta.addValueMeta(new ValueMeta("id", ValueMetaInterface.TYPE_INTEGER));
-      Object[] parameterData = new Object[] { ((LongObjectId)id).longValue(), } ;
+      Object[] parameterData = new Object[] { Long.parseLong(id.getId()), } ;
       
       ResultSet resultSet = null;
       try {
         resultSet = database.openQuery(ps, parameterMeta, parameterData);
         Object[] result = database.getRow(resultSet);
-        if (result==null) return null;
+        if (result==null) return new RowMetaAndData(database.getReturnRowMeta(), RowDataUtil.allocateRowData(database.getReturnRowMeta().size()));
         return new RowMetaAndData(database.getReturnRowMeta(), result);
       } catch(KettleException e) {
         throw e;
