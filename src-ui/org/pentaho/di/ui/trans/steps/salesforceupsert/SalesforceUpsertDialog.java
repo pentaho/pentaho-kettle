@@ -795,10 +795,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 			mb.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.Connected.Title.Ok")); 
 			mb.open();
 		}else{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "SalesforceUpsertDialog.Connected.NOK",wUserName.getText(),msgError));
-			mb.setText(BaseMessages.getString(PKG, "SalesforceUpsertDialog.Connected.Title.Error")); 
-			mb.open(); 
+			new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceUpsertDialog.Connected.Title.Error"),
+					BaseMessages.getString(PKG, "SalesforceUpsertDialog.Connected.NOK",wUserName.getText()),new Exception(msgError));
 		}
 		
 	}

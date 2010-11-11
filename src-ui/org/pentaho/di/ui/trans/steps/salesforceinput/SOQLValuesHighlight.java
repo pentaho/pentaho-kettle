@@ -242,7 +242,7 @@ public class SOQLValuesHighlight implements LineStyleListener {
 		protected boolean fEofSeen= false;
 
 		private String[] kfKeywords ={
-				"count", "max", "min"				
+				"count", "max", "min", "like"				
  
 		};
 			

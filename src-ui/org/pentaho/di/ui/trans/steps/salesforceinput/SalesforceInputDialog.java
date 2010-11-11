@@ -1320,10 +1320,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			mb.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Connected.Title.Ok")); 
 			mb.open();
 		}else{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "SalesforceInputDialog.Connected.NOK",wUserName.getText(),msgError));
-			mb.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.Connected.Title.Error")); 
-			mb.open(); 
+			new ErrorDialog(shell,BaseMessages.getString(PKG, "SalesforceInputDialog.Connected.Title.Error"),
+					BaseMessages.getString(PKG, "SalesforceInputDialog.Connected.NOK",wUserName.getText()),new Exception(msgError));
 		}
 	}
 
