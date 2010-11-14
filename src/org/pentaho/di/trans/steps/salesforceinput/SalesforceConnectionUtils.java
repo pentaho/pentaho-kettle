@@ -19,6 +19,8 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class SalesforceConnectionUtils {
 	
+	public static final int MAX_UPDATED_OBJECTS_IDS= 2000;
+	
 	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
 	public static final String LIB_VERION="16.0";

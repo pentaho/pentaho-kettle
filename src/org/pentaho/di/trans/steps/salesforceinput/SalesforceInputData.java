@@ -47,6 +47,7 @@ public class SalesforceInputData extends BaseStepData implements StepDataInterfa
 	public SalesforceConnection connection;
 	public GregorianCalendar startCal;
 	public GregorianCalendar endCal;
+	public boolean finishedRecord;
 
 	/**
 	 * 

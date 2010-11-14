@@ -1182,6 +1182,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	wlRecordsFilter.setEnabled(!wspecifyQuery.getSelection());
 	wRecordsFilter.setEnabled(!wspecifyQuery.getSelection());
 	updateRecordsFilter();
+	enableCondition();
  }
  private void setEnableInclSQL()
  {
@@ -1380,9 +1381,16 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	  wlReadTo.setEnabled(activeFilter);
 	  wReadTo.setEnabled(activeFilter);
 	  opento.setEnabled(activeFilter);
+	  enableCondition();
 			  
   }
-
+	 private void enableCondition()
+	 {
+		boolean enableCondition=!wspecifyQuery.getSelection() &&
+		SalesforceConnectionUtils.getRecordsFilterByDesc(wRecordsFilter.getText())== SalesforceConnectionUtils.RECORDS_FILTER_ALL;
+		wlCondition.setVisible(enableCondition);
+		wCondition.setVisible(enableCondition);
+	 }
 	/**
 	 * Read the data from the TextFileInputMeta object and show it in this
 	 * dialog.
