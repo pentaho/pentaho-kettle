@@ -21,6 +21,8 @@ public class SalesforceConnectionUtils {
 	
 	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
+	public static final int MAX_UPDATED_OBJECTS_IDS= 2000;
+	
 	public static final String LIB_VERION="20.0";
 	
 	public static final String TARGET_DEFAULT_URL= "https://www.salesforce.com/services/Soap/u/20.0";
