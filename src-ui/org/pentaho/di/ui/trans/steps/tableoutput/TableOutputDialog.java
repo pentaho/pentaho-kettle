@@ -1172,7 +1172,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     {
     	DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
     	boolean hasErrorHandling = transMeta.findStep(stepname).isDoingErrorHandling();
-    	
+  
     	// Do we want to return keys?
     	boolean returnKeys        = wReturnKeys.getSelection();
     	

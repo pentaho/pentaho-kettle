@@ -1255,7 +1255,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING), value_str);
 
 		/* If we have prepared the insert, we don't do it again.
-		 * We asume that all the step insert statements come one after the other.
+		 * We assume that all the step insert statements come one after the other.
 		 */
 		
 		if (psStepAttributesInsert == null)
@@ -1629,7 +1629,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
 	public RowMetaAndData getOneRow(String tablename, String keyfield, ObjectId id) throws KettleException
 	{
-	  String sql = "SELECT * FROM " + tablename + " WHERE " + keyfield + " = ?"; // TODO add parameters
+	  String sql = "SELECT * FROM " + tablename + " WHERE " + keyfield + " = ?"; 
 
       // Get the prepared statement
       //
