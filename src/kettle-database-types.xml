@@ -140,11 +140,6 @@
     <classname>org.pentaho.di.core.database.OracleRDBDatabaseMeta</classname>
   </database-type>                                                           
 
-  <database-type id="PALO">
-    <description>Palo MOLAP Server</description>
-    <classname>org.pentaho.di.core.database.PALODatabaseMeta</classname>
-  </database-type>                                                      
-
   <database-type id="POSTGRESQL">
     <description>PostgreSQL</description>
     <classname>org.pentaho.di.core.database.PostgreSQLDatabaseMeta</classname>
